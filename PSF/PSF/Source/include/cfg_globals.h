@@ -38,7 +38,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Data types and constants
 // *****************************************************************************
 // *****************************************************************************
-#if(PWRCTRL_DEFAULT_PSF_GPIO_CONFIG == BOARD_CONFIG_DCDC_CTRL)
+#if(PWRCTRL_DEFAULT_PSF_GPIO_CONFIG == CONFIG_DCDC_CTRL)
 
 extern UPD_PIO_CONFIG_DATA const gasUpdPioDcDcConfig[CONFIG_PD_PORT_COUNT];
 
