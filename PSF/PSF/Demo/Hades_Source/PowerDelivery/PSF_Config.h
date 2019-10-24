@@ -1160,7 +1160,7 @@ Description:
     is a control for discharging VBUS (connecting VBUS to GND). It asserts as per 
     CONFIG_PORT_n_UPD_VBUS_DIS_PIO_MODE whenever VBUS voltage must transition from a high voltage to
     a lower voltage state and when VBUS is disabled.
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. It takes value from 0 to 15 and to 
+    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). It takes value from 0 to 15 and to 
     disable the pin functionality from stack, user can define it as 0xFF.
     It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG.
 Remarks:
@@ -1182,7 +1182,7 @@ Example:
 Description:
 	CONFIG_PORT_n_UPD_VBUS_DIS_PIO_MODE defines the PIO mode of the UPD350 PIO VBUS_DIS defined in  
     CONFIG_PORT_n_UPD_VBUS_DIS_PIO_NO. It takes only values from enum eUPD_OUTPUT_PIN_MODES_TYPE. 
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1.
+    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1).
 Remarks:
     By default, it is configured to ePUSH_PULL_ACTIVE_HIGH.
 Example:
@@ -1202,7 +1202,7 @@ Description:
 	CONFIG_PORT_n_UPD_DC_DC_EN_PIO_NO defines the UPD350 PIO to enable DC-DC controller. It is
     asserted as per CONFIG_PORT_n_UPD_DC_DC_EN_PIO_MODE during initialization and de-asserted during error 
     condition to reset the DC-DC controller
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. It takes value from 0 to 15 and to 
+    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). It takes value from 0 to 15 and to 
     disable the pin functionality from stack, user can define it as 0xFF.
     It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG.
 Remarks:
@@ -1224,7 +1224,7 @@ Example:
 Description:
 	CONFIG_PORT_n_UPD_DC_DC_EN_PIO_MODE defines the PIO mode of the UPD350 PIO DC_DC_EN defined in  
     CONFIG_PORT_n_UPD_DC_DC_EN_PIO_NO. It takes only values from enum eUPD_OUTPUT_PIN_MODES_TYPE. 
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1.
+    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1).
 Remarks:
     By default, it is configured to ePUSH_PULL_ACTIVE_HIGH.
 Example:
@@ -1255,8 +1255,8 @@ Remarks:
 Example:
 	<code>
        #define CONFIG_PORT_0_UPD_VSEL0_PIO_NO           7 (VSEL0 for port 0 is PIO7)
-       #define CONFIG_PORT_0_UPD_VSEL0_PIO_NO           8 (VSEL1 for port 0 is PIO8)
-       #define CONFIG_PORT_0_UPD_VSEL0_PIO_NO           9 (VSEL2 for port 0 is PIO9)
+       #define CONFIG_PORT_0_UPD_VSEL1_PIO_NO           8 (VSEL1 for port 0 is PIO8)
+       #define CONFIG_PORT_0_UPD_VSEL2_PIO_NO           9 (VSEL2 for port 0 is PIO9)
        #define CONFIG_PORT_0_UPD_VSEL0_PIO_NO           0xFF (VSEL0 for port 0 is disabled)
 	</code>
 **************************************************************************************************/										  
@@ -1280,7 +1280,7 @@ Example:
 Description:
 	CONFIG_PORT_n_UPD_VSELx_PIO_MODE defines the PIO mode of the UPD350 PIO VSELx defined in  
     CONFIG_PORT_n_UPD_VSELx_PIO_NO. It takes only values from enum eUPD_OUTPUT_PIN_MODES_TYPE. 
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. x takes vlaue between 0 to 2.
+    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). x takes vlaue between 0 to 2.
 Remarks:
     By default, it is configured to ePUSH_PULL_ACTIVE_HIGH.
 Example:
@@ -1310,7 +1310,7 @@ Description:
 	CONFIG_PORT_n_VSAFE0V_VSEL_MAPPING defines the assertion and de-assertion to be driven on 
     VSEL[2:0] pins(defined in CONFIG_PORT_n_UPD_VSELx_PIO_NO) by the PSF stack as per 
     CONFIG_PORT_n_UPD_VSELx_PIO_MODE to have a output voltage of VSafe0V out of DC-Dc controller.
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1.
+    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1).
 Remarks:
     By default, it is configured to 0x00. It is applicable only for source operation.
 Example:
@@ -1330,7 +1330,7 @@ Description:
     VSEL[2:0] pins(defined in CONFIG_PORT_n_UPD_VSELx_PIO_NO) by the PSF stack as per 
     CONFIG_PORT_n_UPD_VSELx_PIO_MODE to have a output voltage of PDO voltage defined in 
     CONFIG_PORT_n_SOURCE_PDO_x_VOLTAGE out of DC-DC controller.
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. x takes value between 1 to 7 as by PD 
+    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). x takes value between 1 to 7 as by PD 
     specification, there can only be 7 PDOs. It is applicable only for source.
 Remarks:
     By default, a 1 pin per voltage implementation is implemented. 
@@ -1392,7 +1392,7 @@ Description:
     It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
     and INCLUDE_POWER_FAULT_HANDLING defined as '1'.
 Remarks:
-    By default, it is defined as 5.n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. 
+    By default, it is defined as 5.n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). 
 Example:
     <code>
        #define CONFIG_PORT_0_UPD_FAULT_IN           5 (FAULT_IN is PIO5)
@@ -1409,7 +1409,7 @@ Example:
 Description:
 	CONFIG_PORT_n_UPD_FAULT_IN_MODE defines the PIO mode of the UPD350 PIO FAULT_IN defined in  
     CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO. It takes only values from enum eFAULT_IN_MODE_TYPE. 
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1.
+    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1).
 Remarks:
     By default, it is configured to ePUSH_PULL_ACTIVE_HIGH.
 Example:
