@@ -385,7 +385,6 @@ void UPD_GPIOInit(UINT8 u8PortNum)
 void UPD_PIOHandleISR(UINT8 u8PortNum)
 {
 	UINT16 u16PIOIntSts = 0;
-    UINT16 u16PIORegVal;
 	
  	/* Read the interrupt status*/
 	UPD_RegisterReadISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntSts, BYTE_LEN_2);
@@ -393,6 +392,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
     #if INCLUDE_POWER_FAULT_HANDLING
 	if ((BIT(gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio)) & u16PIOIntSts)
 	{	
+        UINT16 u16PIORegVal;
         /* Clear the OCS interrupt Configuration*/
         UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio),\
 									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
