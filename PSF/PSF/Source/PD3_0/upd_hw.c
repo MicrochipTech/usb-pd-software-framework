@@ -398,11 +398,14 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
 									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
         u16PIORegVal &= ~ (UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
 		UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio),\
-										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);  
+										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+        /*Notify Power fault to DPM only none of the Power fault recovery is not in progress*/
+        if (!gasDPM[u8PortNum].u8HRCompleteWait)
+        {
+            /* Notify DPM about the power fault*/
+            gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
+        }
     
-		/* Notify DPM about the power fault*/
-        gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
-
 		#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
 			/* Disable EN_VBUS gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio*/
 			UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio),\
