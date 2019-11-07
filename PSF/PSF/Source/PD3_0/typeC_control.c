@@ -1328,14 +1328,10 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 
         if (TRUE == u8HandleUV)
         {
-            
             #if INCLUDE_POWER_FAULT_HANDLING
-
             u16Data = 0;
-
             /* Read the sample En to determine whether undervoltage is enabled */
             UPD_RegisterReadISR (u8PortNum, TYPEC_VBUS_SAMP_EN, (UINT8 *)&u16Data, BYTE_LEN_1);
-
             /* Verifying whether undervoltage is enabled */
             if (TYPEC_UNDER_VOLT_THR3_MATCH & u16Data)
             {
@@ -1344,7 +1340,16 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                 {
                     gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_UV;
                 }
-            }            
+            }
+            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+                /*When PIO override is disabled; VBUS_EN is disabled by FW on Power fault*/
+                /* Disable EN_VBUS gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio*/
+                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio),\
+									(UINT8 *)&u16Data, BYTE_LEN_1);
+                u16Data &= ~ UPD_CFG_PIO_DATAOUTPUT;
+                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio),\
+										(UINT8 *)&u16Data, BYTE_LEN_1);
+            #endif
             #endif /* endif for INCLUDE_POWER_FAULT_HANDLING*/            
         }
         else if (u8Data & TYPEC_VBUS_OVERVOLT_MATCH_BIT)
@@ -1352,9 +1357,16 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             /* Over voltage is checked before desired voltage as TYPEC_VBUS_MATCH_OVER_V 
                 checks for only over votage bit being set are not*/
             #if INCLUDE_POWER_FAULT_HANDLING
-
-             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP; 
-             
+             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP;
+            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+                /*When PIO override is disabled; VBUS_EN is disabled by FW on Power fault*/
+                /* Disable EN_VBUS gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio*/
+                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio),\
+									(UINT8 *)&u16Data, BYTE_LEN_1);
+                u16Data &= ~ UPD_CFG_PIO_DATAOUTPUT;
+                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio),\
+										(UINT8 *)&u16Data, BYTE_LEN_1);
+            #endif
             #endif /* endif for INCLUDE_POWER_FAULT_HANDLING*/
         }
         else if((u8Data == TYPEC_VBUS_DESIRED_V_MATCH_VAL) || \
@@ -1376,16 +1388,12 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                     break;
                 }
             }
-
-
             if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {              
                  /*Disabling the VBUS discharge functionality as desired voltage is reached
                 only if port role is source*/                  
                 PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
-              
             }            
-                    
         }
 
         /*Clearing the VBUS Change status interrupt*/
