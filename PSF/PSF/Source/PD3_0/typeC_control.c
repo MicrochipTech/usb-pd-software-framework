@@ -2223,11 +2223,12 @@ void TypeC_DecodeSourceRpValue(UINT8 u8PortNum)
              {
                  /*Clear the Collision avoidance Status variable*/
                  u8PortSts &= ~TYPEC_COLLISION_AVOIDANCE_ACT;
-                   
+                 
+            #if INCLUDE_PD_3_0
                 /*Calling the callback API provided by the protocol layer here*/
                 PRL_CommitPendingTxOnCAISR (u8PortNum);
                 DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Collision Avoidance Callback API called\r\n");
-                                     
+            #endif                      
              }
              break;
         }
