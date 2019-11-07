@@ -138,7 +138,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Per port configuration assignment depending on the number of port*/
 
 #if (CONFIG_PD_PORT_COUNT == 1)
-#define CONFIG_PORT_CONFIGURATION_DATA      CONFIG_PORT_0_CONFIGURATION_DATA
+#define CONFIG_PORT_CONFIGURATION_DATA      {CONFIG_PORT_0_CONFIGURATION_DATA}
 #endif
 
 #if (CONFIG_PD_PORT_COUNT == 2)
@@ -147,16 +147,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #endif
 
 #if (CONFIG_PD_PORT_COUNT == 3)
-#define CONFIG_PORT_CONFIGURATION_DATA      CONFIG_PORT_0_CONFIGURATION_DATA,\
-                                            CONFIG_PORT_1_CONFIGURATION_DATA,\
-                                            CONFIG_PORT_2_CONFIGURATION_DATA
+#define CONFIG_PORT_CONFIGURATION_DATA      {CONFIG_PORT_0_CONFIGURATION_DATA},\
+                                            {CONFIG_PORT_1_CONFIGURATION_DATA},\
+                                            {CONFIG_PORT_2_CONFIGURATION_DATA}
 #endif
 
 #if (CONFIG_PD_PORT_COUNT == 4)
-#define CONFIG_PORT_CONFIGURATION_DATA      CONFIG_PORT_0_CONFIGURATION_DATA,\
-                                            CONFIG_PORT_1_CONFIGURATION_DATA,\
-                                            CONFIG_PORT_2_CONFIGURATION_DATA,\
-                                            CONFIG_PORT_3_CONFIGURATION_DATA
+#define CONFIG_PORT_CONFIGURATION_DATA      {CONFIG_PORT_0_CONFIGURATION_DATA},\
+                                            {CONFIG_PORT_1_CONFIGURATION_DATA},\
+                                            {CONFIG_PORT_2_CONFIGURATION_DATA},\
+                                            {CONFIG_PORT_3_CONFIGURATION_DATA}
 #endif 
 
 
@@ -228,7 +228,7 @@ PORT_CONFIG_DATA gasPortConfigurationData[CONFIG_PD_PORT_COUNT] = {CONFIG_PORT_C
 
 /********************************************************************************/
 #if (CONFIG_PD_PORT_COUNT == 1)
-#define CONFIG_PORT_UPD_PIO_CONFIGURATION_DATA      UPD_PIO_MNG_CONFIG(0)
+#define CONFIG_PORT_UPD_PIO_CONFIGURATION_DATA      {UPD_PIO_MNG_CONFIG(0)}
 #endif
 
 #if (CONFIG_PD_PORT_COUNT == 2)
@@ -237,16 +237,16 @@ PORT_CONFIG_DATA gasPortConfigurationData[CONFIG_PD_PORT_COUNT] = {CONFIG_PORT_C
 #endif
 
 #if (CONFIG_PD_PORT_COUNT == 3)
-#define CONFIG_PORT_UPD_PIO_CONFIGURATION_DATA      UPD_PIO_MNG_CONFIG(0),	\
-                                                    UPD_PIO_MNG_CONFIG(1),  \
-                                                    UPD_PIO_MNG_CONFIG(2)
+#define CONFIG_PORT_UPD_PIO_CONFIGURATION_DATA      {UPD_PIO_MNG_CONFIG(0)},	\
+                                                    {UPD_PIO_MNG_CONFIG(1)},  \
+                                                    {UPD_PIO_MNG_CONFIG(2)}
 #endif
 
 #if (CONFIG_PD_PORT_COUNT == 4)
-#define CONFIG_PORT_UPD_PIO_CONFIGURATION_DATA      UPD_PIO_MNG_CONFIG(0),	\
-                                                    UPD_PIO_MNG_CONFIG(1),  \
-                                                    UPD_PIO_MNG_CONFIG(2),  \
-                                                    UPD_PIO_MNG_CONFIG(3)
+#define CONFIG_PORT_UPD_PIO_CONFIGURATION_DATA      {UPD_PIO_MNG_CONFIG(0)},	\
+                                                    {UPD_PIO_MNG_CONFIG(1)},  \
+                                                    {UPD_PIO_MNG_CONFIG(2)},  \
+                                                    {UPD_PIO_MNG_CONFIG(3)}
 #endif 
 
 
