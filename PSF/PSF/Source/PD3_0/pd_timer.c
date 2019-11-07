@@ -148,7 +148,9 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
     /* Resetting all the module's TimerID globals */
 	gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 	gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = MAX_CONCURRENT_TIMERS;
+    #if INCLUDE_PD_3_0
 	gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
+    #endif
 	gasPolicy_Engine[u8PortNum].u8PENoResponseTimerID = MAX_CONCURRENT_TIMERS;
     
 	#if INCLUDE_POWER_FAULT_HANDLING

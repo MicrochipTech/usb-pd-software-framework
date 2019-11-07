@@ -220,9 +220,11 @@ void  PRL_Init (UINT8 u8PortNum)
 	/* Rx Error bit is reset */
 	gasPRL [u8PortNum].u8RxError = RESET_TO_ZERO;
 	
+    #if  INCLUDE_PD_3_0
 	/* Chunk SM is reset */
     gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
 	PRL_ResetChunkSM (u8PortNum);
+    #endif
     
     DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Intialisation Done\r\n");
 }
@@ -280,9 +282,9 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 {
   
 	UINT8 u8MsgId, u8Pkt_Len, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = 0;
-	UINT16 u16MsgDataIndex;
     
-    #ifdef INCLUDE_PD_3_0
+    #if INCLUDE_PD_3_0
+    UINT16 u16MsgDataIndex;
 	
 	/* Checks whether the message is extended PD packet & chunk state machine is enabled*/
 	if ((!gasChunkSM [u8PortNum].u8EnableChunkSM) && (PRL_IS_EXTENDED_MSG(u32Header)))
@@ -485,7 +487,7 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 	/* Info: while handling u8DataObjSizeinBytes for extended message, size of extended message header
 				is not accounted nor the Chunk padded bytes count if any */
     
-    #ifdef INCLUDE_PD_3_0
+    #if INCLUDE_PD_3_0
     UINT8 u8ZeroPadding = 0, u8LastChunkDataobjCnt;
 	UINT16 u16ExtendedMsgHeader = 0x0;
 	
@@ -549,7 +551,7 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 	pu8TxPkt [u8Pktindex] = LOBYTE(u32Header);
 	pu8TxPkt [++u8Pktindex] = HIBYTE(u32Header);
 	
-    #ifdef INCLUDE_PD_3_0
+    #if INCLUDE_PD_3_0
 	if(PRL_IS_EXTENDED_MSG(u32Header))
 	{
 		/* If extended, Extended Message header is loaded */
@@ -568,7 +570,7 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 		}
 	}
     
-    #ifdef INCLUDE_PD_3_0
+    #if INCLUDE_PD_3_0
 	/* zero padding in case the data byte is not 4 byte aligned*/
 	while (u8ZeroPadding)
 	{
@@ -688,7 +690,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
 
     }
     
-    #ifdef INCLUDE_PD_3_0
+    #if INCLUDE_PD_3_0
     else if (u8Return & PRL_RET_EXT_MSG_RCVD)
     {
 		/* Extended message is received */
@@ -1012,14 +1014,15 @@ void PRL_PHYLayerReset (UINT8 u8PortNum)
 
 UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 {
-    UINT8 u8PDOIndex, u8Return = PRL_RET_NO_MSG_RCVD;
+    UINT8 u8Return = PRL_RET_NO_MSG_RCVD;
 
     if (!(gasPRL[u8PortNum].u8RxRcvdISR))
     {
         return u8Return;
     }
     
-    #ifdef INCLUDE_PD_3_0
+    #if INCLUDE_PD_3_0
+    UINT8 u8PDOIndex;
 /***********************************************Extended Message Handling**************************************************************/
 	/* if received message is extended message*/
     if (PRL_IS_EXTENDED_MSG(gasPRLRecvBuff [u8PortNum].u16Header))
@@ -1177,10 +1180,8 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 	
     } /* end of if check for IsExtendedMsg*/
 	/***************************************************Non-Extended Message Handling******************************************************/
-    else
-    #endif /* for INCLUDE_PD_3_0 */
+    else    
 	{
-	  
 	  	if ((gasChunkSM [u8PortNum].u8EnableChunkSM) && (PRL_GET_MESSAGE_TYPE(gasPRLRecvBuff [u8PortNum].u16Header) != PE_CTRL_PING))
         {
 		  	/* Unexpected message received and received message is not PING */
@@ -1203,9 +1204,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 				PRL_ResetChunkSM (u8PortNum);
 			}
         }
-        
 	  	/* if it is not an extended message, Message is copied to globals & PE is informed*/
-        
         /* Return value is set to PRL_RET_MSG_RCVD to indicate Message has received */
         u8Return |=  PRL_RET_MSG_RCVD;
 		 	
@@ -1223,8 +1222,11 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
            /* PRL_TX_IDLE_ST is assinged*/
             PRL_ChangeTxState (u8PortNum, PRL_TX_IDLE_ST);
      }
-       
-	
+    
+    #else
+        /* Return value is set to PRL_RET_MSG_RCVD to indicate Message has received */
+        u8Return |=  PRL_RET_MSG_RCVD;
+     #endif /* for INCLUDE_PD_3_0 */
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     /* gasPRL[u8PortNum].u8RxRcvdISR is ISR & foreground sync variable. 
         Interrupt is disabled to prevent variable corruption */
@@ -1256,7 +1258,7 @@ UINT32 PRL_IsAnyMsgPendinginPRL (UINT8 u8PortNum)
 
 /* Below are PD 3.0 Spec related functions */
 
-#ifdef INCLUDE_PD_3_0
+#if INCLUDE_PD_3_0
 
 /******************************************************************************************************************************************
 

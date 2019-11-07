@@ -476,8 +476,10 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					
                     DPM_EnablePowerFaultDetection(u8PortNum);
                     
+                    #if INCLUDE_PD_3_0
                     /* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */
                     (void)PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
+                    #endif
                   
                     break;
                 }
