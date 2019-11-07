@@ -611,7 +611,6 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             {            
                 /*Setting the VCONN Good to Supply Flag as False*/
                  gasDPM[u8PortNum].u8VCONNGoodtoSupply = FALSE;
-            
             }
 		    if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= CONFIG_MAX_VBUS_POWER_FAULT_COUNT)
             {
@@ -636,10 +635,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 					/* Assign an idle state wait for detach*/
 					gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
 				}
-				
 				/* Assign an idle state wait for detach*/
 				gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-				
 				DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state");
             }
             else
@@ -648,19 +645,14 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                     Power fault handling*/
                 UPD_EnableFaultIn(u8PortNum);
             }
-			
-		
 			/* Reset Wait for HardReset Complete bit*/
 			gasDPM[u8PortNum].u8HRCompleteWait = SET_TO_ZERO;
 			
 		}
 	}
-	
-	
 	if (gasDPM[u8PortNum].u8PowerFaultISR)
 	{
 	  	DEBUG_PRINT_PORT_STR(u8PortNum, "DPM Fault Handling");
-		
         /*If VCONN OCS is present , kill the VCONN power good timer*/
         if(gasDPM[u8PortNum].u8PowerFaultISR & DPM_POWER_FAULT_VCONN_OCS)
         {
@@ -685,6 +677,12 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             {
                 return;
             }
+             /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
+            UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
+                gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_DE_ASSERT);
+            UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
+                gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_ASSERT);
+            
             /* Kill Power Good Timer */
             PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
         
@@ -693,9 +691,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 			
             DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: VBUS Power Fault");
-        
         }
-    
 		if(PE_GET_PD_CONTRACT(u8PortNum) == PE_IMPLICIT_CONTRACT)
 		{
 			/* Set it to Type C Error Recovery */
@@ -704,7 +700,6 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 						
 			/* Assign an idle state wait for detach*/
 			gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-			
 		}
 		else
 		{          
@@ -713,27 +708,22 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 /*Increment the VCONN fault count*/
                 gasDPM[u8PortNum].u8VCONNPowerFaultCount++;
                 
-                /*CC comparator will off once VCONN OCS is detected
-                    for implicit contract it is enabled as part of Type C error 
-                   recovery. For explicit contract it is enabled here*/
+                /*CC comparator will off once VCONN OCS is detected for implicit contract it is 
+                 enabled as part of Type C error recovery. For explicit contract it is enabled here*/
                 /*Enabling the CC Sampling on CC1 and CC2 lines*/
                 TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
-            
             }
             if(gasDPM[u8PortNum].u8PowerFaultISR & ~DPM_POWER_FAULT_VCONN_OCS)
             {
                 /*Increment the fault count*/
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount++;            
             }
-			
 			/* Send Hard reset*/
 			PE_SendHardResetMsg(u8PortNum);
 			
 			/* Set Wait for HardReset Complete bit*/
 			gasDPM[u8PortNum].u8HRCompleteWait = gasDPM[u8PortNum].u8PowerFaultISR;
-			
 		}
-        
 		/*ISR flag is cleared by disabling the interrupt*/
 		MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
 		gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
@@ -854,7 +844,6 @@ UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
 
     UINT8 u8HardResetProgressStatus = ((gasPolicy_Engine[u8PortNum].u8PEPortSts & \
                                         PE_HARDRESET_PROGRESS_MASK) >> PE_HARDRESET_PROGRESS_POS);
-    
     return u8HardResetProgressStatus;
 
 }

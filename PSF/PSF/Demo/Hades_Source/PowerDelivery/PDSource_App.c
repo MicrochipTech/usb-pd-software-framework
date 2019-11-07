@@ -109,11 +109,6 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         
         case eMCHP_PSF_VBUS_PWR_FAULT:
         {
-            /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
-            UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
-                gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_DE_ASSERT);
-            UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
-                gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_ASSERT);
             u8RetVal = MCHP_PSF_HANDLE_PWR_FAULT;
             break;
         }
