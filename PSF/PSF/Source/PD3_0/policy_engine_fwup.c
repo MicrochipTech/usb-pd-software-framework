@@ -107,7 +107,7 @@ UINT8 PE_FwUpdtStateMachine(
     if(ePE_FWUP_MANIFEST_SS == PE_FWUP_GET_CURRENT_SUBSTATE(u8PortNum))
     {
         /** During the Manifestation state, Boot from the newly Updated Updateable application*/
-        MSCH_PSF_HOOK_BOOT_UPDATABLE_APP();
+        MCHP_PSF_HOOK_BOOT_UPDATABLE_APP();
     }
     
     if (PE_FWUP_NEWMSG_EVT == (PE_FWUP_NEWMSG_EVT & gsPdfuInfo.u8EventType))
@@ -608,7 +608,7 @@ UINT8 PE_FwUpdtProcessTransferState(
         /** Check if Firmware update is Progress*/
         if (PE_FWUP_TRANSFER_PHASE_COMPLETE != gsPdfuInfo.u8TransferPhaseComplete)
         {
-            u8Status = MSCH_PSF_HOOK_PROGRAM_FWBLOCK(pu8DataBuffer, \
+            u8Status = MCHP_PSF_HOOK_PROGRAM_FWBLOCK(pu8DataBuffer, \
                         (PRL_GET_DATA_SIZE(u16ExtendedMsgHeader) - 4u));
 
             if ((UINT8)ePE_FWUP_OK == u8Status)
@@ -906,7 +906,7 @@ UINT16 PE_FwUpdtGetFWIDRequest(void)
     stGetFWID.u16FWVersion4 = (((UINT16)(SYSTEM_FW_REV >> 8)) |((UINT16)SYSTEM_FW_REV & (UINT16)0xFFu));
 
     /*Current image bank, u8CurrentMemory was stored when booting*/
-    stGetFWID.u8ImageBank = MSCH_PSF_HOOK_GETCURRENT_IMAGEBANK();
+    stGetFWID.u8ImageBank = MCHP_PSF_HOOK_GETCURRENT_IMAGEBANK();
 
     /*Flags only applies to PD FW Update Spec, Hence fill it as Zero*/
     stGetFWID.u8Flags1 = (UINT8) (CONFIG_PDFU_VIA_USBPD_SUPPORTED | (CONFIG_PDFU_SUPPORTED << PE_FWUP_FLAGS1_BIT2));
@@ -948,7 +948,7 @@ UINT8 PE_FwUpdtPDFUInitateRequest(UINT8   u8PortNum, UINT8   u8WaitTime)
     UINT16 u16PDFUResponseLength = (UINT16)PE_FWUP_RESPBUFF_STATUS_INDEX;
     ePolicySubState eSubState = ePE_INVALIDSUBSTATE;
     
-    if (CONFIG_UPDATABLE_IMAGEBANK_INDEX != MSCH_PSF_HOOK_GETCURRENT_IMAGEBANK())
+    if (CONFIG_UPDATABLE_IMAGEBANK_INDEX != MCHP_PSF_HOOK_GETCURRENT_IMAGEBANK())
     {
         /**PDFU Initiate message is considered as First Message of the PDFU Flow*/
         gsPdfuInfo.u8IsPDFUActive = TRUE;
@@ -1032,7 +1032,7 @@ UINT8 PE_FwUpdtPDFUInitateRequest(UINT8   u8PortNum, UINT8   u8WaitTime)
     else
     {
         /** Reset and Boot from Fixed Application for continuing the Firmware Upgrade */
-        MSCH_PSF_HOOK_BOOT_FIXED_APP();
+        MCHP_PSF_HOOK_BOOT_FIXED_APP();
     }
 
 #else
@@ -1071,7 +1071,7 @@ UINT8 PE_FwUpdtPDFUValidateRequest(UINT8   u8PortNum)
     /** To process the request \a PDFW_ProcessPDFUInitateRequest \norm is invoked.
     The response message contents are copied into \a gsPdfuInfo.pu8ResponseBuffer*/
    // gsPdfuInfo.u16PDFUResponseLength = PE_FWUP_RESPBUFF_STATUS_INDEX;
-    u8ValidationStatus = (UINT8)MSCH_PSF_HOOK_VALIDATE_FIRMWARE();
+    u8ValidationStatus = (UINT8)MCHP_PSF_HOOK_VALIDATE_FIRMWARE();
     if (PE_FWUP_VALIDATION_SUCCESSFUL == u8ValidationStatus)
     {
         gsPdfuInfo.pu8ResponseBuffer[u16PDFUResponseLength++] = (UINT8)ePE_FWUP_OK;
@@ -1206,9 +1206,9 @@ UINT8 PE_FwUpdtPDFUDataRequest(
 
         if ((u16DataBlockSize != (UINT16)SET_TO_ZERO)&& (((UINT8)ePE_FWUP_OK) == u8Status))
         {
-            /** To process the request \a MSCH_PSF_HOOK_PROGRAM_FWBLOCK \norm is invoked.
+            /** To process the request \a MCHP_PSF_HOOK_PROGRAM_FWBLOCK \norm is invoked.
             The response message contents are copied into \a gsPdfuInfo.pu8ResponseBuffer*/
-            u8Status = MSCH_PSF_HOOK_PROGRAM_FWBLOCK(pu8DataBuffer, u16DataBlockSize);
+            u8Status = MCHP_PSF_HOOK_PROGRAM_FWBLOCK(pu8DataBuffer, u16DataBlockSize);
         }
         UINT16 u16PDFUResponseLength = (UINT16)PE_FWUP_RESPBUFF_STATUS_INDEX;
         gsPdfuInfo.u16ExptDataBlockIdx++;

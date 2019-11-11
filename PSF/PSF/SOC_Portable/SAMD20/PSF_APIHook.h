@@ -1427,7 +1427,7 @@ enum MCHP_PSF_NOTIFICATION
                                                                            
 /**************************************************************************
     Function:
-        MSCH_PSF_HOOK_GETCURRENT_IMAGEBANK()
+        MCHP_PSF_HOOK_GETCURRENT_IMAGEBANK()
     Summary:
         To Return the Index of the Image Bank which is currently executing.
         \Example:
@@ -1449,7 +1449,7 @@ enum MCHP_PSF_NOTIFICATION
         IMAGE_BANK_UPDATABLE_APP 0x03
     Example:
         <code>
-            \#define MSCH_PSF_HOOK_GETCURRENT_IMAGEBANK()  getCurrentImageBank()
+            \#define MCHP_PSF_HOOK_GETCURRENT_IMAGEBANK()  getCurrentImageBank()
 
             UINT8 getCurrentImageBank(void)
             {
@@ -1460,11 +1460,11 @@ enum MCHP_PSF_NOTIFICATION
         The User definition of the function is mandatory in both Fixed and
         Updatable application when INCLUDE_PDFU is TRUE.                 
 **************************************************************************/
-#define MSCH_PSF_HOOK_GETCURRENT_IMAGEBANK()
+#define MCHP_PSF_HOOK_GETCURRENT_IMAGEBANK()    0
 
 /****************************************************************************************
     Function:
-        MSCH_PSF_HOOK_PROGRAM_FWBLOCK( _OBJ1_,_LEN_)
+        MCHP_PSF_HOOK_PROGRAM_FWBLOCK( _OBJ1_,_LEN_)
     Summary:
         Validate the Data block and program the data to the Memory, and return
         the Status of the Programming Operation.
@@ -1496,7 +1496,7 @@ enum MCHP_PSF_NOTIFICATION
           * ePE_FWUP_errADDRESS &#45; when data block index is out of range.
     Example:
         <code>
-            \#define MSCH_PSF_HOOK_PROGRAM_FWBLOCK(_OBJ1_, _LEN_)     (PDFW_ProcessPDFUDataRequest)
+            \#define MCHP_PSF_HOOK_PROGRAM_FWBLOCK(_OBJ1_, _LEN_)     (PDFW_ProcessPDFUDataRequest)
         </code>
             ePE_PDFU_RESPONSE_CODE PDFW_ProcessPDFUDataRequest( UINT8 u8RequestBuffer, \
                                                            UINT16 u16RequestLength)
@@ -1535,11 +1535,11 @@ enum MCHP_PSF_NOTIFICATION
         User definition of this Hook function is mandatory when
         INCLUDE_PDFU is TRUE.                                                          
  ****************************************************************************************/
-#define MSCH_PSF_HOOK_PROGRAM_FWBLOCK(_OBJ1_,_LEN_)
+#define MCHP_PSF_HOOK_PROGRAM_FWBLOCK(_OBJ1_,_LEN_) 0
 
 /**************************************************************************************************
     Function:
-        MSCH_PSF_HOOK_VALIDATE_FIRMWARE(_OBJ1_,_LEN_)
+        MCHP_PSF_HOOK_VALIDATE_FIRMWARE(_OBJ1_,_LEN_)
     Summary:
         To validate the Flashed Binary using a User defined validation method
         and return the Status of the Firmware Validation Operation.
@@ -1567,7 +1567,7 @@ enum MCHP_PSF_NOTIFICATION
         * PE_FWUP_VALIDATION_FAILURE 0x02u
     Example:
         <code>
-            \#define MSCH_PSF_HOOK_VALIDATE_FIRMWARE() (PDFW_ProcessPDFUDataRequest)
+            \#define MCHP_PSF_HOOK_VALIDATE_FIRMWARE() (PDFW_ProcessPDFUDataRequest)
 
             UINT8 PDFW_ProcessPDFUValidateRequest(void)
             {    
@@ -1580,13 +1580,13 @@ enum MCHP_PSF_NOTIFICATION
         User definition of this Hook function is mandatory when INCLUDE_PDFU is
         TRUE                                                                                           
 **************************************************************************************************/
-#define MSCH_PSF_HOOK_VALIDATE_FIRMWARE()
+#define MCHP_PSF_HOOK_VALIDATE_FIRMWARE()   0
 
 /**************************************************************************
     Function:
-        MSCH_PSF_HOOK_BOOT_FIXED_APP()
+        MCHP_PSF_HOOK_BOOT_FIXED_APP()
     Summary:
-        MSCH_PSF_HOOK_BOOT_FIXED_APP shall perform necessary operation to
+        MCHP_PSF_HOOK_BOOT_FIXED_APP shall perform necessary operation to
         switch from Updatable application to Fixed application.
     Description:
         Re-flash of the Updatable_Application image bank while currently
@@ -1604,7 +1604,7 @@ enum MCHP_PSF_NOTIFICATION
         switched to the Fixed application.
     Example:
         <code>
-            \#define MSCH_PSF_HOOK_BOOT_FIXED_APP()   Boot_Fixed_Application()
+            \#define MCHP_PSF_HOOK_BOOT_FIXED_APP()   Boot_Fixed_Application()
             void Boot_Fixed_Application(void)
             {
                 UPD301_EraseUpdatableAppSignature(); //Invalidate the Updatable app sign
@@ -1615,13 +1615,13 @@ enum MCHP_PSF_NOTIFICATION
         User definition of this Hook function is mandatory in the Updatable
         application when INCLUDE_PDFU is TRUE                            
   **************************************************************************/
+#define MCHP_PSF_HOOK_BOOT_FIXED_APP()
 
-#define MSCH_PSF_HOOK_BOOT_FIXED_APP()          
  /***********************************************************************************
     Function:
-        MSCH_PSF_HOOK_BOOT_UPDATABLE_APP()
+        MCHP_PSF_HOOK_BOOT_UPDATABLE_APP()
     Summary:
-        MSCH_PSF_HOOK_BOOT_UPDATABLE_APP shall perform necessary
+        MCHP_PSF_HOOK_BOOT_UPDATABLE_APP shall perform necessary
         operation to boot from the updatable application after a PDFU is
         successfully completed.
     Description:
@@ -1642,7 +1642,7 @@ enum MCHP_PSF_NOTIFICATION
         switched to the Updatable application.
    Example:
         <code>
-            \#define MSCH_PSF_HOOK_BOOT_UPDATABLE_APP()   Boot_Updatable_Application()
+            \#define MCHP_PSF_HOOK_BOOT_UPDATABLE_APP()   Boot_Updatable_Application()
      
             void Boot_Updatable_Application(void)
             {
@@ -1653,14 +1653,13 @@ enum MCHP_PSF_NOTIFICATION
         User definition of this Hook function is mandatory in the Fixed
         application when INCLUDE_PDFU is TRUE                                     
 ***********************************************************************************/ 
-
-#define MSCH_PSF_HOOK_BOOT_UPDATABLE_APP()         
+#define MCHP_PSF_HOOK_BOOT_UPDATABLE_APP()         
                                                   
 /**************************************************************************
     Function:
-        MSCH_PSF_HOOK_IS_PDFU_ALLOWED_NOW()
+        MCHP_PSF_HOOK_IS_PDFU_ALLOWED_NOW()
     Description:
-        MSCH_PSF_HOOK_IS_PDFU_ALLOWED_NOW specifies if PD Firmware Update can be
+        MCHP_PSF_HOOK_IS_PDFU_ALLOWED_NOW specifies if PD Firmware Update can be
         currently allowed, based on the priority of the application tasks
         currently executing.
         1. When the PD Firmware Update is allowed, the PDFU Initiator can
@@ -1685,14 +1684,14 @@ enum MCHP_PSF_NOTIFICATION
         0x01 - PDFU Allowed.
     Example:
         <code>
-            \#define MSCH_PSF_HOOK_IS_PDFU_ALLOWED_NOW   isPdfuAllowedNow()
+            \#define MCHP_PSF_HOOK_IS_PDFU_ALLOWED_NOW   isPdfuAllowedNow()
             UINT8 isPdfuAllowedNow(void)
             {
                 return u8PdfuAllow;
             }
         </code>
 **************************************************************************/
-#define MSCH_PSF_HOOK_IS_PDFU_ALLOWED_NOW()
+#define MCHP_PSF_HOOK_IS_PDFU_ALLOWED_NOW()     0
 
 // *****************************************************************************
 // *****************************************************************************
