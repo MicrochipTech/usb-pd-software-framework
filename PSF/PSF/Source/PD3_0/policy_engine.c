@@ -492,7 +492,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                       ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum))&& (ePE_SNK_READY == PE_FWUP_GET_CURRENT_STATE(u8PortNum)))) ||
                       (ePE_PDFU_MODE == PE_FWUP_GET_CURRENT_STATE(u8PortNum)))
                     {
-                        if(TRUE == MSCH_PSF_HOOK_IS_PDFU_ALLOWED_NOW())
+                        if(TRUE == MCHP_PSF_HOOK_IS_PDFU_ALLOWED_NOW())
                         {
                             UINT8 u8PDFUActivePortNum;              
                             u8PDFUActivePortNum = PE_FwUpdtGetPDFUActivePortNum();
