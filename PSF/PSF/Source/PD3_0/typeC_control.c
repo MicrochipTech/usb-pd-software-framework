@@ -221,7 +221,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
                     TYPEC_CONFIG_NON_PWR_FAULT_THR);
         
         /*Disable the Sink circuitry to stop sinking the power from source*/
-        MCHP_PSF_HOOK_PORTPWR_ENDIS_SINK_HW(u8PortNum, TYPEC_VBUS_0V, \
+        MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, TYPEC_VBUS_0V, \
                 (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
       
     }
@@ -279,7 +279,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {   
                      
                      /*Notify external DPM of Type Detach event through a user defined call back*/
-                     (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
+                     (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
                      
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
@@ -684,7 +684,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     
                     gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = SET_TO_ZERO;
-                    MCHP_PSF_HOOK_PORTPWR_ENDIS_SINK_HW(u8PortNum,TYPEC_VBUS_0V, \
+                    MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_0V, \
                             (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
                     PRL_EnableRx (u8PortNum, FALSE);
                     
@@ -854,7 +854,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 					}
 
                     
-                    MCHP_PSF_HOOK_PORTPWR_ENDIS_SINK_HW(u8PortNum,TYPEC_VBUS_5V,\
+                    MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_5V,\
                             (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
                                        
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_RUN_SM_SS; 
@@ -896,7 +896,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {    
                      
                     /*Disable the Sink circuitry to stop sinking the power from source*/
-                      MCHP_PSF_HOOK_PORTPWR_ENDIS_SINK_HW(u8PortNum,TYPEC_VBUS_0V,\
+                      MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_0V,\
                               (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
                      
                     if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) != (TYPEC_VBUS_0V_PRES))
@@ -980,7 +980,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     else
                     {
                         /*Disable the Sink circuitry to stop sinking the power from source*/
-                        MCHP_PSF_HOOK_PORTPWR_ENDIS_SINK_HW(u8PortNum,TYPEC_VBUS_0V, \
+                        MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_0V, \
                                 (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
                         
                          /*Setting the CC1 and CC2 line as Open Disconnect*/

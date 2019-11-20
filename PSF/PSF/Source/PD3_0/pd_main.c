@@ -45,7 +45,7 @@ UINT8 MchpPSF_Init(void)
     u8InitStatus &= PDTimer_Init();
     
     /*Initialize HW SPI module defined by the user*/
-    u8InitStatus &= MCHP_PSF_HOOK_UPD_HW_INIT();
+    u8InitStatus &= MCHP_PSF_HOOK_UPDHW_INTF_INIT();
     
     
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
@@ -84,7 +84,7 @@ UINT8 MchpPSF_Init(void)
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
             /*User defined UPD Interrupt Initialization for MCU*/
-            MCHP_PSF_HOOK_UPD_ALERT_GPIO_INIT(u8PortNum);
+            MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum);
             
             /*Port Power Intialisation*/
             PWRCTRL_initialization(u8PortNum);
@@ -113,14 +113,14 @@ void MchpPSF_RUN()
 /*********************************************************************************************/
 
 /*********************************************************************************************/
-void MchpPSF_UPDAlertISR(UINT8 u8PortNum)
+void MchpPSF_UPDIrqHandler(UINT8 u8PortNum)
 {
     UPDIntr_AlertHandler(u8PortNum);
 }
 /*********************************************************************************************/
 
 /*********************************************************************************************/
-void MchpPSF_PDTimerISR(void)
+void MchpPSF_PDTimerHandler(void)
 {
     PDTimer_InterruptHandler();
 }

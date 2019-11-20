@@ -281,7 +281,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK: Enterted the state\r\n");
                     
                     /* Requested current controlling */
-                      MCHP_PSF_HOOK_PORTPWR_ENDIS_SINK_HW(u8PortNum, \
+                      MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, \
                             DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO),\
                               (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
                     

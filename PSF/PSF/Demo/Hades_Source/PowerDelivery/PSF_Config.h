@@ -1033,8 +1033,8 @@ Example:
 // *****************************************************************************
 /**************************************************************************************************
 Description :
-    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is put to Idle by the  
-    power management control if there is no activity or interrupt in UPD350.
+    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is put to low power mode by   
+    the power management control if there is no activity or interrupt in UPD350.
 Remarks :
     It shall be expressed in MILLISECONDS_TO_TICKS define.
     CONFIG_PORT_UPD_IDLE_TIMEOUT_MS is valid only if INCLUDE_POWER_MANAGEMENT_CTRL set as 1.
@@ -1048,7 +1048,7 @@ Example :
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: DC_DC Controller configurations
+// Section: DC-DC Buck boost controller configurations
 // *****************************************************************************
 // *****************************************************************************
 /**************************************************************************
@@ -1074,7 +1074,6 @@ Example :
 // Section: PIO configurations
 // *****************************************************************************
 // *****************************************************************************
-
 /**************************************************************************************************
 	Description:
 	eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes applicable for UPD350 GPIO
@@ -1091,7 +1090,6 @@ typedef enum
     eOPEN_DRAIN_ACTIVE_HIGH_PU   = 0x88U,   // Active High Open Drain output signal with internal pull up
     eOPEN_DRAIN_ACTIVE_LOW_PU    = 0x80U    // Active Low Open Drain output signal with internal pull up
 }eUPD_OUTPUT_PIN_MODES_TYPE;
-
 /**************************************************************************************************
 	Description:
 	eFAULT_IN_MODE_TYPE enum defines the various combination modes applicable for UPD350 GPIO
@@ -1106,7 +1104,6 @@ typedef enum
     eFAULT_IN_ACTIVE_LOW_PU      = 0xA0U,   //Active low signal with internal pull up
     eFAULT_IN_ACTIVE_HIGH_PD     = 0x50U    //Active high signal with internal pull down
 }eFAULT_IN_MODE_TYPE;
-
 /**************************************************************************************************
 Description:
 	CONFIG_PORT_n_EN_VBUS_UPD_PIO refers to the UPD350 PIO number used for EN_VBUS pin functionality 

@@ -103,13 +103,15 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         
         case eMCHP_PSF_VCONN_PWR_FAULT:
         {
-            u8RetVal = MCHP_PSF_HANDLE_PWR_FAULT;
+			/*Returning TRUE to enable PSF to handle the power fault*/
+            u8RetVal = TRUE;
             break;
         }
         
         case eMCHP_PSF_VBUS_PWR_FAULT:
         {
-            u8RetVal = MCHP_PSF_HANDLE_PWR_FAULT;
+			/*Returning TRUE to enable PSF to handle the power fault*/
+            u8RetVal = TRUE;
             break;
         }
         

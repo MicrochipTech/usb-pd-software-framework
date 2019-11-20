@@ -88,13 +88,13 @@ static void SAMD20_HWTimerCallback(TC_TIMER_STATUS status, uintptr_t context)
     if (TC_TIMER_STATUS_OVERFLOW == (status & TC_TIMER_STATUS_OVERFLOW))
     {
         /*PSF Timer Callback is called for Timer ISR*/
-        MchpPSF_PDTimerISR();
+        MchpPSF_PDTimerHandler();
     }
 }
 static void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
 {
     /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
-    MchpPSF_UPDAlertISR(u8PortNum);
+    MchpPSF_UPDIrqHandler(u8PortNum);
 }
 
 /* ************************************************************************** */

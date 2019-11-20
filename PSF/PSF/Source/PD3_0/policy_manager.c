@@ -127,8 +127,6 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     #if INCLUDE_POWER_MANAGEMENT_CTRL
         UPD_PwrManagementCtrl (u8PortNum);
     #endif
-    
-    MCHP_PSF_HOOK_DPM_POST_PROCESS(u8PortNum);
 }
 
 
@@ -554,9 +552,16 @@ UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum)
 
 #if INCLUDE_POWER_FAULT_HANDLING
 
+static void DPM_ClearPowerfaultFlags(UINT8 u8PortNum)
+{
+    /*ISR flag is cleared by disabling the interrupt*/
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+    gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
+    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+}
+
 void DPM_PowerFaultHandler(UINT8 u8PortNum)
 {
-    
   	/* Incase detach reset the Power Fault handling variables*/
 	if (((gasTypeCcontrol[u8PortNum].u8TypeCState == TYPEC_UNATTACHED_SRC) &&
 		    (gasTypeCcontrol[u8PortNum].u8TypeCSubState == TYPEC_UNATTACHED_SRC_INIT_SS))||
@@ -656,9 +661,10 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         /*If VCONN OCS is present , kill the VCONN power good timer*/
         if(gasDPM[u8PortNum].u8PowerFaultISR & DPM_POWER_FAULT_VCONN_OCS)
         {
-            if(MCHP_PSF_NEGLECT_PWR_FAULT == MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, \
-                                              eMCHP_PSF_VCONN_PWR_FAULT))
+            if(FALSE == MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_VCONN_PWR_FAULT))
             {
+                /*Clear the Power fault flag and return*/
+                DPM_ClearPowerfaultFlags(u8PortNum);
                 return;
             }
             /*Kill the VCONN Power fault timer*/
@@ -672,9 +678,10 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         }
         if(gasDPM[u8PortNum].u8PowerFaultISR & ~DPM_POWER_FAULT_VCONN_OCS)
         { 
-            if(MCHP_PSF_NEGLECT_PWR_FAULT == MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, \
-                                                eMCHP_PSF_VBUS_PWR_FAULT))
+            if(FALSE == MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_VBUS_PWR_FAULT))
             {
+                /*Clear the Power fault flag and return*/
+                DPM_ClearPowerfaultFlags(u8PortNum);
                 return;
             }
              /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
@@ -682,7 +689,6 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_DE_ASSERT);
             UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
                 gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_ASSERT);
-            
             /* Kill Power Good Timer */
             PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
         
@@ -724,10 +730,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 			/* Set Wait for HardReset Complete bit*/
 			gasDPM[u8PortNum].u8HRCompleteWait = gasDPM[u8PortNum].u8PowerFaultISR;
 		}
-		/*ISR flag is cleared by disabling the interrupt*/
-		MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-		gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
-    	MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+		/*Clear the Power fault flag*/
+        DPM_ClearPowerfaultFlags(u8PortNum);
 	}
 }
 
