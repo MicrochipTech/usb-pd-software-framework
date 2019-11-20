@@ -142,7 +142,7 @@ UINT8 SAMD20_HWTimerInit(void);
         Wrapper function to initialize SAMD20 Hardware Interface for UPD350 communication  
     Description:
         This API serves as a wrapper between PSF stack defined Hardware interface initialization 
-        function MCHP_PSF_HOOK_UPD_HW_INIT and Harmony generated SPI drivers. It shall initialize 
+        function MCHP_PSF_HOOK_UPDHW_INTF_INIT and Harmony generated SPI drivers. It shall initialize 
         the Hardware interface for communication. In this case, it is SPI.
     Conditions:
         None
@@ -233,7 +233,7 @@ UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Wri
         Wrapper function to initialize UPD350 Alert configured GPIOs  
     Description:
         This API serves as a wrapper between PSF stack defined Alert initialization function 
-        MCHP_PSF_HOOK_UPD_ALERT_GPIO_INIT and Harmony generated generated code to initialize the GPIO for
+        MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT and Harmony generated generated code to initialize the GPIO for
         UPD350 Alert functionality port specifically.
     Conditions:
         None
