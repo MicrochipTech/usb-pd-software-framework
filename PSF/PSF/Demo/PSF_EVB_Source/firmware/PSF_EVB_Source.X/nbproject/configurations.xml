@@ -225,8 +225,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
         <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
+        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -256,7 +256,7 @@
         <property key="AutoSelectMemRanges" value="auto"/>
         <property key="communication.interface" value="swd"/>
         <property key="communication.speed" value="4.000"/>
-        <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="debugoptions.useswbreakpoints" value="true"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
