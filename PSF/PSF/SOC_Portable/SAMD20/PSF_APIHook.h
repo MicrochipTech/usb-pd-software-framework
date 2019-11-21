@@ -1475,7 +1475,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                                                
 ****************************************************************************************************/
-#define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   PDStack_Events(u8PortNum, _u8pd_event_)
+#define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   PDStack_Events(u8PortNum, ePSFNotification)
                                            
 #endif /*_PSF_API_HOOK_H_*/
 
