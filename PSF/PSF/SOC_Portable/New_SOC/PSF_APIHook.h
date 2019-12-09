@@ -996,7 +996,8 @@ Example:
 Remarks:
    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
 *************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)                
+#define MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)      
+
 /*************************************************************************
 Function:
     MCHP_PSF_HOOK_DEBUG_UINT32(u32Val)
@@ -1379,51 +1380,61 @@ Remarks:
 **************************************************************************************************/
 void MchpPSF_PDTimerHandler(void);
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Notification callback from PSF
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Description:
-	eMCHP_PSF_NOTIFICATION enum defines the all the notifications PSF can notify via 
-    MCHP_PSF_NOTIFY_CALL_BACK.
-    eMCHP_PSF_TYPEC_DETACH_EVENT:
-        This event is posted by PSF Type C state machine when port partner Detach event is detected.
-    eMCHP_PSF_TYPEC_CC1_ATTACH:
-        This event is posted by PSF Type C state machine when port partner Type C attach is detected 
-        in CC1 pin.
-    eMCHP_PSF_TYPEC_CC2_ATTACH:
-        This event is posted by PSF Type C state machine when port partner Type C attach is detected 
-        in CC2 pin.
-    eMCHP_PSF_UPDS_IN_IDLE:
-        This event is posted by Power management control. PSF runs an algorithm backend for Power
-        management control. If there is no activity in UPD350 for CONFIG_PORT_UPD_IDLE_TIMEOUT_MS
-        corresponding UPD350 is put to low power mode. When all the UPD350 present in the system 
-        enters low mode, eMCHP_PSF_UPDS_IN_IDLE is posted. User can put SOC in low power mode 
-        as required on this notification. This notification occurs only when INCLUDE_POWER_MANAGEMENT_CTRL
-        defined as 1.
-    eMCHP_PSF_VCONN_PWR_FAULT:
-        UPD350 has VCONN comparators to detect VCONN OCS faults. This event is notified when VCONN 
-        OCS fault is detected by UPD350. For this notification, PSF expects a return value to decide
-        whether to handle the fault occurred. When user returns TRUE for VCONN power fault, 
-        Incase of explicit contract, if VCONN power fault count is less than 
-        CONFIG_MAX_VCONN_POWER_FAULT_COUNT, PSF DPM power fault manager handles it by sending Hard 
-        Reset. If the count exceeds max fault count,VCONN is powered off until physical detach of 
-        port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery.
-        This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
-    eMCHP_PSF_VBUS_PWR_FAULT:
-        PSF notifies all VBUS power fault VBUS Over voltage, VBUS under voltage, VBUS OCS via this
-        notification. For this notification, PSF expects a return value to decide whether to handle
-        the fault occurred.When user returns TRUE for power fault, Incase of explicit contract, 
-        if power fault count is less than CONFIG_MAX_VBUS_POWER_FAULT_COUNT,PSF DPM power fault 
-        manager handles it by sending Hard Reset. When the power fault count exceeds the max fault
-        count,CC termination on the port is removed until the physical detach of the port partner.
-        Incase of implicit contract, PSF handles by entering TypeC Error Recovery. This notification 
-        occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1. 
-Remarks:
-    None
-**************************************************************************************************/
+/******************************************************************************************************
+  Section:
+     Notification callback from PSF
+    
+    * *************************************************************************** *
+    * *************************************************************************** *
+    * *********************************************************************************************** *
+  Description:
+    eMCHP_PSF_NOTIFICATION enum defines the all the notifications PSF can
+    notify via MCHP_PSF_NOTIFY_CALL_BACK.
+    
+    <b>eMCHP_PSF_TYPEC_DETACH_EVENT:</b> This event is posted by PSF Type C
+    state machine when port partner Detach event is detected.
+    
+    <b> eMCHP_PSF_TYPEC_CC1_ATTACH: </b>This event is posted by PSF Type C
+    state machine when port partner Type C attach is detected in CC1 pin.
+    
+    <b>eMCHP_PSF_TYPEC_CC2_ATTACH:</b> This event is posted by PSF Type C
+    state machine when port partner Type C attach is detected in CC2 pin.
+    
+    <b>eMCHP_PSF_UPDS_IN_IDLE: </b>This event is posted by Power management
+    control. PSF runs an algorithm backend for Power management control. If
+    there is no activity in UPD350 for CONFIG_PORT_UPD_IDLE_TIMEOUT_MS
+    corresponding UPD350 is put to low power mode. When all the UPD350
+    present in the system enters low mode, eMCHP_PSF_UPDS_IN_IDLE is
+    posted. User can put SOC in low power mode as required on this
+    notification. This notification occurs only when
+    INCLUDE_POWER_MANAGEMENT_CTRL defined as 1.
+    
+    <b> eMCHP_PSF_VCONN_PWR_FAULT:</b> UPD350 has VCONN comparators to
+    detect VCONN OCS faults. This event is notified when VCONN OCS fault is
+    detected by UPD350. For this notification, PSF expects a return value
+    to decide whether to handle the fault occurred. When user returns TRUE
+    for VCONN power fault, Incase of explicit contract, if VCONN power
+    fault count is less than CONFIG_MAX_VCONN_POWER_FAULT_COUNT, PSF DPM
+    power fault manager handles it by sending Hard Reset. If the count
+    exceeds max fault count,VCONN is powered off until physical detach of
+    port partner. Incase of implicit contract, PSF handles by entering
+    TypeC Error Recovery. This notification occurs only when
+    INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+    
+    <b> eMCHP_PSF_VBUS_PWR_FAULT</b>: PSF notifies all VBUS power fault
+    VBUS Over voltage, VBUS under voltage, VBUS OCS via this notification.
+    For this notification, PSF expects a return value to decide whether to
+    handle the fault occurred.When user returns TRUE for power fault,
+    Incase of explicit contract, if power fault count is less than
+    CONFIG_MAX_VBUS_POWER_FAULT_COUNT,PSF DPM power fault manager handles
+    it by sending Hard Reset. When the power fault count exceeds the max
+    fault count,CC termination on the port is removed until the physical
+    detach of the port partner. Incase of implicit contract, PSF handles by
+    entering TypeC Error Recovery. This notification occurs only when
+    INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+  Remarks:
+    None                                                                                               
+  ******************************************************************************************************/
 typedef enum MCHP_PSF_NOTIFICATION
 {    
 eMCHP_PSF_TYPEC_DETACH_EVENT = 1,   // Detach event has occurred
