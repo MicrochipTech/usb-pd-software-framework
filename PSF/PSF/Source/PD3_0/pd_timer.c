@@ -61,7 +61,7 @@ UINT8 PDTimer_Start (UINT32 u32Timeout_ticks, PDTimerCallback pfnTimerCallback, 
                 ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE)== PDTIMER_EXPIRED))
 		{
 
-            #if (TRUE == CONFIG_16_BIT_PDTIMEOUT)
+            #if (TRUE == CONFIG_16_BIT_PDTIMER_COUNTER)
                 gasPDTimers[u8TimerID].u16Timeout_Tickcnt = (UINT16)u32Timeout_ticks;
             #else
                 gasPDTimers[u8TimerID].u32Timeout_Tickcnt = u32Timeout_ticks;
@@ -94,7 +94,7 @@ void PDTimer_WaitforTicks (UINT32 u32Timeout_ticks)
 		if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE ) == PDTIMER_NON_ACTIVE) || ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE)== PDTIMER_EXPIRED))
 		{
 
-#if (1 == CONFIG_16_BIT_PDTIMEOUT)
+#if (1 == CONFIG_16_BIT_PDTIMER_COUNTER)
 
 			gasPDTimers[u8TimerID].u16Timeout_Tickcnt = (UINT16)u32Timeout_ticks;
 #else
@@ -194,7 +194,7 @@ void PDTimer_InterruptHandler (void)
 		if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE) == PDTIMER_ACTIVE))
 		{
 			
-#if (1 == CONFIG_16_BIT_PDTIMEOUT)
+#if (1 == CONFIG_16_BIT_PDTIMER_COUNTER)
 
        /*If the Timeout_Tickcnt value is 0, then the timer has expired*/
           

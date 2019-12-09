@@ -332,21 +332,21 @@ Example:
 
 /**************************************************************************************************
 Description :
-    CONFIG_16_BIT_PDTIMEOUT can be defined as either 1 or 0 to set the timeout counter in PSF 
+    CONFIG_16_BIT_PDTIMER_COUNTER can be defined as either 1 or 0 to set the timeout counter in PSF 
     to unsigned 16bit or unsigned 32bit correspondingly. When set as 1, maximum timeout that can be 
     set will be 65535 ticks.(Ticks = Resolution of the Hardware timer used). When set as 0 , maximum 
-    timeout that can be set will be 4294967296 ticks. Default value of CONFIG_16_BIT_PDTIMEOUT is 
+    timeout that can be set will be 4294967296 ticks. Default value of CONFIG_16_BIT_PDTIMER_COUNTER is 
     set as 1. With Hardware timer resolution set as 1ms , PSF will be capable of handling timeouts 
     upto 65.535 Seconds.
 Remarks :
     None
 Example :
     <code>
-      #define CONFIG_16_BIT_PDTIMEOUT	1 (Sets timeout variable inside the PSF as unsigned 16bit)
-      #define CONFIG_16_BIT_PDTIMEOUT	0 (Sets timeout variable inside the PSF as unsigned 32bit)
+      #define CONFIG_16_BIT_PDTIMER_COUNTER	1 (Sets timeout variable inside the PSF as unsigned 16bit)
+      #define CONFIG_16_BIT_PDTIMER_COUNTER	0 (Sets timeout variable inside the PSF as unsigned 32bit)
     </code>
 **************************************************************************************************/
-#define CONFIG_16_BIT_PDTIMEOUT     1
+#define CONFIG_16_BIT_PDTIMER_COUNTER     1
 
 // *****************************************************************************
 // *****************************************************************************
