@@ -84,7 +84,7 @@ Example:
             //Intialise SOC's SPI master
             //Return TRUE if initialsation is successful else FALSE
         }
-    </code>   
+    </code>
     <code>
         #define MCHP_PSF_HOOK_UPDHW_INTF_INIT()      hw_i2c_init()
         UINT8 hw_i2c_init(void);
@@ -121,7 +121,8 @@ Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_UPD_COMM_ENDIS (u8PortNum,u8EnDis)    hw_spi_drive_cs (u8PortNum, u8EnDis)
+        #define MCHP_PSF_HOOK_UPD_COMM_ENDIS (u8PortNum,u8EnDis)\
+						hw_spi_drive_cs (u8PortNum, u8EnDis)
         void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8EnDis);
         void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8EnDis)
         {
@@ -132,13 +133,14 @@ Example:
             }
             else if(u8EnDis == FALSE)
             {
-                //Set pin level high for SOC GPIO that is connected to the u8PortNum port's 
+                //Set pin level high for SOC GPIO that is connected to the u8PortNum port's
                 //UPD350 SPI CS pin
             }
         }
     </code>
     <code>
-        #define MCHP_PSF_HOOK_UPD_COMM_ENDIS(u8PortNum,u8EnDis)     hw_port_i2cmux_routing(u8PortNum,u8EnDis)
+        #define MCHP_PSF_HOOK_UPD_COMM_ENDIS(u8PortNum,u8EnDis)\
+							hw_port_i2cmux_routing(u8PortNum,u8EnDis)	
         void hw_port_i2cmux_routing(u8PortNum,u8EnDis);
         void hw_port_i2cmux_routing(u8PortNum,u8EnDis)
         {
@@ -179,7 +181,7 @@ Return:
 Example:
     <code>
         #define MCHP_PSF_HOOK_UPD_WRITE(u8PortNum,pu8WriteBuf,u8WriteLen)\   
-                SPI_Write (u8PortNum,pu8WriteBuf,u8WriteLen)
+					SPI_Write (u8PortNum,pu8WriteBuf,u8WriteLen)
         UINT8 SPI_Write(UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength);
         UINT8 SPI_Write(UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength)
         {
@@ -190,9 +192,10 @@ Example:
             // Return TRUE if the write is successful; else FALSE
         }
     </code>
+
     <code>
         #define MCHP_PSF_HOOK_UPD_WRITE(u8PortNum,pu8WriteBuf,u8WriteLen)\
-                            I2C_Write (u8PortNum,pu8WriteBuf,u8WriteLen)
+					I2C_Write (u8PortNum,pu8WriteBuf,u8WriteLen)
         UINT8 I2C_Write(UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength);
         UINT8 I2C_Write(UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength)
         {
@@ -238,8 +241,10 @@ Example:
     <code>
         #define MCHP_PSF_HOOK_UPD_READ(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)  \
                 SPI_Read (u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
-        void SPI_Read (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, UINT8 *pu8ReadBuffer, UINT8 u8Readlength);
-        void SPI_Read (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, UINT8 *pu8ReadBuffer, UINT16 u8Readlength)
+        void SPI_Read (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, \
+								UINT8 *pu8ReadBuffer, UINT8 u8Readlength);
+        void SPI_Read (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, \
+								UINT8 *pu8ReadBuffer, UINT16 u8Readlength)
         {
             for(UINT8 u8Txcount = 0; u8Txcount < u16Writelength; u8Txcount++)
             {
@@ -256,8 +261,10 @@ Example:
         #define MCHP_PSF_HOOK_UPD_READ(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)\
                         I2C_Read(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
 
-        void I2C_Read (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, UINT8 *pu8ReadBuffer, UINT16 u8Readlength);
-        void I2C_Read (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, UINT8 *pu8ReadBuffer, UINT16 u8Readlength)
+        void I2C_Read (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, \
+								UINT8 *pu8ReadBuffer, UINT16 u8Readlength);
+        void I2C_Read (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, \
+								UINT8 *pu8ReadBuffer, UINT16 u8Readlength)
         {
             //Select I2C address for the UPD350 I2C slave using u8PortNum 
             for(UINT8 u8Txcount = 0; u8Txcount < u16Writelength; u8Txcount++)
@@ -300,12 +307,12 @@ Return:
             and the API returns FALSE, all the PD ports are disabled by PSF by default.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_HW_PDTIMER_INIT()       Timer_Init()
+        #define MCHP_PSF_HOOK_HW_PDTIMER_INIT()		Timer_Init()
         UINT8 Timer_Init(void);
         UINT8 Timer_Init(void)
         {
-            //Initialize and start the SOC timer module for MCHP_PSF_PDTIMER_INTERRUPT_RATE interrupt
-            // frequency & register MchpPSF_PDTimerHandler as callback for timer interrupt
+			//Initialize and start the SOC timer module for MCHP_PSF_PDTIMER_INTERRUPT_RATE 
+            //interrupt frequency & register MchpPSF_PDTimerHandler as callback
             //Return TRUE if Timer initialisation is successful else return FALSE
         }
     </code>
@@ -315,6 +322,8 @@ Remarks:
 #define MCHP_PSF_HOOK_HW_PDTIMER_INIT()   SAMD20_HWTimerInit() 
 
 /**************************************************************************************************
+Summary:
+	PD Timer Interrupt Rate
 Description:
     MCHP_PSF_PDTIMER_INTERRUPT_RATE defines the frequency of interrupt set in the hardware timer 
     dedicated for PSF. In other words, it is the resolution of the hardware timer. It can be 
@@ -324,29 +333,31 @@ Remarks:
     timer is 1ms.(Corresponding MCHP_PSF_PDTIMER_INTERRUPT_RATE value is 1000).
 Example:
     <code>
-        #define MCHP_PSF_PDTIMER_INTERRUPT_RATE 1000 (1000 interrupts per second, with interrupt 
-                                                        interval or resolution of 1ms)
+        #define MCHP_PSF_PDTIMER_INTERRUPT_RATE		1000 
+		(1000 interrupts per second, with interrupt interval or resolution of 1ms)
     </code>
 **************************************************************************************************/
 #define MCHP_PSF_PDTIMER_INTERRUPT_RATE	1000
 
 /**************************************************************************************************
+Summary:
+	Config 16-bit PD Timer Counter
 Description :
-    CONFIG_16_BIT_PDTIMER_COUNTER can be defined as either 1 or 0 to set the timeout counter in PSF 
+    MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER can be defined as either 1 or 0 to set the timeout counter in PSF 
     to unsigned 16bit or unsigned 32bit correspondingly. When set as 1, maximum timeout that can be 
     set will be 65535 ticks.(Ticks = Resolution of the Hardware timer used). When set as 0 , maximum 
-    timeout that can be set will be 4294967296 ticks. Default value of CONFIG_16_BIT_PDTIMER_COUNTER is 
+    timeout that can be set will be 4294967296 ticks. Default value of MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER is 
     set as 1. With Hardware timer resolution set as 1ms , PSF will be capable of handling timeouts 
     upto 65.535 Seconds.
 Remarks :
     None
 Example :
     <code>
-      #define CONFIG_16_BIT_PDTIMER_COUNTER	1 (Sets timeout variable inside the PSF as unsigned 16bit)
-      #define CONFIG_16_BIT_PDTIMER_COUNTER	0 (Sets timeout variable inside the PSF as unsigned 32bit)
+      #define MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER	1 (Sets timeout variable inside the PSF as unsigned 16bit)
+      #define MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER	0 (Sets timeout variable inside the PSF as unsigned 32bit)
     </code>
 **************************************************************************************************/
-#define CONFIG_16_BIT_PDTIMER_COUNTER     1
+#define MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER     1
 
 // *****************************************************************************
 // *****************************************************************************
@@ -374,7 +385,7 @@ Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum)      INT_ExtIrqInit(u8PortNum)
+		#define MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum)      INT_ExtIrqInit(u8PortNum)
         void INT_ExtIrqInit(UINT8 u8PortNum);
         void INT_ExtIrqInit(UINT8 u8PortNum)
         {
@@ -425,9 +436,9 @@ Example:
         void updreset_init(UINT8 u8PortNum);
         void updreset_init(UINT8 u8PortNum)
         {
-            // If single SOC GPIO is connected to all the UPD350's, do initialisation only once when
-            // PortNum is '0'
-            // If separate GPIOs are used for each port UPD350, do initialisation port specifically.
+            // If single SOC GPIO is connected to all the UPD350's, do initialisation only once 
+            // when PortNum is '0'. If separate GPIOs are used for each port UPD350, do 
+			//initialisation port specifically
             if (0 == u8PortNum)
             {
                 //Initialization of SOC GPIO connected to UPD350 reset lines
@@ -802,6 +813,8 @@ Remarks:
 // *****************************************************************************   
 /**********************************Globals*********************************************/
 /**************************************************************************************************
+Summary:
+	User configurable boot time structure.
 Description:
 	User Configurable Structure at boot time: This structure contains the Type-C configure parameters 
 	PDO count and PDOs parameters
@@ -810,11 +823,11 @@ Remarks:
 **************************************************************************************************/
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PortData_cfg 
 {
-UINT32 u32CfgData;			//Bits 2:0 - Port Role
-                            //Bits 4:3 - Type-C Current
-                            //Bits 5 - Port Enable/Disable
-UINT32 u32PDO[7];		    //Source/Sink Capabilities PDOs
-UINT8  u8PDOCnt;			//PDO count of Source/Sink Capabilities
+	UINT32 u32CfgData;			//Bits 2:0 - Port Role
+								//Bits 4:3 - Type-C Current
+								//Bits 5 - Port Enable/Disable
+	UINT32 u32PDO[7];		    //Source/Sink Capabilities PDOs
+	UINT8  u8PDOCnt;			//PDO count of Source/Sink Capabilities
 }MCHP_PSF_STRUCT_PACKED_END PORT_CONFIG_DATA;
 
 extern PORT_CONFIG_DATA gasPortConfigurationData[CONFIG_PD_PORT_COUNT];
@@ -1000,7 +1013,8 @@ Example:
 Remarks:
    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
 *************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)                
+#define MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)      
+
 /*************************************************************************
 Function:
     MCHP_PSF_HOOK_DEBUG_UINT32(u32Val)
@@ -1129,8 +1143,10 @@ Return:
             3. ePE_FWUP_errADDRESS - When data block index is out of range.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_PROGRAM_FWBLOCK(u8pObj, u16Len)   PDFW_ProcessPDFUDataRequest(u8pObj, u16Len)
-        ePE_PDFU_RESPONSE_CODE PDFW_ProcessPDFUDataRequest( UINT8 u8RequestBuffer, UINT16 u16RequestLength)
+        #define MCHP_PSF_HOOK_PROGRAM_FWBLOCK(u8pObj, u16Len)\
+						PDFW_ProcessPDFUDataRequest(u8pObj, u16Len)
+        ePE_PDFU_RESPONSE_CODE PDFW_ProcessPDFUDataRequest( UINT8 u8RequestBuffer, \
+												UINT16 u16RequestLength)
         {
             UINT16 u16DataBlockIndex = *((UINT16*)&amp;u8RequestBuffer[2]);
             u32ProgAddr = CalculateAddress(u16DataBlockIndex);
@@ -1139,7 +1155,8 @@ Example:
                 ProgramMemoryCB(u32ProgAddr, &u8RequestBuffer[4u],u16RequestLength);
                 ReadMemoryCB(u32ProgAddr, &u8ResponseBuffer[0u],u16RequestLength);
                 //Compare data written and read
-                if (MCHP_PSF_HOOK_MEMCMP(&u8ResponseBuffer[0], &u8RequestBuffer[4],u16RequestLength) == 0)
+                if (0 == MCHP_PSF_HOOK_MEMCMP(&u8ResponseBuffer[0], \
+										&u8RequestBuffer[4], u16RequestLength))
                 {
                     //Set the status as OK
                     u8Status = ePE_FWUP_OK;
@@ -1163,42 +1180,47 @@ Remarks:
 ****************************************************************************************/
 #define MCHP_PSF_HOOK_PROGRAM_FWBLOCK(u8pObj,u16Len) 0
 
-/**************************************************************************************************
-Function:
-    MCHP_PSF_HOOK_VALIDATE_FIRMWARE()
-Summary:
-    To validate the Flashed Binary using a user defined validation method and return the status of 
-    the Firmware Validation Operation.
-Description:
+/**********************************************************************************************************
+  Function:
+        MCHP_PSF_HOOK_VALIDATE_FIRMWARE()
+  Summary:
+    To validate the Flashed Binary using a user defined validation method and return the status of
+	the Firmware Validation Operation.
+  Description:
     This hook is invoked during the validation phase on reception of every PDFU Validation Request.
-    It is responsible for validating the Firmware data in the memory. It shall return the progress 
-    status of the Validation on every invocation. If the Status indicates "On going" then the
-    Validation command will be responded with the configured Wait time CONFIG_VALIDATION_PHASE_WAITTIME.
-    Validation Method can be any custom method as required by the User.
-Conditions:
-    Multiple invocations of the function hook is possible from PDFU Validation phase. Until the 
-    Validation process is complete, for every request of PDFU_VALIDATION command this function will 
-    be invoked. The definition of this function shall include 
-    1) Starting the Validation process on the First call, 
-    2) Returning the Status of the Validation process during subsequent invocation of the function.
-Return:
-    Returns the UINT8 Status of the Validation Operation. It take following values
-        0x00u - PE_FWUP_VALIDATION_SUCCESSFUL
-        0x01u - PE_FWUP_VALIDATION_INPROGRESS
-        0x02u - PE_FWUP_VALIDATION_FAILURE
-Example:
+	It is responsible for validating the Firmware data in the memory. It shall return the progress
+	status of the Validation on every invocation. If the Status indicates "On going" then the
+	Validation command will be responded with the configured Wait time 
+	CONFIG_VALIDATION_PHASE_WAITTIME. Validation Method can be any custom method as required by the User.
+  Conditions:
+    Multiple invocations of the function hook is possible from PDFU Validation phase. Until the
+	Validation process is complete, for every request of PDFU_VALIDATION command this function will
+	be invoked.The definition of this function shall include 
+	1) Starting the Validation process on the First call, 
+	2) Returning the Status of the Validation process during subsequent invocation of the function.
+  Return:
+    Returns the UINT8 Status of the Validation Operation. It take
+    following values
+ 
+    0x00u - PE_FWUP_VALIDATION_SUCCESSFUL
+    
+    0x01u - PE_FWUP_VALIDATION_INPROGRESS
+    
+    0x02u - PE_FWUP_VALIDATION_FAILURE
+  Example:
     <code>
-        #define MCHP_PSF_HOOK_VALIDATE_FIRMWARE()   PDFW_ProcessPDFUDataRequest()
+        \#define MCHP_PSF_HOOK_VALIDATE_FIRMWARE()   PDFW_ProcessPDFUDataRequest()
         UINT8 PDFW_ProcessPDFUValidateRequest(void)
-        {    
+        {
             The definition of this function shall include
             1) Starting the Validation process on the First call,
             2) Returning the Status of the Validation process during subsequent invocation of the function.
         }
     </code>
-Remarks:
-    User definition of this Hook function is mandatory when INCLUDE_PDFU is TRUE                                                                                           
-**************************************************************************************************/
+  Remarks:
+    User definition of this Hook function is mandatory when INCLUDE_PDFU is
+    TRUE                                                                                                   
+  **********************************************************************************************************/
 #define MCHP_PSF_HOOK_VALIDATE_FIRMWARE()   0
 
 /**************************************************************************
@@ -1321,7 +1343,9 @@ Return:
     TRUE - Stack and UPD350 HW successfully initialized.
     FALSE - Stack and UPD350 HW initialization failed.
 Remarks:
-    For the current PSF implementation, return value is not used. API called with void.
+    For the current PSF implementation, return value is not used. API called with void. With SAMD20 
+	environment configured for CPU frequency 48MHZ, this API took maximum of 3.488ms and 6.182ms 
+	execution time for 1 and 2 port solution respectively.
 **************************************************************************************************/
 UINT8 MchpPSF_Init(void);
 
@@ -1340,7 +1364,10 @@ Input:
 Return:
     None
 Remarks:
-    Multi threaded Free RTOS environment is untested and latency of API call is to identified yet.
+	In SAMD20 environment where CPU frequency is configured for 48MHZ and single threaded environment 
+	where MchpPSF_RUN is called in a while(1) loop, it took maximum of 74.57us and 0.1439 ms execution
+	time for 1 port and 2 port solution respectively. Multi threaded Free RTOS environment is 
+	untested and latency of API call is to identified yet.
 **************************************************************************************************/
 void MchpPSF_RUN(void);
 
@@ -1360,7 +1387,8 @@ Input:
 Return:
     None
 Remarks:
-    None
+    With SAMD20 environment configured for CPU frequency 48MHZ, this API took maximum of 3.98us and
+	5.8us execution time for 1 and 2 port solution respectively.
 **************************************************************************************************/
 void MchpPSF_UPDIrqHandler(UINT8 u8PortNum);
 
@@ -1379,55 +1407,59 @@ Input:
 Return:
     None
 Remarks:
-    None
+    With SAMD20 environment configured for CPU frequency 48MHZ, this API took maximum of 262us  
+	execution time for both 1 and 2 port solution.
 **************************************************************************************************/
 void MchpPSF_PDTimerHandler(void);
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Notification callback from PSF
+// Section:  Notification callback from PSF
 // *****************************************************************************
 // *****************************************************************************
 /**************************************************************************************************
+Summary:
+	PSF notification enum
 Description:
-	eMCHP_PSF_NOTIFICATION enum defines the all the notifications PSF can notify via 
-    MCHP_PSF_NOTIFY_CALL_BACK.
-    eMCHP_PSF_TYPEC_DETACH_EVENT:
-        This event is posted by PSF Type C state machine when port partner Detach event is detected.
-    eMCHP_PSF_TYPEC_CC1_ATTACH:
-        This event is posted by PSF Type C state machine when port partner Type C attach is detected 
-        in CC1 pin.
-    eMCHP_PSF_TYPEC_CC2_ATTACH:
-        This event is posted by PSF Type C state machine when port partner Type C attach is detected 
-        in CC2 pin.
-    eMCHP_PSF_UPDS_IN_IDLE:
-        This event is posted by Power management control. PSF runs an algorithm backend for Power
-        management control. If there is no activity in UPD350 for CONFIG_PORT_UPD_IDLE_TIMEOUT_MS
-        corresponding UPD350 is put to low power mode. When all the UPD350 present in the system 
-        enters low mode, eMCHP_PSF_UPDS_IN_IDLE is posted. User can put SOC in low power mode 
-        as required on this notification. This notification occurs only when INCLUDE_POWER_MANAGEMENT_CTRL
-        defined as 1.
-    eMCHP_PSF_VCONN_PWR_FAULT:
-        UPD350 has VCONN comparators to detect VCONN OCS faults. This event is notified when VCONN 
-        OCS fault is detected by UPD350. For this notification, PSF expects a return value to decide
-        whether to handle the fault occurred. When user returns TRUE for VCONN power fault, 
-        Incase of explicit contract, if VCONN power fault count is less than 
-        CONFIG_MAX_VCONN_POWER_FAULT_COUNT, PSF DPM power fault manager handles it by sending Hard 
-        Reset. If the count exceeds max fault count,VCONN is powered off until physical detach of 
-        port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery.
-        This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
-    eMCHP_PSF_VBUS_PWR_FAULT:
-        PSF notifies all VBUS power fault VBUS Over voltage, VBUS under voltage, VBUS OCS via this
-        notification. For this notification, PSF expects a return value to decide whether to handle
-        the fault occurred.When user returns TRUE for power fault, Incase of explicit contract, 
-        if power fault count is less than CONFIG_MAX_VBUS_POWER_FAULT_COUNT,PSF DPM power fault 
-        manager handles it by sending Hard Reset. When the power fault count exceeds the max fault
-        count,CC termination on the port is removed until the physical detach of the port partner.
-        Incase of implicit contract, PSF handles by entering TypeC Error Recovery. This notification 
-        occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1. 
+    eMCHP_PSF_NOTIFICATION enum defines the all the notifications PSF can notify via 
+	MCHP_PSF_NOTIFY_CALL_BACK.
+    
+    <b>eMCHP_PSF_TYPEC_DETACH_EVENT:</b> This event is posted by PSF Type C state machine when 
+	port partner Detach event is detected.
+    
+    <b> eMCHP_PSF_TYPEC_CC1_ATTACH: </b>This event is posted by PSF Type C state machine when port
+	partner Type C attach is detected in CC1 pin.
+    
+    <b>eMCHP_PSF_TYPEC_CC2_ATTACH:</b> This event is posted by PSF Type C state machine when port
+	partner Type C attach is detected in CC2 pin.
+    
+    <b>eMCHP_PSF_UPDS_IN_IDLE: </b>This event is posted by Power management control. PSF runs an
+	algorithm backend for Power management control. If there is no activity in UPD350 for 
+	CONFIG_PORT_UPD_IDLE_TIMEOUT_MS corresponding UPD350 is put to low power mode. When all the
+	UPD350 present in the system enters low mode, eMCHP_PSF_UPDS_IN_IDLE is posted. User can put 
+	SOC in low power mode as required on this notification. This notification occurs only when
+    INCLUDE_POWER_MANAGEMENT_CTRL defined as 1.
+    
+    <b> eMCHP_PSF_VCONN_PWR_FAULT:</b> UPD350 has VCONN comparators to detect VCONN OCS faults. 
+	This event is notified when VCONN OCS fault is detected by UPD350. For this notification, PSF
+	expects a return value to decide whether to handle the fault occurred. When user returns TRUE
+	for VCONN power fault, Incase of explicit contract, if VCONN power fault count is less than
+	CONFIG_MAX_VCONN_POWER_FAULT_COUNT, PSF DPM power fault manager handles it by sending Hard Reset.
+	If the count exceeds max fault count,VCONN is powered off until physical detach of port partner.
+	Incase of implicit contract, PSF handles by entering TypeC Error Recovery. This notification
+	occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+    
+    <b> eMCHP_PSF_VBUS_PWR_FAULT</b>: PSF notifies all VBUS power fault VBUS Over voltage, VBUS
+	under voltage, VBUS OCS via this notification. For this notification, PSF expects a return
+	value to decide whether to handle the fault occurred.When user returns TRUE for power fault,
+    Incase of explicit contract, if power fault count is less than CONFIG_MAX_VBUS_POWER_FAULT_COUNT,
+	PSF DPM power fault manager handles it by sending Hard Reset. When the power fault count 
+	exceeds the max fault count,CC termination on the port is removed until the physical detach of
+	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery.
+	This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
 Remarks:
-    None
-**************************************************************************************************/
+    None                                                                                               
+  ******************************************************************************************************/
 typedef enum MCHP_PSF_NOTIFICATION
 {    
 eMCHP_PSF_TYPEC_DETACH_EVENT = 1,   // Detach event has occurred
