@@ -110,7 +110,7 @@ typedef void(*PDTimerCallback) (UINT8,UINT8);
 typedef struct MCHP_PSF_STRUCT_PACKED_START _Timer 
 {
   
-    #if (TRUE == CONFIG_16_BIT_PDTIMER_COUNTER)
+    #if (TRUE == MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER)
 	UINT16 u16Timeout_Tickcnt; /*Stores Timer value in terms of tick count*/			
     #else
 	UINT32 u32Timeout_Tickcnt;			
