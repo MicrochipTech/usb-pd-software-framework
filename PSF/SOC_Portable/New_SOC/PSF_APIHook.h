@@ -1347,12 +1347,12 @@ UINT8 MchpPSF_Init(void);
 
 /**************************************************************************************************
 Function:
-    void MchpPSF_RUN(void)
+	void MchpPSF_RUN(void)
 Summary:
     PSF state machine run API
 Description:
-    This API is to run the PSF state machine. 
-    For single threaded environment, it should be called repeatedly within a while(1).
+    This API is to run the PSF state machine.For single threaded environment, it should be called 
+	repeatedly within a while(1).
 Conditions:
     API should be called only after MchpPSF_Init().
 Input:
@@ -1360,11 +1360,13 @@ Input:
 Return:
     None
 Remarks:
-	In SAMD20 environment where CPU frequency is configured for 48MHZ and single threaded environment 
-	where MchpPSF_RUN is called in a while(1) loop, it took maximum of 74.57us and 0.1439 ms execution
-	time for 1 port and 2 port solution respectively. Multi threaded Free RTOS environment is 
-	untested and latency of API call is to identified yet.
-**************************************************************************************************/
+    In SAMD20 environment where CPU frequency is configured for 48MHZ and
+    single threaded environment where MchpPSF_RUN is called in a while(1)
+    loop, it took maximum of 74.57us and 0.1439 ms execution time for 1
+    port and 2 source port solution respectively. In Multi threaded SAMD20
+    configured for 48MHz environment, MchpPSF_RUN has to be called for
+    every 2ms for Successful 2-Port Source only operation.                
+  *************************************************************************/
 void MchpPSF_RUN(void);
 
 /**************************************************************************************************
