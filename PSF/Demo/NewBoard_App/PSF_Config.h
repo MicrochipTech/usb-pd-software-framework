@@ -192,7 +192,8 @@ Description:
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
     to 0 to reduce code size of the PSF, application doesnot use Firmware update feature. 
 Remarks:
-    Recommended default value is 0 unless Firmware update feature is used.
+    Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
+    INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
 Example:
     <code>
     #define INCLUDE_PDFU    1(Include PDFU feature)
@@ -463,7 +464,7 @@ Remarks:
 Example:
     <code>
     #define CONFIG_PORT_0_SOURCE_USB_SUSPEND		0 (Port 0 is not USB suspend capable)
-    #define CONFIG_PORT_0_SOURCE_USB_SUSPEND		0 (Port 0 is USB suspend capable)
+    #define CONFIG_PORT_0_SOURCE_USB_SUSPEND		1 (Port 0 is USB suspend capable)
     </code>
 **************************************************************************************************/
 #define CONFIG_PORT_n_SOURCE_USB_SUSPEND
@@ -1639,8 +1640,8 @@ Description:
     request to be issued by the initiator after the specified wait time. This information is  
     shared with the PDFU Initiator as part of PDFU_DATA command's response.
 Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is TRUE. It can have values
-    from 0x00 to 0xFF. By default, it is defined as '0x03'.
+    The user definition of this macro is mandatory when INCLUDE_PDFU is '1'. It can have values from
+    0x00 to 0xFF. By default, it is defined as '0x03'.
 Example:
     <code>
      #define CONFIG_TRANSFER_PHASE_WAITTIME   0x03u //3ms required for processing PDFU_DATA request
