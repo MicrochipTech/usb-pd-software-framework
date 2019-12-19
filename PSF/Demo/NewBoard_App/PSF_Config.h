@@ -660,27 +660,6 @@ Example:
 #define CONFIG_PORT_1_SINK_HIGHER_CAPABILITY     1
 #define CONFIG_PORT_2_SINK_HIGHER_CAPABILITY     1
 #define CONFIG_PORT_3_SINK_HIGHER_CAPABILITY     1
-/**************************************************************************************************
-Summary:
-    Sink USB suspend field.
-Description:
-    CONFIG_PORT_n_SINK_USB_SUSPEND defines the USB Suspend supported bit in fixed PDO of nth 
-    sink port. As per PD specification, this field is exposed for PDO1 alone for rest of the 
-    fixed PDOs it is Zero. CONFIG_PORT_n_SINK_PDO_1_USB_SUSPEND can be configured as 0 or 1.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    By default, it is defined as '0'.
-Example:
-    <code>
-    #define CONFIG_PORT_0_SINK_USB_SUSPEND		0 (Port 0 is not USB suspend capable)
-    #define CONFIG_PORT_0_SINK_USB_SUSPEND		0 (Port 0 is USB suspend capable)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SINK_USB_SUSPEND
-#define CONFIG_PORT_0_SINK_USB_SUSPEND           0
-#define CONFIG_PORT_1_SINK_USB_SUSPEND           0
-#define CONFIG_PORT_2_SINK_USB_SUSPEND           0
-#define CONFIG_PORT_3_SINK_USB_SUSPEND           0
 
 /**************************************************************************************************
 Summary:
