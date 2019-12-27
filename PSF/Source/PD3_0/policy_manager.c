@@ -687,8 +687,11 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
              /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
             UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
                 gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_DE_ASSERT);
-            UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
-                gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_ASSERT);
+            #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+            /*Clear PIO ovveride enable*/
+            UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
+            #endif
+            
             /* Kill Power Good Timer */
             PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
         
@@ -730,6 +733,16 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 			/* Set Wait for HardReset Complete bit*/
 			gasDPM[u8PortNum].u8HRCompleteWait = gasDPM[u8PortNum].u8PowerFaultISR;
 		}
+        
+        /* Enable DC_DC_EN to drive power*/
+        UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
+                gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_ASSERT);
+        
+        #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+        /*Enable PIO ovveride enable*/
+        UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
+        #endif
+            
 		/*Clear the Power fault flag*/
         DPM_ClearPowerfaultFlags(u8PortNum);
 	}
