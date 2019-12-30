@@ -114,7 +114,8 @@ Description:
 	functionality at the compile time. User can set this define to 0 to reduce code size, if none of
 	the PD enabled ports requires VCONN Swap functionality.
 Remarks:
-    Recommended default value is 1.
+    Recommended default value is 1. For Source Operation, it is mandatory to define this macro as '1'.
+    When INCLUDE_PD_SOURCE is defined as '1', define this macro as '1'.
 Example:
     <code>
     #define INCLUDE_VCONN_SWAP_SUPPORT	1(Include VCONN Swap functionality in PSF)
@@ -125,7 +126,7 @@ Example:
 
 /**************************************************************************************************
 Summary:
-    Power Fault Hanlding code inclusion.
+    Power Fault Handling code inclusion.
 Description:
     Setting the INCLUDE_POWER_FAULT_HANDLING as 1, enables PSF to handle Power faults (Source and 
 	Sink over voltage, Source OCS, Sink under voltage) as per Power Delivery specification Rev3.0 as
