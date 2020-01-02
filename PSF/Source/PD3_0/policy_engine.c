@@ -1008,13 +1008,13 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     reset state*/
 
                     /*Start the VCONN timer*/
-                    /*Set the timer callback to transition to ePE_VCS_WAIT_FOR_VCONN_SENDERRES_TO_SS
-                    sub state if timeout happens*/
+                    /*Set the timer callback to transition to ePE_SRC_HARD_RESET state
+                     * ePE_SRC_HARD_RESET_ENTRY_SS sub state if timeout happens*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                               CONFIG_PE_VCONNON_TIMEOUT_MS,\
                                                               PE_SubStateChangeAndTimeoutValidateCB,\
                                                               u8PortNum,\
-                                                              (UINT8) ePE_VCS_WAIT_FOR_VCONN_SENDERRES_TO_SS);
+                                                              (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
 
 
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS;
@@ -1023,11 +1023,6 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS:
                 {
                     /*Wait for PS_RDY message*/
-                    break;
-                }
-                case ePE_VCS_WAIT_FOR_VCONN_SENDERRES_TO_SS:
-                {
-                    PE_SendHardResetMsg (u8PortNum);
                     break;
                 }
                 default:
@@ -1440,12 +1435,22 @@ void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState)
         gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = gasPolicy_Engine[u8PortNum].u32MsgHeader;
     }
 
-    /* Set Timeout state to passed timeout sub state */
-    gasPolicy_Engine[u8PortNum].ePETimeoutSubState = (ePolicySubState) u8PESubState;
-
+	/* Set Timeout state to passed timeout sub state */
+	gasPolicy_Engine[u8PortNum].ePETimeoutSubState = (ePolicySubState) u8PESubState;
+    
     /* Set PE sub state to passed timeout sub state */
     gasPolicy_Engine[u8PortNum].ePESubState = (ePolicySubState) u8PESubState;
-
+    
+    if (ePE_SRC_HARD_RESET_ENTRY_SS == u8PESubState)
+    {
+    	gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
+        
+    }
+    else if (ePE_SNK_HARD_RESET_SEND_SS == u8PESubState)
+    {
+         gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_HARD_RESET;
+    }
+   
     /*Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
     Timeout has occured*/
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
