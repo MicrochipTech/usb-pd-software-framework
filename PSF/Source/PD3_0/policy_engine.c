@@ -594,7 +594,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                                                                    ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS);
 
                     }
-                    else if (ePE_SRC_SEND_SOFT_RESET_IDLE_SS == gasPolicy_Engine[u8PortNum].ePESubState)
+                    else if ((ePE_SRC_SEND_SOFT_RESET_IDLE_SS == gasPolicy_Engine[u8PortNum].ePESubState) ||
+                            (ePE_SRC_SEND_SOFT_RESET_GOODCRC_RECEIVED_SS == gasPolicy_Engine[u8PortNum].ePESubState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_ACCEPT: SenderResponse Timer Killed\r\n");
                         PE_KillPolicyEngineTimer (u8PortNum);
