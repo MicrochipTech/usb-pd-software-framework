@@ -1902,17 +1902,17 @@ Summary:
 	tSenderResponse.
 Description:
     CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS defines the SenderResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS is set as 26 milliseconds.
+    Default value of CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS is set as 24 milliseconds.
 Remarks:
     CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS can be configured depending on the microcontroller 
     platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
     MILLISECONDS_TO_TICKS.
 Example:
     <code>
-     #define CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(26)
+     #define CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(24)
     </code>
 **************************************************************************************************/
-#define CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(26)
+#define CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(24)
 
 /**************************************************************************************************
 Summary:
