@@ -255,24 +255,14 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     gasPolicy_Engine[u8PortNum].u8PEPortSts |= PE_PDCONNECTED_STS_MASK;
                     
 					/* Start Sender Reseponse timer and Set the timer callback to transition to 
-					ePE_SRC_SEND_CAP_SENDER_RESPONSE_TIMEOUT_SS sub state if timeout happens */
+					ePE_SRC_HARD_RESET sate and ePE_SRC_HARD_RESET_ENTRY_SS sub state if timeout happens */
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                            CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChangeAndTimeoutValidateCB, u8PortNum,  
-                                                            (UINT8)ePE_SRC_SEND_CAP_SENDER_RESPONSE_TIMEOUT_SS);
+                                                            (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
                     
                     break;
                 }
-                
-                case ePE_SRC_SEND_CAP_SENDER_RESPONSE_TIMEOUT_SS:
-                {
-					/* Sender Response timer timed out */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-SENDER_RESPONSE_TIMEOUT_SS\r\n");
-                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
-                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
-                    break;  
-                }
-               
                 default:
                 {
                     break;
@@ -285,6 +275,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 		/************ PE_SRC_NEGOTIATE_CAPABILITY *************/
         case ePE_SRC_NEGOTIATE_CAPABILITY:
         {
+            /* Set PD Status as Connected as ePE_SRC_SEND_CAP_GOODCRC_RECEIVED_SS state 
+             may be skipped sometime when Request from partner arises quickly after Good_CRC*/
+            gasPolicy_Engine[u8PortNum].u8PEPortSts |= PE_PDCONNECTED_STS_MASK;
 
 			/* Validate the received Request message by passing the received message to DPM */
             if(DPM_VALID_REQUEST == DPM_ValidateRequest(u8PortNum, (UINT16)u32Header, pu8DataBuf))
@@ -906,7 +899,6 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u16Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
 																	PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-                    //u16Transmit_Header = 0x16D;
                     u32pTransmit_DataObj = NULL;
                     Transmit_cb = PE_StateChange_TransmitCB;
                     u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_SOFT_RESET, \
