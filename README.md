@@ -1,6 +1,6 @@
 # **Microchip USB Power Delivery Software Framework (PSF)**
 
-Microchip's USB Power Delivery Software Framework (PSF) is an open-source USB Power Delivery (PD) stack that is designed to integrate any suitable powerful MCU with Microchip's [UPD350](https://www.microchip.com/wwwproducts/en/UPD350) Type-C&trade; PD controller to realize multi-port custom PD solutions. The stack also supports Microchip's UPD301C standalone Type-C&trade; PD controller.
+Microchip's USB Power Delivery Software Framework (PSF) is a light weight USB Power Delivery (PD) stack that is designed to integrate any suitable powerful MCU with Microchip's [UPD350](https://www.microchip.com/wwwproducts/en/UPD350) Type-C&trade; PD controller to realize multi-port custom PD solutions. The stack also supports Microchip's UPD301C standalone Type-C&trade; PD controller.
 
 PSF provides a range of configuration options for your custom PD design and is portable to many MCUs. The stack currently supports multi-port PD source application. Other PD features will be added to the stack in a planned fashion.
 
@@ -35,6 +35,7 @@ Please refer to the readme file for your chosen demo. You can find the applicati
 Release version numbers will have a prefix *PSF_STACK_V* and a version number in the  format *XX.YZ* where:
 
 *XX*: Represents the major version number.
+
 *YZ*: Represents the minor version number. All minor versions with *Z*=0 represent a SQA qualified (stable) release. For e.g. PSF_STACK_v1.20.
 
 For the versions available, see the [tags on this repository](https://github.com/MicrochipTech/usb-pd-software-framework/tags).
