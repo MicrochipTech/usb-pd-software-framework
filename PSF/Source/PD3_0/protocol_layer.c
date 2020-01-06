@@ -419,7 +419,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_A, (PRL_TX_PARAM_A_EXPECT_GOODCRC | PRL_TX_PARAM_A_EN_FW_TX | u8TxSOPSelect | u8MsgId));
 	
     #ifdef INCLUDE_PD_3_0
-    /* UPD301-175 if a Soft_Reset Message is pending, Needn't wait for Rp is set to SinkTxOk.*/
+    /* If a Soft_Reset Message is pending, Needn't wait for Rp is set to SinkTxOk.*/
 	/* Tx Buffereing on CA*/
 	if ((PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST == gasPRL [u8PortNum].u8TxStateISR) || \
             ((PRL_TX_CA_SINK_TXNG_ST == gasPRL [u8PortNum].u8TxStateISR) && \
@@ -979,9 +979,8 @@ void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum)
 	
 	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_HR_COMPLETE: PRL is informed about HR complete");
     
-	/* UPD301-118 Bug fix - If Tx_EOP is enabled at the time of 
-		Auto mode response. For Good_CRC sent as auto response, Tx_EOP interrupt is fired*/
-    /* Disable the Tx interrupt*/
+	/*If Tx_EOP is enabled at the time of Auto mode response,For Good_CRC sent as auto 
+     * response, Tx_EOP interrupt is fired. Thus, Disable the Tx interrupt*/
 	UPD_RegWriteByte (u8PortNum, PRL_TX_IRQ_EN, CLR_VAL);
 
     /* Bug UP301-48 fix - when HR is received from port partner, EN_RCV bit is cleared. 

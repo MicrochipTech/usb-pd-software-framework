@@ -65,7 +65,7 @@ void SetMCUIdle()
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
-    DEBUG_PRINT_PORT_STR (3, "UPD301: Set UPD301 IDLE");
+    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE");
     
 	/*If there is any pending interrupt it will not go to sleep*/
     SCB->SCR |=  (SCB_SCR_SLEEPDEEP_Msk )| (SCB_SCR_SEVONPEND_Msk);

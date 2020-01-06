@@ -237,9 +237,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     /* Get the Requested PDO object position from received buffer */
     u8SinkReqObjPos= ((u8DataBuf[INDEX_3]) & PE_REQUEST_OBJ_MASK) >> PE_REQUEST_OBJ_POS;
     
-   
-
-    /* UPD301-223 -> Get the Requested current value */
+    /* Get the Requested current value */
     u16SinkReqCurrVal = (UINT16)(((MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], 
             u8DataBuf[INDEX_2], u8DataBuf[INDEX_3])) & PE_REQUEST_OPR_CUR_MASK) >> PE_REQUEST_OPR_CUR_START_POS);
 	

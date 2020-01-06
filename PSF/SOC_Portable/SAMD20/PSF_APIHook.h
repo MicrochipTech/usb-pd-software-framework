@@ -101,7 +101,7 @@ Remarks:
 
 /*************************************************************************************************
 Function:
-    MCHP_PSF_HOOK_UPD_COMM_ENDIS(u8PortNum,u8EnDis)
+    MCHP_PSF_HOOK_UPD_COMM_ENABLE(u8PortNum,u8Enable)
 Summary:
     Enable or disables hardware interface(SPI/I2C) communication to the port's UPD350
 Description:
@@ -116,22 +116,23 @@ Conditions:
     None.
 Input:
     u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u8EnDis - Parameter indicating whether to enable or disable the communication for the port. 
+    u8Enable - Parameter indicating whether to enable or disable the communication for the port. 
+               When u8Enable is 1 - Enable interface, 0 - Disable interface.
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_UPD_COMM_ENDIS (u8PortNum,u8EnDis)\
-						hw_spi_drive_cs (u8PortNum, u8EnDis)
-        void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8EnDis);
-        void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8EnDis)
+        #define MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum,u8Enable)\
+						hw_spi_drive_cs (u8PortNum, u8Enable)
+        void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8Enable);
+        void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8Enable)
         {
-            if (u8EnDis == TRUE)
+            if (u8Enable == TRUE)
             {
                 //Set pin level low for SOC's GPIO that is connected to the u8PortNum port's 
                 //UPD350 SPI CS pin
             }
-            else if(u8EnDis == FALSE)
+            else if(u8Enable == FALSE)
             {
                 //Set pin level high for SOC GPIO that is connected to the u8PortNum port's
                 //UPD350 SPI CS pin
@@ -139,16 +140,16 @@ Example:
         }
     </code>
     <code>
-        #define MCHP_PSF_HOOK_UPD_COMM_ENDIS(u8PortNum,u8EnDis)\
-							hw_port_i2cmux_routing(u8PortNum,u8EnDis)	
-        void hw_port_i2cmux_routing(u8PortNum,u8EnDis);
-        void hw_port_i2cmux_routing(u8PortNum,u8EnDis)
+        #define MCHP_PSF_HOOK_UPD_COMM_ENABLE(u8PortNum,u8Enable)\
+							hw_port_i2cmux_routing(u8PortNum,u8Enable)	
+        void hw_port_i2cmux_routing(u8PortNum,u8Enable);
+        void hw_port_i2cmux_routing(u8PortNum,u8Enable)
         {
-            if (u8EnDis == TRUE)
+            if (u8Enable == TRUE)
             {
                 //Route the I2C mux to the u8PortNum UPD350 Port 
             }
-            else if(u8EnDis == FALSE)
+            else if(u8Enable == FALSE)
             { 
                 //disable the I2C mux routing to the u8PortNum UPD350 Port
             }
@@ -157,7 +158,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory for SPI Hardware interface                                           
 *************************************************************************************************/
-#define MCHP_PSF_HOOK_UPD_COMM_ENDIS(u8PortNum,u8EnDis) SAMD20_DriveChipSelect(u8PortNum,u8EnDis)
+#define MCHP_PSF_HOOK_UPD_COMM_ENABLE(u8PortNum,u8Enable) SAMD20_DriveChipSelect(u8PortNum,u8Enable)
 
 /*********************************************************************************************
 Function:
