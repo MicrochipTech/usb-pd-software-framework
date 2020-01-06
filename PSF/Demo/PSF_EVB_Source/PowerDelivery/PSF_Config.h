@@ -577,7 +577,7 @@ Example:
 Summary:
     Source PDO's Voltage field.
 Description:
-    CONFIG_PORT_n_SOURCE_PDO_1_VOLTAGE defines the voltage supported in xth PDO of nth source 
+    CONFIG_PORT_n_SOURCE_PDO_x_VOLTAGE defines the voltage supported in xth PDO of nth source 
     port. As per PD specification, there can be 7 PDOs. Thus, x takes value from 1 to 7.
     n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
 Remarks:
@@ -968,8 +968,8 @@ Description:
 Remarks:
     If 85% of the PDO voltage has to be considered as under voltage for that PDO voltage, then
     define CONFIG_UNDER_VOLTAGE_FACTOR as 0.85.
-    CONFIG_UNDER_VOLTAGE_FACTOR must be defined when INCLUDE_POWER_FAULT_HANDLING is defined. As an
-	exceptional case this factor is not considered for VSafe5V.
+    CONFIG_UNDER_VOLTAGE_FACTOR must be defined when INCLUDE_POWER_FAULT_HANDLING is defined as '1'. 
+    As an exceptional case this factor is not considered for VSafe5V.
 
     For Source VSafe5V, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as Vsafe5V undervoltage 
     instead of (CONFIG_UNDER_VOLTAGE_FACTOR * TYPEC_VBUS_5V).
@@ -1490,8 +1490,8 @@ Remarks:
     By default, it is defined as 5.n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). 
 Example:
     <code>
-       #define CONFIG_PORT_0_UPD_FAULT_IN           5 (FAULT_IN is PIO5)
-       #define CONFIG_PORT_0_UPD_FAULT_IN           0xFF (FAULT_IN functinality disabled)
+       #define CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO           5 (FAULT_IN is PIO5)
+       #define CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO           0xFF (FAULT_IN functinality disabled)
 	</code>
 **************************************************************************************************/
 #define CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO               eUPD_PIO5
@@ -1508,7 +1508,7 @@ Description:
     CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO. It takes only values from enum eFAULT_IN_MODE_TYPE. 
     n can take values between 0 and (CONFIG_PD_PORT_COUNT-1).
 Remarks:
-    By default, it is configured to ePUSH_PULL_ACTIVE_HIGH.
+    By default, it is configured to ePUSH_PULL_ACTIVE_LOW.
 Example:
 	<code>
     #define CONFIG_PORT_n_UPD_FAULT_IN_MODE          eFAULT_IN_ACTIVE_LOW
@@ -1608,7 +1608,7 @@ Description:
     can be issued by the PDFU_Initiator after the specified wait time. This information is  
     shared with the PDFU Initiator as part of PDFU_INITIATE command's response.
 Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is TRUE. It can have values 
+    The user definition of this macro is mandatory when INCLUDE_PDFU is '1'. It can have values 
     from 0x00 to 0xFF. By default, it is defined as '0x00'.
 Example:
     <code>
@@ -1643,7 +1643,7 @@ Description:
     the PDFU_Validate command's processing takes "Wait time" millisecond, and next request can 
     be issued by the Initiator after the specified wait time.
 Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is TRUE. It can have values
+    The user definition of this macro is mandatory when INCLUDE_PDFU is '1'. It can have values
     from 0x00 to 0xFF. By default, it is defined as '0x03'.
 Example:
     <code>
@@ -1766,7 +1766,7 @@ Summary:
 	tVCONNON.
 Description:
     CONFIG_TYPEC_VCONNON_TIMEOUT_MS defines the tVCONNON specified in the USB-Type C Specification. 
-    Default value of CONFIG_TYPEC_VCONNON_TIMEOUT_MS is set as 2 milliseconds.
+    Default value of CONFIG_TYPEC_VCONNON_TIMEOUT_MS is set as 10 milliseconds.
 Remarks:
     CONFIG_TYPEC_VCONNON_TIMEOUT_MS can be configured depending on the microcontroller 
     platform used, for the device to be USB Type-C Compliant. It shall always be expressed in define 
@@ -1857,7 +1857,7 @@ Summary:
 	Self tVCONNSourceOn.
 Description:
     CONFIG_PE_VCONNON_SELF_TIMEOUT_MS defines the tVCONNSourceOn specified in the USB PD Specification. 
-    Default value of CONFIG_PE_VCONNON_SELF_TIMEOUT_MS is set as 100 milliseconds.
+    Default value of CONFIG_PE_VCONNON_SELF_TIMEOUT_MS is set as 150 milliseconds.
 Remarks:
     CONFIG_PE_VCONNON_SELF_TIMEOUT_MS can be configured depending on the microcontroller 
     platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
@@ -2027,14 +2027,14 @@ Summary:
 	tSrcTransistionTimer.
 Description:
     CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS defines the tSrcTransistionTimer specified in the 
-    USB-PD Specification. By default it is set to 30 milliseconds.
+    USB-PD Specification. By default, it is set to 28 milliseconds.
 Remarks:
-    CONFIG_POWER_GOOD_TIMER_MS can be configured depending on the microcontroller 
+    CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS can be configured depending on the microcontroller 
     platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
     MILLISECONDS_TO_TICKS.
 Example:
     <code>
-    #define CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS             MILLISECONDS_TO_TICKS(30)
+    #define CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS             MILLISECONDS_TO_TICKS(28)
     </code>
 **************************************************************************************************/
 #define CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS	      MILLISECONDS_TO_TICKS(28)
