@@ -900,8 +900,8 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
         case ePE_VCS_EVALUATE_SWAP:
         {
-            /*Transition directly to next state as UPD301A accepts VCONN Swap always*/
-            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP: Enterted the state\r\n");
+            /*Transition directly to next state as PSF accepts VCONN Swap always*/
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP: Entered the state\r\n");
 
 #if INCLUDE_POWER_FAULT_HANDLING
             

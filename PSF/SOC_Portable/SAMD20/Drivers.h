@@ -163,7 +163,7 @@ UINT8 SAMD20_SPIInitialisation(void);
         Wrapper function to enable or disable the SAMD20 HW interface communication with Port's UPD350.  
     Description:
         This API serves as a wrapper between PSF stack defined UPD350 communication enable disable 
-        function MCHP_PSF_HOOK_UPD_COMM_ENDIS and Harmony generated code to drive Chip select to 
+        function MCHP_PSF_HOOK_UPD_COMM_ENABLE and Harmony generated code to drive Chip select to 
         enable or disable SPI communication to specific port's UPD350.
     Conditions:
         None

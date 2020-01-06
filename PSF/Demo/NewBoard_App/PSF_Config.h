@@ -216,8 +216,8 @@ Description:
     state-machine during Enumeration phase. This information is shared with the PDFU Initiator 
     as part of GET_FW_ID command's response.
 Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.It should
-    always be two byte width. It should always be two byte width.
+    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.It should 
+    always be two byte wide.
 Example:
     <code>
     #define CONFIG_VENDOR_ID    0x0424u
@@ -233,8 +233,8 @@ Description:
     state-machine during Enumeration phase. This information is shared with the PDFU Initiator 
     as part of GET_FW_ID command's response.
 Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.It should
-    always be two byte width.
+    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.It should 
+    always be two byte wide.
 Example:
     <code>
 	#define CONFIG_PRODUCT_ID 0x301Cu
@@ -280,12 +280,12 @@ Example:
 Summary:
     Silicon Base Version.
 Description:
-    CONFIG_SILICON_VERSION is UPD301 Silicon Base Version. It is used by the PD Firmware Update 
+    CONFIG_SILICON_VERSION is Silicon Base Version. It is used by the PD Firmware Update 
     state-machine during Enumeration phase. This information is shared with the PDFU Initiator as 
     part of GET_FW_ID command's response.
 Remarks:
     The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.
-    It should be a byte width.
+    It should be a byte wide.
 Example:
     <code>
     #define CONFIG_SILICON_VERSION    0x01u
@@ -306,8 +306,9 @@ Description:
     of ports PSF can be configured is '4'. 
 Remarks:
     The max and min value for CONFIG_PD_PORT_COUNT is '4' and '1' respectively. PSF refers the 
-    Port number in the call backs as 0 to (CONFIG_PD_PORT_COUNT - 1).
-    The default value is 2 and it can be defined based on the user application.
+    Port number in the call backs as 0 to (CONFIG_PD_PORT_COUNT - 1). 
+    The default value is 2 and it can be defined based on the user application. For each port 
+    defined by this macro approximately 500Bytes of Data RAM is consumed.
 Example:
     <code>
     #define CONFIG_PD_PORT_COUNT        2 (Number of PD ports enabled in PSF Stack is 2)
@@ -321,9 +322,11 @@ Summary:
 Description:
     CONFIG_DEFINE_UPD350_HW_INTF_SEL defines the Hardware interface for communication between
     the SOC and UPD350. It can take either CONFIG_UPD350_SPI or CONFIG_UPD350_I2C as value.
-	\<b>CONFIG_UPD350_SPI</b> - SPI is the communication interface between SOC and UPD350.
+	
+	<b>CONFIG_UPD350_SPI</b> - SPI is the communication interface between SOC and UPD350.
 									SPI interface is supported by UPD350 B and D parts alone.
-	\<b>CONFIG_UPD350_I2C</b> - I2C is the communication interface between SOC and UPD350.
+	
+	<b>CONFIG_UPD350_I2C</b> - I2C is the communication interface between SOC and UPD350.
 									I2C interface is supported by UPD350 A and C parts alone.
 Remarks:
     CONFIG_DEFINE_UPD350_HW_INTF_SEL should be defined based on UPD350 silicon part used for the
@@ -375,29 +378,32 @@ Example:
 #define CONFIG_PORT_2_POWER_ROLE           1
 #define CONFIG_PORT_3_POWER_ROLE           1
 
-/**************************************************************************************************
+/**********************************************************************************************
 Summary:
     Rp Current value for the port
 Description:
-    CONFIG_PORT_n_RP_CURRENT_VALUE defines the Rp Value of nth port. n can take values between
-    0 and (CONFIG_PD_PORT_COUNT-1). CONFIG_PORT_n_RP_CURRENT_VALUE can take following values
-	\0 - Rp termination is disabled; For Sink, CONFIG_PORT_n_RP_CURRENT_VALUE should be set '0'
-    \1 - Rp termination is set to default USB Power
-    \2 - Rp termination is set to 1.5A current
-    \3 - Rp termination is set to 3A current
+    CONFIG_PORT_n_RP_CURRENT_VALUE defines the Rp Value of nth port. n can take values between 0 and
+    (CONFIG_PD_PORT_COUNT-1). CONFIG_PORT_n_RP_CURRENT_VALUE can take following values
+    0 - Rp termination is disabled; For Sink,CONFIG_PORT_n_RP_CURRENT_VALUE
+    should be set '0'
+    
+    1 - Rp termination is set to default USB Power
+    
+    2 - Rp termination is set to 1.5A current
+    
+    3 - Rp termination is set to 3A current
 Remarks:
-    If CONFIG_PORT_n_POWER_ROLE set as 0 (Sink), CONFIG_PORT_n_RP_CURRENT_VALUE should be 
-    defined as 0. If CONFIG_PORT_n_POWER_ROLE set as 1 (Source), CONFIG_PORT_n_RP_CURRENT_VALUE 
-    should take value other than  0. By default, all the ports are configured as Source & Rp
-    termination set to 3A.
+    If CONFIG_PORT_n_POWER_ROLE set as 0(Sink),CONFIG_PORT_n_RP_CURRENT_VALUE should be defined as 0. 
+    If CONFIG_PORT_n_POWER_ROLE set as 1(Source),CONFIG_PORT_n_RP_CURRENT_VALUE should take value 
+    other than 0. By default, all the ports are configured as Source, Rp termination set to 3A.
 Example:
     <code>
-     #define CONFIG_PORT_0_RP_CURRENT_VALUE	 0 (Configuring the Port 0 Rp Value as Disabled)
-     #define CONFIG_PORT_0_RP_CURRENT_VALUE	 1 (Configuring the Port 0 Rp Value as DEFAULT)
-     #define CONFIG_PORT_0_RP_CURRENT_VALUE	 2 (Configuring the Port 0 Rp Value as CURRENT_15)
-     #define CONFIG_PORT_0_RP_CURRENT_VALUE	 3 (Configuring the Port 0 Rp Value as CURRENT_30)
-    </code>
-**************************************************************************************************/
+    #define CONFIG_PORT_0_RP_CURRENT_VALUE	 0 (Configuring the Port 0 Rp Value as Disabled)
+    #define CONFIG_PORT_0_RP_CURRENT_VALUE	 1 (Configuring the Port 0 Rp Value as DEFAULT)
+    #define CONFIG_PORT_0_RP_CURRENT_VALUE	 2 (Configuring the Port 0 Rp Value as CURRENT_15)
+    #define CONFIG_PORT_0_RP_CURRENT_VALUE	 3 (Configuring the Port 0 Rp Value as CURRENT_30)
+    </code>                                                                                             
+  **********************************************************************************************/
 #define  CONFIG_PORT_n_RP_CURRENT_VALUE 
 #define  CONFIG_PORT_0_RP_CURRENT_VALUE     3        /* 0- RP_DISABLED(To be set for Sink), 1- DEFAULT_CURRENT ,2- CURRENT_15 ,3- CURRENT_30 */
 #define  CONFIG_PORT_1_RP_CURRENT_VALUE     3
@@ -408,24 +414,24 @@ Example:
 Summary:
     Port Enable disable macro.
 Description:
-	CONFIG_PORT_n_ENDIS defines whether a port to be enabled or disabled. n can take values between 0 
+	CONFIG_PORT_n_ENABLE defines whether a port to be enabled or disabled. n can take values between 0 
 	and (CONFIG_PD_PORT_COUNT-1).
-	If CONFIG_PORT_n_ENDIS defined as 1, port is enabled.
-	If CONFIG_PORT_n_ENDIS defined as 0, port is disabled.
+	If CONFIG_PORT_n_ENABLE defined as 1, port is enabled.
+	If CONFIG_PORT_n_ENABLE defined as 0, port is disabled.
 Remarks:
 	By default, all ports are enabled.
 Example:
 	<code>
-	#define CONFIG_PORT_0_ENDIS  0 (Type-C Port 0 Disabled)
-	#define CONFIG_PORT_0_ENDIS  1 (Type-C Port 0 Enabled)
+	#define CONFIG_PORT_0_ENABLE  0 (Type-C Port 0 Disabled)
+	#define CONFIG_PORT_0_ENABLE  1 (Type-C Port 0 Enabled)
 	</code>
                                                                            
 **************************************************************************************************/
-#define CONFIG_PORT_n_ENDIS         1
-#define CONFIG_PORT_0_ENDIS         1
-#define CONFIG_PORT_1_ENDIS         1
-#define CONFIG_PORT_2_ENDIS         1
-#define CONFIG_PORT_3_ENDIS         1
+#define CONFIG_PORT_n_ENABLE         1
+#define CONFIG_PORT_0_ENABLE         1
+#define CONFIG_PORT_1_ENABLE         1
+#define CONFIG_PORT_2_ENABLE         1
+#define CONFIG_PORT_3_ENABLE         1
 
 // *****************************************************************************
 // *****************************************************************************
@@ -457,7 +463,7 @@ Summary:
     Source PDO's USB Suspend field.
 Description:
     CONFIG_PORT_n_SOURCE_USB_SUSPEND defines the USB Suspend supported bit in fixed PDO of nth 
-    source port. As per PD specification, this field is exposed for PDO1 alone for rest of the 
+    source port. As per PD specification, this field is exposed for PDO1 alone, for rest of the 
     fixed PDOs it is Zero. CONFIG_PORT_n_SOURCE_PDO_1_USB_SUSPEND can be configured as 0 or 1.
     n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
 Remarks:
@@ -479,7 +485,7 @@ Summary:
     Source PDO's Unconstrained Power field.
 Description:
     CONFIG_PORT_n_SOURCE_UNCONSTRAINED_PWR defines the Unconstrained Power bit in fixed PDO of
-    nth source port. As per PD specification, this field is exposed for PDO1 alone for rest of
+    nth source port. As per PD specification, this field is exposed for PDO1 alone, for rest of
     the fixed PDOs it is Zero. CONFIG_PORT_n_SOURCE_UNCONSTRAINED_PWR can be configured as 0 or 1.
     n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
 Remarks:
@@ -501,7 +507,7 @@ Summary:
     Source PDO's USB Communication capable field.
 Description:
     CONFIG_PORT_n_SOURCE_USB_COM defines the USB communication enable bit in PDO of nth source 
-    port. As per PD specification, this field is exposed for PDO1 alone for rest of the fixed 
+    port. As per PD specification, this field is exposed for PDO1 alone, for rest of the fixed 
     PDOs it is Zero. CONFIG_PORT_n_SOURCE_USB_COM can be configured as 0 or 1. n can take values
     between 0 and (CONFIG_PD_PORT_COUNT - 1).
 Remarks:
@@ -523,7 +529,7 @@ Summary:
     Source PDO's Current field.
 Description:
     CONFIG_PORT_n_SOURCE_PDO_x_CURRENT defines the maximum current value in xth PDO of nth 
-    source port. As per PD specification there can be 7 PDOs, thus x takes value from 1 to 7.
+    source port. As per PD specification, there can be 7 PDOs. Thus, x takes value from 1 to 7.
     n can take values between 0 and(CONFIG_PD_PORT_COUNT - 1). This define is
     expressed in mA units.
 Remarks:
@@ -572,7 +578,7 @@ Summary:
     Source PDO's Voltage field.
 Description:
     CONFIG_PORT_n_SOURCE_PDO_1_VOLTAGE defines the voltage supported in xth PDO of nth source 
-    port. As per PD specification there can be 7 PDOs, So x takes value from 1 to 7.
+    port. As per PD specification, there can be 7 PDOs. Thus, x takes value from 1 to 7.
     n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
 Remarks:
     Units are expressed in milliVolts(mV). It is mandatory to define PDO1 as vSafe5V (5000).
@@ -645,7 +651,7 @@ Summary:
     Sink PDO's Higher capability field.
 Description:
     CONFIG_PORT_n_SINK_HIGHER_CAPABILITY defines the Higher Capability bit in fixed PDO in nth 
-    sink port. As per PD specification, this field is exposed for PDO1 alone for rest of the
+    sink port. As per PD specification, this field is exposed for PDO1 alone, for rest of the
     fixed PDOs it is Zero. CONFIG_PORT_0_SINK_HIGHER_CAPABILITY can be configured as 0 or 1.
     n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
 Remarks:
@@ -667,7 +673,7 @@ Summary:
     Sink PDO's Unconstrained Power field.
 Description:
     CONFIG_PORT_n_SINK_UNCONSTRAINED_PWR defines the Unconstrained Power bit in fixed PDO of
-    nth sink port. As per PD specification, this field is exposed for PDO1 alone for rest of
+    nth sink port. As per PD specification, this field is exposed for PDO1 alone, for rest of
     the fixed PDOs it is Zero. CONFIG_PORT_n_SINK_UNCONSTRAINED_PWR can be configured as 0 or 1.
     n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
 Remarks:
@@ -689,7 +695,7 @@ Summary:
     Sink PDO's USB Communication capable field.
 Description:
     CONFIG_PORT_n_SINK_USB_COM defines the USB communication enable bit in PDO of nth sink 
-    port. As per PD specification, this field is exposed for PDO1 alone for rest of the fixed 
+    port. As per PD specification, this field is exposed for PDO1 alone, for rest of the fixed 
     PDOs it is Zero. CONFIG_PORT_n_SINK_USB_COM can be configured as 0 or 1. n can take values
     between 0 and (CONFIG_PD_PORT_COUNT - 1).
 Remarks:
@@ -711,7 +717,7 @@ Summary:
     Sink PDO's Current field.
 Description:
     CONFIG_PORT_n_SINK_PDO_x_CURRENT defines the maximum current value in xth PDO of nth 
-    Sink port. As per PD specification there can be 7 PDOs, thus x takes value from 1 to 7.
+    Sink port. As per PD specification, there can be 7 PDOs, thus x takes value from 1 to 7.
     n can take values between 0 and(CONFIG_PD_PORT_COUNT - 1). This define is
     expressed in mA units.
 Remarks:
@@ -760,7 +766,7 @@ Summary:
     Sink PDO's Voltage field.
 Description:
     CONFIG_PORT_n_SINK_PDO_1_VOLTAGE defines the voltage supported in xth PDO of nth sink 
-    port. As per PD specification there can be 7 PDOs, So x takes value from 1 to 7.
+    port. As per PD specification, there can be 7 PDOs, thus x takes value from 1 to 7.
     n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
 Remarks:
     Units are expressed in milliVolts(mV). It is mandatory to define PDO1 as vSafe5V (5000).
@@ -937,7 +943,7 @@ Summary:
     Over voltage factor.
 Description:
     CONFIG_OVER_VOLTAGE_FACTOR is percentage of PDO voltage to be considered as Over Voltage for
-	that PDO. As per PD specification desired range for fixed PDO voltage is (0.95 * PDO Voltage) 
+	that PDO. As per PD specification, desired range for fixed PDO voltage is (0.95 * PDO Voltage) 
 	to (1.05 * PDO Voltage), So CONFIG_OVER_VOLTAGE_FACTOR should be greater than the desired range.
 Remarks:
     If 115% of the PDO voltage has to be considered as overvoltage for that PDO voltage,
@@ -957,7 +963,7 @@ Summary:
     Under Voltage factor.
 Description:
     CONFIG_UNDER_VOLTAGE_FACTOR is percentage of PDO voltage to be considered as under Voltage for
-	that PDO. As per PD specification desired range for fixed PDO voltage is (0.95 * PDO Voltage) 
+	that PDO. As per PD specification, desired range for fixed PDO voltage is (0.95 * PDO Voltage) 
 	to (1.05 * PDO Volatge), So CONFIG_OVER_VOLTAGE_FACTOR should be less than the desired range.
 Remarks:
     If 85% of the PDO voltage has to be considered as under voltage for that PDO voltage, then

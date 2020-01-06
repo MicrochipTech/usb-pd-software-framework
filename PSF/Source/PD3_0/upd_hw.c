@@ -102,7 +102,7 @@ void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset,
         UINT8 *pu8WriteData, UINT8 u8WriteDataLen)
 {
     /*Enable Hardware Interface for Communication for the specific port*/
-	MCHP_PSF_HOOK_UPD_COMM_ENDIS (u8PortNum, TRUE);
+	MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, TRUE);
     
     #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
     
@@ -132,7 +132,7 @@ void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset,
     
     #endif
     
-	MCHP_PSF_HOOK_UPD_COMM_ENDIS (u8PortNum, FALSE);
+	MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, FALSE);
 }
 
 /******************************************************************************************************/
@@ -140,7 +140,7 @@ void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset,
 void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
         UINT8 *pu8ReadData, UINT8 u8Readlen)
 {
-    MCHP_PSF_HOOK_UPD_COMM_ENDIS (u8PortNum, TRUE);
+    MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, TRUE);
   
    #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
   
@@ -162,7 +162,7 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
     
 	(void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
 
-	MCHP_PSF_HOOK_UPD_COMM_ENDIS (u8PortNum, FALSE);
+	MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, FALSE);
 
 }
 /******************************************************************************************************/
