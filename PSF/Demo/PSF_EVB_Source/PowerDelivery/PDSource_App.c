@@ -40,8 +40,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 
 #include "psf_stdinc.h"
-#include "Drivers.h"
-#include "PDSource_App.h"
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -100,18 +98,18 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
-            UPD_GPIOEnableDisable(u8PortNum,eUPD_PIO2,UPD_ENABLE_GPIO);
-            UPD_GPIOSetDirection(u8PortNum,eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-            UPD_GPIOSetBufferType(u8PortNum,eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-            UPD_GPIOSetClearOutput(u8PortNum,eUPD_PIO2,UPD_GPIO_CLEAR);
+            UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
+            UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
+            UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+            UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_CLEAR);
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
-            UPD_GPIOEnableDisable(u8PortNum,eUPD_PIO2,UPD_ENABLE_GPIO);
-            UPD_GPIOSetDirection(u8PortNum,eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-            UPD_GPIOSetBufferType(u8PortNum,eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-            UPD_GPIOSetClearOutput(u8PortNum,eUPD_PIO2,UPD_GPIO_SET);
+            UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
+            UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
+            UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+            UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SET);
             break;
         }
 		

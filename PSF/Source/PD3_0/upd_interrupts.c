@@ -94,10 +94,10 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         }
 		
 		/* Checking for UPD GPIO interrupt */
-		if (u16InterruptStatus & UPDINTR_PIO_INT)
-		{
-			UPD_PIOHandleISR (u8PortNum);
-		}
+        if (u16InterruptStatus & UPDINTR_PIO_INT)
+        {
+            UPD_PIOHandleISR (u8PortNum);
+        }
 
 #if INCLUDE_POWER_MANAGEMENT_CTRL
         

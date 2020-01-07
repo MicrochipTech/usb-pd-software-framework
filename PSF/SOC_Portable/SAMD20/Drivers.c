@@ -65,7 +65,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #define SAMD20Timer_Initialise(n)    TCn_TimerInitialize(n)
 #define TCn_TimerInitialize(n)   {TC##n##_TimerInitialize();\
                                     TC##n##_TimerStart(); \
-                                    TC##n##_TimerCallbackRegister(&SAMD20_HWTimerCallback, (uintptr_t)NULL);}
+                                    TC##n##_TimerCallbackRegister(SAMD20_HWTimerCallback, (uintptr_t)NULL);}
 
 
 /*SPI drivers - SERCOMn_SPI_Initialize is called to initialize the SERCOM SPI module. 
@@ -85,7 +85,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 /* ************************************************************************** */
 static void SAMD20_HWTimerCallback(TC_TIMER_STATUS status, uintptr_t context)
 {
-    if (TC_TIMER_STATUS_OVERFLOW == (status & TC_TIMER_STATUS_OVERFLOW))
+    if (TC_TIMER_STATUS_OVERFLOW == (TC_TIMER_STATUS)((UINT8)status & (UINT8)TC_TIMER_STATUS_OVERFLOW))
     {
         /*PSF Timer Callback is called for Timer ISR*/
         MchpPSF_PDTimerHandler();
@@ -165,17 +165,17 @@ void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
     /* MCU PIO routed to UPD350 line configured for low level and internal pullup*/
     if (PORT0 == u8PortNum)
     {
-        PORT_PinInputEnable(SAMD20_PORT0_EIC_PIN);
-        PORT_PinWrite(SAMD20_PORT0_EIC_PIN, TRUE);
-        EIC_CallbackRegister(SAMD20_PORT0_EIC_PIN, &SAMD20_UPD350AlertCallback, PORT0);
-        EIC_InterruptEnable(SAMD20_PORT0_EIC_PIN);
+        PORT_PinInputEnable((PORT_PIN)SAMD20_PORT0_EIC_PIN);
+        PORT_PinWrite((PORT_PIN)SAMD20_PORT0_EIC_PIN, TRUE);
+        EIC_CallbackRegister((EIC_PIN)SAMD20_PORT0_EIC_PIN, SAMD20_UPD350AlertCallback, PORT0);
+        EIC_InterruptEnable((EIC_PIN)SAMD20_PORT0_EIC_PIN);
     }
     else if (PORT1 == u8PortNum)
     {
-        PORT_PinInputEnable(SAMD20_PORT1_EIC_PIN);
-        PORT_PinWrite(SAMD20_PORT1_EIC_PIN, TRUE);
-        EIC_CallbackRegister(SAMD20_PORT1_EIC_PIN, &SAMD20_UPD350AlertCallback, PORT1);
-        EIC_InterruptEnable(SAMD20_PORT1_EIC_PIN);
+        PORT_PinInputEnable((PORT_PIN)SAMD20_PORT1_EIC_PIN);
+        PORT_PinWrite((PORT_PIN)SAMD20_PORT1_EIC_PIN, TRUE);
+        EIC_CallbackRegister((EIC_PIN)SAMD20_PORT1_EIC_PIN, SAMD20_UPD350AlertCallback, PORT1);
+        EIC_InterruptEnable((EIC_PIN)SAMD20_PORT1_EIC_PIN);
     }
 }
 

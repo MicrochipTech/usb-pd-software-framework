@@ -656,35 +656,35 @@ void PRL_EnableRx (UINT8 u8PortNum, UINT8 u8Enable)
 
 UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, UINT8 *pu8DataBuffer, PRLRxCallback pfnRxCallback)
 {
-	UINT16 u16DataSize, u8Return;
+    UINT16 u16DataSize, u8Return;
  
-	u8Return = PRL_ProcessRecvdMsg(u8PortNum);
+    u8Return = PRL_ProcessRecvdMsg(u8PortNum);
 	
-	if ((u8Return == PRL_RET_NO_MSG_RCVD) && (!gasPRL [u8PortNum].u8RxError) && (!gasPRL [u8PortNum].u8RxHRRcvdISR))
-	{
+    if ((u8Return == PRL_RET_NO_MSG_RCVD) && (!gasPRL [u8PortNum].u8RxError) && (!gasPRL [u8PortNum].u8RxHRRcvdISR))
+    {
 		/* No Message is received. Return PRL_RET_NO_MSG_RCVD */
-	  	return PRL_RET_NO_MSG_RCVD;
-	}
+        return PRL_RET_NO_MSG_RCVD;
+    }
 	
     if (u8Return & PRL_RET_MSG_RCVD)
     {
 	  	/* Non - Extended message is returned here */
         /* RxPacket is copied from global buffer */
         
-	  	*pu8SOPType = gasPRLRecvBuff[u8PortNum].u8SOPtype;
+        *pu8SOPType = gasPRLRecvBuff[u8PortNum].u8SOPtype;
         *pu32Header =  gasPRLRecvBuff[u8PortNum].u16Header;
 		
 		/* if pu8DataBuffer is not NULL*/
-		if (pu8DataBuffer != NULL)
-		{
+        if (pu8DataBuffer != NULL)
+        {
 		  	/* data from global buffer is copied to local buffer */
-			for (u16DataSize = 0; 
+            for (u16DataSize = 0; 
 				 u16DataSize < (PRL_GET_OBJECT_COUNT(gasPRLRecvBuff[u8PortNum].u16Header) * PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES); 
 				 u16DataSize++)
-			{
-				pu8DataBuffer [u16DataSize] = gasPRLRecvBuff[u8PortNum].u8DataObj[u16DataSize];
-			}
-		}
+            {
+                pu8DataBuffer [u16DataSize] = gasPRLRecvBuff[u8PortNum].u8DataObj[u16DataSize];
+            }
+        }
         
         DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_RX_PKT_PASSED_TO_PE: Rx Msg received passed to PE\r\n");
 
@@ -694,48 +694,48 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
     else if (u8Return & PRL_RET_EXT_MSG_RCVD)
     {
 		/* Extended message is received */
-		*pu8SOPType = gasExtendedMsgBuff [u8PortNum].u8SOPtype;
-		*pu32Header = PRL_FORM_COMBINED_MSG_HEADER (gasExtendedMsgBuff [u8PortNum].u16ExtendedMsgHeader, 
+        *pu8SOPType = gasExtendedMsgBuff [u8PortNum].u8SOPtype;
+        *pu32Header = PRL_FORM_COMBINED_MSG_HEADER (gasExtendedMsgBuff [u8PortNum].u16ExtendedMsgHeader, 
 													gasExtendedMsgBuff [u8PortNum].u16Header);
 		/* if pu8DataBuffer is not NULL*/
-		if (pu8DataBuffer != NULL)
-		{
+        if (pu8DataBuffer != NULL)
+        {
 		  	/* data from global buffer is copied to local buffer */
-			for (u16DataSize = 0;	\
+            for (u16DataSize = 0;	\
 			  u16DataSize < (PRL_GET_DATA_SIZE(gasExtendedMsgBuff[u8PortNum].u16ExtendedMsgHeader));	\
 			  u16DataSize++)
-			{
-				pu8DataBuffer [u16DataSize] = gasExtendedMsgBuff[u8PortNum].u8Data[u16DataSize];
-			}
-		}
+            {
+                pu8DataBuffer [u16DataSize] = gasExtendedMsgBuff[u8PortNum].u8Data[u16DataSize];
+            }
+        }
 		
-		DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_EXTN_RX_PKT_PASSED_TO_PE: Extended Msg received passed to PE\r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_EXTN_RX_PKT_PASSED_TO_PE: Extended Msg received passed to PE\r\n");
 		
     }
     /*Note: gasPRL [u8PortNum].u8RxError is used only for PRL_RX_CHUNK_RCV_ERROR*/
     else if(gasPRL [u8PortNum].u8RxError)
     {
 	  	/* Chunk State Error*/
-	  	u8Return = PRL_RET_RCV_CHUNK_ERROR;
+        u8Return = PRL_RET_RCV_CHUNK_ERROR;
 		/* RxIntrStatus is cleared*/
         gasPRL [u8PortNum].u8RxError &= ~PRL_RX_CHUNK_RCV_ERROR;
 		
-		DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_RX_CHUNK_RCV_ERROR: Rx Chunk Error \r\n");
-	}
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_RX_CHUNK_RCV_ERROR: Rx Chunk Error \r\n");
+    }
     #endif
     else
     {
        /* Hard Reset Process pending*/
-       u8Return = PRL_RET_HARD_RESET_RCVD; 
+        u8Return = PRL_RET_HARD_RESET_RCVD; 
     }
 	
 	/* if pfnRxCallback is not NULL, pfnRxCallback is called */
-	if (pfnRxCallback != NULL)
-	{
-		pfnRxCallback(u8PortNum, u8Return);
-	}
+    if (pfnRxCallback != NULL)
+    {
+        pfnRxCallback(u8PortNum, u8Return);
+    }
     
-	return u8Return;
+    return u8Return;
 	
 }
 
@@ -1032,38 +1032,38 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 		
 		/*******************************************************REQUEST_CHUNK Handling******************************************************/
 	  	/* Checks whether received message is Chunk Response or Request */
-		if (PRL_IS_REQUEST_CHUNK_MSG(u16ExtendedMsgHeader))
-		{
+        if (PRL_IS_REQUEST_CHUNK_MSG(u16ExtendedMsgHeader))
+        {
 		  	/* CONFIG_PRL_CHUNK_SENDER_REQUEST_TIMEOUT_MS is killed on receiveing Chunk Request */
-			PRL_KillCAorChunkSMTimer (u8PortNum);
+            PRL_KillCAorChunkSMTimer (u8PortNum);
 			
-			if ((PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader) == gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent)
+            if ((PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader) == gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent)
 					&& PRL_IS_MSG_CHUNKED(u16ExtendedMsgHeader))
-			{
-			  	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_REQUEST_RCV: Chunk Request received");
+            {
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_REQUEST_RCV: Chunk Request received");
 				
 			  	/* If Chunk number request received and ChunkNumber of next Chunk to be sent is equal,
 				PRL_TCH_SEND_RESPONSE_CHUNK_ST is assigned to send next chunk packet*/
-				gasChunkSM [u8PortNum].u8ChunkState	= PRL_TCH_SEND_RESPONSE_CHUNK_ST;
-			}
-			else
-			{
-			  	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TCH_ERROR: Request Chunk number mismatch");
+                gasChunkSM [u8PortNum].u8ChunkState	= PRL_TCH_SEND_RESPONSE_CHUNK_ST;
+            }
+            else
+            {
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TCH_ERROR: Request Chunk number mismatch");
 				
 			  	/* Spec Ref: TCH_Report_Error - Report Error to Policy Engine. 
 												Entered on condition 
 											(Chunk Request Rcvd & Chunk Number != Chunk Number to Send) */
 				/* if Chunk number doesnot match, error state is assigned.
 					It is transmission error, Thus PE is informed through call back*/
-				PRL_TxOriginalCBfromCH (u8PortNum, PRL_TX_FAILED_ST);
-			}
+                PRL_TxOriginalCBfromCH (u8PortNum, PRL_TX_FAILED_ST);
+            }
 			
-		} /* end of if for IS_REQ_CHUNK_MSG*/
+        } /* end of if for IS_REQ_CHUNK_MSG*/
 		
 		/***********************************************************************************************************************************/
 		/**********************************************RESPONSE CHUNK Handling**************************************************************/
-		else
-		{
+        else
+        {
 		  	/* Chunk Response is handled here */
 			
 			/* Spec Ref: RCH_Processing_Extended_Message - Entered on Condition 
@@ -1073,7 +1073,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 				ChunkSM related gloabals are updated & Chunk response is stored in global*/
 		  
             if (PRL_FIRST_CHUNK_PACKET == PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader))
-			{
+            {
                /* if Chunk SM Chunk message is already in process & other message is received*/
                 if (gasChunkSM [u8PortNum].u8EnableChunkSM)
                 {
@@ -1099,7 +1099,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
                     /* New message received is processed below*/
                 }
                 
-               /* Spec Ref: RCH_Processing_Extended_Message: 
+                /* Spec Ref: RCH_Processing_Extended_Message: 
 					If first chunk: Set Chunk_Number_Expected = 0 and Num bytes received = 0 */
                 gasChunkSM [u8PortNum].u8EnableChunkSM = TRUE;
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PRL: Chunk SM Enabled\r\n");
@@ -1107,107 +1107,107 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 				/* copying the message to global buffer */
 				
 				/* SOP* Type of received packet*/
-				gasExtendedMsgBuff [u8PortNum].u8SOPtype = gasPRLRecvBuff [u8PortNum].u8SOPtype;
+                gasExtendedMsgBuff [u8PortNum].u8SOPtype = gasPRLRecvBuff [u8PortNum].u8SOPtype;
 			
 				/*Header is copied */
-				gasExtendedMsgBuff [u8PortNum].u16Header = gasPRLRecvBuff [u8PortNum].u16Header;
+                gasExtendedMsgBuff [u8PortNum].u16Header = gasPRLRecvBuff [u8PortNum].u16Header;
 				
 				/* Extended message header is copied to the global*/
-				gasExtendedMsgBuff [u8PortNum].u16ExtendedMsgHeader = u16ExtendedMsgHeader;
+                gasExtendedMsgBuff [u8PortNum].u16ExtendedMsgHeader = u16ExtendedMsgHeader;
 				
 				/* Total Chunk packtet to be sent is updated*/
-				PRL_UpdateTotalChunkNumVar (u8PortNum);
+                PRL_UpdateTotalChunkNumVar (u8PortNum);
 				
-			}
+            }
             else
-			{
+            {
 			  	/* CONFIG_PRL_CHUNK_SENDER_RESPONSE_TIMEOUT_MS is killed on receiveing Chunk Response if it is not first Chunk Response packet*/
-				PRL_KillCAorChunkSMTimer (u8PortNum);
-			}
+                PRL_KillCAorChunkSMTimer (u8PortNum);
+            }
 			
 			
-			if ((PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader) == gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent)
+            if ((PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader) == gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent)
 					&& PRL_IS_MSG_CHUNKED(u16ExtendedMsgHeader))
-			{
+            {
 			  	/* Spec Ref: RCH_Processing_Extended_Message: If expected Chunk Number: 
 							Append data to Extended_Messsage_Buffer;
 							Increment Chunk_Number_Expected and adjust Num bytes received. */
 			
 				/* Data Buffer is copied*/
 				/* Data buffer copy is started from 2 as first two bytes of data Extended Message Header */
-				for (u8PDOIndex = PRL_EXTN_MSG_HEADER_SIZE_IN_BYTES; 
-						u8PDOIndex < PRL_GET_OBJECT_COUNT(gasPRLRecvBuff [u8PortNum].u16Header) * PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES; 
-							u8PDOIndex++)
-				{
-					gasExtendedMsgBuff [u8PortNum].u8Data[gasChunkSM [u8PortNum].u16RxReceivedBytes++] = gasPRLRecvBuff [u8PortNum].u8DataObj[u8PDOIndex];
-				}
+                for (u8PDOIndex = PRL_EXTN_MSG_HEADER_SIZE_IN_BYTES; 
+                        u8PDOIndex < PRL_GET_OBJECT_COUNT(gasPRLRecvBuff [u8PortNum].u16Header) * PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES; 
+                            u8PDOIndex++)
+                {
+                    gasExtendedMsgBuff [u8PortNum].u8Data[gasChunkSM [u8PortNum].u16RxReceivedBytes++] = gasPRLRecvBuff [u8PortNum].u8DataObj[u8PDOIndex];
+                }
 				
 				/* if received chunk response is last chunk packet*/
-				if (gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent == gasChunkSM [u8PortNum].u8TotalChunkPkt)
-				{
+                if (gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent == gasChunkSM [u8PortNum].u8TotalChunkPkt)
+                {
 					/* all the chunk packet expected is received. Hence PE is informed through INTR status*/
 					
 					/* Chunk SM is reset*/
-					PRL_ResetChunkSM (u8PortNum);
+                    PRL_ResetChunkSM (u8PortNum);
                     
                     /* Return value is set to PRL_RET_EXT_MSG_RCVD to indicate Extended Message has received */
                     u8Return =  PRL_RET_EXT_MSG_RCVD;
                     
-				}
-				else
-				{
-				  	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RESPONSE_RCV: Chunk Response Received");
+                }
+                else
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RESPONSE_RCV: Chunk Response Received");
 					
-					/* If the received Chunk response is not the last chunk response packet
+                    /* If the received Chunk response is not the last chunk response packet
 						PRL_RCH_SEND_CHUNK_REQUEST_ST is assigned to to request for next chunk*/
-					gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_SEND_CHUNK_REQUEST_ST;
+                    gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_SEND_CHUNK_REQUEST_ST;
 					
 					/* Increment the chunk number expected */
-					gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent++;
-				}
-			}
-			else
-			{
-			  	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RECV_ERROR: Response Chunk number mismatch");
+                    gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent++;
+                }
+            }
+            else
+            {
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RECV_ERROR: Response Chunk number mismatch");
 			  	/* PRL_RCH_CHUNK_RECV_ERROR_ST is assigned to indicate PE*/
-				gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
-			}
+                gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
+            }
 			
-		} /* end of if for IS_REQ_CHUNK_MSG*/
+        } /* end of if for IS_REQ_CHUNK_MSG*/
 		
 		/***********************************************************************************************************************************/
 	
     } /* end of if check for IsExtendedMsg*/
 	/***************************************************Non-Extended Message Handling******************************************************/
     else    
-	{
-	  	if ((gasChunkSM [u8PortNum].u8EnableChunkSM) && (PRL_GET_MESSAGE_TYPE(gasPRLRecvBuff [u8PortNum].u16Header) != PE_CTRL_PING))
+    {
+        if ((gasChunkSM [u8PortNum].u8EnableChunkSM) && (PRL_GET_MESSAGE_TYPE(gasPRLRecvBuff [u8PortNum].u16Header) != PE_CTRL_PING))
         {
 		  	/* Unexpected message received and received message is not PING */
-		  	if ((gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST)
+            if ((gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST)
                 || (gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_SEND_CHUNK_REQUEST_ST)
                 || (gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST))
             {
                 DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg");
 			  	
                 /* Chunk SM is reset*/
-				PRL_ResetChunkSM (u8PortNum);
+                PRL_ResetChunkSM (u8PortNum);
                     
                 /* Spec Ref: On RCH_WAITING_CHUNK if other message receiced Report RCH_Report_Error*/
-				u8Return = PRL_RET_RCV_CHUNK_ERROR;
+                u8Return = PRL_RET_RCV_CHUNK_ERROR;
             }
-			else
-			{
-			  	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg");
+            else
+            {
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg");
 				/* Spec Ref: TCH_Message_Received - Clear Extended Message Buffer. Pass message to Chunked Rx*/
-				PRL_ResetChunkSM (u8PortNum);
-			}
+                PRL_ResetChunkSM (u8PortNum);
+            }
         }
-	  	/* if it is not an extended message, Message is copied to globals & PE is informed*/
+        /* if it is not an extended message, Message is copied to globals & PE is informed*/
         /* Return value is set to PRL_RET_MSG_RCVD to indicate Message has received */
         u8Return |=  PRL_RET_MSG_RCVD;
 		 	
-	}/*end of else for IsExtendedMsg*/
+    }/*end of else for IsExtendedMsg*/
     
     /* if the message is received in process of Collision avoidance, the pending message is disacarded
         by setting the Tx state to PRL_TX_IDLE_ST*/
@@ -1220,7 +1220,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
            
            /* PRL_TX_IDLE_ST is assinged*/
             PRL_ChangeTxState (u8PortNum, PRL_TX_IDLE_ST);
-     }
+    }
     
     #else
         /* Return value is set to PRL_RET_MSG_RCVD to indicate Message has received */
@@ -1497,27 +1497,25 @@ void PRL_TxOriginalCBfromCH (UINT8 u8PortNum, UINT8 u8TxStateforCB)
     /* Interrupt enable disable is done as the call back is expected to be called in ISR*/
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
   	/* Checks whether Tx Callback is not present */
-	if (gasChunkSM [u8PortNum].pFnTxCallback != NULL)
-	{
+    if (gasChunkSM [u8PortNum].pFnTxCallback != NULL)
+    {
 		/* PRL Txstate is assigned as PRL_TX_FAILED_ST & callback is called*/
-		gasPRL [u8PortNum].u8TxStateISR = u8TxStateforCB;
-		u32pkdTmrID_TxSt = gasChunkSM[u8PortNum].u32pkdTmrID_TxSt;
-		gasChunkSM [u8PortNum].pFnTxCallback(u8PortNum, 
+        gasPRL [u8PortNum].u8TxStateISR = u8TxStateforCB;
+        u32pkdTmrID_TxSt = gasChunkSM[u8PortNum].u32pkdTmrID_TxSt;
+        gasChunkSM [u8PortNum].pFnTxCallback(u8PortNum, 
                                         LOBYTE(u32pkdTmrID_TxSt), 	/* Next PE state for PRL_TX_DONE_ST or PRL_TX_EOP_ST incase of HR */
 										HIBYTE(u32pkdTmrID_TxSt), 	/* Next PE sub state for PRL_TX_DONE_ST or PRL_TX_EOP_ST incase of HR*/                                 
 										LOBYTE(HIWORD(u32pkdTmrID_TxSt)),	/* Next PE state for PRL_TX_ABORT or TX_FAILED */
 										HIBYTE(HIWORD(u32pkdTmrID_TxSt)));	/* Next PE sub state for PRL_TX_ABORT or TX_FAILED*/
 		/* PRL Tx state is set back to PRL_TX_IDLE_ST after the callback*/
-		gasPRL [u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;		
-	}
-    
+        gasPRL [u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;		
+    }
     
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 			
 	/* Reset the CHUNK SM*/
-	PRL_ResetChunkSM (u8PortNum);
+    PRL_ResetChunkSM (u8PortNum);
 	
-
 }				
 /******************************************************************************************************/
 
@@ -1572,19 +1570,19 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 											 					NULL,									
 											  					PRL_RCH_CHUNK_RECV_ERROR_ST,			/* Tx_FAILED Chunk state*/
 											  					NULL)))
-				{
+                {
 					/* Next CH SM state is assigned*/
-					gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST;
-				}
-				else
-				{
+                    gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST;
+                }
+                else
+                {
 				  	/* if message is not transmitted on line PRL_RCH_CHUNK_RECV_ERROR_ST is assigned*/
-					gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
-				}
+                    gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
+                }
 			
             }
-			break;
-		}   /* end of case PRL_RCH_SEND_CHUNK_REQUEST_ST */
+            break;
+        }   /* end of case PRL_RCH_SEND_CHUNK_REQUEST_ST */
 		
 		case PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST:
 		/* Idle state waiting for GOODCRC or Transmission error for the Request Chunk sent */
@@ -1614,9 +1612,9 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 		  	    /* TCH state to send Chunk packet*/
 		  	    
 		  	    /* Extended Header is updated for Current Chunk packet to be sent */
-			    UINT8 u8ChunkNumber	= gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent;
+                UINT8 u8ChunkNumber	= gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent;
 			    /*Extended message is updated and stored*/
-			    UINT32 u32CombinedMessageHeader = PRL_UPDATE_EXT_MSG_HEADER_CHUNK_NUMBER(
+                UINT32 u32CombinedMessageHeader = PRL_UPDATE_EXT_MSG_HEADER_CHUNK_NUMBER(
 			    									gasExtendedMsgBuff [u8PortNum].u16ExtendedMsgHeader,
 			    									u8ChunkNumber);
                 u32CombinedMessageHeader = PRL_FORM_COMBINED_MSG_HEADER((UINT16)u32CombinedMessageHeader,
@@ -1635,18 +1633,18 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 			    												PRL_TCH_EXPECT_CHUNK_REQUEST_WAIT_ST,	/* Tx_DONE Chunk state*/
 			    												PRL_TCH_CHUNK_TX_ERROR_ST,				/* Tx_FAILED Chunk state*/
 			    												PRL_TCH_CHUNK_TX_ERROR_ST)))			/* Tx_ABORT Chunk state*/
-			    {
+                {
 			    	/* Assigning PRL_TCH_WAIT_FOR_REQUEST_CHUNK_STATUS_ST state*/
-			    	gasChunkSM [u8PortNum].u8ChunkState = PRL_TCH_WAIT_FOR_REQUEST_CHUNK_STATUS_ST;
-			    }
-			    else
-			    {
+                    gasChunkSM [u8PortNum].u8ChunkState = PRL_TCH_WAIT_FOR_REQUEST_CHUNK_STATUS_ST;
+                }
+                else
+                {
 			      	/* If message is not transmitted on line, PRL_TCH_CHUNK_TX_ERROR_ST error state is assigned*/
-			      	gasChunkSM [u8PortNum].u8ChunkState = PRL_TCH_CHUNK_TX_ERROR_ST;
-			    }
+                    gasChunkSM [u8PortNum].u8ChunkState = PRL_TCH_CHUNK_TX_ERROR_ST;
+                }
             } /* end of PRL_TCH_SEND_RESPONSE_CHUNK_ST case*/
-			break;
-		}
+            break;
+        }
 		
 		case PRL_TCH_CHUNKSENDERREQUEST_TIMEOUT_ST:
 		{
@@ -1657,14 +1655,14 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 			  	PRL_TxOriginalCBfromCH (u8PortNum, PRL_TX_DONE_ST);
             }
             else
-			{
+            {
 			  	/* Spec Ref: ChunkSenderRequestTimer has expired and Chunk Number is greater than zero.
 							TCH transit to TCH_Report_Error*/
-			  	gasChunkSM [u8PortNum].u8ChunkState = PRL_TCH_CHUNK_TX_ERROR_ST;
-			}
+                gasChunkSM [u8PortNum].u8ChunkState = PRL_TCH_CHUNK_TX_ERROR_ST;
+            }
 		  	
-			break;	
-		}	
+            break;	
+        }	
 		
 		case PRL_TCH_CHUNK_TX_ERROR_ST:
 		{
@@ -1710,16 +1708,16 @@ UINT32 PRL_FormRequestChunkMsgHeader(UINT8 u8PortNum)
 								  PRL_REQUEST_CHUNK_DATA_OBJ_CNT, PRL_EXTENDED_MSG);
     }
     else
-	{
+    {
 	
 		u32CombinedHeader = PRL_FormNonSOPTypeMsgHeader (u8PortNum, 
 									PRL_GET_MESSAGE_TYPE(gasExtendedMsgBuff [u8PortNum].u16Header),
 									 PRL_REQUEST_CHUNK_DATA_OBJ_CNT, PRL_EXTENDED_MSG);
-	}
+    }
 	
-	u32CombinedHeader =   PRL_FORM_COMBINED_MSG_HEADER(PRL_FORM_REQUEST_CHUNK_EXT_MSG_HEADER(gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent), 
+    u32CombinedHeader =   PRL_FORM_COMBINED_MSG_HEADER(PRL_FORM_REQUEST_CHUNK_EXT_MSG_HEADER(gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent), 
 									(UINT16)u32CombinedHeader);
-	return u32CombinedHeader;
+    return u32CombinedHeader;
 }
 
 /******************************************************************************************************/

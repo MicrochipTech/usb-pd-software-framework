@@ -214,7 +214,7 @@ void UPD_GPIOSetBufferType(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8BufferType)
 
 void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
 {
-    if (eUPD_PIO_UN_DEF != u8PIONum)
+    if ((UINT8)eUPD_PIO_UN_DEF != u8PIONum)
     {
         /*read the GPIO register*/
         UINT8 u8PioData = UPD_RegReadByte(u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum));
@@ -482,7 +482,7 @@ UINT8 UPD_CheckUPDsActive()
     UINT8 u8IsAllUPDsActive = FALSE;
     
     for (UINT8 u8PortNo = 0; u8PortNo < CONFIG_PD_PORT_COUNT; u8PortNo++)
-  	{
+    {
 		/*Ignore if port is disabled, so consider only for enabled ports*/
 		if (((gasPortConfigurationData[u8PortNo].u32CfgData \
             & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
@@ -500,7 +500,7 @@ UINT8 UPD_CheckUPDsActive()
 				break;
 			}
 		}
-	}
+    }
   
     return u8IsAllUPDsActive;
 }
@@ -580,7 +580,7 @@ void UPD_PwrManagementCtrl(UINT8 u8PortNum)
         {
             /* Notification CallBack to the Client, to indicate all the
              UPD350s are in idle state */
-            (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_UPDS_IN_IDLE);
+            (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_UPDS_IN_IDLE);
         }
     } 
 }

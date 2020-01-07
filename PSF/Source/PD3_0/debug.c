@@ -32,7 +32,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #include <psf_stdinc.h>
 
-#if CONFIG_HOOK_DEBUG_MSG
+#ifdef CONFIG_HOOK_DEBUG_MSG
 
 void Debug_PrintInt32Buffer (INT32 const *pi32Buffer, UINT32 u32TotalCount)
 {
