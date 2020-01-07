@@ -1441,12 +1441,12 @@ void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState)
     /* Set PE sub state to passed timeout sub state */
     gasPolicy_Engine[u8PortNum].ePESubState = (ePolicySubState) u8PESubState;
     
-    if (ePE_SRC_HARD_RESET_ENTRY_SS == u8PESubState)
+    if (ePE_SRC_HARD_RESET_ENTRY_SS == (ePolicySubState)u8PESubState)
     {
     	gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
         
     }
-    else if (ePE_SNK_HARD_RESET_SEND_SS == u8PESubState)
+    else if (ePE_SNK_HARD_RESET_SEND_SS == (ePolicySubState)u8PESubState)
     {
          gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_HARD_RESET;
     }

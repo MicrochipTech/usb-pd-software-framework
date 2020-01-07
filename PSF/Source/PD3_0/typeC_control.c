@@ -263,7 +263,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
         case TYPEC_UNATTACHED_SRC:
         {          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
-		    {
+            {
                 case TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS:
                 {
                     /* Check for VBUS VSafe0V for Voltage driven in TypeC Initialization */
@@ -278,8 +278,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_UNATTACHED_SRC_ENTRY_SS:
                 {   
                      
-                     /*Notify external DPM of Type Detach event through a user defined call back*/
-                     (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
+                    /*Notify external DPM of Type Detach event through a user defined call back*/
+                    (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT);
                      
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
@@ -288,10 +288,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                       TYPEC_PORT_RPVAL_MASK) >> TYPEC_PORT_RPVAL_POS);
 					 
 					/*Reset the VBUS threshold for 5V detection*/
-					TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
 					
-					 /*Power down the CC comparator*/
-					TypeC_ConfigCCComp(u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+					/*Power down the CC comparator*/
+                    TypeC_ConfigCCComp(u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                      
                     /*Check whether the current Rp value is same as the default Rp value*/
                     if(((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
@@ -317,15 +317,15 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 }
 				
-				case TYPEC_UNATTACHED_SRC_INIT_SS:
-				{
+                case TYPEC_UNATTACHED_SRC_INIT_SS:
+                {
                     /*DPM power fault handler resets SM by polling this state 
                      TYPEC_UNATTACHED_SRC_INIT_SS in the hanlder for Src unattach.
                      Any module can reset its reset its SM by polling this state*/                       
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_IDLE_SS;
                     
-					break;
-				}
+                    break;
+                }
               
                 /*Source waits in this substate for sink attachment*/
                 case TYPEC_UNATTACHED_SRC_IDLE_SS:
@@ -397,7 +397,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                              gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
                         }
                         
-						PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
+                        PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
                     }
                     break;
                 }
@@ -412,7 +412,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
         {
           
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
-		    {   
+            {   
                 /*Source Drives VBUS and VCONN required in this substate*/
                 case TYPEC_ATTACHED_SRC_DRIVE_PWR_SS:
                 {
@@ -429,16 +429,16 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
 					
-					 /*Sink Attached in CC1 pin*/
-					if(u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
-					{
-						UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL); 
-					}
+					/*Sink Attached in CC1 pin*/
+                    if(u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
+                    {
+                        UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL); 
+                    }
 					/*Sink attached in CC2*/
-					else
-					{
-						UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
-					}
+                    else
+                    {
+                        UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
+                    }
 		   
                     /*Enable VCONN FETs if Powered cable is present*/
                     if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK)
@@ -545,31 +545,31 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_ATTACHED_SRC_SET_PRL_SS:
                 {                  
-                     /*Sink Attached in CC1 pin*/
-                      if(u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
-                       {
-                           (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);
-                       }
-                       /*Sink attached in CC2*/
-                       else
-                       {
-                           (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
-                       }
+                    /*Sink Attached in CC1 pin*/
+                    if(u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
+                    {
+                        (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH);
+                    }
+                    /*Sink attached in CC2*/
+                    else
+                    {
+                        (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH);
+                    }
                
-                       /* Enabling PRL Rx*/
-                       PRL_EnableRx(u8PortNum, TRUE);                  
+                    /* Enabling PRL Rx*/
+                    PRL_EnableRx(u8PortNum, TRUE);                  
 
-                       /* Enable Power Threshold for TYPEC_VBUS_5V */
-                       TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA, TYPEC_CONFIG_PWR_FAULT_THR);
+                    /* Enable Power Threshold for TYPEC_VBUS_5V */
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA, TYPEC_CONFIG_PWR_FAULT_THR);
                      
-                       gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_RUN_SM_SS;
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_RUN_SM_SS;
                        
-                       break;
+                    break;
                   
                 }
                              
                 case TYPEC_ATTACHED_SRC_RUN_SM_SS:
-				case TYPEC_ATTACHED_SRC_IDLE_SS:
+                case TYPEC_ATTACHED_SRC_IDLE_SS:
                     break;
                     
                 default:
@@ -678,8 +678,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
         
        case TYPEC_UNATTACHED_SNK:
        {          
-           switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
-		   {             
+            switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
+		    {             
                 case TYPEC_UNATTACHED_SNK_ENTRY_SS: 
                 {
                     
@@ -689,7 +689,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     PRL_EnableRx (u8PortNum, FALSE);
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
-                    (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
+                    (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT);
                    
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK: Entered"\
                                         "UNATTACHED SNK State\r\n");
@@ -713,14 +713,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 }
 				
-		   		case TYPEC_UNATTACHED_SNK_INIT_SS:
-				{
+                case TYPEC_UNATTACHED_SNK_INIT_SS:
+                {
                     /*DPM power fault handler resets SM by polling this state TYPEC_UNATTACHED_SNK_INIT_SS
                     in the hanlder for Sink unattach.
                     Any module can reset its reset its SM by polling this state*/
-				  	gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_IDLE_SS;                    
-					break;
-				}
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_IDLE_SS;                    
+                    break;
+                }
                                    
                 /*Sink Waits in this Substate for Source attachment*/    
                 case TYPEC_UNATTACHED_SNK_IDLE_SS:
@@ -794,7 +794,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
         case TYPEC_ATTACHED_SNK:
         {          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
-		    {
+            {
                  /*Sink enables the CC Communication channel and notifies the external DPM
                  about the Type C Attached event this substate */
                 case TYPEC_ATTACHED_SNK_ENTRY_SS:
@@ -840,18 +840,18 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
 #endif                    
                     /*Source Attached in CC1 pin*/
-					if (u8CC1_MatchISR > u8CC2_MatchISR)
-					{
+                    if (u8CC1_MatchISR > u8CC2_MatchISR)
+                    {
                         UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
-                        (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);
+                        (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH);
                         
-					}
+                    }
                     /*Source Attached in CC2 pin*/
-					else
-					{
-						UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
-                        (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
-					}
+                    else
+                    {
+                        UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
+                        (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH);
+                    }
 
                     
                     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_5V,\
@@ -860,11 +860,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_RUN_SM_SS; 
                     
 					/* Enabling PRL Rx*/
-					PRL_EnableRx (u8PortNum, TRUE);
+                    PRL_EnableRx (u8PortNum, TRUE);
 			
 				   
-				   /* Enable Power Threshold for TYPEC_VBUS_5V */
-					TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,(gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
+				    /* Enable Power Threshold for TYPEC_VBUS_5V */
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,(gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
                    
                    break;
                 }
@@ -1186,30 +1186,30 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
     UINT8 u8IntStsISR = gasTypeCcontrol[u8PortNum].u8IntStsISR;
      
     /*Check for CC Change interrupt*/
-	if (u16InterruptStatus & UPDINTR_CC_INT)
-	{			       
+    if (u16InterruptStatus & UPDINTR_CC_INT)
+    {			       
         UPD_RegisterReadISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
          
-		if (u8Data & TYPEC_CC_MATCH_VLD)
-		{
+        if (u8Data & TYPEC_CC_MATCH_VLD)
+        {
             /*Clearing the CC Match valid interrupt */
             /*This Interrupt is usually ocurred while switching on the CC Comparator
             and Comparator has finished one round of sampling*/
-			UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
+            UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
             
-           /*Setting the CC Match Valid interrupt as CC interrupt for the firmware to handle.
-           This is done to detect the detach event while Comparator goes from OFF state to ON state
-           when the firmware is in attached state such as Collision avoidance and VCONN discharge*/
+            /*Setting the CC Match Valid interrupt as CC interrupt for the firmware to handle.
+            This is done to detect the detach event while Comparator goes from OFF state to ON state
+            when the firmware is in attached state such as Collision avoidance and VCONN discharge*/
                        
-		}
+        }
         
-		if(u8Data & (TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG))
-		{   			
+        if(u8Data & (TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG))
+        {   			
             /*Clearing the CC Change status interrupt */
             UPD_RegisterReadISR (u8PortNum, TYPEC_CC_CHG_STS, (UINT8 *)&u16Data, BYTE_LEN_2);           
-			UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_CHG_STS, (UINT8 *)&u16Data, BYTE_LEN_2);
+            UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_CHG_STS, (UINT8 *)&u16Data, BYTE_LEN_2);
               			
-		}
+        }
         
         /*Setting the CC interrupt flag in "u8IntStsISR" variable*/
         u8IntStsISR |= TYPEC_CCINT_STATUS_MASK;
@@ -1230,11 +1230,11 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             gasTypeCcontrol[u8PortNum].u8CC1_MatchISR = (UINT8)LOBYTE(u16Data);;			
             gasTypeCcontrol[u8PortNum].u8CC2_MatchISR = (UINT8)HIBYTE(u16Data);            
         }
-	}
+    }
     
     /*Check for power interrupt*/
-	if(u16InterruptStatus & UPDINTR_PWR_INT)
-	{   
+    if(u16InterruptStatus & UPDINTR_PWR_INT)
+    {   
         /*Reading the power interrupt status register*/
         UPD_RegisterReadISR (u8PortNum, TYPEC_PWR_INT_STS, &u8Data, BYTE_LEN_1); 
         
@@ -1260,11 +1260,11 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         
         /*Clearing the Power interrupt*/    
 		UPD_RegisterWriteISR (u8PortNum, TYPEC_PWR_INT_STS, &u8Data, BYTE_LEN_1);
-	}
+    }
     
     /*Check for VBUS Change interrupt*/    
-	if((TRUE == u8VbusMatchValid) || (u16InterruptStatus & UPDINTR_VBUS_INT))
-	{
+    if((TRUE == u8VbusMatchValid) || (u16InterruptStatus & UPDINTR_VBUS_INT))
+    {
         UPD_RegisterReadISR (u8PortNum, TYPEC_VBUS_MATCH, &u8Data, BYTE_LEN_1);
         
         UINT8 u8HandleUV = FALSE;
@@ -1285,8 +1285,8 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                     u8HandleUV = TRUE;
                 }
             }
-			else
-			{
+            else
+            {
 				/* Verifies whether VBUS Drop is due to Source detach*/
 	            if((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) &&
 	                  (!DPM_IsHardResetInProgress(u8PortNum)))
@@ -1295,7 +1295,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 	                u8IntStsISR |= TYPEC_VSINKDISCONNECT_STATUS_MASK;
                     
 	            }		
-			}
+            }
         }
         
         if (TYPEC_MAX_VSAFE_0V_MATCH_VAL == u8Data)
@@ -1964,8 +1964,8 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 		{           
             /*Audio Adapter Accessory is Present*/         
             if (gasTypeCcontrol[u8PortNum].u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCDebMatch)
-			{   
-                 /*Consider the CC Sample values as valid Audio accessory attach only at the 
+            {   
+                /*Consider the CC Sample values as valid Audio accessory attach only at the 
                 unattached state*/
                 /*This avoids unwanted transistion in attached state*/
                 if(u8TypeCState == TYPEC_UNATTACHED_SRC)
@@ -1979,14 +1979,14 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 }
 			    
 				
-			}
+            }
             /*No Devices are Present*/
-			else if (!gasTypeCcontrol[u8PortNum].u8CC1_MatchISR)
-			{             
+            else if (!gasTypeCcontrol[u8PortNum].u8CC1_MatchISR)
+            {             
                 /*Clearing the Powered cable presence in u8PortSts variable*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
                 
-				DPM_ResetVCONNErrorCnt (u8PortNum);
+                DPM_ResetVCONNErrorCnt (u8PortNum);
                 DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: No Devices are present\r\n");
                 
                 if(u8TypeCState == TYPEC_ATTACHWAIT_SRC)
@@ -2007,10 +2007,10 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                     u8TypeCSubState = TYPEC_UNATTACH_WAIT_SRC_ENTRY_SS; 
                 }               
                 
-			}			
+            }			
             /*Debug Accessory is Present*/
-			else
-			{    
+            else
+            {    
                   /*Consider the CC Sample values as valid Debug accessory attach only at the 
                 unattached state*/
                 /*This avoids unwanted transistion in attached state*/              
@@ -2023,7 +2023,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                     u8TypeCSubState  = TYPEC_ATTACHWAIT_SRC_DEB_SS;
 
                 }
-			} 
+            } 
             break;
 		}		
         

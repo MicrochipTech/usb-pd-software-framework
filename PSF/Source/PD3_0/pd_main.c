@@ -70,7 +70,7 @@ UINT8 MchpPSF_Init(void)
     /* VBUS threshold correction factor */
     UPD_FindVBusCorrectionFactor();
     
-    #if CONFIG_HOOK_DEBUG_MSG
+    #ifdef CONFIG_HOOK_DEBUG_MSG
     /*Initialize debug hardware*/
     MCHP_PSF_HOOK_DEBUG_INIT();
     #endif
