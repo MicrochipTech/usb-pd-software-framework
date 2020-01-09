@@ -16,7 +16,7 @@
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
 
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -60,7 +60,7 @@ Function:
 Summary:
     Initialize the hardware interface(SPI/I2C) used for communicating with UPD350 part.
 Description:
-    PSF needs a Hardware interface from SOC either SPI or I2C to communicate with UPD350. UPD350 
+    PSF requires a Hardware interface from SOC(either SPI or I2C) to communicate with UPD350. UPD350 
     supports either I2C or SPI interface depending on UPD350 part used.  UPD350 A and C supports I2C
     interface and UPD350 B and D part supports SPI interface. 
     This Hook is to initialize the SOC's Hardware interface for communication. It is called 
@@ -367,7 +367,7 @@ Function:
 Summary:
     Initializes the SOC GPIOs connected to the IRQ_N lines of ports' UPD350.
 Description:
-    PSF requires GPIO specific to each port for UPD350 interrupt detection via UPD350's IRQ_N lines.
+    PSF requires a GPIO specific to each port for UPD350 interrupt detection via UPD350's IRQ_N lines.
     IRQ_N is an active low signal. This Hook shall initialize the SOC GPIOs connected to the IRQ_N
     lines of UPD350s in the system for interrupt notification. It is recommended to configure SOC
     GPIOs interrupt in edge level detection with internal pull up since the UPD350 keeps the IRQ_N
@@ -417,7 +417,7 @@ Summary:
     Initializes the SOC GPIOs connected to the RESET_N lines of UPD350s
 Description:
     This hook initializes the SOC GPIOs connected to the RESET_N lines of Port's UPD350. It is 
-    recommended to connect a single GPIO to the reset line of all UPD350s. User can also have 
+    recommended to connect a single GPIO to the reset line of all UPD350s. User can also define a  
     separate GPIO for each port. As the UPD350 RESET_N is active low signal, SOC should initialize 
     the GPIO to be high by default. Define relevant function that has port number as argument 
     without return type.
@@ -458,7 +458,7 @@ Description:
     RESET_N pin of that UPD350. Since, RESET_N is active low signal, SOC GPIO should be driven low 
     for a while and then back to default high state. It is recommended to have common reset pin for 
     all ports. In such case user must drive the GPIO for UPD350 reset only when u8PortNum passed is 
-    '0' via this hook.Define relevant function that has port number as argument without return type.
+    '0' via this hook. Define relevant function that has port number as argument without return type.
 Conditions:
     None.
 Input:
@@ -495,10 +495,10 @@ Remarks:
 Summary:
     Disables the global interrupt.
 Description:
-    This hook is called when PSF enter into a critical section. It must provide an implementation
+    This hook is called when PSF enters into a critical section. It must provide an implementation
     to disable the interrupts globally. This hook implementation must be very short, otherwise 
-    response time to the interrupt will take longer time. Define relevant function that has no 
-    arguments without return type.
+    resposne time may be delayed and cause timing issues/conflicts. Define relevant function that 
+	has no arguments without return type.
 Conditions:
     None.
 Return:
@@ -523,10 +523,10 @@ Function:
 Summary:
     Enables the global interrupt.
 Description:
-    This hook is called by the PSF when exits from critical section. It must provide an 
+    This hook is called when PSF exits from critical section. It must provide an 
     implementation to enable the interrupts globally. This function must be very short, otherwise 
-    response time to the interrupt will take longer time. Define relevant function that has no 
-    arguments without return type.
+    response time to the interrupt may be delayed and cause timing issues/conflicts. Define 
+	relevant function that has no arguments without return type.
 Conditions:
     None.
 Return:
@@ -728,10 +728,10 @@ Description:
     switch used. Define relevant function that has UINT8,UINT8 arguments without return type.
 Conditions:
     MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH is called in ISR handler. Its implementation shall be very 
-    short, otherwise response time to the interrupt will take longer time. Passing of the Compliance
-    test "TD.4.2.1" (Source Connect Sink) in "USB_Type_C_Functional_Test_Specification" depends on 
-    the VBUS Discharge circuitry used. Typical VBUS Discharge time from any higher voltage to 0V 
-    should be around 10ms.
+    short, otherwise response time to the interrupt may be delayed and cause timing issues/conflicts.
+	Passing of the Compliance test "TD.4.2.1" (Source Connect Sink) in "USB_Type_C_Functional_Test_Specification" 
+	depends on the VBUS Discharge circuitry used. Typical VBUS Discharge time from any higher voltage 
+	to 0V should be around 10ms.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
     u8EnableDisable -  Flag indicating whether to enable/disable VBUS Discharge mechanism.
