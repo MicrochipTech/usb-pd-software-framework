@@ -17,7 +17,7 @@
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
 
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -59,9 +59,9 @@ Summary:
     USB-PD V3.0 support code inclusion.
 Description:
     Setting the INCLUDE_PD_3_0 as 1, enables PSF to include USB Power delivery 3.0 specification
-    features Collision Avoidance, Extended message support via chunking along with PD 2.0 features
+    features(collision avoidance and extended message support via chunking) along with PD 2.0 features
 	at the compile. User can set this define to 0 to reduce code size, if none of the PD enabled 
-	ports require PD 3.0 specific features and operates only at PD 2.0 specification.
+	ports require PD 3.0 specific features.
 Remarks:
     Recommended default value is '1'.
 Example:
@@ -76,8 +76,8 @@ Example:
 Summary:
     Source support code inclusion.
 Description:
-    Setting the INCLUDE_PD_SOURCE as 1, enables PSF to include the USB PD Source functionality
-    at compile time. User can set this define to 0 to reduce code size, if none of the PD 
+    Setting the INCLUDE_PD_SOURCE as 1 enables PSF to include the USB PD Source functionality
+    at compile time. User can set this define to 0 to reduce code size if none of the PD 
     enabled ports in the system are configured for Source operation.
 Remarks: 
     Recommended default value is '1' for Source Application.
@@ -93,8 +93,8 @@ Example:
 Summary:
     Sink support code inclusion.
 Description:
-    Setting the INCLUDE_PD_SINK as 1, enables PSF to include USB PD Sink functionality at the 
-	compile time. User can set this define to 0 to reduce code size, if none of the PD enabled ports 
+    Setting the INCLUDE_PD_SINK as 1 enables PSF to include USB PD Sink functionality at the 
+	compile time. User can set this define to 0 to reduce code size if none of the PD enabled ports 
 	are configured for Sink operation.
 Remarks:
     Recommended default value is '1' for Sink Application.
@@ -110,8 +110,8 @@ Example:
 Summary:
     VCONN Support code inclusion.
 Description:
-    Setting the INCLUDE_VCONN_SWAP_SUPPORT as 1, enables PSF to include the VCONN Swap
-	functionality at the compile time. User can set this define to 0 to reduce code size, if none of
+    Setting the INCLUDE_VCONN_SWAP_SUPPORT as 1 enables PSF to include the VCONN Swap
+	functionality at the compile time. User can set this define to 0 to reduce code size if none of
 	the PD enabled ports requires VCONN Swap functionality.
 Remarks:
     Recommended default value is 1. For Source Operation, it is mandatory to define this macro as '1'.
@@ -128,9 +128,9 @@ Example:
 Summary:
     Power Fault Handling code inclusion.
 Description:
-    Setting the INCLUDE_POWER_FAULT_HANDLING as 1, enables PSF to handle Power faults (Source and 
+    Setting the INCLUDE_POWER_FAULT_HANDLING as 1 enables PSF to handle power faults (Source and 
 	Sink over voltage, Source OCS, Sink under voltage) as per Power Delivery specification Rev3.0 as
-	applicable. User can set this define to 0 to reduce code size, if PSF based power fault handling
+	applicable. User can set this define to 0 to reduce code size if PSF based power fault handling
 	is not required.
 Remarks:
     Recommended default value is 1.
@@ -149,7 +149,7 @@ Description:
     PIO override is UPD350 specific feature which changes the state of a PIO without software
     intervention. PSF use this feature to disable EN_VBUS instantly on detection of a 
     Power Fault Condition. Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature.
-    User can set this define to 0 to reduce code size of PSF, if PIO override based 
+    User can set this define to 0 to reduce code size of PSF if PIO override based 
     power faulting is not required.
 Remarks:
     To use this feature, EN_VBUS and FAULT_IN Pin of the system should be UPD350 PIOs.
@@ -170,10 +170,10 @@ Example:
 Summary:
     Power Management Control Support code inclusion.
 Description:
-    Setting the INCLUDE_POWER_MANAGEMENT_CTRL as 1, enables PSF to include the 
+    Setting the INCLUDE_POWER_MANAGEMENT_CTRL as 1 enables PSF to include the 
     functionality that puts the UPD350 into low power mode if UPD350 is inactive for 
     CONFIG_PORT_UPD_IDLE_TIMEOUT_MS time and PSF notifies the same via the call back
-    MCHP_PSF_NOTIFY_CALL_BACK. User can set this define to 0 to reduce code size of the PSF, 
+    MCHP_PSF_NOTIFY_CALL_BACK. User can set this define to 0 to reduce code size of the PSF 
     if low power mode operation of UPD350 is not required for the application.
 Remarks:
     Recommended default value is 1.
@@ -189,9 +189,9 @@ Example:
 Summary:
     PD Firmware update code inclusion.
 Description:
-    Setting the INCLUDE_PDFU as 1, includes the state machine code for PD Firmware Update 
+    Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size of the PSF, application doesnot use Firmware update feature. 
+    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -303,7 +303,7 @@ Summary:
     Power Delivery Enabled ports count.
 Description:
     CONFIG_PD_PORT_COUNT defines the number of Power delivery enabled ports. The maximum number
-    of ports PSF can be configured is '4'. 
+    of ports PSF can support is '4'. 
 Remarks:
     The max and min value for CONFIG_PD_PORT_COUNT is '4' and '1' respectively. PSF refers the 
     Port number in the call backs as 0 to (CONFIG_PD_PORT_COUNT - 1). 
@@ -321,7 +321,7 @@ Summary:
     HW Communication interface between SOC and UPD350.
 Description:
     CONFIG_DEFINE_UPD350_HW_INTF_SEL defines the Hardware interface for communication between
-    the SOC and UPD350. It can take either CONFIG_UPD350_SPI or CONFIG_UPD350_I2C as value.
+    the SOC and UPD350. It can take either CONFIG_UPD350_SPI or CONFIG_UPD350_I2C as input value.
 	
 	<b>CONFIG_UPD350_SPI</b> - SPI is the communication interface between SOC and UPD350.
 									SPI interface is supported by UPD350 B and D parts alone.
@@ -331,13 +331,19 @@ Description:
 Remarks:
     CONFIG_DEFINE_UPD350_HW_INTF_SEL should be defined based on UPD350 silicon part used for the
     application. All the ports in a system should use either I2C supported or SPI supported 
-    UPD350 part. Different part for each port, for example SPI supported UPD350 for Port 1 and 
-    I2C supported UPD350 part for Port 2 is not supported.
+    UPD350 part. Using mixed interfaces for individual ports is not supported (i.e.: SPI for 
+	Port 1 and I2C for Port 2).
+
 Example:
     <code>
 	#define CONFIG_DEFINE_UPD350_HW_INTF_SEL    CONFIG_UPD350_SPI
 	#define CONFIG_DEFINE_UPD350_HW_INTF_SEL    CONFIG_UPD350_I2C
     </code>
+
+Note:
+	If the target for PSF is a UPD301C device, SPI must always be selected. I2C is not an option 
+	for UPD301C due to the physical bonding of the UPD301C.
+
 
   **************************************************************************/
  #define CONFIG_DEFINE_UPD350_HW_INTF_SEL
@@ -991,9 +997,9 @@ Summary:
     Maximum VBUS Power fault count.
 Description:
     CONFIG_MAX_VBUS_POWER_FAULT_COUNT is the maximum number of back-to-back VBUS faults allowed 
-	before shut down of the port. A back-to-back fault is a second fault which occurs within the 
-	CONFIG_POWER_GOOD_TIMER_MS after a port is automatically re-enabled from a previous fault 
-	condition. During port shutdown due to occurrent fault, the device removes its CC termination
+	before permanent shut down of the port. A back-to-back fault is a second fault which occurs within  
+	the CONFIG_POWER_GOOD_TIMER_MS after a port is automatically re-enabled from a previous fault 
+	condition. During port shutdown due to over current fault, the device removes its CC termination
 	and wait for port partner to get detached physically from the port to resume its normal operation.
 Remarks:
     By default, it is configured to count 3.
@@ -1009,9 +1015,9 @@ Summary:
     Maximum VCONN Power fault count.
 Description:
     CONFIG_MAX_VCONN_POWER_FAULT_COUNT is the maximum number of back-to-back VCONN faults 
-    allowed before it disables the VCONN. A back-to-back fault is a second fault which occurs 
-    within the CONFIG_POWER_GOOD_TIMER_MS after a port is automatically re-enabled from a 
-    previous fault condition. If VCONN disabled due to occurrent VCONN power fault, VCONN will 
+    allowed before it permanently disables the VCONN. A back-to-back fault is a second fault which 
+    occurs within the CONFIG_POWER_GOOD_TIMER_MS after a port is automatically re-enabled from a 
+    previous fault condition. If VCONN is disabled due to over current VCONN power fault, VCONN will 
     be enabled only after a physical detach and re-attach.
 Remarks:
     By default, it is configured to count 3.
@@ -1026,19 +1032,19 @@ Example:
 Summary:
     Power Good Timer value in milliseconds.
 Description:
-    After an automatic fault recovery, a CONFIG_POWER_GOOD_TIMER_MS is ran to determine whether 
+    After an automatic fault recovery, CONFIG_POWER_GOOD_TIMER_MS is run to determine whether 
     power remains in a good state for the duration of the timer, then the Fault Counter is reset. 
     If another fault occurs before the Power Good Timer expires, then the Fault Counter is 
     incremented.
 
     For power Source, it is the time a power source must consistently provide power without a  
-    power to determine the power is good and a fault condition does not exist.
+    fault to determine the power is good and a fault condition does not exist.
     For power Sink, it is the time after the sink established a contract and its consistently 
     drawing power from VBUS without a power fault to determine that power is good and a fault 
     condition does not exist.
 Remarks:
-    It shall be expressed in MILLISECONDS_TO_TICKS defines. By default, it is configured to 
-    10Seconds.
+    It shall be expressed in MILLISECONDS_TO_TICKS define. By default, it is configured to 
+    10 seconds.
 Example:
     <code>
     #define CONFIG_POWER_GOOD_TIMER_MS			MILLISECONDS_TO_TICKS(10000)
@@ -1129,8 +1135,8 @@ Summary:
 Description:
 	CONFIG_DCDC_CTRL is to define the default DC-DC control provided by the PSF stack. If 
 	CONFIG_DCDC_CTRL defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG, default GPIO based DC-DC controller
-	is used. If left undefined, default stack's DC-DC control option is not used. User has to config
-	via Power control APIs provided by the stack. 
+	is used. If left undefined, default stack's DC-DC control option is not used and the user must 
+	control power via power control APIs provided by the stack. 
 Remarks:
 	None.
 Example:
@@ -1189,8 +1195,9 @@ Description:
     to a load switch device such as a power FET or load switch IC. It is driven as per 
     CONFIG_PORT_n_UPD_EN_VBUS_PIO_MODE configuration mode whenever stack requires VBUS to driven 
     high as well as low. 
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. It takes value from 0 to 15 and to 
-    disable the pin functionality from stack, user can define it as 0xFF.
+    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. The range of valid values is 0 to 15 
+	which correspond to UPD350 PIO0 to PIO15. To disable the pin functionality from the stack, the 
+	user can define a value of 0xFF.
     It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG 
     and for Source operation only.  By defining INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as '1', The PIO 
     Override feature of the UPD350 shall be utilized in this pin to ensure that fast and autonomous 
@@ -1239,8 +1246,9 @@ Description:
     is a control for discharging VBUS (connecting VBUS to GND). It asserts as per 
     CONFIG_PORT_n_UPD_VBUS_DIS_PIO_MODE whenever VBUS voltage must transition from a high voltage to
     a lower voltage state and when VBUS is disabled.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). It takes value from 0 to 15 and to 
-    disable the pin functionality from stack, user can define it as 0xFF.
+    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). The range of valid values is 0 to 15 
+	which correspond to UPD350 PIO0 to PIO15. To disable the pin functionality from the stack, the 
+	user can define a value of 0xFF.
     It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG.
 Remarks:
     By default, it is configured to PIO4. User can also use stack's enum eUPD_PIO_NUM_TYPE to 
@@ -1332,10 +1340,10 @@ Description:
     stack provides provision for three Voltage selector pin VSEL[2:0]. It is used to control the 
     output voltage of the DC/DC controller. In a typical application, these pins are used to switch 
     in different resistors into the feedback loop to vary the output voltage.
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. x takes vlaue between 0 to 2.
-    This define takes value from 0 to 15 and to disable the pin functionality from stack, user can 
-    define it as 0xFF. It is applicable only when CONFIG_DCDC_CTRL is defined as 
-    PWRCTRL_DEFAULT_PSF_GPIO_CONFIG.
+    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. The range of valid values is 0 to 15 
+	which correspond to UPD350 PIO0 to PIO15. To disable the pin functionality from the stack, the 
+	user can define a value of 0xFF. Here x takes the the valid values from 0 to 2 which corresponds
+	to VSEL0 to VSEL2.It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG.
 Remarks:
     By default, VSEL0, VSEL1, VSEL2 is configured to PIO7, PIO8 and PIO9 respectively. User can also
     use stack's enum eUPD_PIO_NUM_TYPE to define this. It is applicable only for source operation.
@@ -1487,7 +1495,7 @@ Description:
     It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
     and INCLUDE_POWER_FAULT_HANDLING defined as '1'.
 Remarks:
-    By default, it is defined as 5.n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). 
+    By default, it is defined as 5. n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). 
 Example:
     <code>
        #define CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO           5 (FAULT_IN is PIO5)
