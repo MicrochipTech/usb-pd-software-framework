@@ -38,15 +38,15 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /****************************Fixed PDO generation for Source ***************************************/
 
 #define PE_SRC_PDO_1_GENERATION(n) \
-  (((CONFIG_PORT_##n##_SOURCE_USB_SUSPEND) << 28) |\
-  ((CONFIG_PORT_##n##_SOURCE_UNCONSTRAINED_PWR) << 27) |\
-  ((CONFIG_PORT_##n##_SOURCE_USB_COM) << 26) |\
-  (((CONFIG_PORT_##n##_SOURCE_PDO_1_VOLTAGE)/50) << 10) |\
-  ((CONFIG_PORT_##n##_SOURCE_PDO_1_CURRENT)/10))
+  ((((UINT32)CONFIG_PORT_##n##_SOURCE_USB_SUSPEND) << 28) |\
+  (((UINT32)CONFIG_PORT_##n##_SOURCE_UNCONSTRAINED_PWR) << 27) |\
+  (((UINT32)CONFIG_PORT_##n##_SOURCE_USB_COM) << 26) |\
+  ((((UINT32)CONFIG_PORT_##n##_SOURCE_PDO_1_VOLTAGE)/50) << 10) |\
+  (((UINT32)CONFIG_PORT_##n##_SOURCE_PDO_1_CURRENT)/10))
 
 #define PE_SRC_PDO_GENERATION(n,x) \
-  ((((CONFIG_PORT_##n##_SOURCE_PDO_##x##_VOLTAGE)/50) << 10) |\
-  ((CONFIG_PORT_##n##_SOURCE_PDO_##x##_CURRENT)/10))
+  (((((UINT32)CONFIG_PORT_##n##_SOURCE_PDO_##x##_VOLTAGE)/50) << 10) |\
+  (((UINT32)CONFIG_PORT_##n##_SOURCE_PDO_##x##_CURRENT)/10))
 
 #define PE_PORT_SRC_PDO_GENERATION(n) \
             (PE_SRC_PDO_1_GENERATION(n)), \
@@ -64,15 +64,15 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /******************************Fixed PDO generation for Sink ***************************************/
 
 #define PE_SNK_PDO_1_GENERATION(n) \
-  (((CONFIG_PORT_##n##_SINK_HIGHER_CAPABILITY) << 28) |\
-  ((CONFIG_PORT_##n##_SINK_UNCONSTRAINED_PWR) << 27) |\
-  ((CONFIG_PORT_##n##_SINK_USB_COM) << 26) |\
-  (((CONFIG_PORT_##n##_SINK_PDO_1_VOLTAGE)/50) << 10) |\
-  ((CONFIG_PORT_##n##_SINK_PDO_1_CURRENT)/10))
+  ((((UINT32)CONFIG_PORT_##n##_SINK_HIGHER_CAPABILITY) << 28) |\
+  (((UINT32)CONFIG_PORT_##n##_SINK_UNCONSTRAINED_PWR) << 27) |\
+  (((UINT32)CONFIG_PORT_##n##_SINK_USB_COM) << 26) |\
+  ((((UINT32)CONFIG_PORT_##n##_SINK_PDO_1_VOLTAGE)/50) << 10) |\
+  (((UINT32)CONFIG_PORT_##n##_SINK_PDO_1_CURRENT)/10))
 
 #define PE_SNK_PDO_GENERATION(n,x) \
-  ((((CONFIG_PORT_##n##_SINK_PDO_##x##_VOLTAGE)/50) << 10) |\
-  ((CONFIG_PORT_##n##_SINK_PDO_##x##_CURRENT)/10))
+  (((((UINT32)CONFIG_PORT_##n##_SINK_PDO_##x##_VOLTAGE)/50) << 10) |\
+  (((UINT32)CONFIG_PORT_##n##_SINK_PDO_##x##_CURRENT)/10))
  
 #define PE_PORT_SNK_PDO_GENERATION(n) \
             (PE_SNK_PDO_1_GENERATION(n)), \
@@ -89,9 +89,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /***************************************************************************************************/
 /* Type C configuration data generation */
-#define TYPEC_CONFIG_DATA(n) ((CONFIG_PORT_##n##_ENABLE << TYPEC_PORT_ENDIS_POS)| \
-                             ((CONFIG_PORT_##n##_RP_CURRENT_VALUE) << TYPEC_PORT_RPVAL_POS)|\
-                                    (CONFIG_PORT_##n##_POWER_ROLE))
+#define TYPEC_CONFIG_DATA(n) (((UINT32)CONFIG_PORT_##n##_ENABLE << TYPEC_PORT_ENDIS_POS)| \
+                             (((UINT32)CONFIG_PORT_##n##_RP_CURRENT_VALUE) << TYPEC_PORT_RPVAL_POS)|\
+                                    ((UINT32)CONFIG_PORT_##n##_POWER_ROLE))
 
 /***************************************************************************************************/
 
