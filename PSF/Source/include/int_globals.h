@@ -95,6 +95,19 @@ extern DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
     extern UINT8 gu8PDFUResBuffer[260];
 #endif
     
+/********************Power Balancing globals************************************/
+#if (TRUE == INCLUDE_POWER_BALANCING) 
+    /* Power Balancing Internal System Parameters */
+    extern PB_INT_SYS_PARAM gsPBIntSysParam; 
+    /* Power Balancing Internal Port Parameters */
+    extern PB_INT_PORT_PARAM gasPBIntPortParam[CONFIG_PD_PORT_COUNT]; 
+    /* Sequence in which ports are attached */
+    extern UINT8 gu8AttachSeq; 
+    /* Timer used to wait for Asynchronous request from the Sink */
+    extern UINT8 gu8PBTimerID; 
+#endif 
+/**************************************************************************************************/ 
+       
 // *****************************************************************************
 // *****************************************************************************
 //  Section: Interface Routines

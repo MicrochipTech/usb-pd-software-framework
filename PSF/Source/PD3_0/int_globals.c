@@ -83,6 +83,19 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 #endif
 
 /**************************************************************************************************/
+
+/********************Power Balancing globals************************************/
+#if (TRUE == INCLUDE_POWER_BALANCING) 
+    /* Power Balancing Internal System Parameters */
+    PB_INT_SYS_PARAM gsPBIntSysParam; 
+    /* Power Balancing Internal Port Parameters */
+    PB_INT_PORT_PARAM gasPBIntPortParam[CONFIG_PD_PORT_COUNT]; 
+    /* Sequence in which ports are attached */
+    UINT8 gu8AttachSeq; 
+    /* Timer used to wait for Asynchronous request from the Sink */
+    UINT8 gu8PBTimerID; 
+#endif 
+/**************************************************************************************************/ 
     
 /*******************************************************************/
 /******************* Functions**************************************/
@@ -107,6 +120,11 @@ void IntGlobals_PDInitialization(void)
             PE_FwUpdtInitialize();
         #endif
     }
+    #if INCLUDE_POWER_BALANCING 
+        /* Initialize PB System and Port Parameters */
+        PB_Init(); 
+    
+    #endif 
 }
 
 /**************************************************************************************************/

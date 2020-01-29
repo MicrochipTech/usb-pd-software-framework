@@ -97,7 +97,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                             (((UINT32)u8LoWordHiByte) << 8)			|\
                                             (((UINT32)u8HiWordLoByte) << 16) 		|\
                                             (((UINT32)u8HiWordHiByte) << 24u))
-			
+
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))	/* Returns the minimum of two */
+#define MAX(a,b) ((a) > (b) ? (a) : (b))	/* Returns the maximum of two */
+
 /******************************CLEAR & RESET VALUE *************************************/
 
 #define CLR_VAL                                         0x00

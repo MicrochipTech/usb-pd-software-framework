@@ -33,16 +33,27 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _CFG_GLOBALS_H_
 #define _CFG_GLOBALS_H_
 
+#define STRUCT_MAJOR_VERSION    0x01U
+#define STRUCT_MINOR_VERSION    0x00U
+#define PRODUCT_ID              0x0424U
+#define VENDOR_ID               0x301CU
+#define PRODUCT_TYPE_VDO        0x0000U
+#define PRODUCT_VDO             0x0000U  
+#define CERT_STAT_VDO           0x0000U
+#define ID_HEADER_VDO           0x0000U
+#define HW_VERSION              0x00U
+#define SILICON_VERSION         0x00U
+
+#define PD_THROTTLE_BANK_A      0x00 
+#define PD_THROTTLE_BANK_B      0x01
+#define PD_THROTTLE_BANK_C      0x10
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data types and constants
 // *****************************************************************************
 // *****************************************************************************
-#if(PWRCTRL_DEFAULT_PSF_GPIO_CONFIG == CONFIG_DCDC_CTRL)
 
-extern UPD_PIO_CONFIG_DATA const gasUpdPioDcDcConfig[CONFIG_PD_PORT_COUNT];
-
-#endif
+extern void CFG_LoadDefaults ();
 
 #endif /*_CFG_GLOBALS_H_*/
 
