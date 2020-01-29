@@ -120,6 +120,9 @@
           <itemPath>../../../../Source/include/upd_hw.h</itemPath>
           <itemPath>../../../../Source/include/upd_interrupts.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f1" displayName="PB" projectFiles="true">
+          <itemPath>../../../../Source/PB/PB_Mngr.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -179,6 +182,10 @@
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="Source" displayName="Source" projectFiles="true">
+        <logicalFolder name="PB" displayName="PB" projectFiles="true">
+          <itemPath>../../../../Source/PB/PB_Mngr.c</itemPath>
+          <itemPath>../../../../Source/PB/PB_Helper.c</itemPath>
+        </logicalFolder>
         <logicalFolder name="PD3_0" displayName="PD3_0" projectFiles="true">
           <itemPath>../../../../Source/PD3_0/cfg_globals.c</itemPath>
           <itemPath>../../../../Source/PD3_0/debug.c</itemPath>
@@ -404,7 +411,7 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\PowerDelivery;..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include"/>
+                  value="..\..\PowerDelivery;..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>

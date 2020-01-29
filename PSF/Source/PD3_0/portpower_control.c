@@ -55,23 +55,23 @@ static void UPD_GPIOGenericOutputInit(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8Pi
 void PWRCTRL_initialization(UINT8 u8PortNum)
 {
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
-    UPD_GPIOGenericOutputInit(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio, \
-                                    gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPioMode);
+    UPD_GPIOGenericOutputInit(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnPio, \
+                                    gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnMode);
 
-    UPD_GPIOGenericOutputInit(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8VBUSDisPio, \
-                                        gasUpdPioDcDcConfig[u8PortNum].u8VBUSDisPioMode);
+    UPD_GPIOGenericOutputInit(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSDisPio, \
+                                        gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSDisPioMode);
 
-    UPD_GPIOGenericOutputInit(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
-                                    gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode);
+    UPD_GPIOGenericOutputInit(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPio, \
+                                    gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPioMode);
     
     for(UINT8 u8VSELIndex = SET_TO_ZERO; u8VSELIndex < PWRCTRL_VSEL_PIO_MAX_COUNT; u8VSELIndex++)
     {
-        UPD_GPIOGenericOutputInit(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8VSELPio[u8VSELIndex], \
-                                gasUpdPioDcDcConfig[u8PortNum].u8VSELPioMode[u8VSELIndex]);
+        UPD_GPIOGenericOutputInit(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VSELPio[u8VSELIndex], \
+                                gasPortConfigurationData.sPortConfigData[u8PortNum].u8VSELPioMode[u8VSELIndex]);
     }
 
-    UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
-                gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_ASSERT);
+    UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPio, \
+                gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPioMode, (UINT8)UPD_GPIO_ASSERT);
     #endif /*CONFIG_DCDC_CTRL*/
 
     /*Hook to modify or overwrite the default Port Power control initialization */
@@ -83,24 +83,24 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
 {
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
 
-    UINT8 u8EnVbusMode = gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPioMode;
+    UINT8 u8EnVbusMode = gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnMode;
     if (PWRCTRL_VBUS_0V == u16VBUSVoltage)
     {
         /*De-assert VBUS_EN if voltage is 0V*/
-        UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio, 
+        UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnPio, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_DE_ASSERT);
     }
     else
     {
         /*Assert VBUS_EN*/
-        UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio, 
+        UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnPio, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
     }
     for(UINT8 u8VSELIndex = SET_TO_ZERO; u8VSELIndex < PWRCTRL_VSEL_PIO_MAX_COUNT; u8VSELIndex++)
     {
-        UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8VSELPio[u8VSELIndex], \
-            gasUpdPioDcDcConfig[u8PortNum].u8VSELPioMode[u8VSELIndex], \
-            (((gasUpdPioDcDcConfig[u8PortNum].u8VSELmapforPDO[u8PDOIndex] & BIT(u8VSELIndex)) == BIT(u8VSELIndex)) \
+        UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VSELPio[u8VSELIndex], \
+            gasPortConfigurationData.sPortConfigData[u8PortNum].u8VSELPioMode[u8VSELIndex], \
+            (((gasPortConfigurationData.sPortConfigData[u8PortNum].u8VSELTruthTable[u8PDOIndex] & BIT(u8VSELIndex)) == BIT(u8VSELIndex)) \
             ? (UINT8)UPD_GPIO_ASSERT : (UINT8)UPD_GPIO_DE_ASSERT));
     }
     #endif /*CONFIG_DCDC_CTRL*/
@@ -112,15 +112,15 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
 void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
 {
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 
-    UINT8 u8VbusDisMode = gasUpdPioDcDcConfig[u8PortNum].u8VBUSDisPioMode;
+    UINT8 u8VbusDisMode = gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnMode;
     if (u8EnaDisVBUSDIS == TRUE)
     {
-        UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8VBUSDisPio, \
+        UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSDisPio, \
                 u8VbusDisMode, (UINT8)UPD_GPIO_ASSERT);
     }
     else
     {
-        UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8VBUSDisPio, \
+        UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSDisPio, \
                 u8VbusDisMode, (UINT8)UPD_GPIO_DE_ASSERT);
     }
     #endif /*CONFIG_DCDC_CTRL*/

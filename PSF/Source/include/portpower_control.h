@@ -56,23 +56,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Section: Data Structure                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-/* User Config Structure: This structure contains the user configure variables and PDOs*/
-
-typedef struct _Upd_Pio_DcDc_Config
-{   
-	UINT8   u8VBUSEnPio;        //PIO for UPD350  VBus Enable pin
-    UINT8   u8VBUSEnPioMode;    // VBUS enable PIO mode
-	UINT8   u8FaultInPio;       //PIO for UPD350 Port Control selection pin
-    UINT8   u8FaultInMode;      //Fault In PIO mode, active high or active low etc.
-    UINT8   u8VBUSDisPio;       // PIO to discharge VBUS
-    UINT8   u8VBUSDisPioMode;   // VBUS discharger PIO mode, active high or active low etc.
-    UINT8   u8DcDcEnPio;        // DC_DC_EN PIO for controlling the DC_DC enable
-    UINT8   u8DcDcEnPioMode;    // DC_DC_EN PIO mode
-    UINT8   u8VSELPio[3];       // VSEL[2:0] PIO for controlling GPIO based DC_DC
-    UINT8   u8VSELPioMode[3];   // VSEL[2:0] PIO mode
-    UINT8   u8VSELmapforPDO[8]; // VSEL map value corresponding to each PDO
-}UPD_PIO_CONFIG_DATA;
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions

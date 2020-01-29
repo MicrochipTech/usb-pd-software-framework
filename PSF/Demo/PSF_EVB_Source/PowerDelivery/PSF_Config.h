@@ -203,6 +203,25 @@ Example:
  ***************************************************************************/
 #define INCLUDE_PDFU                  0
 
+/**************************************************************************************************
+Summary:
+    Power Balancing support code inclusion.
+Description:
+    Setting the INCLUDE_POWER_BALANCING as 1 enables PSF to include the PD 
+    Power Balancing functionality at compile time. User can set this define to 0
+    to reduce code size if none of the PD enabled Source ports in the system 
+    require Power Balancing functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_PD_POWER_BALANCING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_POWER_BALANCING	1(Include Power Balancing functionality in PSF)
+    #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_POWER_BALANCING  		0
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Power Delivery IDs
@@ -378,11 +397,12 @@ Example:
     #define CONFIG_PORT_0_POWER_ROLE	0 (Configuring the Port 0 as Sink)
     </code>
 **************************************************************************************************/
-#define CONFIG_PORT_n_POWER_ROLE
-#define CONFIG_PORT_0_POWER_ROLE           1   /* 0- PD_ROLE_SINK , 1- PD_ROLE_SOURCE */
-#define CONFIG_PORT_1_POWER_ROLE           1
-#define CONFIG_PORT_2_POWER_ROLE           1
-#define CONFIG_PORT_3_POWER_ROLE           1
+#define CONFIG_PORT_n_POWER_ROLE           1
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_POWER_ROLE           1   /* 0- PD_ROLE_SINK , 1- PD_ROLE_SOURCE */
+//#define CONFIG_PORT_1_POWER_ROLE           1
+//#define CONFIG_PORT_2_POWER_ROLE           1
+//#define CONFIG_PORT_3_POWER_ROLE           1
 
 /**********************************************************************************************
 Summary:
@@ -410,11 +430,12 @@ Example:
     #define CONFIG_PORT_0_RP_CURRENT_VALUE	 3 (Configuring the Port 0 Rp Value as CURRENT_30)
     </code>                                                                                             
   **********************************************************************************************/
-#define  CONFIG_PORT_n_RP_CURRENT_VALUE 
-#define  CONFIG_PORT_0_RP_CURRENT_VALUE     3        /* 0- RP_DISABLED(To be set for Sink), 1- DEFAULT_CURRENT ,2- CURRENT_15 ,3- CURRENT_30 */
-#define  CONFIG_PORT_1_RP_CURRENT_VALUE     3
-#define  CONFIG_PORT_2_RP_CURRENT_VALUE     3
-#define  CONFIG_PORT_3_RP_CURRENT_VALUE     3
+#define  CONFIG_PORT_n_RP_CURRENT_VALUE     3
+/* TBD : To be reviewed */
+//#define  CONFIG_PORT_0_RP_CURRENT_VALUE     3        /* 0- RP_DISABLED(To be set for Sink), 1- DEFAULT_CURRENT ,2- CURRENT_15 ,3- CURRENT_30 */
+//#define  CONFIG_PORT_1_RP_CURRENT_VALUE     3
+//#define  CONFIG_PORT_2_RP_CURRENT_VALUE     3
+//#define  CONFIG_PORT_3_RP_CURRENT_VALUE     3
 
 /**************************************************************************************************
 Summary:
@@ -434,10 +455,11 @@ Example:
                                                                            
 **************************************************************************************************/
 #define CONFIG_PORT_n_ENABLE         1
-#define CONFIG_PORT_0_ENABLE         1
-#define CONFIG_PORT_1_ENABLE         1
-#define CONFIG_PORT_2_ENABLE         1
-#define CONFIG_PORT_3_ENABLE         1
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_ENABLE         1
+//#define CONFIG_PORT_1_ENABLE         1
+//#define CONFIG_PORT_2_ENABLE         1
+//#define CONFIG_PORT_3_ENABLE         1
 
 // *****************************************************************************
 // *****************************************************************************
@@ -458,11 +480,12 @@ Example:
 	#define CONFIG_PORT_0_SOURCE_NUM_OF_PDOS		4 (Port 0 has 4 Source PDOs)
     </code>
 **************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_NUM_OF_PDOS
-#define CONFIG_PORT_0_SOURCE_NUM_OF_PDOS           4
-#define CONFIG_PORT_1_SOURCE_NUM_OF_PDOS           4
-#define CONFIG_PORT_2_SOURCE_NUM_OF_PDOS           1
-#define CONFIG_PORT_3_SOURCE_NUM_OF_PDOS           1
+#define CONFIG_PORT_n_SOURCE_NUM_OF_PDOS           4
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SOURCE_NUM_OF_PDOS           4
+//#define CONFIG_PORT_1_SOURCE_NUM_OF_PDOS           4
+//#define CONFIG_PORT_2_SOURCE_NUM_OF_PDOS           1
+//#define CONFIG_PORT_3_SOURCE_NUM_OF_PDOS           1
 
 /**************************************************************************************************
 Summary:
@@ -480,11 +503,12 @@ Example:
     #define CONFIG_PORT_0_SOURCE_USB_SUSPEND		1 (Port 0 is USB suspend capable)
     </code>
 **************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_USB_SUSPEND
-#define CONFIG_PORT_0_SOURCE_USB_SUSPEND         0
-#define CONFIG_PORT_1_SOURCE_USB_SUSPEND         0
-#define CONFIG_PORT_2_SOURCE_USB_SUSPEND         0
-#define CONFIG_PORT_3_SOURCE_USB_SUSPEND         0
+#define CONFIG_PORT_n_SOURCE_USB_SUSPEND         0
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SOURCE_USB_SUSPEND         0
+//#define CONFIG_PORT_1_SOURCE_USB_SUSPEND         0
+//#define CONFIG_PORT_2_SOURCE_USB_SUSPEND         0
+//#define CONFIG_PORT_3_SOURCE_USB_SUSPEND         0
 
 /**************************************************************************************************
 Summary:
@@ -502,11 +526,12 @@ Example:
     #define CONFIG_PORT_0_SOURCE_UNCONSTRAINED_PWR	 0 (Port 0 is not unconstrained power capable)
     </code>
 **************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_UNCONSTRAINED_PWR
-#define CONFIG_PORT_0_SOURCE_UNCONSTRAINED_PWR         1
-#define CONFIG_PORT_1_SOURCE_UNCONSTRAINED_PWR         1
-#define CONFIG_PORT_2_SOURCE_UNCONSTRAINED_PWR         1
-#define CONFIG_PORT_3_SOURCE_UNCONSTRAINED_PWR         1
+#define CONFIG_PORT_n_SOURCE_UNCONSTRAINED_PWR         1
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SOURCE_UNCONSTRAINED_PWR         1
+//#define CONFIG_PORT_1_SOURCE_UNCONSTRAINED_PWR         1
+//#define CONFIG_PORT_2_SOURCE_UNCONSTRAINED_PWR         1
+//#define CONFIG_PORT_3_SOURCE_UNCONSTRAINED_PWR         1
 
 /**************************************************************************************************
 Summary:
@@ -524,11 +549,12 @@ Example:
     #define CONFIG_PORT_0_SOURCE_USB_COM		0 (Port 0 is not USB communication capable)
     </code>
 **************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_USB_COM
-#define CONFIG_PORT_0_SOURCE_USB_COM         0
-#define CONFIG_PORT_1_SOURCE_USB_COM         0
-#define CONFIG_PORT_2_SOURCE_USB_COM         0
-#define CONFIG_PORT_3_SOURCE_USB_COM         0
+#define CONFIG_PORT_n_SOURCE_USB_COM         0
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SOURCE_USB_COM         0
+//#define CONFIG_PORT_1_SOURCE_USB_COM         0
+//#define CONFIG_PORT_2_SOURCE_USB_COM         0
+//#define CONFIG_PORT_3_SOURCE_USB_COM         0
 
 /**************************************************************************************************
 Summary:
@@ -546,38 +572,45 @@ Example:
                                                             as 3A for PDO1 of Port-0)
     </code>
 **************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_PDO_x_CURRENT 
-#define CONFIG_PORT_0_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_2_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_3_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_4_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
+#define CONFIG_PORT_n_SOURCE_PDO_1_CURRENT         3000 
+#define CONFIG_PORT_n_SOURCE_PDO_2_CURRENT         3000
+#define CONFIG_PORT_n_SOURCE_PDO_3_CURRENT         3000
+#define CONFIG_PORT_n_SOURCE_PDO_4_CURRENT         3000
+#define CONFIG_PORT_n_SOURCE_PDO_5_CURRENT         0
+#define CONFIG_PORT_n_SOURCE_PDO_6_CURRENT         0
+#define CONFIG_PORT_n_SOURCE_PDO_7_CURRENT         0
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_0_SOURCE_PDO_2_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_0_SOURCE_PDO_3_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_0_SOURCE_PDO_4_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_0_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_0_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_0_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
 
-#define CONFIG_PORT_1_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_2_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_3_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_4_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_1_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_1_SOURCE_PDO_2_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_1_SOURCE_PDO_3_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_1_SOURCE_PDO_4_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_1_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_1_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_1_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
 
-#define CONFIG_PORT_2_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_2_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_3_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_4_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_2_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_2_SOURCE_PDO_2_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_2_SOURCE_PDO_3_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_2_SOURCE_PDO_4_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_2_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_2_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_2_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
 
-#define CONFIG_PORT_3_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_2_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_3_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_4_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_3_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
+//#define CONFIG_PORT_3_SOURCE_PDO_2_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_3_SOURCE_PDO_3_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_3_SOURCE_PDO_4_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_3_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_3_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
+//#define CONFIG_PORT_3_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
 
 /**************************************************************************************************
 Summary:
@@ -594,39 +627,46 @@ Example:
      #define CONFIG_PORT_0_SOURCE_PDO_1_VOLTAGE		5000 (PDO1 voltage of Port 1 is 5V)
     </code>
 **************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_PDO_x_VOLTAGE
-#define CONFIG_PORT_0_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_2_VOLTAGE         9000        /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_3_VOLTAGE         15000       /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_4_VOLTAGE         20000       /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
+#define CONFIG_PORT_n_SOURCE_PDO_1_VOLTAGE         5000
+#define CONFIG_PORT_n_SOURCE_PDO_2_VOLTAGE         9000
+#define CONFIG_PORT_n_SOURCE_PDO_3_VOLTAGE         15000
+#define CONFIG_PORT_n_SOURCE_PDO_4_VOLTAGE         20000
+#define CONFIG_PORT_n_SOURCE_PDO_5_VOLTAGE         0
+#define CONFIG_PORT_n_SOURCE_PDO_6_VOLTAGE         0
+#define CONFIG_PORT_n_SOURCE_PDO_7_VOLTAGE         0
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
+//#define CONFIG_PORT_0_SOURCE_PDO_2_VOLTAGE         9000        /* Specify in mV */
+//#define CONFIG_PORT_0_SOURCE_PDO_3_VOLTAGE         15000       /* Specify in mV */
+//#define CONFIG_PORT_0_SOURCE_PDO_4_VOLTAGE         20000       /* Specify in mV */
+//#define CONFIG_PORT_0_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_0_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_0_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
 
-#define CONFIG_PORT_1_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_2_VOLTAGE         9000        /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_3_VOLTAGE         15000       /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_4_VOLTAGE         20000       /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_1_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
+//#define CONFIG_PORT_1_SOURCE_PDO_2_VOLTAGE         9000        /* Specify in mV */
+//#define CONFIG_PORT_1_SOURCE_PDO_3_VOLTAGE         15000       /* Specify in mV */
+//#define CONFIG_PORT_1_SOURCE_PDO_4_VOLTAGE         20000       /* Specify in mV */
+//#define CONFIG_PORT_1_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_1_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_1_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
 
-#define CONFIG_PORT_2_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_2_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_3_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_4_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_2_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
+//#define CONFIG_PORT_2_SOURCE_PDO_2_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_2_SOURCE_PDO_3_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_2_SOURCE_PDO_4_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_2_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_2_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_2_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
 
-#define CONFIG_PORT_3_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_2_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_3_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_4_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
-
+//#define CONFIG_PORT_3_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
+//#define CONFIG_PORT_3_SOURCE_PDO_2_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_3_SOURCE_PDO_3_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_3_SOURCE_PDO_4_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_3_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_3_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
+//#define CONFIG_PORT_3_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
+//DOM-IGNORE-BEGIN
 // *****************************************************************************
 // *****************************************************************************
 // Section: Sink Port configuration
@@ -647,10 +687,11 @@ Example:
     </code>
 **************************************************************************************************/
 #define CONFIG_PORT_n_SINK_NUM_OF_PDOS
-#define CONFIG_PORT_0_SINK_NUM_OF_PDOS           1
-#define CONFIG_PORT_1_SINK_NUM_OF_PDOS           1
-#define CONFIG_PORT_2_SINK_NUM_OF_PDOS           1
-#define CONFIG_PORT_3_SINK_NUM_OF_PDOS           1
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SINK_NUM_OF_PDOS           1
+//#define CONFIG_PORT_1_SINK_NUM_OF_PDOS           1
+//#define CONFIG_PORT_2_SINK_NUM_OF_PDOS           1
+//#define CONFIG_PORT_3_SINK_NUM_OF_PDOS           1
 
 /**************************************************************************************************
 Summary:
@@ -669,10 +710,11 @@ Example:
     </code>
 **************************************************************************************************/
 #define CONFIG_PORT_n_SINK_HIGHER_CAPABILITY
-#define CONFIG_PORT_0_SINK_HIGHER_CAPABILITY     1
-#define CONFIG_PORT_1_SINK_HIGHER_CAPABILITY     1
-#define CONFIG_PORT_2_SINK_HIGHER_CAPABILITY     1
-#define CONFIG_PORT_3_SINK_HIGHER_CAPABILITY     1
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SINK_HIGHER_CAPABILITY     1
+//#define CONFIG_PORT_1_SINK_HIGHER_CAPABILITY     1
+//#define CONFIG_PORT_2_SINK_HIGHER_CAPABILITY     1
+//#define CONFIG_PORT_3_SINK_HIGHER_CAPABILITY     1
 
 /**************************************************************************************************
 Summary:
@@ -691,10 +733,11 @@ Example:
     </code>
 **************************************************************************************************/
 #define CONFIG_PORT_n_SINK_UNCONSTRAINED_PWR
-#define CONFIG_PORT_0_SINK_UNCONSTRAINED_PWR     0
-#define CONFIG_PORT_1_SINK_UNCONSTRAINED_PWR     0
-#define CONFIG_PORT_2_SINK_UNCONSTRAINED_PWR     0
-#define CONFIG_PORT_3_SINK_UNCONSTRAINED_PWR     0
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SINK_UNCONSTRAINED_PWR     0
+//#define CONFIG_PORT_1_SINK_UNCONSTRAINED_PWR     0
+//#define CONFIG_PORT_2_SINK_UNCONSTRAINED_PWR     0
+//#define CONFIG_PORT_3_SINK_UNCONSTRAINED_PWR     0
 
 /**************************************************************************************************
 Summary:
@@ -713,10 +756,11 @@ Example:
     </code>
 **************************************************************************************************/
 #define CONFIG_PORT_n_SINK_USB_COM               0
-#define CONFIG_PORT_0_SINK_USB_COM               0
-#define CONFIG_PORT_1_SINK_USB_COM               0
-#define CONFIG_PORT_2_SINK_USB_COM               0
-#define CONFIG_PORT_3_SINK_USB_COM               0
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SINK_USB_COM               0
+//#define CONFIG_PORT_1_SINK_USB_COM               0
+//#define CONFIG_PORT_2_SINK_USB_COM               0
+//#define CONFIG_PORT_3_SINK_USB_COM               0
 
 /**************************************************************************************************
 Summary:
@@ -734,38 +778,45 @@ Example:
                                                             as 3A for PDO1 of sink Port-0)
     </code>
 **************************************************************************************************/
-#define CONFIG_PORT_n_SINK_PDO_x_CURRENT 
-#define CONFIG_PORT_0_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_2_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_3_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_4_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_5_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_6_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_7_CURRENT        0         /* Specify in mA */
+#define CONFIG_PORT_n_SINK_PDO_1_CURRENT        3000
+#define CONFIG_PORT_n_SINK_PDO_2_CURRENT        0
+#define CONFIG_PORT_n_SINK_PDO_3_CURRENT        0
+#define CONFIG_PORT_n_SINK_PDO_4_CURRENT        0
+#define CONFIG_PORT_n_SINK_PDO_5_CURRENT        0
+#define CONFIG_PORT_n_SINK_PDO_6_CURRENT        0
+#define CONFIG_PORT_n_SINK_PDO_7_CURRENT        0
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
+//#define CONFIG_PORT_0_SINK_PDO_2_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_0_SINK_PDO_3_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_0_SINK_PDO_4_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_0_SINK_PDO_5_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_0_SINK_PDO_6_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_0_SINK_PDO_7_CURRENT        0         /* Specify in mA */
 
-#define CONFIG_PORT_1_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_2_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_3_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_4_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_5_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_6_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_7_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_1_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
+//#define CONFIG_PORT_1_SINK_PDO_2_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_1_SINK_PDO_3_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_1_SINK_PDO_4_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_1_SINK_PDO_5_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_1_SINK_PDO_6_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_1_SINK_PDO_7_CURRENT        0         /* Specify in mA */
 
-#define CONFIG_PORT_2_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_2_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_3_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_4_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_5_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_6_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_7_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_2_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
+//#define CONFIG_PORT_2_SINK_PDO_2_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_2_SINK_PDO_3_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_2_SINK_PDO_4_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_2_SINK_PDO_5_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_2_SINK_PDO_6_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_2_SINK_PDO_7_CURRENT        0         /* Specify in mA */
 
-#define CONFIG_PORT_3_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_2_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_3_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_4_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_5_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_6_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_7_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_3_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
+//#define CONFIG_PORT_3_SINK_PDO_2_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_3_SINK_PDO_3_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_3_SINK_PDO_4_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_3_SINK_PDO_5_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_3_SINK_PDO_6_CURRENT        0         /* Specify in mA */
+//#define CONFIG_PORT_3_SINK_PDO_7_CURRENT        0         /* Specify in mA */
 
 /**************************************************************************************************
 Summary:
@@ -782,38 +833,45 @@ Example:
      #define CONFIG_PORT_0_SINK_PDO_1_VOLTAGE		5000 (PDO1 voltage of sink Port 1 is 5V)
     </code>
 **************************************************************************************************/
-#define CONFIG_PORT_n_SINK_PDO_x_VOLTAGE 
-#define CONFIG_PORT_0_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
+#define CONFIG_PORT_n_SINK_PDO_1_VOLTAGE        5000 
+#define CONFIG_PORT_n_SINK_PDO_2_VOLTAGE        0
+#define CONFIG_PORT_n_SINK_PDO_3_VOLTAGE        0
+#define CONFIG_PORT_n_SINK_PDO_4_VOLTAGE        0
+#define CONFIG_PORT_n_SINK_PDO_5_VOLTAGE        0
+#define CONFIG_PORT_n_SINK_PDO_6_VOLTAGE        0
+#define CONFIG_PORT_n_SINK_PDO_7_VOLTAGE        0
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
+//#define CONFIG_PORT_0_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_0_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_0_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_0_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_0_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_0_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
 
-#define CONFIG_PORT_1_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_1_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
+//#define CONFIG_PORT_1_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_1_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_1_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_1_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_1_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_1_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
 
-#define CONFIG_PORT_2_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_2_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
+//#define CONFIG_PORT_2_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_2_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_2_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_2_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_2_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_2_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
 
-#define CONFIG_PORT_3_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_3_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
+//#define CONFIG_PORT_3_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_3_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_3_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_3_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_3_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
+//#define CONFIG_PORT_3_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1355,21 +1413,26 @@ Example:
     #define CONFIG_PORT_0_UPD_VSEL0_PIO_NO           0xFF (VSEL0 for port 0 is disabled)
 	</code>
 **************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_VSELx_PIO_NO              eUPD_PIO7
-#define CONFIG_PORT_0_UPD_VSEL0_PIO_NO              eUPD_PIO7
-#define CONFIG_PORT_1_UPD_VSEL0_PIO_NO              eUPD_PIO7
-#define CONFIG_PORT_2_UPD_VSEL0_PIO_NO              eUPD_PIO7
-#define CONFIG_PORT_3_UPD_VSEL0_PIO_NO              eUPD_PIO7
+#define CONFIG_PORT_n_UPD_VSEL0_PIO_NO              eUPD_PIO7
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_UPD_VSEL0_PIO_NO              eUPD_PIO7
+//#define CONFIG_PORT_1_UPD_VSEL0_PIO_NO              eUPD_PIO7
+//#define CONFIG_PORT_2_UPD_VSEL0_PIO_NO              eUPD_PIO7
+//#define CONFIG_PORT_3_UPD_VSEL0_PIO_NO              eUPD_PIO7
 
-#define CONFIG_PORT_0_UPD_VSEL1_PIO_NO              eUPD_PIO8
-#define CONFIG_PORT_1_UPD_VSEL1_PIO_NO              eUPD_PIO8
-#define CONFIG_PORT_2_UPD_VSEL1_PIO_NO              eUPD_PIO8
-#define CONFIG_PORT_3_UPD_VSEL1_PIO_NO              eUPD_PIO8
+#define CONFIG_PORT_n_UPD_VSEL1_PIO_NO              eUPD_PIO8
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_UPD_VSEL1_PIO_NO              eUPD_PIO8
+//#define CONFIG_PORT_1_UPD_VSEL1_PIO_NO              eUPD_PIO8
+//#define CONFIG_PORT_2_UPD_VSEL1_PIO_NO              eUPD_PIO8
+//#define CONFIG_PORT_3_UPD_VSEL1_PIO_NO              eUPD_PIO8
 
-#define CONFIG_PORT_0_UPD_VSEL2_PIO_NO              eUPD_PIO9
-#define CONFIG_PORT_1_UPD_VSEL2_PIO_NO              eUPD_PIO9
-#define CONFIG_PORT_2_UPD_VSEL2_PIO_NO              eUPD_PIO9
-#define CONFIG_PORT_3_UPD_VSEL2_PIO_NO              eUPD_PIO9
+#define CONFIG_PORT_n_UPD_VSEL2_PIO_NO              eUPD_PIO9
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_UPD_VSEL2_PIO_NO              eUPD_PIO9
+//#define CONFIG_PORT_1_UPD_VSEL2_PIO_NO              eUPD_PIO9
+//#define CONFIG_PORT_2_UPD_VSEL2_PIO_NO              eUPD_PIO9
+//#define CONFIG_PORT_3_UPD_VSEL2_PIO_NO              eUPD_PIO9
 
 /**************************************************************************************************
 Summary:
@@ -1386,21 +1449,26 @@ Example:
     (VSEL0 is configured as Active signal in output mode)
 	</code>
 **************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_VSELx_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_0_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_1_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_2_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_3_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+#define CONFIG_PORT_n_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+//#define CONFIG_PORT_1_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+//#define CONFIG_PORT_2_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+//#define CONFIG_PORT_3_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
 
-#define CONFIG_PORT_0_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_1_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_2_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_3_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+#define CONFIG_PORT_n_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+//#define CONFIG_PORT_1_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+//#define CONFIG_PORT_2_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+//#define CONFIG_PORT_3_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
 
-#define CONFIG_PORT_0_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_1_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_2_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_3_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+#define CONFIG_PORT_n_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+//#define CONFIG_PORT_1_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+//#define CONFIG_PORT_2_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
+//#define CONFIG_PORT_3_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
 
 /**************************************************************************************************
 Summary:
@@ -1451,38 +1519,46 @@ Example:
     #define CONFIG_PORT_0_PDO_7_VSEL_MAPPING    0x00
 	</code>
 **************************************************************************************************/										  
-#define CONFIG_PORT_n_PDO_x_VSEL_MAPPING    0x00
-#define CONFIG_PORT_0_PDO_1_VSEL_MAPPING    0x00
-#define CONFIG_PORT_0_PDO_2_VSEL_MAPPING    0x01
-#define CONFIG_PORT_0_PDO_3_VSEL_MAPPING    0x02
-#define CONFIG_PORT_0_PDO_4_VSEL_MAPPING    0x04
-#define CONFIG_PORT_0_PDO_5_VSEL_MAPPING    0x00
-#define CONFIG_PORT_0_PDO_6_VSEL_MAPPING    0x00
-#define CONFIG_PORT_0_PDO_7_VSEL_MAPPING    0x00
+#define CONFIG_PORT_n_PDO_1_VSEL_MAPPING    0x00
+#define CONFIG_PORT_n_PDO_2_VSEL_MAPPING    0x01
+#define CONFIG_PORT_n_PDO_3_VSEL_MAPPING    0x02
+#define CONFIG_PORT_n_PDO_4_VSEL_MAPPING    0x04
+#define CONFIG_PORT_n_PDO_5_VSEL_MAPPING    0x00
+#define CONFIG_PORT_n_PDO_6_VSEL_MAPPING    0x00
+#define CONFIG_PORT_n_PDO_7_VSEL_MAPPING    0x00
 
-#define CONFIG_PORT_1_PDO_1_VSEL_MAPPING    0x00
-#define CONFIG_PORT_1_PDO_2_VSEL_MAPPING    0x01
-#define CONFIG_PORT_1_PDO_3_VSEL_MAPPING    0x02    
-#define CONFIG_PORT_1_PDO_4_VSEL_MAPPING    0x04
-#define CONFIG_PORT_1_PDO_5_VSEL_MAPPING    0x00
-#define CONFIG_PORT_1_PDO_6_VSEL_MAPPING    0x00
-#define CONFIG_PORT_1_PDO_7_VSEL_MAPPING    0x00
+/* TBD : To be reviewed */
+//#define CONFIG_PORT_0_PDO_1_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_0_PDO_2_VSEL_MAPPING    0x01
+//#define CONFIG_PORT_0_PDO_3_VSEL_MAPPING    0x02
+//#define CONFIG_PORT_0_PDO_4_VSEL_MAPPING    0x04
+//#define CONFIG_PORT_0_PDO_5_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_0_PDO_6_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_0_PDO_7_VSEL_MAPPING    0x00
 
-#define CONFIG_PORT_2_PDO_1_VSEL_MAPPING    0x00
-#define CONFIG_PORT_2_PDO_2_VSEL_MAPPING    0x01
-#define CONFIG_PORT_2_PDO_3_VSEL_MAPPING    0x02    
-#define CONFIG_PORT_2_PDO_4_VSEL_MAPPING    0x04
-#define CONFIG_PORT_2_PDO_5_VSEL_MAPPING    0x00
-#define CONFIG_PORT_2_PDO_6_VSEL_MAPPING    0x00
-#define CONFIG_PORT_2_PDO_7_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_1_PDO_1_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_1_PDO_2_VSEL_MAPPING    0x01
+//#define CONFIG_PORT_1_PDO_3_VSEL_MAPPING    0x02    
+//#define CONFIG_PORT_1_PDO_4_VSEL_MAPPING    0x04
+//#define CONFIG_PORT_1_PDO_5_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_1_PDO_6_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_1_PDO_7_VSEL_MAPPING    0x00
 
-#define CONFIG_PORT_3_PDO_1_VSEL_MAPPING    0x00
-#define CONFIG_PORT_3_PDO_2_VSEL_MAPPING    0x01
-#define CONFIG_PORT_3_PDO_3_VSEL_MAPPING    0x02    
-#define CONFIG_PORT_3_PDO_4_VSEL_MAPPING    0x04
-#define CONFIG_PORT_3_PDO_5_VSEL_MAPPING    0x00
-#define CONFIG_PORT_3_PDO_6_VSEL_MAPPING    0x00
-#define CONFIG_PORT_3_PDO_7_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_2_PDO_1_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_2_PDO_2_VSEL_MAPPING    0x01
+//#define CONFIG_PORT_2_PDO_3_VSEL_MAPPING    0x02    
+//#define CONFIG_PORT_2_PDO_4_VSEL_MAPPING    0x04
+//#define CONFIG_PORT_2_PDO_5_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_2_PDO_6_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_2_PDO_7_VSEL_MAPPING    0x00
+
+//#define CONFIG_PORT_3_PDO_1_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_3_PDO_2_VSEL_MAPPING    0x01
+//#define CONFIG_PORT_3_PDO_3_VSEL_MAPPING    0x02    
+//#define CONFIG_PORT_3_PDO_4_VSEL_MAPPING    0x04
+//#define CONFIG_PORT_3_PDO_5_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_3_PDO_6_VSEL_MAPPING    0x00
+//#define CONFIG_PORT_3_PDO_7_VSEL_MAPPING    0x00
 
 /**************************************************************************************************
 Summary:

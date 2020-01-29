@@ -40,7 +40,7 @@ void DPM_Init(UINT8 u8PortNum)
     u8DPM_Status |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
     u8DPM_ConfigData |= (CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS);
         
-    if((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== (PD_ROLE_SOURCE))
+    if((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK)== (PD_ROLE_SOURCE))
     {   
         /* Set Port Power Role as Source in DPM Configure variable*/
         u8DPM_ConfigData |= (PD_ROLE_SOURCE << DPM_DEFAULT_POWER_ROLE_POS); 
@@ -93,7 +93,7 @@ void DPM_StateMachineInit(void)
 	for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
         
-        if (UPD_PORT_ENABLED == ((gasPortConfigurationData[u8PortNum].u32CfgData \
+        if (UPD_PORT_ENABLED == ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
 		  	/* Init UPD350 GPIO */
@@ -194,7 +194,7 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
                           TYPEC_VBUS_PRESENCE_MASK) >> TYPEC_VBUS_PRESENCE_POS);
   if (u8VBUSPresence!= TYPEC_VBUS_0V_PRES)
   {
-      return DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasPortConfigurationData[u8PortNum].u32PDO[--u8VBUSPresence]);
+      return DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[--u8VBUSPresence]);
   }
   else
   {
@@ -242,13 +242,13 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
             u8DataBuf[INDEX_2], u8DataBuf[INDEX_3])) & PE_REQUEST_OPR_CUR_MASK) >> PE_REQUEST_OPR_CUR_START_POS);
 	
     /* Get the current value of Requested Source PDO */
-    u16SrcPDOCurrVal = ((gasPortConfigurationData[u8PortNum].u32PDO[u8SinkReqObjPos-1]) & \
+    u16SrcPDOCurrVal = ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[u8SinkReqObjPos-1]) & \
                      PE_REQUEST_MAX_CUR_MASK); 
     
     /* If Requested Max current is greater current value of Requested Source PDO or
         Requested object position is invalid, received request is invalid request */ 
     u8RetVal = (u16SinkReqCurrVal > u16SrcPDOCurrVal) ? DPM_INVALID_REQUEST : (((u8SinkReqObjPos<= FALSE) || \
-               (u8SinkReqObjPos> gasPortConfigurationData[u8PortNum].u8PDOCnt))) ? \
+               (u8SinkReqObjPos> gasPortConfigurationData.sPortConfigData[u8PortNum].u8PDOCnt))) ? \
                 DPM_INVALID_REQUEST : (u8RaPresence == FALSE) ? DPM_VALID_REQUEST : \
                 (u16SinkReqCurrVal > gasDPM[u8PortNum].u16MaxCurrSupportedin10mA) ? \
                 DPM_INVALID_REQUEST : DPM_VALID_REQUEST;   
@@ -256,7 +256,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     /* If request is valid set the Negotiated PDO as requested */
     if(u8RetVal == DPM_VALID_REQUEST)
     {
-        gasDPM[u8PortNum].u32NegotiatedPDO = (gasPortConfigurationData[u8PortNum].u32PDO[u8SinkReqObjPos-1]);
+        gasDPM[u8PortNum].u32NegotiatedPDO = (gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[u8SinkReqObjPos-1]);
         gasDPM[u8PortNum].u8NegotiatedPDOIndex = u8SinkReqObjPos;
         DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Requested is Valid \r\n");
     }
@@ -294,9 +294,9 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
     UINT8 u8RaPresence = SET_TO_ZERO;
 	UINT32 *pu32SrcCap;
 	/* Get the source PDO count */
-    *u8pSrcPDOCnt = gasPortConfigurationData[u8PortNum].u8PDOCnt;
+    *u8pSrcPDOCnt = gasPortConfigurationData.sPortConfigData[u8PortNum].u8PDOCnt;
    
-    pu32SrcCap = (UINT32 *)&gasPortConfigurationData[u8PortNum].u32PDO[0];
+    pu32SrcCap = (UINT32 *)&gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[0];
     
     DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
    
@@ -375,10 +375,10 @@ UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
 void DPM_Get_Sink_Capabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
 {   
     /*Get Sink Capability from Port Configuration Data Structure*/
-    *u8pSinkPDOCnt = gasPortConfigurationData[u8PortNum].u8PDOCnt;
+    *u8pSinkPDOCnt = gasPortConfigurationData.sPortConfigData[u8PortNum].u8PDOCnt;
     
-        (void)MCHP_PSF_HOOK_MEMCPY ( pu32DataObj, gasPortConfigurationData[u8PortNum].u32PDO, \
-                            (gasPortConfigurationData[u8PortNum].u8PDOCnt * 4));
+        (void)MCHP_PSF_HOOK_MEMCPY ( pu32DataObj, gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO, \
+                            (gasPortConfigurationData.sPortConfigData[u8PortNum].u8PDOCnt * 4));
 }
 
 void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2])
@@ -428,7 +428,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     UINT8 u8CapMismatch = FALSE;
     //UINT32 u32SinkSelectedPDO;    
     /*PDO Count of the sink*/
-	UINT8 u8SinkPDOCnt = gasPortConfigurationData[u8PortNum].u8PDOCnt;
+	UINT8 u8SinkPDOCnt = gasPortConfigurationData.sPortConfigData[u8PortNum].u8PDOCnt;
     /*PDO Count of the source derived from received src caps*/
 	UINT8 u8Recevd_SrcPDOCnt =  PRL_GET_OBJECT_COUNT(u16RecvdSrcCapsHeader);
     UINT32 u32RcvdSrcPDO;
@@ -437,19 +437,16 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     UINT8 u8SinkPDOIndex;
     UINT32 u32SinkPDO;
     
-    PORT_CONFIG_DATA *psConfigData;
-    
-    psConfigData = &gasPortConfigurationData[u8PortNum];
-    
+
     /* Calculate and sort the power of Sink PDOs */
-    DPM_CalculateAndSortPower(u8SinkPDOCnt, &psConfigData->u32PDO[0], u8SinkPower);
+    DPM_CalculateAndSortPower(u8SinkPDOCnt, &gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[0], u8SinkPower);
     
     /* Calculate and sort the received source PDOs power */
     DPM_CalculateAndSortPower(u8Recevd_SrcPDOCnt, pu32RecvdSrcCapsPayload, u8SrcPower);
     
     /* Compare Maximum power sink PDO to received source PDOs */
     u8SinkPDOIndex = u8SinkPower[0][1];
-    u32SinkPDO = psConfigData->u32PDO[u8SinkPDOIndex];
+    u32SinkPDO = gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[u8SinkPDOIndex];
     
     for(u8SrcIndex = 0; u8SrcIndex < u8Recevd_SrcPDOCnt; u8SrcIndex++)
     {
@@ -494,7 +491,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
         for(u8SinkIndex = 0; u8SinkIndex < u8SinkPDOCnt; u8SinkIndex++)
         {
             u8SinkPDOIndex = u8SrcPower[u8SinkIndex][1];
-            u32SinkPDO = psConfigData->u32PDO[u8SinkPDOIndex];
+            u32SinkPDO = gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[u8SinkPDOIndex];
             
             if((DPM_GET_PDO_VOLTAGE(u32RcvdSrcPDO)) == DPM_GET_PDO_VOLTAGE(u32SinkPDO))
             {
@@ -668,7 +665,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             /*Kill the VCONN Power fault timer*/
             PDTimer_Kill (gasDPM[u8PortNum].u8VCONNPowerGoodTmrID);
         
-            /*Setting the u8VCONNPowerGoodTmrID to MAX_CONCURRENT_TIMERS to indicate that
+             /*Setting the u8VCONNPowerGoodTmrID to MAX_CONCURRENT_TIMERS to indicate that
             TimerID does not hold any valid timer IDs anymore*/
             gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 			
@@ -682,9 +679,9 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 DPM_ClearPowerfaultFlags(u8PortNum);
                 return;
             }
-            /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
-            UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
-                gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_DE_ASSERT);
+             /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
+            UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPio, \
+                gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPioMode, (UINT8)UPD_GPIO_DE_ASSERT);
             #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
             /*Clear PIO ovveride enable*/
             UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
@@ -733,8 +730,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         }
         
         /* Enable DC_DC_EN to drive power*/
-        UPD_GPIOUpdateOutput(u8PortNum, gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPio, \
-                gasUpdPioDcDcConfig[u8PortNum].u8DcDcEnPioMode, (UINT8)UPD_GPIO_ASSERT);
+        UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPio, \
+            gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPioMode, (UINT8)UPD_GPIO_ASSERT);
         
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
         /*Enable PIO ovveride enable*/

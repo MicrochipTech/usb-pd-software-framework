@@ -56,7 +56,7 @@ void PE_InitPort (UINT8 u8PortNum)
     gasPolicy_Engine[u8PortNum].u32MsgHeader = SET_TO_ZERO;
     gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = SET_TO_ZERO;
 
-    if ((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
+    if ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
     {
         /*Setting the CapsCounter to 0 */
         gasPolicy_Engine[u8PortNum].u8CapsCounter = SET_TO_ZERO;
@@ -809,7 +809,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     Transmit_cb = PE_StateChange_TransmitCB;
 
-                    if ((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == \
+                    if ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) == \
                         PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if
@@ -859,7 +859,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     Transmit_cb = PE_StateChange_TransmitCB;
 
-                    if ((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == \
+                    if ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) == \
                         PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if

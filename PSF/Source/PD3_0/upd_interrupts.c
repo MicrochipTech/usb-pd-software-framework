@@ -36,7 +36,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
 {
     do
     {
-        if (((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
+        if (((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_ENDIS_MASK) \
             >> TYPEC_PORT_ENDIS_POS)== UPD_PORT_DISABLED)
         {
             break;
