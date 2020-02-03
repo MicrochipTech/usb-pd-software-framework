@@ -306,7 +306,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     
 #ifdef CONFIG_HOOK_DEBUG_MSG                    
                     u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
-                    DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
                     break;
                 }

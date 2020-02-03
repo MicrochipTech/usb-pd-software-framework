@@ -460,7 +460,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
 #ifdef CONFIG_HOOK_DEBUG_MSG
                     u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
-                    DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
 					
 					/* Set the PD contract as Explicit Contract */
@@ -702,7 +702,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         
 #ifdef CONFIG_HOOK_DEBUG_MSG
                         u32PDODebug = 0;
-                        DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                        DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_CHECK_VCONNOFF_SS;
                      
@@ -809,7 +809,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         PE_KillPolicyEngineTimer (u8PortNum);
 
 #ifdef CONFIG_HOOK_DEBUG_MSG
-                        DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                        DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
                         /* Inform Protocol Layer about Hard Reset Complete */
                         PRL_HRorCRCompltIndicationFromPE(u8PortNum);

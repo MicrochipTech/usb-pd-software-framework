@@ -331,13 +331,13 @@ event for UFP*/
 			(UINT16)((u16voltagemV * TYPEC_DESIRED_MIN_PDO_VOLTAGE_FACTOR) / \
 			  TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
-/* To get desired VBUS threshold value for maxmimum voltage range of a PDO voltage*/		
+/* To get desired VBUS threshold value for maximum voltage range of a PDO voltage*/		
 #define TYPEC_GET_DESIRED_MAX_VBUS_THR(u16voltagemV)		\
 				(UINT16)((u16voltagemV * TYPEC_DESIRED_MAX_PDO_VOLTAGE_FACTOR) / \
 				  TYPEC_VBUS_THRX_UNITS_MILLI_V )
 
 #if INCLUDE_POWER_FAULT_HANDLING
-/* To get over votlage VBUS threshold*/			
+/* To get over voltage VBUS threshold*/			
 #define TYPEC_GET_OVER_VOLTAGE_VBUS_THR(u16voltagemV)		\
 				(UINT16)((u16voltagemV * (CONFIG_OVER_VOLTAGE_FACTOR)) \
 				  / TYPEC_VBUS_THRX_UNITS_MILLI_V )

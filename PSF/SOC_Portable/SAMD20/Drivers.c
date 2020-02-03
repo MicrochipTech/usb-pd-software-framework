@@ -79,6 +79,21 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #define SERCOMn_SPI_WriteRead(n,pTransmitData,txSize,pReceiveData,rxSize)\
  SERCOM##n##_SPI_WriteRead(pTransmitData,txSize,pReceiveData,rxSize)
 
+#ifdef CONFIG_HOOK_DEBUG_MSG
+    /*Debug UART drivers*/
+    #define SAMD20UART_Init(n) SERCOMn_UART_Initialise(n)
+    #define SERCOMn_UART_Initialise(n) SERCOM##n##_USART_Initialise()
+
+    #define SAMD20UART_Write_Char(n, byData) SERCOMn_UART_Write_Char(n, byData)
+    #define SERCOMn_UART_Write_Char(n, byData) SERCOM##n##_USART_Write_Char(byData)
+
+    #define SAMD20UART_Write_Int(n, dwWriteInt, byWidth) SERCOMn_UART_Write_Int(n, dwWriteInt, byWidth)
+    #define SERCOMn_UART_Write_Int(n, dwWriteInt, byWidth) SERCOM##n##_USART_Write_Int(dwWriteInt, byWidth)
+
+    #define SAMD20UART_Write_String(n, pbyMessage) SERCOMn_UART_Write_String(n, pbyMessage)
+    #define SERCOMn_UART_Write_String(n, pbyMessage) SERCOM##n##_USART_Write_String(pbyMessage)
+
+#endif //CONFIG_HOOK_DEBUG_MSG
 /* ************************************************************************** */
 /* ************************************************************************** */
 // Section: Internal Functions                                               */
@@ -267,6 +282,35 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
     
 	return 0;
 }
+
+/*****************************************************************************/
+/*****************************************************************************/
+/*********************************UART APIs*****************************/
+/*****************************************************************************/
+#ifdef CONFIG_HOOK_DEBUG_MSG
+
+void SAMD20_UART_Initialisation(void)
+{
+    SAMD20UART_Init(SAMD20_UART_INSTANCE);
+}
+
+void SAMD20_UART_Write_Char(char byData)
+{
+    SAMD20UART_Write_Char(SAMD20_UART_INSTANCE, byData);
+}
+
+void SAMD20_UART_Write_Int(UINT32 dwWriteInt, UINT8 byWidth)
+{
+    SAMD20UART_Write_Int(SAMD20_UART_INSTANCE, dwWriteInt, byWidth);
+}
+
+void SAMD20_UART_Write_String(char* pbyMessage)
+{
+    SAMD20UART_Write_String(SAMD20_UART_INSTANCE, pbyMessage);
+}
+
+
+#endif //CONFIG_HOOK_DEBUG_MSG
 /* *****************************************************************************
  End of File
  */

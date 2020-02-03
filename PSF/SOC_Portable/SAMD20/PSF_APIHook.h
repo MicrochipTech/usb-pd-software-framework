@@ -50,7 +50,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include "PSF_Config.h"
 #include "Drivers.h"
 #include "PDSource_App.h"
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: UPD350 Hardware Interface Configuration
@@ -969,6 +968,8 @@ Remarks:
 **************************************************************************/
 #define MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum)     
 
+#ifdef CONFIG_HOOK_DEBUG_MSG
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: DEBUG MESSAGES CONFIGURATION
@@ -998,153 +999,56 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'.                  
 ***********************************************************************/  
-#define MCHP_PSF_HOOK_DEBUG_INIT()   
+#define MCHP_PSF_HOOK_DEBUG_INIT()   SAMD20_UART_Initialisation()
 
-/*************************************************************************
+/***********************************************************************
 Function:
-    MCHP_PSF_HOOK_DEBUG_STRING(pcharBuf)
+    MCHP_PSF_HOOK_DEBUG_INIT()            
 Summary:
-    To pass a string to Debug interface
+    Initialization of debug module interface
 Description:
-    This hook is called by PSF to send a character string to DEBUG_MODULE. It will be called if
-    CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has CHAR pointer argument 
-    without return type.
+    This hook is called during initialization of PSF if CONFIG_HOOK_DEBUG_MSG is set to 1. Define
+    relevant function to initialize the Debug interface used with no arguments without return type.
 Conditions:
     None.
-Input:
-    pcharBuf -  Pointer to the character buffer
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_DEBUG_STRING(pcharBuf)       uart_write(pcharBuf)
-        void uart_write(char *chBuffer);
-        void uart_write(char *chBuffer)
+        #define MCHP_PSF_HOOK_DEBUG_INIT()          uart_init()
+        void uart_init();
+        void uart_init()
         {
-            //Write character string to UART
+            //Initialzes the uart module to send and receive a character
         }
     </code>
 Remarks:
-    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'.             
-*************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_STRING(pcharBuf)		                                  
+    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'.                  
+***********************************************************************/  
+#define MCHP_PSF_HOOK_PRINT_CHAR(byData)    SAMD20_UART_Write_Char(byData);
+/***********************************************************************************/
 
-/**************************************************************************
-Function:
-    MCHP_PSF_HOOK_DEBUG_UINT8(u8Val)
-Summary:
-    Send a UINT8 to Debug interface
-Description:
-    This hook is called by stack to send a UINT8 data to debug interface. This API will be called 
-    if CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has UINT8 argument without 
-    return type.
-Conditions:
-    None.
-Input:
-    u8Val -  UINT8 data to be sent to Debug interface
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_DEBUG_UINT8(u8Val)     uart_write(u8Val)
-        void uart_write(UINT8 u8Val);
-        void uart_write(UINT8 u8Val)
-        {
-            //Convert UINT8 to character string and write to UART
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
-**************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_UINT8(u8Val)              
+/***********************************************************************************/
+//dwData is of type UINT32
+#define MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)    SAMD20_UART_Write_Int(dwWriteInt, byWidth);
 
-/*************************************************************************
-Function:
-    MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)
-Summary:
-    Send UINT16 to Debug interface
-Description:
-    This hook is called by stack to send a UINT16 data to DEBUG_MODULE This API will be called if
-    CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has UINT16 argument without 
-    return type.
-Conditions:
-    None.
-Input:
-    u16Val -  UINT16 data to be sent to Debug interface
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)     uart_write(u16Val)
-        void uart_write(UINT16 u16Val);
-        void uart_write(UINT16 u16Val)
-        {
-            //Convert UINT16 to character string and write to UART
-        }
+/***********************************************************************************/
 
-    </code>
-Remarks:
-   User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
-*************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)      
 
-/*************************************************************************
-Function:
-    MCHP_PSF_HOOK_DEBUG_UINT32(u32Val)
-Summary:
-    Send UINT32 to Debug interface
-Description:
-    This hook is called by stack to send a UINT32 data to DEBUG_MODULE. This API will be called if
-    CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has a UINT32 argument without 
-    return type.
-Conditions:
-    None.
-Input:
-    u32Val -  UINT32 data to be sent to Debug interface
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_DEBUG_UINT32(u32Val)    uart_write(u32Val)
-        void uart_write(UINT32 u32Val);
-        void uart_write(UINT32 u32Val)
-        {
-            //Convert UINT32 to character string and write to UART
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
-*************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_UINT32(u32Val)		                        
+/***********************************************************************************/
+//pbyMessage is of type char*
+#define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)  SAMD20_UART_Write_String(pbyMessage);
+/***********************************************************************************/
 
-/**************************************************************************
-Function:
-    MCHP_PSF_HOOK_DEBUG_INT32(i32Val)
-Summary:
-    Send INT32 to Debug interface
-Description:
-    This hook is called by stack to send a INT32 data to Debug interface. This API will be called if
-    CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has INT32 argument without 
-    return type.
-Conditions:
-    None.
-Input:
-    i32Val -  INT32 data to be sent to DEBUG_MODULE
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_DEBUG_INT32(_i32Val_)        uart_write(i32Val)
-        void uart_write(INT32 i32Val);
-        void uart_write(INT32 i32Val)
-        {
-            //Convert INT32 to character string and write to UART
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
-**************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_INT32(i32Val)		                  
+/***********************************************************************************/
+
+#else
+    #define MCHP_PSF_HOOK_DEBUG_INIT() 
+    #define MCHP_PSF_HOOK_PRINT_CHAR(byData)
+    #define MCHP_PSF_HOOK_PRINT_INTEGER(dwData, byWidth)
+    #define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)
+
+#endif //CONFIG_HOOK_DEBUG_MSG
 
 // *****************************************************************************
 // *****************************************************************************

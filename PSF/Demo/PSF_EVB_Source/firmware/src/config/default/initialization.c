@@ -124,13 +124,12 @@ void SYS_Initialize ( void* data )
 	//SPI initialisation is done as part of MchpPSF_Init by PSF stack
     //SERCOM0_SPI_Initialize();
 
+
+    
     EIC_Initialize();
 	// SPI initialisation is done as part of MchpPSF_Init by PSF stack
     //TC0_TimerInitialize();
-
-
-
-
+	
 
     NVIC_Initialize();
 
