@@ -375,7 +375,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
 #ifdef CONFIG_HOOK_DEBUG_MSG
                         u32PDODebug = 0;
-                        DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                        DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif                       
                         if ((u8CC1_MatchISR == u8CC2_MatchISR))
                         {
@@ -498,7 +498,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             
                         }
 						
-						DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+						DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
                         
                         /*Kill the VBUS ON timer since Vsafe5V is reached*/
@@ -651,7 +651,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
 #ifdef CONFIG_HOOK_DEBUG_MSG
                     u32PDODebug = 0;
-                    DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
                     /*Kill the VBUS ON timer since Vsafe0V is reached*/
                     TypeC_KillTypeCTimer (u8PortNum);
@@ -704,7 +704,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                       
 #ifdef CONFIG_HOOK_DEBUG_MSG
                         u32PDODebug = 0;
-                        DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                        DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif 
                         /* Configure VBUS threshold to detect 5V*/
                         TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR); 
@@ -837,7 +837,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK: Entered"\
                                          "ATTACHED SNK State\r\n");
 #ifdef CONFIG_HOOK_DEBUG_MSG                    
-                    DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif                    
                     /*Source Attached in CC1 pin*/
                     if (u8CC1_MatchISR > u8CC2_MatchISR)
@@ -1038,7 +1038,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
                         #ifdef CONFIG_HOOK_DEBUG_MSG
                         u32PDODebug = 0;
-                        DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                        DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
                         #endif                   
                         /*Setting VBUS Comparator OFF once the VBUS line goes off to 0V*/
                         TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);

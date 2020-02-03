@@ -40,6 +40,7 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Included Files
@@ -49,7 +50,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "peripheral/nvmctrl/plib_nvmctrl.h"
+#include "peripheral/evsys/plib_evsys.h"
 #include "peripheral/sercom/spim/plib_sercom0_spi.h"
+#include "peripheral/sercom/usart/plib_sercom3_usart.h"
 #include "peripheral/port/plib_port.h"
 #include "peripheral/clock/plib_clock.h"
 #include "peripheral/nvic/plib_nvic.h"

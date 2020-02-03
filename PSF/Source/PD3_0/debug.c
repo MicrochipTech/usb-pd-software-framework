@@ -34,36 +34,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #ifdef CONFIG_HOOK_DEBUG_MSG
 
-void Debug_PrintInt32Buffer (INT32 const *pi32Buffer, UINT32 u32TotalCount)
-{
-    for (UINT32 u32Count = 0; u32Count < u32TotalCount; u32Count++)
-    {
-        MCHP_PSF_HOOK_DEBUG_INT32 (pi32Buffer[u32Count]);        
-    }
-}
-/*********************************************************************************/
-void Debug_PrintUint32Buffer (UINT32 const *pu32Buffer, UINT32 u32TotalCount)
-{
-    for (UINT32 u32Count = 0; u32Count < u32TotalCount; u32Count++)
-    {
-        MCHP_PSF_HOOK_DEBUG_UINT32 (pu32Buffer[u32Count]);
-    }
-}
-/***********************************************************************************/
-void Debug_PrintUint16Buffer (UINT16 const *pu16Buffer, UINT32 u32TotalCount)
-{
-    for (UINT32 u32Count = 0; u32Count < u32TotalCount; u32Count++)
-    {
-        MCHP_PSF_HOOK_DEBUG_UINT16 (pu16Buffer[u32Count]);
-    }
-}
-/***********************************************************************************/
-void Debug_PrintUint8Buffer (UINT8 const *pu8Buffer, UINT32 u32TotalCount)
-{
-    for (UINT32 u32Count = 0; u32Count < u32TotalCount; u32Count++)
-    {
-        MCHP_PSF_HOOK_DEBUG_UINT8 (pu8Buffer[u32Count]);
-    }
-}
-/***********************************************************************************/
+
+
+
 #endif

@@ -33,66 +33,25 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
+#include <PSF_APIHook.h>
+
 #if CONFIG_HOOK_DEBUG_MSG
 /**************************************************************************************/
-    
-    /*API to print INT32 (pi32Buffer) buffer of u32TotalCount length*/
-    void Debug_PrintInt32Buffer (INT32 const *pi32Buffer, UINT32 u32TotalCount);
-    /*API to print UINT32 (pu32Buffer) buffer of u32TotalCount length*/
-	void Debug_PrintUint32Buffer (UINT32 const *pu32Buffer, UINT32 u32TotalCount);
-    /*API to print UINT16 (pu16Buffer) buffer of u32TotalCount length*/
-	void Debug_PrintUint16Buffer (UINT16 const *pu16Buffer, UINT32 u32TotalCount);
-    /*API to print UINT8 (pu8Buffer) buffer of u32TotalCount length*/
-	void Debug_PrintUint8Buffer (UINT8 const *pu8Buffer, UINT32 u32TotalCount);
-/**************************************************************************************/ 
-   
     /* Define to print a string */
-    #define DEBUG_PRINT_PORT_STR(u8portNum,string)    \
-                {MCHP_PSF_HOOK_DEBUG_INT32(u8portNum);\
-                 MCHP_PSF_HOOK_DEBUG_STRING(string);}
-    
-    /* Define to print string and a UINT8 buffer*/
-    #define DEBUG_PRINT_UINT8_BUF_STR(u8portNum,string1,u8Buf,u32Len,string2) \
-                {MCHP_PSF_HOOK_DEBUG_INT32(u8portNum);\
-                 MCHP_PSF_HOOK_DEBUG_STRING(string1);\
-                 Debug_PrintUint8Buffer(u8Buf,u32Len);\
-                 MCHP_PSF_HOOK_DEBUG_STRING(string2);}
-     
-    /* Define to print string and a UINT16 buffer*/
-    #define DEBUG_PRINT_UINT16_BUF_STR(u8portNum,string1,u16Buf,u32Len,string2)  \
-                {MCHP_PSF_HOOK_DEBUG_INT32(u8portNum);\
-                MCHP_PSF_HOOK_DEBUG_STRING(string1);\
-                Debug_PrintUint16Buffer(u16Buf,u32Len);\
-                MCHP_PSF_HOOK_DEBUG_STRING(string2);}
-    
+    #define DEBUG_PRINT_PORT_STR(byPortNum,string)    MCHP_PSF_HOOK_PRINT_INTEGER(byPortNum,1); \
+                                                      MCHP_PSF_HOOK_PRINT_TRACE(string);
+
     /* Define to print string and a UINT32 buffer*/
-    #define DEBUG_PRINT_UINT32_BUF_STR(u8portNum,string1,u32Buf,u32Len,string2) \
-                {MCHP_PSF_HOOK_DEBUG_INT32(u8portNum);\
-                MCHP_PSF_HOOK_DEBUG_STRING(string1);\
-                Debug_PrintUint32Buffer(u32Buf,u32Len);\
-                MCHP_PSF_HOOK_DEBUG_STRING(string2);}
-    
-    /* Define to print string and INT32 buffer*/
-    #define DEBUG_PRINT_INT32_BUF_STR(u8portNum,string1,i32Buf,u32Len,string2)  \
-                {MCHP_PSF_HOOK_DEBUG_INT32(u8portNum);\
-                MCHP_PSF_HOOK_DEBUG_STRING(string1);\
-                Debug_PrintInt32Buffer(i32Buf,u32Len);\
-                MCHP_PSF_HOOK_DEBUG_STRING(string2);}
+    #define DEBUG_PRINT_PORT_UINT32_STR(byPortNum,string1,dwData,byLen,string2)      MCHP_PSF_HOOK_PRINT_INTEGER(byPortNum,1); \
+                                                                                     MCHP_PSF_HOOK_PRINT_TRACE(string1); \
+                                                                                     MCHP_PSF_HOOK_PRINT_INTEGER(dwData,byLen); \
+                                                                                     MCHP_PSF_HOOK_PRINT_TRACE(string2);
 
 /**************************************************************************************/ 
     
 #else
-
-    #define DEBUG_PRINT_PORT_STR(u8portNum,string) 
-
-    #define DEBUG_PRINT_UINT8_BUF_STR(u8portNum,string1,u8Buf,u32Len,string2)  
-
-    #define DEBUG_PRINT_UINT16_BUF_STR(u8portNum,string1,u16Buf,u32Len,string2) 
-
-    #define DEBUG_PRINT_UINT32_BUF_STR(u8portNum,string1,u32Buf,u32Len,string2)
-
-    #define HOOK_DEBUG_BUF_INT8(u8portNum,string1,i32Buf,u32Len,string2) 
-
+    #define DEBUG_PRINT_PORT_STR(byPportNum,string) 
+    #define DEBUG_PRINT_PORT_UINT32_STR(byPportNum,string1,u32Buf,u32Len,string2)
 #endif /*CONFIG_HOOK_DEBUG_MSG*/
 
 #endif /*_DEBUG_H_*/

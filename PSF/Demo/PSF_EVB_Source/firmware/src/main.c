@@ -58,7 +58,7 @@ int main ( void )
 {
     /* Initialize all modules */
     SYS_Initialize ( NULL );
-	
+
 	/*PSF init called*/
 	(void)MchpPSF_Init();
 

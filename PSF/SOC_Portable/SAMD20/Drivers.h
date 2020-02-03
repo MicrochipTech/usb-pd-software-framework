@@ -49,6 +49,7 @@
 #include <psf_stdinc.h>
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
 #include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"
+#include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom3_usart.h"
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
 
@@ -103,10 +104,11 @@
  *      and input with internal pullup by default.
  */
 
-#define SAMD20_TIMER_INSTANCE   0
-#define SAMD20_SPI_INSTANCE     0
-#define SAMD20_PORT0_EIC_PIN    EIC_PIN_14
-#define SAMD20_PORT1_EIC_PIN    EIC_PIN_15
+#define SAMD20_TIMER_INSTANCE       0
+#define SAMD20_SPI_INSTANCE         0
+#define SAMD20_PORT0_EIC_PIN        EIC_PIN_14
+#define SAMD20_PORT1_EIC_PIN        EIC_PIN_15
+#define SAMD20_UART_INSTANCE  3
 
 
 // *****************************************************************************
@@ -363,6 +365,18 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
         None                    
 **************************************************************************/
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
+
+/*Debug UART APIs*/
+#ifdef CONFIG_HOOK_DEBUG_MSG
+void SAMD20_UART_Initialisation(void);
+
+void SAMD20_UART_Write_Char(char);
+
+void SAMD20_UART_Write_Int(UINT32, UINT8);
+
+void SAMD20_UART_Write_String(char*);
+
+#endif //CONFIG_HOOK_DEBUG_MSG
 
 #endif /*_DRIVERS_H */
 
