@@ -688,4 +688,32 @@ void PB_TimerEnd(UINT8 u8PortNum, UINT8 u8Dummy)
     PB_HandlePPMEvents (u8PortNum, PB_TIMER_EXPIRED_EVENT); 
 }
 
+void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
+{
+    float fVoltageInmV = 0; 
+    UINT16 u16CurrentIn10mA = 0, u16fixedCurrentIn10mA = 0; 
+    
+    /* To-do : Once LOAD_NEW_SOURCE_PDOS is implemented, update the PDOs in 
+       NEW_SOURCE_PDOn fields */ 
+    
+    /* In Power Balancing, voltages remain fixed irrespective of the power 
+       value advertised. Only current varies with power. */
+    for (UINT8 u8Index = 0; u8Index < gasPortConfigurationData.sPortConfigData[u8PortNum].u8PDOCnt; u8Index++)
+    {
+        /* Get the voltage value from PDO */
+        fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[u8Index]); 
+        
+        /* Calculate new current value based on new power */
+        u16CurrentIn10mA = ((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT);
+        
+        /* Calculated current should not exceed maximum current of a port */
+        u16fixedCurrentIn10mA = PB_GET_CURRENT_FROM_PDO(gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[u8Index]);
+        if (u16fixedCurrentIn10mA > u16CurrentIn10mA)
+        {
+           gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[u8Index] = \
+                    (gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[u8Index] & ~(PB_FIXED_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
+        }
+    }
+
+}
 #endif 
