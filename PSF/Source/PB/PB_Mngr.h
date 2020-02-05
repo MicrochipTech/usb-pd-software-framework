@@ -90,6 +90,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PB_RDO_USB_COM_CAPABLE_MSK              (UINT32)(1 << PB_RDO_USB_COM_CAPABLE_BIT_POS)
 #define PB_RDO_NO_USB_SUSPEND_MSK               (UINT32)(1 << PB_RDO_NO_USB_SUSPEND_BIT_POS)
 
+/* Power is represented in terms of 250mW */
+#define PB_POWER_UINTS_MILLI_W                  250000
+
 /* Macro to get the voltage value from Fixed PDO */
 #define PB_GET_VOLTAGE_FROM_FIXED_PDO(u32PDO)   (UINT16)(((UINT32)u32PDO & \
                                     PB_FIXED_PDO_VOLTAGE_MASK) >> PB_PDO_VOLTGE_BIT_POS)
@@ -829,6 +832,36 @@ UINT8 PB_PortInWaitForAsyncTimerState(void);
 
 **************************************************************************************************/
 void PB_TimerEnd(UINT8, UINT8);
+/**************************************************************************************************
+    Function:
+        void PB_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
+
+    Summary:
+        This API is used to form the PDOs as per power wattage value given.   
+
+    Description:
+        In PB, voltages will remain fixed. But, current varies as per the 
+        power value that is to be advertised. This API calculates the current 
+        value using power value that is given as input to this API and voltage
+        value that is arrived from the PDO initialized during configuration time
+        and updates the current value in the PDO. 
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number.
+        u16PowerIn250mW - Power value in terms of 250mW
+
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
+
 
 /* Enumeration for indicating the PPM Events. 
    To-do: Revisit this section to align with Poornima's PPM Design */
