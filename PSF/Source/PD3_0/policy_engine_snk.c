@@ -38,7 +38,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     UINT8 u8TypeCState = TYPEC_INVALID_STATE;
     UINT8 u8TypeCSubState = TYPEC_INVALID_SUBSTATE;
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
-    UINT32 u32DataObj[PDO_MAX_OBJECTS] = {SET_TO_ZERO};
+    UINT32 u32DataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
 	UINT16 u16Transmit_Header = SET_TO_ZERO;
 	PRLTxCallback Transmit_cb = NULL;
 	UINT32 u32Transmit_TmrID_TxSt = SET_TO_ZERO;

@@ -86,8 +86,8 @@ void DPM_Init(UINT8 u8PortNum)
 	
     
 }
-
 /********************************************************************************************/
+
 void DPM_StateMachineInit(void)
 {
 	for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
@@ -107,6 +107,7 @@ void DPM_StateMachineInit(void)
         }
     }
 }
+/*******************************************************************************/
 
 void DPM_RunStateMachine (UINT8 u8PortNum)
 {
@@ -129,26 +130,40 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     #endif
 }
 
-
 /****************************** DPM APIs Accessing Type C Port Control Module*********************/
-
 void DPM_GetTypeCStates(UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSubState)
 {
     *pu8TypeCState = gasTypeCcontrol[u8PortNum].u8TypeCState;
     *pu8TypeCSubState = gasTypeCcontrol[u8PortNum].u8TypeCSubState;
 }
-
-void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence)
-{
-    *pu8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK);
-}
-
 void DPM_SetTypeCState(UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubState)
 {
     gasTypeCcontrol[u8PortNum].u8TypeCState = u8TypeCState;
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = u8TypeCSubState;
 }
+void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence)
+{
+    *pu8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK);
+}
+/*******************************************************************************/
 
+/**************************DPM APIs for VCONN *********************************/
+void DPM_VConnOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable)
+{
+    if(u8VConnEnable == DPM_VCONN_ON)
+    {
+        /*Enable VCONN by switching on the VCONN FETS*/
+        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_ENABLE);              
+    }    
+    else
+    {
+        /*Disable VCONN by switching off the VCONN FETS*/
+        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);     
+    }
+}
+/*******************************************************************************/
+
+/**************************DPM APIs for VBUS* *********************************/
 void DPM_SetPortPower(UINT8 u8PortNum)
 {
     UINT16 u16PDOVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
@@ -163,45 +178,6 @@ void DPM_SetPortPower(UINT8 u8PortNum)
     }	
 }
 
-void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
-{	
-	#if INCLUDE_POWER_FAULT_HANDLING
-	/* Obtain voltage from negoitated PDO*/
-    UINT16 u16PDOVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
-    UINT16 u16PDOCurrent = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
-	/* set the threshold to detect fault*/
-	TypeC_ConfigureVBUSThr(u8PortNum, u16PDOVoltage, u16PDOCurrent, TYPEC_CONFIG_PWR_FAULT_THR);
-	#endif
-}
-
-void DPM_VConnOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable)
-{
-    if(u8VConnEnable == DPM_VCONN_ON)
-    {
-        /*Enable VCONN by switching on the VCONN FETS*/
-        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_ENABLE);              
-    }    
-    else
-    {
-        /*Disable VCONN by switching off the VCONN FETS*/
-        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);     
-    }
-}
-/*****************************************************************************************/
-UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
-{
-  UINT8 u8VBUSPresence = ((gasTypeCcontrol[u8PortNum].u8IntStsISR & 
-                          TYPEC_VBUS_PRESENCE_MASK) >> TYPEC_VBUS_PRESENCE_POS);
-  if (u8VBUSPresence!= TYPEC_VBUS_0V_PRES)
-  {
-      return DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[--u8VBUSPresence]);
-  }
-  else
-  {
-      return TYPEC_VBUS_0V_PRES;
-  }
-}
-/*****************************************************************************************/
 void DPM_TypeCVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 {
     UINT16 u16Current = gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * 10;
@@ -218,8 +194,33 @@ void DPM_TypeCVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
     }
 }
 
-/****************************** DPM Source related APIs*****************************************/
+UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
+{
+  UINT8 u8VBUSPresence = ((gasTypeCcontrol[u8PortNum].u8IntStsISR & 
+                          TYPEC_VBUS_PRESENCE_MASK) >> TYPEC_VBUS_PRESENCE_POS);
+  if (u8VBUSPresence!= TYPEC_VBUS_0V_PRES)
+  {
+      return DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[--u8VBUSPresence]);
+  }
+  else
+  {
+      return TYPEC_VBUS_0V_PRES;
+  }
+}
 
+void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
+{	
+	#if INCLUDE_POWER_FAULT_HANDLING
+	/* Obtain voltage from negoitated PDO*/
+    UINT16 u16PDOVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
+    UINT16 u16PDOCurrent = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
+	/* set the threshold to detect fault*/
+	TypeC_ConfigureVBUSThr(u8PortNum, u16PDOVoltage, u16PDOCurrent, TYPEC_CONFIG_PWR_FAULT_THR);
+	#endif
+}
+/*******************************************************************************/
+
+/****************************** DPM Source related APIs*****************************************/
 /* Validate the received Request message */
 UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 {
@@ -324,6 +325,7 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
     }
 }
 
+/*********************************DPM VDM Cable APIs**************************************/
 UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
 {
     UINT32 u32ProductTypeVDO;
@@ -338,7 +340,6 @@ UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
     {
         u8RetVal = PE_VDM_NAK;
     }
-    
     else
     {
         /* Get the product VDO from the received message */
@@ -369,6 +370,16 @@ UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
     
     return u8RetVal;
 }
+/*******************************************************************************/
+/*****************************DPM API that access Policy Engine************/
+UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
+{
+    UINT8 u8HardResetProgressStatus = ((gasPolicy_Engine[u8PortNum].u8PEPortSts & \
+                                        PE_HARDRESET_PROGRESS_MASK) >> PE_HARDRESET_PROGRESS_POS);
+    return u8HardResetProgressStatus;
+
+}
+/******************************************************************************/
 
 #if INCLUDE_PD_SINK
 /****************************** DPM Sink related APIs*****************************************/
@@ -417,7 +428,6 @@ void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 
     }
   
 }
-
 void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
                                      UINT32 *pu32RecvdSrcCapsPayload)
 {
@@ -437,7 +447,6 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     UINT8 u8SinkPDOIndex;
     UINT32 u32SinkPDO;
     
-
     /* Calculate and sort the power of Sink PDOs */
     DPM_CalculateAndSortPower(u8SinkPDOCnt, &gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[0], u8SinkPower);
     
@@ -480,7 +489,6 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
             }
         }
     }
-    
     u8CapMismatch = TRUE;
     
     for(u8SrcIndex = 0; u8SrcIndex < u8Recevd_SrcPDOCnt; u8SrcIndex++)
@@ -517,20 +525,16 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
           
 }
 #endif
+
 /********************************VCONN Related APIs**********************************************/
 UINT8 DPM_Evaluate_VCONN_Swap(UINT8 u8PortNum)
 {
     /*As of now, Accept the VCONN Swap without any restriction*/
-    return TRUE;
-    
+    return TRUE;   
 }
-
-
 UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum)
 { 
-  
     UINT8 u8IsVCONNSrc;
-
     if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)
     {
         u8IsVCONNSrc =TRUE;
@@ -539,14 +543,12 @@ UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum)
     {
         u8IsVCONNSrc =FALSE;
     }
-
     return u8IsVCONNSrc;
 }
 
 /********************************Power Fault API ******************************/
 
 #if INCLUDE_POWER_FAULT_HANDLING
-
 static void DPM_ClearPowerfaultFlags(UINT8 u8PortNum)
 {
     /*ISR flag is cleared by disabling the interrupt*/
@@ -554,7 +556,6 @@ static void DPM_ClearPowerfaultFlags(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 }
-
 void DPM_PowerFaultHandler(UINT8 u8PortNum)
 {
   	/* Incase detach reset the Power Fault handling variables*/
@@ -600,8 +601,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
         
-    }
-		
+    }	
     if(gasDPM[u8PortNum].u8HRCompleteWait) 
     { 
         if((gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS) ||
@@ -742,23 +742,16 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         DPM_ClearPowerfaultFlags(u8PortNum);
     }
 }
-
 void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
 	/* Set the timer Id to Max Value*/
- 	gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
-	
+ 	gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;	
 	/* Resetting the VCONN fault Count*/
 	gasDPM[u8PortNum].u8VCONNPowerFaultCount = RESET_TO_ZERO;
 }
-/*************************************************************/
-void DPM_SetPowerFaultISR(UINT8 u8PortNum, UINT8 u8FaultSt)
-{
-    /* Notify DPM about the power fault*/
-    gasDPM[u8PortNum].u8PowerFaultISR |= u8FaultSt;
-}
 #endif 
 
+/*************************************VBUS & VCONN on/off Timer APIS*********************************/
 void DPM_VBUSOnOffTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {   
     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
@@ -769,7 +762,6 @@ void DPM_VBUSOnOffTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 }
-
 void DPM_SrcReadyTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
     if(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
@@ -787,8 +779,7 @@ void DPM_SrcReadyTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 }
 
 void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
-{
-  
+{ 
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
     
@@ -819,12 +810,9 @@ void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
             
             DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SNK Powered OFF state");
-        }
-        
-        
+        }       
         gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
-        
     }
     else
     {
@@ -832,7 +820,6 @@ void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
         PE_SendHardResetMsg(u8PortNum);    
     }    
 }
-
 
 void DPM_VCONNOFFErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 {  
@@ -850,12 +837,4 @@ void DPM_ResetVCONNErrorCnt (UINT8 u8PortNum)
 {  
     gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;  
 }
-
-UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
-{
-
-    UINT8 u8HardResetProgressStatus = ((gasPolicy_Engine[u8PortNum].u8PEPortSts & \
-                                        PE_HARDRESET_PROGRESS_MASK) >> PE_HARDRESET_PROGRESS_POS);
-    return u8HardResetProgressStatus;
-
-}
+/*******************************************************************************/
