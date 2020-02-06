@@ -207,6 +207,47 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
+/************************Client Request Enum******************************/
+typedef enum DPM_ClientRequest
+{    
+    eMCHP_PSF_DPM_RENEGOTIATE=1,
+    eMCHP_PSF_DPM_HANDLE_VBUS_FAULT,
+    eMCHP_PSF_DPM_GET_SNK_CAPS
+}eMCHP_PSF_DPM_ClientRequest;
+
+/**************************************************************************************************
+Summary:
+	PSF DPM Client Request Type enum
+Description:
+    eMCHP_PSF_DPM_ClientRequest enum defines all the Client Request type 
+    DPM can handle in DPM_HandleClientRequest.
+ 
+    eMCHP_PSF_DPM_RENEGOTIATE: To initiate a renegotiation between the port 
+    partner, this client request is posted. On completion of the request,
+    eMCHP_PSF_PD_CONTRACT_NEGOTIATED is posted in notification DPM callback.
+ 
+    eMCHP_PSF_DPM_HANDLE_VBUS_FAULT: 
+    PSF has inbuilt fault mechanism to handle VCONN OCS, VBUS OCS through 
+    FAULT_IN pin, Over Voltage and Under voltage. If external VBUS fault is 
+    detected by the system, for PSF to handle this fault, Client request 
+    eMCHP_PSF_DPM_HANDLE_VBUS_FAULT shall be posted.
+    1)	When fault occurs at implicit contract, Type C error recovery is entered. 
+    When eMCHP_PSF_DPM_HANDLE_VBUS_FAULT is posted, PSF enters error recovery 
+    notifying eMCHP_PSF_ERROR_RECOVERY followed by Type C attach notifying 
+    eMCHP_PSF_TYPEC_CC1_ATTACH/ eMCHP_PSF_TYPEC_CC2_ATTACH indicating the request 
+    is processed completely.
+    2) When a fault is notified during an explicit contract through the client 
+    request, HardReset is sent followed by negotiation. It is indicated by 
+    eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification indicating request is 
+    processed completely.
+
+    eMCHP_PSF_DPM_GET_SNK_CAPS:
+    Application can get the sink capability by sending the Get_Sink_Cap 
+    Control message by raising a client request eMCHP_PSF_DPM_GET_SNK_CAPS.
+    On the request is complete, either eMCHP_PSF_GET_SNK_CAPS_RCVD or 
+    eMCHP_PSF_GET_CAPS_NOT_RCVD notification is posted based on the response 
+    received for Get_Sink_Cap message.
+*******************************************************************************/	
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Routines
@@ -819,6 +860,31 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum);
 
 **************************************************************************************************/
 void DPM_EnablePowerFaultDetection(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_HandleClientRequest(UINT8 u8PortNum, eMCHP_PSF_DPM_ClientRequest ePDMClientRequestType)
+    Summary:
+        API handles client request from Application layer. 
+    Devices Supported:
+        UPD350 REV A
+    Description:
+        Application layer can call this API for DPM to handle any Client request 
+        listed in eMCHP_PSF_DPM_ClientRequest enum than includes Renegotiation,
+        Power Fault handling.
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        eMCHP_PSF_DPM_ClientRequest - Client Request Type requested by 
+    Return:
+        TRUE - If the DPM is ready to handle the Client Request
+        FALSE - If the DPM is busy, Application layer has to retry later. 
+    Remarks:
+        None.
+**************************************************************************************************/
+UINT8 DPM_HandleClientRequest(UINT8 u8PortNum, eMCHP_PSF_DPM_ClientRequest ePDMClientRequestType);
+
 
 #endif /*_POLICY_MANAGER_H_*/
 

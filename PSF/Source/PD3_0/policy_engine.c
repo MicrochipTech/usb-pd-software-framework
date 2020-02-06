@@ -1493,3 +1493,23 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum)
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 
 }
+/******************************************************************************/
+UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
+{
+    UINT8 u8Return = FALSE;    
+    if ((DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) &&
+            (gasPolicy_Engine[u8PortNum].ePEState == ePE_SRC_READY) &&
+          (gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_READY_END_AMS_SS))  
+    {
+        u8Return = TRUE;
+    }
+    else if ((gasPolicy_Engine[u8PortNum].ePEState == ePE_SNK_READY) &&
+          (gasPolicy_Engine[u8PortNum].ePESubState == ePE_SNK_READY_IDLE_SS ))  
+    {
+        u8Return = TRUE;
+    }
+    return u8Return;
+}
+/*******************************************************************************/
+
+

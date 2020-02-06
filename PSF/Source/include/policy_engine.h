@@ -1082,5 +1082,24 @@ void PE_NoResponseTimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
         None.
 **************************************************************************************************/
 void PE_SnkRunStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
-/**************************************************************************************************/
+/**************************************************************************************************
+    Function:
+        UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
+    Summary:
+        Checks whether PE is idle.
+    Devices Supported:
+        UPD350 REV A
+    Description:
+        This API is called to check whether Policy Engine is Idle state.        
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port Number.Value passed will be less than CONFIG_PD_PORT_COUNT.
+    Return:
+        TRUE - If Policy Engine is IDLE
+        FALSE- If Policy Engine is not IDLE.
+    Remarks:
+        None.
+**************************************************************************************************/
+UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum); 
 #endif /*_POLICY_ENGINE_H_*/
