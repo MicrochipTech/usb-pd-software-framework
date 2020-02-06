@@ -1436,6 +1436,9 @@ Description:
 	exceeds the max fault count,CC termination on the port is removed until the physical detach of
 	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery.
 	This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+ 
+    <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
+    established with the Port partner.
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1446,7 +1449,8 @@ eMCHP_PSF_TYPEC_CC1_ATTACH,         // Port partner attached at CC1 orientation
 eMCHP_PSF_TYPEC_CC2_ATTACH,         // Port partner attached at CC2 orientation
 eMCHP_PSF_UPDS_IN_IDLE,             // All the UPD350s are in Idle
 eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
-eMCHP_PSF_VBUS_PWR_FAULT            // VBUS Power Fault has occurred
+eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
+eMCHP_PSF_PD_CONTRACT_NEGOTIATED    // PD Contract established with port partner
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************

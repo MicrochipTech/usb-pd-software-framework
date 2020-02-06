@@ -838,3 +838,57 @@ void DPM_ResetVCONNErrorCnt (UINT8 u8PortNum)
     gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;  
 }
 /*******************************************************************************/
+
+/************************DPM Client Request******************************/
+
+UINT8 DPM_HandleClientRequest(UINT8 u8PortNum,eMCHP_PSF_DPM_ClientRequest eDPMClientRequestType)
+{
+    UINT8 u8RetVal = TRUE;
+    switch(eDPMClientRequestType)
+    {
+        case eMCHP_PSF_DPM_RENEGOTIATE:
+        {
+            if(TRUE == PE_IsPolicyEngineIdle(u8PortNum))
+            {
+                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+                {
+                    /**Send Source capability Policy Engine states are set*/
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
+                }
+                else
+                {
+                    /*TBD for Sink*/
+                }
+            }
+            else
+            {
+                u8RetVal = FALSE;
+            }
+            break;
+        }
+        case eMCHP_PSF_DPM_HANDLE_VBUS_FAULT:
+        {
+            /**VBUS OCS flag is set for DPM to handle the VBUS fault*/
+            MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+            gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
+            MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+            break;
+        }
+        case eMCHP_PSF_DPM_GET_SNK_CAPS:
+        {
+            if((PE_IsPolicyEngineIdle(u8PortNum)) && 
+                    (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE))
+            {
+                /*To be handled*/
+            }
+            else
+            {
+                u8RetVal = FALSE;
+            }
+            break;
+        }
+    }
+    return u8RetVal;
+}           
+

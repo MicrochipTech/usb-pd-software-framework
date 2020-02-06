@@ -473,7 +473,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */
                     (void)PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
                     #endif
-                  
+                    /* Notify that PD contract is established*/    
+                    MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                     break;
                 }
                 
