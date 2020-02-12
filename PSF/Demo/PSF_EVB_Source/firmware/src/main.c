@@ -69,12 +69,20 @@ int main ( void )
 		/*PSF stack Run*/
 		MchpPSF_RUN();
         
+        #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)   
+
+        #if INCLUDE_POWER_FAULT_HANDLING 
+
         if(FALSE != gu8MPQAlertPortMsk)
         {           
             MPQDCDC_FaultHandler(); 
             
             gu8MPQAlertPortMsk = FALSE;
         }
+        
+        #endif
+
+        #endif
     }
 
     /* Execution should not come here during normal operation */
