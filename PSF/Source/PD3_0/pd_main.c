@@ -49,7 +49,11 @@ UINT8 MchpPSF_Init(void)
     
     /*Initialize HW SPI module defined by the user*/
     u8InitStatus &= MCHP_PSF_HOOK_UPDHW_INTF_INIT();
-    
+	
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+    /*Initialize HW I2C module interface defined by the user*/
+    MCHP_PSF_HOOK_UPDI2C_DCDC_INTF_INIT();
+#endif    
     
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
@@ -93,6 +97,22 @@ UINT8 MchpPSF_Init(void)
             PWRCTRL_initialization(u8PortNum);
         }
     }
+    
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+    for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    {
+        if (UPD_PORT_ENABLED == ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData \
+                                    & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
+        {
+            (void)MCHP_PSF_HOOK_I2CDCDCAlertInit(u8PortNum);
+            (void)MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_INIT(u8PortNum);
+
+        }
+    }
+#endif
+
 	    
     DPM_StateMachineInit();  
 

@@ -54,7 +54,6 @@ static void UPD_GPIOGenericOutputInit(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8Pi
 
 void PWRCTRL_initialization(UINT8 u8PortNum)
 {
-    #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
     UPD_GPIOGenericOutputInit(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnPio, \
                                     gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnMode);
 
@@ -63,16 +62,18 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
 
     UPD_GPIOGenericOutputInit(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPio, \
                                     gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPioMode);
-    
+       
+    #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
     for(UINT8 u8VSELIndex = SET_TO_ZERO; u8VSELIndex < PWRCTRL_VSEL_PIO_MAX_COUNT; u8VSELIndex++)
     {
         UPD_GPIOGenericOutputInit(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VSELPio[u8VSELIndex], \
                                 gasPortConfigurationData.sPortConfigData[u8PortNum].u8VSELPioMode[u8VSELIndex]);
     }
+    #endif /*CONFIG_DCDC_CTRL*/
 
     UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPio, \
                 gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPioMode, (UINT8)UPD_GPIO_ASSERT);
-    #endif /*CONFIG_DCDC_CTRL*/
+
 
     /*Hook to modify or overwrite the default Port Power control initialization */
     MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
@@ -102,16 +103,20 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
             gasPortConfigurationData.sPortConfigData[u8PortNum].u8VSELPioMode[u8VSELIndex], \
             (((gasPortConfigurationData.sPortConfigData[u8PortNum].u8VSELTruthTable[u8PDOIndex] & BIT(u8VSELIndex)) == BIT(u8VSELIndex)) \
             ? (UINT8)UPD_GPIO_ASSERT : (UINT8)UPD_GPIO_DE_ASSERT));
-    }
-    #endif /*CONFIG_DCDC_CTRL*/
+    }   
+    
+    #elif (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
+    MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current); 
+    
+    #endif /*CONFIG_DCDC_CTRL*/
+    
     /*Hook to modify or overwrite the default Port Power control VBUS drive */
     MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS (u8PortNum, u16VBUSVoltage, u16Current);
 }
 /************************************************************************************/
 void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
-{
-    #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 
+{ 
     UINT8 u8VbusDisMode = gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnMode;
     if (u8EnaDisVBUSDIS == TRUE)
     {
@@ -123,7 +128,6 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
         UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSDisPio, \
                 u8VbusDisMode, (UINT8)UPD_GPIO_DE_ASSERT);
     }
-    #endif /*CONFIG_DCDC_CTRL*/
 
     /*Hook to modify or overwrite the default Port Power control VBUS discharge*/
     MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH(u8PortNum, u8EnaDisVBUSDIS);
