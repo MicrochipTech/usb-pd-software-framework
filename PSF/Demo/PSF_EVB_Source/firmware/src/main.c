@@ -47,7 +47,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include "definitions.h"                // SYS function prototypes
 #include "psf_stdinc.h"                 // PSF include file
 
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Main Entry Point
@@ -69,6 +68,13 @@ int main ( void )
 		
 		/*PSF stack Run*/
 		MchpPSF_RUN();
+        
+        if(FALSE != gu8MPQAlertPortMsk)
+        {           
+            MPQDCDC_FaultHandler(); 
+            
+            gu8MPQAlertPortMsk = FALSE;
+        }
     }
 
     /* Execution should not come here during normal operation */

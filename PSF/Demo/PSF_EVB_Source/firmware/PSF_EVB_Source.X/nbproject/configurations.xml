@@ -23,6 +23,10 @@
               <itemPath>../src/config/default/peripheral/port/plib_port.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="sercom" projectFiles="true">
+              <logicalFolder name="i2cm" displayName="i2cm" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h</itemPath>
+                <itemPath>../src/config/default/peripheral/sercom/i2cm/plib_sercom_i2c_master.h</itemPath>
+              </logicalFolder>
               <logicalFolder name="f1" displayName="spim" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h</itemPath>
                 <itemPath>../src/config/default/peripheral/sercom/spim/plib_sercom_spi_common.h</itemPath>
@@ -104,6 +108,7 @@
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.h</itemPath>
           <itemPath>../../../../SOC_Portable/SAMD20/PSF_APIHook.h</itemPath>
+          <itemPath>../../../../SOC_Portable/SAMD20/mpq_dc_dc_control.h</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="Source" displayName="Source" projectFiles="true">
@@ -155,6 +160,9 @@
               <itemPath>../src/config/default/peripheral/port/plib_port.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="sercom" projectFiles="true">
+              <logicalFolder name="i2cm" displayName="i2cm" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.c</itemPath>
+              </logicalFolder>
               <logicalFolder name="f1" displayName="spim" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/spim/plib_sercom0_spi.c</itemPath>
               </logicalFolder>
@@ -186,6 +194,7 @@
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.c</itemPath>
+          <itemPath>../../../../SOC_Portable/SAMD20/mpq_dc_dc_control.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="Source" displayName="Source" projectFiles="true">

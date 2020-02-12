@@ -50,6 +50,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include "PSF_Config.h"
 #include "Drivers.h"
 #include "PDSource_App.h"
+#include "mpq_dc_dc_control.h"
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: UPD350 Hardware Interface Configuration
@@ -285,7 +287,29 @@ Remarks:
             SAMD20_SPIReaddriver(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)
 
 // *****************************************************************************
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_INTF_INIT() SAMD20_I2CDCDCInitialisation()
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_READ(u16Address,pu8ReadBuf,u8ReadLen)       \
+            SAMD20_I2CDCDCReadDriver(u16Address,pu8ReadBuf,u8ReadLen)
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE(u16Address,pu8WriteBuf,u8WriteLen)     \
+            SAMD20_I2CDCDCWriteDriver(u16Address,pu8WriteBuf,u8WriteLen)
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE_READ(u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
+            SAMD20_I2CDCDCWriteReadDriver(u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_IsBusy() SAMD20_I2CDCDCIsBusyDriver()
+#define MCHP_PSF_HOOK_I2CDCDCAlertInit(byPortNum) SAMD20_I2CDCDCAlertInit(byPortNum)
 // *****************************************************************************
+
+// *****************************************************************************
+#if (I2C_DCDC_TYPE == MPQ)
+
+    #define MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_INIT(byPortNum) MPQDCDC_Initialize(byPortNum)
+
+    #define MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_SET_POWER(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current) \
+        MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current)
+
+#endif //#if (I2C_DCDC_TYPE == MPQ)
+#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+
 // Section: PDTimer configuration
 // *****************************************************************************
 // *****************************************************************************
