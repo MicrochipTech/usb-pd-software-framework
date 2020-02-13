@@ -116,6 +116,8 @@
 #define SAMD20_I2C_INSTANCE     3
 #endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
+#define SAMD20_UART_INSTANCE  3
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions
