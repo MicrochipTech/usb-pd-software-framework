@@ -75,10 +75,9 @@ void PB_Init(void)
             {
                 PB_InitializePortParam(u8PortNum); 
                 
-                /* To-do : Check if initializing the default PDOs to 15W is 
-                 possible. It yes, do it here. Else, 
-                 do it once attach notification is received */
-                /* Deducting the minimum guaranteed power from Pool Power */
+                PB_UpdatePDO(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
+                
+                /* Deduct the minimum guaranteed power from Pool Power */
                 gsPBIntSysParam.u16PoolPowerIn250mW -= gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW; 
             }
             
@@ -209,9 +208,10 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
 void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattage)
 {
     
-    /* To-do: Call the PPM function which forms the PDO and initiates negotiation 
+    /* To-do: Call the PPM function which initiates negotiation 
        Add a UINT8 u8Negotiate argument if this fn is going to be called from init */ 
-    
+    DPM_HandleClientRequest(u8PortNum, eMCHP_PSF_DPM_RENEGOTIATE);  
+            
     gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = u16NewWattage;   
 }
 
@@ -219,6 +219,8 @@ void PB_InitiateGetSinkCapsWrapper(UINT8 u8PortNum)
 {
     
     /* To-do : Call the PPM function which initiates Get_Sink_Caps message to the partner */
+    DPM_HandleClientRequest (u8PortNum, eMCHP_PSF_DPM_GET_SNK_CAPS);
+    
     PB_ChangePortStates (u8PortNum, eRENEGOTIATION_IN_PROGRESS, eGET_SINKCAPS_SENT);
     
     gasPBIntPortParam[u8PortNum].eGetSinkCapSS = eSINK_CAPS_INITIATED; 

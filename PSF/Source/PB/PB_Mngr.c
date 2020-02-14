@@ -38,7 +38,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 void PB_HandlePPMEvents (UINT8 u8PortNum, UINT8 ePPM_EVENT)
 {
     UINT32 u32SourcePDO            = SET_TO_ZERO; 
-    UINT32 u32SinkPDO              = SET_TO_ZERO;
+    UINT32 u32SinkRDO              = SET_TO_ZERO;
     UINT16 u16GivebackPwr          = SET_TO_ZERO;
     UINT16 u16PrevNegPwr           = SET_TO_ZERO;
     UINT16 u16NewWattage           = SET_TO_ZERO;
@@ -50,6 +50,7 @@ void PB_HandlePPMEvents (UINT8 u8PortNum, UINT8 ePPM_EVENT)
         case eNOTIFY_PPM_ATTACHED: 
             
             /* To-do : Trigger 15W negotiation if it is not done in init */
+            PB_InitiateNegotiationWrapper(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
             gasPBIntPortParam[u8PortNum].u8Attach = TRUE;
             gasPBIntPortParam[u8PortNum].u8AttachSeqNo = gu8AttachSeq++;
             
@@ -176,9 +177,10 @@ void PB_HandlePPMEvents (UINT8 u8PortNum, UINT8 ePPM_EVENT)
             /* To-do : Call the PPM function which gives the current PDO 
                selected by Sink and RDO raised by Sink. Update them in 
                u32SourcePDO and u32RDO variables */ 
-            
+            u32SourcePDO = gasDPM[u8PortNum].u32NegotiatedPDO; 
+            u32SinkRDO = gasDPM[u8PortNum].u32SinkReqRDO;
             /* Calculate the power that was negotiated in the last contract */
-            PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkPDO); 
+            PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkRDO); 
             
             /* If initial negotiation complete, go ahead and publish max caps */
             if (gasPBIntPortParam[u8PortNum].u8InitialNegotationDone)

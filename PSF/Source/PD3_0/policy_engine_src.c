@@ -198,7 +198,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                  
                     else
                     {
-						/* Send Source Cabapilities message to Port partner */
+						/* Send Source Capabilities message to Port partner */
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-ENTRY_SS: Send Source Capabilities\r\n");
                         DPM_Get_Source_Capabilities(u8PortNum, &u8SrcPDOCnt, u32DataObj);
                         
@@ -254,7 +254,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					/* Set PD Status as Connected */
                     gasPolicy_Engine[u8PortNum].u8PEPortSts |= PE_PDCONNECTED_STS_MASK;
                     
-					/* Start Sender Reseponse timer and Set the timer callback to transition to 
+					/* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_SRC_HARD_RESET sate and ePE_SRC_HARD_RESET_ENTRY_SS sub state if timeout happens */
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                            CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS,
@@ -475,6 +475,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     #endif
                     /* Notify that PD contract is established*/    
                     MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
+                    
                     break;
                 }
                 
@@ -880,7 +881,86 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             }
             break;  
         }
-		
+		/************ PE_SRC_GET_SINK_CAP *****************/ 
+        case ePE_SRC_GET_SINK_CAP: 
+        {
+           switch(gasPolicy_Engine[u8PortNum].ePESubState) 
+           {
+                case ePE_SRC_GET_SINK_CAP_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_ENTRY_SS\r\n"); 
+                    
+                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_SINK_CAP, \
+                                            PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+
+                    u8TransmitSOP = PRL_SOP_TYPE;
+                    u32pTransmit_DataObj = NULL;
+                    Transmit_cb = PE_StateChange_TransmitCB;                 
+                        
+                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED, \
+                                                    ePE_SRC_READY, ePE_SRC_READY_END_AMS_SS);
+                                                
+                    u8IsTransmit = TRUE;                                             
+                   
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_IDLE_SS;
+                    
+                    break; 
+                }                   
+                
+                case ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED: 
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED\r\n"); 
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_IDLE_SS; 
+                    
+                    /* Start Sender Response timer and Set the timer callback to transition to 
+					ePE_SRC_READY state and ePE_SRC_READY_ENTRY_SS sub state if timeout happens */
+                    gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                           CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS,
+                                                            PE_SubStateChange_TimerCB, u8PortNum,  
+                                                            (UINT8)ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT); 
+                    
+                    break; 
+                }
+                  
+                case ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT:
+                {
+                   DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT\r\n"); 
+                   gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY; 
+                   gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+                   
+                   MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD);
+                   
+                   break;  
+                }   
+                
+                case ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED\r\n"); 
+                    /* To-do : Pass the sink caps msg to DPM and send notification */         
+                    DPM_StoreSinkCapabilities (u8PortNum, (UINT16) u32Header, (UINT32*) pu8DataBuf); 
+                    
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY; 
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+                    
+                    MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_GET_SNK_CAPS_RCVD);
+                    
+                    break; 
+                }
+                
+                case ePE_SRC_GET_SINK_CAP_IDLE_SS: 
+                {    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_IDLE_SS\r\n"); 
+                    break; 
+                }   
+                
+                default: 
+                {
+                    break; 
+                }
+           }
+           break;
+        } 
+            
         /************* PE_SRC_SEND_SOFT_RESET ******************/
         case ePE_SRC_SEND_SOFT_RESET:
         {

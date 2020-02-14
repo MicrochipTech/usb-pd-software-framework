@@ -849,6 +849,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgData
 {
     UINT32 u32PortCfgData;
     UINT32 u32PDO[7];
+    UINT32 u32PartnerPDO[7];
     UINT8 u8PDOCnt;
     UINT8 u8VBUSEnPio;
     UINT8 u8VBUSEnMode;
@@ -1474,7 +1475,9 @@ eMCHP_PSF_TYPEC_CC2_ATTACH,         // Port partner attached at CC2 orientation
 eMCHP_PSF_UPDS_IN_IDLE,             // All the UPD350s are in Idle
 eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
-eMCHP_PSF_PD_CONTRACT_NEGOTIATED    // PD Contract established with port partner
+eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
+eMCHP_PSF_GET_SNK_CAPS_RCVD,        // Sink Caps received from Port Partner
+eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD         // Sink Caps not received from Port Partner
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************

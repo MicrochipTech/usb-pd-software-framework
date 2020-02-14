@@ -885,6 +885,7 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum);
 **************************************************************************************************/
 UINT8 DPM_HandleClientRequest(UINT8 u8PortNum, eMCHP_PSF_DPM_ClientRequest ePDMClientRequestType);
 
+void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf);
 
 #endif /*_POLICY_MANAGER_H_*/
 

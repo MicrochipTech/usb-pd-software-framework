@@ -325,6 +325,19 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
     }
 }
 
+
+void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf)
+{
+    DEBUG_PRINT_PORT_STR(u8PortNum, "Inside DPM_StoreSinkCapabilities\r\n");
+    
+    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < PRL_GET_OBJECT_COUNT(u16Header); u8PDOIndex++)
+    {
+      gasPortConfigurationData.sPortConfigData[u8PortNum].u32PartnerPDO[u8PDOIndex] = u32DataBuf[u8PDOIndex];   
+    }
+     
+}
+  
+
 /*********************************DPM VDM Cable APIs**************************************/
 UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
 {
@@ -877,10 +890,11 @@ UINT8 DPM_HandleClientRequest(UINT8 u8PortNum,eMCHP_PSF_DPM_ClientRequest eDPMCl
         }
         case eMCHP_PSF_DPM_GET_SNK_CAPS:
         {
-            if((PE_IsPolicyEngineIdle(u8PortNum)) && 
+            if(TRUE == (PE_IsPolicyEngineIdle(u8PortNum)) && 
                     (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE))
             {
-                /*To be handled*/
+                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
+                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;
             }
             else
             {
