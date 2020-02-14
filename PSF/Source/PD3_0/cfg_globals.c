@@ -122,7 +122,10 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     gasPortConfigurationData.sPortConfigData[u8PortNum].u8VCONNOCSDebounce = CONFIG_VCONN_OCS_DEBOUNCE_IN_MS;
     gasPortConfigurationData.sPortConfigData[u8PortNum].u8MaxFaultCntVBUS = CONFIG_MAX_VBUS_POWER_FAULT_COUNT;
     gasPortConfigurationData.sPortConfigData[u8PortNum].u8MaxFaultCntVCONN = CONFIG_MAX_VCONN_FAULT_COUNT;
-    gasPortConfigurationData.sPortConfigData[u8PortNum].u16PowerGoodTimer = MILLISECONDS_TO_TICKS(10000);
+    gasPortConfigurationData.sPortConfigData[u8PortNum].u16PowerGoodTimer = MILLISECONDS_TO_TICKS(10000);    
+    gasPortConfigurationData.sPBPortConfigData[u8PortNum].u16MaxPrtCurrent = 0x12C; 
+    gasPortConfigurationData.sPBPortConfigData[u8PortNum].u16MaxPrtPwrBankA = 0x00F0; 
+    gasPortConfigurationData.sPBPortConfigData[u8PortNum].u8PBEn = 0x01; 
 }
 
 void CFG_LoadDefaults ()
@@ -139,7 +142,10 @@ void CFG_LoadDefaults ()
     gasPortConfigurationData.u16IDHeaderVDO = ID_HEADER_VDO;
     gasPortConfigurationData.u8HWVersion = HW_VERSION;
     gasPortConfigurationData.u8SiVersion = SILICON_VERSION;
-    gasPortConfigurationData.u8PwrThrottleCfg = PD_THROTTLE_BANK_A; 
+    gasPortConfigurationData.u8PwrThrottleCfg = PD_THROTTLE_BANK_A;
+    gasPortConfigurationData.u8PBEnableSelect = 0x10; 
+    gasPortConfigurationData.u16SystemPpwerBankA = 0x01E0; 
+    gasPortConfigurationData.u16MinPowerBankA = 0x003C; 
     
     for (u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {

@@ -1218,7 +1218,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
             /* Collision avoidance timer is killed in case active*/
            PRL_KillCAorChunkSMTimer (u8PortNum);
            
-           /* PRL_TX_IDLE_ST is assinged*/
+           /* PRL_TX_IDLE_ST is assigned*/
             PRL_ChangeTxState (u8PortNum, PRL_TX_IDLE_ST);
     }
     

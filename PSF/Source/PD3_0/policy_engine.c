@@ -557,7 +557,19 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     }
                     #endif
                     break;
-                }                
+                }   
+                case PE_DATA_SINK_CAP:
+                {
+                    DEBUG_PRINT_PORT_STR(u8PortNum, "PE_DATA_SINK_CAP\r\n");
+                    /* To-do : Handle the received Sink caps message */
+                    if (ePE_SRC_GET_SINK_CAP == gasPolicy_Engine[u8PortNum].ePEState)
+                    {
+                        DEBUG_PRINT_PORT_STR(u8PortNum, "Inside PE_DATA_SINK_CAP if\r\n")
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED);
+                    }
+                    break; 
+                }
                 default:
                 {
                     break;
