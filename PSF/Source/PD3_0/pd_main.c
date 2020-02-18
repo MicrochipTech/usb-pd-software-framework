@@ -60,14 +60,14 @@ UINT8 MchpPSF_Init(void)
         /*If Timer and HW module of SOC are not initialized properly disable all the ports*/
         if (TRUE != u8InitStatus)
         {
-            gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData &= \
+            gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
                                                        ~(TYPEC_PORT_ENDIS_MASK);
         }
         /*UPD350 Reset GPIO Init*/
         MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum);
     }
 
-    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(&gasPortConfigurationData);  
+    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(&gasCfgStatusData);  
         
 	/*Initialize Internal global variables*/
     IntGlobals_PDInitialization();
@@ -87,7 +87,7 @@ UINT8 MchpPSF_Init(void)
     
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (UPD_PORT_ENABLED == ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData \
+        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
             /*User defined UPD Interrupt Initialization for MCU*/
@@ -103,7 +103,7 @@ UINT8 MchpPSF_Init(void)
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (UPD_PORT_ENABLED == ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData \
+        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
             (void)MCHP_PSF_HOOK_I2CDCDCAlertInit(u8PortNum);
@@ -112,7 +112,6 @@ UINT8 MchpPSF_Init(void)
         }
     }
 #endif
-
 	    
     DPM_StateMachineInit();  
 
@@ -126,7 +125,7 @@ void MchpPSF_RUN()
 {
 	for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
-        if (UPD_PORT_ENABLED == ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData \
+        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                   & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
            DPM_RunStateMachine (u8PortNum);

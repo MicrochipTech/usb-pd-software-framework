@@ -56,7 +56,7 @@ void PE_InitPort (UINT8 u8PortNum)
     gasPolicy_Engine[u8PortNum].u32MsgHeader = SET_TO_ZERO;
     gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = SET_TO_ZERO;
 
-    if ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
+    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
     {
         /*Setting the CapsCounter to 0 */
         gasPolicy_Engine[u8PortNum].u8CapsCounter = SET_TO_ZERO;
@@ -560,13 +560,12 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 }   
                 case PE_DATA_SINK_CAP:
                 {
-                    DEBUG_PRINT_PORT_STR(u8PortNum, "PE_DATA_SINK_CAP\r\n");
-                    /* To-do : Handle the received Sink caps message */
+                    /* Once response for Get_Sink_Cap is received, kill the Sender 
+                       Response Timer and change the PE sub-state as  ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED */
                     if (ePE_SRC_GET_SINK_CAP == gasPolicy_Engine[u8PortNum].ePEState)
-                    {
-                        DEBUG_PRINT_PORT_STR(u8PortNum, "Inside PE_DATA_SINK_CAP if\r\n")
+                    {                       
                         PE_KillPolicyEngineTimer (u8PortNum);
-                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED);
+                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS);
                     }
                     break; 
                 }
@@ -821,7 +820,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     Transmit_cb = PE_StateChange_TransmitCB;
 
-                    if ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) == \
+                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == \
                         PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if
@@ -871,7 +870,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     Transmit_cb = PE_StateChange_TransmitCB;
 
-                    if ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) == \
+                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == \
                         PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if
@@ -1110,7 +1109,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_VCS_TURN_ON_VCONN_ENTRY_SS:
                 {
                   
-                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Enterted the state\r\n");
+                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Entered the state\r\n");
                     
                     /*Turn ON VCONN*/
                     DPM_VConnOnOff (u8PortNum,DPM_VCONN_ON);

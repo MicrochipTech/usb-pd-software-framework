@@ -44,9 +44,35 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define HW_VERSION              0x00U
 #define SILICON_VERSION         0x00U
 
-#define PD_THROTTLE_BANK_A      0x00 
-#define PD_THROTTLE_BANK_B      0x01
-#define PD_THROTTLE_BANK_C      0x10
+#define PD_THROTTLE_BANK_A              0x00U 
+#define PD_THROTTLE_BANK_B              0x01U
+#define PD_THROTTLE_BANK_C              0x10U
+#define PD_THROTTLE_SHUTDOWN_MODE       0x11U
+
+/* Default Total System Power Bank A is 120W */
+#define CFG_PB_TOT_SYS_POWER_BANKA 0x01E0U
+/* Guaranteed Minimum Power for Bank A is 15W */
+#define CFG_PB_MIN_POWER_BANKA       0x003CU
+/* Default Total System Power Bank B is 120W */
+#define CFG_PB_TOT_SYS_POWER_BANKB 0x01E0U
+/* Guaranteed Minimum Power for Bank A is 15W */
+#define CFG_PB_MIN_POWER_BANKB       0x003CU
+/* Default Total System Power Bank C is 120W */
+#define CFG_PB_TOT_SYS_POWER_BANKC 0x01E0U
+/* Guaranteed Minimum Power for Bank A is 15W */
+#define CFG_PB_MIN_POWER_BANKC       0x003CU
+
+/* Default Max Port Power for Bank A is 60W */
+#define CFG_PB_MAX_PORT_POWER_BANKA  0x00F0U
+/* Default Max Port Power for Bank B is 60W */
+#define CFG_PB_MAX_PORT_POWER_BANKB  0x00F0U
+/* Default Max Port Power for Bank C is 60W */
+#define CFG_PB_MAX_PORT_POWER_BANKC  0x00F0U
+/* Default Max Port current is 3A */
+#define CFG_PB_MAX_PORT_CURRENT      0x012CU
+/* Default Enable PB for port 0 with Priority as 0*/
+#define CFG_PB_PORT_ENABLE           0x0001U
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data types and constants

@@ -845,54 +845,67 @@ Description:
 Remarks:
     None
 **************************************************************************************************/
-typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgData
+typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
 {
-    UINT32 u32PortCfgData;
-    UINT32 u32PDO[7];
-    UINT32 u32PartnerPDO[7];
-    UINT8 u8PDOCnt;
-    UINT8 u8VBUSEnPio;
-    UINT8 u8VBUSEnMode;
-    UINT8 u8FaultInPio;
-    UINT8 u8FaultInPioMode;
-    UINT8 u8VBUSDisPio;
-    UINT8 u8VBUSDisPioMode;
-    UINT8 u8DCDCEnPio;
-    UINT8 u8DCDCEnPioMode;
-    UINT8 u8VSELPio[3];
-    UINT8 u8VSELPioMode[3];
+    UINT32 u32CfgData;
+    UINT32 u32FixedPDO[7];
+    UINT8 u8FixedPDOCnt;
     UINT8 u8VSELTruthTable[8];
-    UINT8 u8OCSThreshold;
+    UINT8 u8OCSThresholdPercentage;
     UINT8 u8FaultInDebounce;
-    UINT8 u8OVThreshold;
-    UINT8 u8UVThreshold;
+    UINT8 u8OVThresholdPercentage;
+    UINT8 u8UVThresholdPercentage;
     UINT8 u8VCONNOCS;
     UINT8 u8VCONNOCSDebounce;
     UINT8 u8MaxFaultCntVBUS;
     UINT8 u8MaxFaultCntVCONN;
+    UINT8 u8NewPDOSlct;
+    UINT32 u32NewPDO[7];
+    UINT8 u8NewPDOCnt; 
     UINT16 u16PowerGoodTimer;
-    UINT8 u8Reserved[64];
-} MCHP_PSF_STRUCT_PACKED_END PORT_CONFIG_DATA, *PPORT_CONFIG_DATA;
+    UINT16 u16PortIntMask;
 
-typedef struct MCHP_PSF_STRUCT_PACKED_START _PBPortCfgData
+    UINT8 u8Pio_VBUS_EN;
+    UINT8 u8Mode_VBUS_EN;
+    UINT8 u8Pio_FAULT_IN;
+    UINT8 u8Mode_FAULT_IN;
+    UINT8 u8Pio_VBUS_DIS;
+    UINT8 u8mode_VBUS_DIS;
+    UINT8 u8Pio_DC_DC_EN;
+    UINT8 u8Mode_DC_DC_EN;
+    UINT8 u8Pio_VSEL[3];
+    UINT8 u8Mode_VSEL[3];
+    
+    UINT16 u16PortConnectStatus;
+    UINT16 u16PortStatusChange;
+    UINT16 u16AllocatedPower;
+    UINT16 u16NegoVoltage;
+    UINT16 u16NegoCurrent;
+    UINT16 u16PortIOStatus;
+    UINT16 u16PortFaultChangeBits;
+    UINT32 u32AdvertisedPDO[7];
+    UINT8 u8AdvertisedPDOCnt; 
+    UINT32 u32PartnerPDO[7];
+    UINT8 u8PartnerPDOCnt; 
+    UINT32 u32RDO;
+} MCHP_PSF_STRUCT_PACKED_END PORT_CFG_STATUS, *PPORT_CFG_STATUS;
+
+typedef struct MCHP_PSF_STRUCT_PACKED_START _PBPortCfgStatus
 {
     UINT16 u16MaxPrtPwrBankA;
     UINT16 u16MaxPrtPwrBankB;
     UINT16 u16MaxPrtPwrBankC;
     UINT16 u16MaxPrtCurrent;
-    UINT8 u8PBEn; 
-    UINT8 u8Priority; 
-} MCHP_PSF_STRUCT_PACKED_END PB_PORT_CONFIG_DATA, *PPB_PORT_CONFIG_DATA;
+    UINT8 u8PBEnablePriority; 
+} MCHP_PSF_STRUCT_PACKED_END PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
 
-typedef struct MCHP_PSF_STRUCT_PACKED_START _PBPortStatusData
+typedef struct MCHP_PSF_STRUCT_PACKED_START _PPSPortCfgStatus
 {
-    UINT16 u16AllocatedPower;
-    UINT16 u16NegoVoltage;
-    UINT16 u16NegoCurrent;
-} MCHP_PSF_STRUCT_PACKED_END PB_PORT_STATUS_DATA, *PPB_PORT_STATUS_DATA;
+    UINT8 u8PPSEnable; 
+    UINT32 u32PPSApdo[3];
+} MCHP_PSF_STRUCT_PACKED_END PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
 
-
-typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgData 
+typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgStatusData 
 {
     UINT8 u8MinorVersion;
     UINT8 u8MajorVersion;
@@ -905,29 +918,26 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgData
     UINT16 u16IDHeaderVDO;
     UINT8 u8HWVersion;
     UINT8 u8SiVersion;
-    PORT_CONFIG_DATA sPortConfigData[CONFIG_PD_PORT_COUNT];
+    PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT];
 
     /* Power Balancing Configurations */
-    UINT16 u16SystemPpwerBankA;
-    UINT16 u16MinPowerBankA;
-    UINT16 u16SystemPpwerBankB;
-    UINT16 u16MinPowerBankB;
-    UINT16 u16SystemPpwerBankC;
-    UINT16 u16MinPowerBankC;
     UINT8 u8PBEnableSelect;
-    UINT8 u8PwrThrottleCfg;  
-    PB_PORT_CONFIG_DATA sPBPortConfigData[CONFIG_PD_PORT_COUNT];	
-}MCHP_PSF_STRUCT_PACKED_END GLOBAL_CONFIG_DATA, * PGLOBAL_CONFIG_DATA;
+    UINT8 u8PwrThrottleCfg;
+    UINT16 u16SystemPowerBankA;
+    UINT16 u16MinPowerBankA;
+    UINT16 u16SystemPowerBankB;
+    UINT16 u16MinPowerBankB;
+    UINT16 u16SystemPowerBankC;
+    UINT16 u16MinPowerBankC;
+    UINT16 u16SharedPowerCapacity;
+    PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	
+    
+    /* PPS Configurations */
+    PPS_PORT_CFG_STATUS sPPSPerPortData[CONFIG_PD_PORT_COUNT];
+}MCHP_PSF_STRUCT_PACKED_END GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
 
-typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalStatusData 
-{
-UINT16 u16SharedPowerCapacity;
-PB_PORT_STATUS_DATA  sPBPortStatusdata[CONFIG_PD_PORT_COUNT];
-}MCHP_PSF_STRUCT_PACKED_END GLOBAL_STATUS_DATA, *PGLOBAL_STATUS_DATA;
+extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;
 
-extern GLOBAL_CONFIG_DATA gasPortConfigurationData;
-
-extern GLOBAL_STATUS_DATA gsPortStatusData; 
 /**************************************************************************************************
 Function:
     MCHP_PSF_HOOK_BOOT_TIME_CONFIG(CfgGlobals)

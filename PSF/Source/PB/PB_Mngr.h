@@ -90,6 +90,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PB_RDO_USB_COM_CAPABLE_MSK              (UINT32)(1 << PB_RDO_USB_COM_CAPABLE_BIT_POS)
 #define PB_RDO_NO_USB_SUSPEND_MSK               (UINT32)(1 << PB_RDO_NO_USB_SUSPEND_BIT_POS)
 
+/* Port Status Mask */
+#define PB_PORT_STATUS_ATTACH               0x01U
+#define PB_PORT_STATUS_INITIAL_NEG_DONE     0x02U
+#define PB_PORT_STATUS_PORT_IN_MIN_PWR      0x04U
+#define PB_PORT_STATUS_CAPABILITY_MISMATCH  0x08U
+#define PB_PORT_STATUS_RENEG_AGAIN          0x10U
+
 /* Power is represented in terms of 250mW */
 #define PB_POWER_UINTS_MILLI_W                  250000
 
@@ -131,36 +138,39 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PB_IS_GIVEBACK_SUPPORTED(u32RDO)  (((UINT32)u32RDO & PB_RDO_GIVEBACK_MSK)!= 0) 
 
 /* Macro to check if Capability Mismatch bit is set in RDO */
-#define PB_IS_CAPABILITY_MISMATCH(u32RDO) (((UINT32)u32RDO & PB_RDO_CAPABILITIY_MISMATCH_MSK) != 0) 
+#define PB_IS_CAPABILITY_MISMATCH(u32RDO) (((UINT32)u32RDO & PB_RDO_CAPABILITIY_MISMATCH_MSK) != 0)  
+
+/* Macro to get priority of the port from Config variable */
+#define PB_GET_PORT_PRIORITY(u8PortNum) ((gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & 0x06) >> 1) 
 
 /* Enumeration to define Power Balancing enabled PD Port States */
 typedef enum PBPortStates
 {
     ePB_IDLE_STATE = 1,
-    eRENEGOTIATION_IN_PROGRESS,
-    eRENEGOTIATION_PENDING,
-    eRENEGOTIATION_COMPLETED,
-    ePWR_RECOVERING_STATE,
+    ePB_RENEGOTIATION_IN_PROGRESS_STATE,
+    ePB_RENEGOTIATION_PENDING_STATE,
+    ePB_RENEGOTIATION_COMPLETED_STATE,
+    ePB_PWR_RECOVERING_STATE,
     ePB_INVALID_STATE = 0xFF
 }PB_PORT_STATES;
 
 /* Enumeration to define Power Balancing enabled PD Port Sub-States */
 typedef enum PortSubState
 {
-    eIDLE_STATE = 1,
-    eGET_SINKCAPS_SENT,
-    eFIRST_RENEGOTIATION_IN_PROGRESS,
-    eSECOND_RENEGOTIATION_IN_PROGRESS,
-    eWAIT_FOR_ASYNC_REQ,
-    eINVALID_STATE = 0xFF
+    ePB_IDLE_SS = 1,
+    ePB_GET_SINKCAPS_SENT_SS,
+    ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS,
+    ePB_SECOND_RENEGOTIATION_IN_PROGRESS_SS,
+    ePB_WAIT_FOR_ASYNC_REQ_SS,
+    ePB_INVALID_SS = 0xFF
 }PB_RENEG_SUBSTATE;
 
 /* Enumeration to define the state of Get_Sink_caps */
 typedef enum GetSinkCapsState
 {
-    eSINK_CAPS_NOT_INITIATED = 1,
-    eSINK_CAPS_INITIATED,
-    eSINK_CAPS_COMPLETED
+    ePB_SINK_CAPS_NOT_INITIATED =  1,
+    ePB_SINK_CAPS_INITIATED,
+    ePB_SINK_CAPS_COMPLETED
 }GET_SINK_CAP_SS;
 
 /* Enumeration to define the types of PDO */ 
@@ -192,7 +202,7 @@ typedef enum PDOtype
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntSysParam 
 {
     UINT32 u32AsyncReqWaitTimer;   /* Asynchronous Request Wait timer value*/
-    UINT16 u16MaxSharedCapIn250mW; /* Max Shared capacity of the system */
+    UINT16 u16TotalSysPwrIn250mW; /* Max Shared capacity of the system */
     UINT16 u16PoolPowerIn250mW;    /* Currently available pool power */
     UINT8 u8ReclaimPortNum;        /* Port from which power is reclaimed */
     UINT8 u8RecoverPortNum;        /* Port which is in recovering mode */  
@@ -229,11 +239,12 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
     PB_RENEG_SUBSTATE eRenegSubState; /* Sub-states of PB State Machine */
     GET_SINK_CAP_SS eGetSinkCapSS;    /* Get Sink caps sub-states */
     UINT8 u8AttachSeqNo;              /* Sequence in which ports are attached */
-    UINT8 u8Attach;                   /* Attach/Detach status of a port*/       
-    UINT8 u8InitialNegotationDone;    /* Initial Negotiation status of a port */
-    UINT8 u8IsPortInMinimalPower;     /* Power level status of a port */
-    UINT8 u8CapabilityMismatch;       /* Capability mismatch status reported by Sink */   
-    UINT8 u8RenegAgain;               /* Need of renegotiation for a port */
+    UINT8 u8PortStatusMask;     /* Bit - Position 
+        0     Attach 
+        1     InitialNegotiationDone 
+        2     IsPortInMinimalPower 
+        3     CapabilityMismatch 
+        4     RenegAgain */         
 } MCHP_PSF_STRUCT_PACKED_END  PB_INT_PORT_PARAM; 
 
 /*****************************************************************************
@@ -249,7 +260,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
 typedef struct MCHP_PSF_STRUCT_PACKED_START PDOInfo_tag
 {
     UINT32 PDOs[7]; /* Store the PDO's.  Allows for storage up to 7 PDOs */
-    UINT32 PDOcnt;  /* Number of PDO's in the array of PDO's */
+    UINT8 PDOcnt;  /* Number of PDO's in the array of PDO's */
 } MCHP_PSF_STRUCT_PACKED_END PDO_INFO;
 
 // *****************************************************************************
@@ -469,7 +480,7 @@ void PB_InitiateGetSinkCapsWrapper(UINT8 u8PortNum);
         None. 
 
 **************************************************************************************************/
-void PB_CalculateRequiredPortPower(UINT8 u8PortNum, const PDO_INFO *psPDOInfo);
+void PB_CalculateRequiredPortPower(UINT8 u8PortNum, UINT8 u8SinkPDOCnt, const UINT32 *pu32SinkCap);
 /**************************************************************************************************
     Function:
         UINT8 PB_NegotiateIfRequiredPwrAvailableInPool (UINT8 u8PortNum);
@@ -861,33 +872,6 @@ void PB_TimerEnd(UINT8, UINT8);
 
 **************************************************************************************************/
 void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
-
-
-/* Enumeration for indicating the PPM Events. 
-   To-do: Revisit this section to align with Poornima's PPM Design */
-typedef enum
-{
-    /** indicates attached to port partner */
-    eNOTIFY_PPM_ATTACHED,    
-    /** indicates detached from port partner */        
-    eNOTIFY_PPM_DETACHED,
-    /** indicates type C error recovery has occurred  */
-    eNOTIFY_STATUS_ERROR_RECOVERY,        
-    /** indicates a PD Contract has been negotiated  */
-    eNOTIFY_PPM_CONTRACT_NEGOTIATED,
-    /* VCONN OCS Detected */
-    eNOTIFY_PPM_VCONN_OCS_DETECTED,
-    /* Sink capabilities received */
-    eNOTIFY_PPM_SINK_CAPS_RCVD,
-    /* Extended Sink capabilities recieved */
-    eNOTIFY_PPM_SINK_CAPS_EXTD_RCVD,
-    /* Extended or Normal Sink capabilities not recieved */        
-    eNOTIFY_PPM_SINK_CAPS_NOT_RCVD,       
-    /* PPM is busy , Retry Later */
-    eNOTIFY_PPM_BUSY,
-    /*Hard Reset action complete*/
-    eNOTIFY_HARD_RESET
-}PPM_NOTIFY_TYPE;
 
 #endif /* _PB_MNGR_H */
 

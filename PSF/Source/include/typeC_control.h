@@ -474,15 +474,15 @@ TypeC_SetRpCollAvoidance API*/
     
 /*************************************************************/
 
-/*Masks used For getting Port Rp Currrent from gasPortConfigurationData structure*/ 
+/*Masks used For getting Port Rp Currrent from gasCfgStatusData structure*/ 
 #define TYPEC_PORT_RPVAL_MASK	        (BIT(4) | BIT(3))
 #define TYPEC_PORT_RPVAL_POS            3
 
 #define TYPEC_PORT_ENDIS_MASK           (BIT(5))
 #define TYPEC_PORT_ENDIS_POS            5
                 
-/* Masks used For getting Port Type from gasPortConfigurationData structure*/
-/* Define to get Power role from gasPortConfigurationData structure*/
+/* Masks used For getting Port Type from gasCfgStatusData structure*/
+/* Define to get Power role from gasCfgStatusData structure*/
 #define TYPEC_PORT_TYPE_MASK		    (BIT(2) | BIT(1) | BIT(0))
                 
 /*Defines for setting Rp value of source*/
@@ -616,7 +616,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
 
     Description:
         Port initialization of Power and data role is done based on the variable 
-        "gasPortConfigurationData[u8PortNum].u32CfgData"
+        "gasCfgStatusData[u8PortNum].u32CfgData"
 
     Conditions:
         This API is called inside the PD Stack initialisation API call .

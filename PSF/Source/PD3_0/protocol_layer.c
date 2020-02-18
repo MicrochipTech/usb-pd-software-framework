@@ -418,9 +418,9 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	/* Update the Tx Param reg */
 	UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_A, (PRL_TX_PARAM_A_EXPECT_GOODCRC | PRL_TX_PARAM_A_EN_FW_TX | u8TxSOPSelect | u8MsgId));
 	
-    #ifdef INCLUDE_PD_3_0
+    #if INCLUDE_PD_3_0
     /* If a Soft_Reset Message is pending, Needn't wait for Rp is set to SinkTxOk.*/
-	/* Tx Buffereing on CA*/
+	/* Tx Buffering on CA*/
 	if ((PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST == gasPRL [u8PortNum].u8TxStateISR) || \
             ((PRL_TX_CA_SINK_TXNG_ST == gasPRL [u8PortNum].u8TxStateISR) && \
                 (PRL_GET_MESSAGE_TYPE(u32Header) != PE_CTRL_SOFT_RESET)))
@@ -434,7 +434,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	}
     #endif
 	
-	/* Tx_Disacard handling*/
+	/* Tx_Discard handling*/
 	
 	if ((gasPRL[u8PortNum].u8RxRcvdISR) &&                			/* Checks whetehr a message is received */
             (PRL_SOP_TYPE == gasPRLRecvBuff[u8PortNum].u8SOPtype))     /* Checks whether received message is PRL_SOP_TYPE type*/
@@ -1020,7 +1020,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
         return u8Return;
     }
     
-    #if INCLUDE_PD_3_0
+    #if (TRUE == INCLUDE_PD_3_0) 
     UINT8 u8PDOIndex;
 /***********************************************Extended Message Handling**************************************************************/
 	/* if received message is extended message*/
