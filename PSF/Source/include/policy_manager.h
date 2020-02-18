@@ -885,6 +885,27 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum);
 **************************************************************************************************/
 UINT8 DPM_HandleClientRequest(UINT8 u8PortNum, eMCHP_PSF_DPM_ClientRequest ePDMClientRequestType);
 
+/**************************************************************************************************
+    Function:
+        void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf);
+    Summary:
+        Stores the Sink capabilities received from Port Partner. 
+    Description:
+        This API is used to store the Sink capabilities received from Port Partner 
+        that is attached as Sink. This will be called from PE Source State machine 
+        once the response is received for GET_SINK_CAP PD message. 
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u16Header - Header Data of the Sink Caps message
+        u32DataBuf - Data Buffer containing Sink capabilities 
+    Return:
+        None.  
+    Remarks:
+        None.
+**************************************************************************************************/
+
 void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf);
 
 #endif /*_POLICY_MANAGER_H_*/

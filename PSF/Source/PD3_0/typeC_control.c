@@ -106,7 +106,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
 	/*Setting VBUS_BLK_EN bit in VBUS Control 2 Register*/
     UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL2, TYPEC_VBUS_DEB_BLK_EN);
  
-	switch (gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK)
+	switch (gasCfgStatusData.sPerPortData [u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)
     {
       
 #if INCLUDE_PD_SOURCE
@@ -123,7 +123,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             					
             /*Write CCx Debounce clear enable register, CCx Match Enable register, 
             CCx sample enable register*/            
-            TypeC_SetCCDebounceVariable(u8PortNum, ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & \
+            TypeC_SetCCDebounceVariable(u8PortNum, ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
                                        TYPEC_PORT_RPVAL_MASK) >> TYPEC_PORT_RPVAL_POS));
             
             /*Setting Port Role as DFP in TYPEC_CC_HW_CTL register*/
@@ -131,7 +131,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
                          
             /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and 
             CC2*/ 
-            u16Data = ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_RPVAL_MASK)\
+            u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK)\
                       >> TYPEC_PORT_RPVAL_POS);
             
             /*Setting the Power role as Source*/
@@ -208,7 +208,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
     TypeC_ConfigCCComp (u8PortNum,TYPEC_CC_COMP_CTL_CC1_CC2);
     
     /*Setting the Power Module as per the port role*/
-    if((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
+    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
     {
         /*Setting the VBUS to vSafe0V before entering the State machine*/
         DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
@@ -284,7 +284,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
                      
-                    UINT8 u8RpValue = ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & \
+                    UINT8 u8RpValue = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
                                       TYPEC_PORT_RPVAL_MASK) >> TYPEC_PORT_RPVAL_POS);
 					 
 					/*Reset the VBUS threshold for 5V detection*/
@@ -954,7 +954,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
             {
-                /*In this SubState, VBUS and VCONN are disabled.Pull down and Pull up resisters
+                /*In this SubState, VBUS and VCONN are disabled.Pull down and Pull up resistors
                 are set to open disconnect*/
                 case TYPEC_ERROR_RECOVERY_ENTRY_SS:
                 {
@@ -968,14 +968,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Setting CC Comparator OFF*/
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
-                    if((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
+                    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
                     {                    
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                         
                          /*Disable DC_DC EN on VBUS fault to reset the DC-DC controller*/
-                        UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPio, \
-                            gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPioMode, (UINT8)UPD_GPIO_DE_ASSERT);
+                        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN, (UINT8)UPD_GPIO_DE_ASSERT);
                         
                         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                         /*Disable PIO ovveride enable*/
@@ -1062,14 +1062,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {    
                     
                     /*Resetting the Port Power Role*/
-                    if ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) \
+                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) \
                         == PD_ROLE_SOURCE)
                     {                      
                         UINT8 u8Data;
                         
                         /*Setting Rp Current Source as user given and Rd as Open disconnect in both 
                         CC1 and CC2*/ 
-                        u8Data = ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_RPVAL_MASK) \
+                        u8Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK) \
                                   >> TYPEC_PORT_RPVAL_POS);            
                         TypeC_SetPowerRole  (u8PortNum, TYPEC_ROLE_SOURCE, u8Data);
                         
@@ -1077,8 +1077,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SRC_ENTRY_SS; 
                         
                         /*Enable DC_DC EN on VBUS fault to reset the DC-DC controller*/
-                        UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPio, \
-                            gasPortConfigurationData.sPortConfigData[u8PortNum].u8DCDCEnPioMode, (UINT8)UPD_GPIO_ASSERT);
+                        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN, (UINT8)UPD_GPIO_ASSERT);
                         
                         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                         /*Enable PIO ovveride enable*/
@@ -1216,7 +1216,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         UPD_RegisterReadISR( u8PortNum, TYPEC_CC_MATCH, (UINT8 *)&u16Data, BYTE_LEN_2); 
         
         /*For Source Port*/
-        if((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
+        if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
         {             
             /*For a source port, a bit in CC Match register will be "cleared" , if a 
             match of the particular bit occurs. Hence the CC match register is negated while
@@ -1353,11 +1353,11 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             {
                 #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                     /*When PIO override is disabled; VBUS_EN is disabled by FW on Power fault*/
-                    /* Disable EN_VBUS gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio*/
-                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio),\
+                    /* Disable EN_VBUS gasUpdPioDcDcConfig[u8PortNum].u8Pio_VBUS_EN*/
+                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8Pio_VBUS_EN),\
                                         (UINT8 *)&u16Data, BYTE_LEN_1);
                     u16Data &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio),\
+                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8Pio_VBUS_EN),\
                                             (UINT8 *)&u16Data, BYTE_LEN_1);
                 #endif   
                /* undervoltage is considered if VBUS not lowered as part of Over voltage*/
@@ -1374,11 +1374,11 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
              gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP;
             #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                 /*When PIO override is disabled; VBUS_EN is disabled by FW on Power fault*/
-                /* Disable EN_VBUS gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnPio*/
-                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnPio),\
+                /* Disable EN_VBUS gasCfgStatusData.sPortCSRData[u8PortNum].u8Pio_VBUS_EN*/
+                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
 									(UINT8 *)&u16Data, BYTE_LEN_1);
                 u16Data &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnPio),\
+                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
 										(UINT8 *)&u16Data, BYTE_LEN_1);
             #endif
         }
@@ -1392,10 +1392,10 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
              u16Data =(UINT16)((u16Data * TYPEC_VBUS_THRX_UNITS_MILLI_V)
                               /gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor);
 
-            for (UINT8 u8Index = 0; u8Index < gasPortConfigurationData.sPortConfigData[u8PortNum].u8PDOCnt; u8Index++)
+            for (UINT8 u8Index = 0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt; u8Index++)
             {
                 /* PDO voltage for which VBUS Threshold was configured is determined */
-                if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasPortConfigurationData.sPortConfigData[u8PortNum].u32PDO[u8Index])) 
+                if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[u8Index])) 
                 {
                     /*Setting the VBUS Status flag for corresponding voltage
                         in u8IntStsISR variable*/
@@ -1637,7 +1637,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         
         UINT8 u8CCRead = UPD_RegReadByte (u8PortNum, TYPEC_CC_CTL1_HIGH);
                
-        if((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
+        if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
         {       
             /*Powered cable attached in CC1 when CC1 is greater than CC2*/
             /*Powered cable attached in CC1 when PD Communication is enabled in CC2*/
@@ -1709,7 +1709,7 @@ void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
 
 void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
 {
-    if(gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK)
+    if(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)
     {
         /*VCONN Enabled in CC1 and Sink Attached in CC2*/
         if((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN1_ON_REQ) && \
@@ -2040,7 +2040,7 @@ void TypeC_SetDefaultRpValue (UINT8 u8PortNum)
 {
     UINT16 u16Data;    
     
-    u16Data = ((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_RPVAL_MASK) \
+    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK) \
               >> TYPEC_PORT_RPVAL_POS);
     
     /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and CC2*/ 
@@ -2076,7 +2076,7 @@ void TypeC_Reset_VCONNDIS_Settings (UINT8 u8PortNum)
     UPD_RegWriteWord (u8PortNum, TYPEC_CC_THR0, TYPEC_CC_THR0_VAL);    
     
     #if INCLUDE_PD_SOURCE
-    if((gasPortConfigurationData.sPortConfigData[u8PortNum].u32PortCfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
+    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
     {
         /*Setting the user given Rp value for source since it is changed to open disconnect
         while VCONN Discharge*/

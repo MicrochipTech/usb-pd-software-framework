@@ -75,8 +75,8 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     UINT8 u8Return = TRUE;
 
     /*Assert VBUS_EN*/
-    UINT8 u8EnVbusMode = gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnMode;
-    UPD_GPIOUpdateOutput(u8PortNum, gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnPio, 
+    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN;
+    UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
                                     u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
 
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();

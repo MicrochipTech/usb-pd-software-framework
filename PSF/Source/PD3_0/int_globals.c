@@ -120,10 +120,9 @@ void IntGlobals_PDInitialization(void)
             PE_FwUpdtInitialize();
         #endif
     }
-    #if INCLUDE_POWER_BALANCING 
+    #if (TRUE == INCLUDE_POWER_BALANCING)
         /* Initialize PB System and Port Parameters */
-        PB_Init(); 
-    
+        PB_Init();     
     #endif 
 }
 

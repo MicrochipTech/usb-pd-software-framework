@@ -948,8 +948,8 @@ void UPD_FaultInInit (UINT8 u8PortNum);
         None.
 
     Remarks:
-        Fault_IN for the port is obtained from gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio 
-        VBUS_EN for the port is obtained from gasPortConfigurationData.sPortConfigData[u8PortNum].u8VBUSEnPio
+        Fault_IN for the port is obtained from gasUpdPioDcDcConfig[u8PortNum].u8Pio_FAULT_IN 
+        VBUS_EN for the port is obtained from gasCfgStatusData.sPortCSRDatasPortCSRDatasPortCSRData[u8PortNum].u8Pio_VBUS_EN
 
 **************************************************************************************************/
 void UPD_ConfigPIOOvrforPwrFault (UINT8 u8PortNum);
