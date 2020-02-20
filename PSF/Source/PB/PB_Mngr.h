@@ -33,8 +33,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #ifndef _PB_MNGR_H    /* Guard against multiple inclusion */
 #define _PB_MNGR_H
- 
-/* TODO:  Include other files here if needed. */
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -120,7 +118,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                             >> PB_VARIABLE_PDO_MIN_VOLT_BIT_POS)
 
 /* Macro to convert voltage from 50mV units to V units */
-#define PB_CONVERT_PDO_VOLTAGE_FROM_50mV_TO_V(voltIn50mV)   (voltIn50mV/20) 
+#define PB_CONVERT_PDO_VOLTAGE_FROM_50mV_TO_V(voltIn50mV)   ((float)voltIn50mV/20) 
 
 /* Macro to convert power from 10mW units to 250mW units */
 #define PB_CONVERT_POWER_FROM_10mW_TO_250mW(powIn10mW)      (powIn10mW/25) 
@@ -221,17 +219,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntSysParam
 **********************************************************************************/
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam 
 {
-    // commenting u32SourcePDO and u32SinkRDO since they are converted to local 
-   // variables inside PB_HandlePPMEvents(). Reason for this is, in olympus src, 
-    // they are having it as globals and passing it as arguments for 
-    // PB_CalculateNegotiatedPower(). Instead of it, we are having it as local 
-    // parameters. So, that this API can be reused for any PDO and RDO inputs. 
-  //  UINT32 u32SourcePDO;              /* Negotiated Source PDO */ 
-  //  UINT32 u32SinkRDO;                /* Sink requested RDO */
-    /* commenting as they are covered in config globals */
-  //  float fNegotiatedVoltage;         /* Voltage that is currently negotiated */  
     UINT16 u16RequiredPrtPwrIn250mW; /* Power required by a port in units of 250mW */
- //   UINT16 u16NegotiatedCurrentIn10mA;/* Negotiated current in units of 10mA */ 
     UINT16 u16NegotiatedPwrIn250mW; /* Negotiated power in units of 250mW */
     UINT16 u16MinGuaranteedPwrIn250mW; /* Minimum guaranteed power for a port */
     UINT16 u16MaxPortPwrIn250mW;      /* Maximum Port Power in units of 250mW */ 
@@ -246,22 +234,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
         3     CapabilityMismatch 
         4     RenegAgain */         
 } MCHP_PSF_STRUCT_PACKED_END  PB_INT_PORT_PARAM; 
-
-/*****************************************************************************
-  Summary:
-    Power Data Object Information   
-
-  Description:
-    This structure stores the PDO's and the maximum number of PDOs. 
-
-  Remarks:
-    Need to be packed always based on type of microcontroller.
-**********************************************************************************/
-typedef struct MCHP_PSF_STRUCT_PACKED_START PDOInfo_tag
-{
-    UINT32 PDOs[7]; /* Store the PDO's.  Allows for storage up to 7 PDOs */
-    UINT8 PDOcnt;  /* Number of PDO's in the array of PDO's */
-} MCHP_PSF_STRUCT_PACKED_END PDO_INFO;
 
 // *****************************************************************************
 // *****************************************************************************
