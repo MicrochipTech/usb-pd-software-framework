@@ -96,7 +96,7 @@ void PB_InitializePortParam(UINT8 u8PortNum)
     gasPBIntPortParam[u8PortNum].eGetSinkCapSS             = ePB_SINK_CAPS_NOT_INITIATED; 
     gasPBIntPortParam[u8PortNum].u8PortStatusMask          = FALSE; 
     gasPBIntPortParam[u8PortNum].ePBPortState              = ePB_IDLE_STATE;
-    gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = SET_TO_ZERO; 
+    gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW  = SET_TO_ZERO; 
     
     /* Get the Guaranteed Minimum Power and Maximum Power based on 
        currently selected throttling bank */
@@ -139,9 +139,9 @@ void PB_ChangePortStates(UINT8 u8PortNum, PB_PORT_STATES ePortState, PB_RENEG_SU
 
 void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
 {
-    UINT16 u16NegVoltIn50mV = 0;
+    UINT16 u16NegVoltIn50mV;
     UINT16 u16CurrentIn10mA = 0;
-    UINT16 u16TempPwr = 0;
+    UINT16 u16TempPwr;
     float fNegotiatedVoltage; 
     
     /*we need to calculate the power the sink is drawing and 
@@ -168,6 +168,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     }
     else
     {
+        /* To-do : Use CSR variable for checking capability  mismatch */
         if (PB_IS_CAPABILITY_MISMATCH(u32RDO))
         {
             gasPBIntPortParam[u8PortNum].u8PortStatusMask |= PB_PORT_STATUS_CAPABILITY_MISMATCH;
@@ -202,17 +203,19 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
 }
 
 void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattage)
-{
+{    
     PB_UpdatePDO(u8PortNum, u16NewWattage); 
     
-    DPM_HandleClientRequest(u8PortNum, eMCHP_PSF_DPM_RENEGOTIATE);  
+    /* To-do: Do we need to re initiate the request in case of failure */
+    (void) DPM_HandleClientRequest(u8PortNum, eMCHP_PSF_DPM_RENEGOTIATE);  
             
     gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = u16NewWattage;   
 }
 
 void PB_InitiateGetSinkCapsWrapper(UINT8 u8PortNum)
 {
-    DPM_HandleClientRequest (u8PortNum, eMCHP_PSF_DPM_GET_SNK_CAPS);
+    /* To-do: Do we need to re initiate the request in case of failure */
+    (void) DPM_HandleClientRequest (u8PortNum, eMCHP_PSF_DPM_GET_SNK_CAPS);
     
     PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_GET_SINKCAPS_SENT_SS);
     
@@ -223,7 +226,7 @@ void PB_CalculateRequiredPortPower(UINT8 u8PortNum, UINT8 u8SinkPDOCnt, const UI
 {
     UINT16 u16PortMaxRequiredPwr = 0;  
     UINT16 u16TempPwr = 0, u16TempCurr = 0, u16TempVolt = 0; 
-    UINT8  u8PDOCnt = 0;
+    UINT8  u8PDOCnt;
     float fPDOVoltage = 0; 
     
     for (u8PDOCnt = 0; u8PDOCnt < u8SinkPDOCnt; u8PDOCnt++)
@@ -233,19 +236,17 @@ void PB_CalculateRequiredPortPower(UINT8 u8PortNum, UINT8 u8SinkPDOCnt, const UI
         {
             if (ePDO_FIXED == (ePDOtypes)PB_GET_PDO_TYPE (pu32SinkCap[u8PDOCnt]))
             {      
-                u16TempVolt = PB_GET_VOLTAGE_FROM_FIXED_PDO (pu32SinkCap[u8PDOCnt]);
-                fPDOVoltage = PB_CONVERT_PDO_VOLTAGE_FROM_50mV_TO_V (u16TempVolt);
-                u16TempCurr = PB_GET_CURRENT_FROM_PDO (pu32SinkCap[u8PDOCnt]);
-                u16TempPwr = (UINT16)(u16TempCurr * (UINT16) fPDOVoltage);           
+                u16TempVolt = PB_GET_VOLTAGE_FROM_FIXED_PDO (pu32SinkCap[u8PDOCnt]);          
             }
             else
             {
-                u16TempVolt = PB_GET_VARIABLE_PDO_MAX_VOLTAGE (pu32SinkCap[u8PDOCnt]);
-                fPDOVoltage = PB_CONVERT_PDO_VOLTAGE_FROM_50mV_TO_V (u16TempVolt);
-                u16TempCurr = PB_GET_CURRENT_FROM_PDO (pu32SinkCap[u8PDOCnt]);
-                u16TempPwr =  (UINT16)(u16TempCurr * (UINT16) fPDOVoltage);      
-            } 
-
+                u16TempVolt = PB_GET_VARIABLE_PDO_MAX_VOLTAGE (pu32SinkCap[u8PDOCnt]);     
+            }
+            
+            fPDOVoltage = PB_CONVERT_PDO_VOLTAGE_FROM_50mV_TO_V (u16TempVolt);
+            u16TempCurr = PB_GET_CURRENT_FROM_PDO (pu32SinkCap[u8PDOCnt]);
+            u16TempPwr =  (UINT16)(u16TempCurr * (UINT16) fPDOVoltage); 
+                
             if (u16TempPwr > u16PortMaxRequiredPwr)
             {
                 /* Now power will be in units of 10mW */
@@ -271,7 +272,7 @@ void PB_CalculateRequiredPortPower(UINT8 u8PortNum, UINT8 u8SinkPDOCnt, const UI
 
 UINT8 PB_NegotiateIfRequiredPwrAvailableInPool(UINT8 u8PortNum)
 {
-    UINT16 u16AvailablePwr = 0; 
+    UINT16 u16AvailablePwr; 
     UINT16 u16NewWattage = 0; 
     UINT8 u8RequiredPwrAvailable = FALSE; 
     
@@ -342,13 +343,11 @@ UINT8 PB_ReturnHigherPriorityPort (UINT8 u8PortNum1, UINT8 u8PortNum2)
 {
     UINT8 u8HigherPriorityPort = u8PortNum2;
     
-    if (gasCfgStatusData.sPBPerPortData[u8PortNum1].u8PBEnablePriority < \
-            gasCfgStatusData.sPBPerPortData[u8PortNum2].u8PBEnablePriority)
+    if (PB_GET_PORT_PRIORITY(u8PortNum1) < PB_GET_PORT_PRIORITY(u8PortNum2))
     {
         u8HigherPriorityPort = u8PortNum1;       
     }
-    else if (gasCfgStatusData.sPBPerPortData[u8PortNum1].u8PBEnablePriority == \
-            gasCfgStatusData.sPBPerPortData[u8PortNum2].u8PBEnablePriority)
+    else if (PB_GET_PORT_PRIORITY(u8PortNum1) == PB_GET_PORT_PRIORITY(u8PortNum2))
     {
         if ((PB_PORT_STATUS_CAPABILITY_MISMATCH == (gasPBIntPortParam[u8PortNum1].u8PortStatusMask & \
                                         PB_PORT_STATUS_CAPABILITY_MISMATCH)) && \
@@ -442,12 +441,12 @@ UINT8 PB_ReclaimPower(UINT8 u8PortNum)
     UINT16 u16RenegotiatePwr = 0;
     UINT16 u16AvailablePwr = 0;    
     UINT8 u8RetVal = PB_RECLAIM_FAILED;
-    UINT8 u8LowPriorityPort = 0;  
+    UINT8 u8LowPriorityPort;  
     
     u8LowPriorityPort = PB_IdentifyLowestPriorityPort(u8PortNum);
     
-   if (u8LowPriorityPort != u8PortNum)   
-   {
+    if (u8LowPriorityPort != u8PortNum)   
+    {
         /*Calculate how much power can be recovered from lower priority port*/      
         gsPBIntSysParam.u8RecoveringMode = TRUE;
         gsPBIntSysParam.u8RecoverPortNum = u8PortNum;
@@ -466,13 +465,13 @@ UINT8 PB_ReclaimPower(UINT8 u8PortNum)
                                                     - u16RenegotiatePwr);
         
         /* Renegotiate the lower priority port with new power */
-        PB_InitiateNegotiationWrapper (u8LowPriorityPort, u16RenegotiatePwr);
+        PB_InitiateNegotiationWrapper (gsPBIntSysParam.u8ReclaimPortNum, u16RenegotiatePwr);
         
         /* Change the state of reclaiming port to Renegotiation_in_progress */
-        PB_ChangePortStates (u8LowPriorityPort, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS);
+        PB_ChangePortStates (gsPBIntSysParam.u8ReclaimPortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS);
         
         /*Change the state of recovering Port to IDLE*/
-        PB_ChangePortStates (u8PortNum, ePB_PWR_RECOVERING_STATE, ePB_IDLE_SS);
+        PB_ChangePortStates (gsPBIntSysParam.u8RecoverPortNum, ePB_PWR_RECOVERING_STATE, ePB_IDLE_SS);
        
         u8RetVal = PB_RECLAIM_SUCCESS;  
     }
@@ -489,7 +488,7 @@ void PB_SinkCapsReceivedHandler(UINT8 u8PortNum)
     UINT8 u8SinkPDOCnt; 
     UINT32 *pu32SinkCap; 
     UINT16 u16AvailablePwrIn250mW = 0; 
-    UINT8 u8AvailablePwrSufficient = FALSE; 
+    UINT8 u8AvailablePwrSufficient; 
    
     /* Get the Sink capabilities from DPM */
     u8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt;  
@@ -497,7 +496,7 @@ void PB_SinkCapsReceivedHandler(UINT8 u8PortNum)
     
     /* Calculate the power required for the port based on Sink caps values */
     PB_CalculateRequiredPortPower(u8PortNum, u8SinkPDOCnt, pu32SinkCap); 
-   
+
     u8AvailablePwrSufficient = PB_NegotiateIfRequiredPwrAvailableInPool(u8PortNum); 
     
     if (!u8AvailablePwrSufficient)
@@ -522,7 +521,7 @@ void PB_SinkCapsReceivedHandler(UINT8 u8PortNum)
 
 UINT8 PB_ReleaseExcessPwr(UINT8 u8PortNum)
 {
-    UINT16 u16ExcessPwr = 0;
+    UINT16 u16ExcessPwr;
     UINT8 u8ExcessPwrReturned = FALSE;    
     
      /*The Allocated Power for the Port would not have been negotiated. 
@@ -646,7 +645,7 @@ UINT8 PB_IdentifyHighestPriorityPortInPendingState(void)
 
 void PB_InitiateNextPortNegotiation(void)
 {
-    UINT8 u8HighestPortInPendingstate   = 0;
+    UINT8 u8HighestPortInPendingstate;
    
     u8HighestPortInPendingstate = PB_IdentifyHighestPriorityPortInPendingState();
                 
@@ -700,7 +699,7 @@ void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
         fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[u8Index]); 
         
         /* Calculate new current value based on new power */
-        u16CurrentIn10mA = ((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT); 
+        u16CurrentIn10mA = (UINT16)(((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT)); 
         
         /* In PB, current value of a port should not exceed PORT_MAX_I */ 
         u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrent); 
@@ -711,4 +710,4 @@ void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
     }
 
 }
-#endif 
+#endif

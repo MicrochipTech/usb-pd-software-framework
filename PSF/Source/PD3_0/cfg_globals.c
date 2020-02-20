@@ -154,10 +154,10 @@ void CFG_LoadDefaults ()
     
     gasCfgStatusData.u16SystemPowerBankA = CFG_PB_TOT_SYS_POWER_BANKA;
     gasCfgStatusData.u16MinPowerBankA = CFG_PB_MIN_POWER_BANKA;
-    gasCfgStatusData.u16SystemPowerBankB = CFG_PB_TOT_SYS_POWER_BANKA;
+    gasCfgStatusData.u16SystemPowerBankB = CFG_PB_TOT_SYS_POWER_BANKB;
     gasCfgStatusData.u16MinPowerBankB = CFG_PB_MIN_POWER_BANKB;
-    gasCfgStatusData.u16SystemPowerBankB =CFG_PB_TOT_SYS_POWER_BANKA;
-    gasCfgStatusData.u16MinPowerBankB = CFG_PB_MIN_POWER_BANKC;
+    gasCfgStatusData.u16SystemPowerBankC =CFG_PB_TOT_SYS_POWER_BANKC;
+    gasCfgStatusData.u16MinPowerBankC = CFG_PB_MIN_POWER_BANKC;
     
     for (u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
