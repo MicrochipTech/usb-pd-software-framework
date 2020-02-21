@@ -978,7 +978,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN, (UINT8)UPD_GPIO_DE_ASSERT);
                         
                         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                        /*Disable PIO ovveride enable*/
+                        /*Disable PIO override enable*/
                         UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
                         #endif
             
@@ -2452,13 +2452,13 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
             /* Maximum Vsafe5V threshold is configured in u16MaxVoltageThr*/
             if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
-                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT((float)TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor);                
-                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT((float)TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor); 
+                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor));
+                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor)); 
             }
             else
             {
-                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT((float)TYPEC_DESIRED_MIN_SNK_VSAFE5V_VBUS_THR * fVBUSCorrFactor);
-                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT((float)TYPEC_DESIRED_MAX_SNK_VSAFE5V_VBUS_THR * fVBUSCorrFactor);  
+                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MIN_SNK_VSAFE5V_VBUS_THR * fVBUSCorrFactor));
+                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MAX_SNK_VSAFE5V_VBUS_THR * fVBUSCorrFactor)); 
             }
             break;
 				
@@ -2467,10 +2467,10 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 	  	default:
 		{
             /* Minimum valid PDO voltage configured in u16MinVoltageThr*/
-            u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(u16Voltage) * fVBUSCorrFactor); 
+            u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(u16Voltage) * fVBUSCorrFactor)); 
             
             /* Maximum PDO voltage threshold is configured in u16MaxVoltageThr*/
-            u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT((float)TYPEC_GET_DESIRED_MAX_VBUS_THR(u16Voltage) * fVBUSCorrFactor); 
+            u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MAX_VBUS_THR(u16Voltage) * fVBUSCorrFactor));
             break;
 		}/* end of default*/
         
