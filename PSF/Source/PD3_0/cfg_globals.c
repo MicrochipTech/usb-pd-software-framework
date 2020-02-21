@@ -100,28 +100,28 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVCONN = CONFIG_MAX_VCONN_FAULT_COUNT;
     gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimer = MILLISECONDS_TO_TICKS(10000);
 
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN = CONFIG_PORT_n_UPD_EN_VBUS;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN = CONFIG_PORT_n_UPD_EN_VBUS_PIO_MODE;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN = CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN = CONFIG_PORT_n_UPD_FAULT_IN_MODE;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS = CONFIG_PORT_n_UPD_VBUS_DIS_PIO_NO;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8mode_VBUS_DIS = CONFIG_PORT_n_UPD_VBUS_DIS_PIO_MODE;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN = CONFIG_PORT_n_UPD_DC_DC_EN_PIO_NO;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN = CONFIG_PORT_n_UPD_DC_DC_EN_PIO_MODE;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN = (UINT8)CONFIG_PORT_n_UPD_EN_VBUS;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN = (UINT8)CONFIG_PORT_n_UPD_EN_VBUS_PIO_MODE;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN = (UINT8)CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN = (UINT8)CONFIG_PORT_n_UPD_FAULT_IN_MODE;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS = (UINT8)CONFIG_PORT_n_UPD_VBUS_DIS_PIO_NO;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8mode_VBUS_DIS = (UINT8)CONFIG_PORT_n_UPD_VBUS_DIS_PIO_MODE;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN = (UINT8)CONFIG_PORT_n_UPD_DC_DC_EN_PIO_NO;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN = (UINT8)CONFIG_PORT_n_UPD_DC_DC_EN_PIO_MODE;
 
     gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[0] =         \
-                                                CONFIG_PORT_n_UPD_VSEL0_PIO_NO;
+                                                (UINT8)CONFIG_PORT_n_UPD_VSEL0_PIO_NO;
     gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[1] =         \
-                                                CONFIG_PORT_n_UPD_VSEL1_PIO_NO;
+                                                (UINT8)CONFIG_PORT_n_UPD_VSEL1_PIO_NO;
     gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[2] =         \
-                                                CONFIG_PORT_n_UPD_VSEL2_PIO_NO;
+                                                (UINT8)CONFIG_PORT_n_UPD_VSEL2_PIO_NO;
 
     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[0] =       \
-                                               CONFIG_PORT_n_UPD_VSEL0_PIO_MODE;
+                                               (UINT8)CONFIG_PORT_n_UPD_VSEL0_PIO_MODE;
     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[1] =       \
-                                               CONFIG_PORT_n_UPD_VSEL1_PIO_MODE;
+                                               (UINT8)CONFIG_PORT_n_UPD_VSEL1_PIO_MODE;
     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[2] =       \
-                                               CONFIG_PORT_n_UPD_VSEL2_PIO_MODE;
+                                               (UINT8)CONFIG_PORT_n_UPD_VSEL2_PIO_MODE;
     
 }
 

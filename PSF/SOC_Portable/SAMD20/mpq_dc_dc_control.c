@@ -33,8 +33,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
 #include <psf_stdinc.h>
-#include "mpq_dc_dc_control.h"
-
 
 /***********************************************************************************/
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
@@ -154,7 +152,7 @@ UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
 {
     UINT16 u16FaultStatus;
     
-    MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE_READ(u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
+    (void)MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE_READ(u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
 
     return u16FaultStatus;
 }

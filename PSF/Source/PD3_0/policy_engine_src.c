@@ -474,7 +474,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     (void)PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
                     #endif
                     /* Notify that PD contract is established*/    
-                    MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
+                    (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                     
                     break;
                 }
@@ -931,7 +931,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY; 
                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
                    
-                   MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD);
+                   (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD);
                    
                    break;  
                 }   
@@ -945,7 +945,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY; 
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
                     
-                    MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_GET_SNK_CAPS_RCVD);
+                    (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_GET_SNK_CAPS_RCVD);
                     
                     break; 
                 }

@@ -46,9 +46,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-/* Values for CONFIG_DCDC_CTRL*/
-#define I2C_DC_DC_CONTROL_CONFIG     2
-
 /* Lower byte corresponds to register address and higher byte corresponds 
    to command type */
 #define MPQ_CMD_CLEAR_FAULT             0x0003U
