@@ -1028,7 +1028,7 @@ Summary:
 Description:
     CONFIG_UNDER_VOLTAGE_FACTOR is percentage of PDO voltage to be considered as under Voltage for
 	that PDO. As per PD specification, desired range for fixed PDO voltage is (0.95 * PDO Voltage) 
-	to (1.05 * PDO Volatge), So CONFIG_OVER_VOLTAGE_FACTOR should be less than the desired range.
+	to (1.05 * PDO Volatge), So CONFIG_UNDER_VOLTAGE_FACTOR should be less than the desired range.
 Remarks:
     If 85% of the PDO voltage has to be considered as under voltage for that PDO voltage, then
     define CONFIG_UNDER_VOLTAGE_FACTOR as 0.85.
@@ -1269,7 +1269,7 @@ Remarks:
 Example:
 	<code>
     #define CONFIG_PORT_0_UPD_EN_VBUS		3    (EN_VBUS pin is PIO3)
-    #define CONFIG_PORT_0_UPD_EN_VBUS		0xFF (EN_VBUS functinality disabled)
+    #define CONFIG_PORT_0_UPD_EN_VBUS		0xFF (EN_VBUS functionality disabled)
 	</code>
 **************************************************************************************************/										  
 #define CONFIG_PORT_n_UPD_EN_VBUS                   eUPD_PIO3
