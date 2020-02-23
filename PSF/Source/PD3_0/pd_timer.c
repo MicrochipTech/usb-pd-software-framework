@@ -209,8 +209,8 @@ void PDTimer_InterruptHandler (void)
 				if (gasPDTimers[u8TimerID].pfnTimerCallback != NULL)
 				{
                   
-                    /*Calling the callback function with a set of arguemnts 
-                    namely portnumber and PD state*/
+                    /*Calling the callback function with a set of arguments 
+                    namely port number and PD state*/
 					gasPDTimers[u8TimerID].pfnTimerCallback((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_PORT_NUM), gasPDTimers[u8TimerID].u8PDState);
 				}
 				
