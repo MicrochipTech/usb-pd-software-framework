@@ -309,7 +309,7 @@ void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnTyp
     }   
 }
 /**********************************************************************************/
-#if INCLUDE_POWER_FAULT_HANDLING
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 
 void UPD_FaultInInit (UINT8 u8PortNum)
 {
@@ -369,10 +369,10 @@ void UPD_GPIOInit(UINT8 u8PortNum)
 	/*Enable GPIO interrupt for UPD350*/
 	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, UPDINTR_PIO_INT);
 	
-	#if INCLUDE_POWER_FAULT_HANDLING
+	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         /* Configure Fault Pin */
         UPD_FaultInInit(u8PortNum);
-	#if INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
+	#if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
 		/* Configure PIO override for fault conditions */
 		(void)UPD_ConfigPwrFaultPIOOvverride(u8PortNum);
 	#endif 
@@ -389,7 +389,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
  	/* Read the interrupt status*/
 	UPD_RegisterReadISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntSts, BYTE_LEN_2);
 	
-    #if INCLUDE_POWER_FAULT_HANDLING
+    #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	if ((BIT(gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN)) & u16PIOIntSts)
 	{	
         UINT16 u16PIORegVal;
@@ -422,7 +422,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
 }
 /******************************************************************************************************/
 
-#if INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
+#if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
 
 void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 {
@@ -475,7 +475,7 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 
 /******************************************************************************************************/
 
-#if INCLUDE_POWER_MANAGEMENT_CTRL
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
 
 UINT8 UPD_CheckUPDsActive()
 {

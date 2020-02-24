@@ -148,12 +148,12 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
     /* Resetting all the module's TimerID globals */
 	gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 	gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = MAX_CONCURRENT_TIMERS;
-    #if INCLUDE_PD_3_0
+    #if (TRUE == INCLUDE_PD_3_0)
 	gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
     #endif
 	gasPolicy_Engine[u8PortNum].u8PENoResponseTimerID = MAX_CONCURRENT_TIMERS;
     
-	#if INCLUDE_POWER_FAULT_HANDLING
+	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
     gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	#endif
@@ -165,7 +165,7 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
         if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE) == PDTIMER_ACTIVE)\
           && ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_PORT_NUM) == u8PortNum)
             
-#if INCLUDE_POWER_MANAGEMENT_CTRL
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
 			/*If power management is active don't kill IDLE Timer*/
             && (u8TimerID != gau8PortIdleTimerID[u8PortNum])
 #endif

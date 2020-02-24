@@ -60,14 +60,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PD_SYS_MAX_CONCURRENT_TIMERS        3
 
 /*Maximum active concurrent timer for a port when Power fault is enabled*/
-#if INCLUDE_POWER_FAULT_HANDLING
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	#define PD_SYS_POWER_FAULT_TIMER            2
 #else
 	#define PD_SYS_POWER_FAULT_TIMER		    0
 #endif
 
 /*Maximum active concurrent timers for a port when Power management control is enabled*/
-#if INCLUDE_POWER_MANAGEMENT_CTRL
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
 	#define PD_SYS_PWR_MNGMNT_CTRL              1
 #else
 	#define PD_SYS_PWR_MNGMNT_CTRL              0

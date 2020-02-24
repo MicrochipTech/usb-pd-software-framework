@@ -31,7 +31,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 #include <psf_stdinc.h>
 
-#if INCLUDE_PD_SOURCE
+#if (TRUE == INCLUDE_PD_SOURCE)
 /********************************************************************/
 /****************Source Policy Engine State Machine******************/
 /********************************************************************/
@@ -469,7 +469,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					
                     DPM_EnablePowerFaultDetection(u8PortNum);
                     
-                    #if INCLUDE_PD_3_0
+                    #if (TRUE == INCLUDE_PD_3_0)
                     /* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */
                     (void)PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
                     #endif
@@ -751,7 +751,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT-POWER_ON_SS\r\n");
  
-#if INCLUDE_POWER_FAULT_HANDLING
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
                     
 					/* Turn On VConn if E-Cable detected and VCONN Good to Supply flag is true*/
                     if(u8RaPresence && gasDPM[u8PortNum].u8VCONNGoodtoSupply)
@@ -819,7 +819,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 						/* Enable Power fault thresholds for TYPEC_VBUS_5V*/
                         TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA, TYPEC_CONFIG_PWR_FAULT_THR);
                         
-#if INCLUDE_POWER_FAULT_HANDLING   
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)   
                         
                         if(u8RaPresence && gasDPM[u8PortNum].u8VCONNGoodtoSupply)
                         {

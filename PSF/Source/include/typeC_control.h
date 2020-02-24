@@ -336,7 +336,7 @@ event for UFP*/
 				((u16voltagemV * TYPEC_DESIRED_MAX_PDO_VOLTAGE_FACTOR) / \
 				  TYPEC_VBUS_THRX_UNITS_MILLI_V )
 
-#if INCLUDE_POWER_FAULT_HANDLING
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 /* To get over voltage VBUS threshold*/			
 #define TYPEC_GET_OVER_VOLTAGE_VBUS_THR(u16voltagemV)		\
 				(UINT16)((u16voltagemV * (CONFIG_OVER_VOLTAGE_FACTOR)) \
