@@ -1052,7 +1052,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_VCS_TURN_OFF_VCONN_ENTRY_SS:
                 {
                   
-                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Enterted the state\r\n");
+                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Entered the state\r\n");
 
                     /*Turn off VCONN since PS RDY message is received from VCONN Source partner*/
                     DPM_VConnOnOff(u8PortNum,DPM_VCONN_OFF);            
