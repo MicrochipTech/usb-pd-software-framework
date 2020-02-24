@@ -1927,51 +1927,53 @@ Summary:
 	tVCONNSourceOn.
 Description:
     CONFIG_PE_VCONNON_TIMEOUT_MS defines the tVCONNSourceOn specified in the USB PD Specification. 
-    Default value of CONFIG_PE_VCONNON_TIMEOUT_MS is set as 100 milliseconds.
+    Default value of CONFIG_PE_VCONNON_TIMEOUT_MS is set as 50 milliseconds.
 Remarks:
     CONFIG_PE_VCONNON_TIMEOUT_MS can be configured depending on the microcontroller 
     platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
     MILLISECONDS_TO_TICKS.
 Example:
     <code>
-    #define CONFIG_PE_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(100)
+    #define CONFIG_PE_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(50)
     </code>
 **************************************************************************************************/
-#define CONFIG_PE_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(100)
+#define CONFIG_PE_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(50)
 
 /**************************************************************************************************
 Summary:
 	Self tVCONNSourceOn.
 Description:
-    CONFIG_PE_VCONNON_SELF_TIMEOUT_MS defines the tVCONNSourceOn specified in the USB PD Specification. 
-    Default value of CONFIG_PE_VCONNON_SELF_TIMEOUT_MS is set as 150 milliseconds.
+    CONFIG_PE_VCONNON_SELF_TIMEOUT_MS defines the Self timer used to monitor VCONN ON
+    and send hard reset in case of VCONN ON Failure. The value of Self timer is 
+    set to a value greater than tVCONNSourceOn. Default value of CONFIG_PE_VCONNON_SELF_TIMEOUT_MS 
+    is set as 75 milliseconds.
 Remarks:
     CONFIG_PE_VCONNON_SELF_TIMEOUT_MS can be configured depending on the microcontroller 
     platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
     MILLISECONDS_TO_TICKS.
 Example:
     <code>
-    #define CONFIG_PE_VCONNON_SELF_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(150)
+    #define CONFIG_PE_VCONNON_SELF_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(75)
     </code>
 **************************************************************************************************/
-#define CONFIG_PE_VCONNON_SELF_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(150)
+#define CONFIG_PE_VCONNON_SELF_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(75)
 
 /**************************************************************************************************
 Summary:
 	tVCONNOFF.
 Description:
-    CONFIG_PE_VCONNOFF_TIMEOUT_MS defines the tVCONNOFF specified in the USB-Type C Specification. 
-    Default value of CONFIG_PE_VCONNOFF_TIMEOUT_MS is set as 35 milliseconds.
+    CONFIG_PE_VCONNOFF_TIMEOUT_MS defines the tVCONNSourceOff specified in the USB PD Specification. 
+    Default value of CONFIG_PE_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.
 Remarks:
     CONFIG_PE_VCONNOFF_TIMEOUT_MS can be configured depending on the microcontroller 
     platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
     MILLISECONDS_TO_TICKS.
 Example:
     <code>
-     #define CONFIG_PE_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(35)
+     #define CONFIG_PE_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
     </code>
 **************************************************************************************************/
-#define CONFIG_PE_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(35)
+#define CONFIG_PE_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
 
 /**************************************************************************************************
 Summary:
