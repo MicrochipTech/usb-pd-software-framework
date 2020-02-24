@@ -72,7 +72,7 @@ void DPM_Init(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8DPM_Status =  u8DPM_Status;
     gasDPM[u8PortNum].u8DPM_ConfigData  = u8DPM_ConfigData;
 	
-#if INCLUDE_POWER_FAULT_HANDLING
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
 	gasDPM[u8PortNum].u8VBUSPowerFaultCount = RESET_TO_ZERO;
@@ -120,12 +120,12 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     PE_RunStateMachine(u8PortNum);
 	
 	/* Power Fault handling*/
-	#if INCLUDE_POWER_FAULT_HANDLING
+	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 		DPM_PowerFaultHandler(u8PortNum);
 	#endif
     
     /* UPD Power Management */
-    #if INCLUDE_POWER_MANAGEMENT_CTRL
+    #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         UPD_PwrManagementCtrl (u8PortNum);
     #endif
 }
@@ -210,7 +210,7 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
 
 void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 {	
-	#if INCLUDE_POWER_FAULT_HANDLING
+	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	/* Obtain voltage from negoitated PDO*/
     UINT16 u16PDOVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
     UINT16 u16PDOCurrent = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
@@ -327,7 +327,7 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
     }
 }
 
-#if INCLUDE_PD_SOURCE
+#if (TRUE == INCLUDE_PD_SOURCE)
 void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf)
 {   
     /* Store the count in Partner PDO Count. */
@@ -396,7 +396,7 @@ UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
 }
 /******************************************************************************/
 
-#if INCLUDE_PD_SINK
+#if (TRUE == INCLUDE_PD_SINK)
 /****************************** DPM Sink related APIs*****************************************/
 void DPM_Get_Sink_Capabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
 {   
@@ -564,7 +564,7 @@ UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum)
 
 /********************************Power Fault API ******************************/
 
-#if INCLUDE_POWER_FAULT_HANDLING
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 static void DPM_ClearPowerfaultFlags(UINT8 u8PortNum)
 {
     /*ISR flag is cleared by disabling the interrupt*/

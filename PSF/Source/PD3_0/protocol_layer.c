@@ -220,7 +220,7 @@ void  PRL_Init (UINT8 u8PortNum)
 	/* Rx Error bit is reset */
 	gasPRL [u8PortNum].u8RxError = RESET_TO_ZERO;
 	
-    #if  INCLUDE_PD_3_0
+    #if  (TRUE == INCLUDE_PD_3_0)
 	/* Chunk SM is reset */
     gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
 	PRL_ResetChunkSM (u8PortNum);
@@ -283,7 +283,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
   
 	UINT8 u8MsgId, u8Pkt_Len, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = 0;
     
-    #if INCLUDE_PD_3_0
+    #if (TRUE == INCLUDE_PD_3_0)
     UINT16 u16MsgDataIndex;
 	
 	/* Checks whether the message is extended PD packet & chunk state machine is enabled*/
@@ -418,7 +418,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	/* Update the Tx Param reg */
 	UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_A, (PRL_TX_PARAM_A_EXPECT_GOODCRC | PRL_TX_PARAM_A_EN_FW_TX | u8TxSOPSelect | u8MsgId));
 	
-    #if INCLUDE_PD_3_0
+    #if (TRUE == INCLUDE_PD_3_0)
     /* If a Soft_Reset Message is pending, Needn't wait for Rp is set to SinkTxOk.*/
 	/* Tx Buffering on CA*/
 	if ((PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST == gasPRL [u8PortNum].u8TxStateISR) || \
@@ -487,7 +487,7 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 	/* Info: while handling u8DataObjSizeinBytes for extended message, size of extended message header
 				is not accounted nor the Chunk padded bytes count if any */
     
-    #if INCLUDE_PD_3_0
+    #if (TRUE == INCLUDE_PD_3_0)
     UINT8 u8ZeroPadding = 0, u8LastChunkDataobjCnt;
 	UINT16 u16ExtendedMsgHeader = 0x0;
 	
@@ -551,7 +551,7 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 	pu8TxPkt [u8Pktindex] = LOBYTE(u32Header);
 	pu8TxPkt [++u8Pktindex] = HIBYTE(u32Header);
 	
-    #if INCLUDE_PD_3_0
+    #if (TRUE == INCLUDE_PD_3_0)
 	if(PRL_IS_EXTENDED_MSG(u32Header))
 	{
 		/* If extended, Extended Message header is loaded */
@@ -570,7 +570,7 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 		}
 	}
     
-    #if INCLUDE_PD_3_0
+    #if (TRUE == INCLUDE_PD_3_0)
 	/* zero padding in case the data byte is not 4 byte aligned*/
 	while (u8ZeroPadding)
 	{
@@ -690,7 +690,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
 
     }
     
-    #if INCLUDE_PD_3_0
+    #if (TRUE == INCLUDE_PD_3_0)
     else if (u8Return & PRL_RET_EXT_MSG_RCVD)
     {
 		/* Extended message is received */
@@ -1020,7 +1020,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
         return u8Return;
     }
     
-    #if (TRUE == INCLUDE_PD_3_0) 
+    #if (TRUE == INCLUDE_PD_3_0)
     UINT8 u8PDOIndex;
 /***********************************************Extended Message Handling**************************************************************/
 	/* if received message is extended message*/
@@ -1257,7 +1257,7 @@ UINT32 PRL_IsAnyMsgPendinginPRL (UINT8 u8PortNum)
 
 /* Below are PD 3.0 Spec related functions */
 
-#if INCLUDE_PD_3_0
+#if (TRUE == INCLUDE_PD_3_0)
 
 /******************************************************************************************************************************************
 

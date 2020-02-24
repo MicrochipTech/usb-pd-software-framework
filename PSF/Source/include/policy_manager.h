@@ -195,7 +195,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT32  u32NegotiatedPDO;     //NegotiatedPDO
   UINT32 u32SinkReqRDO;         //Sink Requested RDO
  
-  #if INCLUDE_POWER_FAULT_HANDLING
+  #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
       UINT8 u8VCONNPowerGoodTmrID;    //VConn PowerGood Timer ID
 	  UINT8 u8VBUSPowerFaultCount;      //VBUS Power fault count

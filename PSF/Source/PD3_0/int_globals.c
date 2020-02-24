@@ -105,7 +105,7 @@ void IntGlobals_PDInitialization(void)
 {
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-#if INCLUDE_POWER_MANAGEMENT_CTRL
+    #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         UPD_PwrManagementInit(u8PortNum);        
 #endif
         DPM_Init(u8PortNum);

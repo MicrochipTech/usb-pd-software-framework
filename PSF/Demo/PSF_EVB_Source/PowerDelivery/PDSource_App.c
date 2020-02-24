@@ -57,7 +57,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 void SetMCUIdle()
 {
-#if INCLUDE_POWER_MANAGEMENT_CTRL
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     
     /*Disable Timer to avoid interrupt from Timer*/
