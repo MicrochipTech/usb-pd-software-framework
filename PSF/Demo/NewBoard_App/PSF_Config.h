@@ -964,32 +964,39 @@ Example:
 **************************************************************************************************/
 #define CONFIG_OVER_VOLTAGE_FACTOR					1.15
 
-/**************************************************************************************************
-Summary:
+/**************************************************************************************
+  Summary:
     Under Voltage factor.
-Description:
-    CONFIG_UNDER_VOLTAGE_FACTOR is percentage of PDO voltage to be considered as under Voltage for
-	that PDO. As per PD specification, desired range for fixed PDO voltage is (0.95 * PDO Voltage) 
-	to (1.05 * PDO Volatge), So CONFIG_OVER_VOLTAGE_FACTOR should be less than the desired range.
-Remarks:
-    If 85% of the PDO voltage has to be considered as under voltage for that PDO voltage, then
-    define CONFIG_UNDER_VOLTAGE_FACTOR as 0.85.
-    CONFIG_UNDER_VOLTAGE_FACTOR must be defined when INCLUDE_POWER_FAULT_HANDLING is defined as '1'. 
-    As an exceptional case this factor is not considered for VSafe5V.
-
-    For Source VSafe5V, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as Vsafe5V undervoltage 
-    instead of (CONFIG_UNDER_VOLTAGE_FACTOR * TYPEC_VBUS_5V).
+  Description:
+    CONFIG_UNDER_VOLTAGE_FACTOR is percentage of PDO voltage to be
+    considered as under Voltage for that PDO. As per PD specification,
+    desired range for fixed PDO voltage is (0.95 * PDO Voltage) to (1.05 *
+    PDO Volatge), So CONFIG_UNDER_VOLTAGE_FACTOR should be less than the
+    desired range.
+  Remarks:
+    If 85% of the PDO voltage has to be considered as under voltage for
+    that PDO voltage, then define CONFIG_UNDER_VOLTAGE_FACTOR as 0.85.
+    CONFIG_UNDER_VOLTAGE_FACTOR must be defined when
+    INCLUDE_POWER_FAULT_HANDLING is defined as '1'. As an exceptional case
+    this factor is not considered for VSafe5V.
     
-	For Sink, VSafe5V under voltage is not applicable as when voltage is less than or equal to
-    CONFIG_VSINKDISCONNECT_VOLTAGE, sink becomes disconnected.
-
-    The default value for CONFIG_UNDER_VOLTAGE_FACTOR is 0.85 indicating 85%.
-Example:
+    For Source VSafe5V, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as
+    Vsafe5V undervoltage instead of (CONFIG_UNDER_VOLTAGE_FACTOR *
+    TYPEC_VBUS_5V).
+    
+    For Sink, VSafe5V under voltage is not applicable as when voltage is
+    less than or equal to CONFIG_VSINKDISCONNECT_VOLTAGE, sink becomes
+    disconnected.
+    
+    The default value for CONFIG_UNDER_VOLTAGE_FACTOR is 0.85 indicating
+    85%.
+  Example:
     <code>
-    #define CONFIG_UNDER_VOLTAGE_FACTOR			0.85
+    \#define CONFIG_UNDER_VOLTAGE_FACTOR         0.85
     (CONFIG_PORT_0_SOURCE_PDO_2_VOLTAGE is 9000, then for PDO 2 Over voltage is 7650mV)
     </code>
-**************************************************************************************************/
+                                                                                       
+  **************************************************************************************/
 #define CONFIG_UNDER_VOLTAGE_FACTOR					0.85
 
 /**************************************************************************************************
@@ -1186,31 +1193,34 @@ typedef enum
     eFAULT_IN_ACTIVE_LOW_PU      = 0xA0U,   //Active low signal with internal pull up
     eFAULT_IN_ACTIVE_HIGH_PD     = 0x50U    //Active high signal with internal pull down
 }eFAULT_IN_MODE_TYPE;
-/**************************************************************************************************
-Summary:
-	"Enable VBUS" UPD350 PIO.
-Description:
-	CONFIG_PORT_n_EN_VBUS_UPD_PIO refers to the UPD350 PIO number used for EN_VBUS pin functionality 
-    for the nth Port.  EN_VBUS is to enable VBUS drive out of DC-DC controller. EN_VBUS pin connects 
-    to a load switch device such as a power FET or load switch IC. It is driven as per 
-    CONFIG_PORT_n_UPD_EN_VBUS_PIO_MODE configuration mode whenever stack requires VBUS to driven 
-    high as well as low. 
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. The range of valid values is 0 to 15 
-	which correspond to UPD350 PIO0 to PIO15. To disable the pin functionality from the stack, the 
-	user can define a value of 0xFF.
-    It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG 
-    and for Source operation only.  By defining INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as '1', The PIO 
-    Override feature of the UPD350 shall be utilized in this pin to ensure that fast and autonomous 
-    action is taken by the UPD350 in a fault condition.  
-Remarks:
-    By default, it is configured to PIO3. User can also use stack's enum eUPD_PIO_NUM_TYPE to 
-    define this.
-Example:
-	<code>
-    #define CONFIG_PORT_0_UPD_EN_VBUS		3    (EN_VBUS pin is PIO3)
-    #define CONFIG_PORT_0_UPD_EN_VBUS		0xFF (EN_VBUS functinality disabled)
-	</code>
-**************************************************************************************************/										  
+/*********************************************************************************
+  Summary:
+    "Enable VBUS" UPD350 PIO.
+  Description:
+    CONFIG_PORT_n_EN_VBUS_UPD_PIO refers to the UPD350 PIO number used for
+    EN_VBUS pin functionality for the nth Port. EN_VBUS is to enable VBUS
+    drive out of DC-DC controller. EN_VBUS pin connects to a load switch
+    device such as a power FET or load switch IC. It is driven as per
+    CONFIG_PORT_n_UPD_EN_VBUS_PIO_MODE configuration mode whenever stack
+    requires VBUS to driven high as well as low. n can take values between
+    0 and CONFIG_PD_PORT_COUNT - 1. The range of valid values is 0 to 15
+    which correspond to UPD350 PIO0 to PIO15. To disable the pin
+    functionality from the stack, the user can define a value of 0xFF. It
+    is applicable only when CONFIG_DCDC_CTRL is defined as
+    PWRCTRL_DEFAULT_PSF_GPIO_CONFIG and for Source operation only. By
+    defining INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as '1', The PIO Override
+    feature of the UPD350 shall be utilized in this pin to ensure that fast
+    and autonomous action is taken by the UPD350 in a fault condition.
+  Remarks:
+    By default, it is configured to PIO3. User can also use stack's enum
+    eUPD_PIO_NUM_TYPE to define this.
+  Example:
+    <code>
+    \#define CONFIG_PORT_0_UPD_EN_VBUS       3    (EN_VBUS pin is PIO3)
+    \#define CONFIG_PORT_0_UPD_EN_VBUS       0xFF (EN_VBUS functionality disabled)
+    </code>
+                                                                                  
+  *********************************************************************************/										  
 #define CONFIG_PORT_n_UPD_EN_VBUS                   eUPD_PIO3
 #define CONFIG_PORT_0_UPD_EN_VBUS                   eUPD_PIO3
 #define CONFIG_PORT_1_UPD_EN_VBUS                   eUPD_PIO3
