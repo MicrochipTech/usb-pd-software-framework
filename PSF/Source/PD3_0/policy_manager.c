@@ -297,9 +297,18 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
     UINT8 u8RaPresence = SET_TO_ZERO;
 	UINT32 *pu32SrcCap;
 	/* Get the source PDO count */
-    *u8pSrcPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt;
+    if (gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSlct)
+    {
+        *u8pSrcPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt;
    
-    pu32SrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[0];
+        pu32SrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32NewPDO[0];                        
+    }
+    else
+    {
+        *u8pSrcPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt;
+   
+        pu32SrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[0];        
+    }
     
     DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
    
@@ -325,6 +334,18 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
     {
         DPM_ChangeCapbilities (pu32DataObj, &pu32SrcCap[0],*u8pSrcPDOCnt);  
     }
+}
+
+void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
+{
+    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSlct = FALSE; 
+    
+    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = RESET_TO_ZERO; 
+        
+    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < 7; u8PDOIndex++)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32NewPDO[u8PDOIndex] = RESET_TO_ZERO; 
+    }    
 }
 
 #if (TRUE == INCLUDE_PD_SOURCE)
