@@ -908,5 +908,25 @@ UINT8 DPM_HandleClientRequest(UINT8 u8PortNum, eMCHP_PSF_DPM_ClientRequest ePDMC
 
 void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf);
 
+/**************************************************************************************************
+    Function:
+        void DPM_ResetNewPDOParameters(UINT8 u8PortNum);
+    Summary:
+        Resets the New PDO parameters once New PDOs are advertised. 
+    Description:
+        This API clears the New PDO Select flag, New PDO Count and all the New
+        PDO registers. 
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT. 
+    Return:
+        None.  
+    Remarks:
+        None.
+**************************************************************************************************/
+
+void DPM_ResetNewPDOParameters(UINT8 u8PortNum); 
+
 #endif /*_POLICY_MANAGER_H_*/
 
