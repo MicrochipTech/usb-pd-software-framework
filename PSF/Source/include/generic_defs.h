@@ -97,7 +97,17 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                             (((UINT32)u8LoWordHiByte) << 8)			|\
                                             (((UINT32)u8HiWordLoByte) << 16) 		|\
                                             (((UINT32)u8HiWordHiByte) << 24u))
-			
+
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))	/* Returns the minimum of two */
+#define MAX(a,b) ((a) > (b) ? (a) : (b))	/* Returns the maximum of two */
+
+/* Extract first decimal value in a floating point number */
+#define NO_OF_DECIMAL_POINTS_PRECISION          10 
+#define EXTRACT_FIRST_DECIMAL_FROM_FLOAT(fNum)  ((UINT16)(fNum * NO_OF_DECIMAL_POINTS_PRECISION) \
+                                                    % NO_OF_DECIMAL_POINTS_PRECISION)
+/* Round off float value to nearest integer */
+#define ROUND_OFF_FLOAT_TO_INT(fNum)            (EXTRACT_FIRST_DECIMAL_FROM_FLOAT(fNum) >= 5) \
+                                                    ? ((UINT16)fNum + 1) : ((UINT16)fNum)          
 /******************************CLEAR & RESET VALUE *************************************/
 
 #define CLR_VAL                                         0x00
