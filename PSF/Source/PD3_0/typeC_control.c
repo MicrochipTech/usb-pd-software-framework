@@ -1267,7 +1267,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
     {
         UPD_RegisterReadISR (u8PortNum, TYPEC_VBUS_MATCH, &u8Data, BYTE_LEN_1);
         
+#if INCLUDE_POWER_FAULT_HANDLING
         UINT8 u8HandleUV = FALSE;
+#endif
         UINT8 u8IsSourceport = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
 
         if (TYPEC_VSAFE_0V_MATCH_VAL == u8Data)
@@ -1282,7 +1284,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             {
                 if (u16InterruptStatus & UPDINTR_VBUS_INT)
                 {
+#if INCLUDE_POWER_FAULT_HANDLING
                     u8HandleUV = TRUE;
+#endif //#if INCLUDE_POWER_FAULT_HANDLING
                 }
             }
             else
@@ -1302,7 +1306,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         {
             if(u8IsSourceport)
             {
+#if INCLUDE_POWER_FAULT_HANDLING                
                 u8HandleUV = TRUE;
+#endif                 
             }
             else
             {
@@ -1324,7 +1330,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         {
             if (u8IsSourceport)
             {
+#if INCLUDE_POWER_FAULT_HANDLING                
                 u8HandleUV = TRUE;
+#endif                
             }
             else
             {
@@ -1337,7 +1345,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                }
                else
                {
+#if INCLUDE_POWER_FAULT_HANDLING                   
                     u8HandleUV = TRUE;
+#endif                    
                }
             }
         }
@@ -2377,6 +2387,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
   	UINT16 u16PrevVolt = DPM_GetVBUSVoltage(u8PortNum);
 	UINT8 u8SampleEn = 0;
     float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor;
+    float fTempVoltage = 0.0; 
 	
 	/*Setting the VBUS Comparator OFF*/
 	TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
@@ -2452,13 +2463,19 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
             /* Maximum Vsafe5V threshold is configured in u16MaxVoltageThr*/
             if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
-                u16MinVoltageThr = (UINT16)((float)TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor);
-                u16MaxVoltageThr = (UINT16)((float)TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor);
+                fTempVoltage = ((float)TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor);
+                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(fTempVoltage); 
+                
+                fTempVoltage = ((float)TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor);
+                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(fTempVoltage); 
             }
             else
             {
-                u16MinVoltageThr = (UINT16)((float)TYPEC_DESIRED_MIN_SNK_VSAFE5V_VBUS_THR * fVBUSCorrFactor);
-                u16MaxVoltageThr = (UINT16)((float)TYPEC_DESIRED_MAX_SNK_VSAFE5V_VBUS_THR * fVBUSCorrFactor);  
+                fTempVoltage = ((float)TYPEC_DESIRED_MIN_SNK_VSAFE5V_VBUS_THR * fVBUSCorrFactor);
+                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(fTempVoltage);
+                
+                fTempVoltage = ((float)TYPEC_DESIRED_MAX_SNK_VSAFE5V_VBUS_THR * fVBUSCorrFactor);
+                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(fTempVoltage);  
             }
             break;
 				
@@ -2466,11 +2483,14 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 		
 	  	default:
 		{
-			/* Minimum valid PDO voltage configured in u16MinVoltageThr*/
+            /* Minimum valid PDO voltage configured in u16MinVoltageThr*/
+            fTempVoltage = ((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(u16Voltage) * fVBUSCorrFactor);
+            u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(fTempVoltage); 
+            
             /* Maximum PDO voltage threshold is configured in u16MaxVoltageThr*/
-			u16MinVoltageThr = (UINT16)((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(u16Voltage) * fVBUSCorrFactor);
-            u16MaxVoltageThr = (UINT16)((float)TYPEC_GET_DESIRED_MAX_VBUS_THR(u16Voltage) * fVBUSCorrFactor);
-			break;
+            fTempVoltage = ((float)TYPEC_GET_DESIRED_MAX_VBUS_THR(u16Voltage) * fVBUSCorrFactor);
+            u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(fTempVoltage); 
+            break;
 		}/* end of default*/
         
 	  }/* end of switch*/
