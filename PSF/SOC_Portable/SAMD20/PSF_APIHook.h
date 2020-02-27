@@ -909,15 +909,15 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgStatusData
 {
     UINT8 u8MinorVersion;
     UINT8 u8MajorVersion;
-    UINT8 u8ManfString[16];
+    UINT8 u8HWVersion;
+    UINT8 u8SiVersion;
+    UINT8 u8ManfString[8];
     UINT16 u16ProducdID;
     UINT16 u16VendorID;
     UINT16 u16ProductTypeVDO;
     UINT16 u16ProductVDO;
     UINT16 u16CertStatVDO;
     UINT16 u16IDHeaderVDO;
-    UINT8 u8HWVersion;
-    UINT8 u8SiVersion;
     PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT];
 
     /* Power Balancing Configurations */

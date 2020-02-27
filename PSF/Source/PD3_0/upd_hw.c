@@ -332,7 +332,7 @@ void UPD_FaultInInit (UINT8 u8PortNum)
     UPD_RegWriteByte(u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), u8FaultInMode);
     
     /*Write Debounce count*/
-    UPD_ConfigurePIODebounceCount(u8PortNum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS, CONFIG_FAULT_IN_OCS_DEBOUNCE_MS);
+    UPD_ConfigurePIODebounceCount(u8PortNum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS, gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounce);
     
     /* Enable Debounce*/
     UPD_GPIOSetDebounce (u8PortNum, u8PIONum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS);

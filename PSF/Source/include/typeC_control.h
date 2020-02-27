@@ -339,12 +339,12 @@ event for UFP*/
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 /* To get over voltage VBUS threshold*/			
 #define TYPEC_GET_OVER_VOLTAGE_VBUS_THR(u16voltagemV)		\
-				(UINT16)((u16voltagemV * (CONFIG_OVER_VOLTAGE_FACTOR)) \
-				  / TYPEC_VBUS_THRX_UNITS_MILLI_V )
+				 ((u16voltagemV * (gasCfgStatusData.sPerPortData[u8PortNum].u8OVThresholdPercentage / (float)100)) \
+				  / TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
-/* To get under votlage VBUS threshold*/                  
+/* To get under voltage VBUS threshold*/                  
 #define TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(u16voltagemV)		\
-			  (UINT16)((u16voltagemV * (CONFIG_UNDER_VOLTAGE_FACTOR)) \
+			     ((u16voltagemV * (gasCfgStatusData.sPerPortData[u8PortNum].u8UVThresholdPercentage / (float)100)) \
 					/ TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
 #endif /* end of INCLUDE_POWER_FAULT_HANDLING*/

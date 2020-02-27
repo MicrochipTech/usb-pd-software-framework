@@ -644,12 +644,12 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         if((gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS) ||
 				 (gasPolicy_Engine[u8PortNum].ePEState == ePE_SNK_STARTUP))
         {
-            if(gasDPM[u8PortNum].u8VCONNPowerFaultCount >= CONFIG_MAX_VCONN_FAULT_COUNT)
+            if(gasDPM[u8PortNum].u8VCONNPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVCONN))
             {            
                 /*Setting the VCONN Good to Supply Flag as False*/
                 gasDPM[u8PortNum].u8VCONNGoodtoSupply = FALSE;
             }
-            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= CONFIG_MAX_VBUS_POWER_FAULT_COUNT)
+            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVBUS))
             {
 				/* Disable the receiver*/
                 PRL_EnableRx (u8PortNum, FALSE);
@@ -820,7 +820,7 @@ void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
     
-    if(gasDPM[u8PortNum].u8VCONNErrCounter > CONFIG_MAX_VCONN_FAULT_COUNT)
+    if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVCONN))
     {      
         /*Disable the receiver*/
         PRL_EnableRx (u8PortNum, FALSE);
