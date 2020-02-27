@@ -203,6 +203,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
       UINT8 u8VCONNGoodtoSupply;        //Vconn good to supply
 	  UINT8 u8PowerFaultISR;          //Power fault ISR flag
 	  UINT8 u8HRCompleteWait;         //Hard Reset complete wait flag
+      UINT8 u8TypeCErrRecFlag;        //Type-C Error Recovery Flag
   #endif
   
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;

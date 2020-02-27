@@ -1267,7 +1267,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
     {
         UPD_RegisterReadISR (u8PortNum, TYPEC_VBUS_MATCH, &u8Data, BYTE_LEN_1);
         
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         UINT8 u8HandleUV = FALSE;
+#endif
         UINT8 u8IsSourceport = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
 
         if (TYPEC_VSAFE_0V_MATCH_VAL == u8Data)
@@ -1282,7 +1284,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             {
                 if (u16InterruptStatus & UPDINTR_VBUS_INT)
                 {
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
                     u8HandleUV = TRUE;
+#endif //#if INCLUDE_POWER_FAULT_HANDLING
                 }
             }
             else
@@ -1302,7 +1306,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         {
             if(u8IsSourceport)
             {
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)               
                 u8HandleUV = TRUE;
+#endif                 
             }
             else
             {
@@ -1324,7 +1330,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         {
             if (u8IsSourceport)
             {
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)                
                 u8HandleUV = TRUE;
+#endif                
             }
             else
             {
@@ -1337,7 +1345,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                }
                else
                {
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)                  
                     u8HandleUV = TRUE;
+#endif                    
                }
             }
         }
