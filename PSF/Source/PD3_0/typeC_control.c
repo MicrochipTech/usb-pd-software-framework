@@ -192,7 +192,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
     TypeC_SetCCSampleEnable (u8PortNum,(TYPEC_ENABLE_CC1_SAMPLING | TYPEC_ENABLE_CC2_SAMPLING));
   
     /*Setting VCONN Debounce register for 2ms as given in DOS*/
-    UPD_RegWriteByte (u8PortNum, TYPEC_VCONN_DEB, CONFIG_VCONN_OCS_DEBOUNCE_IN_MS);
+    UPD_RegWriteByte (u8PortNum, TYPEC_VCONN_DEB, gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCSDebounce);
      
     
     /*Setting VBUS Debounce enable clear register and VBUS Match Enable Register */
@@ -1627,7 +1627,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         if(gasDPM[u8PortNum].u8VCONNPowerFaultCount!= SET_TO_ZERO)
         {
             PDTimer_Kill (gasDPM[u8PortNum].u8VCONNPowerGoodTmrID);
-            gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = PDTimer_Start (CONFIG_POWER_GOOD_TIMER_MS,\
+            gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = PDTimer_Start (gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimer,\
                                                       DPM_VCONNPowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
                   
         }
@@ -1678,11 +1678,12 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
             UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1, TYPEC_VCONN2_ENABLE);
         }
         
-        #if (CONFIG_VCONN_OCS_ENABLE == TRUE) 
-        /*Enable VCONN OCS detection only if CONFIG_VCONN_OCS_ENABLE is defined as 1*/
-        /*Enable the VCONN OCS monitoring in VBUS_CTL1 register*/
-        UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VCONN_OCS_ENABLE);
-        #endif
+        if (TRUE == gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCS) 
+        {
+            /*Enable VCONN OCS detection only if gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCS is defined as 1*/
+            /*Enable the VCONN OCS monitoring in VBUS_CTL1 register*/
+            UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VCONN_OCS_ENABLE);
+        }
     } 
 }
  
@@ -2376,7 +2377,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 {
   	UINT16 u16PrevVolt = DPM_GetVBUSVoltage(u8PortNum);
 	UINT8 u8SampleEn = 0;
-    float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor; 
+    float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor;  
 	
 	/*Setting the VBUS Comparator OFF*/
 	TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
@@ -2386,17 +2387,17 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	if ((u8PowerFaultThrConfig) && (TYPEC_VBUS_0V != u16Voltage))
 	{
-        /* if fault has occured start the Power Good Timer */
+        /* if fault has occurred start the Power Good Timer */
         if (gasDPM[u8PortNum].u8VBUSPowerFaultCount > SET_TO_ZERO)
         {
             /*  Power Fault threshold are configured only when the desired
                 PDO voltage is reached. Power Good timer should be started only when 
                 PDO voltage is attained. Hence started here.*/
             PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
-            gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = PDTimer_Start (CONFIG_POWER_GOOD_TIMER_MS,\
+            gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = PDTimer_Start (gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimer,\
                                                           TypeC_PowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
         }
-
+        
         /* Over voltage threshold is set in TypeC_ConfigureVBUSThr */	
         UINT16 au16VBUSThrVal[] = {(UINT16)((float)TYPEC_GET_OVER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor),
                                    (UINT16)((float)TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor)
@@ -2551,7 +2552,7 @@ void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 {
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
     
-    if(gasDPM[u8PortNum].u8VCONNErrCounter > CONFIG_MAX_VCONN_FAULT_COUNT)
+    if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVCONN))
     {   
         gasDPM[u8PortNum].u8VCONNErrCounter = 0;
         
