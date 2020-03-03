@@ -850,6 +850,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
     UINT32 u32CfgData;
     UINT32 u32FixedPDO[7];
     UINT32 u32NewPDO[7];
+    UINT32 u32AdvertisedPDO[7];
     UINT8 u8FixedPDOCnt;
     UINT8 u8VSELTruthTable[8];
     UINT8 u8OCSThresholdPercentage;
@@ -883,7 +884,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
     UINT16 u16NegoCurrent;
     UINT16 u16PortIOStatus;
     UINT16 u16PortFaultChangeBits;
-    UINT32 u32AdvertisedPDO[7];
     UINT8 u8AdvertisedPDOCnt; 
     UINT32 u32PartnerPDO[7];
     UINT8 u8PartnerPDOCnt; 
@@ -1474,6 +1474,14 @@ Description:
  
     <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
     established with the Port partner.
+   
+    <b> eMCHP_PSF_GET_SNK_CAPS_RCVD</b>: This event is used by PSF to notify DPM when 
+    Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
+    message initiated by PSF on request from DPM. 
+    
+    <b> eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify DPM when
+    Sink capabilities has not been received from Port Partner within tSenderResponseTimer
+    as a response to the Get_Sink_Caps message initiated by PSF on request from DPM.   
 Remarks:
     None                                                                                               
   ******************************************************************************************************/

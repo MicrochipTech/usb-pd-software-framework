@@ -35,8 +35,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define STRUCT_MAJOR_VERSION    0x01U
 #define STRUCT_MINOR_VERSION    0x00U
-#define PRODUCT_ID              0x0424U
-#define VENDOR_ID               0x301CU
+#define PRODUCT_ID              0x301CU
+#define VENDOR_ID               0x0424U
 #define PRODUCT_TYPE_VDO        0x0000U
 #define PRODUCT_VDO             0x0000U  
 #define CERT_STAT_VDO           0x0000U
@@ -89,6 +89,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CONFIG_PORT_SINK_PDO_6_VOLTAGE        0
 #define CONFIG_PORT_SINK_PDO_7_VOLTAGE        0
 
+#define CONFIG_MAX_PDO_COUNT                  7
 #define CONFIG_OVER_VOLTAGE_FACTOR			  115
 #define CONFIG_UNDER_VOLTAGE_FACTOR			  85
 #define CONFIG_MAX_VBUS_POWER_FAULT_COUNT	  3
@@ -163,7 +164,7 @@ typedef enum
 #define CONFIG_VCONN_OCS_DEBOUNCE_IN_MS       2
 #define CONFIG_FAULT_IN_OCS_DEBOUNCE_MS       5
 
-
+/* Power Throttling Bank values */
 #define PD_THROTTLE_BANK_A                    0x00U 
 #define PD_THROTTLE_BANK_B                    0x01U
 #define PD_THROTTLE_BANK_C                    0x10U
@@ -193,6 +194,33 @@ typedef enum
 /* Default Enable PB for port 0 with Priority as 0*/
 #define CFG_PB_PORT_ENABLE                    0x0001U
 
+/* Port Connection Status parameters */
+#define PORT_CONNECT_STS_ATTACHED                             BIT(0)
+#define PORT_CONNECT_STS_ORIENTATION_FLIPPED                  BIT(1)
+#define PORT_CONNECT_STS_DATA_ROLE                            BIT(2)
+#define PORT_CONNECT_STS_POWER_ROLE                           BIT(3)
+#define PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD              BIT(4)
+#define PORT_CONNECT_STS_AS_SRC_RDO_ACCEPTED                  BIT(5)
+#define PORT_CONNECT_STS_AS_SRC_RDO_REJECTED                  BIT(6)
+#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_ACCEPT               BIT(7)
+#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_REJECT               BIT(8)
+#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_PS_RDY               BIT(9)
+#define PORT_CONNECT_STS_VCONN_STATUS                         BIT(10)
+#define PORT_CONNECT_STS_CABLE_REDUCED_SRC_CAPABILITIES       BIT(11)
+#define PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES      BIT(12)
+
+/* Port IO Status parameters */
+#define PORT_IO_EN_DC_DC_STATUS                      BIT(0)
+#define PORT_IO_VSEL0_STATUS                         BIT(1)
+#define PORT_IO_VSEL1_STATUS                         BIT(2)
+#define PORT_IO_VSEL2_STATUS                         BIT(3)
+#define PORT_IO_EN_VBUS_STATUS                       BIT(4)
+#define PORT_IO_VBUS_DIS_STATUS                      BIT(5)
+#define PORT_IO_EN_SINK_STATUS                       BIT(6)
+#define PORT_IO_15_IND_STATUS                        BIT(7)
+#define PORT_IO_30_IND_STATUS                        BIT(8)
+#define PORT_IO_PS_RDY_RECVD_STATUS                  BIT(9)
+#define PORT_IO_CAP_MISMATCH_STATUS                  BIT(10)
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data types and constants

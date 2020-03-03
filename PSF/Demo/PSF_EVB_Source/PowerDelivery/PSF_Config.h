@@ -227,39 +227,6 @@ Example:
 // Section: Power Delivery IDs
 // *****************************************************************************
 // *****************************************************************************
-/************************************************************************
-Summary:
-    Vendor Identifier value.
-Description:
-    CONFIG_VENDOR_ID field defines Vendor Identifier value. It is used by the PD Firmware Update
-    state-machine during Enumeration phase. This information is shared with the PDFU Initiator 
-    as part of GET_FW_ID command's response.
-Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.It should 
-    always be two byte wide.
-Example:
-    <code>
-    #define CONFIG_VENDOR_ID    0x0424u
-    </code>                                                                     
-  ************************************************************************/
-#define CONFIG_VENDOR_ID          0x0424u
-
-/************************************************************************
-Summary:
-    Product Identifier value.
-Description:
-    CONFIG_PRODUCT_ID is the Product Identifier value. It is used by the PD Firmware Update 
-    state-machine during Enumeration phase. This information is shared with the PDFU Initiator 
-    as part of GET_FW_ID command's response.
-Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.It should 
-    always be two byte wide.
-Example:
-    <code>
-	#define CONFIG_PRODUCT_ID 0x301Cu
-    </code>                                                                      
-  ************************************************************************/
-#define CONFIG_PRODUCT_ID          0x301Cu
 
 /************************************************************************
 Summary:
@@ -294,23 +261,6 @@ Example:
     </code>                                                                 
   ************************************************************************/                                                                                            
 #define CONFIG_HWMAJOR_VERSION       0x1u
-
-/************************************************************************
-Summary:
-    Silicon Base Version.
-Description:
-    CONFIG_SILICON_VERSION is Silicon Base Version. It is used by the PD Firmware Update 
-    state-machine during Enumeration phase. This information is shared with the PDFU Initiator as 
-    part of GET_FW_ID command's response.
-Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.
-    It should be a byte wide.
-Example:
-    <code>
-    #define CONFIG_SILICON_VERSION    0x01u
-    </code>                                                      
-  ************************************************************************/                                                                                           
-#define CONFIG_SILICON_VERSION       0x01u
 
 // *****************************************************************************
 // *****************************************************************************
