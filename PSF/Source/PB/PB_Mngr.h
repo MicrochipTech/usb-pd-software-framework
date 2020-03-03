@@ -38,10 +38,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* Section: Constants                                                         */
 /* ************************************************************************** */
-/* ************************************************************************** */
-
-/* Macro to check Power Balancing enable/disable for the system */
-#define PB_ENABLE                               0x10  
+/* ************************************************************************** */ 
 
 /* Asynchronous Request Wait time value - 200ms */
 #define PB_ASYN_REQ_WAIT_TIMER                  0xC8  
@@ -99,7 +96,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PB_POWER_UINTS_MILLI_W                  250000
 
 /* Macro to know if PB is enabled for the system and for the port */
-#define IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & PB_ENABLE) && \
+#define IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & CFG_PB_ENABLE) && \
                              (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & CFG_PB_PORT_ENABLE)) \
                                     ? TRUE : FALSE)         
 

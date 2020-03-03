@@ -152,6 +152,7 @@ void CFG_LoadDefaults ()
     gasCfgStatusData.u8SiVersion = SILICON_VERSION; 
     gasCfgStatusData.u8PwrThrottleCfg = PD_THROTTLE_BANK_A;
     
+    gasCfgStatusData.u8PBEnableSelect = CFG_PB_ENABLE;  
     gasCfgStatusData.u16SystemPowerBankA = CFG_PB_TOT_SYS_POWER_BANKA;
     gasCfgStatusData.u16MinPowerBankA = CFG_PB_MIN_POWER_BANKA;
     gasCfgStatusData.u16SystemPowerBankB = CFG_PB_TOT_SYS_POWER_BANKB;

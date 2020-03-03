@@ -41,7 +41,7 @@ void PB_Init(void)
     UINT16 u16TotSysPwr = 0; 
         
     /* Initialize System parameters only if PB is enabled for the system */
-    if (gasCfgStatusData.u8PBEnableSelect & PB_ENABLE)
+    if (gasCfgStatusData.u8PBEnableSelect & CFG_PB_ENABLE)
     {
         /* Get the Total System Power based on currently selected Throttling bank */
         if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
