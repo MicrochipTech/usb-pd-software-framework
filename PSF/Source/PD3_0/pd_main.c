@@ -99,8 +99,6 @@ UINT8 MchpPSF_Init(void)
     }
     
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \

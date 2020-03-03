@@ -95,7 +95,10 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         {
             UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2, UPD_DISABLE_GPIO);
             #if (TRUE == INCLUDE_POWER_BALANCING)
-            PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT); 
+            if (TRUE == IS_PB_ENABLED(u8PortNum))
+            {
+                PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT); 
+            }
             #endif 
             break;
         }
@@ -106,7 +109,10 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
             UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_CLEAR);
             #if (TRUE == INCLUDE_POWER_BALANCING)
-            PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH); 
+            if (TRUE == IS_PB_ENABLED(u8PortNum))
+            {
+                PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH); 
+            }
             #endif 
             break;
         }
@@ -117,7 +123,10 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
             UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SET);
             #if (TRUE == INCLUDE_POWER_BALANCING)
-            PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH);
+            if (TRUE == IS_PB_ENABLED(u8PortNum))
+            {
+                PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH);
+            }
             #endif 
             break;
         }
@@ -145,7 +154,10 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
         {
             #if (TRUE == INCLUDE_POWER_BALANCING)
-            PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
+            if (TRUE == IS_PB_ENABLED(u8PortNum))
+            {
+                PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
+            }
             #endif 
             break; 
         }
@@ -153,7 +165,10 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD: 
         {
             #if (TRUE == INCLUDE_POWER_BALANCING)
-            PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD);
+            if (TRUE == IS_PB_ENABLED(u8PortNum))
+            {
+                PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD);
+            }
             #endif  
             break; 
         }  
@@ -161,7 +176,10 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         case eMCHP_PSF_GET_SNK_CAPS_RCVD:
         {
             #if (TRUE == INCLUDE_POWER_BALANCING)
-            PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_GET_SNK_CAPS_RCVD);
+            if (TRUE == IS_PB_ENABLED(u8PortNum))
+            {
+                PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_GET_SNK_CAPS_RCVD);
+            }
             #endif  
             break;            
         }

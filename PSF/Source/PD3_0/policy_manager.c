@@ -45,7 +45,7 @@ void DPM_Init(UINT8 u8PortNum)
         /* Set Port Power Role as Source in DPM Configure variable*/
         u8DPM_ConfigData |= (PD_ROLE_SOURCE << DPM_DEFAULT_POWER_ROLE_POS); 
         
-        /* Set Port Data Role as DFP in DPM Cofigure variable*/
+        /* Set Port Data Role as DFP in DPM Configure variable*/
         u8DPM_ConfigData |= (PD_ROLE_DFP << DPM_DEFAULT_DATA_ROLE_POS);
         
         /* Set Port Power Role as Source in DPM Status variable */
@@ -53,6 +53,12 @@ void DPM_Init(UINT8 u8PortNum)
         
         /* Set Port Data Role as DFP in DPM Status variable */
         u8DPM_Status |= (PD_ROLE_DFP << DPM_CURR_DATA_ROLE_POS);
+        
+        /* Set Port Power Role as Source in Port Connection Status register */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= PORT_CONNECT_STS_POWER_ROLE; 
+        
+        /* Set Port Data Role as DFP in Port Connection Status register */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= PORT_CONNECT_STS_DATA_ROLE; 
     }       
     else
     {
@@ -67,6 +73,12 @@ void DPM_Init(UINT8 u8PortNum)
         
         /* Set the Current  Port Data Role as UFP in DPM Status variable */
         u8DPM_Status |= (PD_ROLE_UFP << DPM_CURR_DATA_ROLE_POS);
+        
+        /* Set Port Power Role as Sink in Port Connection Status register */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= ~(PORT_CONNECT_STS_POWER_ROLE); 
+        
+        /* Set Port Data Role as UFP in Port Connection Status register */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= ~(PORT_CONNECT_STS_DATA_ROLE);         
     }
     
     gasDPM[u8PortNum].u8DPM_Status =  u8DPM_Status;
@@ -200,7 +212,7 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
                           TYPEC_VBUS_PRESENCE_MASK) >> TYPEC_VBUS_PRESENCE_POS);
   if (u8VBUSPresence!= TYPEC_VBUS_0V_PRES)
   {
-      return DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[--u8VBUSPresence]);
+      return DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO[--u8VBUSPresence]);
   }
   else
   {
@@ -243,7 +255,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
             u8DataBuf[INDEX_2], u8DataBuf[INDEX_3])) & PE_REQUEST_OPR_CUR_MASK) >> PE_REQUEST_OPR_CUR_START_POS);
 	
     /* Get the current value of Requested Source PDO */
-    u16SrcPDOCurrVal = ((gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[u8SinkReqObjPos-1]) & \
+    u16SrcPDOCurrVal = ((gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO[u8SinkReqObjPos-1]) & \
                      PE_REQUEST_MAX_CUR_MASK); 
     
     /* If Requested Max current is greater current value of Requested Source PDO or
@@ -257,13 +269,20 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     /* If request is valid set the Negotiated PDO as requested */
     if(u8RetVal == DPM_VALID_REQUEST)
     {
-        gasDPM[u8PortNum].u32NegotiatedPDO = (gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[u8SinkReqObjPos-1]);
+        gasDPM[u8PortNum].u32NegotiatedPDO = (gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO[u8SinkReqObjPos-1]);
         gasDPM[u8PortNum].u8NegotiatedPDOIndex = u8SinkReqObjPos;
-        gasDPM[u8PortNum].u32SinkReqRDO = (u8DataBuf[0] | u8DataBuf[1] << 8 | u8DataBuf[2] << 16 | 
-                                                        u8DataBuf[3] << 24);
+        gasDPM[u8PortNum].u32SinkReqRDO = MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], 
+                                        u8DataBuf[INDEX_2], u8DataBuf[INDEX_3]);
+        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrent = u16SrcPDOCurrVal; 
+        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltage = \
+                ((DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO)) / DPM_PDO_VOLTAGE_UNIT);
+        /* Update the allocated power in terms of 250mW */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPower =    
+                ((gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltage * gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrent) / 
+                (DPM_PDO_VOLTAGE_UNIT * DPM_PDO_CURRENT_UNIT)); 
         DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Requested is Valid \r\n");
     }
-      
+
     return u8RetVal;
 }
 
@@ -281,8 +300,13 @@ UINT32 DPM_CurrentCutDown (UINT32 u32PDO)
 }
 
 /* Copy the Source capabilities */
-void DPM_ChangeCapbilities (UINT32* pu32DataObj, UINT32 *pu32SrcCaps, UINT8 u8pSrcPDOCnt)
+void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32SrcCaps, UINT8 u8pSrcPDOCnt)
 {
+    
+    /* The attached USB-C cable does not support the locally defined Source PDOs  */   
+    gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= 
+                                        PORT_CONNECT_STS_CABLE_REDUCED_SRC_CAPABILITIES;        
+
     for (UINT8 u8PDOindex = 0; u8PDOindex < u8pSrcPDOCnt; u8PDOindex++)
     {   
         /* Reset the current value to E-Cable supported current */
@@ -318,6 +342,10 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
         /* If E-Cable max current is 5A, pass the capabilities without change */
         if(gasDPM[u8PortNum].u16MaxCurrSupportedin10mA == DPM_CABLE_CURR_5A_UNIT)
         {
+            /* The attached USB-C cable supports the locally-defined Source PDOs */
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+                                        ~(PORT_CONNECT_STS_CABLE_REDUCED_SRC_CAPABILITIES);
+
             (void)MCHP_PSF_HOOK_MEMCPY(&pu32DataObj[INDEX_0], &pu32SrcCap[INDEX_0],\
                     ((*u8pSrcPDOCnt) * 4));
         }
@@ -325,15 +353,18 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
             reset the current value of PDOs */
         else
         {
-            DPM_ChangeCapbilities (&pu32DataObj[INDEX_0], &pu32SrcCap[INDEX_0], *u8pSrcPDOCnt);
+            DPM_ChangeCapabilities (u8PortNum, &pu32DataObj[INDEX_0], &pu32SrcCap[INDEX_0], *u8pSrcPDOCnt);
         }
           
-    }
-    
+    }   
     else
     {
-        DPM_ChangeCapbilities (pu32DataObj, &pu32SrcCap[0],*u8pSrcPDOCnt);  
+        DPM_ChangeCapabilities (u8PortNum, pu32DataObj, &pu32SrcCap[0],*u8pSrcPDOCnt);  
     }
+    
+    /* Update Advertised PDO registers */
+    DPM_UpdateAdvertisedPDOParam(u8PortNum, pu32DataObj, *u8pSrcPDOCnt);    
+    
 }
 
 void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
@@ -342,10 +373,45 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = RESET_TO_ZERO; 
         
-    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < 7; u8PDOIndex++)
+    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < CONFIG_MAX_PDO_COUNT; u8PDOIndex++)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32NewPDO[u8PDOIndex] = RESET_TO_ZERO; 
     }    
+}
+
+void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum, UINT32 *pu32DataObj, UINT8 u8SrcPDOCnt)
+{
+    /* Update Advertised PDO Count */
+    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = u8SrcPDOCnt; 
+    
+    /* Update Advertised PDO Registers */
+    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < u8SrcPDOCnt; u8PDOIndex++)
+    {   
+        gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO[u8PDOIndex] = pu32DataObj[u8PDOIndex];
+    }    
+ 
+    /* Update the Port Connection Status register by comparing the Fixed and 
+       Advertised Source PDOs */
+    if (0 == DPM_ComparePDOs(u8PortNum))
+    {
+        /* The advertised PDOs are equivalent to the default configured values */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+                            ~(PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES);         
+    }   
+    else
+    {
+        /* The advertised PDOs have been reduced from default configured values */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= 
+                            PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES;                 
+    }
+}
+
+UINT8 DPM_ComparePDOs(UINT8 u8PortNum)
+{
+    return MCHP_PSF_HOOK_MEMCMP(&gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[INDEX_0],
+                    &gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO[INDEX_0], 
+                    MAX(gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt, 
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt)); 
 }
 
 #if (TRUE == INCLUDE_PD_SOURCE)
@@ -421,7 +487,7 @@ UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
 /****************************** DPM Sink related APIs*****************************************/
 void DPM_Get_Sink_Capabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
 {   
-    /*Get Sink Capability from Port Configuration Data Structure*/
+    /* Get Sink Capability from Port Configuration Data Structure */
     *u8pSinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt;
     
         (void)MCHP_PSF_HOOK_MEMCPY ( pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO, \
@@ -723,10 +789,10 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 return;
             }
              /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
-            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
-                gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN, (UINT8)UPD_GPIO_DE_ASSERT);
+            PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);    
+            
             #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-            /*Clear PIO ovveride enable*/
+            /*Clear PIO override enable*/
             UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
             #endif
             
@@ -810,12 +876,11 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             gasDPM[u8PortNum].u8HRCompleteWait = gasDPM[u8PortNum].u8PowerFaultISR;
         }
         
-        /* Enable DC_DC_EN to drive power*/
-        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
-            gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN, (UINT8)UPD_GPIO_ASSERT);
-        
+        /* Enable DC_DC_EN to drive power*/        
+        PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE); 
+
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-        /*Enable PIO ovveride enable*/
+        /*Enable PIO override enable*/
         UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
         #endif
             

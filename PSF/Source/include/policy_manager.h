@@ -216,6 +216,15 @@ typedef enum DPM_ClientRequest
     eMCHP_PSF_DPM_GET_SNK_CAPS
 }eMCHP_PSF_DPM_ClientRequest;
 
+/* Enumeration to define the types of PDO */ 
+typedef enum PDOtype
+{
+    ePDO_FIXED = 0x00,
+    ePDO_BATTERY = 0x01,
+    ePDO_VARIABLE = 0x02,
+    ePDO_INVALID = 0xFF
+} ePDOtypes;
+
 /**************************************************************************************************
 Summary:
 	PSF DPM Client Request Type enum
@@ -328,7 +337,7 @@ void DPM_SetPortPower(UINT8 u8PortNum);
     Conditions:
         None.
     Input:
-        u8PortNum - Port Number for which source cabilities to be returned.
+        u8PortNum - Port Number for which source capabilities to be returned.
         NumOfPdo - Pointer to hold number of PDOs supported by the port
         pu32DataObj - Pointer to hold the source capabilities.
     Return:
@@ -928,6 +937,49 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
 **************************************************************************************************/
 
 void DPM_ResetNewPDOParameters(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum, UINT32 *pu32DataObj, UINT8 u8SrcPDOCnt); 
+    Summary:
+        Updates the Advertised PDO registers and status bits once PDOs are advertised. 
+    Description:
+        This API sets the advertised PDO count, updates the registers and sets/clears  
+        the PD_BAL_REDUCED_SOURCE_CAPABILITIES bit in Port Connection Status 
+        after comparing the advertised PDOs with Fixed PDOs.       . 
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT. 
+        pu32DataObj - Pointer to hold the advertised source capabilities.
+        u8SrcPDOCnt - Holds the number of advertised source capabilities.
+    Return:
+        None.  
+    Remarks:
+        None.
+**************************************************************************************************/
+
+void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum, UINT32 *pu32DataObj, UINT8 u8SrcPDOCnt); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_ComparePDOs(UINT8 u8PortNum); 
+    Summary:
+        Compares advertised PDOs and Fixed PDOs. 
+    Description:
+        This API compares the default Source capabilities(Fixed PDOs) with the 
+        advertised Source capabilities(Advertised PDOs).       . 
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT. 
+    Return:
+        None.  
+    Remarks:
+        None.
+**************************************************************************************************/
+
+UINT8 DPM_ComparePDOs(UINT8 u8PortNum);
 
 #endif /*_POLICY_MANAGER_H_*/
 

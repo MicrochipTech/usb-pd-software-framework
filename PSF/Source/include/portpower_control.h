@@ -135,4 +135,29 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum,UINT8 u8PDOIndex, UINT16 u16VBUSVolta
 **************************************************************************************************/
 void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS);
 
+/****************************************************************************
+    Function:
+        void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
+    Summary:
+        API to configure DC_DC_EN as required
+    Description:
+        This API enables or disables DC_DC_EN based on u8EnaDisDCDCEn 
+        parameter for the port. Also, updates the enable/disable status in 
+        Port I/O Status register. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Corresponding Port Number. Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8EnaDisDCDCEn - u8EnaDisDCDCEn takes following value 
+                           'TRUE' Enables DC_DC_EN 
+                           'FALSE' Disables DC_DC_EN
+    Return:
+      None.
+    Remarks:
+      None.
+
+**************************************************************************************************/
+
+void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn); 
+
 #endif /*_PORTPOWER_CONTROL_H_*/

@@ -168,7 +168,6 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     }
     else
     {
-        /* To-do : Use CSR variable for checking capability  mismatch */
         if (PB_IS_CAPABILITY_MISMATCH(u32RDO))
         {
             gasPBIntPortParam[u8PortNum].u8PortStatusMask |= PB_PORT_STATUS_CAPABILITY_MISMATCH;
@@ -200,6 +199,8 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     {
        gasPBIntPortParam[u8PortNum].u8PortStatusMask &= ~(PB_PORT_STATUS_PORT_IN_MIN_PWR);
     }
+    
+    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPower = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW; 
 }
 
 void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattage)

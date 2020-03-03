@@ -619,7 +619,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
         "gasCfgStatusData[u8PortNum].u32CfgData"
 
     Conditions:
-        This API is called inside the PD Stack initialisation API call .
+        This API is called inside the PD Stack initialization API call .
 
     Input:
         u8PortNum - Port Number.

@@ -98,6 +98,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Power is represented in terms of 250mW */
 #define PB_POWER_UINTS_MILLI_W                  250000
 
+/* Macro to know if PB is enabled for the system and for the port */
+#define IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & PB_ENABLE) && \
+                             (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & CFG_PB_PORT_ENABLE)) \
+                                    ? TRUE : FALSE)         
+
 /* Macro to get the voltage value from Fixed PDO */
 #define PB_GET_VOLTAGE_FROM_FIXED_PDO(u32PDO)   (UINT16)(((UINT32)u32PDO & \
                                     PB_FIXED_PDO_VOLTAGE_MASK) >> PB_PDO_VOLTGE_BIT_POS)
@@ -170,15 +175,6 @@ typedef enum GetSinkCapsState
     ePB_SINK_CAPS_INITIATED,
     ePB_SINK_CAPS_COMPLETED
 }GET_SINK_CAP_SS;
-
-/* Enumeration to define the types of PDO */ 
-typedef enum PDOtype
-{
-    ePDO_FIXED = 0x00,
-    ePDO_BATTERY = 0x01,
-    ePDO_VARIABLE = 0x02,
-    ePDO_INVALID = 0xFF
-} ePDOtypes;
 
 /***************************************************************************************/
 // *****************************************************************************

@@ -157,7 +157,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
         /*This State is set by the PE_ReceiveMsgHandler API if the source capability message has been received*/    
         case ePE_SNK_EVALUATE_CAPABILITY:
         {            
-            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY: Enterted the state\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY: Entered the state\r\n");
                     
             /*Reset the HardResetCounter*/
             gasPolicy_Engine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	
@@ -195,9 +195,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             switch (gasPolicy_Engine[u8PortNum].ePESubState)
             {
                 case ePE_SNK_SELECT_CAPABILITY_SEND_REQ_SS:
-                {
-                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Enterted the state\r\n");
+                {                 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Entered the state\r\n");
 
                     /*Set the PD message transmitter API variables to send Sink Data request Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
@@ -296,7 +295,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             {
                 case ePE_SNK_READY_ENTRY_SS:
                 {                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY: Enterted the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY: Entered the state\r\n");
 					/* configure threshold to detect faults*/
                    	DPM_EnablePowerFaultDetection(u8PortNum);
 					

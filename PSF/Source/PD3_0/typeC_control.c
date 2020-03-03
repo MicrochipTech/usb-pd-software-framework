@@ -276,9 +276,18 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                 
                 case TYPEC_UNATTACHED_SRC_ENTRY_SS:
-                {   
-                     
-                    /*Notify external DPM of Type Detach event through a user defined call back*/
+                {     
+                    /* Clear the ATTACHED and AS_SOURCE_PD_CONTRACT_GOOD bits in 
+                       Port Connection Status register */
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+                            ~(PORT_CONNECT_STS_ATTACHED | PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD);
+                    
+                    /* Set the Power related variables to 0 in Status register */
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrent = RESET_TO_ZERO; 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltage = RESET_TO_ZERO; 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPower = RESET_TO_ZERO; 
+                    
+                    /* Notify external DPM of Type Detach event through a user defined call back*/
                     (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT);
                      
                     /* Disable the receiver*/
@@ -320,7 +329,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_UNATTACHED_SRC_INIT_SS:
                 {
                     /*DPM power fault handler resets SM by polling this state 
-                     TYPEC_UNATTACHED_SRC_INIT_SS in the hanlder for Src unattach.
+                     TYPEC_UNATTACHED_SRC_INIT_SS in the handler for Src unattach.
                      Any module can reset its reset its SM by polling this state*/                       
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_IDLE_SS;
                     
@@ -548,15 +557,21 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Sink Attached in CC1 pin*/
                     if(u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
                     {
+                        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+                                                ~(PORT_CONNECT_STS_ORIENTATION_FLIPPED);
                         (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH);
                     }
                     /*Sink attached in CC2*/
                     else
                     {
+                        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= 
+                                                 PORT_CONNECT_STS_ORIENTATION_FLIPPED;                        
                         (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
-               
-                    /* Enabling PRL Rx*/
+                    
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= PORT_CONNECT_STS_ATTACHED;  
+                    
+                    /* Enabling PRL Rx */
                     PRL_EnableRx(u8PortNum, TRUE);                  
 
                     /* Enable Power Threshold for TYPEC_VBUS_5V */
@@ -687,6 +702,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_0V, \
                             (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
                     PRL_EnableRx (u8PortNum, FALSE);
+                    
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= ~(PORT_CONNECT_STS_ATTACHED);
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT);
@@ -843,16 +860,24 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     if (u8CC1_MatchISR > u8CC2_MatchISR)
                     {
                         UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
-                        (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH);
                         
+                        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+                                                ~(PORT_CONNECT_STS_ORIENTATION_FLIPPED); 
+                        
+                        (void)MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH);                        
                     }
                     /*Source Attached in CC2 pin*/
                     else
                     {
                         UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
+                        
+                        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= 
+                                                  PORT_CONNECT_STS_ORIENTATION_FLIPPED;
+                        
                         (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= PORT_CONNECT_STS_ATTACHED;  
                     
                     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_5V,\
                             (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
@@ -974,8 +999,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                         
                          /*Disable DC_DC EN on VBUS fault to reset the DC-DC controller*/
-                        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
-                            gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN, (UINT8)UPD_GPIO_DE_ASSERT);
+                        PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
                         
                         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                         /*Disable PIO override enable*/
@@ -1077,8 +1101,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SRC_ENTRY_SS; 
                         
                         /*Enable DC_DC EN on VBUS fault to reset the DC-DC controller*/
-                        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
-                            gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN, (UINT8)UPD_GPIO_ASSERT);
+                        PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
                         
                         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                         /*Enable PIO ovveride enable*/
@@ -1356,9 +1379,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         if (TRUE == u8HandleUV)
         {   
             u16Data = 0;
-            /* Read the sample En to determine whether undervoltage is enabled */
+            /* Read the sample En to determine whether under voltage is enabled */
             UPD_RegisterReadISR (u8PortNum, TYPEC_VBUS_SAMP_EN, (UINT8 *)&u16Data, BYTE_LEN_1);
-            /* Verifying whether undervoltage is enabled */
+            /* Verifying whether under voltage is enabled */
             if (TYPEC_UNDER_VOLT_THR3_MATCH & u16Data)
             {
                 #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
@@ -1370,7 +1393,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                     UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8Pio_VBUS_EN),\
                                             (UINT8 *)&u16Data, BYTE_LEN_1);
                 #endif   
-               /* undervoltage is considered if VBUS not lowered as part of Over voltage*/
+               /* under voltage is considered if VBUS not lowered as part of Over voltage*/
                 if (!gasDPM[u8PortNum].u8HRCompleteWait)
                 {
                     gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_UV;
@@ -1380,7 +1403,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         else if (u8Data & TYPEC_VBUS_OVERVOLT_MATCH_BIT)
         {
             /* Over voltage is checked before desired voltage as TYPEC_VBUS_MATCH_OVER_V 
-                checks for only over votage bit being set are not*/
+                checks for only over voltage bit being set are not*/
              gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP;
             #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                 /*When PIO override is disabled; VBUS_EN is disabled by FW on Power fault*/
@@ -1626,7 +1649,11 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
            
         /*Setting CC Comparator to sample both the CC1 and CC2*/
         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
-
+        
+        /* Clear VCONN_STATUS bit in Port Connection Status register */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+                                                    ~(PORT_CONNECT_STS_VCONN_STATUS);
+        
         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE initiated\r\n");
         
     }
@@ -1694,6 +1721,9 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
             /*Enable the VCONN OCS monitoring in VBUS_CTL1 register*/
             UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VCONN_OCS_ENABLE);
         }
+        
+        /* Set VCONN_STATUS bit in Port Connection Status register */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= PORT_CONNECT_STS_VCONN_STATUS;
     } 
 }
  

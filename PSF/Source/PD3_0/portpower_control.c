@@ -71,9 +71,7 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
     }
     #endif /*CONFIG_DCDC_CTRL*/
 
-    UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
-                gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN, (UINT8)UPD_GPIO_ASSERT);
-
+    PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
 
     /*Hook to modify or overwrite the default Port Power control initialization */
     MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
@@ -85,24 +83,47 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
 
     UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN;
+    UINT8 u8VSELAssert; 
+    
     if (PWRCTRL_VBUS_0V == u16VBUSVoltage)
     {
         /*De-assert VBUS_EN if voltage is 0V*/
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_DE_ASSERT);
+        
+        /* Clear the status of EN_VBUS and VSEL 2:0 */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= 
+                ~(PORT_IO_EN_VBUS_STATUS | PORT_IO_VSEL0_STATUS | PORT_IO_VSEL1_STATUS | PORT_IO_VSEL2_STATUS); 
     }
     else
     {
         /*Assert VBUS_EN*/
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
+        
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= PORT_IO_EN_VBUS_STATUS;
     }
+    
     for(UINT8 u8VSELIndex = SET_TO_ZERO; u8VSELIndex < PWRCTRL_VSEL_PIO_MAX_COUNT; u8VSELIndex++)
     {
-        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[u8VSELIndex], \
-            gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[u8VSELIndex], \
-            (((gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[u8PDOIndex] & BIT(u8VSELIndex)) == BIT(u8VSELIndex)) \
-            ? (UINT8)UPD_GPIO_ASSERT : (UINT8)UPD_GPIO_DE_ASSERT));
+        u8VSELAssert = gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[u8PDOIndex] & BIT(u8VSELIndex); 
+        
+        if (BIT(u8VSELIndex) == u8VSELAssert)
+        {
+            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[u8VSELIndex], \
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[u8VSELIndex], \
+                        (UINT8)UPD_GPIO_ASSERT);
+
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= (PORT_IO_VSEL0_STATUS << u8VSELIndex);            
+        }
+        else
+        {
+            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[u8VSELIndex], \
+                gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[u8VSELIndex], \
+                    (UINT8)UPD_GPIO_DE_ASSERT);
+            
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(PORT_IO_VSEL0_STATUS << u8VSELIndex);            
+        }       
     }   
     
     #elif (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
@@ -122,11 +143,15 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
     {
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
                 u8VbusDisMode, (UINT8)UPD_GPIO_ASSERT);
+        
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= PORT_IO_VBUS_DIS_STATUS; 
     }
     else
     {
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
                 u8VbusDisMode, (UINT8)UPD_GPIO_DE_ASSERT);
+        
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(PORT_IO_VBUS_DIS_STATUS); 
     }
 
     /*Hook to modify or overwrite the default Port Power control VBUS discharge*/
@@ -134,4 +159,22 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
 
 }
 
+void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
+{
+    UINT8 u8DCDCEnMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN; 
+    UINT8 u8DCDCEnPio = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN;
+    
+    if (TRUE == u8EnaDisDCDCEn)
+    {
+        UPD_GPIOUpdateOutput(u8PortNum, u8DCDCEnPio, u8DCDCEnMode, (UINT8)UPD_GPIO_ASSERT);
+        
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= PORT_IO_EN_DC_DC_STATUS;
+    }
+    else
+    {
+        UPD_GPIOUpdateOutput(u8PortNum, u8DCDCEnPio, u8DCDCEnMode, (UINT8)UPD_GPIO_DE_ASSERT);
+        
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(PORT_IO_EN_DC_DC_STATUS);
+    }
+}
 /************************************************************************************/
