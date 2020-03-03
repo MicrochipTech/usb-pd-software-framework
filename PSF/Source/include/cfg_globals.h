@@ -191,6 +191,8 @@ typedef enum
 #define CFG_PB_MAX_PORT_POWER_BANKC           0x00F0U
 /* Default Max Port current is 3A */
 #define CFG_PB_MAX_PORT_CURRENT               0x012CU
+/* Default PB Enable for System with Algorithm as FCFS */
+#define CFG_PB_ENABLE                         0x10U 
 /* Default Enable PB for port 0 with Priority as 0*/
 #define CFG_PB_PORT_ENABLE                    0x0001U
 
