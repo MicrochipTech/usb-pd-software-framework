@@ -940,7 +940,7 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum, UINT32 *pu32DataObj, UINT8 u8SrcPDOCnt); 
+        void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum); 
     Summary:
         Updates the Advertised PDO registers and status bits once PDOs are advertised. 
     Description:
@@ -951,15 +951,13 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum);
         None
     Input:
         u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT. 
-        pu32DataObj - Pointer to hold the advertised source capabilities.
-        u8SrcPDOCnt - Holds the number of advertised source capabilities.
     Return:
         None.  
     Remarks:
         None.
 **************************************************************************************************/
 
-void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum, UINT32 *pu32DataObj, UINT8 u8SrcPDOCnt); 
+void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:

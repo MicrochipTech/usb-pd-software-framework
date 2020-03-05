@@ -73,6 +73,11 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
                            ((CONFIG_PORT_SOURCE_PDO_7_CURRENT)/10));
     gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt = CONFIG_PORT_SOURCE_NUM_OF_PDOS;
 
+    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO, 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt * 4));
+    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt;
+    
     gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[0] =  \
                                              CONFIG_PORT_VSAFE0V_VSEL_MAPPING;
     gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[1] =  \

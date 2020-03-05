@@ -33,6 +33,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _TYPECCONTROL_H_
 #define _TYPECCONTROL_H_
 
+#include "cfg_globals.h"
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Constants
