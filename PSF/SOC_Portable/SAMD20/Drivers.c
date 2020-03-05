@@ -214,15 +214,15 @@ void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum)
     {
         PORT_PinInputEnable(SAMD20_DCDC_ALERT0);
         PORT_PinWrite(SAMD20_DCDC_ALERT0, TRUE);
-        EIC_CallbackRegister(SAMD20_DCDC_ALERT0, SAMD20_I2CDCDCAlertCallback, PORT0);
-        EIC_InterruptEnable(SAMD20_DCDC_ALERT0);
+        EIC_CallbackRegister((EIC_PIN)SAMD20_DCDC_ALERT0, SAMD20_I2CDCDCAlertCallback, PORT0);
+        EIC_InterruptEnable((EIC_PIN)SAMD20_DCDC_ALERT0);
     }
     else if (PORT1 == u8PortNum)
     {
         PORT_PinInputEnable(SAMD20_DCDC_ALERT1);
         PORT_PinWrite(SAMD20_DCDC_ALERT1, TRUE);
-        EIC_CallbackRegister(SAMD20_DCDC_ALERT1, SAMD20_I2CDCDCAlertCallback, PORT1);
-        EIC_InterruptEnable(SAMD20_DCDC_ALERT1);
+        EIC_CallbackRegister((EIC_PIN)SAMD20_DCDC_ALERT1, SAMD20_I2CDCDCAlertCallback, PORT1);
+        EIC_InterruptEnable((EIC_PIN)SAMD20_DCDC_ALERT1);
     }
 }
 

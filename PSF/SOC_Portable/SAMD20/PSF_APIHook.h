@@ -852,6 +852,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
     UINT32 u32NewPDO[7];
     UINT32 u32AdvertisedPDO[7];
     UINT8 u8FixedPDOCnt;
+    UINT8 u8AdvertisedPDOCnt; 
     UINT8 u8VSELTruthTable[8];
     UINT8 u8OCSThresholdPercentage;
     UINT8 u8FaultInDebounce;
@@ -884,7 +885,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
     UINT16 u16NegoCurrent;
     UINT16 u16PortIOStatus;
     UINT16 u16PortFaultChangeBits;
-    UINT8 u8AdvertisedPDOCnt; 
     UINT32 u32PartnerPDO[7];
     UINT8 u8PartnerPDOCnt; 
     UINT32 u32RDO;
