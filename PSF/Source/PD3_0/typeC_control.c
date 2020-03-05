@@ -1425,10 +1425,10 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
              u16Data =(UINT16)((u16Data * TYPEC_VBUS_THRX_UNITS_MILLI_V)
                               /gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor);
 
-            for (UINT8 u8Index = 0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt; u8Index++)
+            for (UINT8 u8Index = 0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
             {
                 /* PDO voltage for which VBUS Threshold was configured is determined */
-                if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[u8Index])) 
+                if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO[u8Index])) 
                 {
                     /*Setting the VBUS Status flag for corresponding voltage
                         in u8IntStsISR variable*/
@@ -1733,7 +1733,7 @@ void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
           
     /*Clearing the CC interrupt status in u8IntStsISR variable at the start of this function to 
     make this ISR safe as after TypeC_Reset_VCONNDIS_Settings function call,
-    Interrupt will immediatley be fired*/  
+    Interrupt will immediately be fired*/  
     gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_CCINT_STATUS_MASK;
     
     /*Setting the VCONN source bit in u8IntStsISR variable as VCONN disabled */
@@ -2452,13 +2452,13 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
                               TYPEC_UNDER_VOLT_THR3_MATCH);
 
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-            /* Enable PIO override for over voltage and undervoltage*/
+            /* Enable PIO override for over voltage and under voltage*/
             UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UPD_PIO_OVR_0 | UPD_PIO_OVR_1));
         #endif
 	}
 	else
 	#endif /*INCLUDE_POWER_FAULT_HANDLING*/
-	/*****************************VBUS threshould configuration for all voltages ****************/  
+	/*****************************VBUS threshold configuration for all voltages ****************/  
 	{
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)

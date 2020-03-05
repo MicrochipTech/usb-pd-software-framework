@@ -261,7 +261,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     /* If Requested Max current is greater current value of Requested Source PDO or
         Requested object position is invalid, received request is invalid request */ 
     u8RetVal = (u16SinkReqCurrVal > u16SrcPDOCurrVal) ? DPM_INVALID_REQUEST : (((u8SinkReqObjPos<= FALSE) || \
-               (u8SinkReqObjPos> gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt))) ? \
+               (u8SinkReqObjPos> gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt))) ? \
                 DPM_INVALID_REQUEST : (u8RaPresence == FALSE) ? DPM_VALID_REQUEST : \
                 (u16SinkReqCurrVal > gasDPM[u8PortNum].u16MaxCurrSupportedin10mA) ? \
                 DPM_INVALID_REQUEST : DPM_VALID_REQUEST;   
@@ -360,11 +360,7 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
     else
     {
         DPM_ChangeCapabilities (u8PortNum, pu32DataObj, &pu32SrcCap[0],*u8pSrcPDOCnt);  
-    }
-    
-    /* Update Advertised PDO registers */
-    DPM_UpdateAdvertisedPDOParam(u8PortNum, pu32DataObj, *u8pSrcPDOCnt);    
-    
+    }     
 }
 
 void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
@@ -379,17 +375,29 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
     }    
 }
 
-void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum, UINT32 *pu32DataObj, UINT8 u8SrcPDOCnt)
+void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
 {
-    /* Update Advertised PDO Count */
-    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = u8SrcPDOCnt; 
-    
-    /* Update Advertised PDO Registers */
-    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < u8SrcPDOCnt; u8PDOIndex++)
-    {   
-        gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO[u8PDOIndex] = pu32DataObj[u8PDOIndex];
-    }    
- 
+    if (gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSlct)
+    {
+        /* Update Advertised PDO Count */
+        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt;
+
+       /* Update Advertised PDO Registers with New PDOs if NewPDOSlct is enabled. */
+        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO, 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32NewPDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt * 4));            
+    }
+    else
+    {
+        /* Update Advertised PDO Count */
+        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt;
+
+        /* Update Advertised PDO Registers with Fixed PDOs if NewPDOSlct is not enabled. */
+        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO, 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt * 4));           
+    }
+
     /* Update the Port Connection Status register by comparing the Fixed and 
        Advertised Source PDOs */
     if (0 == DPM_ComparePDOs(u8PortNum))
@@ -403,15 +411,15 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum, UINT32 *pu32DataObj, UINT8 u8
         /* The advertised PDOs have been reduced from default configured values */
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= 
                             PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES;                 
-    }
+    }    
 }
 
 UINT8 DPM_ComparePDOs(UINT8 u8PortNum)
 {
     return MCHP_PSF_HOOK_MEMCMP(&gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[INDEX_0],
                     &gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO[INDEX_0], 
-                    MAX(gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt, 
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt)); 
+                    ((MAX(gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt, 
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt)) * 4)); 
 }
 
 #if (TRUE == INCLUDE_PD_SOURCE)

@@ -246,9 +246,12 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-GOODCRC_RECEIVED_SS\r\n");
                     
+                    /* Update Advertised PDO registers */
+                    DPM_UpdateAdvertisedPDOParam(u8PortNum); 
+                       
                     /* Reset New PDO Parameters if NewPDOSlct is enabled */
                     if (gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSlct)
-                    {
+                    {                                                
                         DPM_ResetNewPDOParameters(u8PortNum);
                     }
                     
