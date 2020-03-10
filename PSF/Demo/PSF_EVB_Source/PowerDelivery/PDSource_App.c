@@ -173,12 +173,12 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             break; 
         }  
         
-        case eMCHP_PSF_GET_SNK_CAPS_RCVD:
+        case eMCHP_PSF_GET_SINK_CAPS_RCVD:
         {
             #if (TRUE == INCLUDE_POWER_BALANCING)
             if (TRUE == IS_PB_ENABLED(u8PortNum))
             {
-                PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_GET_SNK_CAPS_RCVD);
+                PB_HandlePPMEvents (u8PortNum, (UINT8)eMCHP_PSF_GET_SINK_CAPS_RCVD);
             }
             #endif  
             break;            

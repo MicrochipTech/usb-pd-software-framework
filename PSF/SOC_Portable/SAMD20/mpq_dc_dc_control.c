@@ -37,7 +37,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /***********************************************************************************/
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
-#if (I2C_DCDC_TYPE == MPQ)
+#if (CONFIG_I2C_DCDC_TYPE == MPQ)
 
 UINT8 gu8MPQAlertPortMsk = 0;
         
@@ -60,7 +60,7 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
     }
             
     /* wait for the current transfer to complete */ 
-    while(MCHP_PSF_HOOK_UPDI2C_DCDC_IsBusy( ));
+    while(MCHP_PSF_HOOK_UPDI2C_DCDC_ISBUSY( ));
     __NOP(); 
             
     return u8RetVal;
@@ -198,5 +198,5 @@ void MPQDCDC_HandleAlertISR(UINT8 u8PortNum)
     } */ 
 }
 
-#endif //#if (I2C_DCDC_TYPE == MPQ)
+#endif //#if (CONFIG_I2C_DCDC_TYPE == MPQ)
 #endif
