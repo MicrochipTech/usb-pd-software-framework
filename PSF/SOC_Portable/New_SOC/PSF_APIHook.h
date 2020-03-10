@@ -282,7 +282,235 @@ Remarks:
 #define MCHP_PSF_HOOK_UPD_READ(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)	0
 
 // *****************************************************************************
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+
+/*********************************************************************************************
+Function:
+    MCHP_PSF_HOOK_UPDI2C_DCDC_INTF_INIT()
+Summary:
+    Initialize the I2C hardware interface of SOC used for communicating with I2C based DCDC Converter.
+Description:
+    If I2C based DCDC converter is used to deliver power, PSF will require an I2C hardware interface from SOC to communicate with the DCDC converter.  
+ 
+    This Hook is used to initialize the SOC's Hardware interface for I2C communication with I2C based DCDC converter. It is called 
+    during initialization of PSF. Define relevant function that has no arguments but a return type 
+    UINT8 that indicates whether initialization is successful. 
+Conditions:
+	This hook API should be called if I2C based DCDC converter is used to deliver power.
+Return:
+    UINT8 - Return TRUE if initialization was successful or else return FALSE. 
+Example:
+
+    <code>
+        #define MCHP_PSF_HOOK_UPDI2C_DCDC_INTF_INIT()      hw_i2c_init()
+        UINT8 hw_i2c_init(void);
+        UINT8 hw_i2c_init(void)
+        {
+            //Initialise SOC's I2C master
+            //Return TRUE if initialsation is successful else FALSE
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory if I2C based DCDC converter is used to deliver power.   
+**************************************************************************/
+
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_INTF_INIT() 			0
+
+/*********************************************************************************************
+Function:
+    MCHP_PSF_HOOK_UPDI2C_DCDC_READ(u16Address,pu8ReadBuf,u8ReadLen)
+Summary:
+    Initiates a read transfer from I2C based DCDC converter via I2C.
+Description:
+    This hook is called to read registers of I2C based DCDC converter. Define 
+    relevant function that has UINT8, UINT8*, UINT8 arguments with a return type UINT8.
+Conditions:
+    None.
+Input:
+    u16Address -  Address of I2C DCDC converter.
+    pu8ReadBuf - PSF shall pass the pointer to the buffer in which data read via I2C Hardware bus should be stored. 
+                 Data type of the pointer buffer must be UINT8*.
+    u8ReadLen - PSF shall pass the Number of bytes to be read on the I2C Hardware bus. 
+                Data type of this parameter must be UINT8.
+Return:
+    UINT8 - Return TRUE if read was successful or else return FALSE.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_UPDI2C_DCDC_READ(u16Address,pu8ReadBuf,u8ReadLen)\   
+					I2C_Read (u16Address,pu8ReadBuf,u8ReadLen)
+        UINT8 I2C_Read(UINT16 u16Address,UINT8* pu8ReadBuf,UINT8 u8ReadLen);
+        UINT8 I2C_Read(UINT16 u16Address,UINT8* pu8ReadBuf,UINT8 u8ReadLen)
+        {
+			// Select I2C address for the UPD350 I2C slave using u16Address 
+            for(UINT8 u8Rxcount = 0; u8Rxcount < u8ReadLen; u8Rxcount++)
+            {
+                //Read data bytes from I2C bus
+            }
+            // Return TRUE if the read is successful; else FALSE
+        }
+    </code>
+
+Remarks:
+    User definition of this Hook function is mandatory if I2C based DCDC converter is used to deliver power.                                       
+*********************************************************************************************/
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_READ(u16Address,pu8ReadBuf,u8ReadLen)       0
+
+/*********************************************************************************************
+Function:
+    MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE(u16Address,pu8WriteBuf,u8WriteLen)
+Summary:
+    Initiates a write transfer to I2C based DCDC converter via I2C.
+Description:
+    This hook is called to write to registers of I2C based DCDC converter. Define 
+    relevant function that has UINT8, UINT8*, UINT8 arguments with a return type UINT8.
+Conditions:
+    None.
+Input:
+    u16Address -  Address of I2C DCDC converter. Data type of this parameter must be UINT16.
+    pu8WriteBuf - PSF shall pass the pointer to the buffer which has the data to be written on the
+                  I2C Hardware bus. Data type of the pointer buffer must be UINT8*.
+    u8WriteLen - PSF shall pass the Number of bytes to be written on the I2C Hardware bus. Data
+                 type of this parameter must be UINT8.
+Return:
+    UINT8 - Return TRUE if write was successful or else return FALSE.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE(u16Address,pu8WriteBuf,u8WriteLen)\   
+					I2C_Write (u16Address,pu8WriteBuf,u8WriteLen)
+        UINT8 I2C_Write(UINT16 u16Address,UINT8* pu8WriteBuf,UINT8 u8WriteLen);
+        UINT8 I2C_Write(UINT16 u16Address,UINT8* pu8WriteBuf,UINT8 u8WriteLen)
+        {
+			// Select I2C address for the UPD350 I2C slave using u16Address 
+            for(UINT8 u8Txcount = 0; u8Txcount < u8WriteLen; u8Txcount++)
+            {
+                //Write data bytes to I2C bus
+            }
+            // Return TRUE if the write is successful; else FALSE
+        }
+    </code>
+
+Remarks:
+    User definition of this Hook function is mandatory if I2C based DCDC converter is used to deliver power.                                       
+*********************************************************************************************/
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE(u16Address,pu8WriteBuf,u8WriteLen)     0
+
+/*********************************************************************************************
+Function:
+    MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE_READ(u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
+Summary:
+    Initiates a write and read transfer from I2C based DCDC converter via I2C.
+Description:
+    This hook is called to write and read registers of I2C based DCDC converter. Define 
+    relevant function that has UINT8, UINT8*, UINT8 arguments with a return type UINT8.
+Conditions:
+    None.
+Input:
+    u16Address -  Address of I2C DCDC converter. Data type of this parameter must be UINT8.
+	pu8WriteBuf - PSF shall pass the pointer to the buffer which has the data to be written on the
+                  I2C Hardware bus. Data type of the pointer buffer must be UINT8*.
+    u8WriteLen - PSF shall pass the Number of bytes to be written on the I2C Hardware bus. Data
+                 type of this parameter must be UINT8.
+    pu8ReadBuf - PSF shall pass the pointer to the buffer in which data read via I2C Hardware bus should be stored. Data type of the pointer buffer must be UINT8*.
+    u8ReadLen - PSF shall pass the Number of bytes to be read on the I2C Hardware bus. Data
+                 type of this parameter must be UINT8.
+Return:
+    UINT8 - Return TRUE if write and read was successful or else return FALSE.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE_READ(u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)\   
+					I2C_WriteRead (u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
+        UINT8 I2C_WriteRead (UINT16 u16Address,UINT8* pu8WriteBuf,UINT8 u8WriteLen,UINT8* pu8ReadBuf,UINT8 u8ReadLen);
+        UINT8 I2C_WriteRead (UINT16 u16Address,UINT8* pu8WriteBuf,UINT8 u8WriteLen,UINT8* pu8ReadBuf,UINT8 u8ReadLen)
+        {
+			// Select I2C address for the UPD350 I2C slave using u16Address 
+			
+			for(UINT8 u8Txcount = 0; u8Txcount < u8WriteLen; u8Txcount++)
+            {
+                //Write data bytes to I2C bus
+            }
+			
+            for(UINT8 u8Rxcount = 0; u8Rxcount < u8ReadLen; u8Rxcount++)
+            {
+                //Read data bytes from I2C bus
+            }
+            // Return TRUE if the write is successful; else FALSE
+        }
+    </code>
+
+Remarks:
+    This Hook function may be used if I2C based DCDC converter is used to deliver power.                                       
+*********************************************************************************************/
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE_READ(u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) 0
+
+/***********************************************************************
+Function:
+    MCHP_PSF_HOOK_UPDI2C_DCDC_IsBusy()
+Summary:
+    Returns the busy status of I2C hardware interface of SOC used for communicating with I2C based DCDC Converter.
+Description:
+    This Hook is to check the busy status of the SOC's Hardware interface for I2C communication with I2C based DCDC converter. Define relevant function that has no arguments but a return type 
+    UINT8 that indicates whether the I2C hardware interface is busy.
+Conditions:
+	This hook API may be called if I2C based DCDC converter is used to deliver power.
+Return:
+    UINT8 - Return TRUE if I2C hardware interface is busy or else return FALSE. 
+Example:
+
+    <code>
+        #define MCHP_PSF_HOOK_UPDI2C_DCDC_IsBusy()      hw_i2c_isBusy()
+        UINT8 hw_i2c_isBusy(void);
+        UINT8 hw_i2c_isBusy(void)
+        {
+			//Get I2C busy status
+            //Return TRUE if I2C interface is busy else FALSE
+        }
+    </code>
+Remarks:
+	None
+**************************************************************************/
+#define MCHP_PSF_HOOK_UPDI2C_DCDC_ISBUSY() 			0 
+
+/* *****************************************************************************
+Function:
+	MCHP_PSF_HOOK_I2CDCDCAlertInit(byPortNum)
+Summary:
+    Configures GPIO of SOC as Input enables external interrupt for that GPIO.
+Description:
+    This Hook is used to configure a GPIO in input mode and enables external interrupt for that pin. 
+	For each port, this hook can be used to assign alert pin of I2C based DCDC converter to a GPIO. 
+	Whenever, an interrupt is fired from alert pin of I2C based DCDC converter, the SOC can call a callback function to execute the necessary fault handling operations.
+Conditions:
+	This hook API may be called if I2C based DCDC converter is used to deliver power.
+Return:
+	None.
+Example:
+
+    <code>
+        #define MCHP_PSF_HOOK_I2CDCDCAlertInit()      hw_alertinit()
+        void hw_alertinit(void);
+        void hw_alertinit(void)
+        {
+			//Enable PIOx of SOC as input
+			//Assign a callback api for interrupt that handles the fault condition
+			//Enable external interrupt for PIOx        
+        }
+    </code>
+Remarks:
+	None
+**************************************************************************/
+#define MCHP_PSF_HOOK_I2CDCDCALERTINIT(byPortNum) 
+
 // *****************************************************************************
+#if (CONFIG_I2C_DCDC_TYPE == MPQ)
+
+    #define MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_INIT(byPortNum) MPQDCDC_Initialize(byPortNum)
+
+    #define MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_SET_POWER(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current) \
+        MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current)
+
+#endif //#if (CONFIG_I2C_DCDC_TYPE == MPQ)
+#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+
 // Section: PDTimer configuration
 // *****************************************************************************
 // *****************************************************************************
@@ -803,60 +1031,438 @@ Remarks:
 *******************************************************************************************/
 #define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Boot Time Configuration
-// *****************************************************************************
-// *****************************************************************************   
-/**********************************Globals*********************************************/
-/**************************************************************************************************
-Summary:
-	User configurable boot time structure.
-Description:
-	User Configurable Structure at boot time: This structure contains the Type-C configure parameters 
-	PDO count and PDOs parameters
-Remarks:
-    None
-**************************************************************************************************/
-typedef struct MCHP_PSF_STRUCT_PACKED_START _PortData_cfg 
+/******************************************************************************************************
+  Section:
+           Boot Time Configuration
+    
+    
+    
+    
+    * *************************************************************************** *
+    * *************************************************************************** *
+    * ********************************Globals******************************************* *
+    * *********************************************************************************************** *
+  Summary:
+    User configurable boot time structure that contains port specific
+    config and status parameters.
+  Description:
+    This structure contains the following configuration and status
+    \parameters.
+      * Type C Configuration
+      * Default Source/Sink PDOs and PDO Count
+      * New PDOs and PDO Count
+      * Advertised PDOs and PDO Count
+      * Partner PDO and PDO Count
+      * Over&#45;Voltage and Under&#45;Voltage Threshold values
+      * Maximum number of VBUS and VCONN Faults
+      * Power Good Timer value
+      * Mode and PIO No of Port Control pins
+      * Port Connection Status parameters
+      * Port Status Change parameters
+      * Current negotiated Voltage and Current values
+  Remarks:
+    None                                                                                               
+  ******************************************************************************************************/
+typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
 {
-	UINT32 u32CfgData;			//Bits 2:0 - Port Role
-								//Bits 4:3 - Type-C Current
-								//Bits 5 - Port Enable/Disable
-	UINT32 u32PDO[7];		    //Source/Sink Capabilities PDOs
-	UINT8  u8PDOCnt;			//PDO count of Source/Sink Capabilities
-}MCHP_PSF_STRUCT_PACKED_END PORT_CONFIG_DATA;
+    UINT32 u32CfgData;				/*<p>Bit  0   - Port Enable/Disable </p>
+									  <p>     0   - Disabled </p>
+									  <p>     1   - Enabled </p>
+									 <p>Bits 3:1 - Port Role </p>
+									 <p>     000 - Sink </p>
+									 <p>     001 - Source </p>
+									 <p>Bits 5:4 - Rp Selection </p>
+									 <p>     00  - Disabled </p>
+									 <p>	  01  - USB Power </p>
+									 <p>	  10  - 1.5A </p>
+									 <p>	  11  - 3.0A </p>
+									 <p>Bits 8:6 - USB Data </p>
+									 <p>     000 - No Data </p>
+									 <p>     001 - USB2 </p>
+									 <p>     010 - USB3.1 Gen1 </p>
+									 <p>     011 - USB3.1 Gen2	</p>
+									 <p>Bits 32:9 - Reserved</p>	*/								
+    UINT32 u32FixedPDO[7];		    //Upto 7 fixed Source PDOs where Voltage is specified in mV and Current in mA.	 
+    UINT32 u32NewPDO[7];		    //Upto 7 fixed New PDOs where Voltage is specified in mV and Current in mA.	 
+    UINT32 u32AdvertisedPDO[7];	    //Upto 7 PDOs that are advertised to Port Partner.  
+    UINT8 u8FixedPDOCnt;			//Number of Default Source PDOs supported 
+    UINT8 u8AdvertisedPDOCnt; 		//Number of Advertised Source PDOs 
+    UINT8 u8VSELTruthTable[8];		/*This truth table corresponds to the assertion and de-assertion of the  VSEL[2:0] pins to drive the Voltage in GPIO PMPD module.  */
+    UINT8 u8OCSThresholdPercentage; //OCS Threshold 
+    UINT8 u8FaultInDebounce;		/* Debounce timer value in terms of milliseconds for VBUS overcurrent fault
+	conditions before reacting and entering fault recovery routine.It is applicable only for OCS detection via   FAULT_IN configured UPD350 pin. */
+    UINT8 u8OVThresholdPercentage;  //Over Voltage threshold for VBUS_DET 
+    UINT8 u8UVThresholdPercentage;	//Under Voltage threshold for VBUS_DET
+    UINT8 u8VCONNOCS;				//<p>VCONN OCS Enable/Disable</p>
+									//<p>0x00 - Disable</p>
+									//<p>0x01 – Enable</p>
+    UINT8 u8VCONNOCSDebounce;/*Debounce timer value in terms of milliseconds for VCONN overcurrent fault
+	conditions before reacting and entering fault recovery routine. */
+    UINT8 u8MaxFaultCntVBUS;//Maximum number of back-to-back faults allowed before permanent shut down of the port
+    UINT8 u8MaxFaultCntVCONN;//Maximum number of back-to-back faults allowed before permanent shut down of the port
+    UINT8 u8NewPDOSlct;/*<p>0 = Clear</p>
+					   <p>1 = Set, when Set the below steps are done</p>
+					   <p>1.Load New Source PDO</p>
+					   <p>2.Advertise New PDOs to Port partner</p>
+					   <p>3.Clear all New PDO registers</p>
+					   <p>4.Clear this bit </p> */
+    UINT8 u8NewPDOCnt; //The number of New PDOs Supported
+    UINT16 u16PowerGoodTimer;/*Power good timer to determine if the power remains in good state without fault for 	the duration in ms. */
+    UINT16 u16PortIntMask;/*<p>Bit 0: ATTACH_EVENT_C_MASK</p>
+						 <p>Bit 1: DETACH_EVENT_C_MASK</p>
+						 <p>Bit 2: AS_SOURCE_NEW_REQUEST_C_MASK</p>
+						 <p>Bit 3: AS_SINK_NEW_PDOS_RECVD_C_MASK</p>
+						 <p>Bit 4: AS_SINK_NEW_REQ_SENT_C_MASK</p>
+						 <p>Bit 5: AS_SINK_LAST_REQ_ACCEPT_C_MASK</p>
+						 <p>Bit 6: AS_SINK_LAST_REQ_REJECT_C_MASK</p>
+						 <p>Bit 7: AS_SINK_LAST_SINK_PS_RDY_C_MASK</p>
+						 <p>Bit 8: HARD_RESET_EVENT_C_MASK</p>
+						 <p>Bit 9: VBUS_VCONN_FAULT_C_MASK</p>
+						 <p>When,</p>
+						 <p>0= Do not mask interrupt pin toggle on changes to this event.</p>
+					     <p>1=Mask this event from generating interrupt pin toggle.</p> */
 
-extern PORT_CONFIG_DATA gasPortConfigurationData[CONFIG_PD_PORT_COUNT];
-/**************************************************************************************************
-Function:
-    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(CfgGlobals)
-Summary :
-    Updates the Type-C Configurable parameters(Power Role and Rp Current), number of PDO and PDOs 
-    parameter at boot time.
-Description :
-    This function is called to update the configuration parameters of Type-C (Power Role and Rp Current),
-    number of PDO and PDOs parameter at boot time(Stack initialization). 
-    This API must have a input parameter of PORT_CONFIG_DATA prototype (Structure Pointer to PORT_CONFIG_DATA).
-Precondition :
+    UINT8 u8Pio_VBUS_EN;//Defines the UPD350 PIO number used for EN_VBUS pin
+    UINT8 u8Mode_VBUS_EN;//Defines the PIO mode for EN_VBUS pin
+    UINT8 u8Pio_FAULT_IN;//Defines the UPD350 PIO number used for FAULT_IN pin
+    UINT8 u8Mode_FAULT_IN;//Defines the PIO mode for FAULT_IN pin
+    UINT8 u8Pio_VBUS_DIS;//Defines the UPD350 PIO number used for VBUS_DIS pin
+    UINT8 u8mode_VBUS_DIS;//Defines the PIO mode for VBUS_DIS pin
+    UINT8 u8Pio_DC_DC_EN;//Defines the UPD350 PIO number used for DC_DC_EN pin
+    UINT8 u8Mode_DC_DC_EN;//Defines the PIO mode for DC_DC_EN pin
+    UINT8 u8Pio_VSEL[3];//Defines the UPD350 PIO number used for VSEL0, VSEL1 and VSEL2 pins
+    UINT8 u8Mode_VSEL[3];//Defines the PIO mode for VSEL0,VSEL1 and VSEL2 pins
+    
+    UINT16 u16PortConnectStatus;/*<p> Define the connection status of the port </p>
+							     <p>Bit 0: Attached </p> 
+								 <p> 	 0 - Detached </p>
+								 <p> 	 1 - Attached </p> 
+								 <p>Bit 1: Orientation </p> 
+								 <p>    0 - Unflipped </p> 
+								 <p>    1 - Flipped </p> 
+								 <p>Bit 2: Data Role </p>
+								 <p>    0 - UFP </p>
+								 <p>    1 - DFP </p>
+							     <p>Bit 3: Power Role</p>
+								 <p>    0 - Sink </p>
+								 <p>    1 - Source</p> 
+								 <p>Bit 4: As Source PD Contract Good </p>  
+								 <p>    0 - As Source: USB-C Connection Only (No Request Made Yet) </p> 
+								 <p>    1 - As Source; USB PD connection established, Power request has been made, 	accepted and PS_RDY message sent </p> 
+								 <p>Bit 5: As Source RDO Accepted </p>  
+								 <p>    0 - As Source: No RDO Accept message has been sent to last Request made by attached Sink or no Request has yet been made during connection  </p> 
+								 <p>    1 - As Source: RDO Accept message has been sent to last Request made by attached Sink </p> 
+								 <p>Bit 6: As Source RDO Rejected </p>  
+								 <p>    0 - As source; No RDO reject message has been sent to last request made by attached Sink or no Request has yet been made during connection  </p> 
+								 <p>    1 - As Source: RDO Reject message has been sent to last Request made by attached Sink </p> 
+								 <p>Bit 7: As Sink Last Request Accept </p>  
+								 <p>    0 - As Sink: Last RDO Request was not Accepted or no request has yet been made  </p> 
+								 <p>    1 - As Sink: Last RDO Request was Accepted </p> 
+								 <p>Bit 8: As Sink Last Request Reject </p>  
+								 <p>    0 - As Sink: Last RDO Request was not Rejected or no request has yet been made  </p> 
+								 <p>    1 - As Sink: Last RDO Request was Rejected </p>
+								 <p>Bit 9: As Sink Last Request PS_RDY </p>  
+								 <p>    As Sink: PS_RDY not yet received for last RDO request   </p> 
+								 <p>    As Sink: PS_RDY received for last RDO request </p>
+								 <p>Bit 10: VCONN Status </p>  
+								 <p>    0 - Disabled   </p> 
+								 <p>    1 - Enabled </p>
+								 <p>Bit 11: Cable Reduced Source Capabilities </p>  
+								 <p>    0 - The attached USB-C cable supports the locally-defined Source PDOs </p>  
+								 <p>    1 - The attached USB-C cable does not support the locally defined Source PDOs (ex: 3A cable used w/ >3A Source Caps) </p>
+								 <p>Bit 12: PD Bal Reduced Source Capabilities </p>  
+								 <p>    0 - The advertised PDOs are equivalent to the default configured values</p>
+								 <p>    1 - The advertised PDOs have been reduced from default configured values due to PB algorithm </p>
+								<p>Bits 15:13: Reserved </p>  */
+    UINT16 u16PortStatusChange;/*<p> Defines the port connection status change bits </p>
+							     <p>Bit 0: ATTACH_EVENT_C </p> 
+								 <p> 	 0 - Since the last read of this register, PSF has not experienced a USB-C attach </p>
+								 <p> 	 1 - Since the last read of this register, PSF has experienced a USB-C attach </p> 
+								 <p>Bit 1: DETACH_EVENT_C </p> 
+								 <p>    0 - Since the last read of this register, PSF has not experienced a USB-C detach </p> 
+								 <p>    1 - Since the last read of this register, PSF has experienced a USB-C detach </p> 
+								 <p>Bit 2: AS_SOURCE_NEW_REQUEST_C </p>  
+								 <p>    0 - As Source, since the last read of this register, PSF has not received any new PDO request from attached port partner </p>
+								 <p>    1 - As Source: Received a new PDO request the attached Sink port partner, - As Sink: Received an updated set of Source capabilities form the attached Source port partner </p>
+							     <p>Bit 3: AS_SINK_NEW_PDOS_RECVD_C </p>
+								 <p>    0 - As Sink: Since the last read of this register, PSF has not received any CHANGED source capabilities </p>
+								 <p>    1 - As Sink: Received an updated set of Source capabilities form the attached Source port partner </p> 
+								 <p>Bit 4: AS_SINK_NEW_REQ_SENT_C </p>  
+								 <p>    0 - As Sink: Since the last read of this register, PSF has not sent any additional Sink RDOs </p> 
+								 <p>    1 - As Sink: Since the last read of this register, PSF has issued a new Sink RDO to the attached Source, This bit always to remain 0 when acting as a source </p> 
+								 <p>Bit 5: AS_SINK_LAST_REQ_ACCEPT_C </p>  
+								 <p>    0 - As Sink: Since the last read of this register, PSF has not received any new Request Accept messages from the attached Source  </p> 
+								 <p>    1 - As Sink: Since the last read of this register, PSF has received a new Request Accept from the attached Source </p> 
+								 <p>Bit 6: AS_SINK_LAST_REQ_REJECT_C </p>  
+								 <p>    0 - As Sink: Since the last read of this register, PSF has not received any new Request Reject messages from the attached Source </p> 
+								 <p>    1 - As Sink: Since the last read of this register, PSF has received a new Request Reject message from the attached Source </p> 
+								 <p>Bit 7: AS_SINK_LAST_SINK_PS_RDY_C </p>  
+								 <p>    0 - As Sink: Since the last read of this register, PSF has not received any PS_RDY messages from the attached Source  </p> 
+								 <p>    1 - As Sink: Since the last read of this register, PSF has received a PS_RDY message from the attached Source </p> 
+								 <p>Bit 8: HARD_RESET_EVENT_C </p>  
+								 <p>    0 - Since the last read of this register, PSF has not experienced a USB PD Hard_Reset  </p> 
+								 <p>    1 - Since the last read of this register, PSF has experienced a USB PD Hard_Reset </p>
+								 <p>Bit 9: PIN_RESET_EVENT_C </p>  
+								 <p>    Since the last read of this register, PSF has not been reset via POR or pin  </p> 
+								 <p>    Since the last read of this register, PSF has been reset via POR or pin </p>
+								 <p>Bit 10: VBUS_VCONN_FAULT_C </p>  
+								 <p>    0 - Since the last read of this register, no faults have been detected   </p> 
+								 <p>    1 - Since the last read of this register, 1 or more faults have been detected </p>
+								 <p>Bits 15:11: Reserved </p> */
+    UINT16 u16AllocatedPower;//Allocated Power for the Port PD contract in 0.25W steps
+    UINT16 u16NegoVoltage;/*<p> Negotiated Voltage from the Port Bits 19:10 from the RDO
+								Voltage is in 50mV steps</p> 
+						  <p>	0x00 = No Contract </p>
+						  <p>  0x064 = 5V</p>
+						  <p>  0x0B4 = 9 V</p>
+						  <p>  0x12C = 15V</p>
+						  <p>  0x190 = 20V</p>
+						  <p>  0x3FF = 51.15V</p> */
+    UINT16 u16NegoCurrent;/*<p> Negotiated Current from the Port Bits 9: 0 from the RDO, Ampere is in 10mA steps</p>
+						 <p> 0x0000 = No Contract </p>
+						 <p> 0x012C = 3A </p>
+						 <p> 0x01F4 = 5A </p>
+						 <p> 0x03FF = 10.24A </p> */
+    UINT16 u16PortIOStatus;/*<p> Defines the Port IO status </p> 
+									<p>Bit  0   - EN_DC_DC_STATUS </p>
+									<p>Bit  1   - VSEL0_STATUS </p>
+									<p>Bit  2   - VSEL1_STATUS </p>
+									<p>Bit  3   - VSEL2_STATUS </p>
+									<p>Bit  4   - EN_VBUS_STATUS </p>
+									<p>Bit  5   - VBUS_DIS_STATUS </p>
+									<p>Bit  6   - EN_SINK_STATUS </p>
+									<p>Bit  7   - 1.5_IND </p>
+									<p>Bit  8   - 3.0_IND </p>
+									<p>Bit  9   - PS_RDY_RECVD </p>
+									<p>Bit  10   - CAP_MISMATCH </p>
+									<p>Bits 15:11  - Reserved </p>
+									<p>	Where the logic state, </p>
+									<p> 0 = Asserted </p>
+									<p> 1 = De-asserted>/p> */
+    UINT16 u16PortFaultChangeBits;/*<p> Defines the fault change bits </p> 
+								    <p>Bit  0   - FLT_VBUS_C </p>
+									<p>Bit  1   - FLT_VCONN_C </p> */
+    UINT32 u32PartnerPDO[7];/*Partner PDOs Configuration: Upto 7 fixed Source PDOs where Voltage is specified in mV and Current is specified in mA */
+    UINT8 u8PartnerPDOCnt; //Number of Partner PDOs 
+    UINT32 u32RDO;/*Complete raw RDO Data as Sent/Requested by connected port partner, Will be blank of no RDO has  been received */
+} MCHP_PSF_STRUCT_PACKED_END PORT_CFG_STATUS, *PPORT_CFG_STATUS;
+
+ /**********************************************************************
+   Summary:
+     User configurable boot time structure that contains port specific power 
+	 balancing Config parameters.
+   Description:
+     This structure contains the following Power Balancing configuration
+     parameters.
+       * Maximum Port Power Bank A
+       * Maximum Port Power Bank B
+       * Maximum Port Power Bank C
+       * Maximum Port Current
+       * PB Enable
+       * PB Port Priority
+   Remarks:
+     None                                                               
+   **********************************************************************/
+  
+typedef struct MCHP_PSF_STRUCT_PACKED_START _PBPortCfgStatus
+{
+    UINT16 u16MaxPrtPwrBankA; /*<p>Maximum Port Power Bank A in 0.25W steps</p>
+								<p>Unit/LSB = 0.25W</p>
+								<p>0x0000 = 0W (invalid)</p>
+								<p>0x0001 = 0.25W</p>
+								<p>0x00F0 = 60W</p>
+								<p>0x0190 = 100W</p>
+								<p>0xFFFF = 16381.25W</p>
+								<p>Note: a setting of 0x191-0xFFF is invalid </p>*/
+    UINT16 u16MaxPrtPwrBankB; /*<p>Maximum Port Power Bank B in 0.25W steps</p>
+								<p>Unit/LSB = 0.25W</p>
+								<p>0x0000 = 0W (invalid)</p>
+								<p>0x0001 = 0.25W</p>
+								<p>0x00F0 = 60W</p>
+								<p>0x0190 = 100W</p>
+								<p>0xFFFF = 16381.25W</p>
+								<p>Note: a setting of 0x191-0xFFF is invalid</p> */
+    UINT16 u16MaxPrtPwrBankC; /* <p>Maximum Port Power Bank C in 0.25W steps</p>
+								<p>Unit/LSB = 0.25W</p>
+								<p>0x0000 = 0W (invalid)</p>
+								<p>0x0001 = 0.25W</p>
+								<p>0x00F0 = 60W</p>
+								<p>0x0190 = 100W</p>
+								<p>0xFFFF = 16381.25W</p>
+								<p>Note: a setting of 0x191-0xFFF is invalid</p> */
+    UINT16 u16MaxPrtCurrent; /* <p>Maximum allowable current for ports in 10mA steps</p>
+								<p>0x0032 = 0.5A</p>
+								<p>0x012C = 3A</p>
+								<p>0x01F4 = 5A</p>
+								<p>Values above 5A (0x01F5 - 0x0FFF) are not supported</p> */
+    UINT8 u8PBEnablePriority; /* <p>Defines PB Enable/Disable per port and also the priority for the port</p>
+								<p>Bit 0 : PB Enable/Disable </p>
+								<p>0 = Disable</p>
+								<p>1 = Enable</p>
+								<p>Bit 3-1: Select priority</p>
+								<p>000b is the highest priority </p>*/
+} MCHP_PSF_STRUCT_PACKED_END PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
+
+ /**********************************************************************
+   Summary:
+     User configurable boot time structure that contains port specific 
+     PPS config parameters.
+   Description:
+     This structure contains the following PPS configuration
+     parameters.
+       * PPS Enable 
+       * PPS APDOs 
+   Remarks:
+     None                                                               
+   **********************************************************************/
+   
+typedef struct MCHP_PSF_STRUCT_PACKED_START _PPSPortCfgStatus
+{
+    UINT8 u8PPSEnable; /* <p> PPS Enable/Disable </p>
+						  <p> 0x00 = Disable </p>
+						  <p> 0x01 Enable </p> */
+    UINT32 u32PPSApdo[3];  /* Defines the PPS APDOs */
+} MCHP_PSF_STRUCT_PACKED_END PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
+
+ /**********************************************************************
+   Summary:
+     User configurable boot time structure that contains the global 
+	 Config and Status parameters. 
+   Description:
+     This structure contains the following global configuration and 
+	 status parameters. 
+     parameters.
+       * Power Delivery IDs 
+       * PORT_CFG_STATUS structure 
+       * PB Enable for the system 
+	   * PB Algorithm 
+	   * Power Throttle Configuration 
+	   * Total System Power of Banks A,B & C 
+	   * Guaranteed Minimum Power of Banks A,B & C 
+       * PB_PORT_CFG_STATUS structure
+       * PPS_PORT_CFG_STATUS structure
+   Remarks:
+     None                                                               
+   **********************************************************************/
+typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgStatusData 
+{
+    UINT8 u8MinorVersion;  /* Structure Minor version */ 
+    UINT8 u8MajorVersion;  /* Structure Major version */
+    UINT8 u8HWVersion;	   /* HW Version */ 
+    UINT8 u8SiVersion;     /* Silicon Version */ 
+    UINT8 u8ManfString[8]; /* Manufacturer String */
+    UINT16 u16ProducdID;	/* Product ID */
+    UINT16 u16VendorID;		/* Vendor ID */ 
+    UINT16 u16ProductTypeVDO; /* Product Type VDO */ 
+    UINT16 u16ProductVDO; /* Product VDO*/ 
+    UINT16 u16CertStatVDO; /* Cert Stat VDO */  
+    UINT16 u16IDHeaderVDO; /* ID Header VDO */ 
+    PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; /* Per Port Config and Status */ 
+
+    /* Power Balancing Configurations */
+    UINT8 u8PBEnableSelect;		/* <p> Bits 3-0: Selection of Power Balancing Algorithm </p>
+									<p> 0000 = First Come First Serve </p>
+									<p> 0001 = Last Plugged Gets Priority </p>
+									<p> 0010 = Port 1 Fixed Priority </p>
+									<p> 0011-1111 = Reserved </p>
+
+									<p> Bit 4:PD Power balancing Enable/Disable </p>
+									<p> 0 = PD Balancing is Enabled</p> 
+									<p> 1= PD Balancing is Disabled </p>*/ 
+    UINT8 u8PwrThrottleCfg;	 /*	<p>Define the currently selected bank </p>
+								<p>	0x00 = Bank A</p>
+								<p>	0x00 = Bank B</p>
+								<p>	0x00 = Bank C</p>
+								<p>	0x00 = Shutdown</p> */
+    UINT16 u16SystemPowerBankA; /* <p>Total System power Bank A Each Unit is 0.25W</p>
+								<p>0x0000 = 0W (invalid)</p>
+								<p>0x0001 = 0.25W</p>
+								<p>0x01E0 = 120W</p>
+								<p>0x0320 = 200W</p>
+								<p>0xFFFF = 16381.25W</p>
+								<p>Note: a setting of 0x0321-0xFFFF is invalid</p> */ 
+    UINT16 u16MinPowerBankA;   /* <p>Guaranteed minimum power Bank A Each Unit is 0.25W</p>
+								<p>0x0000 = 0W (invalid)</p>
+								<p>0x0001 = 0.25W</p>
+								<p>0x003C = 15W</p>
+								<p>0x0190 = 100W</p>
+								<p>0xFFFF = 16381.25W</p>
+								<p>Note: a setting of 0x191-0xFFF is invalid</p> */
+    UINT16 u16SystemPowerBankB; /* <p>Total System power Bank B Each Unit is 0.25W</p>
+								<p>0x0000 = 0W (invalid) </p>
+								<p>0x0001 = 0.25W</p>
+								<p>0x01E0 = 120W</p>
+								<p>0x0320 = 200W</p>
+								<p>0xFFFF = 16381.25W</p>
+								<p>Note: a setting of 0x0321-0xFFFF is invalid</p> */
+    UINT16 u16MinPowerBankB;   /* <p>Guaranteed minimum power Bank B Each Unit is 0.25W</p>
+								<p>0x0000 = 0W (invalid)</p>
+								<p>0x0001 = 0.25W</p>
+								<p>0x003C = 15W</p>
+								<p>0x0190 = 100W</p>
+								<p>0xFFFF = 16381.25W</p>
+								<p>Note: a setting of 0x191-0xFFF is invalid</p> */
+    UINT16 u16SystemPowerBankC; /* <p>Total System power Bank C Each Unit is 0.25W</p>
+								<p>0x0000 = 0W (invalid)</p>
+								<p>0x0001 = 0.25W</p>
+								<p>0x01E0 = 120W</p>
+								<p>0x0320 = 200W</p>
+								<p>0xFFFF = 16381.25W</p>
+								<p>Note: a setting of 0x0321-0xFFFF is invalid</p> */
+    UINT16 u16MinPowerBankC;    /* <p>Guaranteed minimum power Bank C Each Unit is 0.25W</p>
+								<p>0x0000 = 0W (invalid)</p>
+								<p>0x0001 = 0.25W</p>
+								<p>0x003C = 15W</p>
+								<p>0x0190 = 100W</p>
+								<p>0xFFFF = 16381.25W</p>
+								<p>Note: a setting of 0x191-0xFFF is invalid</p> */
+    UINT16 u16SharedPowerCapacity; /* The currently available shared power
+                                    capacity from which power is allocated to ports 
+                                    that are not yet in a valid negotiated contract, 
+                                    The shared power capacity is dynamically adjusted 
+                                    as ports are connected and disconnected
+								<p>Each Unit is 0.25W</p>
+								<p>0x0000 = 0W (invalid)</p>
+								<p>0x0001 = 0.25W</p>
+								<p>0xFFFF = 16381.25W </p>*/
+    PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	/* Per Port PB Config and Status */
+    
+    /* PPS Configurations */
+    PPS_PORT_CFG_STATUS sPPSPerPortData[CONFIG_PD_PORT_COUNT];  /* Per Port PPS Config and Status */
+}MCHP_PSF_STRUCT_PACKED_END GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
+
+extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
+   
+/*********************************************************************************************
+  Function:
+        MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)
+  Summary:
+    Updates the global and per port Configuration parameters.
+  Description:
+    This function is called to update the configuration parameters of
+    Type-C, PD, Power Balancing, Power throttling and PPS. This API must 
+	have a input parameter of GLOBAL_CFG_STATUS_DATA prototype (Structure
+	Pointer to GLOBAL_CFG_STATUS_DATA).
+  Conditions:
     None.
-Parameters :
-    CfgGlobals - Holds the structure pointer of the structure PORT_CONFIG_DATA
-Return :
+  Input:
+    gasCfgStatusData -  Holds the structure pointer of the structure
+						GLOBAL_CFG_STATUS_DATA
+  Return:
     None.
-Example :
+  Example:
     <code>
-    #define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(_CfgGlobals_)  STRAPS_PowerRole_Set(_CfgGlobals_)
-    void STRAPS_PowerRole_Set(PORT_CONFIG_DATA *PortConfigData);
-    void STRAPS_PowerRole_Set(PORT_CONFIG_DATA *PortConfigData)
+    \#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(_GlobalCfgStatusData)  STRAPS_PowerRole_Set(_GlobalCfgStatusData)
+    void STRAPS_PowerRole_Set(GLOBAL_CFG_STATUS_DATA *PGLOBAL_CFG_STATUS_DATA);
+    void STRAPS_PowerRole_Set(GLOBAL_CFG_STATUS_DATA *PGLOBAL_CFG_STATUS_DATA)
     {
         // Configure Cfg variables for Source or Sink
     }
     </code>
-Remarks:
-    User definition of this Hook function is optional
-**************************************************************************************************/
-#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(CfgGlobals)  	
+  Remarks:
+    User definition of this Hook function is optional                                         
+  *********************************************************************************************/
+#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)  	
 
 // *****************************************************************************
 // *****************************************************************************
@@ -893,6 +1499,8 @@ Remarks:
 **************************************************************************/
 #define MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum)     
 
+#ifdef CONFIG_HOOK_DEBUG_MSG
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: DEBUG MESSAGES CONFIGURATION
@@ -924,151 +1532,96 @@ Remarks:
 ***********************************************************************/  
 #define MCHP_PSF_HOOK_DEBUG_INIT()   
 
-/*************************************************************************
+/***********************************************************************
 Function:
-    MCHP_PSF_HOOK_DEBUG_STRING(pcharBuf)
+    MCHP_PSF_HOOK_PRINT_CHAR(byData)            
 Summary:
-    To pass a string to Debug interface
+    Outputs a character via UART interface
 Description:
-    This hook is called by PSF to send a character string to DEBUG_MODULE. It will be called if
-    CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has CHAR pointer argument 
-    without return type.
+    This hook is can be called to output a character via UART interface to help the user in debugging. byData is of type char.
+    Define relevant function to print a character via UART terminal with argument of type char and no return type. 
 Conditions:
-    None.
-Input:
-    pcharBuf -  Pointer to the character buffer
+    MCHP_PSF_HOOK_DEBUG_INIT() should have been called before using this API.
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_DEBUG_STRING(pcharBuf)       uart_write(pcharBuf)
-        void uart_write(char *chBuffer);
-        void uart_write(char *chBuffer)
+        #define MCHP_PSF_HOOK_PRINT_CHAR(byData)          uart_print_char(byData)
+        void uart_print_char(char);
+        void uart_print_char(char byData)
         {
-            //Write character string to UART
+            //Print a character through UART terminal
         }
     </code>
 Remarks:
-    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'.             
-*************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_STRING(pcharBuf)		                                  
+    This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
+***********************************************************************/  
 
-/**************************************************************************
+#define MCHP_PSF_HOOK_PRINT_CHAR(byData)    
+
+/***********************************************************************
 Function:
-    MCHP_PSF_HOOK_DEBUG_UINT8(u8Val)
+    MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)            
 Summary:
-    Send a UINT8 to Debug interface
+    Outputs an integer via UART interface
 Description:
-    This hook is called by stack to send a UINT8 data to debug interface. This API will be called 
-    if CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has UINT8 argument without 
-    return type.
+    This hook is can be called to output an integer via UART interface to help the user in debugging. 
+    The size of integer is specified in byWidth.
+    dwWriteInt is of type unsigned long. byWidth is of type unsigned char.
+    Define relevant function to print an integer via UART terminal with arguments of type unsigned long and unsigned char and no return type. 
+
 Conditions:
-    None.
-Input:
-    u8Val -  UINT8 data to be sent to Debug interface
+    MCHP_PSF_HOOK_DEBUG_INIT() should have been called before using this API.
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_DEBUG_UINT8(u8Val)     uart_write(u8Val)
-        void uart_write(UINT8 u8Val);
-        void uart_write(UINT8 u8Val)
+        #define MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)          uart_print_char(dwWriteInt, byWidth)
+        void uart_print_int(UINT32 dwWriteInt, UINT8 byWidth);
+        void uart_print_int(UINT32 dwWriteInt, UINT8 byWidth)
         {
-            //Convert UINT8 to character string and write to UART
+            //Print byWidth no of bytes from dwWriteInt through UART terminal.
         }
     </code>
 Remarks:
-    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
-**************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_UINT8(u8Val)              
+    This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
+***********************************************************************/  
+#define MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)    
 
-/*************************************************************************
+/***********************************************************************
 Function:
-    MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)
+    MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)        
 Summary:
-    Send UINT16 to Debug interface
+    Outputs a string via UART interface
 Description:
-    This hook is called by stack to send a UINT16 data to DEBUG_MODULE This API will be called if
-    CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has UINT16 argument without 
-    return type.
+    This hook is can be called to output a string via UART interface to help the user in debugging. pbyMessage is of type char *.
+    Define relevant function to print a string via UART terminal with argument of type char* and no return type. 
+
 Conditions:
-    None.
-Input:
-    u16Val -  UINT16 data to be sent to Debug interface
+    MCHP_PSF_HOOK_DEBUG_INIT() should have been called before using this API.
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)     uart_write(u16Val)
-        void uart_write(UINT16 u16Val);
-        void uart_write(UINT16 u16Val)
+        #define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)           uart_print_string(pbyMessage)
+        void uart_print_string(char *);
+        void uart_print_string(char * pbyMessage)
         {
-            //Convert UINT16 to character string and write to UART
-        }
-
-    </code>
-Remarks:
-   User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
-*************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_UINT16(u16Val)      
-
-/*************************************************************************
-Function:
-    MCHP_PSF_HOOK_DEBUG_UINT32(u32Val)
-Summary:
-    Send UINT32 to Debug interface
-Description:
-    This hook is called by stack to send a UINT32 data to DEBUG_MODULE. This API will be called if
-    CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has a UINT32 argument without 
-    return type.
-Conditions:
-    None.
-Input:
-    u32Val -  UINT32 data to be sent to Debug interface
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_DEBUG_UINT32(u32Val)    uart_write(u32Val)
-        void uart_write(UINT32 u32Val);
-        void uart_write(UINT32 u32Val)
-        {
-            //Convert UINT32 to character string and write to UART
+            //Print a string in pbyMessage through UART terminal
         }
     </code>
 Remarks:
-    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
-*************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_UINT32(u32Val)		                        
+    This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
+***********************************************************************/ 
+#define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage) 
+	
+#else
+    #define MCHP_PSF_HOOK_DEBUG_INIT() 
+    #define MCHP_PSF_HOOK_PRINT_CHAR(byData)
+    #define MCHP_PSF_HOOK_PRINT_INTEGER(dwData, byWidth)
+    #define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)
 
-/**************************************************************************
-Function:
-    MCHP_PSF_HOOK_DEBUG_INT32(i32Val)
-Summary:
-    Send INT32 to Debug interface
-Description:
-    This hook is called by stack to send a INT32 data to Debug interface. This API will be called if
-    CONFIG_HOOK_DEBUG_MSG is set to 1. Define relevant function that has INT32 argument without 
-    return type.
-Conditions:
-    None.
-Input:
-    i32Val -  INT32 data to be sent to DEBUG_MODULE
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_DEBUG_INT32(_i32Val_)        uart_write(i32Val)
-        void uart_write(INT32 i32Val);
-        void uart_write(INT32 i32Val)
-        {
-            //Convert INT32 to character string and write to UART
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'. 
-**************************************************************************/ 
-#define MCHP_PSF_HOOK_DEBUG_INT32(i32Val)		                  
+#endif //CONFIG_HOOK_DEBUG_MSG
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1456,6 +2009,17 @@ Description:
 	exceeds the max fault count,CC termination on the port is removed until the physical detach of
 	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery.
 	This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+ 
+    <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
+    established with the Port partner.
+   
+    <b> eMCHP_PSF_GET_SINK_CAPS_RCVD</b>: This event is used by PSF to notify DPM when 
+    Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
+    message initiated by PSF on request from DPM. 
+    
+    <b> eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify DPM when
+    Sink capabilities has not been received from Port Partner within tSenderResponseTimer
+    as a response to the Get_Sink_Caps message initiated by PSF on request from DPM.   
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1466,7 +2030,10 @@ eMCHP_PSF_TYPEC_CC1_ATTACH,         // Port partner attached at CC1 orientation
 eMCHP_PSF_TYPEC_CC2_ATTACH,         // Port partner attached at CC2 orientation
 eMCHP_PSF_UPDS_IN_IDLE,             // All the UPD350s are in Idle
 eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
-eMCHP_PSF_VBUS_PWR_FAULT            // VBUS Power Fault has occurred
+eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
+eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
+eMCHP_PSF_GET_SINK_CAPS_RCVD,        // Sink Caps received from Port Partner
+eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD     // Sink Caps not received from Port Partner
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************

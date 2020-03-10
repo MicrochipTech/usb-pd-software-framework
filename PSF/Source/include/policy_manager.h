@@ -254,8 +254,8 @@ Description:
     eMCHP_PSF_DPM_GET_SNK_CAPS:
     Application can get the sink capability by sending the Get_Sink_Cap 
     Control message by raising a client request eMCHP_PSF_DPM_GET_SNK_CAPS.
-    On the request is complete, either eMCHP_PSF_GET_SNK_CAPS_RCVD or 
-    eMCHP_PSF_GET_CAPS_NOT_RCVD notification is posted based on the response 
+    On the request is complete, either eMCHP_PSF_GET_SINK_CAPS_RCVD or 
+    eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD notification is posted based on the response 
     received for Get_Sink_Cap message.
 *******************************************************************************/	
 // *****************************************************************************

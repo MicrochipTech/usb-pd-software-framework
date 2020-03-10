@@ -38,7 +38,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
 // *****************************************************************************
-#if (I2C_DCDC_TYPE == MPQ)
+#if (CONFIG_I2C_DCDC_TYPE == MPQ)
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -202,7 +202,7 @@ void MPQDCDC_HandleAlertISR(UINT8 u8PortNum);
 
 UINT8 MPQDCDC_FaultHandler(void);
 
-#endif //#if (I2C_DCDC_TYPE == MPQ)
+#endif //#if (CONFIG_I2C_DCDC_TYPE == MPQ)
 
 #endif
 #endif /*_MPQ_DCDC_CONTROL_H_*/

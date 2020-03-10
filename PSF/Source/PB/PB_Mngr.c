@@ -376,7 +376,7 @@ void PB_HandlePPMEvents (UINT8 u8PortNum, UINT8 ePPM_EVENT)
             
             break;  
             
-        case eMCHP_PSF_GET_SNK_CAPS_RCVD: 
+        case eMCHP_PSF_GET_SINK_CAPS_RCVD: 
             
             if (ePB_SINK_CAPS_INITIATED == gasPBIntPortParam[u8PortNum].eGetSinkCapSS)
             {

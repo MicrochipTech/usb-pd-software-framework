@@ -474,18 +474,38 @@ Summary:
 Description:
 	CONFIG_DCDC_CTRL is to define the default DC-DC control provided by the PSF stack. If 
 	CONFIG_DCDC_CTRL defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG, default GPIO based DC-DC controller
-	is used. If left undefined, default stack's DC-DC control option is not used and the user must 
-	control power via power control APIs provided by the stack. 
+	is used. If CONFIG_DCDC_CTRL is defined as I2C_DC_DC_CONTROL_CONFIG, default I2C based 
+    DC-DC Controller is used. If left undefined, default stack's DC-DC control option is not used 
+    and the user must control power via power control APIs provided by the stack.  
 Remarks:
 	None.
 Example:
 	<code>
 	#define CONFIG_DCDC_CTRL    PWRCTRL_DEFAULT_PSF_GPIO_CONFIG (Uses default GPIO based DC-DC contol)
+	#define CONFIG_DCDC_CTRL    I2C_DC_DC_CONTROL_CONFIG (Uses default I2C based DC-DC contol)
 	#define CONFIG_DCDC_CTRL    (If undefined, Default DC DC control provided by stack is not used)
 	</code>                                  
   **************************************************************************/
 #define CONFIG_DCDC_CTRL        I2C_DC_DC_CONTROL_CONFIG
-#define I2C_DCDC_TYPE           MPQ
+					
+/**************************************************************************
+Summary:
+    Default I2C DC DC Controller Type.
+Description:
+	CONFIG_I2C_DCDC_TYPE is to define the default I2C DC-DC control provided by the PSF stack.
+    This macro is valid only when CONFIG_DCDC_CTRL is set to I2C_DC_DC_CONTROL_CONFIG. If 
+	CONFIG_I2C_DCDC_TYPE defined as MPQ, Monolithic MPQ4230 I2C DC-DC Controller 
+    is used. If CONFIG_I2C_DCDC_TYPE defined as ONSEMI, On Semi I2C DC-DC 
+    Controller is used. 
+Remarks:
+	None.
+Example:
+	<code>
+	#define CONFIG_I2C_DCDC_TYPE    MPQ (Uses Monolithic I2C DC-DC contol)
+    #define CONFIG_I2C_DCDC_TYPE    ONSEMI (Uses OnSemi I2C DC-DC contol)	
+	</code>                                  
+  **************************************************************************/
+#define CONFIG_I2C_DCDC_TYPE        MPQ
 
 // *****************************************************************************
 // *****************************************************************************

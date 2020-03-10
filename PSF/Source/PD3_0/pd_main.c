@@ -104,9 +104,8 @@ UINT8 MchpPSF_Init(void)
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
-            (void)MCHP_PSF_HOOK_I2CDCDCAlertInit(u8PortNum);
+            (void)MCHP_PSF_HOOK_I2CDCDCALERTINIT(u8PortNum);
             (void)MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_INIT(u8PortNum);
-
         }
     }
 #endif
