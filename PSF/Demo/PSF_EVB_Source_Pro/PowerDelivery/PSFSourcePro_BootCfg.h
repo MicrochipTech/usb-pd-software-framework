@@ -45,8 +45,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define SILICON_VERSION         0x00U
 
 #define CONFIG_PORT_POWER_ROLE                1U
-#define CONFIG_PORT_RP_CURRENT_VALUE          3U
-#define CONFIG_PORT_ENABLE                    1U
+#define CONFIG_PORT_RP_CURRENT_VALUE          (3U << TYPEC_PORT_RPVAL_POS)
+#define CONFIG_PORT_ENABLE                    (1U << TYPEC_PORT_ENDIS_POS)
 #define CONFIG_PORT_SOURCE_NUM_OF_PDOS        4U
 #define CONFIG_PORT_SOURCE_USB_SUSP           0U
 #define CONFIG_PORT_SOURCE_UNCONSTARINED_PWR  1U
@@ -195,6 +195,24 @@ typedef enum
 #define CFG_PB_ENABLE                         0x10U 
 /* Default Enable PB for port 0 with Priority as 0*/
 #define CFG_PB_PORT_ENABLE                    0x0001U
+
+#define CFG_PDO_VOLTAGE_POS                   10 
+#define CFG_PDO_VOLTAGE_UNIT                  50
+#define CFG_PDO_CURRENT_UNIT                  10
+#define CFG_PDO_USB_SUSPEND_POS               28 
+#define CFG_PDO_USB_COMMN_POS                 26 
+#define CFG_PDO_UNCONSTRAINED_PWR             27 
+
+/* Macro used to form Fixed PDO 1 */
+#define CFG_FORM_FIXED_PDO1(voltage,current,usbCommn,usbSusp,unconstrainedPwr)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
+                                         ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
+                                         ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
+                                         (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+                                         ((current)/CFG_PDO_CURRENT_UNIT))            
+
+/* Macro used to form Fixed PDOs 2 to 7 */
+#define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+                                                            ((current)/CFG_PDO_CURRENT_UNIT))
 
 /* Port Connection Status parameters */
 #define PORT_CONNECT_STS_ATTACHED                             BIT(0)

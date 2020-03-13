@@ -38,35 +38,32 @@ static void CFG_PBPerPortParams (UINT8 u8PortNum);
 
 static void CFG_PerPortParams (UINT8 u8PortNum)
 {    
-    gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData =       \
-                    ((CONFIG_VCONN_OCS_ENABLE << TYPEC_VCONN_OCS_EN_POS ) |\
-                    (CONFIG_PORT_ENABLE << TYPEC_PORT_ENDIS_POS)| \
-                    ((CONFIG_PORT_RP_CURRENT_VALUE) << TYPEC_PORT_RPVAL_POS)|\
+    gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData =       
+                    ((CONFIG_PORT_ENABLE) | (CONFIG_PORT_RP_CURRENT_VALUE)| \
                     (CONFIG_PORT_POWER_ROLE));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[0] =           \
-                  (((CONFIG_PORT_SOURCE_USB_SUSP) << 28) | \
-                  ((CONFIG_PORT_SOURCE_UNCONSTARINED_PWR) << 27) | \
-                   ((CONFIG_PORT_SOURCE_USB_COMM) << 26) | \
-                (((CONFIG_PORT_SOURCE_PDO_1_VOLTAGE)/50) << 10) | \
-                    ((CONFIG_PORT_SOURCE_PDO_1_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[1] =           \
-                          ((((CONFIG_PORT_SOURCE_PDO_2_VOLTAGE)/50) << 10) | \
-                           ((CONFIG_PORT_SOURCE_PDO_2_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[2] =           \
-                          ((((CONFIG_PORT_SOURCE_PDO_3_VOLTAGE)/50) << 10) | \
-                           ((CONFIG_PORT_SOURCE_PDO_3_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[3] =           \
-                          ((((CONFIG_PORT_SOURCE_PDO_4_VOLTAGE)/50) << 10) | \
-                           ((CONFIG_PORT_SOURCE_PDO_4_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[4] =           \
-                          ((((CONFIG_PORT_SOURCE_PDO_5_VOLTAGE)/50) << 10) | \
-                           ((CONFIG_PORT_SOURCE_PDO_5_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[5] =           \
-                          ((((CONFIG_PORT_SOURCE_PDO_6_VOLTAGE)/50) << 10) | \
-                           ((CONFIG_PORT_SOURCE_PDO_6_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[6] =           \
-                          ((((CONFIG_PORT_SOURCE_PDO_7_VOLTAGE)/50) << 10) | \
-                           ((CONFIG_PORT_SOURCE_PDO_7_CURRENT)/10));
+    
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[0] = CFG_FORM_FIXED_PDO1(CONFIG_PORT_SOURCE_PDO_1_VOLTAGE, \
+            CONFIG_PORT_SOURCE_PDO_1_CURRENT, CONFIG_PORT_SOURCE_USB_COMM, CONFIG_PORT_SOURCE_USB_SUSP,  \
+            CONFIG_PORT_SOURCE_UNCONSTARINED_PWR);    
+
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[1] = CFG_FORM_FIXED_PDOx(CONFIG_PORT_SOURCE_PDO_2_VOLTAGE, \
+                                                    CONFIG_PORT_SOURCE_PDO_2_CURRENT);        
+
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[2] = CFG_FORM_FIXED_PDOx(CONFIG_PORT_SOURCE_PDO_3_VOLTAGE, 
+                                                    CONFIG_PORT_SOURCE_PDO_3_CURRENT);     
+
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[3] = CFG_FORM_FIXED_PDOx(CONFIG_PORT_SOURCE_PDO_4_VOLTAGE, 
+                                                    CONFIG_PORT_SOURCE_PDO_4_CURRENT);         \
+
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[4] = CFG_FORM_FIXED_PDOx(CONFIG_PORT_SOURCE_PDO_5_VOLTAGE, 
+                                                    CONFIG_PORT_SOURCE_PDO_5_CURRENT);            \
+
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[5] = CFG_FORM_FIXED_PDOx(CONFIG_PORT_SOURCE_PDO_6_VOLTAGE, 
+                                                    CONFIG_PORT_SOURCE_PDO_6_CURRENT);            \
+    
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[6] = CFG_FORM_FIXED_PDOx(CONFIG_PORT_SOURCE_PDO_7_VOLTAGE, 
+                                                    CONFIG_PORT_SOURCE_PDO_7_CURRENT); 
+    
     gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt = CONFIG_PORT_SOURCE_NUM_OF_PDOS;
 
     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
