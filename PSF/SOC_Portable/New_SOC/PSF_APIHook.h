@@ -1053,7 +1053,7 @@ Remarks:
       * New PDOs and PDO Count
       * Advertised PDOs and PDO Count
       * Partner PDO and PDO Count
-      * Over&#45;Voltage and Under&#45;Voltage Threshold values
+      * Over-Voltage and Under-Voltage Threshold values
       * Maximum number of VBUS and VCONN Faults
       * Power Good Timer value
       * Mode and PIO No of Port Control pins
@@ -1066,9 +1066,9 @@ Remarks:
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
 {
     UINT32 u32CfgData;				/*<p>Bit  0   - Port Enable/Disable </p>
-									  <p>     0   - Disabled </p>
-									  <p>     1   - Enabled </p>
-									 <p>Bits 3:1 - Port Role </p>
+									 <p>     0   - Disabled </p>
+									 <p>     1   - Enabled </p>
+									 <p>Bits 3:1 - Port Power Role </p>
 									 <p>     000 - Sink </p>
 									 <p>     001 - Source </p>
 									 <p>Bits 5:4 - Rp Selection </p>
@@ -1081,59 +1081,17 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
 									 <p>     001 - USB2 </p>
 									 <p>     010 - USB3.1 Gen1 </p>
 									 <p>     011 - USB3.1 Gen2	</p>
-									 <p>Bits 32:9 - Reserved</p>	*/								
-    UINT32 u32FixedPDO[7];		    //Upto 7 fixed Source PDOs where Voltage is specified in mV and Current in mA.	 
-    UINT32 u32NewPDO[7];		    //Upto 7 fixed New PDOs where Voltage is specified in mV and Current in mA.	 
-    UINT32 u32AdvertisedPDO[7];	    //Upto 7 PDOs that are advertised to Port Partner.  
-    UINT8 u8FixedPDOCnt;			//Number of Default Source PDOs supported 
-    UINT8 u8AdvertisedPDOCnt; 		//Number of Advertised Source PDOs 
-    UINT8 u8VSELTruthTable[8];		/*This truth table corresponds to the assertion and de-assertion of the  VSEL[2:0] pins to drive the Voltage in GPIO PMPD module.  */
-    UINT8 u8OCSThresholdPercentage; //OCS Threshold 
-    UINT8 u8FaultInDebounce;		/* Debounce timer value in terms of milliseconds for VBUS overcurrent fault
-	conditions before reacting and entering fault recovery routine.It is applicable only for OCS detection via   FAULT_IN configured UPD350 pin. */
-    UINT8 u8OVThresholdPercentage;  //Over Voltage threshold for VBUS_DET 
-    UINT8 u8UVThresholdPercentage;	//Under Voltage threshold for VBUS_DET
-    UINT8 u8VCONNOCS;				//<p>VCONN OCS Enable/Disable</p>
-									//<p>0x00 - Disable</p>
-									//<p>0x01 – Enable</p>
-    UINT8 u8VCONNOCSDebounce;/*Debounce timer value in terms of milliseconds for VCONN overcurrent fault
-	conditions before reacting and entering fault recovery routine. */
-    UINT8 u8MaxFaultCntVBUS;//Maximum number of back-to-back faults allowed before permanent shut down of the port
-    UINT8 u8MaxFaultCntVCONN;//Maximum number of back-to-back faults allowed before permanent shut down of the port
-    UINT8 u8NewPDOSlct;/*<p>0 = Clear</p>
-					   <p>1 = Set, when Set the below steps are done</p>
-					   <p>1.Load New Source PDO</p>
-					   <p>2.Advertise New PDOs to Port partner</p>
-					   <p>3.Clear all New PDO registers</p>
-					   <p>4.Clear this bit </p> */
-    UINT8 u8NewPDOCnt; //The number of New PDOs Supported
-    UINT16 u16PowerGoodTimer;/*Power good timer to determine if the power remains in good state without fault for 	the duration in ms. */
-    UINT16 u16PortIntMask;/*<p>Bit 0: ATTACH_EVENT_C_MASK</p>
-						 <p>Bit 1: DETACH_EVENT_C_MASK</p>
-						 <p>Bit 2: AS_SOURCE_NEW_REQUEST_C_MASK</p>
-						 <p>Bit 3: AS_SINK_NEW_PDOS_RECVD_C_MASK</p>
-						 <p>Bit 4: AS_SINK_NEW_REQ_SENT_C_MASK</p>
-						 <p>Bit 5: AS_SINK_LAST_REQ_ACCEPT_C_MASK</p>
-						 <p>Bit 6: AS_SINK_LAST_REQ_REJECT_C_MASK</p>
-						 <p>Bit 7: AS_SINK_LAST_SINK_PS_RDY_C_MASK</p>
-						 <p>Bit 8: HARD_RESET_EVENT_C_MASK</p>
-						 <p>Bit 9: VBUS_VCONN_FAULT_C_MASK</p>
-						 <p>When,</p>
-						 <p>0= Do not mask interrupt pin toggle on changes to this event.</p>
-					     <p>1=Mask this event from generating interrupt pin toggle.</p> */
-
-    UINT8 u8Pio_VBUS_EN;//Defines the UPD350 PIO number used for EN_VBUS pin
-    UINT8 u8Mode_VBUS_EN;//Defines the PIO mode for EN_VBUS pin
-    UINT8 u8Pio_FAULT_IN;//Defines the UPD350 PIO number used for FAULT_IN pin
-    UINT8 u8Mode_FAULT_IN;//Defines the PIO mode for FAULT_IN pin
-    UINT8 u8Pio_VBUS_DIS;//Defines the UPD350 PIO number used for VBUS_DIS pin
-    UINT8 u8mode_VBUS_DIS;//Defines the PIO mode for VBUS_DIS pin
-    UINT8 u8Pio_DC_DC_EN;//Defines the UPD350 PIO number used for DC_DC_EN pin
-    UINT8 u8Mode_DC_DC_EN;//Defines the PIO mode for DC_DC_EN pin
-    UINT8 u8Pio_VSEL[3];//Defines the UPD350 PIO number used for VSEL0, VSEL1 and VSEL2 pins
-    UINT8 u8Mode_VSEL[3];//Defines the PIO mode for VSEL0,VSEL1 and VSEL2 pins
-    
-    UINT16 u16PortConnectStatus;/*<p> Define the connection status of the port </p>
+                                     <p> Bit 9 - VCONN OCS Enable
+                                     <p>    0 - Disable
+                                     <p>    1 - Enable
+									 <p>Bits 32:10 - Reserved</p>	*/							
+    UINT32 u32aSourcePDO[7];		/*Upto 7 fixed Source PDOs where Voltage is specified in mV and Current in mA.*/
+    UINT32 u32aSinkPDO[7];          /*Upto 7 fixed Sink PDOs where Voltage is specified in mV and Current in mA.*/
+    UINT32 u32aNewPDO[7];		    /*Upto 7 fixed New PDOs where Voltage is specified in mV and Current in mA.*/
+    UINT32 u32aAdvertisedPDO[7];	/*Upto 7 PDOs that are advertised to Port Partner.  */
+    UINT32 u32aPartnerPDO[7];       /*Partner PDOs Configuration: Upto 7 fixed Source PDOs where Voltage is specified in mV and Current is specified in mA */
+    UINT32 u32RDO;                  /*Complete raw RDO Data as Sent/Requested by connected port partner, Will be blank of no RDO has  been received */
+    UINT32 u32PortConnectStatus;/*<p> Define the connection status of the port </p>
 							     <p>Bit 0: Attached </p> 
 								 <p> 	 0 - Detached </p>
 								 <p> 	 1 - Attached </p> 
@@ -1146,34 +1104,85 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
 							     <p>Bit 3: Power Role</p>
 								 <p>    0 - Sink </p>
 								 <p>    1 - Source</p> 
-								 <p>Bit 4: As Source PD Contract Good </p>  
-								 <p>    0 - As Source: USB-C Connection Only (No Request Made Yet) </p> 
-								 <p>    1 - As Source; USB PD connection established, Power request has been made, 	accepted and PS_RDY message sent </p> 
-								 <p>Bit 5: As Source RDO Accepted </p>  
-								 <p>    0 - As Source: No RDO Accept message has been sent to last Request made by attached Sink or no Request has yet been made during connection  </p> 
-								 <p>    1 - As Source: RDO Accept message has been sent to last Request made by attached Sink </p> 
-								 <p>Bit 6: As Source RDO Rejected </p>  
-								 <p>    0 - As source; No RDO reject message has been sent to last request made by attached Sink or no Request has yet been made during connection  </p> 
-								 <p>    1 - As Source: RDO Reject message has been sent to last Request made by attached Sink </p> 
-								 <p>Bit 7: As Sink Last Request Accept </p>  
-								 <p>    0 - As Sink: Last RDO Request was not Accepted or no request has yet been made  </p> 
-								 <p>    1 - As Sink: Last RDO Request was Accepted </p> 
-								 <p>Bit 8: As Sink Last Request Reject </p>  
-								 <p>    0 - As Sink: Last RDO Request was not Rejected or no request has yet been made  </p> 
-								 <p>    1 - As Sink: Last RDO Request was Rejected </p>
-								 <p>Bit 9: As Sink Last Request PS_RDY </p>  
-								 <p>    As Sink: PS_RDY not yet received for last RDO request   </p> 
-								 <p>    As Sink: PS_RDY received for last RDO request </p>
-								 <p>Bit 10: VCONN Status </p>  
+                                 <p>Bit 4: VCONN Status </p>  
 								 <p>    0 - Disabled   </p> 
 								 <p>    1 - Enabled </p>
-								 <p>Bit 11: Cable Reduced Source Capabilities </p>  
+								 <p>Bit 5: Cable Reduced Source Capabilities </p>  
 								 <p>    0 - The attached USB-C cable supports the locally-defined Source PDOs </p>  
 								 <p>    1 - The attached USB-C cable does not support the locally defined Source PDOs (ex: 3A cable used w/ >3A Source Caps) </p>
-								 <p>Bit 12: PD Bal Reduced Source Capabilities </p>  
+								 <p>Bit 6: PD Bal Reduced Source Capabilities </p>  
 								 <p>    0 - The advertised PDOs are equivalent to the default configured values</p>
 								 <p>    1 - The advertised PDOs have been reduced from default configured values due to PB algorithm </p>
-								<p>Bits 15:13: Reserved </p>  */
+								 <p>Bit 7: Source Capability Mismatch  </p>
+                                 <p>    0 - De-asserted by  Source port when there is capability mismatch with the sink partner </p>
+                                 <p>    1 - Asserted by the Source port when the sink port partner indicates capability mismatch in the RDO</p>
+                                 <p>Bit 8: As Source PD Contract Good </p>  
+								 <p>    0 - As Source: USB-C Connection Only (No Request Made Yet) </p> 
+								 <p>    1 - As Source; USB PD connection established, Power request has been made, 	accepted and PS_RDY message sent </p> 
+								 <p>Bit 9: As Source RDO Accepted </p>  
+								 <p>    0 - As Source: No RDO Accept message has been sent to last Request made by attached Sink or no Request has yet been made during connection  </p> 
+								 <p>    1 - As Source: RDO Accept message has been sent to last Request made by attached Sink </p> 
+								 <p>Bit 10: As Source RDO Rejected </p>  
+								 <p>    0 - As source; No RDO reject message has been sent to last request made by attached Sink or no Request has yet been made during connection  </p> 
+								 <p>    1 - As Source: RDO Reject message has been sent to last Request made by attached Sink </p> 
+								 <p>Bit 11: As Sink Last Request Accept </p>  
+								 <p>    0 - As Sink: Last RDO Request was not Accepted or no request has yet been made  </p> 
+								 <p>    1 - As Sink: Last RDO Request was Accepted </p> 
+								 <p>Bit 12: As Sink Last Request Reject </p>  
+								 <p>    0 - As Sink: Last RDO Request was not Rejected or no request has yet been made  </p> 
+								 <p>    1 - As Sink: Last RDO Request was Rejected </p>
+								 <p>Bit 13: As Sink Last Request PS_RDY </p>  
+								 <p>    0 - As Sink: PS_RDY not yet received for last RDO request   </p> 
+								 <p>    1 - As Sink: PS_RDY received for last RDO request </p>
+                                 <p>Bit 14: Sink Capability Mismatch </p>
+                                 <p>    0 - De-asserted by the Sink Port when there is no capability mismatch </p>
+                                 <p>    1 - Asserted by Sink Port when no Source capability was found</p>
+                                 <p>Bits [16:15]: Rp Value detected by Sink </p> 
+                                 <p>     00  - Disabled </p>
+                                 <p>	  01  - USB Power </p>
+                                 <p>	  10  - 1.5A </p>
+                                 <p>	  11  - 3.0A </p>      
+                                 <p>Bits [31:17] - Reserved*/
+
+    
+    UINT16 u16AllocatedPowerIn250mW;   /*Allocated Power for the Port PD contract in 0.25W steps*/
+    UINT16 u16NegoVoltageIn50mV;      /*<p> Negotiated Voltage from the Port Bits 19:10 from the RDO
+								Voltage is in 50mV steps</p> 
+                                <p>	0x00 = No Contract </p>
+                                <p>  0x064 = 5V</p>
+                                <p>  0x0B4 = 9 V</p>
+                                <p>  0x12C = 15V</p>
+                                <p>  0x190 = 20V</p>
+                                <p>  0x3FF = 51.15V</p> */
+    UINT16 u16NegoVoltageIn10mA;      /*<p> Negotiated Current from the Port Bits 9: 0 from the RDO, Ampere is in 10mA steps</p>
+                                <p> 0x0000 = No Contract </p>
+                                <p> 0x012C = 3A </p>
+                                <p> 0x01F4 = 5A </p>
+                                <p> 0x03FF = 10.24A </p> */
+    UINT16 u16MaximumOperatingCurInmA; /*Maximum allowable current or system's 
+                                        maximum operating current in terms of mA*/
+    #if (TRUE == INCLUDE_PD_SINK)
+    UINT16 u1a6MinPDOPreferredCurInmA[7]; /* Preferred minimum current range for 
+                                            the PDO by which the Sink may select without setting 
+                                            Capability Mismatch Bit with highest current preferred */
+    UINT16 u16MinimumOperatingCurInmA; /* Minimum operating current by the System*/
+    #endif
+    UINT16 u16PortIOStatus;/*<p> Defines the Port IO status </p> 
+                                <p>Bit  0   - EN_DC_DC_STATUS </p>
+                                <p>Bit  1   - VSEL0_STATUS </p>
+                                <p>Bit  2   - VSEL1_STATUS </p>
+                                <p>Bit  3   - VSEL2_STATUS </p>
+                                <p>Bit  4   - EN_VBUS_STATUS </p>
+                                <p>Bit  5   - VBUS_DIS_STATUS </p>
+                                <p>Bit  6   - EN_SINK_STATUS </p>
+                                <p>Bit  7   - 1.5_IND </p>
+                                <p>Bit  8   - 3.0_IND </p>
+                                <p>Bit  9   - PS_RDY_RECVD </p>
+                                <p>Bit  10   - CAP_MISMATCH </p>
+                                <p>Bits 15:11  - Reserved </p>
+                                <p>	Where the logic state, </p>
+                                <p> 0 = Asserted </p>
+                                <p> 1 = De-asserted>/p> */
     UINT16 u16PortStatusChange;/*<p> Defines the port connection status change bits </p>
 							     <p>Bit 0: ATTACH_EVENT_C </p> 
 								 <p> 	 0 - Since the last read of this register, PSF has not experienced a USB-C attach </p>
@@ -1205,47 +1214,101 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
 								 <p>Bit 9: PIN_RESET_EVENT_C </p>  
 								 <p>    Since the last read of this register, PSF has not been reset via POR or pin  </p> 
 								 <p>    Since the last read of this register, PSF has been reset via POR or pin </p>
-								 <p>Bit 10: VBUS_VCONN_FAULT_C </p>  
-								 <p>    0 - Since the last read of this register, no faults have been detected   </p> 
-								 <p>    1 - Since the last read of this register, 1 or more faults have been detected </p>
-								 <p>Bits 15:11: Reserved </p> */
-    UINT16 u16AllocatedPower;//Allocated Power for the Port PD contract in 0.25W steps
-    UINT16 u16NegoVoltage;/*<p> Negotiated Voltage from the Port Bits 19:10 from the RDO
-								Voltage is in 50mV steps</p> 
-						  <p>	0x00 = No Contract </p>
-						  <p>  0x064 = 5V</p>
-						  <p>  0x0B4 = 9 V</p>
-						  <p>  0x12C = 15V</p>
-						  <p>  0x190 = 20V</p>
-						  <p>  0x3FF = 51.15V</p> */
-    UINT16 u16NegoCurrent;/*<p> Negotiated Current from the Port Bits 9: 0 from the RDO, Ampere is in 10mA steps</p>
-						 <p> 0x0000 = No Contract </p>
-						 <p> 0x012C = 3A </p>
-						 <p> 0x01F4 = 5A </p>
-						 <p> 0x03FF = 10.24A </p> */
-    UINT16 u16PortIOStatus;/*<p> Defines the Port IO status </p> 
-									<p>Bit  0   - EN_DC_DC_STATUS </p>
-									<p>Bit  1   - VSEL0_STATUS </p>
-									<p>Bit  2   - VSEL1_STATUS </p>
-									<p>Bit  3   - VSEL2_STATUS </p>
-									<p>Bit  4   - EN_VBUS_STATUS </p>
-									<p>Bit  5   - VBUS_DIS_STATUS </p>
-									<p>Bit  6   - EN_SINK_STATUS </p>
-									<p>Bit  7   - 1.5_IND </p>
-									<p>Bit  8   - 3.0_IND </p>
-									<p>Bit  9   - PS_RDY_RECVD </p>
-									<p>Bit  10   - CAP_MISMATCH </p>
-									<p>Bits 15:11  - Reserved </p>
-									<p>	Where the logic state, </p>
-									<p> 0 = Asserted </p>
-									<p> 1 = De-asserted>/p> */
-    UINT16 u16PortFaultChangeBits;/*<p> Defines the fault change bits </p> 
-								    <p>Bit  0   - FLT_VBUS_C </p>
-									<p>Bit  1   - FLT_VCONN_C </p> */
-    UINT32 u32PartnerPDO[7];/*Partner PDOs Configuration: Upto 7 fixed Source PDOs where Voltage is specified in mV and Current is specified in mA */
-    UINT8 u8PartnerPDOCnt; //Number of Partner PDOs 
-    UINT32 u32RDO;/*Complete raw RDO Data as Sent/Requested by connected port partner, Will be blank of no RDO has  been received */
-} MCHP_PSF_STRUCT_PACKED_END PORT_CFG_STATUS, *PPORT_CFG_STATUS;
+								 <p>Bit 10: VBUS_FAULT_C </p>  
+								 <p>    0 - Since the last read of this register, no VBUS faults have been detected   </p> 
+								 <p>    1 - Since the last read of this register, 1 or more VBUS faults have been detected </p>
+                                 <p>Bit 11: VCONN_FAULT_C </p>  
+								 <p>    0 - Since the last read of this register, no VCONN faults have been detected   </p> 
+								 <p>    1 - Since the last read of this register, 1 or more VCONN faults have been detected </p>
+                                <p>Bits 15:12: Reserved </p> */
+    UINT16 u16PortIntMask;/*<p>Bit 0: ATTACH_EVENT_C_MASK</p>
+						 <p>Bit 1: DETACH_EVENT_C_MASK</p>
+						 <p>Bit 2: AS_SOURCE_NEW_REQUEST_C_MASK</p>
+						 <p>Bit 3: AS_SINK_NEW_PDOS_RECVD_C_MASK</p>
+						 <p>Bit 4: AS_SINK_NEW_REQ_SENT_C_MASK</p>
+						 <p>Bit 5: AS_SINK_LAST_REQ_ACCEPT_C_MASK</p>
+						 <p>Bit 6: AS_SINK_LAST_REQ_REJECT_C_MASK</p>
+						 <p>Bit 7: AS_SINK_LAST_SINK_PS_RDY_C_MASK</p>
+						 <p>Bit 8: HARD_RESET_EVENT_C_MASK</p>
+						 <p>Bit 9: PIN_RESET_EVENT_C</p>
+                         <p>Bit 10: VBUS_FAULT_C</p>
+                         <p>Bit 11: VCONN_FAULT_C</p>
+						 <p>When,</p>
+						 <p>0= Do not mask interrupt pin toggle on changes to this event.</p>
+					     <p>1=Mask this event from generating interrupt pin toggle.</p> */
+    UINT16 u16PowerGoodTimerInms;   /*Power good timer to determine if the power remains in good state without fault for 	the duration in ms. */
+    UINT8 u8SourcePDOCnt;			/*Number of Default Source PDOs supported*/
+    UINT8 u8SinkPDOCnt;             /*Number of Default Source PDOs supported */
+    UINT8 u8NewPDOCnt;              /*The number of New PDOs Supported*/
+    UINT8 u8AdvertisedPDOCnt; 		/*Number of Advertised Source PDOs*/
+    UINT8 u8PartnerPDOCnt;          /*Number of Partner PDOs*/
+    UINT8 u8NewPDOSelect;           /*<p>0 = Clear</p>
+                                    <p>1 = Set, when Set the below steps are done</p>
+                                    <p>1.Load New Source PDO</p>
+                                    <p>2.Advertise New PDOs to Port partner</p>
+                                    <p>3.Clear all New PDO registers</p>
+                                    <p>4.Clear this bit </p> */
+    UINT8 u8SinkModeSelect;         /*Sink Selection mode for operation
+                                     <p> 0x00 - Mode A - Prefer Higher Voltage and Wattage </p>
+                                     <p> 0x01 - Mode B - Prefer Lower Voltage and Wattage </p>*/
+    UINT8 u8FaultInDebounceInms;    /* Debounce timer value in terms of milliseconds for VBUS overcurrent fault
+	conditions before reacting and entering fault recovery routine.It is applicable only for OCS detection via   FAULT_IN configured UPD350 pin. */
+    UINT8 u8OCSThresholdPercentage; /*OCS Threshold in terms of percentage */
+    UINT8 u8OVThresholdPercentage;  /*Over Voltage threshold for VBUS_DET */
+    UINT8 u8UVThresholdPercentage;	/*Under Voltage threshold for VBUS_DET */
+    UINT8 u8VCONNOCSDebounceInms;/*Debounce timer value in terms of milliseconds for VCONN overcurrent fault
+	conditions before reacting and entering fault recovery routine. */
+    UINT8 u8MaxFaultCntVBUS;/*Maximum number of back-to-back faults allowed before permanent shut down of the port */
+    UINT8 u8MaxFaultCntVCONN;/*Maximum number of back-to-back faults allowed before permanent shut down of the port*/
+    UINT8 u8Pio_VBUS_EN;/*Defines the UPD350 PIO number used for EN_VBUS pin*/
+    UINT8 u8Mode_VBUS_EN;/*Defines the PIO mode for EN_VBUS pin*/
+    UINT8 u8Pio_FAULT_IN;/*Defines the UPD350 PIO number used for FAULT_IN pin*/
+    UINT8 u8Mode_FAULT_IN;/*Defines the PIO mode for FAULT_IN pin*/
+    UINT8 u8Pio_VBUS_DIS;/*Defines the UPD350 PIO number used for VBUS_DIS pin*/
+    UINT8 u8mode_VBUS_DIS;/*Defines the PIO mode for VBUS_DIS pin*/
+    UINT8 u8Pio_DC_DC_EN;/*Defines the UPD350 PIO number used for DC_DC_EN pin*/
+    UINT8 u8Mode_DC_DC_EN;/*Defines the PIO mode for DC_DC_EN pin*/
+    #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 
+    UINT8 u8aPio_VSEL[3];/*Defines the UPD350 PIO number used for VSEL0, VSEL1 and VSEL2 pins*/
+    UINT8 u8aMode_VSEL[3];/*Defines the PIO mode for VSEL0,VSEL1 and VSEL2 pins*/
+	UINT8 u8aVSELTruthTable[8];/*This truth table corresponds to the assertion and de-assertion of the  VSEL[2:0]pins to drive the Voltage in GPIO PMPD module.  */
+	#endif
+    #if (TRUE == INCLUDE_PD_SINK)
+    UINT8 u8Pio_EN_SINK; /*Defines the UPD350 PIO number used for EN_SINK pin*/
+    UINT8 u8Mode_EN_SINK; /* Defines the PIO mode for EN_SINK pin */
+    UINT8 u8SnkPio_1_5A_IND; /*Defines the UPD350 PIO number used for 1.5A_IND pin */
+    UINT8 u8Mode_1_5A_IND;  /*Defines the PIO mode for 1.5A_IND pin */
+    UINT8 u8SnkPio_3A_IND;  /*Defines the UPD350 PIO number used for 3A_IND pin */
+    UINT8 u8Mode_3A_IND;    /* Defines the PIO mode for 3A_IND pin */
+    UINT8 u8PIO_SNK_PD_NEG_CMPLT; /*Defines the UPD350 PIO number for SNK_PD_NEG_CMPLT pin */
+    UINT8 u8Mode_SNK_PD_NEG_CMPLT; /* Defines the PIO mode for SNK_PD_NEG_CMPLT pin */
+    UINT8 u8PIO_SNK_CAP_MISMATCH; /* Defines the UPD350 PIO number for SNK_CAP_MISMATCH*/
+    UINT8 u8Mode_SNK_CAP_MISMATCH; /*Defines the PIO mode for SNK_CAP_MISMATCH pin */
+    UINT8 u8DAC_I_MaxOutVoltIn10mV; /* Defines the maximum voltage on DAC_I with a maximum of 2.5V in terms of 10mV*/
+    UINT8 u8DAC_I_MinOutVoltIn10mV; /* Defines the minimum voltage on DAC_I with a minimum of 0V in terms of 10mV*/
+    UINT8 u8DAC_I_CurrentInd_MaxInA;  /*Defines which current in terms of A corresponding to maximum output voltage 
+                                        It can take either 3A or 5A value.
+                                        <p> If it is 5A and maximum output voltage is 2.5V, then </p>
+                                        <p> 0.5A > DAC_I = 0.25V </p>
+                                        <p> 1.5A > DAC_I = 0.75V </p>
+                                        <p> 2.0A > DAC_I = 1V </p>
+                                        <p> 3.0A > DAC_I = 1.5V </p>
+                                        <p> 4.0A > DAC_I = 2.0V </p>
+                                        <p> 5.0A > DAC_I = 2.5V </p> 
+                                        <p> If it is 3A and maximum output voltage is 2.5V, then </p>
+                                        <p> 0.5A > DAC_I = 0.42V </p>
+                                        <p> 1.5A > DAC_I = 1.25V </p>
+                                        <p> 2.0A > DAC_I = 1.67V </p>
+                                        <p> 3.0A > DAC_I = 2.5V </p>
+                                        <p> 4.0A > DAC_I = 2.5V </p>
+                                        <p> 5.0A > DAC_I = 2.5V </p>*/
+    UINT8 u8DAC_I_Direction; /* Specifies the direction of DAC_I to allow user invert
+                               direction of DAC_I if required </p>
+                              <p> 0 - High Amperage - Max Voltage </p>
+                              <p> 1 - High Amperage - Min Voltage </p>*/
+    #endif
+	 
+   } MCHP_PSF_STRUCT_PACKED_END PORT_CFG_STATUS, *PPORT_CFG_STATUS;
 
  /**********************************************************************
    Summary:
@@ -1263,7 +1326,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
    Remarks:
      None                                                               
    **********************************************************************/
-  
+#if (TRUE == INCLUDE_POWER_BALANCING) 
+
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PBPortCfgStatus
 {
     UINT16 u16MaxPrtPwrBankA; /*<p>Maximum Port Power Bank A in 0.25W steps</p>
@@ -1303,6 +1367,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBPortCfgStatus
 								<p>000b is the highest priority </p>*/
 } MCHP_PSF_STRUCT_PACKED_END PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
 
+#endif 
  /**********************************************************************
    Summary:
      User configurable boot time structure that contains port specific 
@@ -1315,7 +1380,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBPortCfgStatus
    Remarks:
      None                                                               
    **********************************************************************/
-   
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)   
+
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PPSPortCfgStatus
 {
     UINT8 u8PPSEnable; /* <p> PPS Enable/Disable </p>
@@ -1324,6 +1390,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PPSPortCfgStatus
     UINT32 u32PPSApdo[3];  /* Defines the PPS APDOs */
 } MCHP_PSF_STRUCT_PACKED_END PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
 
+#endif 
  /**********************************************************************
    Summary:
      User configurable boot time structure that contains the global 
@@ -1351,14 +1418,18 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgStatusData
     UINT8 u8HWVersion;	   /* HW Version */ 
     UINT8 u8SiVersion;     /* Silicon Version */ 
     UINT8 u8ManfString[8]; /* Manufacturer String */
+    UINT8 u8PSFMajorVersion; /* PSF Stack Major Version */ 
+    UINT8 u8PSFMinorVersion; /* PSF Stack Minor Version */ 
+    UINT16 u16Reserved;     /* Reserved variable to avoid unaligned addr */
     UINT16 u16ProducdID;	/* Product ID */
     UINT16 u16VendorID;		/* Vendor ID */ 
     UINT16 u16ProductTypeVDO; /* Product Type VDO */ 
     UINT16 u16ProductVDO; /* Product VDO*/ 
     UINT16 u16CertStatVDO; /* Cert Stat VDO */  
     UINT16 u16IDHeaderVDO; /* ID Header VDO */ 
+    
     PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; /* Per Port Config and Status */ 
-
+#if (TRUE == INCLUDE_POWER_BALANCING)
     /* Power Balancing Configurations */
     UINT8 u8PBEnableSelect;		/* <p> Bits 3-0: Selection of Power Balancing Algorithm </p>
 									<p> 0000 = First Come First Serve </p>
@@ -1369,6 +1440,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgStatusData
 									<p> Bit 4:PD Power balancing Enable/Disable </p>
 									<p> 0 = PD Balancing is Enabled</p> 
 									<p> 1= PD Balancing is Disabled </p>*/ 
+#endif 
+#if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
     UINT8 u8PwrThrottleCfg;	 /*	<p>Define the currently selected bank </p>
 								<p>	0x00 = Bank A</p>
 								<p>	0x00 = Bank B</p>
@@ -1416,6 +1489,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgStatusData
 								<p>0x0190 = 100W</p>
 								<p>0xFFFF = 16381.25W</p>
 								<p>Note: a setting of 0x191-0xFFF is invalid</p> */
+#endif
+#if (TRUE == INCLUDE_POWER_BALANCING)    
     UINT16 u16SharedPowerCapacity; /* The currently available shared power
                                     capacity from which power is allocated to ports 
                                     that are not yet in a valid negotiated contract, 
@@ -1426,9 +1501,12 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgStatusData
 								<p>0x0001 = 0.25W</p>
 								<p>0xFFFF = 16381.25W </p>*/
     PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	/* Per Port PB Config and Status */
+#endif 
     
     /* PPS Configurations */
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
     PPS_PORT_CFG_STATUS sPPSPerPortData[CONFIG_PD_PORT_COUNT];  /* Per Port PPS Config and Status */
+#endif
 }MCHP_PSF_STRUCT_PACKED_END GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
 
 extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
@@ -2074,6 +2152,27 @@ Remarks:
     User definition of this Hook function is mandatory                                                
 ****************************************************************************************************/
 #define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)
-                                           
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_SET_MCU_IDLE()
+Summary:
+    Configures the SoC to enter Low power mode.
+Description:
+    This hook is called when eMCHP_PSF_UPDS_IN_IDLE event notification is posted 
+    by PSF. A suitable function that puts SoC to low power mode need to be 
+    implemented in this hook.
+Conditions:
+    None.
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_SET_MCU_IDLE()   SAMD20_SetMCUIdle()
+    </code>
+Remarks:
+User definition of this Hook function is optional.                          
+*******************************************************************************/  
+#define MCHP_PSF_HOOK_SET_MCU_IDLE          
+
 #endif /*_PSF_API_HOOK_H_*/
 
