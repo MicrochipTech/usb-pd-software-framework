@@ -192,7 +192,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
     TypeC_SetCCSampleEnable (u8PortNum,(TYPEC_ENABLE_CC1_SAMPLING | TYPEC_ENABLE_CC2_SAMPLING));
   
     /*Setting VCONN Debounce register for 2ms as given in DOS*/
-    UPD_RegWriteByte (u8PortNum, TYPEC_VCONN_DEB, gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCSDebounce);
+    UPD_RegWriteByte (u8PortNum, TYPEC_VCONN_DEB, gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCSDebounceInms);
      
     
     /*Setting VBUS Debounce enable clear register and VBUS Match Enable Register */
@@ -279,13 +279,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {     
                     /* Clear the ATTACHED and AS_SOURCE_PD_CONTRACT_GOOD bits in 
                        Port Connection Status register */
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
                             ~(PORT_CONNECT_STS_ATTACHED | PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD);
                     
                     /* Set the Power related variables to 0 in Status register */
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrent = RESET_TO_ZERO; 
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltage = RESET_TO_ZERO; 
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPower = RESET_TO_ZERO; 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn10mA = RESET_TO_ZERO; 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = RESET_TO_ZERO; 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
                     
                     /* Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
@@ -557,19 +557,19 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Sink Attached in CC1 pin*/
                     if(u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
                     {
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
                                                 ~(PORT_CONNECT_STS_ORIENTATION_FLIPPED);
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);
                     }
                     /*Sink attached in CC2*/
                     else
                     {
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= 
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                                                  PORT_CONNECT_STS_ORIENTATION_FLIPPED;                        
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
                     
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= PORT_CONNECT_STS_ATTACHED;  
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= PORT_CONNECT_STS_ATTACHED;  
                     
                     /* Enabling PRL Rx */
                     PRL_EnableRx(u8PortNum, TRUE);                  
@@ -703,7 +703,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
                     PRL_EnableRx (u8PortNum, FALSE);
                     
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= ~(PORT_CONNECT_STS_ATTACHED);
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(PORT_CONNECT_STS_ATTACHED);
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
@@ -861,7 +861,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
                         UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
                         
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
                                                 ~(PORT_CONNECT_STS_ORIENTATION_FLIPPED); 
                         
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);                        
@@ -871,13 +871,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
                         UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
                         
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= 
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                                                   PORT_CONNECT_STS_ORIENTATION_FLIPPED;
                         
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
 
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= PORT_CONNECT_STS_ATTACHED;  
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= PORT_CONNECT_STS_ATTACHED;  
                     
                     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_5V,\
                             (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
@@ -1428,7 +1428,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             for (UINT8 u8Index = 0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
             {
                 /* PDO voltage for which VBUS Threshold was configured is determined */
-                if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO[u8Index])) 
+                if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index])) 
                 {
                     /*Setting the VBUS Status flag for corresponding voltage
                         in u8IntStsISR variable*/
@@ -1651,7 +1651,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
         
         /* Clear VCONN_STATUS bit in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus &= 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
                                                     ~(PORT_CONNECT_STS_VCONN_STATUS);
         
         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE initiated\r\n");
@@ -1664,7 +1664,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         if(gasDPM[u8PortNum].u8VCONNPowerFaultCount!= SET_TO_ZERO)
         {
             PDTimer_Kill (gasDPM[u8PortNum].u8VCONNPowerGoodTmrID);
-            gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = PDTimer_Start (gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimer,\
+            gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = PDTimer_Start (gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimerInms,\
                                                       DPM_VCONNPowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
                   
         }
@@ -1715,15 +1715,16 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
             UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1, TYPEC_VCONN2_ENABLE);
         }
         
-        if (TRUE == gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCS) 
+        if (TRUE == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
+                                       TYPEC_VCONN_OCS_EN) >> TYPEC_VCONN_OCS_EN_POS)) 
         {
-            /*Enable VCONN OCS detection only if gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCS is defined as 1*/
+            /*Enable VCONN OCS detection only if gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCSEn is defined as 1*/
             /*Enable the VCONN OCS monitoring in VBUS_CTL1 register*/
             UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VCONN_OCS_ENABLE);
         }
         
         /* Set VCONN_STATUS bit in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u16PortConnectStatus |= PORT_CONNECT_STS_VCONN_STATUS;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= PORT_CONNECT_STS_VCONN_STATUS;
     } 
 }
  
@@ -2434,7 +2435,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
                 PDO voltage is reached. Power Good timer should be started only when 
                 PDO voltage is attained. Hence started here.*/
             PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
-            gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = PDTimer_Start (gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimer,\
+            gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = PDTimer_Start (gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimerInms,\
                                                           TypeC_PowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
         }
         

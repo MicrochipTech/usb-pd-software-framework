@@ -149,7 +149,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     u16NegVoltIn50mV = PB_GET_VOLTAGE_FROM_FIXED_PDO(u32PDO); 
     
     /* Update the global status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltage = u16NegVoltIn50mV; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = u16NegVoltIn50mV; 
     
     /* Convert the voltage from 50mV units to V */
     fNegotiatedVoltage = PB_CONVERT_PDO_VOLTAGE_FROM_50mV_TO_V(u16NegVoltIn50mV); 
@@ -181,7 +181,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     }
     
     /* Update the global status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrent = u16CurrentIn10mA; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn10mA = u16CurrentIn10mA; 
     
     /* Calculate power in terms of 10mW */
     u16TempPwr = (UINT16) ((UINT16)fNegotiatedVoltage * u16CurrentIn10mA);
@@ -200,7 +200,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
        gasPBIntPortParam[u8PortNum].u8PortStatusMask &= ~(PB_PORT_STATUS_PORT_IN_MIN_PWR);
     }
     
-    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPower = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW; 
 }
 
 void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattage)
@@ -493,7 +493,7 @@ void PB_SinkCapsReceivedHandler(UINT8 u8PortNum)
    
     /* Get the Sink capabilities from DPM */
     u8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt;  
-    pu32SinkCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerPDO[INDEX_0]; 
+    pu32SinkCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]; 
     
     /* Calculate the power required for the port based on Sink caps values */
     PB_CalculateRequiredPortPower(u8PortNum, u8SinkPDOCnt, pu32SinkCap); 
@@ -691,15 +691,15 @@ void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
     
     /* Enable New PDO Select. Load the New PDO Count which is same as Fixed PDO 
        count */
-    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSlct = TRUE; 
-    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSelect = TRUE; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt; 
     
     /* In Power Balancing, voltages remain fixed irrespective of the power 
        value advertised. Only current varies with power. */
     for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt; u8Index++)
     {
         /* Get the voltage value from PDO */
-        fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[u8Index]); 
+        fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index]); 
         
         /* Calculate new current value based on new power */
         u16CurrentIn10mA = (UINT16)(((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT)); 
@@ -708,8 +708,8 @@ void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
         u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrent); 
         
         /* Load the New PDO registers with the new PDO values */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32NewPDO[u8Index] = \
-                    (gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[u8Index] & ~(PB_FIXED_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8Index] = \
+                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index] & ~(PB_FIXED_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
 
     }
 

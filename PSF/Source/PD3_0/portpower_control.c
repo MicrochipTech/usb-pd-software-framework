@@ -66,8 +66,8 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
     for(UINT8 u8VSELIndex = SET_TO_ZERO; u8VSELIndex < PWRCTRL_VSEL_PIO_MAX_COUNT; u8VSELIndex++)
     {
-        UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[u8VSELIndex], \
-                                gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[u8VSELIndex]);
+        UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8aPio_VSEL[u8VSELIndex], \
+                                gasCfgStatusData.sPerPortData[u8PortNum].u8aMode_VSEL[u8VSELIndex]);
     }
     #endif /*CONFIG_DCDC_CTRL*/
 
@@ -106,20 +106,20 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
     
     for(UINT8 u8VSELIndex = SET_TO_ZERO; u8VSELIndex < PWRCTRL_VSEL_PIO_MAX_COUNT; u8VSELIndex++)
     {
-        u8VSELAssert = gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[u8PDOIndex] & BIT(u8VSELIndex); 
+        u8VSELAssert = gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[u8PDOIndex] & BIT(u8VSELIndex); 
         
         if (BIT(u8VSELIndex) == u8VSELAssert)
         {
-            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[u8VSELIndex], \
-                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[u8VSELIndex], \
+            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8aPio_VSEL[u8VSELIndex], \
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8aMode_VSEL[u8VSELIndex], \
                         (UINT8)UPD_GPIO_ASSERT);
 
             gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= (PORT_IO_VSEL0_STATUS << u8VSELIndex);            
         }
         else
         {
-            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[u8VSELIndex], \
-                gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[u8VSELIndex], \
+            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8aPio_VSEL[u8VSELIndex], \
+                gasCfgStatusData.sPerPortData[u8PortNum].u8aMode_VSEL[u8VSELIndex], \
                     (UINT8)UPD_GPIO_DE_ASSERT);
             
             gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(PORT_IO_VSEL0_STATUS << u8VSELIndex);            

@@ -39,49 +39,49 @@ static void CFG_PBPerPortParams (UINT8 u8PortNum);
 static void CFG_PerPortParams (UINT8 u8PortNum)
 {    
     gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData =       \
-                    ((CONFIG_PORT_ENABLE << TYPEC_PORT_ENDIS_POS)| \
+                    ((CONFIG_VCONN_OCS_ENABLE << TYPEC_VCONN_OCS_EN_POS ) |\
+                    (CONFIG_PORT_ENABLE << TYPEC_PORT_ENDIS_POS)| \
                     ((CONFIG_PORT_RP_CURRENT_VALUE) << TYPEC_PORT_RPVAL_POS)|\
                     (CONFIG_PORT_POWER_ROLE));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[0] =           \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[0] =           \
                   (((CONFIG_PORT_SOURCE_USB_SUSP) << 28) | \
                   ((CONFIG_PORT_SOURCE_UNCONSTARINED_PWR) << 27) | \
                    ((CONFIG_PORT_SOURCE_USB_COMM) << 26) | \
                 (((CONFIG_PORT_SOURCE_PDO_1_VOLTAGE)/50) << 10) | \
                     ((CONFIG_PORT_SOURCE_PDO_1_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[1] =           \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[1] =           \
                           ((((CONFIG_PORT_SOURCE_PDO_2_VOLTAGE)/50) << 10) | \
                            ((CONFIG_PORT_SOURCE_PDO_2_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[2] =           \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[2] =           \
                           ((((CONFIG_PORT_SOURCE_PDO_3_VOLTAGE)/50) << 10) | \
                            ((CONFIG_PORT_SOURCE_PDO_3_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[3] =           \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[3] =           \
                           ((((CONFIG_PORT_SOURCE_PDO_4_VOLTAGE)/50) << 10) | \
                            ((CONFIG_PORT_SOURCE_PDO_4_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[4] =           \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[4] =           \
                           ((((CONFIG_PORT_SOURCE_PDO_5_VOLTAGE)/50) << 10) | \
                            ((CONFIG_PORT_SOURCE_PDO_5_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[5] =           \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[5] =           \
                           ((((CONFIG_PORT_SOURCE_PDO_6_VOLTAGE)/50) << 10) | \
                            ((CONFIG_PORT_SOURCE_PDO_6_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO[6] =           \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[6] =           \
                           ((((CONFIG_PORT_SOURCE_PDO_7_VOLTAGE)/50) << 10) | \
                            ((CONFIG_PORT_SOURCE_PDO_7_CURRENT)/10));
-    gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt = CONFIG_PORT_SOURCE_NUM_OF_PDOS;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt = CONFIG_PORT_SOURCE_NUM_OF_PDOS;
 
-    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32AdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32FixedPDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt * 4));
+    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
     gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8FixedPDOCnt;  
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;  
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounce = CONFIG_FAULT_IN_OCS_DEBOUNCE_MS;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms = CONFIG_FAULT_IN_OCS_DEBOUNCE_MS;
     gasCfgStatusData.sPerPortData[u8PortNum].u8OVThresholdPercentage = CONFIG_OVER_VOLTAGE_FACTOR;
     gasCfgStatusData.sPerPortData[u8PortNum].u8UVThresholdPercentage = CONFIG_UNDER_VOLTAGE_FACTOR;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCS = CONFIG_VCONN_OCS_ENABLE;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCSDebounce = CONFIG_VCONN_OCS_DEBOUNCE_IN_MS;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCSDebounceInms = CONFIG_VCONN_OCS_DEBOUNCE_IN_MS;
     gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVBUS = CONFIG_MAX_VBUS_POWER_FAULT_COUNT;
     gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVCONN = CONFIG_MAX_VCONN_FAULT_COUNT;
-    gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimer = CONFIG_POWER_GOOD_TIMER_MS;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimerInms = MILLISECONDS_TO_TICKS(CONFIG_POWER_GOOD_TIMER_MS);
 
     gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN = (UINT8)CONFIG_PORT_UPD_EN_VBUS;
     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN = (UINT8)CONFIG_PORT_UPD_EN_VBUS_PIO_MODE;
@@ -93,35 +93,35 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN = (UINT8)CONFIG_PORT_UPD_DC_DC_EN_PIO_MODE;
 
 #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)  
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[0] =         \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aPio_VSEL[0] =         \
                                                 (UINT8)CONFIG_PORT_UPD_VSEL0_PIO_NO;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[1] =         \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aPio_VSEL[1] =         \
                                                 (UINT8)CONFIG_PORT_UPD_VSEL1_PIO_NO;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VSEL[2] =         \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aPio_VSEL[2] =         \
                                                 (UINT8)CONFIG_PORT_UPD_VSEL2_PIO_NO;
 
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[0] =       \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aMode_VSEL[0] =       \
                                                (UINT8)CONFIG_PORT_UPD_VSEL0_PIO_MODE;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[1] =       \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aMode_VSEL[1] =       \
                                                (UINT8)CONFIG_PORT_UPD_VSEL1_PIO_MODE;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VSEL[2] =       \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aMode_VSEL[2] =       \
                                                (UINT8)CONFIG_PORT_UPD_VSEL2_PIO_MODE;
 
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[0] =  \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[0] =  \
                                              CONFIG_PORT_VSAFE0V_VSEL_MAPPING;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[1] =  \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[1] =  \
                                              CONFIG_PORT_PDO_1_VSEL_MAPPING;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[2] =  \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[2] =  \
                                              CONFIG_PORT_PDO_2_VSEL_MAPPING;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[3] =  \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[3] =  \
                                              CONFIG_PORT_PDO_3_VSEL_MAPPING;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[4] =  \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[4] =  \
                                              CONFIG_PORT_PDO_4_VSEL_MAPPING;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[5] =  \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[5] =  \
                                              CONFIG_PORT_PDO_5_VSEL_MAPPING;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[6] =  \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[6] =  \
                                              CONFIG_PORT_PDO_6_VSEL_MAPPING;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8VSELTruthTable[7] =  \
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[7] =  \
                                              CONFIG_PORT_PDO_7_VSEL_MAPPING;    
 #endif    
 }
