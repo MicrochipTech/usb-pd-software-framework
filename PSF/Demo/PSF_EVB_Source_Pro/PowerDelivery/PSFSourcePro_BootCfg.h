@@ -94,7 +94,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CONFIG_UNDER_VOLTAGE_FACTOR			  85
 #define CONFIG_MAX_VBUS_POWER_FAULT_COUNT	  3
 #define CONFIG_MAX_VCONN_FAULT_COUNT		  3
-#define CONFIG_POWER_GOOD_TIMER_MS			  MILLISECONDS_TO_TICKS(10000)
+#define CONFIG_POWER_GOOD_TIMER_MS			  10000
 
 // *****************************************************************************
 // *****************************************************************************
