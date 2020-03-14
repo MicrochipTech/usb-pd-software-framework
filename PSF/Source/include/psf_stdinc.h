@@ -34,7 +34,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <upd_interrupts.h>
 #include <upd_hw.h>
 #include <protocol_layer.h>
-#include <pb_mngr.h>
+#include <pb_mng.h>
 #include <int_globals.h>
 #include <policy_engine_fwup.h>
 #include <ProjectVersion.h>
