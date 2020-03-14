@@ -948,7 +948,7 @@ Function:
 Summary:
     Enables or disables VBUS Discharge functionality for a given port.
 Description:
-    VBUS Discharge mechanism is required to enable quick of discharge VBUS when VBUS transition from 
+    VBUS Discharge mechanism is required to enable quick discharge of VBUS when VBUS transitions from 
     higher to lower voltage. PSF provides default DC-DC Buck booster control configuration via 
     CONFIG_DCDC_CTRL define. If user chose to implement their own DC-DC buck booster control, this 
     hook must be implemented to enable or disable the VBUS Discharge functionality for a given Port. 
@@ -1030,6 +1030,49 @@ Remarks:
     User definition of this Hook function is mandatory if PSF is configured for Sink functionality.
 *******************************************************************************************/
 #define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
+
+/*******************************************************************************************
+Function:
+    MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn)
+Summary:
+    Enables or disables DC_DC_EN functionality for a given port.
+Description:
+    DC_DC_EN functionality is required to enable DC-DC Controller. It asserts high once 
+    PSF is initialized, ready to operate and CC pins are functional. It will be 
+    toggled low during error condition say, on occurrence of fault to reset the DC-DC.  
+    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define. 
+    If user chose to implement their own DC-DC buck booster control, this hook must be 
+    implemented to enable or disable the DC_DC_EN functionality for a given Port. 
+    Implementation of this function depends on the type of DC-DC buck boost controller and load 
+    switch used. Define relevant function that has UINT8,UINT8 arguments without return type.
+Conditions:
+    None.
+Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+    u8EnaDisDCDCEn -  Flag indicating whether to enable/disable DC_DC_EN.
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn) \
+                      hw_portpower_enab_dis_DCDCEn(u8PortNum, u8EnableDisable)
+        void hw_portpower_enab_dis_DCDCEn(UINT8 u8PortNum,UINT8 u8EnableDisable);
+        void hw_portpower_enab_dis_DCDCEn(UINT8 u8PortNum,UINT8 u8EnableDisable)
+        {
+            if (TRUE == u8EnableDisable)
+            {
+                //Enable the DC_DC_EN for "u8PortNum" Port
+            }
+            else
+            {
+                //Disable the DC_DC_EN for "u8PortNum" Port
+            }
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.                                    
+*******************************************************************************************/
+#define MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn)
 
 /******************************************************************************************************
   Section:
@@ -1162,7 +1205,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
     UINT16 u16MaximumOperatingCurInmA; /*Maximum allowable current or system's 
                                         maximum operating current in terms of mA*/
     #if (TRUE == INCLUDE_PD_SINK)
-    UINT16 u1a6MinPDOPreferredCurInmA[7]; /* Preferred minimum current range for 
+    UINT16 u16aMinPDOPreferredCurInmA[7]; /* Preferred minimum current range for 
                                             the PDO by which the Sink may select without setting 
                                             Capability Mismatch Bit with highest current preferred */
     UINT16 u16MinimumOperatingCurInmA; /* Minimum operating current by the System*/
@@ -1221,7 +1264,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
 								 <p>    0 - Since the last read of this register, no VCONN faults have been detected   </p> 
 								 <p>    1 - Since the last read of this register, 1 or more VCONN faults have been detected </p>
                                 <p>Bits 15:12: Reserved </p> */
-    UINT16 u16PortIntMask;/*<p>Bit 0: ATTACH_EVENT_C_MASK</p>
+    UINT16 u16PortIntrMask;/*<p>Bit 0: ATTACH_EVENT_C_MASK</p>
 						 <p>Bit 1: DETACH_EVENT_C_MASK</p>
 						 <p>Bit 2: AS_SOURCE_NEW_REQUEST_C_MASK</p>
 						 <p>Bit 3: AS_SINK_NEW_PDOS_RECVD_C_MASK</p>
@@ -1258,8 +1301,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
     UINT8 u8UVThresholdPercentage;	/*Under Voltage threshold for VBUS_DET */
     UINT8 u8VCONNOCSDebounceInms;/*Debounce timer value in terms of milliseconds for VCONN overcurrent fault
 	conditions before reacting and entering fault recovery routine. */
-    UINT8 u8MaxFaultCntVBUS;/*Maximum number of back-to-back faults allowed before permanent shut down of the port */
-    UINT8 u8MaxFaultCntVCONN;/*Maximum number of back-to-back faults allowed before permanent shut down of the port*/
+    UINT8 u8VBUSMaxFaultCnt;/*Maximum number of back-to-back faults allowed before permanent shut down of the port */
+    UINT8 u8VCONNMaxFaultCnt;/*Maximum number of back-to-back faults allowed before permanent shut down of the port*/
     UINT8 u8Pio_VBUS_EN;/*Defines the UPD350 PIO number used for EN_VBUS pin*/
     UINT8 u8Mode_VBUS_EN;/*Defines the PIO mode for EN_VBUS pin*/
     UINT8 u8Pio_FAULT_IN;/*Defines the UPD350 PIO number used for FAULT_IN pin*/
@@ -1271,7 +1314,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 
     UINT8 u8aPio_VSEL[3];/*Defines the UPD350 PIO number used for VSEL0, VSEL1 and VSEL2 pins*/
     UINT8 u8aMode_VSEL[3];/*Defines the PIO mode for VSEL0,VSEL1 and VSEL2 pins*/
-	UINT8 u8aVSELTruthTable[8];/*This truth table corresponds to the assertion and de-assertion of the  VSEL[2:0]pins to drive the Voltage in GPIO PMPD module.  */
+	UINT8 u8aVSELTruthTable[8];/*This truth table corresponds to the assertion and 
+                               de-assertion of the  VSEL[2:0]pins to drive the Voltage in GPIO PMPD module.  */
 	#endif
     #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; /*Defines the UPD350 PIO number used for EN_SINK pin*/
@@ -1387,7 +1431,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PPSPortCfgStatus
     UINT8 u8PPSEnable; /* <p> PPS Enable/Disable </p>
 						  <p> 0x00 = Disable </p>
 						  <p> 0x01 Enable </p> */
-    UINT32 u32PPSApdo[3];  /* Defines the PPS APDOs */
+    UINT32 u32aPPSApdo[3];  /* Defines the PPS APDOs */
 } MCHP_PSF_STRUCT_PACKED_END PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
 
 #endif 
@@ -1417,7 +1461,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _GlobalCfgStatusData
     UINT8 u8MajorVersion;  /* Structure Major version */
     UINT8 u8HWVersion;	   /* HW Version */ 
     UINT8 u8SiVersion;     /* Silicon Version */ 
-    UINT8 u8ManfString[8]; /* Manufacturer String */
+    UINT8 u8aManfString[8]; /* Manufacturer String */
     UINT8 u8PSFMajorVersion; /* PSF Stack Major Version */ 
     UINT8 u8PSFMinorVersion; /* PSF Stack Minor Version */ 
     UINT16 u16Reserved;     /* Reserved variable to avoid unaligned addr */

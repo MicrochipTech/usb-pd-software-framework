@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFSourcePro_Config.h
+    PSF_Config.h
 
   Summary:
     PSF configuration header file
@@ -183,7 +183,7 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL         1
+#define INCLUDE_POWER_MANAGEMENT_CTRL         0
 
 /**************************************************************************
 Summary:
@@ -395,7 +395,7 @@ Example:
 	#define CONFIG_DCDC_CTRL    (If undefined, Default DC DC control provided by stack is not used)
 	</code>                                  
   **************************************************************************/
-#define CONFIG_DCDC_CTRL        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+#define CONFIG_DCDC_CTRL        I2C_DC_DC_CONTROL_CONFIG
 					
 /**************************************************************************
 Summary:

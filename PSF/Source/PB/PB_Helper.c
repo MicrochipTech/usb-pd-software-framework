@@ -44,15 +44,15 @@ void PB_Init(void)
     if (gasCfgStatusData.u8PBEnableSelect & CFG_PB_ENABLE)
     {
         /* Get the Total System Power based on currently selected Throttling bank */
-        if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
+        if (CFG_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
         {
             u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankA;
         }
-        else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+        else if (CFG_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
         {
             u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankB;
         }
-        else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+        else if (CFG_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
         {
             u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankC; 
         }
@@ -100,17 +100,17 @@ void PB_InitializePortParam(UINT8 u8PortNum)
     
     /* Get the Guaranteed Minimum Power and Maximum Power based on 
        currently selected throttling bank */
-    if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
+    if (CFG_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
     {
         u16MinPwr = gasCfgStatusData.u16MinPowerBankA;
         u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankA; 
     }
-    else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (CFG_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
     {
         u16MinPwr = gasCfgStatusData.u16MinPowerBankB;
         u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankB; 
     }
-    else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (CFG_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
     {
         u16MinPwr = gasCfgStatusData.u16MinPowerBankC;
         u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankC; 
@@ -681,7 +681,7 @@ UINT8 PB_PortInWaitForAsyncTimerState(void)
 void PB_TimerEnd(UINT8 u8PortNum, UINT8 u8PBEvent)
 {
     /* Handle Timer expired event. */
-    PB_HandleDPMEvents (u8PortNum, u8PBEvent); 
+    (void)PB_HandleDPMEvents (u8PortNum, u8PBEvent); 
 }
 
 void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)

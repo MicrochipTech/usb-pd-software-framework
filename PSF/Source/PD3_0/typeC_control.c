@@ -1718,7 +1718,8 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         if (TRUE == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
                                        TYPEC_VCONN_OCS_EN) >> TYPEC_VCONN_OCS_EN_POS)) 
         {
-            /*Enable VCONN OCS detection only if gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNOCSEn is defined as 1*/
+            /*Enable VCONN OCS detection only if Bit 9(VCONN OCS En) of 
+              gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData defined as 1*/
             /*Enable the VCONN OCS monitoring in VBUS_CTL1 register*/
             UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VCONN_OCS_ENABLE);
         }
@@ -2593,7 +2594,7 @@ void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 {
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
     
-    if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVCONN))
+    if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
     {   
         gasDPM[u8PortNum].u8VCONNErrCounter = 0;
         
