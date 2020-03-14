@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PB_Mngr.h
+    pb_mngr.h
 
   Description:
     This header file contains the data structures, constant definitions and 

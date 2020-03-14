@@ -5,7 +5,7 @@
    Microchip Technology Inc.
 
  File Name:
-   PB_Mngr.c
+   pb_mngr.c
 
  Description:
    This file contains the function for Power Balancing State machine. 

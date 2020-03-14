@@ -316,7 +316,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 
 }PD_FW_UPDATE_INFO_TYPE;
 
-/*****Staructural storage type for the Get_FW_ID message information***************/
+/*****Structural storage type for the Get_FW_ID message information***************/
 typedef struct PE_GET_FW_ID_RESPONSE
 {
     UINT8 u8Status;

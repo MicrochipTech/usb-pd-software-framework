@@ -133,7 +133,7 @@
           <itemPath>../../../../Source/include/timer_defs.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="PB" projectFiles="true">
-          <itemPath>../../../../Source/PB/PB_Mngr.h</itemPath>
+          <itemPath>../../../../Source/PB/pb_mngr.h</itemPath>
         </logicalFolder>
       </logicalFolder>
     </logicalFolder>
@@ -205,8 +205,8 @@
       </logicalFolder>
       <logicalFolder name="Source" displayName="Source" projectFiles="true">
         <logicalFolder name="PB" displayName="PB" projectFiles="true">
-          <itemPath>../../../../Source/PB/PB_Mngr.c</itemPath>
-          <itemPath>../../../../Source/PB/PB_Helper.c</itemPath>
+          <itemPath>../../../../Source/PB/pb_helper.c</itemPath>
+          <itemPath>../../../../Source/PB/pb_mngr.c</itemPath>
         </logicalFolder>
         <logicalFolder name="PD3_0" displayName="PD3_0" projectFiles="true">
           <itemPath>../../../../Source/PD3_0/debug.c</itemPath>
