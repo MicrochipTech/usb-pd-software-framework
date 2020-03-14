@@ -24,8 +24,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 
 #include <generic_defs.h>
-#include <PSF_APIHook.h>
 #include <portpower_control.h>
+#include <PSF_APIHook.h>
 #include <debug.h>
 #include <pd_timer.h>
 #include <typeC_control.h>
