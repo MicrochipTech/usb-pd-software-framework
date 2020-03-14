@@ -1137,65 +1137,65 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
                                      <p>    0 - Disable
                                      <p>    1 - Enable
 									 <p>Bits 32:10 - Reserved</p>	*/							
-    UINT32 u32aSourcePDO[7];		/*Upto 7 fixed Source PDOs where Voltage is specified in mV and Current in mA.*/
-    UINT32 u32aSinkPDO[7];          /*Upto 7 fixed Sink PDOs where Voltage is specified in mV and Current in mA.*/
-    UINT32 u32aNewPDO[7];		    /*Upto 7 fixed New PDOs where Voltage is specified in mV and Current in mA.*/
-    UINT32 u32aAdvertisedPDO[7];	/*Upto 7 PDOs that are advertised to Port Partner.  */
+    UINT32 u32aSourcePDO[7];		/*Upto 7 fixed Source PDOs where Voltage is specified in mV and Current in mA*/
+    UINT32 u32aSinkPDO[7];          /*Upto 7 fixed Sink PDOs where Voltage is specified in mV and Current in mA*/
+    UINT32 u32aNewPDO[7];		    /*Upto 7 fixed New PDOs where Voltage is specified in mV and Current in mA*/
+    UINT32 u32aAdvertisedPDO[7];	/*Upto 7 PDOs that are advertised to Port Partner  */
     UINT32 u32aPartnerPDO[7];       /*Partner PDOs Configuration: Upto 7 fixed Source PDOs where Voltage is specified in mV and Current is specified in mA */
-    UINT32 u32RDO;                  /*Complete raw RDO Data as Sent/Requested by connected port partner, Will be blank of no RDO has  been received */
-    UINT32 u32PortConnectStatus;/*<p> Define the connection status of the port </p>
-							     <p>Bit 0: Attached </p> 
-								 <p> 	 0 - Detached </p>
-								 <p> 	 1 - Attached </p> 
-								 <p>Bit 1: Orientation </p> 
-								 <p>    0 - Unflipped </p> 
-								 <p>    1 - Flipped </p> 
-								 <p>Bit 2: Data Role </p>
-								 <p>    0 - UFP </p>
-								 <p>    1 - DFP </p>
-							     <p>Bit 3: Power Role</p>
-								 <p>    0 - Sink </p>
-								 <p>    1 - Source</p> 
-                                 <p>Bit 4: VCONN Status </p>  
-								 <p>    0 - Disabled   </p> 
-								 <p>    1 - Enabled </p>
-								 <p>Bit 5: Cable Reduced Source Capabilities </p>  
-								 <p>    0 - The attached USB-C cable supports the locally-defined Source PDOs </p>  
-								 <p>    1 - The attached USB-C cable does not support the locally defined Source PDOs (ex: 3A cable used w/ >3A Source Caps) </p>
-								 <p>Bit 6: PD Bal Reduced Source Capabilities </p>  
-								 <p>    0 - The advertised PDOs are equivalent to the default configured values</p>
-								 <p>    1 - The advertised PDOs have been reduced from default configured values due to PB algorithm </p>
-								 <p>Bit 7: Source Capability Mismatch  </p>
-                                 <p>    0 - De-asserted by  Source port when there is capability mismatch with the sink partner </p>
-                                 <p>    1 - Asserted by the Source port when the sink port partner indicates capability mismatch in the RDO</p>
-                                 <p>Bit 8: As Source PD Contract Good </p>  
-								 <p>    0 - As Source: USB-C Connection Only (No Request Made Yet) </p> 
-								 <p>    1 - As Source; USB PD connection established, Power request has been made, 	accepted and PS_RDY message sent </p> 
-								 <p>Bit 9: As Source RDO Accepted </p>  
-								 <p>    0 - As Source: No RDO Accept message has been sent to last Request made by attached Sink or no Request has yet been made during connection  </p> 
-								 <p>    1 - As Source: RDO Accept message has been sent to last Request made by attached Sink </p> 
-								 <p>Bit 10: As Source RDO Rejected </p>  
-								 <p>    0 - As source; No RDO reject message has been sent to last request made by attached Sink or no Request has yet been made during connection  </p> 
-								 <p>    1 - As Source: RDO Reject message has been sent to last Request made by attached Sink </p> 
-								 <p>Bit 11: As Sink Last Request Accept </p>  
-								 <p>    0 - As Sink: Last RDO Request was not Accepted or no request has yet been made  </p> 
-								 <p>    1 - As Sink: Last RDO Request was Accepted </p> 
-								 <p>Bit 12: As Sink Last Request Reject </p>  
-								 <p>    0 - As Sink: Last RDO Request was not Rejected or no request has yet been made  </p> 
-								 <p>    1 - As Sink: Last RDO Request was Rejected </p>
-								 <p>Bit 13: As Sink Last Request PS_RDY </p>  
-								 <p>    0 - As Sink: PS_RDY not yet received for last RDO request   </p> 
-								 <p>    1 - As Sink: PS_RDY received for last RDO request </p>
-                                 <p>Bit 14: Sink Capability Mismatch </p>
-                                 <p>    0 - De-asserted by the Sink Port when there is no capability mismatch </p>
-                                 <p>    1 - Asserted by Sink Port when no Source capability was found</p>
-                                 <p>Bits [16:15]: Rp Value detected by Sink </p> 
-                                 <p>     00  - Disabled </p>
-                                 <p>	  01  - USB Power </p>
-                                 <p>	  10  - 1.5A </p>
-                                 <p>	  11  - 3.0A </p>      
-                                 <p>Bits [31:17] - Reserved*/
-
+    UINT32 u32RDO;                  /*Complete raw RDO Data as Sent/Requested by connected port partner, Will 	be blank of no RDO has  been received */
+	
+	UINT32 u32PortConnectStatus;	 /* <p> Defines the connection status of the port </p>
+				<p>Bit 0: Attached </p> 
+				<p> 	0 - Detached </p>
+				<p> 	1 - Attached </p>  										 
+				<p>Bit 1: Orientation </p> 
+				<p>    0 - Unflipped </p> 
+				<p>    1 - Flipped </p> 
+				<p>Bit 2: Data Role </p>
+				<p>    0 - UFP </p>
+			    <p>    1 - DFP </p> 
+				<p>Bit 3: Power Role</p>
+				<p>    0 - Sink </p>
+				<p>    1 - Source</p> 
+				<p>Bit 4: VCONN Status </p>  
+				<p>    0 - Disabled   </p> 
+				<p>    1 - Enabled </p>
+				<p>Bit 5: Cable Reduced Source Capabilities </p>  
+				<p>    0 - Attached USB-C cable supports the locally-defined Source PDOs </p>  
+				<p>    1 - Attached USB-C cable does not support the locally defined Source PDOs </p>
+				<p>Bit 6: PD Bal Reduced Source Capabilities </p>  
+				<p>    0 - The advertised PDOs are equivalent to the default configured values</p>
+				<p>    1 - The advertised PDOs have been reduced from default configured values </p>
+				<p>Bit 7: Source Capability Mismatch  </p>
+				<p>    0 - De-asserted by  Source port when there is capability mismatch with sink partner </p>
+				<p>    1 - Asserted by Source port when sink port indicates capability mismatch in RDO</p>
+				<p>Bit 8: As Source PD Contract Good </p>  
+				<p>    0 - As Source: USB-C Connection Only (No Request Made Yet) </p> 
+				<p>    1 - As Source; USB PD connection established, Power request has been made, accepted and PS_RDY message sent </p> 
+				<p>Bit 9: As Source RDO Accepted </p>  
+				<p>    0 - As Source: No RDO Accept message has been sent to last Request made by attached Sink or no Request has yet been made during connection  </p> 
+				<p>    1 - As Source: RDO Accept message has been sent to last Request made by attached Sink </p> 
+				<p>Bit 10: As Source RDO Rejected </p>  
+				<p>    0 - As source; No RDO reject message has been sent to last request made by attached Sink or no Request has yet been made during connection  </p> 
+				<p>    1 - As Source: RDO Reject message has been sent to last Request made by attached Sink </p>										 
+				<p>Bit 11: As Sink Last Request Accept </p>  
+				<p>    0 - As Sink: Last RDO Request was not Accepted or no request has yet been made  </p> 
+				<p>    1 - As Sink: Last RDO Request was Accepted </p> 
+				<p>Bit 12: As Sink Last Request Reject </p>  
+				<p>    0 - As Sink: Last RDO Request was not Rejected or no request has yet been made  </p> 
+				<p>    1 - As Sink: Last RDO Request was Rejected </p>
+				<p>Bit 13: As Sink Last Request PS_RDY </p>  
+				<p>    0 - As Sink: PS_RDY not yet received for last RDO request   </p> 
+				<p>    1 - As Sink: PS_RDY received for last RDO request </p>
+				<p>Bit 14: Sink Capability Mismatch </p>
+				<p>    0 - De-asserted by the Sink Port when there is no capability mismatch </p>
+				<p>    1 - Asserted by Sink Port when no Source capability was found </p> 				
+				<p>Bits 16:15 - Rp Value detected by Sink </p> 	
+				<p>   00  - Disabled </p>
+				<p>	  01  - USB Power </p> 			
+				<p>	  10  - 1.5A </p> 
+				<p>	  11  - 3.0A </p>    
+				<p>Bits 31:17 - Reserved*/
     
     UINT16 u16AllocatedPowerIn250mW;   /*Allocated Power for the Port PD contract in 0.25W steps*/
     UINT16 u16NegoVoltageIn50mV;      /*<p> Negotiated Voltage from the Port Bits 19:10 from the RDO
@@ -1324,7 +1324,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
     UINT8 u8aPio_VSEL[3];/*Defines the UPD350 PIO number used for VSEL0, VSEL1 and VSEL2 pins*/
     UINT8 u8aMode_VSEL[3];/*Defines the PIO mode for VSEL0,VSEL1 and VSEL2 pins*/
 	UINT8 u8aVSELTruthTable[8];/*This truth table corresponds to the assertion and 
-                               de-assertion of the  VSEL[2:0]pins to drive the Voltage in GPIO PMPD module.  */
+                               de-assertion of the  VSEL[2:0]pins to drive the Voltage in GPIO PMPD module  */
 	#endif
     #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; /*Defines the UPD350 PIO number used for EN_SINK pin*/
@@ -1340,7 +1340,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PortCfgStatus
     UINT8 u8DAC_I_MaxOutVoltIn10mV; /* Defines the maximum voltage on DAC_I with a maximum of 2.5V in terms of 10mV*/
     UINT8 u8DAC_I_MinOutVoltIn10mV; /* Defines the minimum voltage on DAC_I with a minimum of 0V in terms of 10mV*/
     UINT8 u8DAC_I_CurrentInd_MaxInA;  /*Defines which current in terms of A corresponding to maximum output voltage 
-                                        It can take either 3A or 5A value.
+                                        It can take either 3A or 5A value
                                         <p> If it is 5A and maximum output voltage is 2.5V, then </p>
                                         <p> 0.5A > DAC_I = 0.25V </p>
                                         <p> 1.5A > DAC_I = 0.75V </p>
@@ -1572,7 +1572,7 @@ extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;
   Description:
     This function is called to update the configuration parameters of
     Type-C, PD, Power Balancing, Power throttling and PPS. This API must 
-	have a input parameter of GLOBAL_CFG_STATUS_DATA prototype (Structure
+	have an input parameter of GLOBAL_CFG_STATUS_DATA prototype (Structure
 	Pointer to GLOBAL_CFG_STATUS_DATA).
   Conditions:
     None.
@@ -1591,9 +1591,9 @@ extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;
     }
     </code>
   Remarks:
-    User definition of this Hook function is optional                                         
-  **********`***********************************************************************************/
-#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)  	PSF_LoadConfig()
+    User definition of this Hook function is mandatory                                          
+  *********************************************************************************************/
+#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)  	
 
 // *****************************************************************************
 // *****************************************************************************
