@@ -547,4 +547,7 @@ Example:
 **************************************************************************************************/                                                                                            
 #define CONFIG_VALIDATION_PHASE_WAITTIME    0x03u 
 
+#include "PSFSourcePro_App.h"
+#include "PSFSourcePro_BootCfg.h"
+
 #endif
