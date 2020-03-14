@@ -369,7 +369,7 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = RESET_TO_ZERO; 
         
-    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < CONFIG_MAX_PDO_COUNT; u8PDOIndex++)
+    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < CFG_MAX_PDO_COUNT; u8PDOIndex++)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8PDOIndex] = RESET_TO_ZERO; 
     }    
@@ -393,7 +393,7 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
                             gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;
 
-        /* Update Advertised PDO Registers with Fixed PDOs if NewPDOSlct is not enabled. */
+        /* Update Advertised PDO Registers with Default Source PDOs if NewPDOSlct is not enabled. */
         (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
             gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));           
     }
@@ -724,12 +724,12 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         if((gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS) ||
 				 (gasPolicy_Engine[u8PortNum].ePEState == ePE_SNK_STARTUP))
         {
-            if(gasDPM[u8PortNum].u8VCONNPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVCONN))
+            if(gasDPM[u8PortNum].u8VCONNPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
             {            
                 /*Setting the VCONN Good to Supply Flag as False*/
                 gasDPM[u8PortNum].u8VCONNGoodtoSupply = FALSE;
             }
-            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVBUS))
+            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt))
             {
 				/* Disable the receiver*/
                 PRL_EnableRx (u8PortNum, FALSE);
@@ -824,7 +824,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             /*Increment the fault count*/
             gasDPM[u8PortNum].u8VBUSPowerFaultCount++;
             
-            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= CONFIG_MAX_VBUS_POWER_FAULT_COUNT)
+            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= CFG_MAX_VBUS_POWER_FAULT_COUNT)
             {
 				/* Disable the receiver*/
                 //PRL_EnableRx (u8PortNum, FALSE);
@@ -937,7 +937,7 @@ void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
     
-    if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8MaxFaultCntVCONN))
+    if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
     {      
         /*Disable the receiver*/
         PRL_EnableRx (u8PortNum, FALSE);

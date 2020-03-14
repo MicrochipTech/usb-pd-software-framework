@@ -57,7 +57,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 void SAMD20_SetMCUIdle()
 {
-#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     
     /*Disable Timer to avoid interrupt from Timer*/
@@ -76,26 +75,25 @@ void SAMD20_SetMCUIdle()
     /* Resume from Idle*/
     /* Enable the disabled interrupt*/
     TC0_TimerStart();
-#endif
 }
 
 void SAMD20_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent)
 {
-    if (eMCHP_PSF_TYPEC_CC1_ATTACH == u8PDEvent)
+    if ((UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH == u8PDEvent)
     {
         UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
         UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
         UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
         UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_CLEAR);      
     }
-    else if (eMCHP_PSF_TYPEC_CC2_ATTACH == u8PDEvent)
+    else if ((UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH == u8PDEvent)
     {
         UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
         UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
         UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
         UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SET);           
     }
-    else if (eMCHP_PSF_TYPEC_DETACH_EVENT == u8PDEvent)
+    else if ((UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT == u8PDEvent)
     {
         UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2, UPD_DISABLE_GPIO);
     }
@@ -136,7 +134,9 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
 		
 		case eMCHP_PSF_UPDS_IN_IDLE:
 		{
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
 			MCHP_PSF_HOOK_SET_MCU_IDLE;
+#endif
 			break;
 		}
         

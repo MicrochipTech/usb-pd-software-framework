@@ -176,5 +176,8 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
         
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(PORT_IO_EN_DC_DC_STATUS);
     }
+    
+    /* Hook to modify or overwrite the Port Control DC_DC_EN enable/disable */
+    MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn); 
 }
 /************************************************************************************/

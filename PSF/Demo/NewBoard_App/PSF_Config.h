@@ -212,7 +212,7 @@ Description:
     to reduce code size if none of the PD enabled Source ports in the system 
     require Power Balancing functionality.
 Remarks: 
-    Recommended default value is 1. For INCLUDE_PD_POWER_BALANCING to be 1, 
+    Recommended default value is 1. For INCLUDE_POWER_BALANCING to be 1, 
     INCLUDE_PD_SOURCE shall be set to 1. 
 Example:
     <code>
@@ -221,6 +221,44 @@ Example:
     </code>
 **************************************************************************************************/
 #define INCLUDE_POWER_BALANCING  		1
+
+/**************************************************************************************************
+Summary:
+    Power Throttling support code inclusion.
+Description:
+    Setting the INCLUDE_POWER_THROTTLING as 1 enables PSF to include the 
+    Power Throttling(PT) feature at compile time. User can set this define to 0
+    to reduce code size if none of the Source ports in the system 
+    require PT functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_POWER_THROTTLING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_POWER_THROTTLING	1(Include PT functionality in PSF)
+    #define INCLUDE_POWER_THROTTLING	0(Exclude PT functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_POWER_THROTTLING        1 
+
+/**************************************************************************************************
+Summary:
+    PPS support code inclusion.
+Description:
+    Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Programmable 
+    Power Supply(PPS) feature at compile time. User can set this define to 0
+    to reduce code size if none of the Source ports in the system 
+    require PPS functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_PD_SOURCE_PPS to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_SOURCE_PPS	1(Include PPS functionality in PSF)
+    #define INCLUDE_PD_SOURCE_PPS	0(Exclude PPS functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_SOURCE_PPS           1
 
 // *****************************************************************************
 // *****************************************************************************
@@ -317,135 +355,6 @@ Note:
   **************************************************************************/
  #define CONFIG_DEFINE_UPD350_HW_INTF_SEL         
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: VSAFE5V range for Source and Sink
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-    Vsafe5V Maximum acceptable limit for Source.
-Description:
-    CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for
-    VSafe5V expressed in terms of millivolts for source. The voltage will be considered as valid 
-    Vsafe5V only if it is equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less 
-    than CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be 
-    considered as overvoltage for Vsafe5V for Source.
-
-	Valid Vsafe5V condition:
-        \CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE <= Valid Vsafe5V < CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE
-	
-	Vsafe5V overvoltage condition:
-        \VBUS >= CONFIG_OVER_VOLTAGE_FACTOR * 5000mV
-Remarks:
-    It is mandatory to define CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. By default, it is defined as 
-	5500 mV. It must be defined in such a way that following condition is met.
-	\CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE < CONFIG_OVER_VOLTAGE_FACTOR * TYPEC_VBUS_5V.
-Example:
-    <code>
-	#define CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE			5500
-    </code>
-**************************************************************************************************/
-#define CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
-
-/**************************************************************************************************
-Summary:
-    Vsafe5V Minimum acceptable limit for Source.
-Description:
-    CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed in 
-    terms of millivolts for source. The voltage will be considered as valid Vsafe5V only if it is
-    equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less than 
-    CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE.
-
-	Valid Vsafe5V condition:
-        \CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE <= Valid Vsafe5V < CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE
-Remarks:
-    It is mandatory to define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE. The default value for this 
-	macro is 4750mV. It must be defined in such a way that following condition is met:
-    \CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE > CONFIG_VSINKDISCONNECT_VOLTAGE.
-Example:
-    <code>
-    #define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE			4750
-    </code>
-**************************************************************************************************/
-#define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE 		4750
-
-/**************************************************************************************************
-Summary:
-    Vsafe5V Maximum acceptable limit for Sink.
-Description:
-    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for VSafe5V expressed 
-    in terms of millivolts for sink. The voltage will be considered as valid Vsafe5V only if it 
-    is equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
-    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be
-    considered as overvoltage for Vsafe5V for sink.
-
-    Valid Vsafe5V condition:
-        \CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE > Valid Vsafe5V <= CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE
-    \Overvoltage condition:
-        \Vsafe5V >= CONFIG_OVER_VOLTAGE_FACTOR * 5000
-Remarks:
-    It is mandatory to define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. The default value for this 
-	macro is 5500mV. It must be defined in such a way that following condition is met.
-    \CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE < CONFIG_OVER_VOLTAGE_FACTOR * TYPEC_VBUS_5V.
-    
-Example:
-    <code>
-    #define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE			5500
-    </code>
-**************************************************************************************************/
-#define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
-
-/**************************************************************************************************
-Summary:
-    Vsafe5V Minimum acceptable limit for Sink.
-Description:
-    CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed 
-    in terms of millivolts for Sink. The voltage will be considered as valid Vsafe5V only if it is
-    equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
-    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. 
-    
-	Valid Vsafe5V condition:
-    \CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE > Valid Vsafe5V <= CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE
-Remarks:
-    It is mandatory to define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE. By default, it is defined as 4400mV.
-    It must be defined in such a way that following condition is met.
-    \CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE > CONFIG_VSINKDISCONNECT_VOLTAGE.
-Example:
-    <code>
-    #define CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE			4400
-    </code>
-**************************************************************************************************/
-#define CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE 		4400
-
-/**************************************************************************************************
-Summary:
-    vSinkDisconnect.
-Description:
-    CONFIG_VSINKDISCONNECT_VOLTAGE is the vSinkDisconnect mentioned in Type c specification v1.3.
-    Specification defines it as threshold used for transition from Attached.SNK to Unattached.SNK.
-    In PSF, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as undervoltage for Vsafe5V in case of 
-    source. For Sink, if the voltage is below CONFIG_VSINKDISCONNECT_VOLTAGE, it is considered 
-    as VBUS disconnect.
-
-    For Sink: 
-    If Voltage <= CONFIG_VSINKDISCONNECT_VOLTAGE, then Sink disconnected
-    \For Source:
-    If Voltage <= CONFIG_VSINKDISCONNECT_VOLTAGE, then Source undervoltage
-Remarks:
-    By default, it is defined as 3.67V 
-Example:
-    <code>
-    #define CONFIG_VSINKDISCONNECT_VOLTAGE			3670
-    </code>
-**************************************************************************************************/
-#define CONFIG_VSINKDISCONNECT_VOLTAGE 		3670
-
-
-// *****************************************************************************
-// Section: MCU Idle Timeout
-// *****************************************************************************
-// *****************************************************************************
 /**************************************************************************************************
 Summary:
     UPD350 Idle Timeout value in milliseconds.
@@ -637,462 +546,5 @@ Example:
     </code>                                                            
 **************************************************************************************************/                                                                                            
 #define CONFIG_VALIDATION_PHASE_WAITTIME    0x03u 
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Type C Timeout configuration
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-	tCCDebounce.
-Description:
-    CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS defines the tCCDebounce timeout specified in the USB 
-    Type C Specification. Default value of CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS is set as 
-    150 milliseconds.
-Remarks:
-    CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS can be configured depending on the microcontroller
-    platform platform used, for the device to be USB Type C Compliant. It shall always be
-    expressed in define MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS		MILLISECONDS_TO_TICKS(150)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS			MILLISECONDS_TO_TICKS(150)
-/**************************************************************************************************
-Summary:
-	tPDDebounce.
-Description:
-    CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS defines the tPDDebounce timeout specified in the 
-    USB Type C Specification. Default value of this macro is set as 10 milliseconds.
-Remarks:
-    CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS can can be configured depending on the microcontroller
-    platform platform used, for the device to be USB Type C Compliant. It shall always be
-    expressed in define MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS		MILLISECONDS_TO_TICKS(10)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
-
-/**********************************************************************`****************************
-Summary:
-	tErrorRecovery.
-Description:
-    CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS defines the tErrorRecovery timeout specified in the 
-    USB Type C Specification.  Default value of CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS is set as 
-    500 milliseconds.
-Remarks:
-    CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS can be configured depending on the microcontroller
-    platform platform used, for the device to be USB Type C Compliant. It shall always be
-    expressed in define MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS		MILLISECONDS_TO_TICKS(500)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS         MILLISECONDS_TO_TICKS(500)
-
-/**************************************************************************************************
-Summary:
-	tVCONNDischarge.
-Description:
-    CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS defines the tVCONNDischarge timeout specified in the 
-    USB Type C Specification. Default value of CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS is set 
-    as 35 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS can be configured depending on the microcontroller
-    platform platform used, for the device to be USB Type C Compliant. It shall always be
-    expressed in define MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS		MILLISECONDS_TO_TICKS(35)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS        MILLISECONDS_TO_TICKS(35)  
-
-/**************************************************************************************************
-Summary:
-	tVBUSON.
-Description:
-    CONFIG_TYPEC_VBUS_ON_TIMER_MS defines the tVBUSON specified in the USB-TypeC Specification. 
-    Default value of CONFIG_TYPEC_VBUS_ON_TIMER_MS is set as 275 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VBUS_ON_TIMER_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB Type C Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VBUS_ON_TIMER_MS			        MILLISECONDS_TO_TICKS(275)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VBUS_ON_TIMER_MS			        MILLISECONDS_TO_TICKS(275)
-
-/**************************************************************************************************
-Summary:
-	tVBUSOFF.
-Description:
-    CONFIG_TYPEC_VBUS_OFF_TIMER_MS defines the tVBUSOFF specified in the USB-TypeC Specification. 
-    Default value of CONFIG_TYPEC_VBUS_OFF_TIMER_MS is set as 650 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VBUS_OFF_TIMER_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB Type C Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VBUS_OFF_TIMER_MS                MILLISECONDS_TO_TICKS(650)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VBUS_OFF_TIMER_MS                MILLISECONDS_TO_TICKS(650)
-
-/**************************************************************************************************
-Summary:
-	tVCONNON.
-Description:
-    CONFIG_TYPEC_VCONNON_TIMEOUT_MS defines the tVCONNON specified in the USB-Type C Specification. 
-    Default value of CONFIG_TYPEC_VCONNON_TIMEOUT_MS is set as 10 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VCONNON_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB Type-C Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
-
-/**************************************************************************************************
-Summary:
-	tVCONNOFF.
-Description:
-    CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS defines the tVCONNOFF specified in the USB-Type C Specification. 
-    Default value of CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Policy Engine Timeout configuration
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-	tTypeCSendSourceCap.
-Description:
-    CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS defines the SourceCapabilityTimer specified in the 
-    USB-PD Specification. Default value of CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS is set as 
-    150 milliseconds.
-Remarks:
-    CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS		MILLISECONDS_TO_TICKS(150)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS          MILLISECONDS_TO_TICKS(150)
-
-/**************************************************************************************************
-Summary:
-	tSrcReady.
-Description:
-    CONFIG_PE_SRC_READY_TIMEOUT_MS defines the tSrcReady specified in the PD 3.0 Specification. 
-    Default value of CONFIG_PE_SRC_READY_TIMEOUT_MS is set as 285 milliseconds.
-Remarks:
-    CONFIG_PE_SRC_READY_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_SRC_READY_TIMEOUT_MS                MILLISECONDS_TO_TICKS(285)
-    </code>
-**************************************************************************************************/   
-#define CONFIG_PE_SRC_READY_TIMEOUT_MS                     MILLISECONDS_TO_TICKS(285)
-
-/**************************************************************************************************
-Summary:
-	tVCONNSourceOn.
-Description:
-    CONFIG_PE_VCONNON_TIMEOUT_MS defines the tVCONNSourceOn specified in the USB PD Specification. 
-    Default value of CONFIG_PE_VCONNON_TIMEOUT_MS is set as 50 milliseconds.
-Remarks:
-    CONFIG_PE_VCONNON_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(50)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(50)
-
-/**************************************************************************************************
-Summary:
-	Self tVCONNSourceOn.
-Description:
-    CONFIG_PE_VCONNON_SELF_TIMEOUT_MS defines the Self timer used to monitor VCONN ON
-    and send hard reset in case of VCONN ON Failure. The value of Self timer is 
-    set to a value greater than tVCONNSourceOn. Default value of CONFIG_PE_VCONNON_SELF_TIMEOUT_MS 
-    is set as 75 milliseconds.
-Remarks:
-    CONFIG_PE_VCONNON_SELF_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_VCONNON_SELF_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(75)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_VCONNON_SELF_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(75)
-
-/**************************************************************************************************
-Summary:
-	tVCONNOFF.
-Description:
-    CONFIG_PE_VCONNOFF_TIMEOUT_MS defines the tVCONNSourceOff specified in the USB PD Specification. 
-    Default value of CONFIG_PE_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.
-Remarks:
-    CONFIG_PE_VCONNOFF_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
-
-/**************************************************************************************************
-Summary:
-	tNoResponse.
-Description:
-    CONFIG_PE_NORESPONSE_TIMEOUT_MS defines the NoResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_NORESPONSE_TIMEOUT_MS is set as 5.5 seconds.
-Remarks:
-    CONFIG_PE_NORESPONSE_TIMEOUT_MS an be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_NORESPONSE_TIMEOUT_MS		MILLISECONDS_TO_TICKS(5500)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_NORESPONSE_TIMEOUT_MS               MILLISECONDS_TO_TICKS(5500)
-
-/**************************************************************************************************
-Summary:
-	tSenderResponse.
-Description:
-    CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS defines the SenderResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS is set as 24 milliseconds.
-Remarks:
-    CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(24)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(24)
-
-/**************************************************************************************************
-Summary:
-	tTypeCSinkWaitCap.
-Description:
-    CONFIG_PE_SINKWAITCAP_TIMEOUT_MS defines the SinkWaitCapTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SINKWAITCAP_TIMEOUT_MS is set as 465 milliseconds.
-Remarks:
-    CONFIG_PE_SINKWAITCAP_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_SINKWAITCAP_TIMEOUT_MS               MILLISECONDS_TO_TICKS(465)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SINKWAITCAP_TIMEOUT_MS               MILLISECONDS_TO_TICKS(465)
-
-/**************************************************************************************************
-Summary:
-	tPSTransition.
-Description:
-    CONFIG_PE_PSTRANSITION_TIMEOUT_MS defines the PSTransitionTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_PSTRANSITION_TIMEOUT_MS is set as 500 milliseconds.
-Remarks:
-    CONFIG_PE_PSTRANSITION_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_PSTRANSITION_TIMEOUT_MS              MILLISECONDS_TO_TICKS(500)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_PSTRANSITION_TIMEOUT_MS              MILLISECONDS_TO_TICKS(500)
-
-/**************************************************************************************************
-Summary:
-	tSinkRequest.
-Description:
-    CONFIG_PE_SINKREQUEST_TIMEOUT_MS defines the SinkRequestTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SINKREQUEST_TIMEOUT_MS is set as 100 milliseconds.
-Remarks:
-    CONFIG_PE_SINKREQUEST_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_SINKREQUEST_TIMEOUT_MS               MILLISECONDS_TO_TICKS(100)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SINKREQUEST_TIMEOUT_MS               MILLISECONDS_TO_TICKS(100)
-
-/**************************************************************************************************
-Summary:
-	tVDMSenderResponse.
-Description:
-    CONFIG_PE_VDMRESPONSE_TIMEOUT_MS defines the VDMResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_VDMRESPONSE_TIMEOUT_MS is set as 28 milliseconds.
-Remarks:
-    CONFIG_PE_VDMRESPONSE_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_VDMRESPONSE_TIMEOUT_MS              MILLISECONDS_TO_TICKS(28)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_VDMRESPONSE_TIMEOUT_MS              MILLISECONDS_TO_TICKS(28)
-
-/**************************************************************************************************
-Summary:
-	tPSHardReset.
-Description:
-    CONFIG_PE_PSHARDRESET_TIMEOUT_MS defines the PSHardResetTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_PSHARDRESET_TIMEOUT_MS is set as 28 milliseconds.
-Remarks:
-    CONFIG_PE_PSHARDRESET_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_PSHARDRESET_TIMEOUT_MS             MILLISECONDS_TO_TICKS(28)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_PSHARDRESET_TIMEOUT_MS             MILLISECONDS_TO_TICKS(28)
-
-/**************************************************************************************************
-Summary:
-	tSrcRecover.
-Description:
-    CONFIG_PE_SRCRECOVER_TIMEOUT_MS defines the tSrcRecover specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SRCRECOVER_TIMEOUT_MS is set as 800 milliseconds.
-Remarks:
-    CONFIG_PE_SRCRECOVER_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_SRCRECOVER_TIMEOUT_MS               MILLISECONDS_TO_TICKS(800)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SRCRECOVER_TIMEOUT_MS               MILLISECONDS_TO_TICKS(800)
-
-/**************************************************************************************************
-Summary:
-	tSrcTransistionTimer.
-Description:
-    CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS defines the tSrcTransistionTimer specified in the 
-    USB-PD Specification. By default, it is set to 28 milliseconds.
-Remarks:
-    CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS             MILLISECONDS_TO_TICKS(28)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS	      MILLISECONDS_TO_TICKS(28)
-
-/**************************************************************************************************
-Summary:
-	tChunkSenderRequest.
-Description:
-    CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS defines the ChunkSenderRequestTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS is set as 26 milliseconds.
-Remarks:
-    CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS		MILLISECONDS_TO_TICKS(26)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS		MILLISECONDS_TO_TICKS(26)
-
-/**************************************************************************************************
-Summary:
-	tChunkSenderResponse.
-Description:
-    CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS defines the ChunkSenderResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS is set as 26 milliseconds.
-Remarks:
-    CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS    MILLISECONDS_TO_TICKS(26)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS    MILLISECONDS_TO_TICKS(26)
-
-/**************************************************************************************************
-Summary:
-	tSinkTx.
-Description:
-    CONFIG_PRL_SINKTX_TIMEOUT_MS defines the SinkTxTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PRL_SINKTX_TIMEOUT_MS is set as 16 milliseconds.
-Remarks:
-    CONFIG_PRL_SINKTX_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PRL_SINKTX_TIMEOUT_MS				    MILLISECONDS_TO_TICKS(16)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PRL_SINKTX_TIMEOUT_MS				    MILLISECONDS_TO_TICKS(16)
-
-/**************************************************************************************************
-Summary:
-	tBISTContMode.
-Description:
-    CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS defines the BISTContModeTimer specified in the USB-PD Specification.
-    Default value of CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS is set as 45 milliseconds.
-Remarks:
-    CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS			MILLISECONDS_TO_TICKS(45)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS			MILLISECONDS_TO_TICKS(45)                                             
 
 #endif

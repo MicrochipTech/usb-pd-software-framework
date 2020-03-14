@@ -475,7 +475,7 @@ TypeC_SetRpCollAvoidance API*/
 /*************************************************************/
 
 /*Defines for VCONN OCS Enable*/
-#define TYPEC_VCONN_OCS_EN	        BIT(9)
+#define TYPEC_VCONN_OCS_EN                BIT(9)
 #define TYPEC_VCONN_OCS_EN_POS            9
 
 /*Masks used For getting Port Rp Currrent from gasCfgStatusData structure*/ 

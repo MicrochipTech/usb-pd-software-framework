@@ -567,6 +567,12 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_KillPolicyEngineTimer (u8PortNum);
                         PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS);
                     }
+                    else
+                    {
+                        /* Handle Unexpected message when Sink capabilities message is 
+                           received in wrong PE State */
+                        PE_HandleUnExpectedMsg (u8PortNum);
+                    }
                     break; 
                 }
                 default:
