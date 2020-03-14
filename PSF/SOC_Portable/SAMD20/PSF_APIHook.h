@@ -49,9 +49,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #include "PSF_Config.h"
 #include "Drivers.h"
-#include "PSFSourcePro_App.h"
-#include "Mpq_dc_dc_control.h"
-#include "PSFSourcePro_BootCfg.h"
+
 
 // *****************************************************************************
 // *****************************************************************************

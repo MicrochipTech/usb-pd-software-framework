@@ -47,10 +47,15 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <psf_stdinc.h>
+#if ((CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG) && (CONFIG_I2C_DCDC_TYPE == MPQ))
+        #include "Mpq_dc_dc_control.h"
+#endif
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
 #include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"
 #include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom3_usart.h"
+#if(CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 #include "../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h"
+#endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
 
