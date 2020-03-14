@@ -466,10 +466,10 @@ Description:
 Remarks:
     Choose Firmware Image size in such a way that integral multiple of 256. The definition of 
     this function is mandatory when INCLUDE_PDFU is '1' and shall expressed in terms of bytes. 
-    By default, the value is 0x8800UL(32KB).
+    By default, the value is 0x8800UL(34KB).
 Example:
     <code>
-     #define CONFIG_MAX_FIRMWARE_IMAGESIZE 38*1024 (38*1024 bytes for 38KB Updatable application).
+     #define CONFIG_MAX_FIRMWARE_IMAGESIZE 0x9800UL (38*1024 bytes for 38KB Updatable application).
     </code>                                                                                 
 **************************************************************************************************/  
 #define CONFIG_MAX_FIRMWARE_IMAGESIZE   0x8800UL
