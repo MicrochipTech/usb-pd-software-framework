@@ -5,7 +5,7 @@
    Microchip Technology Inc.
 
  File Name:
-   PB_Helper.c
+   pb_helper.c
 
  Description:
    This file contains the helper functions that are needed by Power Balancing
