@@ -183,7 +183,7 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL         0
+#define INCLUDE_POWER_MANAGEMENT_CTRL         1
 
 /**************************************************************************
 Summary:
@@ -202,63 +202,6 @@ Example:
     </code>                                                                        
  ***************************************************************************/
 #define INCLUDE_PDFU                  0
-
-/**************************************************************************************************
-Summary:
-    Power Balancing support code inclusion.
-Description:
-    Setting the INCLUDE_POWER_BALANCING as 1 enables PSF to include the PD 
-    Power Balancing functionality at compile time. User can set this define to 0
-    to reduce code size if none of the PD enabled Source ports in the system 
-    require Power Balancing functionality.
-Remarks: 
-    Recommended default value is 1. For INCLUDE_POWER_BALANCING to be 1, 
-    INCLUDE_PD_SOURCE shall be set to 1. 
-Example:
-    <code>
-    #define INCLUDE_POWER_BALANCING	1(Include Power Balancing functionality in PSF)
-    #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_POWER_BALANCING  		0
-
-/**************************************************************************************************
-Summary:
-    Power Throttling support code inclusion.
-Description:
-    Setting the INCLUDE_POWER_THROTTLING as 1 enables PSF to include the 
-    Power Throttling(PT) feature at compile time. User can set this define to 0
-    to reduce code size if none of the Source ports in the system 
-    require PT functionality.
-Remarks: 
-    Recommended default value is 1. For INCLUDE_POWER_THROTTLING to be 1, 
-    INCLUDE_PD_SOURCE shall be set to 1. 
-Example:
-    <code>
-    #define INCLUDE_POWER_THROTTLING	1(Include PT functionality in PSF)
-    #define INCLUDE_POWER_THROTTLING	0(Exclude PT functionality from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_POWER_THROTTLING        0 
-
-/**************************************************************************************************
-Summary:
-    PPS support code inclusion.
-Description:
-    Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Programmable 
-    Power Supply(PPS) feature at compile time. User can set this define to 0
-    to reduce code size if none of the Source ports in the system 
-    require PPS functionality.
-Remarks: 
-    Recommended default value is 1. For INCLUDE_PD_SOURCE_PPS to be 1, 
-    INCLUDE_PD_SOURCE shall be set to 1. 
-Example:
-    <code>
-    #define INCLUDE_PD_SOURCE_PPS	1(Include PPS functionality in PSF)
-    #define INCLUDE_PD_SOURCE_PPS	0(Exclude PPS functionality from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_PD_SOURCE_PPS           0 
 
 // *****************************************************************************
 // *****************************************************************************
@@ -396,25 +339,6 @@ Example:
 	</code>                                  
   **************************************************************************/
 #define CONFIG_DCDC_CTRL        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
-					
-/**************************************************************************
-Summary:
-    Default I2C DC DC Controller Type.
-Description:
-	CONFIG_I2C_DCDC_TYPE is to define the default I2C DC-DC control provided by the PSF stack.
-    This macro is valid only when CONFIG_DCDC_CTRL is set to I2C_DC_DC_CONTROL_CONFIG. If 
-	CONFIG_I2C_DCDC_TYPE defined as MPQ, Monolithic MPQ4230 I2C DC-DC Controller 
-    is used. If CONFIG_I2C_DCDC_TYPE defined as ONSEMI, On Semi I2C DC-DC 
-    Controller is used. 
-Remarks:
-	None.
-Example:
-	<code>
-	#define CONFIG_I2C_DCDC_TYPE    MPQ (Uses Monolithic I2C DC-DC contol)
-    #define CONFIG_I2C_DCDC_TYPE    ONSEMI (Uses OnSemi I2C DC-DC contol)	
-	</code>                                  
-  **************************************************************************/
-#define CONFIG_I2C_DCDC_TYPE        MPQ
 
 // *****************************************************************************
 // *****************************************************************************
