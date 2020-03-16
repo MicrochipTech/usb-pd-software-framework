@@ -124,12 +124,14 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
 }
 
 void CFG_PBPerPortParams (UINT8 u8PortNum)
-{     
+{   
+    #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))
     gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankA = CFG_PB_MAX_PORT_POWER_BANKA;
     gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankB = CFG_PB_MAX_PORT_POWER_BANKB;
     gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankC = CFG_PB_MAX_PORT_POWER_BANKC;
     gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrent = CFG_PB_MAX_PORT_CURRENT;
     gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority = ((u8PortNum << 1) | CFG_PB_PORT_ENABLE);
+    #endif
 }
 
 /* ************************************************************************** */
@@ -171,9 +173,7 @@ void PSF_LoadConfig()
     for (u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         CFG_PerPortParams (u8PortNum);  
-#if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))
-        CFG_PBPerPortParams (u8PortNum);
-#endif   
+        CFG_PBPerPortParams (u8PortNum);   
     }
 
 }
