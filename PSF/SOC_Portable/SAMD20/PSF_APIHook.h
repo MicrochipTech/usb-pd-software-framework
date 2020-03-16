@@ -1591,7 +1591,7 @@ extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;
   Remarks:
     User definition of this Hook function is mandatory                                          
   *********************************************************************************************/
-#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)  	
+#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)       PSF_LoadConfig()  	
 
 // *****************************************************************************
 // *****************************************************************************
