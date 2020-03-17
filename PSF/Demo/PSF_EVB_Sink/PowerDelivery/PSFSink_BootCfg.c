@@ -41,34 +41,30 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
                     ((CFG_VCONN_OCS_ENABLE) | (CFG_PORT_ENABLE) | (CFG_PORT_RP_CURRENT_VALUE)| \
                     (CFG_PORT_POWER_ROLE));
     
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[0] = CFG_FORM_FIXED_PDO1(CFG_PORT_SOURCE_PDO_1_VOLTAGE, \
-            CFG_PORT_SOURCE_PDO_1_CURRENT, CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
-            CFG_PORT_SOURCE_UNCONSTARINED_PWR);    
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[0] = CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_SINK_PDO_1_CURRENT, \
+            CFG_PORT_SINK_PDO_1_VOLTAGE, CFG_PORT_SINK_USB_COMM, \
+            CFG_PORT_SINK_UNCONSTARINED_PWR,CFG_PORT_SINK_HIGHER_CAPABILITY);    
 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[1] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_2_VOLTAGE, \
-                                                    CFG_PORT_SOURCE_PDO_2_CURRENT);        
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[1] = CFG_FORM_FIXED_PDOx(CFG_PORT_SINK_PDO_2_VOLTAGE, \
+                                                    CFG_PORT_SINK_PDO_2_CURRENT);        
 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[2] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_3_VOLTAGE, 
-                                                    CFG_PORT_SOURCE_PDO_3_CURRENT);     
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[2] = CFG_FORM_FIXED_PDOx(CFG_PORT_SINK_PDO_3_VOLTAGE, 
+                                                    CFG_PORT_SINK_PDO_3_CURRENT);     
 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[3] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_4_VOLTAGE, 
-                                                    CFG_PORT_SOURCE_PDO_4_CURRENT);         \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[3] = CFG_FORM_FIXED_PDOx(CFG_PORT_SINK_PDO_4_VOLTAGE, 
+                                                    CFG_PORT_SINK_PDO_4_CURRENT);         \
 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[4] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_5_VOLTAGE, 
-                                                    CFG_PORT_SOURCE_PDO_5_CURRENT);            \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[4] = CFG_FORM_FIXED_PDOx(CFG_PORT_SINK_PDO_5_VOLTAGE, 
+                                                    CFG_PORT_SINK_PDO_5_CURRENT);            \
 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[5] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_6_VOLTAGE, 
-                                                    CFG_PORT_SOURCE_PDO_6_CURRENT);            \
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[5] = CFG_FORM_FIXED_PDOx(CFG_PORT_SINK_PDO_6_VOLTAGE, 
+                                                    CFG_PORT_SINK_PDO_6_CURRENT);            \
     
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[6] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_7_VOLTAGE, 
-                                                    CFG_PORT_SOURCE_PDO_7_CURRENT); 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[6] = CFG_FORM_FIXED_PDOx(CFG_PORT_SINK_PDO_7_VOLTAGE, 
+                                                    CFG_PORT_SINK_PDO_7_CURRENT); 
     
-    gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt = CFG_PORT_SOURCE_NUM_OF_PDOS;
-
-    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
-    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;  
+    gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt = CFG_PORT_SINK_NUM_OF_PDOS;
+  
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
     gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;

@@ -87,7 +87,7 @@ Example:
     #define INCLUDE_PD_SOURCE	0(Exclude USB PD Source functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_SOURCE  		1
+#define INCLUDE_PD_SOURCE  		0
 
 /**************************************************************************************************
 Summary:
