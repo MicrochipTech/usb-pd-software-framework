@@ -166,7 +166,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             DPM_Evaluate_Received_Src_caps(u8PortNum,(UINT16) u32Header ,(UINT32*)pu8DataBuf );
 
             /*Invalid Source Capability Message results in Sink request object count to be 0*/
-           if (gasDPM[u8PortNum].u32SinkReqRDO == SET_TO_ZERO)
+           if (gasCfgStatusData.sPerPortData[u8PortNum].u32RDO == SET_TO_ZERO)
            {
                 /*Transition to Ready state if already in PD contract*/
                 if ((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_PDCONTRACT_MASK ) == \
@@ -204,7 +204,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_REQUEST,\
                                             PE_OBJECT_COUNT_1, PE_NON_EXTENDED_MSG);
                     
-                    u32DataObj[0] = gasDPM[u8PortNum].u32SinkReqRDO;
+                    u32DataObj[0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
                     Transmit_cb = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to Soft reset state if
