@@ -193,7 +193,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8NegotiatedPDOIndex;
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
   UINT32  u32NegotiatedPDO;     //NegotiatedPDO
-  UINT32 u32SinkReqRDO;         //Sink Requested RDO
  
   #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
