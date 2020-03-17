@@ -45,7 +45,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define SILICON_VERSION         0x00U
 
 #define CFG_PORT_POWER_ROLE                0U //Sink
-#define CFG_PORT_RP_CURRENT_VALUE          (3U << TYPEC_PORT_RPVAL_POS)
+#define CFG_PORT_RP_CURRENT_VALUE          (0U << TYPEC_PORT_RPVAL_POS) /*For Sink Rp value is 0*/
 #define CFG_PORT_ENABLE                    (1U << TYPEC_PORT_ENDIS_POS)
 #define CFG_PORT_SOURCE_NUM_OF_PDOS        4U
 #define CFG_PORT_SOURCE_USB_SUSP           0U
@@ -68,8 +68,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_SOURCE_PDO_6_VOLTAGE      0
 #define CFG_PORT_SOURCE_PDO_7_VOLTAGE      0
 
-#define CFG_PORT_SINK_NUM_OF_PDOS          0U
-#define CFG_PORT_SINK_HIGHER_CAPABILITY    0U
+#define CFG_PORT_SINK_NUM_OF_PDOS          4U
+#define CFG_PORT_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_SINK_UNCONSTARINED_PWR    1U //Set to 1
 #define CFG_PORT_SINK_USB_COMM             0U
 
@@ -201,14 +201,23 @@ typedef enum
 #define CFG_PDO_CURRENT_UNIT                  10
 #define CFG_PDO_USB_SUSPEND_POS               28 
 #define CFG_PDO_USB_COMMN_POS                 26 
-#define CFG_PDO_UNCONSTRAINED_PWR             27 
+#define CFG_PDO_UNCONSTRAINED_PWR_POS         27
+#define CFG_PDO_HIGHER_CAPABILITY_POS         28
 
-/* Macro used to form Fixed PDO 1 */
+/* Macro used to form Source Fixed PDO 1 */
 #define CFG_FORM_FIXED_PDO1(voltage,current,usbCommn,usbSusp,unconstrainedPwr)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
-                                         ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
+                                         ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR_POS) | \
                                          ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
                                          (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                          ((current)/CFG_PDO_CURRENT_UNIT))            
+
+/* Macro used to form Sink Fixed PDO 1 */
+#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,usbCommn,unconstrainedPwr,HigherCapability)  \
+                                         (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS) | \
+                                         ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR_POS) | \
+                                         ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
+                                         (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+                                         ((current)/CFG_PDO_CURRENT_UNIT))  
 
 /* Macro used to form Fixed PDOs 2 to 7 */
 #define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
