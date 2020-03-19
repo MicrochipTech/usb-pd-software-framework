@@ -47,10 +47,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*VSEL PIO count VSEL[2:0]*/
 #define PWRCTRL_VSEL_PIO_MAX_COUNT      3
 
-/* Values for CONFIG_DCDC_CTRL*/
-/* Values for I2C DC DC Controllers */
-#define MPQ                                 1
-
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: Data Structure                                                    */
