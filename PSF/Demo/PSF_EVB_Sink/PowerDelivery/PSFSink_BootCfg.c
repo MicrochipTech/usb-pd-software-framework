@@ -64,13 +64,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
                                                     CFG_PORT_SINK_PDO_7_CURRENT); 
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt = CFG_PORT_SINK_NUM_OF_PDOS;
-  
-      (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt * 4));
-    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
-    
-    
+      
     gasCfgStatusData.sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
     gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;
     gasCfgStatusData.sPerPortData[u8PortNum].u8OVThresholdPercentage = CFG_OVER_VOLTAGE_FACTOR;
