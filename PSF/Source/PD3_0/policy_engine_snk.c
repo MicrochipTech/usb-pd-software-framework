@@ -340,17 +340,11 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Setting the Hard Reset IN progress bit to avoid VBUS discharge
                     when VBUS drops below VSinkDisconnnect*/
                     gasPolicy_Engine[u8PortNum].u8PEPortSts |= PE_HARDRESET_PROGRESS_MASK;
+                   
+                     /*The transmitter callback is set to transition to Startup state 
+                      * if message transmission fails*/
                     
-                    /*Workaround for EOP Issue*/
-                     /*Set the transmitter callback to transition to Startup state if
-                    message transmission fails*/
-                    /*u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_TRANSITION_TO_DEFAULT,\
-                                             ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS,\
-                                             ePE_SNK_STARTUP,ePE_INVALIDSUBSTATE);
-
-                    gasPolicy_Engine[u8PortNum].ePESubState = \
-                      ePE_SNK_HARD_RESET_WAIT_FOR_COMPLETION_SS;*/
-
+                    /* API to send Hardreset is called*/
                     PRL_SendCableorHardReset(u8PortNum, PRL_SEND_HARD_RESET,\
                                              NULL, 0x00);
                     
@@ -360,11 +354,6 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Increment HardReset Counter*/
                     gasPolicy_Engine[u8PortNum].u8HardResetCounter++;             
                     
-                    break;
-               }
-               /*Wait here for the completion of Hard reset signal*/
-               case ePE_SNK_HARD_RESET_WAIT_FOR_COMPLETION_SS:
-               {
                     break;
                }
                default:
