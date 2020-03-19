@@ -33,11 +33,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
 #include <psf_stdinc.h>
+#include <Drivers.h>
 
 /***********************************************************************************/
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-
-#if (CONFIG_I2C_DCDC_TYPE == MPQ)
 
 UINT8 gu8MPQAlertPortMsk = 0;
         
@@ -52,7 +51,7 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
             
     for(int i=0; i<3; i++)
     {
-        if (TRUE == MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE (u8I2CAddress, pu8I2CCmd, u8Length))
+        if (TRUE == MCHP_PSF_HOOK_I2C_DCDC_WRITE (u8I2CAddress, pu8I2CCmd, u8Length))
         {
             u8RetVal = TRUE;
             break;
@@ -60,7 +59,7 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
     }
             
     /* wait for the current transfer to complete */ 
-    while(MCHP_PSF_HOOK_UPDI2C_DCDC_ISBUSY( ));
+    while(MCHP_PSF_HOOK_I2C_DCDC_ISBUSY( ));
     __NOP(); 
             
     return u8RetVal;
@@ -152,7 +151,7 @@ UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
 {
     UINT16 u16FaultStatus;
     
-    (void)MCHP_PSF_HOOK_UPDI2C_DCDC_WRITE_READ(u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
+    (void)MCHP_PSF_HOOK_I2C_DCDC_WRITE_READ(u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
 
     return u16FaultStatus;
 }
@@ -198,5 +197,4 @@ void MPQDCDC_HandleAlertISR(UINT8 u8PortNum)
     } */ 
 }
 
-#endif //#if (CONFIG_I2C_DCDC_TYPE == MPQ)
 #endif

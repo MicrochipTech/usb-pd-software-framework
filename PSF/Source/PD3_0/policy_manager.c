@@ -55,10 +55,10 @@ void DPM_Init(UINT8 u8PortNum)
         u8DPM_Status |= (PD_ROLE_DFP << DPM_CURR_DATA_ROLE_POS);
         
         /* Set Port Power Role as Source in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= PORT_CONNECT_STS_POWER_ROLE; 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS; 
         
         /* Set Port Data Role as DFP in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= PORT_CONNECT_STS_DATA_ROLE; 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS; 
     }       
     else
     {
@@ -75,17 +75,10 @@ void DPM_Init(UINT8 u8PortNum)
         u8DPM_Status |= (PD_ROLE_UFP << DPM_CURR_DATA_ROLE_POS);
         
         /* Set Port Power Role as Sink in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(PORT_CONNECT_STS_POWER_ROLE); 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS); 
         
         /* Set Port Data Role as UFP in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(PORT_CONNECT_STS_DATA_ROLE);         
-        /*On initialization Adversited PDO is updated to Sink's PDO*/
-        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
-            (gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt * 4));
-        /*Advertised PDO Count is updated to SinkPDO Count*/
-        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS);         
     }
     
     gasDPM[u8PortNum].u8DPM_Status =  u8DPM_Status;
@@ -238,7 +231,6 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 	#endif
 }
 /*******************************************************************************/
-#if (TRUE == INCLUDE_PD_SOURCE)
 
 /****************************** DPM Source related APIs*****************************************/
 /* Validate the received Request message */
@@ -279,7 +271,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     {
         gasDPM[u8PortNum].u32NegotiatedPDO = (gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8SinkReqObjPos-1]);
         gasDPM[u8PortNum].u8NegotiatedPDOIndex = u8SinkReqObjPos;
-        gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], 
+        gasDPM[u8PortNum].u32SinkReqRDO = MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], 
                                         u8DataBuf[INDEX_2], u8DataBuf[INDEX_3]);
         gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn10mA = u16SrcPDOCurrVal; 
         gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = \
@@ -313,7 +305,7 @@ void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32S
     
     /* The attached USB-C cable does not support the locally defined Source PDOs  */   
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                                        PORT_CONNECT_STS_CABLE_REDUCED_SRC_CAPABILITIES;        
+                                        DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS;        
 
     for (UINT8 u8PDOindex = 0; u8PDOindex < u8pSrcPDOCnt; u8PDOindex++)
     {   
@@ -352,7 +344,7 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
         {
             /* The attached USB-C cable supports the locally-defined Source PDOs */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                        ~(PORT_CONNECT_STS_CABLE_REDUCED_SRC_CAPABILITIES);
+                                        ~(DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS);
 
             (void)MCHP_PSF_HOOK_MEMCPY(&pu32DataObj[INDEX_0], &pu32SrcCap[INDEX_0],\
                     ((*u8pSrcPDOCnt) * 4));
@@ -412,13 +404,13 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     {
         /* The advertised PDOs are equivalent to the default configured values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                            ~(PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES);         
+                            ~(DPM_PORT_PD_BAL_REDUCED_SRC_CAPABILITIES_STATUS);         
     }   
     else
     {
         /* The advertised PDOs have been reduced from default configured values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                            PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES;                 
+                            DPM_PORT_PD_BAL_REDUCED_SRC_CAPABILITIES_STATUS;                 
     }    
 }
 
@@ -430,6 +422,7 @@ UINT8 DPM_ComparePDOs(UINT8 u8PortNum)
                         gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt)) * 4)); 
 }
 
+#if (TRUE == INCLUDE_PD_SOURCE)
 void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf)
 {   
     /* Store the count in Partner PDO Count. */
@@ -440,7 +433,7 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
       gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8PDOIndex] = u32DataBuf[u8PDOIndex];   
     }    
 }
-#endif /*INCLUDE_PD_SOURCE*/  
+#endif  
 
 /*********************************DPM VDM Cable APIs**************************************/
 UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
@@ -503,10 +496,10 @@ UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
 void DPM_Get_Sink_Capabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
 {   
     /* Get Sink Capability from Port Configuration Data Structure */
-    *u8pSinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+    *u8pSinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;
     
-        (void)MCHP_PSF_HOOK_MEMCPY ( pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, \
-                            (gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt * 4));
+        (void)MCHP_PSF_HOOK_MEMCPY ( pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, \
+                            (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
 }
 
 void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2])
@@ -556,7 +549,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     UINT8 u8CapMismatch = FALSE;
     //UINT32 u32SinkSelectedPDO;    
     /*PDO Count of the sink*/
-	UINT8 u8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+	UINT8 u8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;
     /*PDO Count of the source derived from received src caps*/
 	UINT8 u8Recevd_SrcPDOCnt =  PRL_GET_OBJECT_COUNT(u16RecvdSrcCapsHeader);
     UINT32 u32RcvdSrcPDO;
@@ -565,18 +558,15 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     UINT8 u8SinkPDOIndex;
     UINT32 u32SinkPDO;
     
-    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
-        
     /* Calculate and sort the power of Sink PDOs */
-    DPM_CalculateAndSortPower(u8SinkPDOCnt, &gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[0], u8SinkPower);
+    DPM_CalculateAndSortPower(u8SinkPDOCnt, &gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[0], u8SinkPower);
     
     /* Calculate and sort the received source PDOs power */
     DPM_CalculateAndSortPower(u8Recevd_SrcPDOCnt, pu32RecvdSrcCapsPayload, u8SrcPower);
     
     /* Compare Maximum power sink PDO to received source PDOs */
     u8SinkPDOIndex = u8SinkPower[0][1];
-    u32SinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[u8SinkPDOIndex];
+    u32SinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8SinkPDOIndex];
     
     for(u8SrcIndex = 0; u8SrcIndex < u8Recevd_SrcPDOCnt; u8SrcIndex++)
     {
@@ -590,7 +580,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 (DPM_GET_PDO_CURRENT(u32RcvdSrcPDO)) >= DPM_GET_PDO_CURRENT(u32SinkPDO))
             {
                 /* Form request message */
-                gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = DPM_FORM_DATA_REQUEST((u8SrcPDOIndex + 1),\
+                gasDPM[u8PortNum].u32SinkReqRDO = DPM_FORM_DATA_REQUEST((u8SrcPDOIndex + 1),\
                                                 u8CapMismatch,DPM_GET_PDO_USB_COMM_CAP(u32SinkPDO),\
                                                 DPM_GET_PDO_CURRENT(u32SinkPDO),\
                                                 DPM_GET_PDO_CURRENT(u32SinkPDO));
@@ -620,12 +610,12 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
         for(u8SinkIndex = 0; u8SinkIndex < u8SinkPDOCnt; u8SinkIndex++)
         {
             u8SinkPDOIndex = u8SrcPower[u8SinkIndex][1];
-            u32SinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[u8SinkPDOIndex];
+            u32SinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8SinkPDOIndex];
             
             if((DPM_GET_PDO_VOLTAGE(u32RcvdSrcPDO)) == DPM_GET_PDO_VOLTAGE(u32SinkPDO))
             {
                 /* Form Request message with Capability Mismatch*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = DPM_FORM_DATA_REQUEST((u8SrcPDOIndex + 1),\
+                gasDPM[u8PortNum].u32SinkReqRDO = DPM_FORM_DATA_REQUEST((u8SrcPDOIndex + 1),\
                                                 u8CapMismatch,DPM_GET_PDO_USB_COMM_CAP(u32SinkPDO),\
                                                 DPM_GET_PDO_CURRENT(u32RcvdSrcPDO),\
                                                 DPM_GET_PDO_CURRENT(u32RcvdSrcPDO));

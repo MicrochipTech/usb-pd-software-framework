@@ -296,7 +296,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 /* No RDO Reject message has been sent to last Request made by attached Sink */
                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                        ~(PORT_CONNECT_STS_AS_SRC_RDO_REJECTED); 
+                                        ~(DPM_PORT_AS_SRC_RDO_REJECTED_STATUS); 
                 
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_TRANSITION_SUPPLY;
                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_ENTRY_SS;
@@ -309,7 +309,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 /* No RDO Accept message has been sent to last Request made by attached Sink */
                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                        ~(PORT_CONNECT_STS_AS_SRC_RDO_ACCEPTED); 
+                                        ~(DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS); 
                 
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_CAPABILITY_RESPONSE;
                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_CAPABILITY_RESPONSE_ENTRY_SS;
@@ -351,7 +351,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED:
                 {
                     /* Set AS_SOURCE_RDO_ACCEPTED bit in Port Connection Status */
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= PORT_CONNECT_STS_AS_SRC_RDO_ACCEPTED;
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS;
                     
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS),
@@ -405,7 +405,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         /* Clear the AS_SOURCE_PD_CONTRACT_GOOD bit in Connection 
                            Status register */
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                        ~(PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD);    
+                                        ~(DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS);    
                         
                         /* If PSRDY is not sent, power will not be allocated to the 
                            port. So, Set the Power related Status registers to 0 */
@@ -469,7 +469,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     /* RDO Reject message has been sent to last Request made by attached Sink */
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                                             PORT_CONNECT_STS_AS_SRC_RDO_REJECTED;
+                                             DPM_PORT_AS_SRC_RDO_REJECTED_STATUS;
                     
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_CAPABILITY_RESPONSE_IDLE_SS;
                     
@@ -511,7 +511,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                        USB PD connection established, Power request has been made, 
                        accepted and PS_RDY message sent */
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                                        PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD; 
+                                        DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS; 
                     
                     DPM_EnablePowerFaultDetection(u8PortNum);
                     
@@ -615,7 +615,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     if (gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_PDCONNECTED_STS_MASK)
                     {
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                        ~(PORT_CONNECT_STS_AS_SRC_RDO_ACCEPTED | PORT_CONNECT_STS_AS_SRC_RDO_REJECTED);
+                                        ~(DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS | DPM_PORT_AS_SRC_RDO_REJECTED_STATUS);
                     }
                     
 					/* Kill the policy engine timer */
@@ -1028,7 +1028,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* If RDO reject message is not sent, PE moves to this state. 
                        Hence, clearing the status variable in this state */
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                        ~(PORT_CONNECT_STS_AS_SRC_RDO_REJECTED);
+                                        ~(DPM_PORT_AS_SRC_RDO_REJECTED_STATUS);
                     
                     /* Kill Policy Engine Timer */
                     PE_KillPolicyEngineTimer (u8PortNum);

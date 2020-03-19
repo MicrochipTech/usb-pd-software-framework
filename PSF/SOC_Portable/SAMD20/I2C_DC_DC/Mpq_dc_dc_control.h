@@ -34,12 +34,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _MPQ_DCDC_CONTROL_H_
 #define _MPQ_DCDC_CONTROL_H_
 
-
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#include "generic_defs.h"
+#include <PSF_Config.h>
 
 // *****************************************************************************
-#if (CONFIG_I2C_DCDC_TYPE == MPQ)
-
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: File Scope or Global Data, constants                              */
@@ -202,7 +200,4 @@ void MPQDCDC_HandleAlertISR(UINT8 u8PortNum);
 
 UINT8 MPQDCDC_FaultHandler(void);
 
-#endif //#if (CONFIG_I2C_DCDC_TYPE == MPQ)
-
-#endif
 #endif /*_MPQ_DCDC_CONTROL_H_*/
