@@ -173,6 +173,41 @@ Source/Sink Power delivery objects*/
 #define DPM_POWER_FAULT_VBUS_OCS		BIT(2)
 #define DPM_POWER_FAULT_VCONN_OCS	    BIT(3)
 
+/* ****************************** Port Connection Status parameters *********** */
+#define DPM_PORT_ATTACHED_STATUS                              BIT(0)
+#define DPM_PORT_ORIENTATION_FLIPPED_STATUS                   BIT(1)
+#define DPM_PORT_DATA_ROLE_STATUS                             BIT(2)
+#define DPM_PORT_POWER_ROLE_STATUS                            BIT(3)
+#define DPM_PORT_VCONN_STATUS                                 BIT(4)
+#define DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS        BIT(5)
+#define DPM_PORT_PD_BAL_REDUCED_SRC_CAPABILITIES_STATUS       BIT(6)
+#define DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS               BIT(7)
+#define DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS               BIT(8)
+#define DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS                   BIT(9)
+#define DPM_PORT_AS_SRC_RDO_REJECTED_STATUS                   BIT(10)
+#define DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS                BIT(11)
+#define DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS                BIT(12)
+#define DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS                BIT(13)
+#define DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS              BIT(14)
+#define DPM_PORT_RP_VAL_DETECT_DEFAULT_USB_STATUS             BIT(15)
+#define DPM_PORT_RP_VAL_DETECT_1_5A_STATUS                    BIT(16)
+#define DPM_PORT_RP_VAL_DETECT_3A_STATUS                     (BIT(15)|BIT(16))
+#define DPM_PORT_RP_VAL_DETECT_MASK_STATUS                   (BIT(15)|BIT(16))
+
+/* *************************Port IO Status parameters *********************** */
+#define DPM_PORT_IO_EN_DC_DC_STATUS                  BIT(0)
+#define DPM_PORT_IO_VSEL0_STATUS                     BIT(1)
+#define DPM_PORT_IO_VSEL1_STATUS                     BIT(2)
+#define DPM_PORT_IO_VSEL2_STATUS                     BIT(3)
+#define DPM_PORT_IO_EN_VBUS_STATUS                   BIT(4)
+#define DPM_PORT_IO_VBUS_DIS_STATUS                  BIT(5)
+#define DPM_PORT_IO_EN_SINK_STATUS                   BIT(6)
+#define DPM_PORT_IO_15_IND_STATUS                    BIT(7)
+#define DPM_PORT_IO_30_IND_STATUS                    BIT(8)
+#define DPM_PORT_IO_PS_RDY_RECVD_STATUS              BIT(9)
+#define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(10)
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -193,6 +228,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8NegotiatedPDOIndex;
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
   UINT32  u32NegotiatedPDO;     //NegotiatedPDO
+  UINT32 u32SinkReqRDO;         //Sink Requested RDO
  
   #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID

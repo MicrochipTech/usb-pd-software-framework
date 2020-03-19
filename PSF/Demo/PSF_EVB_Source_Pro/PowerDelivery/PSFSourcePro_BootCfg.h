@@ -96,46 +96,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_MAX_VCONN_FAULT_COUNT		  3
 #define CFG_POWER_GOOD_TIMER_MS			  10000
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: PIO configurations
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-    UPD350 GPIO Output mode enum.
-Description:
-	eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes applicable for UPD350 GPIO
-    in output mode.
-Remarks:
-        None
-**************************************************************************************************/
-typedef enum
-{
-    ePUSH_PULL_ACTIVE_HIGH       = 0x0CU,   // Active High output signal
-    ePUSH_PULL_ACTIVE_LOW        = 0x04U,   // Active low output signal
-    eOPEN_DRAIN_ACTIVE_HIGH      = 0x08U,   // Active High Open Drain output signal
-    eOPEN_DRAIN_ACTIVE_LOW       = 0x00U,   // Active Low Open Drain output signal
-    eOPEN_DRAIN_ACTIVE_HIGH_PU   = 0x88U,   // Active High Open Drain output signal with internal pull up
-    eOPEN_DRAIN_ACTIVE_LOW_PU    = 0x80U    // Active Low Open Drain output signal with internal pull up
-}eUPD_OUTPUT_PIN_MODES_TYPE;
-/**************************************************************************************************
-Summary:
-    UPD350 Fault_IN GPIO mode enum.
-Description:
-	eFAULT_IN_MODE_TYPE enum defines the various combination modes applicable for UPD350 GPIO
-    in input mode.
-Remarks:
-    None
-**************************************************************************************************/
-typedef enum
-{
-    eFAULT_IN_ACTIVE_LOW         = 0x20U,   //Active low input signal
-    eFAULT_IN_ACTIVE_HIGH        = 0x10U,   //Active high input signal
-    eFAULT_IN_ACTIVE_LOW_PU      = 0xA0U,   //Active low signal with internal pull up
-    eFAULT_IN_ACTIVE_HIGH_PD     = 0x50U    //Active high signal with internal pull down
-}eFAULT_IN_MODE_TYPE;
-
 #define CFG_PORT_UPD_EN_VBUS               eUPD_PIO3
 #define CFG_PORT_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_UPD_VBUS_DIS_PIO_NO       eUPD_PIO4
@@ -213,40 +173,6 @@ typedef enum
 /* Macro used to form Fixed PDOs 2 to 7 */
 #define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                                             ((current)/CFG_PDO_CURRENT_UNIT))
-
-/* Port Connection Status parameters */
-#define PORT_CONNECT_STS_ATTACHED                             BIT(0)
-#define PORT_CONNECT_STS_ORIENTATION_FLIPPED                  BIT(1)
-#define PORT_CONNECT_STS_DATA_ROLE                            BIT(2)
-#define PORT_CONNECT_STS_POWER_ROLE                           BIT(3)
-#define PORT_CONNECT_STS_VCONN_STATUS                         BIT(4)
-#define PORT_CONNECT_STS_CABLE_REDUCED_SRC_CAPABILITIES       BIT(5)
-#define PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES      BIT(6)
-#define PORT_CONNECT_STS_SOURCE_CAPABILITY_MISMATCH           BIT(7)
-#define PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD              BIT(8)
-#define PORT_CONNECT_STS_AS_SRC_RDO_ACCEPTED                  BIT(9)
-#define PORT_CONNECT_STS_AS_SRC_RDO_REJECTED                  BIT(10)
-#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_ACCEPT               BIT(11)
-#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_REJECT               BIT(12)
-#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_PS_RDY               BIT(13)
-#define PORT_CONNECT_STS_SINK_CAPABILITY_MISMATCH             BIT(14)
-#define PORT_CONNECT_STS_RP_VAL_DETECT_DEFAULT_USB            BIT(15)
-#define PORT_CONNECT_STS_RP_VAL_DETECT_1_5A                   BIT(16)
-#define PORT_CONNECT_STS_RP_VAL_DETECT_3A                    (BIT(15)|BIT(16))
-#define PORT_CONNECT_STS_RP_VAL_DETECT_MASK                  (BIT(15)|BIT(16))
-
-/* Port IO Status parameters */
-#define PORT_IO_EN_DC_DC_STATUS                      BIT(0)
-#define PORT_IO_VSEL0_STATUS                         BIT(1)
-#define PORT_IO_VSEL1_STATUS                         BIT(2)
-#define PORT_IO_VSEL2_STATUS                         BIT(3)
-#define PORT_IO_EN_VBUS_STATUS                       BIT(4)
-#define PORT_IO_VBUS_DIS_STATUS                      BIT(5)
-#define PORT_IO_EN_SINK_STATUS                       BIT(6)
-#define PORT_IO_15_IND_STATUS                        BIT(7)
-#define PORT_IO_30_IND_STATUS                        BIT(8)
-#define PORT_IO_PS_RDY_RECVD_STATUS                  BIT(9)
-#define PORT_IO_CAP_MISMATCH_STATUS                  BIT(10)
 
 void PSF_LoadConfig(); 
 

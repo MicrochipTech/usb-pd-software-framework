@@ -52,7 +52,7 @@ UINT8 MchpPSF_Init(void)
 	
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
     /*Initialize HW I2C module interface defined by the user*/
-    (void)MCHP_PSF_HOOK_UPDI2C_DCDC_INTF_INIT();
+    (void)MCHP_PSF_HOOK_I2C_DCDC_INTF_INIT();
 #endif    
     
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)

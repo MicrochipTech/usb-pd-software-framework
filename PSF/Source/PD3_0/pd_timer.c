@@ -87,9 +87,6 @@ void PDTimer_WaitforTicks (UINT32 u32Timeout_ticks)
 {
     UINT8 u8TimerID;
     
-    /*u32Timeout_ticks is incremented by 1 to make sure guaranteed timer wait is provided*/
-    ++u32Timeout_ticks;
-    
     /*Find the unused PD Software timer and start the given timeout value with the found timer*/    
 	for (u8TimerID = 0; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
 	{
@@ -97,7 +94,7 @@ void PDTimer_WaitforTicks (UINT32 u32Timeout_ticks)
 		if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE ) == PDTIMER_NON_ACTIVE) || ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE)== PDTIMER_EXPIRED))
 		{
 
-#if (TRUE == MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER)
+#if (1 == MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER)
 
 			gasPDTimers[u8TimerID].u16Timeout_Tickcnt = (UINT16)u32Timeout_ticks;
 #else

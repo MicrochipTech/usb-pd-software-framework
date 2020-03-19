@@ -100,8 +100,8 @@
                      displayName="PowerDelivery"
                      projectFiles="true">
         <itemPath>../../PowerDelivery/PSFSourcePro_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
         <itemPath>../../PowerDelivery/PSFSourcePro_BootCfg.h</itemPath>
+        <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -300,8 +300,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0x400000-0x5fffff"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath"
-                  value="C:/Users/I20019/Desktop/PSF_Phase_2/Temp_FW/PSF/Source-Pro/Demo/PSF_EVB_Source_Pro/firmware/PSF_EVB_Source_Pro.X/debug/default/PSF_EVB_Source_Pro_ptg"/>
         <property key="programoptions.eraseb4program" value="false"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"
@@ -438,7 +436,7 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\PowerDelivery;..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC"/>
+                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC;..\..\PowerDelivery"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>

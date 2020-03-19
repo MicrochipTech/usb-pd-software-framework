@@ -48,11 +48,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PWRCTRL_VSEL_PIO_MAX_COUNT      3
 
 /* Values for CONFIG_DCDC_CTRL*/
-#define PWRCTRL_DEFAULT_PSF_GPIO_CONFIG     1
-#define I2C_DC_DC_CONTROL_CONFIG            2
-
 /* Values for I2C DC DC Controllers */
 #define MPQ                                 1
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: Data Structure                                                    */

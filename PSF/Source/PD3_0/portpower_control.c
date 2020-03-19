@@ -93,7 +93,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
         
         /* Clear the status of EN_VBUS and VSEL 2:0 */
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= 
-                ~(PORT_IO_EN_VBUS_STATUS | PORT_IO_VSEL0_STATUS | PORT_IO_VSEL1_STATUS | PORT_IO_VSEL2_STATUS); 
+                ~(DPM_PORT_IO_EN_VBUS_STATUS | DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
     }
     else
     {
@@ -101,7 +101,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
         
-        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= PORT_IO_EN_VBUS_STATUS;
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
     }
     
     for(UINT8 u8VSELIndex = SET_TO_ZERO; u8VSELIndex < PWRCTRL_VSEL_PIO_MAX_COUNT; u8VSELIndex++)
@@ -114,7 +114,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
                     gasCfgStatusData.sPerPortData[u8PortNum].u8aMode_VSEL[u8VSELIndex], \
                         (UINT8)UPD_GPIO_ASSERT);
 
-            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= (PORT_IO_VSEL0_STATUS << u8VSELIndex);            
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= (DPM_PORT_IO_VSEL0_STATUS << u8VSELIndex);            
         }
         else
         {
@@ -122,13 +122,13 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
                 gasCfgStatusData.sPerPortData[u8PortNum].u8aMode_VSEL[u8VSELIndex], \
                     (UINT8)UPD_GPIO_DE_ASSERT);
             
-            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(PORT_IO_VSEL0_STATUS << u8VSELIndex);            
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(DPM_PORT_IO_VSEL0_STATUS << u8VSELIndex);            
         }       
     }   
     
     #elif (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
-    MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current); 
+    MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_SET_POWER(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current); 
     
     #endif /*CONFIG_DCDC_CTRL*/
     
@@ -144,14 +144,14 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
                 u8VbusDisMode, (UINT8)UPD_GPIO_ASSERT);
         
-        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= PORT_IO_VBUS_DIS_STATUS; 
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_VBUS_DIS_STATUS; 
     }
     else
     {
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
                 u8VbusDisMode, (UINT8)UPD_GPIO_DE_ASSERT);
         
-        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(PORT_IO_VBUS_DIS_STATUS); 
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(DPM_PORT_IO_VBUS_DIS_STATUS); 
     }
 
     /*Hook to modify or overwrite the default Port Power control VBUS discharge*/
@@ -168,13 +168,13 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
     {
         UPD_GPIOUpdateOutput(u8PortNum, u8DCDCEnPio, u8DCDCEnMode, (UINT8)UPD_GPIO_ASSERT);
         
-        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= PORT_IO_EN_DC_DC_STATUS;
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_DC_DC_STATUS;
     }
     else
     {
         UPD_GPIOUpdateOutput(u8PortNum, u8DCDCEnPio, u8DCDCEnMode, (UINT8)UPD_GPIO_DE_ASSERT);
         
-        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(PORT_IO_EN_DC_DC_STATUS);
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(DPM_PORT_IO_EN_DC_DC_STATUS);
     }
     
     /* Hook to modify or overwrite the Port Control DC_DC_EN enable/disable */

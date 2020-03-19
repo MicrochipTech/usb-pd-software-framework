@@ -95,9 +95,9 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
         <itemPath>../../PowerDelivery/PSFSourceLite_App.h</itemPath>
         <itemPath>../../PowerDelivery/PSFSourceLite_BootCfg.h</itemPath>
+        <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -124,9 +124,6 @@
           <itemPath>../../../../Source/include/upd_hw.h</itemPath>
           <itemPath>../../../../Source/include/upd_interrupts.h</itemPath>
           <itemPath>../../../../Source/include/timer_defs.h</itemPath>
-        </logicalFolder>
-        <logicalFolder name="f1" displayName="PB" projectFiles="true">
-          <itemPath>../../../../Source/PB/pb_mngr.h</itemPath>
         </logicalFolder>
       </logicalFolder>
     </logicalFolder>
@@ -191,10 +188,6 @@
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="Source" displayName="Source" projectFiles="true">
-        <logicalFolder name="PB" displayName="PB" projectFiles="true">
-          <itemPath>../../../../Source/PB/pb_helper.c</itemPath>
-          <itemPath>../../../../Source/PB/pb_mngr.c</itemPath>
-        </logicalFolder>
         <logicalFolder name="PD3_0" displayName="PD3_0" projectFiles="true">
           <itemPath>../../../../Source/PD3_0/debug.c</itemPath>
           <itemPath>../../../../Source/PD3_0/int_globals.c</itemPath>
@@ -287,8 +280,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0x400000-0x5fffff"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath"
-                  value="D:/PSF/usb-pd-software-framework-public_lite/PSF/Demo/PSF_EVB_Source_Pro/firmware/PSF_EVB_Source_Pro.X/debug/default/PSF_EVB_Source_Pro_ptg"/>
         <property key="programoptions.eraseb4program" value="false"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"
@@ -425,7 +416,7 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\PowerDelivery;..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC"/>
+                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\PowerDelivery"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>

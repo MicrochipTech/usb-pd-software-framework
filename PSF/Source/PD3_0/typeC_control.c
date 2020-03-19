@@ -280,7 +280,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Clear the ATTACHED and AS_SOURCE_PD_CONTRACT_GOOD bits in 
                        Port Connection Status register */
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                            ~(PORT_CONNECT_STS_ATTACHED | PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD);
+                            ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS);
                     
                     /* Set the Power related variables to 0 in Status register */
                     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn10mA = RESET_TO_ZERO; 
@@ -558,18 +558,18 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     if(u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
                     {
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                                ~(PORT_CONNECT_STS_ORIENTATION_FLIPPED);
+                                                ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS);
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);
                     }
                     /*Sink attached in CC2*/
                     else
                     {
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                                                 PORT_CONNECT_STS_ORIENTATION_FLIPPED;                        
+                                                 DPM_PORT_ORIENTATION_FLIPPED_STATUS;                        
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
                     
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= PORT_CONNECT_STS_ATTACHED;  
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
                     
                     /* Enabling PRL Rx */
                     PRL_EnableRx(u8PortNum, TRUE);                  
@@ -703,7 +703,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
                     PRL_EnableRx (u8PortNum, FALSE);
                     
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(PORT_CONNECT_STS_ATTACHED);
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_ATTACHED_STATUS);
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
@@ -862,7 +862,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
                         
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                                ~(PORT_CONNECT_STS_ORIENTATION_FLIPPED); 
+                                                ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS); 
                         
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);                        
                     }
@@ -872,12 +872,12 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
                         
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                                                  PORT_CONNECT_STS_ORIENTATION_FLIPPED;
+                                                  DPM_PORT_ORIENTATION_FLIPPED_STATUS;
                         
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
 
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= PORT_CONNECT_STS_ATTACHED;  
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
                     
                     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_5V,\
                             (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
@@ -1652,7 +1652,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         
         /* Clear VCONN_STATUS bit in Port Connection Status register */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                                    ~(PORT_CONNECT_STS_VCONN_STATUS);
+                                                    ~(DPM_PORT_VCONN_STATUS);
         
         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE initiated\r\n");
         
@@ -1725,7 +1725,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         }
         
         /* Set VCONN_STATUS bit in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= PORT_CONNECT_STS_VCONN_STATUS;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_VCONN_STATUS;
     } 
 }
  
