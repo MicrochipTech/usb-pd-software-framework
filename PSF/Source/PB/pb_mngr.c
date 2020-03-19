@@ -166,7 +166,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED:
              
             u32SourcePDO = gasDPM[u8PortNum].u32NegotiatedPDO; 
-            u32SinkRDO = gasDPM[u8PortNum].u32SinkReqRDO;
+            u32SinkRDO = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
             
             /* If initial negotiation complete, go ahead and publish max caps */
             if (gasPBIntPortParam[u8PortNum].u8PortStatusMask & PB_PORT_STATUS_INITIAL_NEG_DONE)

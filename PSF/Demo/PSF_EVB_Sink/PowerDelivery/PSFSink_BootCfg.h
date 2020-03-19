@@ -96,46 +96,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_MAX_VCONN_FAULT_COUNT		  3
 #define CFG_POWER_GOOD_TIMER_MS			  10000
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: PIO configurations
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-    UPD350 GPIO Output mode enum.
-Description:
-	eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes applicable for UPD350 GPIO
-    in output mode.
-Remarks:
-        None
-**************************************************************************************************/
-typedef enum
-{
-    ePUSH_PULL_ACTIVE_HIGH       = 0x0CU,   // Active High output signal
-    ePUSH_PULL_ACTIVE_LOW        = 0x04U,   // Active low output signal
-    eOPEN_DRAIN_ACTIVE_HIGH      = 0x08U,   // Active High Open Drain output signal
-    eOPEN_DRAIN_ACTIVE_LOW       = 0x00U,   // Active Low Open Drain output signal
-    eOPEN_DRAIN_ACTIVE_HIGH_PU   = 0x88U,   // Active High Open Drain output signal with internal pull up
-    eOPEN_DRAIN_ACTIVE_LOW_PU    = 0x80U    // Active Low Open Drain output signal with internal pull up
-}eUPD_OUTPUT_PIN_MODES_TYPE;
-/**************************************************************************************************
-Summary:
-    UPD350 Fault_IN GPIO mode enum.
-Description:
-	eFAULT_IN_MODE_TYPE enum defines the various combination modes applicable for UPD350 GPIO
-    in input mode.
-Remarks:
-    None
-**************************************************************************************************/
-typedef enum
-{
-    eFAULT_IN_ACTIVE_LOW         = 0x20U,   //Active low input signal
-    eFAULT_IN_ACTIVE_HIGH        = 0x10U,   //Active high input signal
-    eFAULT_IN_ACTIVE_LOW_PU      = 0xA0U,   //Active low signal with internal pull up
-    eFAULT_IN_ACTIVE_HIGH_PD     = 0x50U    //Active high signal with internal pull down
-}eFAULT_IN_MODE_TYPE;
-
 #define CFG_PORT_UPD_EN_VBUS               eUPD_PIO3
 #define CFG_PORT_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_UPD_VBUS_DIS_PIO_NO       eUPD_PIO4
