@@ -422,9 +422,11 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 					                                                 
                case ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS:
                {    
-                    /* Reset the local HW - Reconfigure VBUS Thr to 0V*/
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_0V,0, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-                     
+                    /* Configuring VBUS threshold to detect VSafe0V and VSafe5V
+                     as on reception of HardReset Source will transition to VSafe0V*/
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
+                            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA, \
+                            TYPEC_CONFIG_NON_PWR_FAULT_THR);
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS;
                     break;                    
                }
@@ -432,12 +434,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                {                     
                     /*Transition only after the VBUS from Source has gone down to 0V*/
                     if(DPM_GetVBUSVoltage(u8PortNum) == TYPEC_VBUS_0V)
-                    {      
-					  	/*Configuring for VBUS threshold to detect TYPEC_VBUS_5V*/
-                        TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA, \
-                            TYPEC_CONFIG_NON_PWR_FAULT_THR);
-						
+                    {  						
                         /*Inform Protocol Layer about Hard Reset Complete */
                         PRL_HRorCRCompltIndicationFromPE(u8PortNum);
                         
