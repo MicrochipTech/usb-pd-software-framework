@@ -217,12 +217,11 @@ void TypeC_InitPort (UINT8 u8PortNum)
     {
         /* Enable threshold to detect 5V*/
         TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
-                gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA, \
-                    TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
         
         /*Disable the Sink circuitry to stop sinking the power from source*/
-        MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, TYPEC_VBUS_0V, \
-                (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
+        PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, \
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
       
     }
     
@@ -697,10 +696,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 		    {             
                 case TYPEC_UNATTACHED_SNK_ENTRY_SS: 
                 {
-                    
-                    gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = SET_TO_ZERO;
-                    MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_0V, \
-                            (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
+                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;;
+                    PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
+                            gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                     PRL_EnableRx (u8PortNum, FALSE);
                     
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_ATTACHED_STATUS);
@@ -724,7 +722,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif 
                         /* Configure VBUS threshold to detect 5V*/
-                        TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR); 
+                        TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR); 
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_INIT_SS; 
                     }
                     break;
@@ -815,47 +814,12 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                  /*Sink enables the CC Communication channel and notifies the external DPM
                  about the Type C Attached event this substate */
                 case TYPEC_ATTACHED_SNK_ENTRY_SS:
-                {                 
-                    switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
-                    {
-                        case TYPEC_DFP_DEFAULT_CURRENT:
-                        {
-#ifdef CONFIG_HOOK_DEBUG_MSG
-                            u32PDODebug = DPM_DEBUG_PDO_5V_9MA;
-#endif
-                            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = 90;
-                            break;  
-                        }
-                        
-                        case TYPEC_DFP_1A5_CURRENT:
-                        {
-#ifdef CONFIG_HOOK_DEBUG_MSG
-                            u32PDODebug = DPM_DEBUG_PDO_5V_1P5A;
-#endif
-                            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = 150;
-                            break;  
-                        }
-                        
-                        case TYPEC_DFP_3A0_CURRENT:
-                        {
-#ifdef CONFIG_HOOK_DEBUG_MSG                          
-                            u32PDODebug = DPM_DEBUG_PDO_5V_3A;
-#endif                            
-                            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = 300;
-                            break;  
-                        }
-                        
-                        default:
-                        {
-                            break;
-                        }
-                    }
-                 
+                {  
+                    /* Assign Operating current based on the Rp value*/
+					gasDPM[u8PortNum].u16SinkOperatingCurrInmA = TypeC_ObtainCurrentValuefrmRp(u8PortNum);
+                                     
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK: Entered"\
                                          "ATTACHED SNK State\r\n");
-#ifdef CONFIG_HOOK_DEBUG_MSG                    
-                    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
-#endif                    
                     /*Source Attached in CC1 pin*/
                     if (u8CC1_MatchISR > u8CC2_MatchISR)
                     {
@@ -879,8 +843,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
                     
-                    MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_5V,\
-                            (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
+                    PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_5V,\
+                            gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                                        
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_RUN_SM_SS; 
                     
@@ -889,7 +853,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 			
 				   
 				    /* Enable Power Threshold for TYPEC_VBUS_5V */
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,(gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
+                            gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_PWR_FAULT_THR);
                    
                    break;
                 }
@@ -919,10 +884,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 VSinkDisconnect*/
                 case TYPEC_ATTACHED_SNK_TPD_TO_SS:
                 {    
-                     
+                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                     /*Disable the Sink circuitry to stop sinking the power from source*/
-                      MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_0V,\
-                              (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
+                      PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V,\
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                      
                     if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) != (TYPEC_VBUS_0V_PRES))
                     {
@@ -1012,9 +977,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     }
                     else
                     {
+                        gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                         /*Disable the Sink circuitry to stop sinking the power from source*/
-                        MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,TYPEC_VBUS_0V, \
-                                (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
+                        PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                         
                          /*Setting the CC1 and CC2 line as Open Disconnect*/
                         TypeC_SetPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS);
@@ -2626,3 +2592,45 @@ void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 }
 
 /**********************************************************************/
+UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
+{
+    UINT16 u16ReturnVal;
+    switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
+    {
+        case TYPEC_DFP_DEFAULT_CURRENT:
+        {
+#ifdef CONFIG_HOOK_DEBUG_MSG
+            u32PDODebug = DPM_DEBUG_PDO_5V_9MA;
+#endif
+            u16ReturnVal = DPM_900mA;
+            break;  
+        }
+        case TYPEC_DFP_1A5_CURRENT:
+        {
+#ifdef CONFIG_HOOK_DEBUG_MSG
+            u32PDODebug = DPM_DEBUG_PDO_5V_1P5A;
+#endif
+            u16ReturnVal = DPM_1500mA;
+            break;  
+        }
+        case TYPEC_DFP_3A0_CURRENT:
+        {
+#ifdef CONFIG_HOOK_DEBUG_MSG                          
+            u32PDODebug = DPM_DEBUG_PDO_5V_3A;
+#endif                            
+            u16ReturnVal = DPM_3000mA;
+            break;  
+        }
+        default:
+        {
+            u16ReturnVal = DPM_0mA;
+            break;
+        }
+    }
+    
+#ifdef CONFIG_HOOK_DEBUG_MSG                    
+   DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
+#endif                    
+    
+    return u16ReturnVal;
+}

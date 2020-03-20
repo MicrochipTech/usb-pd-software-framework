@@ -73,9 +73,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)          ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
 #define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
 
-/* Define to get negotiated current */
-#define DPM_GET_SINK_CURRRENT(u8PortNum)         (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA)
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Defines to get data from given PDO
@@ -164,7 +161,12 @@ Source/Sink Power delivery objects*/
 #define DPM_VSAFE0V_PDO_INDEX   0
 #define DPM_VSAFE5V_PDO_INDEX_1 1
 
-/*define to convert u16MaxCurrSupportedin10mA expressed interms of 10mA to mA*/
+/*defines to set u16SinkOperatingCurrInmA */
+#define DPM_0mA     0
+#define DPM_900mA   900
+#define DPM_1500mA  1500
+#define DPM_3000mA  3000
+#define DPM_5000mA  5000
 #define DPM_10mA    10
 
 /***************************************u8PowerFaultISR defines*************** */
@@ -227,6 +229,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
+  UINT16 u16SinkOperatingCurrInmA;   //Operating current
   UINT32  u32NegotiatedPDO;     //NegotiatedPDO
  
   #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
