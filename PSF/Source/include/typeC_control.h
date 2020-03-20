@@ -1355,4 +1355,6 @@ void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 **************************************************************************************************/
 void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
+
+UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum);
 #endif /*_TYPECCONTROL_H_*/

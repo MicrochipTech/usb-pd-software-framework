@@ -86,6 +86,8 @@ void DPM_Init(UINT8 u8PortNum)
         /*Advertised PDO Count is updated to SinkPDO Count*/
         gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
                         gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+        
+        gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
     }
     
     gasDPM[u8PortNum].u8DPM_Status =  u8DPM_Status;
@@ -199,7 +201,15 @@ void DPM_SetPortPower(UINT8 u8PortNum)
 
 void DPM_TypeCVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 {
-    UINT16 u16Current = gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * 10;
+	UINT16 u16Current;
+	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+	{
+		u16Current = gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA;
+	}
+	else
+	{
+    	u16Current = gasDPM[u8PortNum].u16SinkOperatingCurrInmA;
+	}
   	if (DPM_VBUS_ON == u8VbusOnorOff)
     {
         TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, u16Current, TYPEC_CONFIG_NON_PWR_FAULT_THR);
@@ -553,8 +563,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     UINT8 u8SinkPower[7][2] = {0};
     UINT8 u8SrcIndex = 0;
     UINT8 u8SinkIndex = 0;
-    UINT8 u8CapMismatch = FALSE;
-    //UINT32 u32SinkSelectedPDO;    
+    UINT8 u8CapMismatch = FALSE;   
     /*PDO Count of the sink*/
 	UINT8 u8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
     /*PDO Count of the source derived from received src caps*/
@@ -595,7 +604,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                                                 DPM_GET_PDO_CURRENT(u32SinkPDO),\
                                                 DPM_GET_PDO_CURRENT(u32SinkPDO));
                 
-                gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_GET_PDO_CURRENT(u32SinkPDO);
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_GET_PDO_CURRENT(u32SinkPDO)*DPM_10mA;
                 
                 /*Updating the globals with Sink PDO selected */
                 gasDPM[u8PortNum].u32NegotiatedPDO = u32SinkPDO;
@@ -630,7 +639,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                                                 DPM_GET_PDO_CURRENT(u32RcvdSrcPDO),\
                                                 DPM_GET_PDO_CURRENT(u32RcvdSrcPDO));
                 
-                gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_GET_PDO_CURRENT(u32RcvdSrcPDO);
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_GET_PDO_CURRENT(u32RcvdSrcPDO) * DPM_10mA;
                 
                 /*Updating the globals with Sink PDO selected */
                 gasDPM[u8PortNum].u32NegotiatedPDO = u32RcvdSrcPDO;

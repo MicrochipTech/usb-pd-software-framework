@@ -586,6 +586,37 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
         {
             switch (PRL_GET_MESSAGE_TYPE (u32Header))
             {
+                #if (TRUE == INCLUDE_PD_SINK)
+                case PE_CTRL_GOTO_MIN:
+                {
+                    /*GotoMin message is received for Sink Data request*/
+                    if (ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS == \
+                        gasPolicy_Engine[u8PortNum].ePESubState)
+                    {
+                        /*kill the timer CONFIG_PE_SENDER_RESPONSE_TIMEOUTID*/
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Gotomin Msg Received\r\n");
+                        PE_KillPolicyEngineTimer (u8PortNum);
+
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
+                                                                   ePE_SNK_TRANSITION_SINK_ENTRY_SS);
+                        gasDPM[u8PortNum].u16SinkOperatingCurrInmA  = \
+                                gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
+                    }
+                    else if (ePE_SNK_READY_IDLE_SS == gasPolicy_Engine[u8PortNum].ePESubState)
+                    {
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
+                                                                   ePE_SNK_TRANSITION_SINK_ENTRY_SS);
+                        gasDPM[u8PortNum].u16SinkOperatingCurrInmA  = \
+                                gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
+                    
+                    }
+                    else
+                    {
+                        PE_HandleUnExpectedMsg (u8PortNum);
+                    }
+                }
+                #endif
+                  
                 case PE_CTRL_ACCEPT:
                 {
                     /*Accept message received for Sink Data request*/
@@ -594,9 +625,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     {
                         /*kill the timer CONFIG_PE_SENDER_RESPONSE_TIMEOUTID*/
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Accept Msg Received\r\n");
-                       PE_KillPolicyEngineTimer (u8PortNum);
+                        PE_KillPolicyEngineTimer (u8PortNum);
 
-                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                     }
                     /*Accept message received for soft reset sent by Sink*/
