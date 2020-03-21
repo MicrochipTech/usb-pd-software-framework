@@ -674,7 +674,7 @@ typedef enum
                                                                         3. Clear all New PDO 
 																		    registers
                                                                         4. Clear this bit
-    u8SinkModeSelect                1         R/W                    * Sink Selection mode for 
+    u8SinkConfigSel                1         R/W                    * Sink Selection mode for 
 																		operation.
                                                                         1. '0x00' Mode A: Prefer 
 																			  Higher Voltage and 
@@ -1351,7 +1351,7 @@ typedef struct _PortCfgStatus
     UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerPDOCnt;          
     UINT8 u8NewPDOSelect;           
-    UINT8 u8SinkModeSelect;         
+    UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
     UINT8 u8OVThresholdPercentage;  

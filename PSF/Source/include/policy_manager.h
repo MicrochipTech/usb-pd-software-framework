@@ -104,9 +104,10 @@ Source/Sink Power delivery objects*/
 // *****************************************************************************
 // *****************************************************************************
 /********************************************Define to form Data Request*******/
-#define DPM_FORM_DATA_REQUEST(OBJECT_POSITION,CAPABLITY_MISMATCH,USB_COMMUNICATION_CAPABLE, \
-        OPERATING_CURRENT,MAXIMUM_OPERATING_CURRENT) ((OBJECT_POSITION << 28) | \
-        (CAPABLITY_MISMATCH << 26) | (USB_COMMUNICATION_CAPABLE << 25) | (OPERATING_CURRENT << 10) \
+#define DPM_FORM_DATA_REQUEST(OBJECT_POSITION,CAPABLITY_MISMATCH,GIVEBACK_FLAG, \
+        USB_COMMUNICATION_CAPABLE,NO_USB_SUSP,OPERATING_CURRENT,MAXIMUM_OPERATING_CURRENT)\
+        ((OBJECT_POSITION << 28) | (GIVEBACK_FLAG << 27) | (CAPABLITY_MISMATCH << 26) | \
+        (USB_COMMUNICATION_CAPABLE << 25) | (NO_USB_SUSP << 24) | (OPERATING_CURRENT << 10) \
           | (MAXIMUM_OPERATING_CURRENT))
 
 /********************* Macros for E-Cable ***************************/
@@ -208,6 +209,18 @@ Source/Sink Power delivery objects*/
 #define DPM_PORT_IO_30_IND_STATUS                    BIT(8)
 #define DPM_PORT_IO_PS_RDY_RECVD_STATUS              BIT(9)
 #define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(10)
+
+/*********************u8SinkConfigSel defines******************/
+#define DPM_SINK_CONFIG_SINK_MODE_SEL_MASK  (BIT(0) | BIT(1))
+#define DPM_SINK_MODE_A     0x00
+#define DPM_SINK_MODE_B      BIT(0)
+
+#define DPM_SINK_CONFIG_NO_USB_SUSP_POS        2
+#define DPM_SINK_CONFIG_NO_USB_SUSP_MASK       BIT(2)
+
+#define DPM_SINK_CONFIG_GIVE_BACK_FLAG_POS  3
+#define DPM_SINK_CONFIG_GIVE_BACK_FLAG_MASK BIT(3)
+
 
 
 // *****************************************************************************

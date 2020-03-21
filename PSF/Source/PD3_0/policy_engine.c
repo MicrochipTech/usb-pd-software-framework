@@ -197,14 +197,15 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             are not supported*/
             /*Any control message with message type between soft reset and Not supported are
             not supported as they are reserved fields*/
-            if ((PE_CTRL_GOTO_MIN == u8MsgType) || (PE_CTRL_DR_SWAP == u8MsgType) ||
-                (PE_CTRL_PR_SWAP == u8MsgType) || (u8MsgType > PE_CTRL_NOT_SUPPORTED)  \
-               || ((u8MsgType > PE_CTRL_SOFT_RESET) && (u8MsgType < PE_CTRL_NOT_SUPPORTED)) )
+            if ((PE_CTRL_DR_SWAP == u8MsgType) || (PE_CTRL_PR_SWAP == u8MsgType) || \
+                (u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
+                    && (u8MsgType < PE_CTRL_NOT_SUPPORTED)) )
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
             else if ((DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE) && \
-                     ((PE_CTRL_GET_SINK_CAP == u8MsgType) || ((PE_CTRL_PING == u8MsgType))))
+                     ((PE_CTRL_GET_SINK_CAP == u8MsgType) || (PE_CTRL_PING == u8MsgType)\
+                        || (PE_CTRL_GOTO_MIN == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
