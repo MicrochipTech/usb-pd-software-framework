@@ -39,7 +39,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     
     gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[0] = CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_SINK_PDO_1_CURRENT, \
             CFG_PORT_SINK_PDO_1_VOLTAGE, CFG_PORT_SINK_USB_COMM, \
-            CFG_PORT_SINK_UNCONSTARINED_PWR,CFG_PORT_SINK_HIGHER_CAPABILITY);    
+            CFG_PORT_SINK_UNCONSTRAINED_PWR,CFG_PORT_SINK_HIGHER_CAPABILITY);    
 
     gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[1] = CFG_FORM_FIXED_PDOx(CFG_PORT_SINK_PDO_2_VOLTAGE, \
                                                     CFG_PORT_SINK_PDO_2_CURRENT);        
@@ -84,6 +84,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN = (UINT8)CFG_PORT_UPD_DC_DC_EN_PIO_NO;
     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN = (UINT8)CFG_PORT_UPD_DC_DC_EN_PIO_MODE;
 
+	gasCfgStatusData.sPerPortData[u8PortNum].u8SinkModeSelect = CFG_PORT_SINK_MODE_B;
 }
 
 
