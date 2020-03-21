@@ -519,7 +519,7 @@ void DPM_Get_Sink_Capabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu
                             (gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt * 4));
 }
 
-void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2])
+void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2], UINT8 u8SinkMode)
 {
     UINT8 u8PowerSwap = 0;
     UINT8 u8PowerSwapIndex = 0;
@@ -542,15 +542,44 @@ void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 
     {          
         for(u8PowerIndex = 0; u8PowerIndex < (u8PDOCount - u8PDOIndex - 1); u8PowerIndex++)
         {
-            if(u8Power[u8PowerIndex][0] <= u8Power[u8PowerIndex + 1][0])
+            if(u8SinkMode == CFG_PORT_SINK_MODE_A)
             {
-               u8PowerSwap = u8Power[u8PowerIndex][0];
-               u8PowerSwapIndex = u8Power[u8PowerIndex][1];
-               u8Power[u8PowerIndex][0] = u8Power[u8PowerIndex + 1][0];
-               u8Power[u8PowerIndex][1] = u8Power[u8PowerIndex + 1][1];
-               u8Power[u8PowerIndex + 1][0] = u8PowerSwap; 
-               u8Power[u8PowerIndex + 1][1] = u8PowerSwapIndex;
+                if(u8Power[u8PowerIndex][0] <= u8Power[u8PowerIndex + 1][0])
+                {
+                   u8PowerSwap = u8Power[u8PowerIndex][0];
+                   u8PowerSwapIndex = u8Power[u8PowerIndex][1];
+                   u8Power[u8PowerIndex][0] = u8Power[u8PowerIndex + 1][0];
+                   u8Power[u8PowerIndex][1] = u8Power[u8PowerIndex + 1][1];
+                   u8Power[u8PowerIndex + 1][0] = u8PowerSwap; 
+                   u8Power[u8PowerIndex + 1][1] = u8PowerSwapIndex;
+                }
             }
+            else if (u8SinkMode == CFG_PORT_SINK_MODE_B)
+            {
+                if(u8Power[u8PowerIndex][0] < u8Power[u8PowerIndex + 1][0])
+                {
+                   u8PowerSwap = u8Power[u8PowerIndex][0];
+                   u8PowerSwapIndex = u8Power[u8PowerIndex][1];
+                   u8Power[u8PowerIndex][0] = u8Power[u8PowerIndex + 1][0];
+                   u8Power[u8PowerIndex][1] = u8Power[u8PowerIndex + 1][1];
+                   u8Power[u8PowerIndex + 1][0] = u8PowerSwap; 
+                   u8Power[u8PowerIndex + 1][1] = u8PowerSwapIndex;
+                }
+                else if(u8Power[u8PowerIndex][0] == u8Power[u8PowerIndex + 1][0]) 
+                {
+                    if(DPM_GET_PDO_VOLTAGE(pu32CapsPayload[u8PowerIndex]) > DPM_GET_PDO_VOLTAGE(pu32CapsPayload[u8PowerIndex + 1]))
+                    {
+                        u8PowerSwap = u8Power[u8PowerIndex][0];
+                        u8PowerSwapIndex = u8Power[u8PowerIndex][1];
+                        u8Power[u8PowerIndex][0] = u8Power[u8PowerIndex + 1][0];
+                        u8Power[u8PowerIndex][1] = u8Power[u8PowerIndex + 1][1];
+                        u8Power[u8PowerIndex + 1][0] = u8PowerSwap; 
+                        u8Power[u8PowerIndex + 1][1] = u8PowerSwapIndex;
+                    }
+                }
+            }
+            
+            
         }
     }
   
@@ -573,15 +602,16 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     UINT8 u8SrcPDOIndex;
     UINT8 u8SinkPDOIndex;
     UINT32 u32SinkPDO;
+    UINT8 u8SinkMode = gasCfgStatusData.sPerPortData[u8PortNum].u8SinkModeSelect;
     
     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, 
             gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
         
     /* Calculate and sort the power of Sink PDOs */
-    DPM_CalculateAndSortPower(u8SinkPDOCnt, &gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[0], u8SinkPower);
+    DPM_CalculateAndSortPower(u8SinkPDOCnt, &gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[0], u8SinkPower, u8SinkMode);
     
     /* Calculate and sort the received source PDOs power */
-    DPM_CalculateAndSortPower(u8Recevd_SrcPDOCnt, pu32RecvdSrcCapsPayload, u8SrcPower);
+    DPM_CalculateAndSortPower(u8Recevd_SrcPDOCnt, pu32RecvdSrcCapsPayload, u8SrcPower, u8SinkMode);
     
     /* Compare Maximum power sink PDO to received source PDOs */
     u8SinkPDOIndex = u8SinkPower[0][1];

@@ -860,7 +860,7 @@ void DPM_StateMachineInit(void);
         None.
 
 **************************************************************************************************/
-void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2]);
+void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2], UINT8 u8SinkMode);
 
 /****************************** DPM Fault handling related APIs*****************************************/
 /**************************************************************************************************
