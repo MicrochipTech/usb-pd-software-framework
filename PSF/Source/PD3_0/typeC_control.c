@@ -1811,6 +1811,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
         DEBUG_PRINT_PORT_STR(gasTypeCcontrol[u8PortNum].u8CC1_MatchISR,"TYPEC: TYPEC: CC1 register\r\n");
         DEBUG_PRINT_PORT_STR(gasTypeCcontrol[u8PortNum].u8CC2_MatchISR,"TYPEC: TYPEC: CC2 register\r\n");
                  
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
         if(gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_DISCHARGE_ON_MASK)
         {
             TypeC_VCONNDis_On_IntrHandler(u8PortNum);
@@ -1819,7 +1820,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
         {
             TypeC_VCONN_ON_IntrHandler(u8PortNum);
         }
-        
+#endif
         if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_CCINT_STATUS_MASK)
         {
             switch (gasTypeCcontrol[u8PortNum].u8TypeCState)
