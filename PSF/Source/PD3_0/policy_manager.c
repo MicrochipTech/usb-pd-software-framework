@@ -681,13 +681,25 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
             
             if((DPM_GET_PDO_VOLTAGE(u32RcvdSrcPDO)) == DPM_GET_PDO_VOLTAGE(u32SinkPDO))
             {
-                /* Form Request message with Capability Mismatch*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = \
+                if(u8SinkGiveBackFlag)
+                {
+                    /*if go to min supported Form request message with minimum current */
+                    /* Form Request message with Capability Mismatch*/
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = \
+                            DPM_FORM_DATA_REQUEST((u8SrcPDOIndex + 1), u8CapMismatch,
+                            u8SinkGiveBackFlag, DPM_GET_PDO_USB_COMM_CAP(u32SinkPDO),\
+                            u8SinkNoUSBSusp, DPM_GET_PDO_CURRENT(u32RcvdSrcPDO),\
+                            (gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA/DPM_10mA));      
+                }
+                else
+                {
+                     /* Form Request message with Capability Mismatch*/
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = \
                             DPM_FORM_DATA_REQUEST((u8SrcPDOIndex + 1), u8CapMismatch,
                             u8SinkGiveBackFlag, DPM_GET_PDO_USB_COMM_CAP(u32SinkPDO),\
                             u8SinkNoUSBSusp, DPM_GET_PDO_CURRENT(u32RcvdSrcPDO),\
                                                 DPM_GET_PDO_CURRENT(u32RcvdSrcPDO));
-                
+                }
                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_GET_PDO_CURRENT(u32RcvdSrcPDO) * DPM_10mA;
                 
                 /*Updating the globals with Sink PDO selected */
