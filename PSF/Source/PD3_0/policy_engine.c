@@ -197,14 +197,15 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             are not supported*/
             /*Any control message with message type between soft reset and Not supported are
             not supported as they are reserved fields*/
-            if ((PE_CTRL_GOTO_MIN == u8MsgType) || (PE_CTRL_DR_SWAP == u8MsgType) ||
-                (PE_CTRL_PR_SWAP == u8MsgType) || (u8MsgType > PE_CTRL_NOT_SUPPORTED)  \
-               || ((u8MsgType > PE_CTRL_SOFT_RESET) && (u8MsgType < PE_CTRL_NOT_SUPPORTED)) )
+            if ((PE_CTRL_DR_SWAP == u8MsgType) || (PE_CTRL_PR_SWAP == u8MsgType) || \
+                (u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
+                    && (u8MsgType < PE_CTRL_NOT_SUPPORTED)) )
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
             else if ((DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE) && \
-                     ((PE_CTRL_GET_SINK_CAP == u8MsgType) || ((PE_CTRL_PING == u8MsgType))))
+                     ((PE_CTRL_GET_SINK_CAP == u8MsgType) || (PE_CTRL_PING == u8MsgType)\
+                        || (PE_CTRL_GOTO_MIN == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
@@ -586,6 +587,37 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
         {
             switch (PRL_GET_MESSAGE_TYPE (u32Header))
             {
+                #if (TRUE == INCLUDE_PD_SINK)
+                case PE_CTRL_GOTO_MIN:
+                {
+                    /*GotoMin message is received for Sink Data request*/
+                    if (ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS == \
+                        gasPolicy_Engine[u8PortNum].ePESubState)
+                    {
+                        /*kill the timer CONFIG_PE_SENDER_RESPONSE_TIMEOUTID*/
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Gotomin Msg Received\r\n");
+                        PE_KillPolicyEngineTimer (u8PortNum);
+
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
+                                                                   ePE_SNK_TRANSITION_SINK_ENTRY_SS);
+                        gasDPM[u8PortNum].u16SinkOperatingCurrInmA  = \
+                                gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
+                    }
+                    else if (ePE_SNK_READY_IDLE_SS == gasPolicy_Engine[u8PortNum].ePESubState)
+                    {
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
+                                                                   ePE_SNK_TRANSITION_SINK_ENTRY_SS);
+                        gasDPM[u8PortNum].u16SinkOperatingCurrInmA  = \
+                                gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
+                    
+                    }
+                    else
+                    {
+                        PE_HandleUnExpectedMsg (u8PortNum);
+                    }
+                }
+                #endif
+                  
                 case PE_CTRL_ACCEPT:
                 {
                     /*Accept message received for Sink Data request*/
@@ -594,9 +626,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     {
                         /*kill the timer CONFIG_PE_SENDER_RESPONSE_TIMEOUTID*/
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Accept Msg Received\r\n");
-                       PE_KillPolicyEngineTimer (u8PortNum);
+                        PE_KillPolicyEngineTimer (u8PortNum);
 
-                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                     }
                     /*Accept message received for soft reset sent by Sink*/

@@ -73,9 +73,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)          ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
 #define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
 
-/* Define to get negotiated current */
-#define DPM_GET_SINK_CURRRENT(u8PortNum)         (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA)
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Defines to get data from given PDO
@@ -107,9 +104,10 @@ Source/Sink Power delivery objects*/
 // *****************************************************************************
 // *****************************************************************************
 /********************************************Define to form Data Request*******/
-#define DPM_FORM_DATA_REQUEST(OBJECT_POSITION,CAPABLITY_MISMATCH,USB_COMMUNICATION_CAPABLE, \
-        OPERATING_CURRENT,MAXIMUM_OPERATING_CURRENT) ((OBJECT_POSITION << 28) | \
-        (CAPABLITY_MISMATCH << 26) | (USB_COMMUNICATION_CAPABLE << 25) | (OPERATING_CURRENT << 10) \
+#define DPM_FORM_DATA_REQUEST(OBJECT_POSITION,CAPABLITY_MISMATCH,GIVEBACK_FLAG, \
+        USB_COMMUNICATION_CAPABLE,NO_USB_SUSP,OPERATING_CURRENT,MAXIMUM_OPERATING_CURRENT)\
+        ((OBJECT_POSITION << 28) | (GIVEBACK_FLAG << 27) | (CAPABLITY_MISMATCH << 26) | \
+        (USB_COMMUNICATION_CAPABLE << 25) | (NO_USB_SUSP << 24) | (OPERATING_CURRENT << 10) \
           | (MAXIMUM_OPERATING_CURRENT))
 
 /********************* Macros for E-Cable ***************************/
@@ -164,7 +162,12 @@ Source/Sink Power delivery objects*/
 #define DPM_VSAFE0V_PDO_INDEX   0
 #define DPM_VSAFE5V_PDO_INDEX_1 1
 
-/*define to convert u16MaxCurrSupportedin10mA expressed interms of 10mA to mA*/
+/*defines to set u16SinkOperatingCurrInmA */
+#define DPM_0mA     0
+#define DPM_900mA   900
+#define DPM_1500mA  1500
+#define DPM_3000mA  3000
+#define DPM_5000mA  5000
 #define DPM_10mA    10
 
 /***************************************u8PowerFaultISR defines*************** */
@@ -207,6 +210,18 @@ Source/Sink Power delivery objects*/
 #define DPM_PORT_IO_PS_RDY_RECVD_STATUS              BIT(9)
 #define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(10)
 
+/*********************u8SinkConfigSel defines******************/
+#define DPM_SINK_CONFIG_SINK_MODE_SEL_MASK  (BIT(0) | BIT(1))
+#define DPM_SINK_MODE_A     0x00
+#define DPM_SINK_MODE_B      BIT(0)
+
+#define DPM_SINK_CONFIG_NO_USB_SUSP_POS        2
+#define DPM_SINK_CONFIG_NO_USB_SUSP_MASK       BIT(2)
+
+#define DPM_SINK_CONFIG_GIVE_BACK_FLAG_POS  3
+#define DPM_SINK_CONFIG_GIVE_BACK_FLAG_MASK BIT(3)
+
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -227,6 +242,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
+  UINT16 u16SinkOperatingCurrInmA;   //Operating current
   UINT32  u32NegotiatedPDO;     //NegotiatedPDO
  
   #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
@@ -857,7 +873,7 @@ void DPM_StateMachineInit(void);
         None.
 
 **************************************************************************************************/
-void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2]);
+void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2], UINT8 u8SinkMode);
 
 /****************************** DPM Fault handling related APIs*****************************************/
 /**************************************************************************************************

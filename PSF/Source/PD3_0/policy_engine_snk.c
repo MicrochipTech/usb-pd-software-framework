@@ -102,8 +102,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             {
 			  	/* Enable Power fault thresholds for TYPEC_VBUS_5V to detect Power faults*/
                 TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                    (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA), \
-                    TYPEC_CONFIG_PWR_FAULT_THR);
+                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA,TYPEC_CONFIG_PWR_FAULT_THR);
 				
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_WAIT_FOR_CAPABILITIES;
                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS;
@@ -260,9 +259,9 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK: Enterted the state\r\n");
                     
                     /* Requested current controlling */
-                      MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, \
+                      PWRCTRL_ConfigSinkHW(u8PortNum, \
                             DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO),\
-                              (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA *DPM_10mA));
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                     
                     /*Initialize and run CONFIG_PE_PSTRANSITION_TIMEOUT_MS*/
                     /*Set the timer callback to transition to 
@@ -425,7 +424,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /* Configuring VBUS threshold to detect VSafe0V and VSafe5V
                      as on reception of HardReset Source will transition to VSafe0V*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA, \
+                            gasDPM[u8PortNum].u16SinkOperatingCurrInmA, \
                             TYPEC_CONFIG_NON_PWR_FAULT_THR);
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS;
                     break;                    
