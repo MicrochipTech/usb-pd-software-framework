@@ -40,37 +40,42 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 UINT8 MchpPSF_Init(void)
 {
     UINT8 u8InitStatus = TRUE;
+    
+    /* Load configurations */
+    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(&gasCfgStatusData);
        
     /*Timer module Initialization*/
     u8InitStatus &= PDTimer_Init();
     
     /*Initialize HW SPI module defined by the user*/
     u8InitStatus &= MCHP_PSF_HOOK_UPDHW_INTF_INIT();
-    
+	
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+    /*Initialize HW I2C module interface defined by the user*/
+    (void)MCHP_PSF_HOOK_I2C_DCDC_INTF_INIT();
+#endif    
     
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        /*If Timer and HW module of SOC are not initializsed properly disable all the ports*/
+        /*If Timer and HW module of SOC are not initialized properly disable all the ports*/
         if (TRUE != u8InitStatus)
         {
-            gasPortConfigurationData[u8PortNum].u32CfgData &= \
-                                ~(TYPEC_PORT_ENDIS_MASK);
+            gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
+                                                       ~(TYPEC_PORT_ENDIS_MASK);
         }
         /*UPD350 Reset GPIO Init*/
         MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum);
-    }
-
+    }  
+        
 	/*Initialize Internal global variables*/
     IntGlobals_PDInitialization();
     
-    UPD_CheckAndDisablePorts();
-    
-    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(&gasPortConfigurationData);  	
+    UPD_CheckAndDisablePorts();	
 
     /* VBUS threshold correction factor */
     UPD_FindVBusCorrectionFactor();
     
-    #ifdef CONFIG_HOOK_DEBUG_MSG
+    #if CONFIG_HOOK_DEBUG_MSG
     /*Initialize debug hardware*/
     MCHP_PSF_HOOK_DEBUG_INIT();
     #endif
@@ -80,16 +85,28 @@ UINT8 MchpPSF_Init(void)
     
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (UPD_PORT_ENABLED == ((gasPortConfigurationData[u8PortNum].u32CfgData \
+        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
             /*User defined UPD Interrupt Initialization for MCU*/
             MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum);
             
-            /*Port Power Intialisation*/
+            /*Port Power Initialization*/
             PWRCTRL_initialization(u8PortNum);
         }
     }
+    
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+    for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    {
+        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
+                                    & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
+        {
+            (void)MCHP_PSF_HOOK_I2CDCDCALERTINIT(u8PortNum);
+            (void)MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_INIT(u8PortNum);
+        }
+    }
+#endif
 	    
     DPM_StateMachineInit();  
 
@@ -103,7 +120,7 @@ void MchpPSF_RUN()
 {
 	for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
-        if (UPD_PORT_ENABLED == ((gasPortConfigurationData[u8PortNum].u32CfgData \
+        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                   & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
            DPM_RunStateMachine (u8PortNum);

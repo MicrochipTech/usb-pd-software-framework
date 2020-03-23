@@ -309,15 +309,15 @@ void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnTyp
     }   
 }
 /**********************************************************************************/
-#if INCLUDE_POWER_FAULT_HANDLING
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 
 void UPD_FaultInInit (UINT8 u8PortNum)
 {
 	/* Get the PIO number*/
-	UINT8 u8PIONum = gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio;
+	UINT8 u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
     
     /* Get the Fault in PIO mode*/
-    UINT8 u8FaultInMode = gasUpdPioDcDcConfig[u8PortNum].u8FaultInMode;
+    UINT8 u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
     
     UINT16 u16Data;
     
@@ -332,7 +332,7 @@ void UPD_FaultInInit (UINT8 u8PortNum)
     UPD_RegWriteByte(u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), u8FaultInMode);
     
     /*Write Debounce count*/
-    UPD_ConfigurePIODebounceCount(u8PortNum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS, CONFIG_FAULT_IN_OCS_DEBOUNCE_MS);
+    UPD_ConfigurePIODebounceCount(u8PortNum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS, gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms);
     
     /* Enable Debounce*/
     UPD_GPIOSetDebounce (u8PortNum, u8PIONum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS);
@@ -348,9 +348,9 @@ void UPD_FaultInInit (UINT8 u8PortNum)
 /*******************************************************************************/
 void UPD_EnableFaultIn(UINT8 u8PortNum)
 {
-	UINT8 u8PIONum = gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio;
+	UINT8 u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
 	UINT16 u16INTSTS = BIT(u8PIONum);
-    UINT8 u8FaultInMode = gasUpdPioDcDcConfig[u8PortNum].u8FaultInMode;
+    UINT8 u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
     
     /* Get the edge type from the user input.*/
     u8FaultInMode &= (UPD_CFG_PIO_RISING_ALERT | UPD_CFG_PIO_FALLING_ALERT);
@@ -369,10 +369,10 @@ void UPD_GPIOInit(UINT8 u8PortNum)
 	/*Enable GPIO interrupt for UPD350*/
 	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, UPDINTR_PIO_INT);
 	
-	#if INCLUDE_POWER_FAULT_HANDLING
+	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         /* Configure Fault Pin */
         UPD_FaultInInit(u8PortNum);
-	#if INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
+	#if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
 		/* Configure PIO override for fault conditions */
 		(void)UPD_ConfigPwrFaultPIOOvverride(u8PortNum);
 	#endif 
@@ -389,15 +389,15 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
  	/* Read the interrupt status*/
 	UPD_RegisterReadISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntSts, BYTE_LEN_2);
 	
-    #if INCLUDE_POWER_FAULT_HANDLING
-	if ((BIT(gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio)) & u16PIOIntSts)
+    #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+	if ((BIT(gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN)) & u16PIOIntSts)
 	{	
         UINT16 u16PIORegVal;
         /* Clear the OCS interrupt Configuration*/
-        UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio),\
+        UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN),\
 									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
         u16PIORegVal &= ~ (UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
-		UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio),\
+		UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN),\
 										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
         /*Notify Power fault to DPM only none of the Power fault recovery is not in progress*/
         if (!gasDPM[u8PortNum].u8HRCompleteWait)
@@ -407,11 +407,11 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
         }
     
 		#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-			/* Disable EN_VBUS gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio*/
-			UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio),\
+			/* Disable EN_VBUS gasPortConfigurationData.sPortCSRData[u8PortNum].u8Pio_VBUS_EN*/
+			UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
 									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
 			u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
-			UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio),\
+			UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
 										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
 		#endif
 	}
@@ -422,7 +422,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
 }
 /******************************************************************************************************/
 
-#if INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
+#if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
 
 void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 {
@@ -431,7 +431,7 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
   	/* Override 2 - Fault Low*/
 	
 	/* Get the PIO number for EN_VBUS */
-	UINT8 u8PIONum = gasUpdPioDcDcConfig[u8PortNum].u8VBUSEnPio;
+	UINT8 u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN;
 	/*Setting Monitoring bit as '1' checks whether voltage exceeds the configured source 
         selection VBUS threshold value or the source selection PIO goes high */
     /* Setting Monitoring bit as '0' checks whether voltage falls below the source 
@@ -452,7 +452,7 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 	  (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS3_THR_MATCH));
 	
 	/* Configure the Source for override 2 as Fault_IN/PRT_CTL pin low from Load switch */
-	UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR2_SRC_SEL, gasUpdPioDcDcConfig[u8PortNum].u8FaultInPio);
+	UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR2_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN);
 	
 	/* VBUS_EN is configured as override Pin in output mode */
 	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, BIT(u8PIONum));
@@ -475,16 +475,16 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 
 /******************************************************************************************************/
 
-#if INCLUDE_POWER_MANAGEMENT_CTRL
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
 
 UINT8 UPD_CheckUPDsActive()
 {
     UINT8 u8IsAllUPDsActive = FALSE;
     
     for (UINT8 u8PortNo = 0; u8PortNo < CONFIG_PD_PORT_COUNT; u8PortNo++)
-    {
+  	{
 		/*Ignore if port is disabled, so consider only for enabled ports*/
-		if (((gasPortConfigurationData[u8PortNo].u32CfgData \
+		if (((gasCfgStatusData.sPerPortData[u8PortNo].u32CfgData \
             & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
 		{
 			/*UPD_STATE_ACTIVE will be set frequently by respective Alert ISR.
@@ -580,7 +580,7 @@ void UPD_PwrManagementCtrl(UINT8 u8PortNum)
         {
             /* Notification CallBack to the Client, to indicate all the
              UPD350s are in idle state */
-            (void) MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eMCHP_PSF_UPDS_IN_IDLE);
+            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_UPDS_IN_IDLE);
         }
     } 
 }
@@ -619,7 +619,7 @@ void UPD_CheckAndDisablePorts (void)
         
         /*Check if timer is Active, if Timer expired, come out of this loop */
         
-        if (((gasPortConfigurationData[u8PortNum].u32CfgData \
+        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
             & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
         {
             /*Start 10ms timer*/
@@ -645,14 +645,14 @@ void UPD_CheckAndDisablePorts (void)
                     {  
                         /*Value read from this port is right, so enable the ports, Set SPI 
                            Communication is active for this port*/
-                        gasPortConfigurationData[u8PortNum].u32CfgData |= \
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= \
                                 (UPD_PORT_ENABLED << TYPEC_PORT_ENDIS_POS);
                         break;
                     }
                     else
                     {
                         /* If the VID and PID doesnt match, Disable the ports */
-                        gasPortConfigurationData[u8PortNum].u32CfgData &= \
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
                                 ~(TYPEC_PORT_ENDIS_MASK);
                         
                     }
@@ -660,7 +660,7 @@ void UPD_CheckAndDisablePorts (void)
                 } /*end of UPD_SPI_TEST_VAL check if*/
                 else
                 {
-                    gasPortConfigurationData[u8PortNum].u32CfgData &= \
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
                             ~(TYPEC_PORT_ENDIS_MASK);
                 }   /*end of UPD_SPI_TEST_VAL check if else*/
 #endif            
@@ -673,10 +673,10 @@ void UPD_CheckAndDisablePorts (void)
     /* Work around - If port-0 as source and port-1 as sink interrupt issued continuously */
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
-        if (UPD_PORT_DISABLED == ((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
+        if (UPD_PORT_DISABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
             >> TYPEC_PORT_ENDIS_POS))
         {
-            gasPortConfigurationData[u8PortNum].u32CfgData = 0;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData = 0;
         }
     }
 }
@@ -689,7 +689,7 @@ void UPD_FindVBusCorrectionFactor(void)
       
     for(UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
+        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
             >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
         {
             /* Read VBUS threshold register value from OTP */    

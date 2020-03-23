@@ -203,44 +203,68 @@ Example:
  ***************************************************************************/
 #define INCLUDE_PDFU                  0
 
+/**************************************************************************************************
+Summary:
+    Power Balancing support code inclusion.
+Description:
+    Setting the INCLUDE_POWER_BALANCING as 1 enables PSF to include the PD 
+    Power Balancing functionality at compile time. User can set this define to 0
+    to reduce code size if none of the PD enabled Source ports in the system 
+    require Power Balancing functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_POWER_BALANCING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_POWER_BALANCING	1(Include Power Balancing functionality in PSF)
+    #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_POWER_BALANCING  		1
+
+/**************************************************************************************************
+Summary:
+    Power Throttling support code inclusion.
+Description:
+    Setting the INCLUDE_POWER_THROTTLING as 1 enables PSF to include the 
+    Power Throttling(PT) feature at compile time. User can set this define to 0
+    to reduce code size if none of the Source ports in the system 
+    require PT functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_POWER_THROTTLING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_POWER_THROTTLING	1(Include PT functionality in PSF)
+    #define INCLUDE_POWER_THROTTLING	0(Exclude PT functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_POWER_THROTTLING        1 
+
+/**************************************************************************************************
+Summary:
+    PPS support code inclusion.
+Description:
+    Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Programmable 
+    Power Supply(PPS) feature at compile time. User can set this define to 0
+    to reduce code size if none of the Source ports in the system 
+    require PPS functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_PD_SOURCE_PPS to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_SOURCE_PPS	1(Include PPS functionality in PSF)
+    #define INCLUDE_PD_SOURCE_PPS	0(Exclude PPS functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_SOURCE_PPS           1
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Power Delivery IDs
 // *****************************************************************************
 // *****************************************************************************
-/************************************************************************
-Summary:
-    Vendor Identifier value.
-Description:
-    CONFIG_VENDOR_ID field defines Vendor Identifier value. It is used by the PD Firmware Update
-    state-machine during Enumeration phase. This information is shared with the PDFU Initiator 
-    as part of GET_FW_ID command's response.
-Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.It should 
-    always be two byte wide.
-Example:
-    <code>
-    #define CONFIG_VENDOR_ID    0x0424u
-    </code>                                                                     
-  ************************************************************************/
-#define CONFIG_VENDOR_ID		
-                                                                                          
-/************************************************************************
-Summary:
-    Product Identifier value.
-Description:
-    CONFIG_PRODUCT_ID is the Product Identifier value. It is used by the PD Firmware Update 
-    state-machine during Enumeration phase. This information is shared with the PDFU Initiator 
-    as part of GET_FW_ID command's response.
-Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.It should 
-    always be two byte wide.
-Example:
-    <code>
-	#define CONFIG_PRODUCT_ID 0x301Cu
-    </code>                                                                      
-  ************************************************************************/
-#define CONFIG_PRODUCT_ID
 
 /************************************************************************
 Summary:
@@ -274,24 +298,7 @@ Example:
     #define CONFIG_HWMAJOR_VERSION    0x1
     </code>                                                                 
   ************************************************************************/                                                                                            
-#define CONFIG_HWMAJOR_VERSION
-
-/************************************************************************
-Summary:
-    Silicon Base Version.
-Description:
-    CONFIG_SILICON_VERSION is Silicon Base Version. It is used by the PD Firmware Update 
-    state-machine during Enumeration phase. This information is shared with the PDFU Initiator as 
-    part of GET_FW_ID command's response.
-Remarks:
-    The user definition of this macro is mandatory when INCLUDE_PDFU is defined as '1'.
-    It should be a byte wide.
-Example:
-    <code>
-    #define CONFIG_SILICON_VERSION    0x01u
-    </code>                                                      
-  ************************************************************************/                                                                                           
-#define CONFIG_SILICON_VERSION
+#define CONFIG_HWMAJOR_VERSION       
 
 // *****************************************************************************
 // *****************************************************************************
@@ -346,774 +353,8 @@ Note:
 
 
   **************************************************************************/
- #define CONFIG_DEFINE_UPD350_HW_INTF_SEL
+ #define CONFIG_DEFINE_UPD350_HW_INTF_SEL         
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Port Specific configurations for CONFIG_PD_PORT_COUNT ports
-// *****************************************************************************
-// *****************************************************************************
-// *****************************************************************************
-// *****************************************************************************
-// Section: Port basic configurations
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-    Port's Power Role.
-Description:
-    CONFIG_PORT_n_POWER_ROLE defines the Power role of nth port. n can take values between 0 
-    and (CONFIG_PD_PORT_COUNT-1). 
-	Setting CONFIG_PORT_n_POWER_ROLE as 1, configures the nth port as Source or 
-	Setting CONFIG_PORT_n_POWER_ROLE as 0, configures the nth port as Sink.
-Remarks:
-    The default Data Role for a port is determined based on the Power role configured via this
-    through this define. Data role is configured as 'DFP' for Source and 'UFP' for Sink
-    respectively.
-    By default, all the ports are configured as Source i.e. CONFIG_PORT_0_POWER_ROLE
-    defined as 1.
-Example:
-    <code>
-    #define CONFIG_PORT_0_POWER_ROLE	1 (Configuring the Port 0 as Source)
-    #define CONFIG_PORT_0_POWER_ROLE	0 (Configuring the Port 0 as Sink)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_POWER_ROLE
-#define CONFIG_PORT_0_POWER_ROLE           1   /* 0- PD_ROLE_SINK , 1- PD_ROLE_SOURCE */
-#define CONFIG_PORT_1_POWER_ROLE           1
-#define CONFIG_PORT_2_POWER_ROLE           1
-#define CONFIG_PORT_3_POWER_ROLE           1
-
-/**********************************************************************************************
-Summary:
-    Rp Current value for the port
-Description:
-    CONFIG_PORT_n_RP_CURRENT_VALUE defines the Rp Value of nth port. n can take values between 0 and
-    (CONFIG_PD_PORT_COUNT-1). CONFIG_PORT_n_RP_CURRENT_VALUE can take following values
-    0 - Rp termination is disabled; For Sink,CONFIG_PORT_n_RP_CURRENT_VALUE
-    should be set '0'
-    
-    1 - Rp termination is set to default USB Power
-    
-    2 - Rp termination is set to 1.5A current
-    
-    3 - Rp termination is set to 3A current
-Remarks:
-    If CONFIG_PORT_n_POWER_ROLE set as 0(Sink),CONFIG_PORT_n_RP_CURRENT_VALUE should be defined as 0. 
-    If CONFIG_PORT_n_POWER_ROLE set as 1(Source),CONFIG_PORT_n_RP_CURRENT_VALUE should take value 
-    other than 0. By default, all the ports are configured as Source, Rp termination set to 3A.
-Example:
-    <code>
-    #define CONFIG_PORT_0_RP_CURRENT_VALUE	 0 (Configuring the Port 0 Rp Value as Disabled)
-    #define CONFIG_PORT_0_RP_CURRENT_VALUE	 1 (Configuring the Port 0 Rp Value as DEFAULT)
-    #define CONFIG_PORT_0_RP_CURRENT_VALUE	 2 (Configuring the Port 0 Rp Value as CURRENT_15)
-    #define CONFIG_PORT_0_RP_CURRENT_VALUE	 3 (Configuring the Port 0 Rp Value as CURRENT_30)
-    </code>                                                                                             
-  **********************************************************************************************/
-#define  CONFIG_PORT_n_RP_CURRENT_VALUE 
-#define  CONFIG_PORT_0_RP_CURRENT_VALUE     3        /* 0- RP_DISABLED(To be set for Sink), 1- DEFAULT_CURRENT ,2- CURRENT_15 ,3- CURRENT_30 */
-#define  CONFIG_PORT_1_RP_CURRENT_VALUE     3
-#define  CONFIG_PORT_2_RP_CURRENT_VALUE     3
-#define  CONFIG_PORT_3_RP_CURRENT_VALUE     3
-
-/**************************************************************************************************
-Summary:
-    Port Enable disable macro.
-Description:
-	CONFIG_PORT_n_ENABLE defines whether a port to be enabled or disabled. n can take values between 0 
-	and (CONFIG_PD_PORT_COUNT-1).
-	If CONFIG_PORT_n_ENABLE defined as 1, port is enabled.
-	If CONFIG_PORT_n_ENABLE defined as 0, port is disabled.
-Remarks:
-	By default, all ports are enabled.
-Example:
-	<code>
-	#define CONFIG_PORT_0_ENABLE  0 (Type-C Port 0 Disabled)
-	#define CONFIG_PORT_0_ENABLE  1 (Type-C Port 0 Enabled)
-	</code>
-                                                                           
-**************************************************************************************************/
-#define CONFIG_PORT_n_ENABLE         1
-#define CONFIG_PORT_0_ENABLE         1
-#define CONFIG_PORT_1_ENABLE         1
-#define CONFIG_PORT_2_ENABLE         1
-#define CONFIG_PORT_3_ENABLE         1
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Source Port configuration
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-    Number of Source PDOs.
-Description:
-    CONFIG_PORT_n_SOURCE_NUM_OF_PDOS refers to the number PDOs supported by the nth source port.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    CONFIG_PORT_n_SOURCE_NUM_OF_PDOS can take only values from 1 to 7. Default value for 
-    CONFIG_PORT_n_SOURCE_NUM_OF_PDOS is 1.
-Example:
-    <code>
-	#define CONFIG_PORT_0_SOURCE_NUM_OF_PDOS		4 (Port 0 has 4 Source PDOs)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_NUM_OF_PDOS		
-#define CONFIG_PORT_0_SOURCE_NUM_OF_PDOS           1
-#define CONFIG_PORT_1_SOURCE_NUM_OF_PDOS           1
-#define CONFIG_PORT_2_SOURCE_NUM_OF_PDOS           1
-#define CONFIG_PORT_3_SOURCE_NUM_OF_PDOS           1
-
-/**************************************************************************************************
-Summary:
-    Source PDO's USB Suspend field.
-Description:
-    CONFIG_PORT_n_SOURCE_USB_SUSPEND defines the USB Suspend supported bit in fixed PDO of nth 
-    source port. As per PD specification, this field is exposed for PDO1 alone, for rest of the 
-    fixed PDOs it is Zero. CONFIG_PORT_n_SOURCE_PDO_1_USB_SUSPEND can be configured as 0 or 1.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    By default, it is defined as '0'.
-Example:
-    <code>
-    #define CONFIG_PORT_0_SOURCE_USB_SUSPEND		0 (Port 0 is not USB suspend capable)
-    #define CONFIG_PORT_0_SOURCE_USB_SUSPEND		1 (Port 0 is USB suspend capable)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_USB_SUSPEND
-#define CONFIG_PORT_0_SOURCE_USB_SUSPEND         0
-#define CONFIG_PORT_1_SOURCE_USB_SUSPEND         0
-#define CONFIG_PORT_2_SOURCE_USB_SUSPEND         0
-#define CONFIG_PORT_3_SOURCE_USB_SUSPEND         0
-
-/**************************************************************************************************
-Summary:
-    Source PDO's Unconstrained Power field.
-Description:
-    CONFIG_PORT_n_SOURCE_UNCONSTRAINED_PWR defines the Unconstrained Power bit in fixed PDO of
-    nth source port. As per PD specification, this field is exposed for PDO1 alone, for rest of
-    the fixed PDOs it is Zero. CONFIG_PORT_n_SOURCE_UNCONSTRAINED_PWR can be configured as 0 or 1.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    By default, this define is set to 1.
-Example:
-    <code>
-    #define CONFIG_PORT_0_SOURCE_UNCONSTRAINED_PWR	 1 (Port 0 is unconstrained power capable)
-    #define CONFIG_PORT_0_SOURCE_UNCONSTRAINED_PWR	 0 (Port 0 is not unconstrained power capable)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_UNCONSTRAINED_PWR
-#define CONFIG_PORT_0_SOURCE_UNCONSTRAINED_PWR         1
-#define CONFIG_PORT_1_SOURCE_UNCONSTRAINED_PWR         1
-#define CONFIG_PORT_2_SOURCE_UNCONSTRAINED_PWR         1
-#define CONFIG_PORT_3_SOURCE_UNCONSTRAINED_PWR         1
-
-/**************************************************************************************************
-Summary:
-    Source PDO's USB Communication capable field.
-Description:
-    CONFIG_PORT_n_SOURCE_USB_COM defines the USB communication enable bit in PDO of nth source 
-    port. As per PD specification, this field is exposed for PDO1 alone, for rest of the fixed 
-    PDOs it is Zero. CONFIG_PORT_n_SOURCE_USB_COM can be configured as 0 or 1. n can take values
-    between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    By default, this define is set to 0.
-Example:
-    <code>
-    #define CONFIG_PORT_0_SOURCE_USB_COM		1 (Port 0 is USB communication capable)
-    #define CONFIG_PORT_0_SOURCE_USB_COM		0 (Port 0 is not USB communication capable)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_USB_COM
-#define CONFIG_PORT_0_SOURCE_USB_COM         0
-#define CONFIG_PORT_1_SOURCE_USB_COM         0
-#define CONFIG_PORT_2_SOURCE_USB_COM         0
-#define CONFIG_PORT_3_SOURCE_USB_COM         0
-
-/**************************************************************************************************
-Summary:
-    Source PDO's Current field.
-Description:
-    CONFIG_PORT_n_SOURCE_PDO_x_CURRENT defines the maximum current value in xth PDO of nth 
-    source port. As per PD specification, there can be 7 PDOs. Thus, x takes value from 1 to 7.
-    n can take values between 0 and(CONFIG_PD_PORT_COUNT - 1). This define is
-    expressed in mA units.
-Remarks:
-    By default, PDO 1 of all the port is defined as 3000 mA and rest as 0 mA.
-Example:
-    <code>
-    #define CONFIG_PORT_0_SOURCE_PDO_1_CURRENT		3000 (Maximum current value is configured 
-                                                            as 3A for PDO1 of Port-0)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_PDO_x_CURRENT 
-#define CONFIG_PORT_0_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_2_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_3_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_4_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_0_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
-
-#define CONFIG_PORT_1_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_2_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_3_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_4_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_1_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
-
-#define CONFIG_PORT_2_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_2_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_3_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_4_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_2_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
-
-#define CONFIG_PORT_3_SOURCE_PDO_1_CURRENT         3000        /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_2_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_3_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_4_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_5_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_6_CURRENT         0           /* Specify in mA */
-#define CONFIG_PORT_3_SOURCE_PDO_7_CURRENT         0           /* Specify in mA */
-
-/**************************************************************************************************
-Summary:
-    Source PDO's Voltage field.
-Description:
-    CONFIG_PORT_n_SOURCE_PDO_x_VOLTAGE defines the voltage supported in xth PDO of nth source 
-    port. As per PD specification, there can be 7 PDOs. Thus, x takes value from 1 to 7.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    Units are expressed in milliVolts(mV). It is mandatory to define PDO1 as vSafe5V (5000).
-    By default, PDO 1 of all the port is defined as 5000mV and rest of PDOs voltage as 0 mV.
-Example:
-    <code>
-     #define CONFIG_PORT_0_SOURCE_PDO_1_VOLTAGE		5000 (PDO1 voltage of Port 1 is 5V)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SOURCE_PDO_x_VOLTAGE
-#define CONFIG_PORT_0_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_2_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_3_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_4_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_0_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
-
-#define CONFIG_PORT_1_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_2_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_3_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_4_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_1_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
-
-#define CONFIG_PORT_2_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_2_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_3_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_4_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_2_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
-
-#define CONFIG_PORT_3_SOURCE_PDO_1_VOLTAGE         5000        /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_2_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_3_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_4_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_5_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_6_VOLTAGE         0           /* Specify in mV */
-#define CONFIG_PORT_3_SOURCE_PDO_7_VOLTAGE         0           /* Specify in mV */
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Sink Port configuration
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-    Number of Sink PDOs.
-Description:
-    CONFIG_PORT_n_SINK_NUM_OF_PDOS defines the number PDOs supported by the nth sink port.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    CONFIG_PORT_n_SINK_NUM_OF_PDOS can be configured from 1 to 7. Default value for 
-    CONFIG_PORT_n_SINK_NUM_OF_PDOS is 1.
-Example:
-    <code>
-    #define CONFIG_PORT_0_SINK_NUM_OF_PDOS		4 (Port 0 has 4 Sink PDOs)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SINK_NUM_OF_PDOS
-#define CONFIG_PORT_0_SINK_NUM_OF_PDOS           1
-#define CONFIG_PORT_1_SINK_NUM_OF_PDOS           1
-#define CONFIG_PORT_2_SINK_NUM_OF_PDOS           1
-#define CONFIG_PORT_3_SINK_NUM_OF_PDOS           1
-
-/**************************************************************************************************
-Summary:
-    Sink PDO's Higher capability field.
-Description:
-    CONFIG_PORT_n_SINK_HIGHER_CAPABILITY defines the Higher Capability bit in fixed PDO in nth 
-    sink port. As per PD specification, this field is exposed for PDO1 alone, for rest of the
-    fixed PDOs it is Zero. CONFIG_PORT_0_SINK_HIGHER_CAPABILITY can be configured as 0 or 1.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    If the define is set as '1', Sink is higher capability capable & if it is set as '0', Sink 
-    is not higher capability capable. The default value is '1'.
-Example:
-    <code>
-	#define CONFIG_PORT_0_SINK_HIGHER_CAPABILITY		1
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SINK_HIGHER_CAPABILITY
-#define CONFIG_PORT_0_SINK_HIGHER_CAPABILITY     1
-#define CONFIG_PORT_1_SINK_HIGHER_CAPABILITY     1
-#define CONFIG_PORT_2_SINK_HIGHER_CAPABILITY     1
-#define CONFIG_PORT_3_SINK_HIGHER_CAPABILITY     1
-
-/**************************************************************************************************
-Summary:
-    Sink PDO's Unconstrained Power field.
-Description:
-    CONFIG_PORT_n_SINK_UNCONSTRAINED_PWR defines the Unconstrained Power bit in fixed PDO of
-    nth sink port. As per PD specification, this field is exposed for PDO1 alone, for rest of
-    the fixed PDOs it is Zero. CONFIG_PORT_n_SINK_UNCONSTRAINED_PWR can be configured as 0 or 1.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    By default, this define is set to 0.
-Example:
-    <code>
-    #define CONFIG_PORT_0_SINK_UNCONSTRAINED_PWR	 1 (Port 0 is unconstrained power capable)
-    #define CONFIG_PORT_0_SINK_UNCONSTRAINED_PWR    0 (Port 0 is not unconstrained power capable)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SINK_UNCONSTRAINED_PWR
-#define CONFIG_PORT_0_SINK_UNCONSTRAINED_PWR     0
-#define CONFIG_PORT_1_SINK_UNCONSTRAINED_PWR     0
-#define CONFIG_PORT_2_SINK_UNCONSTRAINED_PWR     0
-#define CONFIG_PORT_3_SINK_UNCONSTRAINED_PWR     0
-
-/**************************************************************************************************
-Summary:
-    Sink PDO's USB Communication capable field.
-Description:
-    CONFIG_PORT_n_SINK_USB_COM defines the USB communication enable bit in PDO of nth sink 
-    port. As per PD specification, this field is exposed for PDO1 alone, for rest of the fixed 
-    PDOs it is Zero. CONFIG_PORT_n_SINK_USB_COM can be configured as 0 or 1. n can take values
-    between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    By default, this define is set to 0.
-Example:
-    <code>
-     #define CONFIG_PORT_0_SINK_USB_COM		1 (Port 0 is USB communication capable)
-     #define CONFIG_PORT_0_SINK_USB_COM		0 (Port 0 is not USB communication capable)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SINK_USB_COM               0
-#define CONFIG_PORT_0_SINK_USB_COM               0
-#define CONFIG_PORT_1_SINK_USB_COM               0
-#define CONFIG_PORT_2_SINK_USB_COM               0
-#define CONFIG_PORT_3_SINK_USB_COM               0
-
-/**************************************************************************************************
-Summary:
-    Sink PDO's Current field.
-Description:
-    CONFIG_PORT_n_SINK_PDO_x_CURRENT defines the maximum current value in xth PDO of nth 
-    Sink port. As per PD specification, there can be 7 PDOs, thus x takes value from 1 to 7.
-    n can take values between 0 and(CONFIG_PD_PORT_COUNT - 1). This define is
-    expressed in mA units.
-Remarks:
-    By default, PDO 1 of all the port is defined as 3000 mA and rest as 0 mA.
-Example:
-    <code>
-    #define CONFIG_PORT_0_SINK_PDO_1_CURRENT		3000 (Maximum current value is configured 
-                                                            as 3A for PDO1 of sink Port-0)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SINK_PDO_x_CURRENT 
-#define CONFIG_PORT_0_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_2_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_3_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_4_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_5_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_6_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_0_SINK_PDO_7_CURRENT        0         /* Specify in mA */
-
-#define CONFIG_PORT_1_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_2_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_3_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_4_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_5_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_6_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_1_SINK_PDO_7_CURRENT        0         /* Specify in mA */
-
-#define CONFIG_PORT_2_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_2_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_3_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_4_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_5_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_6_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_2_SINK_PDO_7_CURRENT        0         /* Specify in mA */
-
-#define CONFIG_PORT_3_SINK_PDO_1_CURRENT        3000      /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_2_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_3_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_4_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_5_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_6_CURRENT        0         /* Specify in mA */
-#define CONFIG_PORT_3_SINK_PDO_7_CURRENT        0         /* Specify in mA */
-
-/**************************************************************************************************
-Summary:
-    Sink PDO's Voltage field.
-Description:
-    CONFIG_PORT_n_SINK_PDO_1_VOLTAGE defines the voltage supported in xth PDO of nth sink 
-    port. As per PD specification, there can be 7 PDOs, thus x takes value from 1 to 7.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT - 1).
-Remarks:
-    Units are expressed in milliVolts(mV). It is mandatory to define PDO1 as vSafe5V (5000).
-    By default, PDO 1 of all the port is defined as 5000mV and rest of PDOs voltage as 0 mV.
-Example:
-    <code>
-     #define CONFIG_PORT_0_SINK_PDO_1_VOLTAGE		5000 (PDO1 voltage of sink Port 1 is 5V)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_SINK_PDO_x_VOLTAGE 
-#define CONFIG_PORT_0_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_0_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
-
-#define CONFIG_PORT_1_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_1_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
-
-#define CONFIG_PORT_2_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_2_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
-
-#define CONFIG_PORT_3_SINK_PDO_1_VOLTAGE        5000        /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_2_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_3_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_4_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_5_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_6_VOLTAGE        0           /* Specify in mV */
-#define CONFIG_PORT_3_SINK_PDO_7_VOLTAGE        0           /* Specify in mV */
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: VSAFE5V range for Source and Sink
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-    Vsafe5V Maximum acceptable limit for Source.
-Description:
-    CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for
-    VSafe5V expressed in terms of millivolts for source. The voltage will be considered as valid 
-    Vsafe5V only if it is equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less 
-    than CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be 
-    considered as overvoltage for Vsafe5V for Source.
-
-	Valid Vsafe5V condition:
-        \CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE <= Valid Vsafe5V < CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE
-	
-	Vsafe5V overvoltage condition:
-        \VBUS >= CONFIG_OVER_VOLTAGE_FACTOR * 5000mV
-Remarks:
-    It is mandatory to define CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. By default, it is defined as 
-	5500 mV. It must be defined in such a way that following condition is met.
-	\CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE < CONFIG_OVER_VOLTAGE_FACTOR * TYPEC_VBUS_5V.
-Example:
-    <code>
-	#define CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE			5500
-    </code>
-**************************************************************************************************/
-#define CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
-
-/**************************************************************************************************
-Summary:
-    Vsafe5V Minimum acceptable limit for Source.
-Description:
-    CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed in 
-    terms of millivolts for source. The voltage will be considered as valid Vsafe5V only if it is
-    equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less than 
-    CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE.
-
-	Valid Vsafe5V condition:
-        \CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE <= Valid Vsafe5V < CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE
-Remarks:
-    It is mandatory to define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE. The default value for this 
-	macro is 4750mV. It must be defined in such a way that following condition is met:
-    \CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE > CONFIG_VSINKDISCONNECT_VOLTAGE.
-Example:
-    <code>
-    #define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE			4750
-    </code>
-**************************************************************************************************/
-#define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE 		4750
-
-/**************************************************************************************************
-Summary:
-    Vsafe5V Maximum acceptable limit for Sink.
-Description:
-    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for VSafe5V expressed 
-    in terms of millivolts for sink. The voltage will be considered as valid Vsafe5V only if it 
-    is equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
-    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be
-    considered as overvoltage for Vsafe5V for sink.
-
-    Valid Vsafe5V condition:
-        \CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE > Valid Vsafe5V <= CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE
-    \Overvoltage condition:
-        \Vsafe5V >= CONFIG_OVER_VOLTAGE_FACTOR * 5000
-Remarks:
-    It is mandatory to define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. The default value for this 
-	macro is 5500mV. It must be defined in such a way that following condition is met.
-    \CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE < CONFIG_OVER_VOLTAGE_FACTOR * TYPEC_VBUS_5V.
-    
-Example:
-    <code>
-    #define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE			5500
-    </code>
-**************************************************************************************************/
-#define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
-
-/**************************************************************************************************
-Summary:
-    Vsafe5V Minimum acceptable limit for Sink.
-Description:
-    CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed 
-    in terms of millivolts for Sink. The voltage will be considered as valid Vsafe5V only if it is
-    equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
-    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. 
-    
-	Valid Vsafe5V condition:
-    \CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE > Valid Vsafe5V <= CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE
-Remarks:
-    It is mandatory to define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE. By default, it is defined as 4400mV.
-    It must be defined in such a way that following condition is met.
-    \CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE > CONFIG_VSINKDISCONNECT_VOLTAGE.
-Example:
-    <code>
-    #define CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE			4400
-    </code>
-**************************************************************************************************/
-#define CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE 		4400
-
-/**************************************************************************************************
-Summary:
-    vSinkDisconnect.
-Description:
-    CONFIG_VSINKDISCONNECT_VOLTAGE is the vSinkDisconnect mentioned in Type c specification v1.3.
-    Specification defines it as threshold used for transition from Attached.SNK to Unattached.SNK.
-    In PSF, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as undervoltage for Vsafe5V in case of 
-    source. For Sink, if the voltage is below CONFIG_VSINKDISCONNECT_VOLTAGE, it is considered 
-    as VBUS disconnect.
-
-    For Sink: 
-    If Voltage <= CONFIG_VSINKDISCONNECT_VOLTAGE, then Sink disconnected
-    \For Source:
-    If Voltage <= CONFIG_VSINKDISCONNECT_VOLTAGE, then Source undervoltage
-Remarks:
-    By default, it is defined as 3.67V 
-Example:
-    <code>
-    #define CONFIG_VSINKDISCONNECT_VOLTAGE			3670
-    </code>
-**************************************************************************************************/
-#define CONFIG_VSINKDISCONNECT_VOLTAGE 		3670
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Power Fault Configuration
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-    Over voltage factor.
-Description:
-    CONFIG_OVER_VOLTAGE_FACTOR is percentage of PDO voltage to be considered as Over Voltage for
-	that PDO. As per PD specification, desired range for fixed PDO voltage is (0.95 * PDO Voltage) 
-	to (1.05 * PDO Voltage), So CONFIG_OVER_VOLTAGE_FACTOR should be greater than the desired range.
-Remarks:
-    If 115% of the PDO voltage has to be considered as overvoltage for that PDO voltage,
-    then define CONFIG_OVER_VOLTAGE_FACTOR as 1.15.
-    It is mandatory to define CONFIG_OVER_VOLTAGE_FACTOR when INCLUDE_POWER_FAULT_HANDLING 
-    is defined as '1'. Default value for this macro is 1.15 indicating 115%.
-Example:
-    <code>
-    #define CONFIG_OVER_VOLTAGE_FACTOR			1.15
-    (CONFIG_PORT_0_SOURCE_PDO_1_VOLTAGE is 5000, then for PDO 1 Over voltage is 5750mV)
-    </code>
-**************************************************************************************************/
-#define CONFIG_OVER_VOLTAGE_FACTOR					1.15
-
-/**************************************************************************************
-  Summary:
-    Under Voltage factor.
-  Description:
-    CONFIG_UNDER_VOLTAGE_FACTOR is percentage of PDO voltage to be
-    considered as under Voltage for that PDO. As per PD specification,
-    desired range for fixed PDO voltage is (0.95 * PDO Voltage) to (1.05 *
-    PDO Volatge), So CONFIG_UNDER_VOLTAGE_FACTOR should be less than the
-    desired range.
-  Remarks:
-    If 85% of the PDO voltage has to be considered as under voltage for
-    that PDO voltage, then define CONFIG_UNDER_VOLTAGE_FACTOR as 0.85.
-    CONFIG_UNDER_VOLTAGE_FACTOR must be defined when
-    INCLUDE_POWER_FAULT_HANDLING is defined as '1'. As an exceptional case
-    this factor is not considered for VSafe5V.
-    
-    For Source VSafe5V, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as
-    Vsafe5V undervoltage instead of (CONFIG_UNDER_VOLTAGE_FACTOR *
-    TYPEC_VBUS_5V).
-    
-    For Sink, VSafe5V under voltage is not applicable as when voltage is
-    less than or equal to CONFIG_VSINKDISCONNECT_VOLTAGE, sink becomes
-    disconnected.
-    
-    The default value for CONFIG_UNDER_VOLTAGE_FACTOR is 0.85 indicating
-    85%.
-  Example:
-    <code>
-    \#define CONFIG_UNDER_VOLTAGE_FACTOR         0.85
-    (CONFIG_PORT_0_SOURCE_PDO_2_VOLTAGE is 9000, then for PDO 2 Over voltage is 7650mV)
-    </code>
-                                                                                       
-  **************************************************************************************/
-#define CONFIG_UNDER_VOLTAGE_FACTOR					0.85
-
-/**************************************************************************************************
-Summary:
-    Maximum VBUS Power fault count.
-Description:
-    CONFIG_MAX_VBUS_POWER_FAULT_COUNT is the maximum number of back-to-back VBUS faults allowed 
-	before permanent shut down of the port. A back-to-back fault is a second fault which occurs within  
-	the CONFIG_POWER_GOOD_TIMER_MS after a port is automatically re-enabled from a previous fault 
-	condition. During port shutdown due to over current fault, the device removes its CC termination
-	and wait for port partner to get detached physically from the port to resume its normal operation.
-Remarks:
-    By default, it is configured to count 3.
-Example:
-    <code>
-    #define CONFIG_MAX_VBUS_POWER_FAULT_COUNT			3
-    </code>
-**************************************************************************************************/
-#define CONFIG_MAX_VBUS_POWER_FAULT_COUNT					3
-
-/**************************************************************************************************
-Summary:
-    Maximum VCONN Power fault count.
-Description:
-    CONFIG_MAX_VCONN_POWER_FAULT_COUNT is the maximum number of back-to-back VCONN faults 
-    allowed before it permanently disables the VCONN. A back-to-back fault is a second fault which 
-    occurs within the CONFIG_POWER_GOOD_TIMER_MS after a port is automatically re-enabled from a 
-    previous fault condition. If VCONN is disabled due to over current VCONN power fault, VCONN will 
-    be enabled only after a physical detach and re-attach.
-Remarks:
-    By default, it is configured to count 3.
-Example:
-    <code>
-    #define CONFIG_MAX_VCONN_FAULT_COUNT			3
-    </code>
-**************************************************************************************************/
-#define CONFIG_MAX_VCONN_FAULT_COUNT					3
-
-/**************************************************************************************************
-Summary:
-    Power Good Timer value in milliseconds.
-Description:
-    After an automatic fault recovery, CONFIG_POWER_GOOD_TIMER_MS is run to determine whether 
-    power remains in a good state for the duration of the timer, then the Fault Counter is reset. 
-    If another fault occurs before the Power Good Timer expires, then the Fault Counter is 
-    incremented.
-
-    For power Source, it is the time a power source must consistently provide power without a  
-    fault to determine the power is good and a fault condition does not exist.
-    For power Sink, it is the time after the sink established a contract and its consistently 
-    drawing power from VBUS without a power fault to determine that power is good and a fault 
-    condition does not exist.
-Remarks:
-    It shall be expressed in MILLISECONDS_TO_TICKS define. By default, it is configured to 
-    10 seconds.
-Example:
-    <code>
-    #define CONFIG_POWER_GOOD_TIMER_MS			MILLISECONDS_TO_TICKS(10000)
-    </code>
-**************************************************************************************************/
-#define CONFIG_POWER_GOOD_TIMER_MS			MILLISECONDS_TO_TICKS(10000)
-
-/**************************************************************************************************
-Summary:
-    VCONN OCS Enable.
-Description:
-    PSF uses UPD350 internal comparator to detect VCONN Overcurrent fault. 
-    CONFIG_VCONN_OCS_ENABLE is to enable or disable the internal VCONN OCS detection logic.
-    Setting CONFIG_VCONN_OCS_ENABLE as '1' enables the VCONN OCS detection and setting as '0'
-    disables the VCONN OCS detection.
-Remarks:
-    The default value for CONFIG_VCONN_OCS_ENABLE is '1'.
-Example:
-    <code>
-    #define CONFIG_VCONN_OCS_ENABLE	1(Enables VCONN OCS detection)
-    #define CONFIG_VCONN_OCS_ENABLE	0(Disbales VCONN OCS detection)
-    </code>
-
-**************************************************************************************************/
-#define CONFIG_VCONN_OCS_ENABLE                         1
-
-/**************************************************************************************************
-Summary:
-    VCONN OCS Debounce value in milliseconds.
-Description:
-    CONFIG_VCONN_OCS_DEBOUNCE_IN_MS is debounce timer value in terms of milliseconds for VCONN 
-    overcurrent fault conditions before reacting and entering fault recovery routine. 
-Remarks:
-    The default value for CONFIG_VCONN_OCS_DEBOUNCE_IN_MS is 2ms.
-Example:
-    <code>
-    #define CONFIG_VCONN_OCS_DEBOUNCE_IN_MS			2 (Debounce is 2ms)
-    </code>
-**************************************************************************************************/
-#define CONFIG_VCONN_OCS_DEBOUNCE_IN_MS     2
-
-/**************************************************************************************************
-Summary:
-    Fault In OCS Debounce value in milliseconds.
-Description:
-    CONFIG_FAULT_IN_OCS_DEBOUNCE_MS is debounce timer value in terms of milliseconds for VBUS 
-    overcurrent fault conditions before reacting and entering fault recovery routine. It is
-    applicable only for OCS detection via FAULT_IN configured UPD350 pin.
-Remarks:
-    The default debounce for Fault IN OCS detection is 5ms.
-Example:
-    <code>
-    #define CONFIG_FAULT_IN_OCS_DEBOUNCE_MS			5 (Debounce is 5ms)
-    </code>
-**************************************************************************************************/                                  
-#define CONFIG_FAULT_IN_OCS_DEBOUNCE_MS     5 
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: MCU Idle Timeout
-// *****************************************************************************
-// *****************************************************************************
 /**************************************************************************************************
 Summary:
     UPD350 Idle Timeout value in milliseconds.
@@ -1131,6 +372,10 @@ Example :
 **************************************************************************************************/
 #define CONFIG_PORT_UPD_IDLE_TIMEOUT_MS 	MILLISECONDS_TO_TICKS(15000)
 
+/* Values for CONFIG_DCDC_CTRL*/
+#define PWRCTRL_DEFAULT_PSF_GPIO_CONFIG     1
+#define I2C_DC_DC_CONTROL_CONFIG            2
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: DC-DC Buck boost controller configurations
@@ -1142,402 +387,38 @@ Summary:
 Description:
 	CONFIG_DCDC_CTRL is to define the default DC-DC control provided by the PSF stack. If 
 	CONFIG_DCDC_CTRL defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG, default GPIO based DC-DC controller
-	is used. If left undefined, default stack's DC-DC control option is not used and the user must 
-	control power via power control APIs provided by the stack. 
+	is used. If CONFIG_DCDC_CTRL is defined as I2C_DC_DC_CONTROL_CONFIG, default I2C based 
+    DC-DC Controller is used. If left undefined, default stack's DC-DC control option is not used 
+    and the user must control power via power control APIs provided by the stack.  
 Remarks:
 	None.
 Example:
 	<code>
 	#define CONFIG_DCDC_CTRL    PWRCTRL_DEFAULT_PSF_GPIO_CONFIG (Uses default GPIO based DC-DC contol)
+	#define CONFIG_DCDC_CTRL    I2C_DC_DC_CONTROL_CONFIG (Uses default I2C based DC-DC contol)
 	#define CONFIG_DCDC_CTRL    (If undefined, Default DC DC control provided by stack is not used)
 	</code>                                  
   **************************************************************************/
-#define CONFIG_DCDC_CTRL        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
-					  											  
-// *****************************************************************************
-// *****************************************************************************
-// Section: PIO configurations
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
+#define CONFIG_DCDC_CTRL        
+					
+/**************************************************************************
 Summary:
-    UPD350 GPIO Output mode enum.
+    Default I2C DC DC Controller Type.
 Description:
-	eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes applicable for UPD350 GPIO
-    in output mode.
+	CONFIG_I2C_DCDC_TYPE is to define the default I2C DC-DC control provided by the PSF stack.
+    This macro is valid only when CONFIG_DCDC_CTRL is set to I2C_DC_DC_CONTROL_CONFIG. If 
+	CONFIG_I2C_DCDC_TYPE defined as MPQ, Monolithic MPQ4230 I2C DC-DC Controller 
+    is used. If CONFIG_I2C_DCDC_TYPE defined as ONSEMI, On Semi I2C DC-DC 
+    Controller is used. 
 Remarks:
-        None
-**************************************************************************************************/
-typedef enum
-{
-    ePUSH_PULL_ACTIVE_HIGH       = 0x0CU,   // Active High output signal
-    ePUSH_PULL_ACTIVE_LOW        = 0x04U,   // Active low output signal
-    eOPEN_DRAIN_ACTIVE_HIGH      = 0x08U,   // Active High Open Drain output signal
-    eOPEN_DRAIN_ACTIVE_LOW       = 0x00U,   // Active Low Open Drain output signal
-    eOPEN_DRAIN_ACTIVE_HIGH_PU   = 0x88U,   // Active High Open Drain output signal with internal pull up
-    eOPEN_DRAIN_ACTIVE_LOW_PU    = 0x80U    // Active Low Open Drain output signal with internal pull up
-}eUPD_OUTPUT_PIN_MODES_TYPE;
-/**************************************************************************************************
-Summary:
-    UPD350 Fault_IN GPIO mode enum.
-Description:
-	eFAULT_IN_MODE_TYPE enum defines the various combination modes applicable for UPD350 GPIO
-    in input mode.
-Remarks:
-    None
-**************************************************************************************************/
-typedef enum
-{
-    eFAULT_IN_ACTIVE_LOW         = 0x20U,   //Active low input signal
-    eFAULT_IN_ACTIVE_HIGH        = 0x10U,   //Active high input signal
-    eFAULT_IN_ACTIVE_LOW_PU      = 0xA0U,   //Active low signal with internal pull up
-    eFAULT_IN_ACTIVE_HIGH_PD     = 0x50U    //Active high signal with internal pull down
-}eFAULT_IN_MODE_TYPE;
-/*********************************************************************************
-  Summary:
-    "Enable VBUS" UPD350 PIO.
-  Description:
-    CONFIG_PORT_n_EN_VBUS_UPD_PIO refers to the UPD350 PIO number used for
-    EN_VBUS pin functionality for the nth Port. EN_VBUS is to enable VBUS
-    drive out of DC-DC controller. EN_VBUS pin connects to a load switch
-    device such as a power FET or load switch IC. It is driven as per
-    CONFIG_PORT_n_UPD_EN_VBUS_PIO_MODE configuration mode whenever stack
-    requires VBUS to driven high as well as low. n can take values between
-    0 and CONFIG_PD_PORT_COUNT - 1. The range of valid values is 0 to 15
-    which correspond to UPD350 PIO0 to PIO15. To disable the pin
-    functionality from the stack, the user can define a value of 0xFF. It
-    is applicable only when CONFIG_DCDC_CTRL is defined as
-    PWRCTRL_DEFAULT_PSF_GPIO_CONFIG and for Source operation only. By
-    defining INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as '1', The PIO Override
-    feature of the UPD350 shall be utilized in this pin to ensure that fast
-    and autonomous action is taken by the UPD350 in a fault condition.
-  Remarks:
-    By default, it is configured to PIO3. User can also use stack's enum
-    eUPD_PIO_NUM_TYPE to define this.
-  Example:
-    <code>
-    \#define CONFIG_PORT_0_UPD_EN_VBUS       3    (EN_VBUS pin is PIO3)
-    \#define CONFIG_PORT_0_UPD_EN_VBUS       0xFF (EN_VBUS functionality disabled)
-    </code>
-                                                                                  
-  *********************************************************************************/										  
-#define CONFIG_PORT_n_UPD_EN_VBUS                   eUPD_PIO3
-#define CONFIG_PORT_0_UPD_EN_VBUS                   eUPD_PIO3
-#define CONFIG_PORT_1_UPD_EN_VBUS                   eUPD_PIO3
-#define CONFIG_PORT_2_UPD_EN_VBUS                   eUPD_PIO3
-#define CONFIG_PORT_3_UPD_EN_VBUS                   eUPD_PIO3
-
-/**************************************************************************************************
-Summary:
-	"Enable VBUS" UPD350 PIO mode.
-Description:
-	CONFIG_PORT_n_UPD_EN_VBUS_PIO_MODE defines the PIO mode of the UPD350 PIO EN_VBUS defined in  
-    CONFIG_PORT_n_UPD_EN_VBUS. It takes only values from enum eUPD_OUTPUT_PIN_MODES_TYPE. n can 
-    take values between 0 and CONFIG_PD_PORT_COUNT - 1.
-Remarks:
-    By default, it is configured to ePUSH_PULL_ACTIVE_HIGH.
+	None.
 Example:
 	<code>
-    #define CONFIG_PORT_0_UPD_EN_VBUS_PIO_MODE          ePUSH_PULL_ACTIVE_HIGH
-    (EN_VBUS is configured as Active signal in output mode)
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_EN_VBUS_PIO_MODE          ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_0_UPD_EN_VBUS_PIO_MODE          ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_1_UPD_EN_VBUS_PIO_MODE          ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_2_UPD_EN_VBUS_PIO_MODE          ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_3_UPD_EN_VBUS_PIO_MODE          ePUSH_PULL_ACTIVE_HIGH
-
-/**************************************************************************************************
-Summary:
-    "VBUS Discharge" UPD350 PIO.
-Description:
-	CONFIG_PORT_n_UPD_VBUS_DIS_PIO_NO defines the UPD350 PIO for VBUS discharge functionality. It 
-    is a control for discharging VBUS (connecting VBUS to GND). It asserts as per 
-    CONFIG_PORT_n_UPD_VBUS_DIS_PIO_MODE whenever VBUS voltage must transition from a high voltage to
-    a lower voltage state and when VBUS is disabled.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). The range of valid values is 0 to 15 
-	which correspond to UPD350 PIO0 to PIO15. To disable the pin functionality from the stack, the 
-	user can define a value of 0xFF.
-    It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG.
-Remarks:
-    By default, it is configured to PIO4. User can also use stack's enum eUPD_PIO_NUM_TYPE to 
-    define this.
-Example:
-	<code>
-    #define CONFIG_PORT_0_UPD_VBUS_DIS_PIO_NO           eUPD_PIO4 (VBUS_DIS is PIO4)
-    #define CONFIG_PORT_0_UPD_VBUS_DIS_PIO_NO           0xFF (EN_VBUS functinality disabled)
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_VBUS_DIS_PIO_NO           eUPD_PIO4
-#define CONFIG_PORT_0_UPD_VBUS_DIS_PIO_NO           eUPD_PIO4
-#define CONFIG_PORT_1_UPD_VBUS_DIS_PIO_NO           eUPD_PIO4
-#define CONFIG_PORT_2_UPD_VBUS_DIS_PIO_NO           eUPD_PIO4
-#define CONFIG_PORT_3_UPD_VBUS_DIS_PIO_NO           eUPD_PIO4
-
-/**************************************************************************************************
-Summary:
-    "VBUS Discharge" UPD350 PIO mode.
-Description:
-	CONFIG_PORT_n_UPD_VBUS_DIS_PIO_MODE defines the PIO mode of the UPD350 PIO VBUS_DIS defined in  
-    CONFIG_PORT_n_UPD_VBUS_DIS_PIO_NO. It takes only values from enum eUPD_OUTPUT_PIN_MODES_TYPE. 
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1).
-Remarks:
-    By default, it is configured to ePUSH_PULL_ACTIVE_HIGH.
-Example:
-	<code>
-    #define CONFIG_PORT_0_UPD_VBUS_DIS_PIO_MODE          ePUSH_PULL_ACTIVE_HIGH
-    (VBUS_DIS is configured as Active signal in output mode)
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_VBUS_DIS_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_0_UPD_VBUS_DIS_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_1_UPD_VBUS_DIS_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_2_UPD_VBUS_DIS_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_3_UPD_VBUS_DIS_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-
-/**************************************************************************************************
-Summary:
-    "DC DC Enable" UPD350 PIO.
-Description:
-	CONFIG_PORT_n_UPD_DC_DC_EN_PIO_NO defines the UPD350 PIO to enable DC-DC controller. It is
-    asserted as per CONFIG_PORT_n_UPD_DC_DC_EN_PIO_MODE during initialization and de-asserted during error 
-    condition to reset the DC-DC controller
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). It takes value from 0 to 15 and to 
-    disable the pin functionality from stack, user can define it as 0xFF.
-    It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG.
-Remarks:
-    By default, it is configured to PIO6. User can also use stack's enum eUPD_PIO_NUM_TYPE to 
-    define this.
-Example:
-	<code>
-    #define CONFIG_PORT_0_UPD_VBUS_DIS_PIO_NO           6 (DC_DC_EN is PIO6)
-    #define CONFIG_PORT_0_UPD_VBUS_DIS_PIO_NO           0xFF (DC_DC_EN functinality disabled)
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_DC_DC_EN_PIO_NO           eUPD_PIO6
-#define CONFIG_PORT_0_UPD_DC_DC_EN_PIO_NO           eUPD_PIO6
-#define CONFIG_PORT_1_UPD_DC_DC_EN_PIO_NO           eUPD_PIO6
-#define CONFIG_PORT_2_UPD_DC_DC_EN_PIO_NO           eUPD_PIO6
-#define CONFIG_PORT_3_UPD_DC_DC_EN_PIO_NO           eUPD_PIO6
-
-/**************************************************************************************************
-Summary:
-    "DC DC Enable" UPD350 PIO mode.
-Description:
-	CONFIG_PORT_n_UPD_DC_DC_EN_PIO_MODE defines the PIO mode of the UPD350 PIO DC_DC_EN defined in  
-    CONFIG_PORT_n_UPD_DC_DC_EN_PIO_NO. It takes only values from enum eUPD_OUTPUT_PIN_MODES_TYPE. 
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1).
-Remarks:
-    By default, it is configured to ePUSH_PULL_ACTIVE_HIGH.
-Example:
-	<code>
-    #define CONFIG_PORT_0_UPD_DC_DC_EN_PIO_MODE          ePUSH_PULL_ACTIVE_HIGH
-    (DC_DC_EN is configured as Active signal in output mode)
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_DC_DC_EN_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_0_UPD_DC_DC_EN_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_1_UPD_DC_DC_EN_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_2_UPD_DC_DC_EN_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_3_UPD_DC_DC_EN_PIO_MODE         ePUSH_PULL_ACTIVE_HIGH
-
-/**************************************************************************************************
-Summary:
-    "VBUS Voltage Selection" UPD350 PIO.
-Description:
-	CONFIG_PORT_n_UPD_VSELx_PIO_NO defines the UPD350 PIO as voltage selector pins(VSEL[2:0]). PSF 
-    stack provides provision for three Voltage selector pin VSEL[2:0]. It is used to control the 
-    output voltage of the DC/DC controller. In a typical application, these pins are used to switch 
-    in different resistors into the feedback loop to vary the output voltage.
-    n can take values between 0 and CONFIG_PD_PORT_COUNT - 1. The range of valid values is 0 to 15 
-	which correspond to UPD350 PIO0 to PIO15. To disable the pin functionality from the stack, the 
-	user can define a value of 0xFF. Here x takes the the valid values from 0 to 2 which corresponds
-	to VSEL0 to VSEL2.It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG.
-Remarks:
-    By default, VSEL0, VSEL1, VSEL2 is configured to PIO7, PIO8 and PIO9 respectively. User can also
-    use stack's enum eUPD_PIO_NUM_TYPE to define this. It is applicable only for source operation.
-Example:
-	<code>
-    #define CONFIG_PORT_0_UPD_VSEL0_PIO_NO           7 (VSEL0 for port 0 is PIO7)
-    #define CONFIG_PORT_0_UPD_VSEL1_PIO_NO           8 (VSEL1 for port 0 is PIO8)
-    #define CONFIG_PORT_0_UPD_VSEL2_PIO_NO           9 (VSEL2 for port 0 is PIO9)
-    #define CONFIG_PORT_0_UPD_VSEL0_PIO_NO           0xFF (VSEL0 for port 0 is disabled)
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_VSELx_PIO_NO              eUPD_PIO7
-#define CONFIG_PORT_0_UPD_VSEL0_PIO_NO              eUPD_PIO7
-#define CONFIG_PORT_1_UPD_VSEL0_PIO_NO              eUPD_PIO7
-#define CONFIG_PORT_2_UPD_VSEL0_PIO_NO              eUPD_PIO7
-#define CONFIG_PORT_3_UPD_VSEL0_PIO_NO              eUPD_PIO7
-
-#define CONFIG_PORT_0_UPD_VSEL1_PIO_NO              eUPD_PIO8
-#define CONFIG_PORT_1_UPD_VSEL1_PIO_NO              eUPD_PIO8
-#define CONFIG_PORT_2_UPD_VSEL1_PIO_NO              eUPD_PIO8
-#define CONFIG_PORT_3_UPD_VSEL1_PIO_NO              eUPD_PIO8
-
-#define CONFIG_PORT_0_UPD_VSEL2_PIO_NO              eUPD_PIO9
-#define CONFIG_PORT_1_UPD_VSEL2_PIO_NO              eUPD_PIO9
-#define CONFIG_PORT_2_UPD_VSEL2_PIO_NO              eUPD_PIO9
-#define CONFIG_PORT_3_UPD_VSEL2_PIO_NO              eUPD_PIO9
-
-/**************************************************************************************************
-Summary:
-    "VBUS Voltage Selection" UPD350 PIO mode.
-Description:
-	CONFIG_PORT_n_UPD_VSELx_PIO_MODE defines the PIO mode of the UPD350 PIO VSELx defined in  
-    CONFIG_PORT_n_UPD_VSELx_PIO_NO. It takes only values from enum eUPD_OUTPUT_PIN_MODES_TYPE. 
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). x takes vlaue between 0 to 2.
-Remarks:
-    By default, it is configured to ePUSH_PULL_ACTIVE_HIGH.
-Example:
-	<code>
-    #define CONFIG_PORT_0_UPD_VSEL0_PIO_MODE          ePUSH_PULL_ACTIVE_HIGH
-    (VSEL0 is configured as Active signal in output mode)
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_VSELx_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_0_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_1_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_2_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_3_UPD_VSEL0_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-
-#define CONFIG_PORT_0_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_1_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_2_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_3_UPD_VSEL1_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-
-#define CONFIG_PORT_0_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_1_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_2_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-#define CONFIG_PORT_3_UPD_VSEL2_PIO_MODE            ePUSH_PULL_ACTIVE_HIGH
-
-/**************************************************************************************************
-Summary:
-    VSEL Truth table for VSafe0V voltage drive.
-Description:
-	CONFIG_PORT_n_VSAFE0V_VSEL_MAPPING defines the assertion and de-assertion to be driven on 
-    VSEL[2:0] pins(defined in CONFIG_PORT_n_UPD_VSELx_PIO_NO) by the PSF as per 
-    CONFIG_PORT_n_UPD_VSELx_PIO_MODE to have a output voltage of VSafe0V out of DC-Dc controller.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1).
-Remarks:
-    By default, it is configured to 0x00. It is applicable only for source operation.
-Example:
-	<code>
-    #define CONFIG_PORT_0_VSAFE0V_VSEL_MAPPING          0x00
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_VSAFE0V_VSEL_MAPPING  0x00
-#define CONFIG_PORT_0_VSAFE0V_VSEL_MAPPING  0x00
-#define CONFIG_PORT_1_VSAFE0V_VSEL_MAPPING  0x00
-#define CONFIG_PORT_2_VSAFE0V_VSEL_MAPPING  0x00
-#define CONFIG_PORT_3_VSAFE0V_VSEL_MAPPING  0x00
-
-/**************************************************************************************************
-Summary:
-    VSEL Truth table for PDO voltage drive.
-Description:
-    CONFIG_PORT_n_VSAFE0V_VSEL_MAPPING defines the assertion and de-assertion to be driven on 
-    VSEL[2:0] pins(defined in CONFIG_PORT_n_UPD_VSELx_PIO_NO) by the PSF stack as per 
-    CONFIG_PORT_n_UPD_VSELx_PIO_MODE to have a output voltage of PDO voltage defined in 
-    CONFIG_PORT_n_SOURCE_PDO_x_VOLTAGE out of DC-DC controller.
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). x takes value between 1 to 7 as by PD 
-    specification, there can only be 7 PDOs. It is applicable only for source.
-Remarks:
-    By default, a 1 pin per voltage implementation is implemented. 
-    VSEL[2:0]:
-    \000 - 5V (No pins asserted)
-    \001 - 9V (VSEL0 asserted)
-    \010 - 15V (VSEL1 asserted)
-    \100 - 20V (VSEL2 asserted) 
-Example:
-	<code>
-    #define CONFIG_PORT_0_PDO_1_VSEL_MAPPING    0x00
-    #define CONFIG_PORT_0_PDO_2_VSEL_MAPPING    0x01
-    #define CONFIG_PORT_0_PDO_3_VSEL_MAPPING    0x02
-    #define CONFIG_PORT_0_PDO_4_VSEL_MAPPING    0x04
-    #define CONFIG_PORT_0_PDO_5_VSEL_MAPPING    0x00
-    #define CONFIG_PORT_0_PDO_6_VSEL_MAPPING    0x00
-    #define CONFIG_PORT_0_PDO_7_VSEL_MAPPING    0x00
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_PDO_x_VSEL_MAPPING    0x00
-#define CONFIG_PORT_0_PDO_1_VSEL_MAPPING    0x00
-#define CONFIG_PORT_0_PDO_2_VSEL_MAPPING    0x01
-#define CONFIG_PORT_0_PDO_3_VSEL_MAPPING    0x02
-#define CONFIG_PORT_0_PDO_4_VSEL_MAPPING    0x04
-#define CONFIG_PORT_0_PDO_5_VSEL_MAPPING    0x00
-#define CONFIG_PORT_0_PDO_6_VSEL_MAPPING    0x00
-#define CONFIG_PORT_0_PDO_7_VSEL_MAPPING    0x00
-
-#define CONFIG_PORT_1_PDO_1_VSEL_MAPPING    0x00
-#define CONFIG_PORT_1_PDO_2_VSEL_MAPPING    0x01
-#define CONFIG_PORT_1_PDO_3_VSEL_MAPPING    0x02    
-#define CONFIG_PORT_1_PDO_4_VSEL_MAPPING    0x04
-#define CONFIG_PORT_1_PDO_5_VSEL_MAPPING    0x00
-#define CONFIG_PORT_1_PDO_6_VSEL_MAPPING    0x00
-#define CONFIG_PORT_1_PDO_7_VSEL_MAPPING    0x00
-
-#define CONFIG_PORT_2_PDO_1_VSEL_MAPPING    0x00
-#define CONFIG_PORT_2_PDO_2_VSEL_MAPPING    0x01
-#define CONFIG_PORT_2_PDO_3_VSEL_MAPPING    0x02    
-#define CONFIG_PORT_2_PDO_4_VSEL_MAPPING    0x04
-#define CONFIG_PORT_2_PDO_5_VSEL_MAPPING    0x00
-#define CONFIG_PORT_2_PDO_6_VSEL_MAPPING    0x00
-#define CONFIG_PORT_2_PDO_7_VSEL_MAPPING    0x00
-
-#define CONFIG_PORT_3_PDO_1_VSEL_MAPPING    0x00
-#define CONFIG_PORT_3_PDO_2_VSEL_MAPPING    0x01
-#define CONFIG_PORT_3_PDO_3_VSEL_MAPPING    0x02    
-#define CONFIG_PORT_3_PDO_4_VSEL_MAPPING    0x04
-#define CONFIG_PORT_3_PDO_5_VSEL_MAPPING    0x00
-#define CONFIG_PORT_3_PDO_6_VSEL_MAPPING    0x00
-#define CONFIG_PORT_3_PDO_7_VSEL_MAPPING    0x00
-
-/**************************************************************************************************
-Summary:
-    UPD350 Fault_In PIO.
-Description:
-	CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO defines the UPD PIO used as FAULT_IN pin. FAULT_IN detects
-    over-current fault or under/over-voltage fault from external sensing device based on its 
-    configuration CONFIG_PORT_n_UPD_FAULT_IN_MODE. It takes value from 0 to 15 and to 
-    disable the pin functionality from stack, user can define it as 0xFF.
-    It is applicable only when CONFIG_DCDC_CTRL is defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
-    and INCLUDE_POWER_FAULT_HANDLING defined as '1'.
-Remarks:
-    By default, it is defined as 5. n can take values between 0 and (CONFIG_PD_PORT_COUNT-1). 
-Example:
-    <code>
-       #define CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO           5 (FAULT_IN is PIO5)
-       #define CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO           0xFF (FAULT_IN functinality disabled)
-	</code>
-**************************************************************************************************/
-#define CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO               eUPD_PIO5
-#define CONFIG_PORT_0_UPD_FAULT_IN_PIO_NO               eUPD_PIO5
-#define CONFIG_PORT_1_UPD_FAULT_IN_PIO_NO               eUPD_PIO5
-#define CONFIG_PORT_2_UPD_FAULT_IN_PIO_NO               eUPD_PIO5
-#define CONFIG_PORT_3_UPD_FAULT_IN_PIO_NO               eUPD_PIO5
-
-/**************************************************************************************************
-Summary:
-    UPD350 Fault_In PIO mode.
-Description:
-	CONFIG_PORT_n_UPD_FAULT_IN_MODE defines the PIO mode of the UPD350 PIO FAULT_IN defined in  
-    CONFIG_PORT_n_UPD_FAULT_IN_PIO_NO. It takes only values from enum eFAULT_IN_MODE_TYPE. 
-    n can take values between 0 and (CONFIG_PD_PORT_COUNT-1).
-Remarks:
-    By default, it is configured to ePUSH_PULL_ACTIVE_LOW.
-Example:
-	<code>
-    #define CONFIG_PORT_n_UPD_FAULT_IN_MODE          eFAULT_IN_ACTIVE_LOW
-				(FAULT_IN is configured as Active low in input mode)
-	</code>
-**************************************************************************************************/										  
-#define CONFIG_PORT_n_UPD_FAULT_IN_MODE               eFAULT_IN_ACTIVE_LOW
-#define CONFIG_PORT_0_UPD_FAULT_IN_MODE               eFAULT_IN_ACTIVE_LOW
-#define CONFIG_PORT_1_UPD_FAULT_IN_MODE               eFAULT_IN_ACTIVE_LOW
-#define CONFIG_PORT_2_UPD_FAULT_IN_MODE               eFAULT_IN_ACTIVE_LOW
-#define CONFIG_PORT_3_UPD_FAULT_IN_MODE               eFAULT_IN_ACTIVE_LOW
+	#define CONFIG_I2C_DCDC_TYPE    MPQ (Uses Monolithic I2C DC-DC contol)
+    #define CONFIG_I2C_DCDC_TYPE    ONSEMI (Uses OnSemi I2C DC-DC contol)	
+	</code>                                  
+  **************************************************************************/
+#define CONFIG_I2C_DCDC_TYPE
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1589,10 +470,10 @@ Description:
 Remarks:
     Choose Firmware Image size in such a way that integral multiple of 256. The definition of 
     this function is mandatory when INCLUDE_PDFU is '1' and shall expressed in terms of bytes. 
-    By default, the value is 0x8800UL(32KB).
+    By default, the value is 0x8800UL(34KB).
 Example:
     <code>
-     #define CONFIG_MAX_FIRMWARE_IMAGESIZE 38*1024 (38*1024 bytes for 38KB Updatable application).
+     #define CONFIG_MAX_FIRMWARE_IMAGESIZE 0x9800UL (38*1024 bytes for 38KB Updatable application).
     </code>                                                                                 
 **************************************************************************************************/  
 #define CONFIG_MAX_FIRMWARE_IMAGESIZE   0x8800UL
@@ -1672,457 +553,1256 @@ Example:
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Type C Timeout configuration
+// Section: PIO configurations
 // *****************************************************************************
 // *****************************************************************************
 /**************************************************************************************************
 Summary:
-	tCCDebounce.
+    UPD350 GPIO Output mode enum.
 Description:
-    CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS defines the tCCDebounce timeout specified in the USB 
-    Type C Specification. Default value of CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS is set as 
-    150 milliseconds.
+	eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes applicable for UPD350 GPIO
+    in output mode.
 Remarks:
-    CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS can be configured depending on the microcontroller
-    platform platform used, for the device to be USB Type C Compliant. It shall always be
-    expressed in define MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS		MILLISECONDS_TO_TICKS(150)
-    </code>
+        None
 **************************************************************************************************/
-#define CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS			MILLISECONDS_TO_TICKS(150)
+typedef enum
+{
+    ePUSH_PULL_ACTIVE_HIGH       = 0x0CU,   // Active High output signal
+    ePUSH_PULL_ACTIVE_LOW        = 0x04U,   // Active low output signal
+    eOPEN_DRAIN_ACTIVE_HIGH      = 0x08U,   // Active High Open Drain output signal
+    eOPEN_DRAIN_ACTIVE_LOW       = 0x00U,   // Active Low Open Drain output signal
+    eOPEN_DRAIN_ACTIVE_HIGH_PU   = 0x88U,   // Active High Open Drain output signal with internal pull up
+    eOPEN_DRAIN_ACTIVE_LOW_PU    = 0x80U    // Active Low Open Drain output signal with internal pull up
+}eUPD_OUTPUT_PIN_MODES_TYPE;
 /**************************************************************************************************
 Summary:
-	tPDDebounce.
+    UPD350 Fault_IN GPIO mode enum.
 Description:
-    CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS defines the tPDDebounce timeout specified in the 
-    USB Type C Specification. Default value of this macro is set as 10 milliseconds.
+	eFAULT_IN_MODE_TYPE enum defines the various combination modes applicable for UPD350 GPIO
+    in input mode.
 Remarks:
-    CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS can can be configured depending on the microcontroller
-    platform platform used, for the device to be USB Type C Compliant. It shall always be
-    expressed in define MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS		MILLISECONDS_TO_TICKS(10)
-    </code>
+    None
 **************************************************************************************************/
-#define CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
+typedef enum
+{
+    eFAULT_IN_ACTIVE_LOW         = 0x20U,   //Active low input signal
+    eFAULT_IN_ACTIVE_HIGH        = 0x10U,   //Active high input signal
+    eFAULT_IN_ACTIVE_LOW_PU      = 0xA0U,   //Active low signal with internal pull up
+    eFAULT_IN_ACTIVE_HIGH_PD     = 0x50U    //Active high signal with internal pull down
+}eFAULT_IN_MODE_TYPE;
 
-/**********************************************************************`****************************
-Summary:
-	tErrorRecovery.
-Description:
-    CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS defines the tErrorRecovery timeout specified in the 
-    USB Type C Specification.  Default value of CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS is set as 
-    500 milliseconds.
-Remarks:
-    CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS can be configured depending on the microcontroller
-    platform platform used, for the device to be USB Type C Compliant. It shall always be
-    expressed in define MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS		MILLISECONDS_TO_TICKS(500)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS         MILLISECONDS_TO_TICKS(500)
+/***************************************************************************************************************************************
+  Section:
+                                                     Boot Time Configuration
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    * *************************************************************************** *
+    * *************************************************************************** *
+    * ********************************Globals******************************************* *
+    * *********************************************************************************************** *
+  Summary:
+    This structure contains port specific Type C and PD configuration and status parameters. 
+  Description:
+    This structure contains the following per port configuration and status
+    \parameters. This structure consists of value based and bit mapped elements. 
+    
+	<b>Value based elements:</b>
+    
+    Following elements of the structure are value based.
+	
+    <table>
+    Name                            Size in   R/W Config   R/W Run   \Description
+                                     Bytes     time         time      
+    ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
+    u32aSourcePDO[7]                28        R/W          R         * Upto 7 fixed Source PDOs 
+																		where Voltage is specified 
+																		in mV and Current is 
+																		specified in mA.
+                                                                      * This array should be used 
+																	    only for Source Operation. 
+    u32aSinkPDO[7]                  28        R/W          R         * Upto 7 fixed Sink PDOs where 
+																		Voltage is specified in mV
+                                                                        and Current is specified in 
+																		mA.
+                                                                      * This array should be used 
+																	    only when the port is 
+																		configured as Sink.
+    u32aNewPDO[7]                   28        R/W          R/W       * Upto 7 fixed New PDOs where 
+																		Voltage is specified in mV 
+																		and Current in mA.
+                                                                      * This array is common for 
+																	     Source and Sink.
+    u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
+																		advertised to Port Partner. 
+                                                                      * During run time, this array 
+																	    holds the value of current
+                                                                        u32aNewPDO[7] if 
+																		u8NewPDOSelect is enabled 
+																		else holds the value of 
+																		current u32aSourcePDO[7]
+    u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Source PDOs 
+																		where Voltage is specified 
+																		in mV and Current is 
+																		specified in mA
+                                                                      * This array is common for 
+																	    Source and Sink.
+    u32RDO                          4         R            R         * Complete raw RDO Data as 
+																		Sent/Requested by connected 
+																		port partner, Will be blank 
+																		of no RDO has been received.
+                                                                      * This variable is common for 
+																	    Source and Sink.
+    u16AllocatedPowerIn250mW        2         R            R         * Allocated Power for the Port 
+																		PD contract in 0.25W steps
+    u16NegoVoltageIn50mV            2         R            R         * Negotiated Voltage from the 
+																		Port Bits 19:10 from the RDO.
+                                                                        Voltage is in 50mV steps. 
+																		Possible values are,
+                                                                        1. 0x00 = No Contract
+                                                                        2. 0x064 = 5V
+                                                                        3. 0x0B4 = 9 V
+                                                                        4. 0x12C = 15V
+                                                                        5. 0x190= 20V
+                                                                        6. 0x3FF = 51.15V
+    u16NegoVoltageIn10mA            2         R            R         * Negotiated Current from the 
+																		Port Bits 9: 0 from the RDO.
+                                                                        Ampere is in 10mA steps. 
+																		Sample values are,
+                                                                        1. 0x0000 = No Contract
+                                                                        2. 0x012C = 3A
+                                                                        3. 0x01F4 = 5A
+                                                                        4. 0x03FF = 10.24A
+    u16MaximumOperatingCurInmA      2                                * Maximum allowable current or 
+																		system's maximum operating
+                                                                        current in terms of mA
+    u16aMinPDOPreferredCurInmA[7]   14                               * Preferred minimum current 
+																		range for the PDO by which 
+																		the Sink may select without 
+																		setting Capability Mismatch 
+																		Bit with highest current 
+																		preferred.
+                                                                      * This array is applicable 
+																	    only for Sink Operation. 
+                                                                        
+    u16MinimumOperatingCurInmA      2                                * Minimum operating current by 
+																	    the System.
+                                                                      * This variable is applicable 
+																	    only for Sink Operation. 
+    u16PowerGoodTimerInms           2         R/W          R         * After an automatic fault 
+																		recovery, 
+																		u16PowerGoodTimerInms
+                                                                        is run to determine whether 
+																		power remains in a good 
+																		state for the duration of 
+																		the timer, then the Fault 
+																		Counter is reset. If another
+																		fault occurs before the 
+																		Power Good Timer expires, 
+																		then the Fault Counter is 
+																		incremented.
+                                                                      * For power Source, it is the 
+																	    time a power source must
+                                                                        consistently provide power 
+																		without a fault to determine 
+																		the power is good and a 
+																		fault condition does not 
+																		exist. For power Sink, it is
+																		the time after the sink 
+																		established a contract and 
+																		its consistently drawing 
+																		power from VBUS without a 
+																		power fault to determine 
+																		that power is good and a
+                                                                        fault condition does not 
+																		exist.
+    u8SourcePDOCnt                  1         R/W          R         * Number of Default Source PDOs
+																	    supported.
+                                                                      * This variable is applicable 
+																	    only when the port is
+                                                                        configured as Source.
+    u8SinkPDOCnt                    1         R/W          R         * Number of Default Sink PDOs 
+																		supported.
+                                                                      * This variable is applicable 
+																	    only when the port is
+                                                                        configured as Sink.
+    u8NewPDOCnt                     1         R/W          R/W       * Number of New PDOs Supported.
+                                                                      * This variable is common for 
+																	    both Source and Sink.
+    u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
+																		port partner.
+    u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
+																		port partner.
+                                                                      * This variable is common for 
+																	    Source and Sink.
+    u8NewPDOSelect                  1         R/W          R/W       * 0 = Clear
+                                                                      * 1 = Set, when Set the below 
+																	    steps are done by PSF.
+                                                                        1. Load New Source PDO
+                                                                        2. Advertise New PDOs to 
+																		    Port partner
+                                                                        3. Clear all New PDO 
+																		    registers
+                                                                        4. Clear this bit
+    u8SinkModeSelect                1         R/W                    * Sink Selection mode for 
+																		operation.
+                                                                        1. '0x00' Mode A: Prefer 
+																			  Higher Voltage and 
+																			  Wattage
+                                                                        2. '0x01' Mode B: Prefer 
+																		      Lower Voltage and 
+																			  Wattage
+    u8FaultInDebounceInms           1         R/W          R         * Debounce timer value in terms 
+																        of milliseconds for VBUS
+                                                                        overcurrent fault conditions
+																		before reacting and entering
+                                                                        fault recovery routine.
+                                                                      * It is applicable only for 
+																	    OCS detection via FAULT_IN
+                                                                        configured UPD350 pin.
+    u8OCSThresholdPercentage        1         R/W          R         * OCS Threshold. Reserved for 
+																		future use. This variable is
+                                                                        not currently used by PSF.
+    u8OVThresholdPercentage         1         R/W          R         * Percentage of PDO voltage to 
+																        be considered as Over 
+																		Voltage for that PDO. As per
+																		PD specification, desired 
+																		range for fixed PDO voltage 
+																		is (0.95 &#42; PDO Voltage) 
+																		to (1.05 &#42; PDO Voltage), 
+																		So u8OVThresholdPercentage 
+																		should be greater
+                                                                        than the desired range.
+                                                                      * If 115% of the PDO voltage 
+																	    has to be considered as
+                                                                        overvoltage for that PDO 
+																		voltage, then define
+                                                                        u8OVThresholdPercentage as 
+																		115.
+                                                                      * It is mandatory to define    	
+																		u8OVThresholdPercentage when
+                                                                        INCLUDE_POWER_FAULT_HANDLING
+																		is defined as '1'.
+    u8UVThresholdPercentage         1         R/W          R         * Percentage of PDO voltage to 
+																		be considered as under
+                                                                        Voltage for that PDO. As per
+																		PD specification, desired 
+																		range for fixed PDO voltage 
+																		is (0.95 &#42; PDO Voltage) 
+																		to (1.05 &#42; PDO Volatge),
+																		So u8UVThresholdPercentage 
+																		should be less than the 
+																		desired range.
+                                                                      * If 85% of the PDO voltage 
+																	    has to be considered as 
+																		under voltage for that PDO 
+																		voltage, then define
+                                                                        u8UVThresholdPercentage as 
+																		85.
+                                                                      * u8UVThresholdPercentage must
+																		be defined when
+                                                                        INCLUDE_POWER_FAULT_HANDLING
+																		is defined as '1'. As an
+                                                                        exceptional case this factor
+																		is not considered for 
+																		VSafe5V.
+    u8VCONNOCSDebounceInms          1         R/W          R         * Debounce timer value in terms
+																		of milliseconds for VCONN
+                                                                        overcurrent fault conditions
+																		before reacting and entering
+                                                                        fault recovery routine.
+    u8VBUSMaxFaultCnt               1         R/W          R         * The maximum number 
+																		of back&#45;to&#45;back VBUS 
+																		faults allowed before 
+																		permanent shut down of the 
+																		port. A back&#45;to&#45;back
+																		fault is a second fault 
+																		which occurs
+                                                                        within the 
+																		u16PowerGoodTimerInms after 
+																		a port is automatically 
+																		reenabled from a previous 
+																		fault condition.
+                                                                      * During port shutdown due to 
+																	    over current fault, the 
+																		device removes its CC 
+																		termination and wait for 
+																		port partner to get detached
+																		physically from the port to 
+																		resume its normal operation.
+    u8VCONNMaxFaultCnt              1         R/W          R         * The maximum number of 
+																		back&#45;to&#45;back VCONN 
+																		faults allowed before it 
+																		permanently disables the 
+																		VCONN. A 
+																		back&#45;to&#45;back fault 
+																		is a second fault which 
+																		occurs within the 
+																		u16PowerGoodTimerInms after 
+																		a port is automatically 
+																		reenabled from a previous 
+																		fault condition.
+                                                                      * If VCONN is disabled due to 
+																	    over current VCONN power
+                                                                        fault, VCONN will be enabled
+																		only after a physical detach
+                                                                        and reattach.
+    u8Pio_VBUS_EN                   1         R/W          R         * Defines the UPD350 PIO number
+																		used for EN_VBUS pin 
+																		functionality for the Port.
+                                                                      * EN_VBUS is to enable VBUS 
+																	    drive out of DC/DC
+                                                                        controller. EN_VBUS pin 
+																		connects to a load switch 
+																		device such as a power FET 
+																		or load switch IC. It is 
+																		driven as per u8Mode_VBUS_EN configuration mode whenever 
+																		stack requires VBUS to 
+																		driven high as well as low.
+                                                                      * The range of valid values is
+ 																	    0 to 15 which correspond to
+                                                                        UPD350 PIO0 to PIO15.
+                                                                      * To disable the pin 
+																	    functionality from the 
+																		stack, the user can define a
+																		value of 0xFF. It is 
+																		applicable only when
+                                                                        CONFIG_DCDC_CTRL is defined 
+																		as
+                                                                        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG 
+																		and for Source operation
+                                                                        only.
+                                                                      * By defining     
+																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
+																		as '1', The PIO Override 
+																		feature of the UPD350 shall 
+																		be utilized in this
+                                                                        pin to ensure that fast and 
+																		autonomous action is taken 
+																		by the UPD350 in a fault 
+																		condition.
+    u8Mode_VBUS_EN                  1         R/W          R         *  Defines the PIO mode of the 
+																		 UPD350 PIO EN_VBUS defined 
+																		 in u8Pio_VBUS_EN. 
+																	  * It takes values only from 
+																	    enum 
+																		eUPD_OUTPUT_PIN_MODES_TYPE.
+																		
+	u8Pio_FAULT_IN                  1         R/W          R         *  Defines the UPD PIO used as 
+																		 FAULT_IN pin. 
+																	  * FAULT_IN pin detects over 
+																		current fault or under/over
+																		voltage fault from external
+																		sensing device based 
+																		on its configuration 
+																		u8Mode_FAULT_IN. 
+																	  * It can take values only 
+																		from 0 to 15 and to disable 
+																		the pin funtionality from 
+																		stack, user can define it 
+																		as 0xFF. 
+																	  * It is applicable only when 
+																		CONFIG_DCDC_CTRL is 
+																		defined as 
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+																		and 
+																		INCLUDE_POWER_FAULT_HANDLING
+																		defined as '1'. 
+	u8Mode_FAULT_IN                 1         R/W          R         * Defines the PIO mode of the 
+																	    UPD350 PIO FAULT_IN defined 
+																	    in u8Pio_FAULT_IN. 
+																	  * It takes only values from 
+																		enum eFAULT_IN_MODE_TYPE.
+	u8Pio_VBUS_DIS                  1         R/W          R         * Defines the UPD350 PIO for 
+																		VBUS Discharge functionality. 
+																	  * It is a control for 
+																	    discharging VBUS (connecting
+																		VBUS to GND). It asserts as 
+																		per u8mode_VBUS_DIS whenever
+																		VBUS voltage must transition
+																		from a high voltage to a 
+																		lower voltage state and 
+																		when VBUS is disabled. 
+																	  * The range of valid values 
+																	    are 0 to 15 which correspond
+																		to UPD350 PIO0 to PIO15. 
+																	  * To disable the pin 
+																		functionality from the stack,
+																		user can define a value of 
+																		0cFF. 
+																	  * It is applicable only when 
+																		CONFIG_DCDC_CTRL is 
+																		defined as 
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+	u8mode_VBUS_DIS                 1         R/W          R         * Defines the PIO mode of the 
+																		UPD350 PIO VBUS_DIS defined 
+																		in u8Pio_VBUS_DIS. 
+																	  * It takes values only from
+																		enum 
+																		eUPD_OUTPUT_PIN_MODES_TYPE
+	u8Pio_DC_DC_EN                  1         R/W          R         * Defines the UPD350 PIO to 
+															            enable DC-DC controller. 
+																	  * It is asserted as per 
+																	    u8Mode_DC_DC_EN during 
+																		initialization and 
+																		deasserted during error
+																		condition to reset the 
+																		DC-DC controller. 
+																	  * It can take values from 0
+																	    to 15 and to disable the 
+																		funtionality from stack, 
+																		user can define it as 0xFF. 
+																	  * It is applicable only when 
+																	    CONFIG_DCDC_CTRL is defined 
+																		as 
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+	u8Mode_DC_DC_EN                 1         R/W          R         * Defines the PIO mode of the 
+																	    UPD350 PIO DC_DC_EN defined 
+																	    in u8Pio_DC_DC_EN. 
+																	  * It takes values only 
+																	    from enum 
+																		eUPD_OUTPUT_PIN_MODES_TYPE
+	u8aPio_VSEL[3]                  3         R/W          R         * Defines the UPD350 PIO as 
+																	    voltage selector pins
+																	    (VSEL[2:0]). 
+																	  * PSF Stack provides provision
+																	    for three Voltage selector 
+																		pins VSEL[2:0]. 
+																	  * It is used to control the 
+																	    output voltage of the DC/DC
+																		controller. In a typical 
+																		application, these pins are
+																		used to switch in different 
+																		resistors into the 
+																		feedback loop to vary the 
+																		output voltage. 
+																	  * The range of valid values is
+																		0 to 15 which correspond to
+																		UPD350 PIO0 to PIO15. 
+																	  * To disable the pin 
+																		funtionality from the stack,
+																		user can define a value of 
+																		0xFF. Index 0 to 2 of this 
+																		array correponds to VSEL0 to
+																		VSEL2. 
+																	  * It is applicable only when
+																	    CONFIG_DCDC_CTRL is defined 
+																		as 
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+																		
+	u8aMode_VSEL[3]                 3         R/W          R         * Defines the PIO mode of the 
+																		UPD350 PIO VSEL pins VSEL0
+																		to VSEL2. 
+																	  * It takes values only from 
+																		enum 
+																		eUPD_OUTPUT_PIN_MODES_TYPE.
+	u8aVSELTruthTable[8]            8         R/W          R         * Index 0 defines the assertion 
+																		and deassertion to be driven
+                                                                        on VSEL[2:0] pins(defined in u8aPio_VSEL[3]) by the PSF 
+																		as per u8aMode_VSEL[3] to 
+																		have an output voltage of 
+																		VSafe0V out of DC/DC 
+																		controller.
+                                                                      * Index 1 to 7 defines the 
+																	    assertion and deassertion to
+																		be driven on VSEL[2:0] pins
+																		(defined in u8aPio_VSEL[3]) 
+																		by the PSF stack as per 
+																		u8aMode_VSEL[3] to have an 
+																		output voltage of PDO 
+																		voltage defined in 
+																		u32aSourcePDO[7] out of 
+																		DC/DC controller.
+                                                                      * It is applicable only for 
+																	    Source.
+                                                                      * For a 1 pin per voltage 
+																	    implementation,
+																		correponding VSEL
+                                                                        mapping would be,
+                                                                        1. '000' 5V (No pins 
+																			 asserted)
+                                                                        2. '001' 9V (VSEL0 
+																		     asserted)
+                                                                        3. '010' 15V (VSEL1 
+																		     asserted)
+                                                                        4. '100' 20V (VSEL2 
+																		     asserted)
+	u8Pio_EN_SINK                   1         R/W          R         * Defines the UPD350 PIO 
+																		number used for EN_SINK pin
+																	  * This is applicable only for
+																		Sink operation. 
+	u8Mode_EN_SINK                  1         R/W          R         * Defines the PIO mode for 
+																		EN_SINK pin
+																	  * This is applicable only for 
+																		Sink operation. 
+    u8SnkPio_1_5A_IND               1         R/W          R         * Defines the UPD350 PIO number 
+																		used for 1.5A_IND pin 
+																	  * This is applicable only for 
+																		Sink operation. 
+	u8Mode_1_5A_IND                 1         R/W          R         * Defines the PIO mode for 
+																		1.5A_IND pin 
+																	  * This is applicable only for
+																		Sink operation. 
+	u8SnkPio_3A_IND                 1         R/W          R         * Defines the UPD350 PIO 
+																		number used for 3A_IND pin
+																	  * This is applicable only for 
+																	    Sink operation. 
+	u8Mode_3A_IND                   1         R/W          R         * Defines the PIO mode for 
+																		3A_IND pin 
+																	  * This is applicable only for 
+																		Sink operation. 
+	u8PIO_SNK_PD_NEG_CMPLT          1         R/W          R         * Defines the UPD350 PIO number
+																		for SNK_PD_NEG_CMPLT pin 
+																	  * This is applicable only for 
+																	    Sink operation. 
+	u8Mode_SNK_PD_NEG_CMPLT         1         R/W          R         * Defines the PIO mode for 
+																		SNK_PD_NEG_CMPLT pin 
+																	  * This is applicable only for
+																		Sink operation. 
+	u8PIO_SNK_CAP_MISMATCH          1         R/W          R         * Defines the UPD350 PIO number
+																	    for SNK_CAP_MISMATCH
+																	  * This is applicable only for
+																		Sink operation. 
+	u8Mode_SNK_CAP_MISMATCH         1         R/W          R         * Defines the PIO mode for 
+																		SNK_CAP_MISMATCH pin
+																	  * This is applicable only for 
+																		Sink operation. 
+	u8DAC_I_MaxOutVoltIn10mV        1                                * Defines the maximum voltage 
+																		on DAC_I with a maximum of 
+																		2.5V in terms of 10mV 
+																	  * This is applicable only for
+																		Sink operation. 
+	u8DAC_I_MinOutVoltIn10mV        1								 * Defines the minimum voltage 
+																		on DAC_I with a minimum of 
+																		0V in terms of 10mV 
+																	  * This is applicable only for
+																		Sink operation. 
+	u8DAC_I_CurrentInd_MaxInA       1								 * Defines which current in
+																		terms of A corresponding 
+																		to maximum output voltage 
+																	  * It can take either 3A or 5A 
+																	    value. 
+																	  * If it is 5A and maximum 
+																		output voltage is 2.5V, then 
+																		1. 0.5A > DAC_I = 0.25V 
+																		2. 1.5A > DAC_I = 0.75V
+																		3. 2.0A > DAC_I = 1V
+																		4. 3.0A > DAC_I = 1.5V 
+																		5. 4.0A > DAC_I = 2.0V
+																		6. 5.0A > DAC_I = 2.5V
+																	  * If it is 3A and maximum 
+																		output voltage is 2.5V, then
+																		1. 0.5A > DAC_I = 0.42V 
+																		2. 1.5A > DAC_I = 1.25V
+																		3. 2.0A > DAC_I = 1.67V
+																		4. 3.0A > DAC_I = 2.5V
+																		5. 4.0A > DAC_I = 2.5V
+																		6. 5.0A > DAC_I = 2.5V
+																	  * This is applicable only for 
+																		Sink operation. 
+	u8DAC_I_Direction               1              	                 * Specifies the direction of 
+																	     DAC_I to allow user invert 
+																		 direction of DAC_I if 
+																		 required 
+																		 1. 0 - High Amperage -
+   																		      Max Voltage 
+																		 2. 1- High Amperage - 
+																			  Min Voltage 
+																	   * This is applicable only 
+																		 for Sink operation. 	
+    </table>
+    
+    
+    
+    <b>Bit mapped elements:</b>
+    
+    Following elements of the structure are bit mapped.
+    
+    <b>u32CfgData</b>:
+    
+    u32CfgData variable holds the Port Configuration Data. It's size is 4 bytes.
+    <table>
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       RW           R         Port Enable/Disable
+                                    * '0' Disabled
+                                    * '1' Enabled
+    3:1     RW           R         Port Power Role
+                                    * '000' Sink
+                                    * '001' Source
+    5:4     RW           R         Rp Selection
+                                    * '00' Disabled
+                                    * '01' USB Power
+                                    * '10' 1.5A
+                                    * '11' 3.0A
+    8:6     RW           R         USB Data
+                                    * '000' No Data
+                                    * '001' USB2
+                                    * '010' USB3.1 Gen1
+                                    * '011' USB3.1 Gen2
+    9       RW           R         VCONN OCS Enable
+                                    * '0' Disable
+                                    * '1' Enable
+    32:10   RW           R         Reserved
+    </table>
+	
+	<b>u32PortConnectStatus</b>: 
+	u32PortConnectStatus variable holds the connection status of the port. It's size is 4 bytes. 
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R            R         Attached 
+                                    * '0' Detached
+                                    * '1' Attached
+	1       R            R         Orientation 
+									* '0' Unflipped 
+									* '1' Flipped 
+	2       R            R         Data Role 
+									* '0' UFP 
+									* '1' DFP 
+	3       R            R         Power Role 
+									* '0' Sink 
+									* '1' Source 
+	4       R            R         VCONN Status  
+									* '0' Disabled 
+									* '1' Enabled 
+	5       R            R         Cable Reduced Source Capabilities 
+									* '0' Attached USB-C cable supports the locally-defined Source 
+									    PDOs
+									* '1' Attached USB-C cable does not support the locally defined 
+									    Source PDOs	
+	6       R            R         PD Bal Reduced Source Capabilities
+									* '0' The advertised PDOs are equivalent to the default 
+									     configured values 
+									* '1' The advertised PDOs have been reduced from default 
+									     configured values
+	7       R            R         Source Capability Mismatch 
+									* '0' De-asserted by  Source port when there is capability 
+									     mismatch with sink partner 
+									* '1' Asserted by Source port when sink port indicates 
+									     capability mismatch in RDO
+	8       R            R         As Source PD Contract Good 
+									* '0' As Source: USB-C Connection Only (No Request Made Yet)
+									* '1' As Source; USB PD connection established, Power request 
+									      has been made, accepted and PS_RDY message sent. 
+								    * This bit will always remain 0 when acting as sink.	
+	9       R            R         As Source RDO Accepted
+									* '0' As Source: No RDO Accept message has been sent to last 
+									      Request made by attached Sink or no Request has yet been 
+										  made during connection. 
+									* '1' As Source: RDO Accept message has been sent to last 
+									      Request made by attached Sink
+								    * This bit will always remain 0 when acting as sink		  
+	10      R            R         As Source RDO Rejected  
+									* '0' As source; No RDO reject message has been sent to last 
+											request made by attached Sink or no Request has yet been 
+											made during connection 
+									* '1' As Source: RDO Reject message has been sent to last 
+									        Request made by attached Sink
+									* This bit will always remain 0 when acting as Sink 		
+	11      R            R         As Sink Last Request Accept 
+									* '0' As Sink: Last RDO Request was not Accepted or no request 
+									      has yet been made. 
+									* '1' As Sink: Last RDO Request was Accepted
+									* This bit will always remain 0 when acting as a source.
+	12      R            R         As Sink Last Request Reject 
+									* '0' As Sink: Last RDO Request was not Rejected or no request 
+									   has yet been made. 
+									* '1' As Sink: Last RDO Request was Rejected
+									* This bit will always remain 0 when acting as a source.
+	13      R            R         As Sink Last Request PS_RDY 
+									* '0' As Sink: PS_RDY not yet received for last RDO request  
+									* '1' As Sink: PS_RDY received for last RDO request
+									* This bit will always remain 0 when acting as a source.
+	14      R            R         Sink Capability Mismatch  
+									* '0' De-asserted by the Sink Port when there is no capability 
+										mismatch 
+									* '1' Asserted by Sink Port when no Source capability was found
+	16:15   R            R         Rp Value detected by Sink 
+									* '00' Disabled 
+									* '01' USB Power 
+								    * '10' 1.5A 
+									* '11' 3.0A 
+	31:17	R			 R         Reserved 				
+	</table>
 
-/**************************************************************************************************
-Summary:
-	tVCONNDischarge.
-Description:
-    CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS defines the tVCONNDischarge timeout specified in the 
-    USB Type C Specification. Default value of CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS is set 
-    as 35 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS can be configured depending on the microcontroller
-    platform platform used, for the device to be USB Type C Compliant. It shall always be
-    expressed in define MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS		MILLISECONDS_TO_TICKS(35)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS        MILLISECONDS_TO_TICKS(35)  
+	<b>u16PortIOStatus</b>: 
+	u16PortIOStatus variable holds the IO status of the port. It's size is 2 bytes. 
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R            R         EN_DC_DC Status  
+                                    * '0' Asserted 
+                                    * '1' De-asserted 
+    1       R            R         VSEL0 Status  
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    2       R            R         VSEL1 Status  
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    3       R            R         VSEL2 Status  
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    4       R            R         EN_VBUS Status  
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    5       R            R         VBUS_DIS Status  
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    6       R            R         EN_SINK Status  
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    7       R            R         1.5_IND Status  
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    8       R            R         3.0_IND Status  
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    9       R            R         PS_RDY Received 
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    10      R            R         Capability Mismatch  
+                                    * '0' Asserted 
+                                    * '1' De-asserted
+    15:11   R            R         Reserved 
+	</table>
+	
+	<b>u16PortStatusChange</b>: 
+	u16PortStatusChange variable defines the port connection status change bits. It's size is 2 
+	bytes. 
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R            R         Attach Event 
+                                    * '0' Since the last read of this register, PSF has not 
+									    experienced a USB-C attach
+                                    * '1' Since the last read of this register, PSF has experienced 
+									    a USB-C attach	
+    1       R            R         Detach Event 
+                                    * '0' Since the last read of this register, PSF has not 
+									    experienced a USB-C detach 
+                                    * '1' Since the last read of this register, PSF has experienced 
+									    a USB-C detach 
+    2       R            R         As Source New Request  
+                                    * '0' As Source, since the last read of this register, PSF has 
+									     not received any new PDO request from attached port partner
+                                    * '1' As Source: Received a new PDO request the attached Sink 
+									     port partner, As Sink: Received an updated set of Source 
+										 capabilities form the attached Source port partner
+    3       R            R         As Sink New PDOs Received  
+                                    * '0' As Sink: Since the last read of this register, PSF has not
+										received any changed source capabilities
+                                    * '1' As Sink: Received an updated set of Source capabilities 
+									    form the attached Source port partner
+    4       R            R         As Sink New Request Sent  
+                                    * '0' As Sink: Since the last read of this register, PSF has not
+										 sent any additional Sink RDOs
+                                    * '1' As Sink: Since the last read of this register, PSF has 
+									     issued a new Sink RDO to the attached Source, 
+								    * This bit will always remain 0 when acting as a source
+    5       R            R         As Sink Last Request Accept 
+                                    * '0' As Sink: Since the last read of this register, PSF has not
+									    received any new Request Accept messages from the attached 
+										Source
+                                    * '1' As Sink: Since the last read of this register, PSF has 
+									     received a new Request Accept from the attached Source
+    6       R            R         As Sink Last Request Reject 
+                                    * '0' As Sink: Since the last read of this register, PSF has not
+										received any new Request Reject messages from the attached 
+										Source
+                                    * '1' As Sink: Since the last read of this register, PSF has 
+									     received a new Request Reject message from the attached 
+										 Source
+    7       R            R         As Sink Last Sink PS Rdy 
+                                    * '0' As Sink: Since the last read of this register, PSF has not
+											received any PS_RDY messages from the attached Source
+                                    * '1' As Sink: Since the last read of this register, PSF has 
+									        received a PS_RDY message from the attached Source
+    8       R            R         Hard Reset Event 
+                                    * '0' Since the last read of this register, PSF has not 
+									      experienced a USB PD Hard Reset
+                                    * '1' Since the last read of this register, PSF has experienced 
+									      a USB PD Hard Reset			
+    9       R            R         Pin Reset Event 
+                                    * '0' Since the last read of this register, PSF has not been 
+									      reset via POR or pin
+                                    * '1' Since the last read of this register, PSF has been reset 
+									      via POR or pin
+    10      R            R         VBUS Fault 
+                                    * '0' Since the last read of this register, no VBUS faults have 
+									      been detected
+                                    * '1' Since the last read of this register, 1 or more VBUS 
+									      faults have been detected
+    11      R            R         VCONN Fault  
+                                    * '0' Since the last read of this register, no VCONN faults have
+      									been detected
+                                    * '1' Since the last read of this register, 1 or more VCONN 
+										faults have been detected										  
+	15:12   R            R 		   Reserved 
+	</table> 	
+	
+	<b>u16PortIntrMask</b>: 
+	u16PortIntrMask variable defines the port interrupt mask bits. It's size is 2 bytes. 
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       RC           RC        Attach Event Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    1       RC           RC        Detach Event Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    2       RC           RC        As Source New Request Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    3       RC           RC        As Sink New PDOs Received Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    4       RC           RC        As Sink New Request Sent Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    5       RC           RC        As Sink Last Request Accept Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    6       RC           RC        As Sink Last Request Reject Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    7       RC           RC        As Sink Last Sink PS RDY Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    8       RC           RC        Hard Reset Event Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    9       RC           RC        Pin Reset Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    10      RC           RC        VBUS Fault Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    11      RC           RC        VCONN Fault Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+	</table> 								
+	
+  Remarks:
+    None                                                                                                                                
+  ***************************************************************************************************************************************/
 
-/**************************************************************************************************
-Summary:
-	tVBUSON.
-Description:
-    CONFIG_TYPEC_VBUS_ON_TIMER_MS defines the tVBUSON specified in the USB-TypeC Specification. 
-    Default value of CONFIG_TYPEC_VBUS_ON_TIMER_MS is set as 275 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VBUS_ON_TIMER_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB Type C Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VBUS_ON_TIMER_MS			        MILLISECONDS_TO_TICKS(275)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VBUS_ON_TIMER_MS			        MILLISECONDS_TO_TICKS(275)
+typedef struct _PortCfgStatus
+{
+    UINT32 u32CfgData;				
+    UINT32 u32aSourcePDO[7];		
+    UINT32 u32aSinkPDO[7];          
+    UINT32 u32aNewPDO[7];		    
+    UINT32 u32aAdvertisedPDO[7];	
+    UINT32 u32aPartnerPDO[7];       
+    UINT32 u32RDO;                  
+	UINT32 u32PortConnectStatus;	
+    UINT16 u16AllocatedPowerIn250mW;   
+    UINT16 u16NegoVoltageIn50mV;      
+    UINT16 u16NegoVoltageIn10mA;      
+    UINT16 u16MaximumOperatingCurInmA; 
+    #if (TRUE == INCLUDE_PD_SINK)
+    UINT16 u16aMinPDOPreferredCurInmA[7]; 
+    UINT16 u16MinimumOperatingCurInmA; 
+    #endif
+    UINT16 u16PortIOStatus;
+    UINT16 u16PortStatusChange;
+    UINT16 u16PortIntrMask;
+    UINT16 u16PowerGoodTimerInms;   
+    UINT8 u8SourcePDOCnt;			
+    UINT8 u8SinkPDOCnt;             
+    UINT8 u8NewPDOCnt;              
+    UINT8 u8AdvertisedPDOCnt; 		
+    UINT8 u8PartnerPDOCnt;          
+    UINT8 u8NewPDOSelect;           
+    UINT8 u8SinkModeSelect;         
+    UINT8 u8FaultInDebounceInms;    
+    UINT8 u8OCSThresholdPercentage; 
+    UINT8 u8OVThresholdPercentage;  
+    UINT8 u8UVThresholdPercentage;	
+    UINT8 u8VCONNOCSDebounceInms;
+    UINT8 u8VBUSMaxFaultCnt;
+    UINT8 u8VCONNMaxFaultCnt;
+    UINT8 u8Pio_VBUS_EN;
+    UINT8 u8Mode_VBUS_EN;
+    UINT8 u8Pio_FAULT_IN;
+    UINT8 u8Mode_FAULT_IN;
+    UINT8 u8Pio_VBUS_DIS;
+    UINT8 u8mode_VBUS_DIS;
+    UINT8 u8Pio_DC_DC_EN;
+    UINT8 u8Mode_DC_DC_EN;
+    UINT8 u8aReserved1[2];
+    #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 
+    UINT8 u8aPio_VSEL[3];
+    UINT8 u8aMode_VSEL[3];
+	UINT8 u8aVSELTruthTable[8];
+    UINT8 u8aReserved2[2];
+	#endif
+    #if (TRUE == INCLUDE_PD_SINK)
+    UINT8 u8Pio_EN_SINK; 
+    UINT8 u8Mode_EN_SINK; 
+    UINT8 u8SnkPio_1_5A_IND; 
+    UINT8 u8Mode_1_5A_IND;  
+    UINT8 u8SnkPio_3A_IND;  
+    UINT8 u8Mode_3A_IND;    
+    UINT8 u8PIO_SNK_PD_NEG_CMPLT; 
+    UINT8 u8Mode_SNK_PD_NEG_CMPLT; 
+    UINT8 u8PIO_SNK_CAP_MISMATCH; 
+    UINT8 u8Mode_SNK_CAP_MISMATCH; 
+    UINT8 u8DAC_I_MaxOutVoltIn10mV; 
+    UINT8 u8DAC_I_MinOutVoltIn10mV; 
+    UINT8 u8DAC_I_CurrentInd_MaxInA;  
+    UINT8 u8DAC_I_Direction; 
+    UINT8 u8aReserved3[2];
+    #endif
+	 
+   } PORT_CFG_STATUS, *PPORT_CFG_STATUS;
 
-/**************************************************************************************************
-Summary:
-	tVBUSOFF.
-Description:
-    CONFIG_TYPEC_VBUS_OFF_TIMER_MS defines the tVBUSOFF specified in the USB-TypeC Specification. 
-    Default value of CONFIG_TYPEC_VBUS_OFF_TIMER_MS is set as 650 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VBUS_OFF_TIMER_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB Type C Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VBUS_OFF_TIMER_MS                MILLISECONDS_TO_TICKS(650)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VBUS_OFF_TIMER_MS                MILLISECONDS_TO_TICKS(650)
+ /**********************************************************************
+   Summary:
+     This structure contains port specific Power Balancing Configuration parameters.
+   Description:
+     This structure contains the following Power Balancing configuration
+     parameters. This structure consists of value based and bit mapped elements.
+	
+    <b>Value based elements:</b> 
+	Following elements of the structure are value based.
+	
+	<table> 	
+    Name                            Size in   R/W Config   R/W Run   \Description
+                                     Bytes     time         time      
+    ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
+    u16MaxPrtPwrBankA               2         R/W          R         * Maximum Port Power Bank A in 
+																		0.25W steps. 
+																	  * Unit/LSB = 0.25W
+																	  * Sample values this variable
+																	    can take are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x00F0 = 60W 
+																		3. 0x0190 = 100W 
+																	  * Note : A setting of 0x0000 
+																		and 0x191-0xFFF is invalid.
+    u16MaxPrtPwrBankB               2         R/W          R         * Maximum Port Power Bank B in 
+																		0.25W steps. 
+																	  * Unit/LSB = 0.25W
+																	  * Sample values this variable
+																	    can take are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x00F0 = 60W 
+																		3. 0x0190 = 100W 
+																	  * Note : A setting of 0x0000 
+																		and 0x191-0xFFF is invalid.	
+    u16MaxPrtPwrBankC               2         R/W          R         * Maximum Port Power Bank A in 
+																		0.25W steps. 
+																	  * Unit/LSB = 0.25W
+																	  * Sample values this variable
+																	    can take are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x00F0 = 60W 
+																		3. 0x0190 = 100W 
+																	  * Note : A setting of 0x0000 
+																		and 0x191-0xFFF is invalid.	
+    u16MaxPrtCurrent                2         R/W          R         * Maximum allowable current for 
+													                    ports in 10mA steps 
+																	  * Sample values this variable
+																	    can take are, 
+																		1. 0x0032 = 0.5A
+																		2. 0x012C = 3A 
+																		3. 0x01F4 = 5A
+																	  * Note : Values above 5A 
+																	    (0x01F5 - 0x0FFF) are not 
+																		supported	 
+	</table>	
 
-/**************************************************************************************************
-Summary:
-	tVCONNON.
-Description:
-    CONFIG_TYPEC_VCONNON_TIMEOUT_MS defines the tVCONNON specified in the USB-Type C Specification. 
-    Default value of CONFIG_TYPEC_VCONNON_TIMEOUT_MS is set as 10 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VCONNON_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB Type-C Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
+    <b>Bit mapped elements:</b>
+    
+    Following elements of the structure are bit mapped.
+    
+    <b>u8PBEnablePriority</b>:
+    
+    u8PBEnablePriority defines PB Enable/Disable per port and also the priority for the port. 
+	It's size is 1 byte. 
+    <table>
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R/W          R/W       PB Enable/Disable
+                                    * '0' Disable
+                                    * '1' Enable
+	3:1     R/W          R/W       Selects the port Priority 								
+									* 000b is the highest priority
+    7:4     R/W          R/W       Reserved 									
+   Remarks:
+     None                                                               
+   **********************************************************************/
 
-/**************************************************************************************************
-Summary:
-	tVCONNOFF.
-Description:
-    CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS defines the tVCONNOFF specified in the USB-Type C Specification. 
-    Default value of CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.
-Remarks:
-    CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
-    </code>
-**************************************************************************************************/
-#define CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
+#if (TRUE == INCLUDE_POWER_BALANCING) 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Policy Engine Timeout configuration
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
-	tTypeCSendSourceCap.
-Description:
-    CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS defines the SourceCapabilityTimer specified in the 
-    USB-PD Specification. Default value of CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS is set as 
-    150 milliseconds.
-Remarks:
-    CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS		MILLISECONDS_TO_TICKS(150)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS          MILLISECONDS_TO_TICKS(150)
+typedef struct _PBPortCfgStatus
+{
+    UINT16 u16MaxPrtPwrBankA; 
+    UINT16 u16MaxPrtPwrBankB; 
+    UINT16 u16MaxPrtPwrBankC; 
+    UINT16 u16MaxPrtCurrent; 
+    UINT8 u8PBEnablePriority; 
+    UINT8 u8aReserved4[3];
+} PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
 
-/**************************************************************************************************
-Summary:
-	tSrcReady.
-Description:
-    CONFIG_PE_SRC_READY_TIMEOUT_MS defines the tSrcReady specified in the PD 3.0 Specification. 
-    Default value of CONFIG_PE_SRC_READY_TIMEOUT_MS is set as 285 milliseconds.
-Remarks:
-    CONFIG_PE_SRC_READY_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_SRC_READY_TIMEOUT_MS                MILLISECONDS_TO_TICKS(285)
-    </code>
-**************************************************************************************************/   
-#define CONFIG_PE_SRC_READY_TIMEOUT_MS                     MILLISECONDS_TO_TICKS(285)
+#endif 
+ /**********************************************************************
+   Summary:
+     This structure contains port specific PPS configuration parameters.
+   Description:
+     This structure contains the following PPS configuration
+     parameters.
+	<table> 	
+    Name                            Size in   R/W Config   R/W Run   \Description
+                                     Bytes     time         time      
+    ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
+    u8PPSEnable                     1         R/W          R         PPS Enable/Disable.
+																	  * '0' = Disable 
+																	  * '1' = Enable 
+    u8PPSEnable                     1         R/W          R         Defines the PPS APDOs. 
+	
+	</table> 																 												  																 																  
+   Remarks:
+     None                                                               
+   **********************************************************************/
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)   
 
-/**************************************************************************************************
-Summary:
-	tVCONNSourceOn.
-Description:
-    CONFIG_PE_VCONNON_TIMEOUT_MS defines the tVCONNSourceOn specified in the USB PD Specification. 
-    Default value of CONFIG_PE_VCONNON_TIMEOUT_MS is set as 100 milliseconds.
-Remarks:
-    CONFIG_PE_VCONNON_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(100)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(100)
+typedef struct _PPSPortCfgStatus
+{
+    UINT8 u8PPSEnable;
+    UINT8 u8aReserved5[3];
+    UINT32 u32aPPSApdo[3];  
+} PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
 
-/**************************************************************************************************
-Summary:
-	Self tVCONNSourceOn.
-Description:
-    CONFIG_PE_VCONNON_SELF_TIMEOUT_MS defines the tVCONNSourceOn specified in the USB PD Specification. 
-    Default value of CONFIG_PE_VCONNON_SELF_TIMEOUT_MS is set as 150 milliseconds.
-Remarks:
-    CONFIG_PE_VCONNON_SELF_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_VCONNON_SELF_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(150)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_VCONNON_SELF_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(150)
+#endif 
+  /**********************************************************************
+   Summary:
+     This structure contains the system level and port specific Configuration and Status parameters 
+	 of PSF including Type C, PD, PB, PT and PPS parameters. 
+   Description:
+     This structure contains the following global configuration and 
+	 status parameters. This structure consists of value based and bit mapped elements.
+	
+    <b>Value based elements:</b> 
+	Following elements of the structure are value based.
+	
+	<table> 	
+    Name                            Size in   R/W Config   R/W Run   \Description
+                                     Bytes     time         time      
+    ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
+    u8MinorVersion               	1         R/W          R         Defines Structure Minor Version 
+	
+	u8MajorVersion               	1         R/W          R         Defines Structure Major Version 
+     
+	u8HWVersion                  	1         R/W          R         Defines Hardware Version  
 
-/**************************************************************************************************
-Summary:
-	tVCONNOFF.
-Description:
-    CONFIG_PE_VCONNOFF_TIMEOUT_MS defines the tVCONNOFF specified in the USB-Type C Specification. 
-    Default value of CONFIG_PE_VCONNOFF_TIMEOUT_MS is set as 35 milliseconds.
-Remarks:
-    CONFIG_PE_VCONNOFF_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(35)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(35)
+	u8SiVersion                  	1         R/W          R         Defines Silicon Version 
 
-/**************************************************************************************************
-Summary:
-	tNoResponse.
-Description:
-    CONFIG_PE_NORESPONSE_TIMEOUT_MS defines the NoResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_NORESPONSE_TIMEOUT_MS is set as 5.5 seconds.
-Remarks:
-    CONFIG_PE_NORESPONSE_TIMEOUT_MS an be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_NORESPONSE_TIMEOUT_MS		MILLISECONDS_TO_TICKS(5500)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_NORESPONSE_TIMEOUT_MS               MILLISECONDS_TO_TICKS(5500)
+	u8aManfString[8]               	1         R/W          R         Defines Manufacturer String 
 
-/**************************************************************************************************
-Summary:
-	tSenderResponse.
-Description:
-    CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS defines the SenderResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS is set as 24 milliseconds.
-Remarks:
-    CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(24)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(24)
+	u8PSFMajorVersion               1         R/W          R         Defines PSF Stack Major Version 
 
-/**************************************************************************************************
-Summary:
-	tTypeCSinkWaitCap.
-Description:
-    CONFIG_PE_SINKWAITCAP_TIMEOUT_MS defines the SinkWaitCapTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SINKWAITCAP_TIMEOUT_MS is set as 465 milliseconds.
-Remarks:
-    CONFIG_PE_SINKWAITCAP_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_SINKWAITCAP_TIMEOUT_MS               MILLISECONDS_TO_TICKS(465)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SINKWAITCAP_TIMEOUT_MS               MILLISECONDS_TO_TICKS(465)
+	u8PSFMinorVersion               1         R/W          R         Defines PSF Stack Minor Version 
 
-/**************************************************************************************************
-Summary:
-	tPSTransition.
-Description:
-    CONFIG_PE_PSTRANSITION_TIMEOUT_MS defines the PSTransitionTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_PSTRANSITION_TIMEOUT_MS is set as 500 milliseconds.
-Remarks:
-    CONFIG_PE_PSTRANSITION_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_PSTRANSITION_TIMEOUT_MS              MILLISECONDS_TO_TICKS(500)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_PSTRANSITION_TIMEOUT_MS              MILLISECONDS_TO_TICKS(500)
+	u16Reserved               	    2         R/W          R         Reserved 
 
-/**************************************************************************************************
-Summary:
-	tSinkRequest.
-Description:
-    CONFIG_PE_SINKREQUEST_TIMEOUT_MS defines the SinkRequestTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SINKREQUEST_TIMEOUT_MS is set as 100 milliseconds.
-Remarks:
-    CONFIG_PE_SINKREQUEST_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_SINKREQUEST_TIMEOUT_MS               MILLISECONDS_TO_TICKS(100)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SINKREQUEST_TIMEOUT_MS               MILLISECONDS_TO_TICKS(100)
+	u16ProducdID               	    2         R/W          R         * Defines the Product Identifier 
+																		Value. 
+																	  * It is used by the PD 
+																		Firmware Update state 
+																		machine during Enumeration 
+																		phase. This information is 
+																		shared with the PDFU 
+																		initiator as part of 
+																		GET_FW_ID command's response. 
+																	  * User definition of this 
+																	    macro is mandatory when 
+																		INCLUDE_PDFU is defined as 1. 
+																		It should always be two byte
+																		wide. 
+	u16VendorID               	    2         R/W          R         * Defines the Vendor Identifier 
+																		Value. 
+																	  * It is used by the PD 
+																		Firmware Update state 
+																		machine during Enumeration 
+																		phase. This information is 
+																		shared with the PDFU 
+																		initiator as part of 
+																		GET_FW_ID command's response. 
+																	  * User definition of this 
+																	    macro is mandatory when 
+																		INCLUDE_PDFU is defined as 1. 
+																		It should always be two byte wide. 															   
+	u16ProductTypeVDO               2         R/W          R         Defines Product Type VDO  
 
-/**************************************************************************************************
-Summary:
-	tVDMSenderResponse.
-Description:
-    CONFIG_PE_VDMRESPONSE_TIMEOUT_MS defines the VDMResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_VDMRESPONSE_TIMEOUT_MS is set as 28 milliseconds.
-Remarks:
-    CONFIG_PE_VDMRESPONSE_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_VDMRESPONSE_TIMEOUT_MS              MILLISECONDS_TO_TICKS(28)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_VDMRESPONSE_TIMEOUT_MS              MILLISECONDS_TO_TICKS(28)
+	u16ProductVDO                   2         R/W          R         Defines Product VDO
 
-/**************************************************************************************************
-Summary:
-	tPSHardReset.
-Description:
-    CONFIG_PE_PSHARDRESET_TIMEOUT_MS defines the PSHardResetTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_PSHARDRESET_TIMEOUT_MS is set as 28 milliseconds.
-Remarks:
-    CONFIG_PE_PSHARDRESET_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_PSHARDRESET_TIMEOUT_MS             MILLISECONDS_TO_TICKS(28)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_PSHARDRESET_TIMEOUT_MS             MILLISECONDS_TO_TICKS(28)
+	u16CertStatVDO                  2         R/W          R         Defines Cert Stat VDO
+	
+	u16IDHeaderVDO                  2         R/W          R         Defines ID Header VDO 
+	     
+	u8PwrThrottleCfg 	            1         R/W          R/W       * Defines the currently 
+																		selected Power Bank. 
+																	  * Possible values are, 
+																		1. 0x00 = Bank A 
+																		2. 0x01 = Bank B
+																	    3. 0x10 = Bank C 
+																		4. 0x11 = Shutdown mode 
+	u16SystemPowerBankA 	        2         R/W          R         * Defines the Total System 
+																		Power of Bank A. Each unit 
+																		is 0.25W 
+																	  * Sample values are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x01E0 = 120W
+																	    3. 0x0320 = 200W 
+																	  * A setting of 0x0000 and 
+																	    0x0321-0xFFFF is invalid. 																		
+	u16MinPowerBankA    	        2         R/W          R         * Defines the Guaranteed  
+																		minimum Power of Bank A. 
+																		Each unit is 0.25W 
+																	  * Sample values are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x003C = 15W
+																	    3. 0x0190 = 100W 
+																	  * A setting of 0x0000 and 
+																	    0x0191-0xFFFF is invalid.
+	u16SystemPowerBankB 	        2         R/W          R         * Defines the Total System 
+																		Power of Bank B. Each unit 
+																		is 0.25W 
+																	  * Sample values are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x01E0 = 120W
+																	    3. 0x0320 = 200W 
+																	  * A setting of 0x0000 and 
+																	    0x0321-0xFFFF is invalid. 
+	u16MinPowerBankB    	        2         R/W          R         * Defines the Guaranteed  
+																		minimum Power of Bank B. 
+																		Each unit is 0.25W 
+																	  * Sample values are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x003C = 15W
+																	    3. 0x0190 = 100W 
+																	  * A setting of 0x0000 and 
+																	    0x0191-0xFFFF is invalid.
+	u16SystemPowerBankC 	        2         R/W          R         * Defines the Total System 
+																		Power of Bank C. Each unit 
+																		is 0.25W 
+																	  * Sample values are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x01E0 = 120W
+																	    3. 0x0320 = 200W 
+																	  * A setting of 0x0000 and 
+																	    0x0321-0xFFFF is invalid. 
+	u16MinPowerBankC    	        2         R/W          R         * Defines the Guaranteed  
+																		minimum Power of Bank C. 
+																		Each unit is 0.25W 
+																	  * Sample values are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x003C = 15W
+																	    3. 0x0190 = 100W 
+																	  * A setting of 0x0000 and 
+																	    0x0191-0xFFFF is invalid.	
+	u16SharedPowerCapacity    	     2         R/W          R        * Defines the currently 
+																		available shared power 
+																		capacity from which power 
+																		is allocated to ports that 
+																		are not yet in a valid 
+																		negotiated contract. 
+																	  *	The shared power capacity is 
+																		dynamically adjusted as 
+																		ports are connected and 
+																		disconnected. 
+																		Each unit is 0.25W 
+																	  * Sample values are, 
+																		1. 0x0001 = 0.25W 
+																		2. 0x003C = 15W
+																	    3. 0x0190 = 100W 
+	</table> 															  										
 
-/**************************************************************************************************
-Summary:
-	tSrcRecover.
-Description:
-    CONFIG_PE_SRCRECOVER_TIMEOUT_MS defines the tSrcRecover specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SRCRECOVER_TIMEOUT_MS is set as 800 milliseconds.
-Remarks:
-    CONFIG_PE_SRCRECOVER_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PE_SRCRECOVER_TIMEOUT_MS               MILLISECONDS_TO_TICKS(800)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SRCRECOVER_TIMEOUT_MS               MILLISECONDS_TO_TICKS(800)
+    <b>Bit mapped elements:</b>
+    
+    Following elements of the structure are bit mapped.
+    
+    <b>u8PBEnableSelect</b>:
+    
+    u8PBEnableSelect defines PB Enable/Disable for the system and also the Power Balancing algorithm. 
+	It's size is 1 byte. 
+    <table>
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    3:0     R/W          R         Selection of Power Balancing Algorithm
+                                    * 0000 = First Come First Serve
+                                    * 0001 = Last Plugged Gets Priority
+									* 0010-1111 = Reserved
+	4       R/W          R         PD Power balancing Enable/Disable for the system								
+									* 0 = PD Balancing is disabled 
+									* 1 = PD Balancing is enabled 									
+	</table>								
+	
+   Remarks:
+     None                                                               
+   **********************************************************************/
 
-/**************************************************************************************************
-Summary:
-	tSrcTransistionTimer.
-Description:
-    CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS defines the tSrcTransistionTimer specified in the 
-    USB-PD Specification. By default, it is set to 28 milliseconds.
-Remarks:
-    CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS             MILLISECONDS_TO_TICKS(28)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS	      MILLISECONDS_TO_TICKS(28)
+typedef struct _GlobalCfgStatusData 
+{
+    UINT8 u8MinorVersion;  
+    UINT8 u8MajorVersion;  
+    UINT8 u8HWVersion;	   
+    UINT8 u8SiVersion;     
+    UINT8 u8aManfString[8]; 
+    UINT8 u8PSFMajorVersion; 
+    UINT8 u8PSFMinorVersion; 
+    UINT8 u8aReserved6[2];     
+    UINT16 u16ProducdID;	
+    UINT16 u16VendorID;		
+    UINT16 u16ProductTypeVDO; 
+    UINT16 u16ProductVDO; 
+    UINT16 u16CertStatVDO; 
+    UINT16 u16IDHeaderVDO; 
+    
+    PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; 
+#if (TRUE == INCLUDE_POWER_BALANCING)
+    UINT8 u8PBEnableSelect;	
+    UINT8 u8aReserved7[3];	
+#endif 
+#if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
+    UINT8 u8PwrThrottleCfg;	
+    UINT8 u8aReserved8[3];
+    UINT16 u16SystemPowerBankA; 
+    UINT16 u16MinPowerBankA;   
+    UINT16 u16SystemPowerBankB; 
+    UINT16 u16MinPowerBankB;   
+    UINT16 u16SystemPowerBankC; 
+    UINT16 u16MinPowerBankC;    
+#endif
+#if (TRUE == INCLUDE_POWER_BALANCING)    
+    UINT16 u16SharedPowerCapacity; 
+    UINT16 u16Reserved1;
+    PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	
+#endif 
+    
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+    PPS_PORT_CFG_STATUS sPPSPerPortData[CONFIG_PD_PORT_COUNT]; 
+#endif
+} GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
 
-/**************************************************************************************************
-Summary:
-	tChunkSenderRequest.
-Description:
-    CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS defines the ChunkSenderRequestTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS is set as 26 milliseconds.
-Remarks:
-    CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS		MILLISECONDS_TO_TICKS(26)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS		MILLISECONDS_TO_TICKS(26)
+extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
 
-/**************************************************************************************************
-Summary:
-	tChunkSenderResponse.
-Description:
-    CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS defines the ChunkSenderResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS is set as 26 milliseconds.
-Remarks:
-    CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS    MILLISECONDS_TO_TICKS(26)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS    MILLISECONDS_TO_TICKS(26)
-
-/**************************************************************************************************
-Summary:
-	tSinkTx.
-Description:
-    CONFIG_PRL_SINKTX_TIMEOUT_MS defines the SinkTxTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PRL_SINKTX_TIMEOUT_MS is set as 16 milliseconds.
-Remarks:
-    CONFIG_PRL_SINKTX_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-    #define CONFIG_PRL_SINKTX_TIMEOUT_MS				    MILLISECONDS_TO_TICKS(16)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PRL_SINKTX_TIMEOUT_MS				    MILLISECONDS_TO_TICKS(16)
-
-/**************************************************************************************************
-Summary:
-	tBISTContMode.
-Description:
-    CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS defines the BISTContModeTimer specified in the USB-PD Specification.
-    Default value of CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS is set as 45 milliseconds.
-Remarks:
-    CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS can be configured depending on the microcontroller 
-    platform used, for the device to be USB PD Compliant. It shall always be expressed in define 
-    MILLISECONDS_TO_TICKS.
-Example:
-    <code>
-     #define CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS			MILLISECONDS_TO_TICKS(45)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS			MILLISECONDS_TO_TICKS(45)                                             
 
 #endif

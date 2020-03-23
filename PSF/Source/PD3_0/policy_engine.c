@@ -56,7 +56,7 @@ void PE_InitPort (UINT8 u8PortNum)
     gasPolicy_Engine[u8PortNum].u32MsgHeader = SET_TO_ZERO;
     gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = SET_TO_ZERO;
 
-    if ((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
+    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
     {
         /*Setting the CapsCounter to 0 */
         gasPolicy_Engine[u8PortNum].u8CapsCounter = SET_TO_ZERO;
@@ -89,7 +89,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
     UINT8 u8RetVal;
 
     /* Protocol layer Chunk State machine must be ran by PE to receive Chunk message if any*/
-#if INCLUDE_PD_3_0
+#if (TRUE == INCLUDE_PD_3_0)
     PRL_RunChunkStateMachine (u8PortNum);
 #endif
 
@@ -151,13 +151,13 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
     if(DPM_GET_CURRENT_POWER_ROLE (u8PortNum) == PD_ROLE_SOURCE)
     {
-        #if INCLUDE_PD_SOURCE
+        #if (TRUE == INCLUDE_PD_SOURCE)
         PE_SrcRunStateMachine (u8PortNum, u8DataBuf, u8SOPType,u32Header);
         #endif
     }
     else if(DPM_GET_CURRENT_POWER_ROLE (u8PortNum) == PD_ROLE_SINK)
     {
-        #if INCLUDE_PD_SINK
+        #if (TRUE == INCLUDE_PD_SINK)
         PE_SnkRunStateMachine (u8PortNum, u8DataBuf, u8SOPType,u32Header);
         #endif
     }
@@ -557,7 +557,24 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     }
                     #endif
                     break;
-                }                
+                }   
+                case PE_DATA_SINK_CAP:
+                {
+                    /* Once response for Get_Sink_Cap is received, kill the Sender 
+                       Response Timer and change the PE sub-state as  ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED */
+                    if (ePE_SRC_GET_SINK_CAP == gasPolicy_Engine[u8PortNum].ePEState)
+                    {                       
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS);
+                    }
+                    else
+                    {
+                        /* Handle Unexpected message when Sink capabilities message is 
+                           received in wrong PE State */
+                        PE_HandleUnExpectedMsg (u8PortNum);
+                    }
+                    break; 
+                }
                 default:
                 {
                     break;
@@ -728,7 +745,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                          (gasDPM[u8PortNum].u8DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
                     {
 
-#if INCLUDE_VCONN_SWAP_SUPPORT
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
                                           
                         gasPolicy_Engine[u8PortNum].ePEState = ePE_VCS_EVALUATE_SWAP;
 #else
@@ -793,7 +810,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
     switch (gasPolicy_Engine[u8PortNum].ePEState)
     {
 
-#if INCLUDE_PD_3_0
+#if (TRUE == INCLUDE_PD_3_0)
        case ePE_SEND_NOT_SUPPORTED:
        {
             switch (gasPolicy_Engine[u8PortNum].ePESubState)
@@ -809,7 +826,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     Transmit_cb = PE_StateChange_TransmitCB;
 
-                    if ((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == \
+                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == \
                         PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if
@@ -859,7 +876,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     Transmit_cb = PE_StateChange_TransmitCB;
 
-                    if ((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == \
+                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == \
                         PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if
@@ -896,14 +913,14 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
        }
 
-#if INCLUDE_VCONN_SWAP_SUPPORT
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
 
         case ePE_VCS_EVALUATE_SWAP:
         {
             /*Transition directly to next state as PSF accepts VCONN Swap always*/
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP: Entered the state\r\n");
 
-#if INCLUDE_POWER_FAULT_HANDLING
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
             
             /*Send Not Supported or Reject if Port partner requests VCONN Swap to supply the
             VCONN when the u8VCONNGoodtoSupply is false */
@@ -1041,7 +1058,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_VCS_TURN_OFF_VCONN_ENTRY_SS:
                 {
                   
-                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Enterted the state\r\n");
+                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Entered the state\r\n");
 
                     /*Turn off VCONN since PS RDY message is received from VCONN Source partner*/
                     DPM_VConnOnOff(u8PortNum,DPM_VCONN_OFF);            
@@ -1098,7 +1115,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_VCS_TURN_ON_VCONN_ENTRY_SS:
                 {
                   
-                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Enterted the state\r\n");
+                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Entered the state\r\n");
                     
                     /*Turn ON VCONN*/
                     DPM_VConnOnOff (u8PortNum,DPM_VCONN_ON);
@@ -1493,3 +1510,23 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum)
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 
 }
+/******************************************************************************/
+UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
+{
+    UINT8 u8Return = FALSE;    
+    if ((DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) &&
+            (gasPolicy_Engine[u8PortNum].ePEState == ePE_SRC_READY) &&
+          (gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_READY_END_AMS_SS))  
+    {
+        u8Return = TRUE;
+    }
+    else if ((gasPolicy_Engine[u8PortNum].ePEState == ePE_SNK_READY) &&
+          (gasPolicy_Engine[u8PortNum].ePESubState == ePE_SNK_READY_IDLE_SS ))  
+    {
+        u8Return = TRUE;
+    }
+    return u8Return;
+}
+/*******************************************************************************/
+
+

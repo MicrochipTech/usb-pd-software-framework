@@ -46,9 +46,22 @@
 /* ************************************************************************** */
 #include <stdbool.h>
 #include <stddef.h>
-#include <psf_stdinc.h>
+
+#include <generic_defs.h>
+        
+#include "PSF_Config.h"
+
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG) 
+//#if (CONFIG_I2C_DCDC_TYPE == 1)
+    #include "Mpq_dc_dc_control.h"
+//#endif
+#endif
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
 #include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"
+#include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom3_usart.h"
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#include "../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h"
+#endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
 
@@ -108,6 +121,13 @@
 #define SAMD20_PORT0_EIC_PIN    EIC_PIN_14
 #define SAMD20_PORT1_EIC_PIN    EIC_PIN_15
 
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#define SAMD20_DCDC_ALERT0      PORT_PIN_PA02
+#define SAMD20_DCDC_ALERT1      PORT_PIN_PA03
+#define SAMD20_I2C_INSTANCE     3
+#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+
+#define SAMD20_UART_INSTANCE  3
 
 // *****************************************************************************
 // *****************************************************************************
@@ -226,6 +246,17 @@ UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writ
 **************************************************************************************************/
 UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength);
 
+/*****************************************************************************/
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+UINT8 SAMD20_I2CDCDCInitialisation (void);
+UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
+UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen);
+UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
+                                              UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
+bool SAMD20_I2CDCDCIsBusyDriver(void);
+void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum);
+
+#endif
 /****************************************************************************
     Function:
         void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
@@ -363,6 +394,18 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
         None                    
 **************************************************************************/
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
+
+/*Debug UART APIs*/
+#ifdef CONFIG_HOOK_DEBUG_MSG
+void SAMD20_UART_Initialisation(void);
+
+void SAMD20_UART_Write_Char(char);
+
+void SAMD20_UART_Write_Int(UINT32, UINT8);
+
+void SAMD20_UART_Write_String(char*);
+
+#endif //CONFIG_HOOK_DEBUG_MSG
 
 #endif /*_DRIVERS_H */
 

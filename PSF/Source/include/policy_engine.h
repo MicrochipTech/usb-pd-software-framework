@@ -117,7 +117,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_N_BUSY_COUNT                 7
 
 /*Default Power role and PD spec assignment based on the includes at compile time*/
-#if INCLUDE_PD_SOURCE
+#if (TRUE == INCLUDE_PD_SOURCE)
     /*Current PD ROLE*/
     #define CONFIG_PD_DEFAULT_ROLE  PD_ROLE_SOURCE
 #else
@@ -125,7 +125,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     #define CONFIG_PD_DEFAULT_ROLE  PD_ROLE_SINK
 #endif
 
-#if INCLUDE_PD_3_0
+#if (TRUE == INCLUDE_PD_3_0)
 	/*Current Spec Role*/
 	#define CONFIG_PD_DEFAULT_SPEC_REV  PD_SPEC_REVISION_3_0
 #else
@@ -305,6 +305,9 @@ typedef enum {
 	/* ePE_SRC_GET_SINK_CAP */
     ePE_SRC_GET_SINK_CAP_ENTRY_SS,
     ePE_SRC_GET_SINK_CAP_IDLE_SS,
+    ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS,
+    ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT_SS,
+    ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS, 
 	/* ePE_SRC_SOFT_RESET */
     ePE_SRC_SOFT_RESET_ENTRY_SS,
     ePE_SRC_SOFT_RESET_IDLE_SS,
@@ -345,7 +348,6 @@ typedef enum {
     ePE_SNK_SEND_SOFT_RESET_WAIT_FOR_ACCEPT_SS,
     /*ePE_SNK_HARD_RESET*/
     ePE_SNK_HARD_RESET_SEND_SS,
-    ePE_SNK_HARD_RESET_WAIT_FOR_COMPLETION_SS,
     /*ePE_SNK_TRANSITION_TO_DEFAULT*/
     ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS,
     ePE_SNK_TRANSITION_TO_DEFAULT_VCONNOFF_CHECK_SS,
@@ -1082,5 +1084,24 @@ void PE_NoResponseTimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
         None.
 **************************************************************************************************/
 void PE_SnkRunStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
-/**************************************************************************************************/
+/**************************************************************************************************
+    Function:
+        UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
+    Summary:
+        Checks whether PE is idle.
+    Devices Supported:
+        UPD350 REV A
+    Description:
+        This API is called to check whether Policy Engine is Idle state.        
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port Number.Value passed will be less than CONFIG_PD_PORT_COUNT.
+    Return:
+        TRUE - If Policy Engine is IDLE
+        FALSE- If Policy Engine is not IDLE.
+    Remarks:
+        None.
+**************************************************************************************************/
+UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum); 
 #endif /*_POLICY_ENGINE_H_*/

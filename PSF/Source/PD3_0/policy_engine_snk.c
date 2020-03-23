@@ -31,14 +31,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 #include <psf_stdinc.h>
 
-#if INCLUDE_PD_SINK
+#if (TRUE == INCLUDE_PD_SINK)
 
 void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
 {
     UINT8 u8TypeCState = TYPEC_INVALID_STATE;
     UINT8 u8TypeCSubState = TYPEC_INVALID_SUBSTATE;
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
-    UINT32 u32DataObj[PDO_MAX_OBJECTS] = {SET_TO_ZERO};
+    UINT32 u32DataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
 	UINT16 u16Transmit_Header = SET_TO_ZERO;
 	PRLTxCallback Transmit_cb = NULL;
 	UINT32 u32Transmit_TmrID_TxSt = SET_TO_ZERO;
@@ -157,7 +157,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
         /*This State is set by the PE_ReceiveMsgHandler API if the source capability message has been received*/    
         case ePE_SNK_EVALUATE_CAPABILITY:
         {            
-            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY: Enterted the state\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY: Entered the state\r\n");
                     
             /*Reset the HardResetCounter*/
             gasPolicy_Engine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	
@@ -166,7 +166,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             DPM_Evaluate_Received_Src_caps(u8PortNum,(UINT16) u32Header ,(UINT32*)pu8DataBuf );
 
             /*Invalid Source Capability Message results in Sink request object count to be 0*/
-           if (gasDPM[u8PortNum].u32SinkReqRDO == SET_TO_ZERO)
+           if (gasCfgStatusData.sPerPortData[u8PortNum].u32RDO == SET_TO_ZERO)
            {
                 /*Transition to Ready state if already in PD contract*/
                 if ((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_PDCONTRACT_MASK ) == \
@@ -195,9 +195,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             switch (gasPolicy_Engine[u8PortNum].ePESubState)
             {
                 case ePE_SNK_SELECT_CAPABILITY_SEND_REQ_SS:
-                {
-                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Enterted the state\r\n");
+                {                 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Entered the state\r\n");
 
                     /*Set the PD message transmitter API variables to send Sink Data request Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
@@ -205,7 +204,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_REQUEST,\
                                             PE_OBJECT_COUNT_1, PE_NON_EXTENDED_MSG);
                     
-                    u32DataObj[0] = gasDPM[u8PortNum].u32SinkReqRDO;
+                    u32DataObj[0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
                     Transmit_cb = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to Soft reset state if
@@ -296,7 +295,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             {
                 case ePE_SNK_READY_ENTRY_SS:
                 {                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY: Enterted the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY: Entered the state\r\n");
 					/* configure threshold to detect faults*/
                    	DPM_EnablePowerFaultDetection(u8PortNum);
 					
@@ -306,8 +305,11 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     
 #ifdef CONFIG_HOOK_DEBUG_MSG                    
                     u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
-                    DEBUG_PRINT_UINT32_BUF_STR( u8PortNum, "PDPWR", &u32PDODebug, 1, "\r\n");
+                    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
+                    /*Notify that contract is established*/
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
+                    
                     break;
                 }
                 
@@ -338,17 +340,11 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Setting the Hard Reset IN progress bit to avoid VBUS discharge
                     when VBUS drops below VSinkDisconnnect*/
                     gasPolicy_Engine[u8PortNum].u8PEPortSts |= PE_HARDRESET_PROGRESS_MASK;
+                   
+                     /*The transmitter callback is set to transition to Startup state 
+                      * if message transmission fails*/
                     
-                    /*Workaround for EOP Issue*/
-                     /*Set the transmitter callback to transition to Startup state if
-                    message transmission fails*/
-                    /*u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_TRANSITION_TO_DEFAULT,\
-                                             ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS,\
-                                             ePE_SNK_STARTUP,ePE_INVALIDSUBSTATE);
-
-                    gasPolicy_Engine[u8PortNum].ePESubState = \
-                      ePE_SNK_HARD_RESET_WAIT_FOR_COMPLETION_SS;*/
-
+                    /* API to send Hardreset is called*/
                     PRL_SendCableorHardReset(u8PortNum, PRL_SEND_HARD_RESET,\
                                              NULL, 0x00);
                     
@@ -358,11 +354,6 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Increment HardReset Counter*/
                     gasPolicy_Engine[u8PortNum].u8HardResetCounter++;             
                     
-                    break;
-               }
-               /*Wait here for the completion of Hard reset signal*/
-               case ePE_SNK_HARD_RESET_WAIT_FOR_COMPLETION_SS:
-               {
                     break;
                }
                default:
@@ -431,9 +422,11 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 					                                                 
                case ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS:
                {    
-                    /* Reset the local HW - Reconfigure VBUS Thr to 0V*/
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_0V,0, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-                     
+                    /* Configuring VBUS threshold to detect VSafe0V and VSafe5V
+                     as on reception of HardReset Source will transition to VSafe0V*/
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
+                            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA, \
+                            TYPEC_CONFIG_NON_PWR_FAULT_THR);
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS;
                     break;                    
                }
@@ -441,12 +434,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                {                     
                     /*Transition only after the VBUS from Source has gone down to 0V*/
                     if(DPM_GetVBUSVoltage(u8PortNum) == TYPEC_VBUS_0V)
-                    {      
-					  	/*Configuring for VBUS threshold to detect TYPEC_VBUS_5V*/
-                        TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA, \
-                            TYPEC_CONFIG_NON_PWR_FAULT_THR);
-						
+                    {  						
                         /*Inform Protocol Layer about Hard Reset Complete */
                         PRL_HRorCRCompltIndicationFromPE(u8PortNum);
                         

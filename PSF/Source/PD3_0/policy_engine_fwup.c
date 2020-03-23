@@ -884,10 +884,10 @@ UINT16 PE_FwUpdtGetFWIDRequest(void)
 
     /*Hard code to PD FW update error code OK*/
     stGetFWID.u8Status = (UINT8)ePE_FWUP_OK;
-    stGetFWID.u16VID = (UINT16)CONFIG_VENDOR_ID;
+    stGetFWID.u16VID = gasCfgStatusData.u16VendorID;
 
     /*Marked as TBD in Hermes interface*/
-    stGetFWID.u16PID = (UINT16)CONFIG_PRODUCT_ID;
+    stGetFWID.u16PID = gasCfgStatusData.u16ProducdID;
 
     /*Set HW revision to 1 as mentioned UDID section of Hermes Interface*/
     stGetFWID.u8HWVersion =
