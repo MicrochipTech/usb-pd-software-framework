@@ -36,7 +36,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
 {
     do
     {
-        if (((gasPortConfigurationData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
+        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
             >> TYPEC_PORT_ENDIS_POS)== UPD_PORT_DISABLED)
         {
             break;
@@ -47,7 +47,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         UINT16 u16InterruptStatus = 0;
         UINT16 u16Data = 0;
 
-#if INCLUDE_POWER_MANAGEMENT_CTRL 
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         UINT8 u8ReadData = 0x00;
 	
         if (gau8ISRPortState[u8PortNum] ==  UPD_STATE_IDLE)
@@ -99,7 +99,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
             UPD_PIOHandleISR (u8PortNum);
         }
 
-#if INCLUDE_POWER_MANAGEMENT_CTRL
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         
         /*Set UPD_STATE_ACTIVE at End of ISR*/
         gau8ISRPortState[u8PortNum] = UPD_STATE_ACTIVE;

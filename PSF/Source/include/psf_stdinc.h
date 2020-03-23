@@ -24,6 +24,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 
 #include <generic_defs.h>
+#include <PSF_Config.h>
 #include <PSF_APIHook.h>
 #include <portpower_control.h>
 #include <debug.h>
@@ -34,9 +35,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <upd_interrupts.h>
 #include <upd_hw.h>
 #include <protocol_layer.h>
-#include <cfg_globals.h>
+#if (TRUE == INCLUDE_POWER_BALANCING)
+#include <pb_mngr.h>
+#endif
 #include <int_globals.h>
 #include <policy_engine_fwup.h>
 #include <ProjectVersion.h>
+#include <timer_defs.h>
 
 #endif

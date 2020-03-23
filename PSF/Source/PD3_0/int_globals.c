@@ -83,7 +83,24 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 #endif
 
 /**************************************************************************************************/
+
+/********************Power Balancing globals************************************/
+#if (TRUE == INCLUDE_POWER_BALANCING) 
+    /* Power Balancing Internal System Parameters */
+    PB_INT_SYS_PARAM gsPBIntSysParam; 
+    /* Power Balancing Internal Port Parameters */
+    PB_INT_PORT_PARAM gasPBIntPortParam[CONFIG_PD_PORT_COUNT]; 
+    /* Sequence in which ports are attached */
+    UINT8 gu8AttachSeq; 
+    /* Timer used to wait for Asynchronous request from the Sink */
+    UINT8 gu8PBTimerID; 
+#endif 
+/**************************************************************************************************/ 
     
+/********************Configuration and Status register ************************************/    
+GLOBAL_CFG_STATUS_DATA gasCfgStatusData;
+/**************************************************************************************************/ 
+
 /*******************************************************************/
 /******************* Functions**************************************/
 /*******************************************************************/
@@ -92,21 +109,22 @@ void IntGlobals_PDInitialization(void)
 {
     for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-
-    #if INCLUDE_POWER_MANAGEMENT_CTRL
-
-        UPD_PwrManagementInit(u8PortNum);
-        
-    #endif
-
+    #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
+        UPD_PwrManagementInit(u8PortNum);        
+#endif
         DPM_Init(u8PortNum);
 
         PE_InitPort(u8PortNum);
         
-        #if (FALSE != INCLUDE_PDFU)
-            PE_FwUpdtInitialize();
-        #endif
+#if (FALSE != INCLUDE_PDFU)
+        PE_FwUpdtInitialize();
+#endif
     }
+    
+#if (TRUE == INCLUDE_POWER_BALANCING)
+    /* Initialize PB System and Port Parameters */
+    PB_Init();     
+#endif 
 }
 
 /**************************************************************************************************/

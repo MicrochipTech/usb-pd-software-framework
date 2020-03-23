@@ -336,15 +336,15 @@ event for UFP*/
 				((u16voltagemV * TYPEC_DESIRED_MAX_PDO_VOLTAGE_FACTOR) / \
 				  TYPEC_VBUS_THRX_UNITS_MILLI_V )
 
-#if INCLUDE_POWER_FAULT_HANDLING
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 /* To get over voltage VBUS threshold*/			
 #define TYPEC_GET_OVER_VOLTAGE_VBUS_THR(u16voltagemV)		\
-				(UINT16)((u16voltagemV * (CONFIG_OVER_VOLTAGE_FACTOR)) \
-				  / TYPEC_VBUS_THRX_UNITS_MILLI_V )
+				 ((u16voltagemV * (gasCfgStatusData.sPerPortData[u8PortNum].u8OVThresholdPercentage / (float)100)) \
+				  / TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
-/* To get under votlage VBUS threshold*/                  
+/* To get under voltage VBUS threshold*/                  
 #define TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(u16voltagemV)		\
-			  (UINT16)((u16voltagemV * (CONFIG_UNDER_VOLTAGE_FACTOR)) \
+			     ((u16voltagemV * (gasCfgStatusData.sPerPortData[u8PortNum].u8UVThresholdPercentage / (float)100)) \
 					/ TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
 #endif /* end of INCLUDE_POWER_FAULT_HANDLING*/
@@ -474,15 +474,19 @@ TypeC_SetRpCollAvoidance API*/
     
 /*************************************************************/
 
-/*Masks used For getting Port Rp Currrent from gasPortConfigurationData structure*/ 
+/*Defines for VCONN OCS Enable*/
+#define TYPEC_VCONN_OCS_EN                BIT(9)
+#define TYPEC_VCONN_OCS_EN_POS            9
+
+/*Masks used For getting Port Rp Currrent from gasCfgStatusData structure*/ 
 #define TYPEC_PORT_RPVAL_MASK	        (BIT(4) | BIT(3))
 #define TYPEC_PORT_RPVAL_POS            3
 
 #define TYPEC_PORT_ENDIS_MASK           (BIT(5))
 #define TYPEC_PORT_ENDIS_POS            5
                 
-/* Masks used For getting Port Type from gasPortConfigurationData structure*/
-/* Define to get Power role from gasPortConfigurationData structure*/
+/* Masks used For getting Port Type from gasCfgStatusData structure*/
+/* Define to get Power role from gasCfgStatusData structure*/
 #define TYPEC_PORT_TYPE_MASK		    (BIT(2) | BIT(1) | BIT(0))
                 
 /*Defines for setting Rp value of source*/
@@ -490,6 +494,8 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_RP_DEFAULT_CURRENT      1
 #define TYPEC_RP_CURRENT_15           2
 #define TYPEC_RP_CURRENT_30           3
+
+
 
 /*************************************************************************************/
 
@@ -548,6 +554,43 @@ from u8PortSts variable*/
 /*Masks used For getting VCONNON Error status from u8IntStsISR variable*/ 
 #define TYPEC_VCONNONERROR_MASK	        BIT(7)
 #define TYPEC_VCONNONERROR_POS         7
+/*************************************************************************************/
+
+/**********************VSAFE5V range for Source and Sink*******************/
+
+/*  CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for
+    VSafe5V expressed in terms of millivolts for source. The voltage will be considered as valid 
+    Vsafe5V only if it is equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less 
+    than CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be 
+    considered as overvoltage for Vsafe5V for Source. */
+#define CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
+
+/*  CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed in 
+    terms of millivolts for source. The voltage will be considered as valid Vsafe5V only if it is
+    equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less than 
+    CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. */
+#define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE 		4750
+
+/*  CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for VSafe5V expressed 
+    in terms of millivolts for sink. The voltage will be considered as valid Vsafe5V only if it 
+    is equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
+    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be
+    considered as overvoltage for Vsafe5V for sink. */
+#define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
+
+/*  CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed 
+    in terms of millivolts for Sink. The voltage will be considered as valid Vsafe5V only if it is
+    equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
+    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. */
+#define CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE 		4400
+
+/*  CONFIG_VSINKDISCONNECT_VOLTAGE is the vSinkDisconnect mentioned in Type c specification v1.3.
+    Specification defines it as threshold used for transition from Attached.SNK to Unattached.SNK.
+    In PSF, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as undervoltage for Vsafe5V in case of 
+    source. For Sink, if the voltage is below CONFIG_VSINKDISCONNECT_VOLTAGE, it is considered 
+    as VBUS disconnect.*/
+#define CONFIG_VSINKDISCONNECT_VOLTAGE              3670
+
 /*************************************************************************************/
 
 // *****************************************************************************
@@ -616,10 +659,10 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
 
     Description:
         Port initialization of Power and data role is done based on the variable 
-        "gasPortConfigurationData[u8PortNum].u32CfgData"
+        "gasCfgStatusData[u8PortNum].u32CfgData"
 
     Conditions:
-        This API is called inside the PD Stack initialisation API call .
+        This API is called inside the PD Stack initialization API call .
 
     Input:
         u8PortNum - Port Number.

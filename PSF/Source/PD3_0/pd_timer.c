@@ -87,6 +87,9 @@ void PDTimer_WaitforTicks (UINT32 u32Timeout_ticks)
 {
     UINT8 u8TimerID;
     
+    /*u32Timeout_ticks is incremented by 1 to make sure guaranteed timer wait is provided*/
+    ++u32Timeout_ticks;
+    
     /*Find the unused PD Software timer and start the given timeout value with the found timer*/    
 	for (u8TimerID = 0; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
 	{
@@ -94,7 +97,7 @@ void PDTimer_WaitforTicks (UINT32 u32Timeout_ticks)
 		if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE ) == PDTIMER_NON_ACTIVE) || ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE)== PDTIMER_EXPIRED))
 		{
 
-#if (1 == MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER)
+#if (TRUE == MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER)
 
 			gasPDTimers[u8TimerID].u16Timeout_Tickcnt = (UINT16)u32Timeout_ticks;
 #else
@@ -148,12 +151,12 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
     /* Resetting all the module's TimerID globals */
 	gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 	gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = MAX_CONCURRENT_TIMERS;
-    #if INCLUDE_PD_3_0
+    #if (TRUE == INCLUDE_PD_3_0)
 	gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
     #endif
 	gasPolicy_Engine[u8PortNum].u8PENoResponseTimerID = MAX_CONCURRENT_TIMERS;
     
-	#if INCLUDE_POWER_FAULT_HANDLING
+	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
     gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	#endif
@@ -165,7 +168,7 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
         if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE) == PDTIMER_ACTIVE)\
           && ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_PORT_NUM) == u8PortNum)
             
-#if INCLUDE_POWER_MANAGEMENT_CTRL
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
 			/*If power management is active don't kill IDLE Timer*/
             && (u8TimerID != gau8PortIdleTimerID[u8PortNum])
 #endif
@@ -209,8 +212,8 @@ void PDTimer_InterruptHandler (void)
 				if (gasPDTimers[u8TimerID].pfnTimerCallback != NULL)
 				{
                   
-                    /*Calling the callback function with a set of arguemnts 
-                    namely portnumber and PD state*/
+                    /*Calling the callback function with a set of arguments 
+                    namely port number and PD state*/
 					gasPDTimers[u8TimerID].pfnTimerCallback((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_PORT_NUM), gasPDTimers[u8TimerID].u8PDState);
 				}
 				

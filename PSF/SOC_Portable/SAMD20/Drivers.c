@@ -79,6 +79,46 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #define SERCOMn_SPI_WriteRead(n,pTransmitData,txSize,pReceiveData,rxSize)\
  SERCOM##n##_SPI_WriteRead(pTransmitData,txSize,pReceiveData,rxSize)
 
+#ifdef CONFIG_HOOK_DEBUG_MSG
+    /*Debug UART drivers*/
+    #define SAMD20UART_Init(n) SERCOMn_UART_Initialise(n)
+    #define SERCOMn_UART_Initialise(n) SERCOM##n##_USART_Initialise()
+
+    #define SAMD20UART_Write_Char(n, byData) SERCOMn_UART_Write_Char(n, byData)
+    #define SERCOMn_UART_Write_Char(n, byData) SERCOM##n##_USART_Write_Char(byData)
+
+    #define SAMD20UART_Write_Int(n, dwWriteInt, byWidth) SERCOMn_UART_Write_Int(n, dwWriteInt, byWidth)
+    #define SERCOMn_UART_Write_Int(n, dwWriteInt, byWidth) SERCOM##n##_USART_Write_Int(dwWriteInt, byWidth)
+
+    #define SAMD20UART_Write_String(n, pbyMessage) SERCOMn_UART_Write_String(n, pbyMessage)
+    #define SERCOMn_UART_Write_String(n, pbyMessage) SERCOM##n##_USART_Write_String(pbyMessage)
+
+#endif //CONFIG_HOOK_DEBUG_MSG
+
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#define SAMD20I2CDCDC_Initialise(n) SERCOMn_I2CDCDC_Initialize(n)
+#define SERCOMn_I2CDCDC_Initialize(n) SERCOM##n##_I2C_Initialize()
+
+#define SAMD20I2CDCDC_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
+                    SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen)
+#define SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
+        SERCOM##n##_I2C_Read(u16Address,pu8ReadBuf,u8ReadLen)
+
+#define SAMD20I2CDCDC_Write(n,u16Address,pu8WritedBuf,u8WriteLen) \
+                    SERCOMn_I2C_Write(n,u16Address,pu8WritedBuf,u8WriteLen)
+#define SERCOMn_I2C_Write(n,u16Address,pu8WritedBuf,u8WriteLen) \
+        SERCOM##n##_I2C_Write(u16Address,pu8WritedBuf,u8WriteLen)
+
+#define SAMD20I2CDCDC_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
+        SERCOMn_I2C_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
+#define SERCOMn_I2C_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
+        SERCOM##n##_I2C_WriteRead(u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
+
+#define SAMD20_I2cDCDCIsBusy(n) SERCOMn_I2C_IsBusy(n)
+#define SERCOMn_I2C_IsBusy(n) SERCOM##n##_I2C_IsBusy()
+
+#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 // Section: Internal Functions                                               */
@@ -156,6 +196,75 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
         }
     }
 }
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+/*****************************************************************************/
+/*****************************************************************************/
+/*********************************I2C Driver APIs*****************************/
+/*****************************************************************************/
+void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum)
+{
+    /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
+    MPQDCDC_HandleAlertISR(u8PortNum);
+}
+
+void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum)
+{
+    /* MCU PIO routed to I2C_DCDC_alert line configured for low level and internal pullup*/
+    if (PORT0 == u8PortNum)
+    {
+        PORT_PinInputEnable(SAMD20_DCDC_ALERT0);
+        PORT_PinWrite(SAMD20_DCDC_ALERT0, TRUE);
+        EIC_CallbackRegister((EIC_PIN)SAMD20_DCDC_ALERT0, SAMD20_I2CDCDCAlertCallback, PORT0);
+        EIC_InterruptEnable((EIC_PIN)SAMD20_DCDC_ALERT0);
+    }
+    else if (PORT1 == u8PortNum)
+    {
+        PORT_PinInputEnable(SAMD20_DCDC_ALERT1);
+        PORT_PinWrite(SAMD20_DCDC_ALERT1, TRUE);
+        EIC_CallbackRegister((EIC_PIN)SAMD20_DCDC_ALERT1, SAMD20_I2CDCDCAlertCallback, PORT1);
+        EIC_InterruptEnable((EIC_PIN)SAMD20_DCDC_ALERT1);
+    }
+}
+
+UINT8 SAMD20_I2CDCDCInitialisation (void)
+{
+    SAMD20I2CDCDC_Initialise(SAMD20_I2C_INSTANCE);
+    return TRUE;
+
+}
+
+UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
+{
+    UINT8 u8Return = FALSE;
+    
+    u8Return = SAMD20I2CDCDC_Read (SAMD20_I2C_INSTANCE,u16Address,pu8ReadBuf,u8ReadLen);
+    return u8Return;
+}
+
+UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen)
+{
+    UINT8 u8Return = FALSE;
+    
+    u8Return = SAMD20I2CDCDC_Write (SAMD20_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen);
+    return u8Return;
+   
+}
+
+UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
+                                              UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
+{
+    UINT8 u8Return = FALSE;
+    
+    u8Return = SAMD20I2CDCDC_WriteRead (SAMD20_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen,\
+                                                            pu8ReadBuf,u8ReadLen);
+    return u8Return;
+}
+
+bool SAMD20_I2CDCDCIsBusyDriver(void)
+{
+    return SAMD20_I2cDCDCIsBusy(SAMD20_I2C_INSTANCE);
+}
+#endif
 /*****************************************************************************/
 /*****************************************************************************/
 /*******************************UPD350 Alert APIs******************************************/
@@ -267,6 +376,35 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
     
 	return 0;
 }
+
+/*****************************************************************************/
+/*****************************************************************************/
+/*********************************UART APIs*****************************/
+/*****************************************************************************/
+#ifdef CONFIG_HOOK_DEBUG_MSG
+
+void SAMD20_UART_Initialisation(void)
+{
+    SAMD20UART_Init(SAMD20_UART_INSTANCE);
+}
+
+void SAMD20_UART_Write_Char(char byData)
+{
+    SAMD20UART_Write_Char(SAMD20_UART_INSTANCE, byData);
+}
+
+void SAMD20_UART_Write_Int(UINT32 dwWriteInt, UINT8 byWidth)
+{
+    SAMD20UART_Write_Int(SAMD20_UART_INSTANCE, dwWriteInt, byWidth);
+}
+
+void SAMD20_UART_Write_String(char* pbyMessage)
+{
+    SAMD20UART_Write_String(SAMD20_UART_INSTANCE, pbyMessage);
+}
+
+
+#endif //CONFIG_HOOK_DEBUG_MSG
 /* *****************************************************************************
  End of File
  */
