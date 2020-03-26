@@ -673,7 +673,7 @@ typedef enum
                                                                         4. 0x12C = 15V
                                                                         5. 0x190= 20V
                                                                         6. 0x3FF = 51.15V
-    u16NegoVoltageIn10mA            2         R            R         * Negotiated Current from the 
+    u16NegoCurrentIn10mA            2         R            R         * Negotiated Current from the 
 																		Port Bits 9: 0 from the RDO.
                                                                         Ampere is in 10mA steps. 
 																		Sample values are,
@@ -1413,7 +1413,7 @@ typedef struct _PortCfgStatus
 	UINT32 u32PortConnectStatus;	
     UINT16 u16AllocatedPowerIn250mW;   
     UINT16 u16NegoVoltageIn50mV;      
-    UINT16 u16NegoVoltageIn10mA;      
+    UINT16 u16NegoCurrentIn10mA;      
     UINT16 u16MaximumOperatingCurInmA; 
     #if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 

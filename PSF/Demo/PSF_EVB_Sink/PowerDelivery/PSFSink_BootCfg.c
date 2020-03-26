@@ -61,6 +61,16 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt = CFG_PORT_SINK_NUM_OF_PDOS;
 
+    /*Assigning PDO preferred minimum current*/
+    gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[0] = CFG_PORT_SINK_PDO_1_PREFERRED_MIN_CURRENT;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[1] = CFG_PORT_SINK_PDO_2_PREFERRED_MIN_CURRENT;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[2] = CFG_PORT_SINK_PDO_3_PREFERRED_MIN_CURRENT;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[3] = CFG_PORT_SINK_PDO_4_PREFERRED_MIN_CURRENT;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[4] = CFG_PORT_SINK_PDO_5_PREFERRED_MIN_CURRENT;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[5] = CFG_PORT_SINK_PDO_6_PREFERRED_MIN_CURRENT;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[6] = CFG_PORT_SINK_PDO_7_PREFERRED_MIN_CURRENT;
+    
+   
     /*Assigning maximum operating current and minimum operating current to 
      * 3000mA and 1000mA respectively*/
     gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = 3000;

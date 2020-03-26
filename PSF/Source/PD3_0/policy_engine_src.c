@@ -409,7 +409,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         
                         /* If PSRDY is not sent, power will not be allocated to the 
                            port. So, Set the Power related Status registers to 0 */
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn10mA = RESET_TO_ZERO; 
+                        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = RESET_TO_ZERO; 
                         gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = RESET_TO_ZERO; 
                         gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
                     }
