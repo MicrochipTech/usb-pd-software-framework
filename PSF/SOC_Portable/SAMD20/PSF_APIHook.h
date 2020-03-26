@@ -1120,7 +1120,7 @@ Remarks:
   Remarks:
     User definition of this Hook function is mandatory                                          
   *********************************************************************************************/
-#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)       PSF_LoadConfig()  	
+#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)       PSF_LoadConfig(gasCfgStatusData)  	
 
 // *****************************************************************************
 // *****************************************************************************
