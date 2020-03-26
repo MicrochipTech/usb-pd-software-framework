@@ -181,13 +181,16 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
     MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn); 
 }
 /************************************************************************************/
-#if (TRUE == INCLUDE_PD_SINK)
 void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
+    #if (TRUE == INCLUDE_PD_SINK)
+
     if (u16Current > gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA)
     {
         u16Current = gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
     }
     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16VBUSVoltage,u16Current);
+    
+    #endif
+
 }
-#endif
