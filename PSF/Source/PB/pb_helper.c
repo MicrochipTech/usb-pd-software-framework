@@ -181,7 +181,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     }
     
     /* Update the global status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn10mA = u16CurrentIn10mA; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16CurrentIn10mA; 
     
     /* Calculate power in terms of 10mW */
     u16TempPwr = (UINT16) ((UINT16)fNegotiatedVoltage * u16CurrentIn10mA);
