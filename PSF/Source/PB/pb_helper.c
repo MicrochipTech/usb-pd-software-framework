@@ -94,7 +94,7 @@ void PB_InitializePortParam(UINT8 u8PortNum)
     gasPBIntPortParam[u8PortNum].eRenegSubState            = ePB_IDLE_SS; 
     gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW   = SET_TO_ZERO; 
     gasPBIntPortParam[u8PortNum].eGetSinkCapSS             = ePB_SINK_CAPS_NOT_INITIATED; 
-    gasPBIntPortParam[u8PortNum].u8PortStatusMask          = FALSE; 
+    gasPBIntPortParam[u8PortNum].u8PBPortStatusMask          = FALSE; 
     gasPBIntPortParam[u8PortNum].ePBPortState              = ePB_IDLE_STATE;
     gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW  = SET_TO_ZERO; 
     
@@ -170,12 +170,12 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     {
         if (PB_IS_CAPABILITY_MISMATCH(u32RDO))
         {
-            gasPBIntPortParam[u8PortNum].u8PortStatusMask |= PB_PORT_STATUS_CAPABILITY_MISMATCH;
+            gasPBIntPortParam[u8PortNum].u8PBPortStatusMask |= PB_PORT_STATUS_CAPABILITY_MISMATCH;
             u16CurrentIn10mA = PB_GET_OPERATING_CURRENT_FROM_RDO(u32RDO);
         }
         else
         {
-            gasPBIntPortParam[u8PortNum].u8PortStatusMask &= ~(PB_PORT_STATUS_CAPABILITY_MISMATCH);
+            gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_CAPABILITY_MISMATCH);
             u16CurrentIn10mA = PB_GET_MAX_CURRENT_FROM_RDO(u32RDO);
         }        
     }
@@ -193,11 +193,11 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
                     gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW)
     {
        gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW = gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;  
-       gasPBIntPortParam[u8PortNum].u8PortStatusMask |= PB_PORT_STATUS_PORT_IN_MIN_PWR; 
+       gasPBIntPortParam[u8PortNum].u8PBPortStatusMask |= PB_PORT_STATUS_PORT_IN_MIN_PWR; 
     }
     else
     {
-       gasPBIntPortParam[u8PortNum].u8PortStatusMask &= ~(PB_PORT_STATUS_PORT_IN_MIN_PWR);
+       gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_PORT_IN_MIN_PWR);
     }
     
     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW; 
@@ -350,14 +350,14 @@ UINT8 PB_ReturnHigherPriorityPort (UINT8 u8PortNum1, UINT8 u8PortNum2)
     }
     else if (PB_GET_PORT_PRIORITY(u8PortNum1) == PB_GET_PORT_PRIORITY(u8PortNum2))
     {
-        if ((PB_PORT_STATUS_CAPABILITY_MISMATCH == (gasPBIntPortParam[u8PortNum1].u8PortStatusMask & \
+        if ((PB_PORT_STATUS_CAPABILITY_MISMATCH == (gasPBIntPortParam[u8PortNum1].u8PBPortStatusMask & \
                                         PB_PORT_STATUS_CAPABILITY_MISMATCH)) && \
-            (FALSE == (gasPBIntPortParam[u8PortNum2].u8PortStatusMask & PB_PORT_STATUS_CAPABILITY_MISMATCH)))
+            (FALSE == (gasPBIntPortParam[u8PortNum2].u8PBPortStatusMask & PB_PORT_STATUS_CAPABILITY_MISMATCH)))
         {
             u8HigherPriorityPort = u8PortNum1;        
         }
-        else if ((FALSE == (gasPBIntPortParam[u8PortNum1].u8PortStatusMask & PB_PORT_STATUS_CAPABILITY_MISMATCH)) && \
-                 (PB_PORT_STATUS_CAPABILITY_MISMATCH == (gasPBIntPortParam[u8PortNum2].u8PortStatusMask & \
+        else if ((FALSE == (gasPBIntPortParam[u8PortNum1].u8PBPortStatusMask & PB_PORT_STATUS_CAPABILITY_MISMATCH)) && \
+                 (PB_PORT_STATUS_CAPABILITY_MISMATCH == (gasPBIntPortParam[u8PortNum2].u8PBPortStatusMask & \
                                                 PB_PORT_STATUS_CAPABILITY_MISMATCH)))
         {
             /* */
@@ -407,9 +407,9 @@ UINT8 PB_IdentifyLowestPriorityPort(UINT8 u8PortNum)
             the renegotiation should have been complete and also the port 
             should have some power in the reserve to give back */
             
-            if ((gasPBIntPortParam[u8LoopPortNum].u8PortStatusMask & PB_PORT_STATUS_ATTACH) && \
+            if ((gasPBIntPortParam[u8LoopPortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH) && \
                 (ePB_RENEGOTIATION_COMPLETED_STATE == gasPBIntPortParam[u8LoopPortNum].ePBPortState)&& \
-                (FALSE == (gasPBIntPortParam[u8LoopPortNum].u8PortStatusMask & PB_PORT_STATUS_PORT_IN_MIN_PWR)))
+                (FALSE == (gasPBIntPortParam[u8LoopPortNum].u8PBPortStatusMask & PB_PORT_STATUS_PORT_IN_MIN_PWR)))
             {
                 /*This check is done here so that Cap Mismatch is not considered 
                  when we are comparing the port for which we need to reclaim. If we
@@ -554,8 +554,8 @@ void PB_SetRenegotiationPendingForLowPriorityPorts(UINT8 u8PortNum)
     {
         if (u8LowPriorityPort != u8PortNum)
         {
-            if ((gasPBIntPortParam[u8LowPriorityPort].u8PortStatusMask & PB_PORT_STATUS_ATTACH) && \
-                (gasPBIntPortParam[u8LowPriorityPort].u8PortStatusMask & PB_PORT_STATUS_INITIAL_NEG_DONE))
+            if ((gasPBIntPortParam[u8LowPriorityPort].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH) && \
+                (gasPBIntPortParam[u8LowPriorityPort].u8PBPortStatusMask & PB_PORT_STATUS_INITIAL_NEG_DONE))
             {               
                 /*Change the state to Negotiation pending if the port is in lower
                  priority. If the negotiation is in progress for the port, set the Reneg 
@@ -568,7 +568,7 @@ void PB_SetRenegotiationPendingForLowPriorityPorts(UINT8 u8PortNum)
                     }
                     else
                     {
-                        gasPBIntPortParam[u8LowPriorityPort].u8PortStatusMask |= PB_PORT_STATUS_RENEG_AGAIN;
+                        gasPBIntPortParam[u8LowPriorityPort].u8PBPortStatusMask |= PB_PORT_STATUS_RENEG_AGAIN;
                     }
                 }
 
