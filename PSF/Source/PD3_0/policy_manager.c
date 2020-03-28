@@ -1161,6 +1161,24 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     }
 #endif
     
+#if (TRUE == INCLUDE_PD_SINK)
+if(eMCHP_PSF_PD_CONTRACT_NEGOTIATED == eDPMNotification)    
+{
+    MCHP_PSF_HOOK_DAC_CONVERT(DPM_GET_PDO_CURRENT(gasDPM[u8PortNum].u32NegotiatedPDO) * \
+            DPM_10mA, gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MaxOutVoltInmV, \
+            gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MinOutVoltInmV, \
+            gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_CurrentInd_MaxInA,\
+            gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_Direction);
+}
+else if ((eMCHP_PSF_TYPEC_CC1_ATTACH == eDPMNotification) || (eMCHP_PSF_TYPEC_CC2_ATTACH == eDPMNotification) )
+{
+     MCHP_PSF_HOOK_DAC_CONVERT(gasDPM[u8PortNum].u16SinkOperatingCurrInmA, \
+            gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MaxOutVoltInmV, \
+            gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MinOutVoltInmV, \
+            gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_CurrentInd_MaxInA,\
+            gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_Direction);
+}
+#endif //(TRUE == INCLUDE_PD_SINK)   
     /* DPM notifications that need to be handled by stack applications must
        be added here before calling the user function. */
     

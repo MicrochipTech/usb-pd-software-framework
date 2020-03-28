@@ -1746,5 +1746,15 @@ User definition of this Hook function is optional.
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_SET_MCU_IDLE          SAMD20_SetMCUIdle()
 
+#if (TRUE == INCLUDE_PD_SINK)
+
+#define MCHP_PSF_HOOK_DAC_INITIALIZE()              SAMD20_DACInitialisation()
+
+#define MCHP_PSF_HOOK_DAC_CONVERT(u16NegotiatedCur, u8MaxOutVolt, u8MinOutVolt,\
+        u8MaxCurIndication, u8Direction)   SAMD20_DACConvert (u16NegotiatedCur, \
+        u8MaxOutVolt, u8MinOutVolt,u8MaxCurIndication, u8Direction)
+
+#endif /*(TRUE == INCLUDE_PD_SINK)*/
+
 #endif /*_PSF_API_HOOK_H_*/
 

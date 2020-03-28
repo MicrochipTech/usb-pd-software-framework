@@ -32,6 +32,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
 #include <psf_stdinc.h>
+#include "peripheral/dac/plib_dac.h"
 
 /*******************************************************************/
 /******************* Functions**************************************/
@@ -107,7 +108,11 @@ UINT8 MchpPSF_Init(void)
         }
     }
 #endif
-	    
+
+#if (TRUE == INCLUDE_PD_SINK)
+    MCHP_PSF_HOOK_DAC_INITIALIZE();
+#endif //(TRUE == INCLUDE_PD_SINK)
+    
     DPM_StateMachineInit();  
 
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
