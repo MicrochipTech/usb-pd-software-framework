@@ -42,7 +42,7 @@ UINT8 MchpPSF_Init(void)
     UINT8 u8InitStatus = TRUE;
     
     /* Load configurations */
-    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(&gasCfgStatusData);
+    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData);
        
     /*Timer module Initialization*/
     u8InitStatus &= PDTimer_Init();
