@@ -10,6 +10,9 @@
             <logicalFolder name="f4" displayName="clock" projectFiles="true">
               <itemPath>../src/config/default/peripheral/clock/plib_clock.h</itemPath>
             </logicalFolder>
+            <logicalFolder name="f8" displayName="dac" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/dac/plib_dac.h</itemPath>
+            </logicalFolder>
             <logicalFolder name="f6" displayName="eic" projectFiles="true">
               <itemPath>../src/config/default/peripheral/eic/plib_eic.h</itemPath>
             </logicalFolder>
@@ -76,6 +79,9 @@
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_iccarm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_gcc.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armcc.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang_ltm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/tz_context.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/core_cm0plus.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/mpu_armv7.h</itemPath>
@@ -103,6 +109,9 @@
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
+          <logicalFolder name="DAC" displayName="DAC" projectFiles="true">
+            <itemPath>../../../../SOC_Portable/SAMD20/DAC/DAC.h</itemPath>
+          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.h</itemPath>
           <itemPath>../../../../SOC_Portable/SAMD20/PSF_APIHook.h</itemPath>
         </logicalFolder>
@@ -142,6 +151,9 @@
           <logicalFolder name="f1" displayName="peripheral" projectFiles="true">
             <logicalFolder name="f4" displayName="clock" projectFiles="true">
               <itemPath>../src/config/default/peripheral/clock/plib_clock.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f8" displayName="dac" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/dac/plib_dac.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f6" displayName="eic" projectFiles="true">
               <itemPath>../src/config/default/peripheral/eic/plib_eic.c</itemPath>
@@ -187,6 +199,9 @@
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
+          <logicalFolder name="DAC" displayName="DAC" projectFiles="true">
+            <itemPath>../../../../SOC_Portable/SAMD20/DAC/DAC.c</itemPath>
+          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.c</itemPath>
         </logicalFolder>
       </logicalFolder>
@@ -237,8 +252,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
         <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
+        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
       </packs>
       <compileType>
         <linkerTool>

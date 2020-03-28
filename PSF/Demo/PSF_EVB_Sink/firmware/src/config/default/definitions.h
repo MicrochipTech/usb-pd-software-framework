@@ -62,6 +62,7 @@
 #include "peripheral/nvic/plib_nvic.h"
 #include "peripheral/eic/plib_eic.h"
 #include "peripheral/tc/plib_tc0.h"
+#include "peripheral/dac/plib_dac.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility

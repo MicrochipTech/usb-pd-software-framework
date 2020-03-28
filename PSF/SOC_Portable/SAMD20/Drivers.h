@@ -64,7 +64,7 @@
 #endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
-
+#include "DAC/DAC.h"
 // *****************************************************************************
 // *****************************************************************************
 // Section: SAMD20 Configuration
