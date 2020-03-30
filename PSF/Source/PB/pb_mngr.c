@@ -110,7 +110,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             gasPBIntPortParam[u8PortNum].eRenegSubState = ePB_IDLE_SS;
             gasPBIntPortParam[u8PortNum].ePBPortState = ePB_IDLE_STATE;
             gasPBIntPortParam[u8PortNum].eGetSinkCapSS = ePB_SINK_CAPS_NOT_INITIATED;      
-            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn10mA = 0;
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = 0;
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = 0; 
                                    
             if (gsPBIntSysParam.u8RecoveringMode)

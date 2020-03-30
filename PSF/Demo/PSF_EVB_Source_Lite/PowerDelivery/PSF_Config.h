@@ -615,7 +615,7 @@ typedef enum
                                                                         4. 0x12C = 15V
                                                                         5. 0x190= 20V
                                                                         6. 0x3FF = 51.15V
-    u16NegoVoltageIn10mA            2         R            R         * Negotiated Current from the 
+    u16NegoCurrentIn10mA            2         R            R         * Negotiated Current from the 
 																		Port Bits 9: 0 from the RDO.
                                                                         Ampere is in 10mA steps. 
 																		Sample values are,
@@ -696,7 +696,7 @@ typedef enum
                                                                         3. Clear all New PDO 
 																		    registers
                                                                         4. Clear this bit
-    u8SinkModeSelect                1         R/W         R          * Sink Selection mode for 
+    u8SinkConfigSel                1         R/W                    * Sink Selection mode for 
 																		operation.
                                                                         1. '0x00' Mode A: Prefer 
 																			  Higher Voltage and 
@@ -1360,7 +1360,7 @@ typedef struct _PortCfgStatus
 	UINT32 u32PortConnectStatus;	
     UINT16 u16AllocatedPowerIn250mW;   
     UINT16 u16NegoVoltageIn50mV;      
-    UINT16 u16NegoVoltageIn10mA;      
+    UINT16 u16NegoCurrentIn10mA;      
     UINT16 u16MaximumOperatingCurInmA; 
     #if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
@@ -1376,7 +1376,7 @@ typedef struct _PortCfgStatus
     UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerPDOCnt;          
     UINT8 u8NewPDOSelect;           
-    UINT8 u8SinkModeSelect;         
+    UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
     UINT8 u8OVThresholdPercentage;  

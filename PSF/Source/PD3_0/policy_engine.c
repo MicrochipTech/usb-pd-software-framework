@@ -601,14 +601,14 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA  = \
-                                gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
+                                gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA;
                     }
                     else if (ePE_SNK_READY_IDLE_SS == gasPolicy_Engine[u8PortNum].ePESubState)
                     {
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA  = \
-                                gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
+                                gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA;
                     
                     }
                     else
