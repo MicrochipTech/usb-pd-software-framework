@@ -282,7 +282,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS);
                     
                     /* Set the Power related variables to 0 in Status register */
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn10mA = RESET_TO_ZERO; 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = RESET_TO_ZERO; 
                     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = RESET_TO_ZERO; 
                     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
                     
