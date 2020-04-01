@@ -53,14 +53,14 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
     {
         if (TRUE == MCHP_PSF_HOOK_I2C_DCDC_WRITE (u8I2CAddress, pu8I2CCmd, u8Length))
         {
+            /* wait for the current transfer to complete */ 
+            while(MCHP_PSF_HOOK_I2C_DCDC_ISBUSY( ));
+            __NOP(); 
+            
             u8RetVal = TRUE;
             break;
         }
     }
-            
-    /* wait for the current transfer to complete */ 
-    while(MCHP_PSF_HOOK_I2C_DCDC_ISBUSY( ));
-    __NOP(); 
             
     return u8RetVal;
 }
