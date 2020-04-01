@@ -96,6 +96,8 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_PDO_CURRENT(X)                  ((X & 0x000003FF))
 #define DPM_GET_PDO_VOLTAGE(X)                  ((X & 0x000FFC00) >> 10)	/*in 50mv units*/
 #define DPM_GET_PDO_USB_COMM_CAP(X)             ((X & 0x04000000) >> 26)
+#define DPM_MAX_PDO_CNT                          7
+
 /*******************************************************************************/
 
 // *****************************************************************************
@@ -220,7 +222,6 @@ Source/Sink Power delivery objects*/
 
 #define DPM_SINK_CONFIG_GIVE_BACK_FLAG_POS  3
 #define DPM_SINK_CONFIG_GIVE_BACK_FLAG_MASK BIT(3)
-
 
 
 // *****************************************************************************
