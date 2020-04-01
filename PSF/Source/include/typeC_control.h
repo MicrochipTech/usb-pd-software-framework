@@ -561,34 +561,39 @@ from u8PortSts variable*/
 /*  CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for
     VSafe5V expressed in terms of millivolts for source. The voltage will be considered as valid 
     Vsafe5V only if it is equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less 
-    than CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be 
-    considered as overvoltage for Vsafe5V for Source. */
+    than CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE.    
+    CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be considered as overvoltage for Vsafe5V for Source. 
+    This parameter shall never be set to 0. */
 #define CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
 
 /*  CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed in 
     terms of millivolts for source. The voltage will be considered as valid Vsafe5V only if it is
     equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less than 
-    CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. */
+    CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. 
+    This parameter shall never be set to 0. */
 #define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE 		4750
 
 /*  CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for VSafe5V expressed 
     in terms of millivolts for sink. The voltage will be considered as valid Vsafe5V only if it 
     is equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
     CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be
-    considered as overvoltage for Vsafe5V for sink. */
+    considered as overvoltage for Vsafe5V for sink. 
+    This parameter shall never be set to 0. */
 #define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
 
 /*  CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed 
     in terms of millivolts for Sink. The voltage will be considered as valid Vsafe5V only if it is
     equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
-    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. */
+    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. 
+    This parameter shall never be set to 0. */
 #define CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE 		4400
 
 /*  CONFIG_VSINKDISCONNECT_VOLTAGE is the vSinkDisconnect mentioned in Type c specification v1.3.
     Specification defines it as threshold used for transition from Attached.SNK to Unattached.SNK.
     In PSF, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as undervoltage for Vsafe5V in case of 
     source. For Sink, if the voltage is below CONFIG_VSINKDISCONNECT_VOLTAGE, it is considered 
-    as VBUS disconnect.*/
+    as VBUS disconnect.
+    This parameter shall never be set to 0. */
 #define CONFIG_VSINKDISCONNECT_VOLTAGE              3670
 
 /*************************************************************************************/
