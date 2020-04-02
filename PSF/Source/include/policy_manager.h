@@ -156,7 +156,7 @@ Source/Sink Power delivery objects*/
 #define DPM_VCONN_ON             1
 #define DPM_VCONN_OFF            0
 
-/*********Macros for u8VbusOnorOff argument of DPM_TypeCVBus5VOnOff API*********/
+/*********Macros for u8VbusOnorOff argument of DPM_TypeCSrcVBus5VOnOff API*********/
 #define DPM_VBUS_ON              1
 #define DPM_VBUS_OFF             0
 
@@ -575,7 +575,7 @@ void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence);
 
 /**************************************************************************************************
     Function:
-        void DPM_TypeCVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+        void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Summary:
         This API drives the VBUS line of a given port to either 0V or 5V.
     Devices Supported:
@@ -595,7 +595,7 @@ void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_TypeCVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
 
 /**************************************************************************************************
     Function:

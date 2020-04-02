@@ -724,7 +724,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
 					
 					/* Turn Off VBus */
-                    DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+                    DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                     
                      /*Start the VBUS OFF timer for monitoring the time taken for 
                     power module to reach Vsafe0V*/
@@ -818,7 +818,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
 					
 					/* Turn On VBus */
-                    DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
+                    DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
                     
                      /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach Vsafe5V*/

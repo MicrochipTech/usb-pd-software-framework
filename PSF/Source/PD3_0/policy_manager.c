@@ -205,7 +205,7 @@ void DPM_SetPortPower(UINT8 u8PortNum)
     }
 }
 
-void DPM_TypeCVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
+void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 {
 	UINT16 u16Current;
 	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
@@ -1090,7 +1090,7 @@ void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
         if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
         {		          
             /*Disable VBUS by driving to vSafe0V if port role is a source*/
-            DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+            DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
         
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
