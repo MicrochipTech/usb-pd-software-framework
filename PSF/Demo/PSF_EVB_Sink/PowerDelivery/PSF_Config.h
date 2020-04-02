@@ -997,18 +997,18 @@ typedef enum
 																		SNK_CAP_MISMATCH pin
 																	  * This is applicable only for 
 																		Sink operation. 
-	u16DAC_I_MaxOutVoltIn10mV        1                                * Defines the maximum voltage 
+	u8DAC_I_MaxOutVoltIn50mV        1                                * Defines the maximum voltage 
 																		on DAC_I with a maximum of 
-																		2.5V in terms of 10mV 
+																		2.5V in terms of 50mV 
 																	  * This is applicable only for
 																		Sink operation. 
-	u16DAC_I_MinOutVoltIn10mV        1								 * Defines the minimum voltage 
+	u8DAC_I_MinOutVoltIn50mV        1								 * Defines the minimum voltage 
 																		on DAC_I with a minimum of 
-																		0V in terms of 10mV 
+																		0V in terms of 50mV 
 																	  * This is applicable only for
 																		Sink operation. 
 	u16DAC_I_CurrentInd_MaxInA       1								 * Defines which current in
-																		terms of A corresponding 
+																		terms of mA corresponding 
 																		to maximum output voltage 
 																	  * It can take either 3A or 5A 
 																	    value. 
@@ -1385,8 +1385,8 @@ typedef struct _PortCfgStatus
     UINT8 u8Mode_SNK_PD_NEG_CMPLT; 
     UINT8 u8PIO_SNK_CAP_MISMATCH; 
     UINT8 u8Mode_SNK_CAP_MISMATCH; 
-    UINT16 u16DAC_I_MaxOutVoltInmV; 
-    UINT16 u16DAC_I_MinOutVoltInmV; 
+    UINT8 u8DAC_I_MaxOutVoltIn50mV; 
+    UINT8 u8DAC_I_MinOutVoltIn50mV; 
     UINT16 u16DAC_I_CurrentInd_MaxInA;  
     UINT16 u8DAC_I_Direction; 
     UINT8 u8aReserved3[2];

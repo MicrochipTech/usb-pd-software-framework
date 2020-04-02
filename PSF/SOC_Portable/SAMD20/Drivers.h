@@ -64,7 +64,9 @@
 #endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
-#include "DAC/DAC.h"
+#if (TRUE == INCLUDE_PD_SINK)
+#include "../../firmware/src/config/default/peripheral/dac/plib_dac.h"
+#endif
 // *****************************************************************************
 // *****************************************************************************
 // Section: SAMD20 Configuration
@@ -407,6 +409,13 @@ void SAMD20_UART_Write_String(char*);
 
 #endif //CONFIG_HOOK_DEBUG_MSG
 
+#if(TRUE == INCLUDE_PD_SINK)
+UINT8 SAMD20_DACInitialisation(void);
+
+UINT8 SAMD20_Drive_DAC_I(UINT16 u16DACData);
+
+
+#endif
 #endif /*_DRIVERS_H */
 
 /* *****************************************************************************

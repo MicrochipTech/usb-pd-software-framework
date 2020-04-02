@@ -59,8 +59,8 @@
 
 void DAC_Initialize(void)
 {
-    /* Set Reference Voltage */
-    DAC_REGS->DAC_CTRLB = DAC_CTRLB_REFSEL(0) | DAC_CTRLB_EOEN_Msk ;
+    /* Set Reference Voltage to analog supply*/
+    DAC_REGS->DAC_CTRLB = DAC_CTRLB_REFSEL(1) | DAC_CTRLB_EOEN_Msk ;
 
     DAC_REGS->DAC_EVCTRL = 0;
     
