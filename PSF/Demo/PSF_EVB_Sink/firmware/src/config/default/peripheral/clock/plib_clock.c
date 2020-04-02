@@ -127,9 +127,9 @@ void CLOCK_Initialize (void)
     GCLK_REGS->GCLK_CLKCTRL = GCLK_CLKCTRL_ID(13) | GCLK_CLKCTRL_GEN(0x0)  | GCLK_CLKCTRL_CLKEN_Msk;
     /* Selection of the Generator and write Lock for SERCOM1_CORE */
     GCLK_REGS->GCLK_CLKCTRL = GCLK_CLKCTRL_ID(14) | GCLK_CLKCTRL_GEN(0x0)  | GCLK_CLKCTRL_CLKEN_Msk;
-     /* Selection of the Generator and write Lock for SERCOM3_CORE */
+    /* Selection of the Generator and write Lock for SERCOM3_CORE */
     GCLK_REGS->GCLK_CLKCTRL = GCLK_CLKCTRL_ID(16) | GCLK_CLKCTRL_GEN(0x0)  | GCLK_CLKCTRL_CLKEN_Msk;
-	/* Selection of the Generator and write Lock for TC0 TC1 */
+    /* Selection of the Generator and write Lock for TC0 TC1 */
     GCLK_REGS->GCLK_CLKCTRL = GCLK_CLKCTRL_ID(19) | GCLK_CLKCTRL_GEN(0x0)  | GCLK_CLKCTRL_CLKEN_Msk;
     /* Selection of the Generator and write Lock for DAC */
     GCLK_REGS->GCLK_CLKCTRL = GCLK_CLKCTRL_ID(26) | GCLK_CLKCTRL_GEN(0x0)  | GCLK_CLKCTRL_CLKEN_Msk;
@@ -143,6 +143,6 @@ void CLOCK_Initialize (void)
 
 
     /* Configure the APBC Bridge Clocks */
-    PM_REGS->PM_APBCMASK = 0x50124;  //SERCOM3 clk enabled
+    PM_REGS->PM_APBCMASK = 0x50124;
 
 }

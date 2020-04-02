@@ -75,14 +75,32 @@
 #define UPD350_RESET_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 0)
 #define UPD350_RESET_PIN                  PORT_PIN_PA00
 
-/*** Macros for SPI_SS_1 pin ***/
-#define SPI_SS_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 1)
-#define SPI_SS_1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 1)
-#define SPI_SS_1_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 1)
-#define SPI_SS_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 1)) & 0x01)
-#define SPI_SS_1_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 1)
-#define SPI_SS_1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 1)
-#define SPI_SS_1_PIN                  PORT_PIN_PA01
+/*** Macros for SNK_1_5A_IND pin ***/
+#define SNK_1_5A_IND_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 1)
+#define SNK_1_5A_IND_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 1)
+#define SNK_1_5A_IND_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 1)
+#define SNK_1_5A_IND_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 1)) & 0x01)
+#define SNK_1_5A_IND_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 1)
+#define SNK_1_5A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 1)
+#define SNK_1_5A_IND_PIN                  PORT_PIN_PA01
+
+/*** Macros for SNK_PD_NEG_CMPLT pin ***/
+#define SNK_PD_NEG_CMPLT_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 3)
+#define SNK_PD_NEG_CMPLT_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 3)
+#define SNK_PD_NEG_CMPLT_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 3)
+#define SNK_PD_NEG_CMPLT_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 3)) & 0x01)
+#define SNK_PD_NEG_CMPLT_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 3)
+#define SNK_PD_NEG_CMPLT_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 3)
+#define SNK_PD_NEG_CMPLT_PIN                  PORT_PIN_PA03
+
+/*** Macros for SNK_CAP_MISMATCH pin ***/
+#define SNK_CAP_MISMATCH_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 4)
+#define SNK_CAP_MISMATCH_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 4)
+#define SNK_CAP_MISMATCH_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 4)
+#define SNK_CAP_MISMATCH_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 4)) & 0x01)
+#define SNK_CAP_MISMATCH_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 4)
+#define SNK_CAP_MISMATCH_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 4)
+#define SNK_CAP_MISMATCH_PIN                  PORT_PIN_PA04
 
 /*** Macros for SPI_SS_0 pin ***/
 #define SPI_SS_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 10)
@@ -92,6 +110,15 @@
 #define SPI_SS_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 10)
 #define SPI_SS_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 10)
 #define SPI_SS_0_PIN                  PORT_PIN_PA10
+
+/*** Macros for SNK_3A_IND pin ***/
+#define SNK_3A_IND_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 15)
+#define SNK_3A_IND_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 15)
+#define SNK_3A_IND_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 15)
+#define SNK_3A_IND_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 15)) & 0x01)
+#define SNK_3A_IND_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 15)
+#define SNK_3A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 15)
+#define SNK_3A_IND_PIN                  PORT_PIN_PA15
 
 
 

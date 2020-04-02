@@ -59,13 +59,13 @@
 
 void DAC_Initialize(void)
 {
-    /* Set Reference Voltage to analog supply*/
+    /* Set Reference Voltage */
     DAC_REGS->DAC_CTRLB = DAC_CTRLB_REFSEL(1) | DAC_CTRLB_EOEN_Msk ;
 
     DAC_REGS->DAC_EVCTRL = 0;
     
     /* Enable DAC */
-    DAC_REGS->DAC_CTRLA = DAC_CTRLA_ENABLE_Msk  | DAC_CTRLA_RUNSTDBY_Msk;
+    DAC_REGS->DAC_CTRLA = DAC_CTRLA_ENABLE_Msk | DAC_CTRLA_RUNSTDBY_Msk;	
     while(DAC_REGS->DAC_STATUS)
     {
         /* Wait for Synchronization after Enabling DAC */

@@ -103,6 +103,7 @@ void EIC_Initialize (void)
 
 
     /* External Interrupt enable*/
+    // Interrupt is enabled as part of PSF
     //EIC_REGS->EIC_INTENSET = 0xc000;
 
     /* Callbacks for enabled interrupts */

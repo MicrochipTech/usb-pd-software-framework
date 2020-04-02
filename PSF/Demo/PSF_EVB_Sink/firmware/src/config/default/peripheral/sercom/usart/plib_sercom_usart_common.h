@@ -42,8 +42,6 @@
 *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifdef CONFIG_HOOK_DEBUG_MSG
-
 #ifndef PLIB_SERCOM_USART_COMMON_H // Guards against multiple inclusion
 #define PLIB_SERCOM_USART_COMMON_H
 
@@ -90,16 +88,16 @@
 typedef enum
 {
     /* Error status when no error has occurred */
-    eUSART_ERROR_NONE,
+    USART_ERROR_NONE,
 
     /* Error status when parity error has occurred */
-    eUSART_ERROR_PARITY = SERCOM_USART_INT_STATUS_PERR_Msk,
+    USART_ERROR_PARITY = SERCOM_USART_INT_STATUS_PERR_Msk,
 
     /* Error status when framing error has occurred */
-    eUSART_ERROR_FRAMING = SERCOM_USART_INT_STATUS_FERR_Msk,
+    USART_ERROR_FRAMING = SERCOM_USART_INT_STATUS_FERR_Msk,
 
     /* Error status when overrun error has occurred */
-    eUSART_ERROR_OVERRUN = SERCOM_USART_INT_STATUS_BUFOVF_Msk
+    USART_ERROR_OVERRUN = SERCOM_USART_INT_STATUS_BUFOVF_Msk
 
 } USART_ERROR;
 
@@ -119,18 +117,18 @@ typedef enum
 
 typedef enum
 {
-    eUSART_DATA_5_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_5_BIT,
+    USART_DATA_5_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_5_BIT,
 
-    eUSART_DATA_6_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_6_BIT,
+    USART_DATA_6_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_6_BIT,
 
-    eUSART_DATA_7_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_7_BIT,
+    USART_DATA_7_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_7_BIT,
 
-    eUSART_DATA_8_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_8_BIT,
+    USART_DATA_8_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_8_BIT,
 
-    eUSART_DATA_9_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_9_BIT,
+    USART_DATA_9_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_9_BIT,
 
     /* Force the compiler to reserve 32-bit memory for each enum */
-    eUSART_DATA_INVALID = 0xFFFFFFFF
+    USART_DATA_INVALID = 0xFFFFFFFF
 
 } USART_DATA;
 
@@ -150,17 +148,17 @@ typedef enum
 
 typedef enum
 {
-    eUSART_PARITY_EVEN = SERCOM_USART_INT_CTRLB_PMODE_EVEN,
+    USART_PARITY_EVEN = SERCOM_USART_INT_CTRLB_PMODE_EVEN,
 
-    eUSART_PARITY_ODD = SERCOM_USART_INT_CTRLB_PMODE_ODD,
+    USART_PARITY_ODD = SERCOM_USART_INT_CTRLB_PMODE_ODD,
 
     /* This enum is defined to set frame format only
      * This value won't be written to register
      */
-    eUSART_PARITY_NONE = 0x2,
+    USART_PARITY_NONE = 0x2,
 
     /* Force the compiler to reserve 32-bit memory for each enum */
-    eUSART_PARITY_INVALID = 0xFFFFFFFF
+    USART_PARITY_INVALID = 0xFFFFFFFF
 
 } USART_PARITY;
 
@@ -180,12 +178,12 @@ typedef enum
 
 typedef enum
 {
-    eUSART_STOP_1_BIT = SERCOM_USART_INT_CTRLB_SBMODE_1_BIT,
+    USART_STOP_1_BIT = SERCOM_USART_INT_CTRLB_SBMODE_1_BIT,
 
-    eUSART_STOP_2_BIT = SERCOM_USART_INT_CTRLB_SBMODE_2_BIT,
+    USART_STOP_2_BIT = SERCOM_USART_INT_CTRLB_SBMODE_2_BIT,
 
     /* Force the compiler to reserve 32-bit memory for each enum */
-    eUSART_STOP_INVALID = 0xFFFFFFFF
+    USART_STOP_INVALID = 0xFFFFFFFF
 
 } USART_STOP;
 
@@ -204,7 +202,7 @@ typedef enum
 
 typedef struct
 {
-    UINT32 dwBaudRate;
+    uint32_t baudRate;
 
     USART_PARITY parity;
 
@@ -248,7 +246,7 @@ typedef void (*SERCOM_USART_CALLBACK)( uintptr_t context );
 
 typedef struct
 {
-    volatile UINT8 *                     pbyTxBuffer;
+    volatile uint8_t *                   txBuffer;
 
     volatile size_t                      txSize;
 
@@ -258,9 +256,9 @@ typedef struct
 
     volatile uintptr_t                   txContext;
 
-    volatile bool                        bTxBusyStatus;
+    volatile bool                        txBusyStatus;
 
-    volatile UINT8 *                     pbyRxBuffer;
+    volatile uint8_t *                   rxBuffer;
 
     volatile size_t                      rxSize;
 
@@ -270,7 +268,7 @@ typedef struct
 
     volatile uintptr_t                   rxContext;
 
-    volatile bool                        bRxBusyStatus;
+    volatile bool                        rxBusyStatus;
 
 } SERCOM_USART_OBJECT;
 
@@ -283,5 +281,3 @@ typedef struct
 // DOM-IGNORE-END
 
 #endif //PLIB_SERCOM_USART_COMMON_H
-
-#endif //#ifdef CONFIG_HOOK_DEBUG_MSG
