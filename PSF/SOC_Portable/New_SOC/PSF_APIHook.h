@@ -47,7 +47,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 // *****************************************************************************
 
-#include "PSF_Config.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1660,7 +1659,15 @@ Description:
     
     <b> eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify DPM when
     Sink capabilities has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Sink_Caps message initiated by PSF on request from DPM.   
+    as a response to the Get_Sink_Caps message initiated by PSF on request from DPM.
+    
+    <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
+    mismatch with Source partner PDOs and capability mismatch bit is set in requested RDO
+    sent by the sink. 
+    
+    <b> eMCHP_PSF_CAPS_MATCH</b>: It is notified by PSF when there is a capability
+    match with Source partner PDOs. Sink request for a Source PDO without capability 
+    mismatch being set.
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1674,7 +1681,9 @@ eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
 eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
 eMCHP_PSF_GET_SINK_CAPS_RCVD,        // Sink Caps received from Port Partner
-eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD     // Sink Caps not received from Port Partner
+eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD,    // Sink Caps not received from Port Partner
+eMCHP_PSF_CAPS_MISMATCH,            // Capability mismatch with Source Port Partner
+eMCHP_PSF_CAPS_MATCH             // Capability match with Source Port Partner
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************
