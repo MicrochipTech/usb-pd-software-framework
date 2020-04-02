@@ -665,6 +665,8 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = DPM_GET_PDO_VOLTAGE(u32SinkPDO);
                 /*Update Negotiated value*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = DPM_GET_PDO_CURRENT(u32SinkPDO);
+                /* Notify the capability match*/
+                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MATCH);
                 /*VBUS Threshold are configured for the requested PDO*/
                 DPM_SetPortPower (u8PortNum);                
                 return;
@@ -714,7 +716,9 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                  gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = DPM_GET_PDO_VOLTAGE(u32SinkPDO);
                 /*Update Negotiated value*/
                  gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16MinPDOPreferredCurIn10mA;
-                 
+                /* Notify the capability match*/
+                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MATCH);
+                
                 DPM_SetPortPower (u8PortNum);
                 
                 return;
@@ -770,6 +774,8 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 /*Set the capability mismatch status*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS;
                 
+                /* Notify the capability mismatch*/
+                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MISMATCH);
 				DPM_SetPortPower (u8PortNum);                
                 return;
             }

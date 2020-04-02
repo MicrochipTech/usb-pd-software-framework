@@ -169,6 +169,16 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             break;            
         }
         
+        case eMCHP_PSF_CAPS_MISMATCH:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_CAPS_MATCH:
+        {
+            break;
+        }
+        
         default:
             break;
     }
