@@ -77,7 +77,14 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
             /*Explicit Contract becomes invaild once this state is reached 
             from Hard Reset or Initial Power up*/
-            gasPolicy_Engine[u8PortNum].u8PEPortSts &= (~PE_EXPLICIT_CONTRACT);	  
+            gasPolicy_Engine[u8PortNum].u8PEPortSts &= (~PE_EXPLICIT_CONTRACT);
+            
+            /*Reset the all the sink status set*/
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                        ~(DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS |
+                            DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS |
+                            DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS |
+                            DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS);
 
             gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_DISCOVERY;
             
