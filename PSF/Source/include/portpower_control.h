@@ -151,10 +151,28 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS);
       None.
 
 **************************************************************************************************/
-
 void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn);
 
+/****************************************************************************
+    Function:
+        void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
+    Summary:
+        API to configure Sink Hardware
+    Description:
+        This API is to configure the Sink hardware as per the passed voltage and
+        current limit passed.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Corresponding Port Number. Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u16VBUSVoltage - Voltage limit the hardware has to be configured
+        u16Current - Current limit the Sink hardware has to be configured
+    Return:
+      None.
+    Remarks:
+      None.
 
+**************************************************************************************************/
 void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current);
 
 #endif /*_PORTPOWER_CONTROL_H_*/

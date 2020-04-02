@@ -1355,6 +1355,30 @@ void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 **************************************************************************************************/
 void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
+/**************************************************************************************************
+    Function:
+       UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
 
+    Summary:
+        Obtains current value from Rp.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is to obtain the current value from the Rp value.
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        UINT16 - Returns the current value in mA.
+
+    Remarks:
+        None.
+**************************************************************************************************/
 UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum);
 #endif /*_TYPECCONTROL_H_*/
