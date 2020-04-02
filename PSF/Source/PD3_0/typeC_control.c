@@ -694,9 +694,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;;
                     PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+         
                     PRL_EnableRx (u8PortNum, FALSE);
                     
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_ATTACHED_STATUS);
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &=\
+                                ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_RP_VAL_DETECT_MASK_STATUS);
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
@@ -2592,11 +2594,15 @@ UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
     UINT16 u16ReturnVal;
     switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
     {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                ~DPM_PORT_RP_VAL_DETECT_MASK_STATUS; 
         case TYPEC_DFP_DEFAULT_CURRENT:
         {
 #ifdef CONFIG_HOOK_DEBUG_MSG
             u32PDODebug = DPM_DEBUG_PDO_5V_9MA;
 #endif
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_RP_VAL_DETECT_DEFAULT_USB_STATUS;
             u16ReturnVal = DPM_900mA;
             break;  
         }
@@ -2605,6 +2611,8 @@ UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
 #ifdef CONFIG_HOOK_DEBUG_MSG
             u32PDODebug = DPM_DEBUG_PDO_5V_1P5A;
 #endif
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_RP_VAL_DETECT_1_5A_STATUS;
             u16ReturnVal = DPM_1500mA;
             break;  
         }
@@ -2613,6 +2621,8 @@ UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
 #ifdef CONFIG_HOOK_DEBUG_MSG                          
             u32PDODebug = DPM_DEBUG_PDO_5V_3A;
 #endif                            
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_RP_VAL_DETECT_3A_STATUS;
             u16ReturnVal = DPM_3000mA;
             break;  
         }
