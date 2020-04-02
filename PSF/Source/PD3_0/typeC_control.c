@@ -215,18 +215,14 @@ void TypeC_InitPort (UINT8 u8PortNum)
     }
     else
     {
+        /* u16SinkOperatingCurrInmA current will be set to 0mA during initialization of DPM*/
         /* Enable threshold to detect 5V*/
         TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
-        
         /*Disable the Sink circuitry to stop sinking the power from source*/
-        PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, \
-                gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
-      
+        PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
     }
-    
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: TypeC Port initialization completed\r\n");             
-    
 }
 /*******************************************************************************************/
 /*********************************TypeC State machine**************************************/
@@ -256,7 +252,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
     switch (gasTypeCcontrol[u8PortNum].u8TypeCState)
     {      
       /*-----------------------------------------TypeC Source States------------------------------*/
-      
 #if (TRUE == INCLUDE_PD_SOURCE)
       
         case TYPEC_UNATTACHED_SRC:
