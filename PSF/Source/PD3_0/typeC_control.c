@@ -211,7 +211,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
     if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
     {
         /*Setting the VBUS to vSafe0V before entering the State machine*/
-        DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
     }
     else
     {
@@ -423,7 +423,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                          "SRC State\r\n");
                    
                     /*Drive VBus for vSafe5V*/
-                    DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
+                    DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
                     
                     /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach Vsafe5V*/
@@ -618,7 +618,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             case TYPEC_UNATTACH_WAIT_SRC_TPD_TO_SS:
             {    
                 /*Disable VBUS by driving to vSafe0V*/
-                DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+                DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                 
                /*Start the VBUS OFF timer for monitoring the time taken for 
                 power module to reach Vsafe0V*/
@@ -745,7 +745,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
           
         case TYPEC_ATTACHWAIT_SNK:
         {
-          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
 		    {   
                 /*This SubState is used to start a tCCDebounce Software timer for Source attachment*/ 
@@ -956,7 +955,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
                     {                    
                         /*Disable VBUS by driving to vSafe0V*/
-                        DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+                        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                         
                          /*Disable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                         PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
@@ -2561,7 +2560,7 @@ void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
         gasDPM[u8PortNum].u8VCONNErrCounter = 0;
         
         /*Disable VBUS by driving to vSafe0V*/
-        DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
         
         /*Disable VCONN by switching off the VCONN FETS which was enabled previously*/
         TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);

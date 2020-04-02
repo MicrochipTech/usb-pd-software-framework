@@ -87,7 +87,6 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 PE_FwUpdtInitialize();
             }
             #endif
-            
             break;
         }            
 
