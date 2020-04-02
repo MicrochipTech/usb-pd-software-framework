@@ -177,11 +177,13 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
             /*PORT_PIN_PA10*/
             SPI_SS_0_Clear();
         }
+        #if (TRUE == INCLUDE_PD_SOURCE) 
         else if(PORT1 == u8PortNum)
         {
             /*PORT_PIN_PA01*/
             SPI_SS_1_Clear();
         } 
+        #endif
     }
     else
     {
@@ -190,10 +192,12 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
         {
             SPI_SS_0_Set();
         }
+        #if (TRUE == INCLUDE_PD_SOURCE) 
         else if(PORT1 == u8PortNum)
         {
             SPI_SS_1_Set();
         }
+        #endif
     }
 }
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)

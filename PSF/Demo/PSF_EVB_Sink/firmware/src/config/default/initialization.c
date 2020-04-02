@@ -120,14 +120,22 @@ void SYS_Initialize ( void* data )
     PORT_Initialize();
 
     CLOCK_Initialize();
+    // SERCOM3 UART is initialized as part of PSF
+    //SERCOM3_USART_Initialize();
 
 	//SPI initialisation is done as part of MchpPSF_Init by PSF stack
     //SERCOM0_SPI_Initialize();
 
     EIC_Initialize();
-	// SPI initialisation is done as part of MchpPSF_Init by PSF stack
+	// TCO initialisation is done as part of MchpPSF_Init by PSF stack
     //TC0_TimerInitialize();
 	
+    // DAC_Initialize is done as part of PSF Hook
+    //DAC_Initialize();
+
+
+
+
 
     NVIC_Initialize();
 

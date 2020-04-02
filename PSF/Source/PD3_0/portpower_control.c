@@ -194,6 +194,18 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
         u16Current = gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
     }
     
+    gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= \
+            ~(DPM_PORT_IO_30_IND_STATUS | DPM_PORT_IO_15_IND_STATUS);
+    if (u16Current >= DPM_3000mA)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_30_IND_STATUS;
+    }
+    else if (u16Current >= DPM_1500mA)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_15_IND_STATUS;
+    }
+   
+    
     PWRCTRL_Drive_DAC_I(u8PortNum, u16Current);
     
     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16VBUSVoltage,u16Current);
