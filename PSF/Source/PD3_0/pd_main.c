@@ -56,7 +56,7 @@ UINT8 MchpPSF_Init(void)
     (void)MCHP_PSF_HOOK_I2C_DCDC_INTF_INIT();
 #endif    
     
-    for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         /*If Timer and HW module of SOC are not initialized properly disable all the ports*/
         if (TRUE != u8InitStatus)
@@ -84,7 +84,7 @@ UINT8 MchpPSF_Init(void)
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     
     
-    for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
@@ -98,7 +98,7 @@ UINT8 MchpPSF_Init(void)
     }
     
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-    for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
@@ -123,7 +123,7 @@ UINT8 MchpPSF_Init(void)
 /********************************************************************************************/
 void MchpPSF_RUN()
 {
-	for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+	for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                   & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
