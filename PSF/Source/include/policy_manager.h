@@ -166,11 +166,18 @@ Source/Sink Power delivery objects*/
 
 /*defines to set u16SinkOperatingCurrInmA */
 #define DPM_0mA     0
+#define DPM_500mA   500
 #define DPM_900mA   900
+#define DPM_1000mA  1000
 #define DPM_1500mA  1500
+#define DPM_2000mA  2000
 #define DPM_3000mA  3000
+#define DPM_4000mA  4000
 #define DPM_5000mA  5000
+
+/*defines to convert voltage and current in terms of 50mV and 10mA to mV and mA respectively*/
 #define DPM_10mA    10
+#define DPM_50mV    50
 
 /***************************************u8PowerFaultISR defines*************** */
 #define DPM_POWER_FAULT_OVP				BIT(0)
@@ -216,6 +223,10 @@ Source/Sink Power delivery objects*/
 #define DPM_SINK_CONFIG_SINK_MODE_SEL_MASK  (BIT(0) | BIT(1))
 #define DPM_SINK_MODE_A     0x00
 #define DPM_SINK_MODE_B      BIT(0)
+
+/*********************u8DAC_I_Direction defines****************/
+#define DPM_DAC_DIR_HIGH_AMP_MAX_VOLT 0
+#define DPM_DAC_DIR_HIGH_AMP_MIN_VOLT 1
 
 #define DPM_SINK_CONFIG_NO_USB_SUSP_POS        2
 #define DPM_SINK_CONFIG_NO_USB_SUSP_MASK       BIT(2)

@@ -109,9 +109,6 @@ UINT8 MchpPSF_Init(void)
     }
 #endif
 
-#if (TRUE == INCLUDE_PD_SINK)
-    MCHP_PSF_HOOK_DAC_INITIALIZE();
-#endif //(TRUE == INCLUDE_PD_SINK)
     
     DPM_StateMachineInit();  
 

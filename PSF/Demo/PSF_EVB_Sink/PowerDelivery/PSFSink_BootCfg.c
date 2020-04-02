@@ -61,6 +61,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt = CFG_PORT_SINK_NUM_OF_PDOS;
 
+#if (TRUE == INCLUDE_PD_SINK)
     /*Assigning PDO preferred minimum current*/
     gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[0] = CFG_PORT_SINK_PDO_1_PREFERRED_MIN_CURRENT;
     gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[1] = CFG_PORT_SINK_PDO_2_PREFERRED_MIN_CURRENT;
@@ -69,13 +70,14 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[4] = CFG_PORT_SINK_PDO_5_PREFERRED_MIN_CURRENT;
     gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[5] = CFG_PORT_SINK_PDO_6_PREFERRED_MIN_CURRENT;
     gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[6] = CFG_PORT_SINK_PDO_7_PREFERRED_MIN_CURRENT;
-    
-   
+#endif
     /*Assigning maximum operating current and minimum operating current to 
      * 3000mA and 1000mA respectively*/
-    gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = 3000;
-    gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA = 1000;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = DPM_3000mA;
     
+#if (TRUE == INCLUDE_PD_SINK)
+    gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA = DPM_1000mA;
+#endif    
     gasCfgStatusData.sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
     gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;
     gasCfgStatusData.sPerPortData[u8PortNum].u8OVThresholdPercentage = CFG_OVER_VOLTAGE_FACTOR;
@@ -98,11 +100,12 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
                                                                  (CFG_PORT_SINK_USB_SUSP << DPM_SINK_CONFIG_NO_USB_SUSP_POS) |\
                                                                  (CFG_PORT_SINK_GIVE_BACK_FLAG << DPM_SINK_CONFIG_GIVE_BACK_FLAG_POS));
     
+#if(TRUE == INCLUDE_PD_SINK)    
     gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_CurrentInd_MaxInA = CFG_PORT_SINK_DAC_I_CUR_INDICATION_MAX;
-    gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MaxOutVoltInmV = CFG_PORT_SINK_DAC_I_MAX_OP_VOLTAGE;
-    gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MinOutVoltInmV = CFG_PORT_SINK_DAC_I_MIN_OP_VOLTAGE;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_MaxOutVoltIn50mV = CFG_PORT_SINK_DAC_I_MAX_OP_VOLTAGE / DPM_50mV;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_MinOutVoltIn50mV = CFG_PORT_SINK_DAC_I_MIN_OP_VOLTAGE / DPM_50mV;
     gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_Direction = CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
-    
+#endif    
     
     
 }

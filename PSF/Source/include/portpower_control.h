@@ -175,4 +175,6 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn);
 **************************************************************************************************/
 void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current);
 
+UINT8 PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent);
+
 #endif /*_PORTPOWER_CONTROL_H_*/

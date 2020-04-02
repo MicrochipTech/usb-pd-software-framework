@@ -109,9 +109,6 @@
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
-          <logicalFolder name="DAC" displayName="DAC" projectFiles="true">
-            <itemPath>../../../../SOC_Portable/SAMD20/DAC/DAC.h</itemPath>
-          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.h</itemPath>
           <itemPath>../../../../SOC_Portable/SAMD20/PSF_APIHook.h</itemPath>
         </logicalFolder>
@@ -199,9 +196,6 @@
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
-          <logicalFolder name="DAC" displayName="DAC" projectFiles="true">
-            <itemPath>../../../../SOC_Portable/SAMD20/DAC/DAC.c</itemPath>
-          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.c</itemPath>
         </logicalFolder>
       </logicalFolder>
