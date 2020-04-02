@@ -62,7 +62,7 @@ UINT16 UPD_RegReadWord (UINT8 u8PortNum, UINT16 u16RegOffset)
 
 void UPD_RegByteSetBit (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8BitMsk)
 {
-	UINT8 u8Data = 0;
+	UINT8 u8Data = SET_TO_ZERO;
 	UPD_RegisterRead (u8PortNum, u16RegOffset, &u8Data, BYTE_LEN_1);
 	u8Data |= u8BitMsk; 
 	UPD_RegisterWrite (u8PortNum, u16RegOffset, &u8Data, BYTE_LEN_1);
@@ -70,7 +70,7 @@ void UPD_RegByteSetBit (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8BitMsk)
 
 void UPD_RegByteClearBit (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8BitMsk)
 {
-    UINT8 u8Data = 0;
+    UINT8 u8Data = SET_TO_ZERO;
     UPD_RegisterRead (u8PortNum, u16RegOffset, &u8Data, BYTE_LEN_1);
     u8Data &= ~u8BitMsk;
     UPD_RegisterWrite (u8PortNum, u16RegOffset, &u8Data, BYTE_LEN_1);
@@ -292,7 +292,7 @@ void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8C
 
 void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType)
 {
-    UINT32 u32Data = 0;
+    UINT32 u32Data = SET_TO_ZERO;
     if (UPD_PIO_DEBOUNCE_DISABLE == u8DebounceEnType)
     {
         
@@ -384,7 +384,7 @@ void UPD_GPIOInit(UINT8 u8PortNum)
 
 void UPD_PIOHandleISR(UINT8 u8PortNum)
 {
-	UINT16 u16PIOIntSts = 0;
+	UINT16 u16PIOIntSts = SET_TO_ZERO;
 	
  	/* Read the interrupt status*/
 	UPD_RegisterReadISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntSts, BYTE_LEN_2);
@@ -481,7 +481,7 @@ UINT8 UPD_CheckUPDsActive()
 {
     UINT8 u8IsAllUPDsActive = FALSE;
     
-    for (UINT8 u8PortNo = 0; u8PortNo < CONFIG_PD_PORT_COUNT; u8PortNo++)
+    for (UINT8 u8PortNo = SET_TO_ZERO; u8PortNo < CONFIG_PD_PORT_COUNT; u8PortNo++)
   	{
 		/*Ignore if port is disabled, so consider only for enabled ports*/
 		if (((gasCfgStatusData.sPerPortData[u8PortNo].u32CfgData \
@@ -612,7 +612,7 @@ void UPD_CheckAndDisablePorts (void)
     UINT8 u8TimerID;
     
     /*run a loop for all the number of CONFIG_PD_PORT_COUNT to check all ports*/
-    for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         /* Reset the Port's UPD350 present*/
         MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(u8PortNum);
@@ -671,12 +671,12 @@ void UPD_CheckAndDisablePorts (void)
     } /*end of for*/
     
     /* Work around - If port-0 as source and port-1 as sink interrupt issued continuously */
-    for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
         if (UPD_PORT_DISABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
             >> TYPEC_PORT_ENDIS_POS))
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData = 0;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData = SET_TO_ZERO;
         }
     }
 }
@@ -685,9 +685,9 @@ void UPD_CheckAndDisablePorts (void)
 /********************************************************************************************/
 void UPD_FindVBusCorrectionFactor(void)
 {
-    UINT16 u16VBUSTHR3 = 0;
+    UINT16 u16VBUSTHR3 = SET_TO_ZERO;
       
-    for(UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    for(UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
             >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)

@@ -107,7 +107,7 @@ GLOBAL_CFG_STATUS_DATA gasCfgStatusData;
 
 void IntGlobals_PDInitialization(void)
 {
-    for (UINT8 u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
     #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         UPD_PwrManagementInit(u8PortNum);        

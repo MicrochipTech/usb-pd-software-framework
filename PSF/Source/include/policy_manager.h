@@ -223,7 +223,14 @@ Source/Sink Power delivery objects*/
 #define DPM_SINK_CONFIG_GIVE_BACK_FLAG_POS  3
 #define DPM_SINK_CONFIG_GIVE_BACK_FLAG_MASK BIT(3)
 
+/*********************Defines for evaluating and sorting PDOs******************/
+#define DPM_2_DIMENSION_TO_STORE_INDEX_AND_PWR 2
+#define DPM_PDO_WITH_MAX_PWR 0
+#define DPM_PDO_PWR 0
+#define DPM_PDO_INDEX 1
+#define DPM_NEXT_PWR_INDEX(x) (x+1)
 
+#define DPM_4BYTES_FOR_EACH_PDO_OF(x) (x*4)
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures

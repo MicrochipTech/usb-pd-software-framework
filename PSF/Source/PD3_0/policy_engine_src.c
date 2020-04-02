@@ -756,7 +756,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                                   (UINT8)SET_TO_ZERO);
                         
 #ifdef CONFIG_HOOK_DEBUG_MSG
-                        u32PDODebug = 0;
+                        u32PDODebug = SET_TO_ZERO;
                         DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_CHECK_VCONNOFF_SS;
