@@ -420,10 +420,45 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
 **************************************************************************/
 void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current);
 
+/**************************************************************************
+    Function:
+        void SAMD20_DACInitialisation()
+    Summary:
+        Wrapper to initialize DAC from SoC.
+    Description:
+        This API serves as a wrapper between PSF stack's MCHP_PSF_HOOK_DAC_INITIALIZE()
+        and Harmony generated code to initialize the Digital to Analog Converter(DAC).
+    Conditions:
+        None.
+    Input:
+        None.
+    Return:
+        None.
+    Remarks:
+        None                    
+**************************************************************************/
+void SAMD20_DACInitialisation(void);
 
-UINT8 SAMD20_DACInitialisation(void);
-
-UINT8 SAMD20_Drive_DAC_I(UINT16 u16DACData);
+/**************************************************************************
+    Function:
+        void SAMD20_Drive_DAC_I(UINT16 u16DACData)
+    Summary:
+        Wrapper to initialize DAC from SoC.
+    Description:
+        This API serves as a wrapper between PSF stack's MCHP_PSF_HOOK_DRIVE_DAC_I()
+        and Harmony generated code to output a voltage on output pin of SoC's
+        Digital to Analog Converter(DAC) to indicate the implicit/explicit current
+        capability of attached source partner.
+    Conditions:
+        None.
+    Input:
+        None.
+    Return:
+        None.
+    Remarks:
+        None                    
+**************************************************************************/
+void SAMD20_Drive_DAC_I(UINT16 u16DACData);
 
 #endif /*INCLUDE_PD_SINK*/
 

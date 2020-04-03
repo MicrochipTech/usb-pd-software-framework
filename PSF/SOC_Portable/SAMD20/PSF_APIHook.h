@@ -911,7 +911,12 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined                        
 *****************************************************************************/
-#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)                       
+#if (TRUE == INCLUDE_PD_SINK)
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  SAMD20_DACInitialisation();
+#else
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
+#endif
+                                                   
 
 /****************************************************************************
 Function:
@@ -1757,9 +1762,33 @@ User definition of this Hook function is optional.
 
 /***********************************DAC_I**************************************/
 #if (TRUE == INCLUDE_PD_SINK)
-
-#define MCHP_PSF_HOOK_DAC_INITIALIZE()              SAMD20_DACInitialisation()
-
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_DRIVE_DAC_I()
+Summary:
+    Indicates the implicit/explicit current capability of attached source partner.
+Description:
+    This hook is called to indicate the sink hardware of the implicit/explicit 
+    current capability of attached source partner. The current capability is 
+    indicated thorough a voltage level on Digital to Analog Converter(DAC)'s 
+    output pin. The voltage level on DAC's output pin is calculated based on 
+    per port Configuration parameters, which were configured using 
+    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData) hook.
+    A suitable function that initializes DAC from SoC needs to be 
+    implemented in this hook. This hook will be enabled only if INCLUDE_PD_SINK 
+    is set to 1. 
+Conditions:
+    SoC should support a DAC. It should be initialized under 
+    MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)   SAMD20_Drive_DAC_I(u16DACData)
+    </code>
+Remarks:
+    None.
+*******************************************************************************/ 
 #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)  SAMD20_Drive_DAC_I(u16DACData)
 
 #endif /*(TRUE == INCLUDE_PD_SINK)*/

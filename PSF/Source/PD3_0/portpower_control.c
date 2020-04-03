@@ -73,9 +73,7 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
 
     PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
 
-#if (TRUE == INCLUDE_PD_SINK)
-    MCHP_PSF_HOOK_DAC_INITIALIZE();
-#endif
+
     
     /*Hook to modify or overwrite the default Port Power control initialization */
     MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
@@ -214,7 +212,7 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
     #endif
 }
 
-UINT8 PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
+void PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
 {
 #if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16MaxNegoCurInmA =0, u16DacData =0;
@@ -273,5 +271,4 @@ UINT8 PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
     MCHP_PSF_HOOK_DRIVE_DAC_I(u16DacData);
     
 #endif //#if (TRUE == INCLUDE_PD_SINK)
-    return TRUE;
 }

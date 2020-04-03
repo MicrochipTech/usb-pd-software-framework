@@ -404,13 +404,12 @@ void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u
 }
 
 
-UINT8 SAMD20_DACInitialisation(void)
+void SAMD20_DACInitialisation(void)
 {
     DAC_Initialize();
-    return TRUE;
 }
 
-UINT8 SAMD20_Drive_DAC_I(UINT16 u16DACData)
+void SAMD20_Drive_DAC_I(UINT16 u16DACData)
 {
     /*SAMD20 intenally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
     /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
@@ -421,7 +420,6 @@ UINT8 SAMD20_Drive_DAC_I(UINT16 u16DACData)
     u16DACData = (UINT16)(u32DACCalculate / 3300);
     DAC_DataWrite(u16DACData);
     
-    return TRUE;
 }
 #endif
 
