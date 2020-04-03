@@ -1662,12 +1662,10 @@ Description:
     as a response to the Get_Sink_Caps message initiated by PSF on request from DPM.
     
     <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
-    mismatch with Source partner PDOs and capability mismatch bit is set in requested RDO
-    sent by the sink. 
+    mismatch with Source partner PDOs in a PD negotiation.
     
-    <b> eMCHP_PSF_CAPS_MATCH</b>: It is notified by PSF when there is a capability
-    match with Source partner PDOs. Sink request for a Source PDO without capability 
-    mismatch being set.
+    <b> eMCHP_PSF_NEW_SRC_CAPS_RCVD</b>: It is notified by PSF when new source capability
+    message is received from the Source Partner.
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1683,7 +1681,7 @@ eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
 eMCHP_PSF_GET_SINK_CAPS_RCVD,        // Sink Caps received from Port Partner
 eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD,    // Sink Caps not received from Port Partner
 eMCHP_PSF_CAPS_MISMATCH,            // Capability mismatch with Source Port Partner
-eMCHP_PSF_CAPS_MATCH             // Capability match with Source Port Partner
+eMCHP_PSF_NEW_SRC_CAPS_RCVD         // New source capability message is received from Source Partner
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************

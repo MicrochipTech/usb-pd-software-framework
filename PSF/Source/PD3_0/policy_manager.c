@@ -665,9 +665,6 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = DPM_GET_PDO_VOLTAGE(u32SinkPDO);
                 /*Update Negotiated value*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = DPM_GET_PDO_CURRENT(u32SinkPDO);
-                /* Notify the capability match*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
-                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MATCH);
                 /*VBUS Threshold are configured for the requested PDO*/
                 DPM_SetPortPower (u8PortNum);                
                 return;
@@ -716,12 +713,9 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 /*Update Negotiated value*/
                  gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = DPM_GET_PDO_VOLTAGE(u32SinkPDO);
                 /*Update Negotiated value*/
-                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16MinPDOPreferredCurIn10mA;
-                /* Notify the capability match*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~DPM_PORT_IO_CAP_MISMATCH_STATUS; 
-                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MATCH);
+                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16MinPDOPreferredCurIn10mA;              
                 
-                DPM_SetPortPower (u8PortNum);
+                 DPM_SetPortPower (u8PortNum);
                 
                 return;
             }
@@ -775,10 +769,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 
                 /*Set the capability mismatch status*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS;
-                
-                /* Notify the capability mismatch*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
-                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MISMATCH);
+
 				DPM_SetPortPower (u8PortNum);                
                 return;
             }
