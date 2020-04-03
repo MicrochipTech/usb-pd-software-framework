@@ -397,6 +397,38 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
 **************************************************************************/
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
 
+#if(TRUE == INCLUDE_PD_SINK)
+/**************************************************************************
+    Function:
+        void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current)
+    Summary:
+        Function to configure sink Hardware
+    Description:
+        It is a wrapper for PSF stack's MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW function
+    Conditions:
+        None.
+    Input:
+        u8PortNum -  PortNumber; Value passed will be less than CONFIG_PD_PORT_COUNT
+        u16VBUSVoltage -  Voltage value in mV to which sink circuitry has to be configured
+                           if required
+        u16Current -   Current value in mA for which sink hardware circuitry has to be
+                        configured.
+    Return:
+        None.
+    Remarks:
+        None                    
+**************************************************************************/
+void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current);
+
+
+UINT8 SAMD20_DACInitialisation(void);
+
+UINT8 SAMD20_Drive_DAC_I(UINT16 u16DACData);
+
+#endif /*INCLUDE_PD_SINK*/
+
+
+
 /*Debug UART APIs*/
 #ifdef CONFIG_HOOK_DEBUG_MSG
 void SAMD20_UART_Initialisation(void);
@@ -409,13 +441,7 @@ void SAMD20_UART_Write_String(char*);
 
 #endif //CONFIG_HOOK_DEBUG_MSG
 
-#if(TRUE == INCLUDE_PD_SINK)
-UINT8 SAMD20_DACInitialisation(void);
 
-UINT8 SAMD20_Drive_DAC_I(UINT16 u16DACData);
-
-
-#endif
 #endif /*_DRIVERS_H */
 
 /* *****************************************************************************

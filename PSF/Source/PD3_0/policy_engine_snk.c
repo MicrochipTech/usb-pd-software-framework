@@ -86,9 +86,6 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                             DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS |
                             DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS);
             
-            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= \
-                            (~DPM_PORT_IO_PS_RDY_RECVD_STATUS | DPM_PORT_IO_CAP_MISMATCH_STATUS);
-
             gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_DISCOVERY;
             
             #if (FALSE != INCLUDE_PDFU)
@@ -317,10 +314,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 #ifdef CONFIG_HOOK_DEBUG_MSG                    
                     u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
                     DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
-#endif
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= \
-                            DPM_PORT_IO_PS_RDY_RECVD_STATUS;
-                    
+#endif                  
                     /*Notify that contract is established*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                     

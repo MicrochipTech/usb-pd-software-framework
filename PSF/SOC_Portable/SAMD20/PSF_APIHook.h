@@ -1000,7 +1000,7 @@ Summary:
     Enables or disables sink hardware circuitry and configures it to sinks the VBUS voltage for 
     a given port based on the sink requested voltage and current.
 Description:
-    This hook is to enable or disable sink hardware circuitry and configure it for Sink requested 
+    This hook is to enable or disable sink hardware circuitry and configure it for Sink  
     requested current and voltage.Implementation of this function depends on the type of Sink 
     circuitry used. Define relevant function that has UINT8,UINT16,UINT16 arguments without return type.
 Conditions:
@@ -1016,9 +1016,9 @@ Return:
 Example:
     <code>
         #define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16Voltage, u16Current)\
-            hw_SinkCircuitary_enab_dis_(u8PortNum, u16Voltage, u16Current)
-        void hw_SinkCircuitary_enab_dis_(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current);
-        void hw_SinkCircuitary_enab_dis_(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current)
+            hw_Configure_SinkCircuitary(u8PortNum, u16Voltage, u16Current)
+        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current);
+        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current)
         {
             if(u16Voltage == Vsafe0V)
             {
@@ -1026,7 +1026,8 @@ Example:
             }
             else
             {
-                //Enable the Sink circuitary for "u8PortNum" Port and configure it to drain u16Voltage 
+                //Enable the Sink circuitary for "u8PortNum" Port and 
+                    configure it to drain u16Voltage 
             }
             //Conifgure Sink circuitary for u16Current current rating
         }
@@ -1035,8 +1036,8 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory if PSF is configured for Sink functionality.
 *******************************************************************************************/
-#define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
-
+#define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current) \
+SAMD20_ConfigureSinkHardware(u8PortNum,u16VBUSVoltage,u16Current)
 /*******************************************************************************************
 Function:
     MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn)
