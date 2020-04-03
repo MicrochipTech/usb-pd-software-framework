@@ -33,8 +33,6 @@
               <logicalFolder name="usart" displayName="usart" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom3_usart.h</itemPath>
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom_usart_common.h</itemPath>
-                <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom3_usart.h</itemPath>
-                <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom_usart_common.h</itemPath>
               </logicalFolder>
             </logicalFolder>
             <logicalFolder name="f7" displayName="tc" projectFiles="true">
@@ -169,7 +167,6 @@
               </logicalFolder>
               <logicalFolder name="usart" displayName="usart" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom3_usart.c</itemPath>
-                <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom3_usart.c</itemPath>
               </logicalFolder>
             </logicalFolder>
             <logicalFolder name="f7" displayName="tc" projectFiles="true">
@@ -246,8 +243,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
         <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
+        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
       </packs>
       <compileType>
         <linkerTool>
