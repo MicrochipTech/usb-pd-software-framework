@@ -106,7 +106,7 @@ Example:
     #define INCLUDE_PD_SINK	0(Exclude USB PD Sink functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_SINK    		1
+#define INCLUDE_PD_SINK    		0
 
 /**************************************************************************************************
 Summary:

@@ -383,6 +383,50 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 
 /*****************************************************************************/
 /*****************************************************************************/
+/*********************************Sink APIs*****************************/
+/*****************************************************************************/
+#if (TRUE == INCLUDE_PD_SINK)
+
+void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current)
+{
+    /* Clear the 1.5A_IND and 3A_IND */
+    SNK_1_5A_IND_Clear();
+    SNK_3A_IND_Clear();
+    
+    if (u16Current >= DPM_3000mA)
+    {
+        SNK_3A_IND_Set();
+    }
+    else if (u16Current >= DPM_1500mA)
+    {
+        SNK_1_5A_IND_Set();
+    }
+}
+
+
+UINT8 SAMD20_DACInitialisation(void)
+{
+    DAC_Initialize();
+    return TRUE;
+}
+
+UINT8 SAMD20_Drive_DAC_I(UINT16 u16DACData)
+{
+    /*SAMD20 intenally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
+    /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
+    /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
+
+    UINT32 u32DACCalculate = u16DACData * 0x3FF;
+
+    u16DACData = (UINT16)(u32DACCalculate / 3300);
+    DAC_DataWrite(u16DACData);
+    
+    return TRUE;
+}
+#endif
+
+/*****************************************************************************/
+/*****************************************************************************/
 /*********************************UART APIs*****************************/
 /*****************************************************************************/
 #ifdef CONFIG_HOOK_DEBUG_MSG
@@ -410,27 +454,6 @@ void SAMD20_UART_Write_String(char* pbyMessage)
 
 #endif //CONFIG_HOOK_DEBUG_MSG
 
-#if (TRUE == INCLUDE_PD_SINK)
-UINT8 SAMD20_DACInitialisation(void)
-{
-    DAC_Initialize();
-    return TRUE;
-}
-
-UINT8 SAMD20_Drive_DAC_I(UINT16 u16DACData)
-{
-    /*SAMD20 intenally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
-    /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
-    /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
-
-    UINT32 u32DACCalculate = u16DACData * 0x3FF;
-
-    u16DACData = (UINT16)(u32DACCalculate / 3300);
-    DAC_DataWrite(u16DACData);
-    
-    return TRUE;
-}
-#endif
 /* *****************************************************************************
  End of File
  */
