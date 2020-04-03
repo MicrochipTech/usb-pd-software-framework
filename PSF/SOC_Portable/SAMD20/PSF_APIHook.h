@@ -1778,7 +1778,7 @@ Description:
     implemented in this hook. This hook will be enabled only if INCLUDE_PD_SINK 
     is set to 1. 
 Conditions:
-    SoC should support a DAC. It should be initialized under 
+    SoC should support a DAC. And the DAC should be initialized under 
     MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
 Return:
     None.

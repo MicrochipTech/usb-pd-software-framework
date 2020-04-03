@@ -2592,6 +2592,9 @@ void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
 {
     UINT16 u16ReturnVal;
+#ifdef CONFIG_HOOK_DEBUG_MSG
+    UINT32 u32PDODebug = SET_TO_ZERO;
+#endif
     switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
