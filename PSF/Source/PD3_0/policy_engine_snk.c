@@ -166,7 +166,10 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
         case ePE_SNK_EVALUATE_CAPABILITY:
         {            
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY: Entered the state\r\n");
-                    
+              
+            /* Notify the new source capability is received*/
+            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
+            
             /*Reset the HardResetCounter*/
             gasPolicy_Engine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	
             
@@ -317,9 +320,16 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 #endif
                     gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= \
                             DPM_PORT_IO_PS_RDY_RECVD_STATUS;
+                    
                     /*Notify that contract is established*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                     
+                    if (DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS == \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus)
+                    {
+                        /* Notify the capability mismatch*/
+                        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MISMATCH);
+                    }
                     break;
                 }
                 
