@@ -233,9 +233,12 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #ifdef CONFIG_HOOK_DEBUG_MSG
     UINT32 u32PDODebug = SET_TO_ZERO;
 #endif
-        
+
+#if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_SINK))    
     UINT8 u8CC1_MatchISR = SET_TO_ZERO;
     UINT8 u8CC2_MatchISR  = SET_TO_ZERO;
+#endif
+    
     UINT8 u8IntStsISR = SET_TO_ZERO;
     
     /*Handle CC and VBUS Interrupt if any*/
@@ -243,8 +246,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
 
+#if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_SINK))  
     u8CC1_MatchISR = gasTypeCcontrol[u8PortNum].u8CC1_MatchISR;
     u8CC2_MatchISR = gasTypeCcontrol[u8PortNum].u8CC2_MatchISR;
+#endif
+    
     u8IntStsISR = gasTypeCcontrol[u8PortNum].u8IntStsISR;
 
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
