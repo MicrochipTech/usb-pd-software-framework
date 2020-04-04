@@ -42,7 +42,6 @@
 *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifdef CONFIG_HOOK_DEBUG_MSG
 
 #ifndef PLIB_SERCOM_USART_COMMON_H // Guards against multiple inclusion
 #define PLIB_SERCOM_USART_COMMON_H
@@ -283,5 +282,3 @@ typedef struct
 // DOM-IGNORE-END
 
 #endif //PLIB_SERCOM_USART_COMMON_H
-
-#endif //#ifdef CONFIG_HOOK_DEBUG_MSG

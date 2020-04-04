@@ -124,7 +124,7 @@ void SYS_Initialize ( void* data )
 	//SPI initialisation is done as part of MchpPSF_Init by PSF stack
     //SERCOM0_SPI_Initialize();
 
-    //UART Initialisation is done as part of MchpPSF_Init by PSF stack
+    //UART initialisation is done as part of MchpPSF_Init by PSF stack
     //SERCOM3_USART_Initialize();
 
     
