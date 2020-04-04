@@ -47,9 +47,6 @@
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
-#ifdef CONFIG_HOOK_DEBUG_MSG
-
-
 #include "plib_sercom3_usart.h"
 #include <string.h>
 
@@ -280,5 +277,3 @@ void SERCOM3_USART_Write_Char(char byWriteChar)
     { 
     }
 }
-
-#endif //CONFIG_HOOK_DEBUG_MSG
