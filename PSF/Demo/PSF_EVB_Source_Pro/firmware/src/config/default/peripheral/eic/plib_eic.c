@@ -60,12 +60,11 @@
 // Section: Global Data
 // *****************************************************************************
 // *****************************************************************************
-
 /* EIC Channel Callback object */
 EIC_CALLBACK_OBJ    eicCallbackObject[EXTINT_COUNT];
 
 
-void EIC_Initialize (void)
+void EIC_Initialize(void)
 {
     /* Reset all registers in the EIC module to their initial state and
 	   EIC will be disabled. */

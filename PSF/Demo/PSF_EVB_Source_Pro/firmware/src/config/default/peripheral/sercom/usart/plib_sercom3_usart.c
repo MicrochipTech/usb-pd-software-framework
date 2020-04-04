@@ -41,7 +41,7 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
-//#ifdef CONFIG_HOOK_DEBUG_MSG
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Included Files
