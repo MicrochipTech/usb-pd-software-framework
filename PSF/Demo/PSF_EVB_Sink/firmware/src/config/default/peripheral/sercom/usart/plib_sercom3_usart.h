@@ -42,7 +42,6 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifdef CONFIG_HOOK_DEBUG_MSG
 
 #ifndef PLIB_SERCOM3_USART_H // Guards against multiple inclusion
 #define PLIB_SERCOM3_USART_H
@@ -196,5 +195,3 @@ void SERCOM3_USART_Write_Char(char byData);
 // DOM-IGNORE-END
 
 #endif //PLIB_SERCOM3_USART_H
-
-#endif //#ifdef CONFIG_HOOK_DEBUG_MSG
