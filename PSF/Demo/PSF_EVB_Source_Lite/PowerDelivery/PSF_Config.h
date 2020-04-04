@@ -41,8 +41,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSF_CONFIG_H_
 #define _PSF_CONFIG_H_
 
-//#include "PSF_APIHook.h"
-#include <generic_defs.h>
+#include "generic_defs.h"
 //DOM-IGNORE-END
 
 // *****************************************************************************
