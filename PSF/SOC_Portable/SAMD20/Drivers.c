@@ -79,7 +79,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #define SERCOMn_SPI_WriteRead(n,pTransmitData,txSize,pReceiveData,rxSize)\
  SERCOM##n##_SPI_WriteRead(pTransmitData,txSize,pReceiveData,rxSize)
 
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if CONFIG_HOOK_DEBUG_MSG
     /*Debug UART drivers*/
     #define SAMD20UART_Init(n) SERCOMn_UART_Initialise(n)
     #define SERCOMn_UART_Initialise(n) SERCOM##n##_USART_Initialise()
@@ -427,7 +427,7 @@ void SAMD20_Drive_DAC_I(UINT16 u16DACData)
 /*****************************************************************************/
 /*********************************UART APIs*****************************/
 /*****************************************************************************/
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if CONFIG_HOOK_DEBUG_MSG
 
 void SAMD20_UART_Initialisation(void)
 {

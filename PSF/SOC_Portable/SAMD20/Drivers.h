@@ -465,7 +465,7 @@ void SAMD20_Drive_DAC_I(UINT16 u16DACData);
 
 
 /*Debug UART APIs*/
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if CONFIG_HOOK_DEBUG_MSG
 void SAMD20_UART_Initialisation(void);
 
 void SAMD20_UART_Write_Char(char);

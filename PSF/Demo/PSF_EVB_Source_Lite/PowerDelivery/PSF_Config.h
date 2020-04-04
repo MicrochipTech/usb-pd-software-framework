@@ -344,6 +344,33 @@ Example:
 #define I2C_DC_DC_CONTROL_CONFIG            2
 #define CONFIG_DCDC_CTRL        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 
+/**************************************************************************
+Summary:
+    Print status messages from PSF stack through UART interface
+Description:
+    Setting CONFIG_HOOK_DEBUG_MSG to 1, prints status messages from PSF stack through
+    UART interface. 
+	
+Remarks:
+    The following hook APIs should be defined with appropriate UART functions to view 
+    status messages from PSF stack.
+    1. MCHP_PSF_HOOK_DEBUG_INIT()
+    2. MCHP_PSF_HOOK_PRINT_CHAR(byData)
+    3. MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth) 
+    4. MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage) 
+
+Example:
+    <code>
+	#define CONFIG_HOOK_DEBUG_MSG    0
+	#define CONFIG_HOOK_DEBUG_MSG    1
+    </code>
+
+Note:
+    None.
+**************************************************************************/
+#define CONFIG_HOOK_DEBUG_MSG                       1
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: PDFU Configuration
