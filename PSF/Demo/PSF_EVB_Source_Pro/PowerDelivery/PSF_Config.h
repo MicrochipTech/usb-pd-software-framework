@@ -1101,23 +1101,26 @@ typedef enum
 																		SNK_CAP_MISMATCH pin
 																	  * This is applicable only for 
 																		Sink operation. 
-	u8DAC_I_MaxOutVoltIn10mV        1                                * Defines the maximum voltage 
+	u16DAC_I_MaxOutVoltInmV        1                                * Defines the maximum voltage 
 																		on DAC_I with a maximum of 
-																		2.5V in terms of 10mV 
+																		2.5V in terms of mV 
 																	  * This is applicable only for
 																		Sink operation. 
-	u8DAC_I_MinOutVoltIn10mV        1								 * Defines the minimum voltage 
+	u16DAC_I_MinOutVoltInmV        1								 * Defines the minimum voltage 
 																		on DAC_I with a minimum of 
-																		0V in terms of 10mV 
+																		0V in terms of mV 
 																	  * This is applicable only for
 																		Sink operation. 
-	u8DAC_I_CurrentInd_MaxInA       1								 * Defines which current in
-																		terms of A corresponding 
+	u16DAC_I_CurrentInd_MaxInA       1								 * Defines which current in
+																		terms of mA corresponding 
 																		to maximum output voltage 
 																	  * It can take either 3A or 5A 
 																	    value. 
 																	  * If it is 5A and maximum 
-																		output voltage is 2.5V, then 
+																		output voltage is 2.5V and if
+                                                                        direction mentioned in 
+                                                                        u8DAC_I_Direction is High 
+                                                                        Amperage - Max Voltage, then 
 																		1. 0.5A > DAC_I = 0.25V 
 																		2. 1.5A > DAC_I = 0.75V
 																		3. 2.0A > DAC_I = 1V
@@ -1443,7 +1446,10 @@ typedef struct _PortCfgStatus
     UINT16 u16MaximumOperatingCurInmA; 
     #if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
-    UINT16 u16MinimumOperatingCurInmA; 
+    UINT16 u16MinimumOperatingCurInmA;
+    UINT16 u16DAC_I_MaxOutVoltInmV; 
+    UINT16 u16DAC_I_MinOutVoltInmV; 
+    UINT16 u16DAC_I_CurrentInd_MaxInA;  
     #endif
     UINT16 u16PortIOStatus;
     UINT16 u16PortStatusChange;
@@ -1489,11 +1495,8 @@ typedef struct _PortCfgStatus
     UINT8 u8Mode_SNK_PD_NEG_CMPLT; 
     UINT8 u8PIO_SNK_CAP_MISMATCH; 
     UINT8 u8Mode_SNK_CAP_MISMATCH; 
-    UINT8 u8DAC_I_MaxOutVoltIn10mV; 
-    UINT8 u8DAC_I_MinOutVoltIn10mV; 
-    UINT8 u8DAC_I_CurrentInd_MaxInA;  
     UINT8 u8DAC_I_Direction; 
-    UINT8 u8aReserved3[2];
+    UINT8 u8aReserved3[3];
     #endif
 	 
    } PORT_CFG_STATUS, *PPORT_CFG_STATUS;

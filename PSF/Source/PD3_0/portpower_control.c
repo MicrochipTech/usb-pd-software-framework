@@ -182,6 +182,7 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
     /* Hook to modify or overwrite the Port Control DC_DC_EN enable/disable */
     MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn); 
 }
+
 /************************************************************************************/
 void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
@@ -216,10 +217,11 @@ void PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
 {
 #if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16MaxNegoCurInmA =0, u16DacData =0;
-    UINT16 u16MaxOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_MaxOutVoltIn50mV * DPM_50mV;
-    UINT16 u16MinOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_MinOutVoltIn50mV * DPM_50mV;
+    UINT16 u16MaxOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MaxOutVoltInmV;
+    UINT16 u16MinOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MinOutVoltInmV;
     UINT16 u16MaxCurIndInmA = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_CurrentInd_MaxInA;
     
+    //Approximate the current value
     if(u16VBUSCurrent > DPM_5000mA)
     {
         u16MaxNegoCurInmA = DPM_5000mA;
@@ -267,7 +269,7 @@ void PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
     }
     
     
-    
+    //value calculated in u16DacData should reflect in DAC_I pin
     MCHP_PSF_HOOK_DRIVE_DAC_I(u16DacData);
     
 #endif //#if (TRUE == INCLUDE_PD_SINK)
