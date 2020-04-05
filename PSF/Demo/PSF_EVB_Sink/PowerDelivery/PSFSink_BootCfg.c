@@ -102,8 +102,8 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     
 #if(TRUE == INCLUDE_PD_SINK)    
     gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_CurrentInd_MaxInA = CFG_PORT_SINK_DAC_I_CUR_INDICATION_MAX;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_MaxOutVoltIn50mV = CFG_PORT_SINK_DAC_I_MAX_OP_VOLTAGE / DPM_50mV;
-    gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_MinOutVoltIn50mV = CFG_PORT_SINK_DAC_I_MIN_OP_VOLTAGE / DPM_50mV;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MaxOutVoltInmV = CFG_PORT_SINK_DAC_I_MAX_OP_VOLTAGE;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MinOutVoltInmV = CFG_PORT_SINK_DAC_I_MIN_OP_VOLTAGE;
     gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_Direction = CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
 #endif    
     
