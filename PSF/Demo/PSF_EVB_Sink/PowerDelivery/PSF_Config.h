@@ -192,7 +192,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
+    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -203,6 +203,63 @@ Example:
     </code>                                                                        
  ***************************************************************************/
 #define INCLUDE_PDFU                  0
+
+/**************************************************************************************************
+Summary:
+    Power Balancing support code inclusion.
+Description:
+    Setting the INCLUDE_POWER_BALANCING as 1 enables PSF to include the PD 
+    Power Balancing functionality at compile time. User can set this define to 0
+    to reduce code size if none of the PD enabled Source ports in the system 
+    require Power Balancing functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_POWER_BALANCING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_POWER_BALANCING	1(Include Power Balancing functionality in PSF)
+    #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_POWER_BALANCING  		0
+
+/**************************************************************************************************
+Summary:
+    Power Throttling support code inclusion.
+Description:
+    Setting the INCLUDE_POWER_THROTTLING as 1 enables PSF to include the 
+    Power Throttling(PT) feature at compile time. User can set this define to 0
+    to reduce code size if none of the Source ports in the system 
+    require PT functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_POWER_THROTTLING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_POWER_THROTTLING	1(Include PT functionality in PSF)
+    #define INCLUDE_POWER_THROTTLING	0(Exclude PT functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_POWER_THROTTLING        0
+
+/**************************************************************************************************
+Summary:
+    PPS support code inclusion.
+Description:
+    Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Programmable 
+    Power Supply(PPS) feature at compile time. User can set this define to 0
+    to reduce code size if none of the Source ports in the system 
+    require PPS functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_PD_SOURCE_PPS to be 1, 
+    INCLUDE_PD_SOURCE and INCLUDE_PD_3_0 shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_SOURCE_PPS	1(Include PPS functionality in PSF)
+    #define INCLUDE_PD_SOURCE_PPS	0(Exclude PPS functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_SOURCE_PPS           0
 
 // *****************************************************************************
 // *****************************************************************************
@@ -321,9 +378,28 @@ Example :
 // Section: DC-DC Buck boost controller configurations
 // *****************************************************************************
 // *****************************************************************************
-/* Values for CONFIG_DCDC_CTRL*/
+
+/**************************************************************************
+Summary:
+    Macro to indicate GPIO based DC-DC Controller. 
+Description:
+	PWRCTRL_DEFAULT_PSF_GPIO_CONFIG defines the default GPIO based DC-DC Controller used by PSF.  
+Remarks:
+	None.                                 
+  **************************************************************************/
 #define PWRCTRL_DEFAULT_PSF_GPIO_CONFIG     1
+
+/**************************************************************************
+Summary:
+    Macro to indicate I2C based DC-DC Controller. 
+Description:
+	I2C_DC_DC_CONTROL_CONFIG defines the default GPIO based DC-DC Controller used by PSF.  
+Remarks:
+	None.                                 
+  **************************************************************************/
 #define I2C_DC_DC_CONTROL_CONFIG            2
+
+
 /**************************************************************************
 Summary:
     DC DC Buck Boost Controller default configuration option.
@@ -343,6 +419,25 @@ Example:
 	</code>                                  
   **************************************************************************/
 #define CONFIG_DCDC_CTRL        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+
+/**************************************************************************
+Summary:
+    Default I2C DC DC Controller Type.
+Description:
+	CONFIG_I2C_DCDC_TYPE is to define the default I2C DC-DC control provided by the PSF stack.
+    This macro is valid only when CONFIG_DCDC_CTRL is set to I2C_DC_DC_CONTROL_CONFIG. If 
+	CONFIG_I2C_DCDC_TYPE defined as MPQ, Monolithic MPQ4230 I2C DC-DC Controller 
+    is used. If CONFIG_I2C_DCDC_TYPE defined as ONSEMI, On Semi I2C DC-DC 
+    Controller is used. 
+Remarks:
+	None.
+Example:
+	<code>
+	#define CONFIG_I2C_DCDC_TYPE    MPQ (Uses Monolithic I2C DC-DC contol)
+    #define CONFIG_I2C_DCDC_TYPE    ONSEMI (Uses OnSemi I2C DC-DC contol)	
+	</code>                                  
+  **************************************************************************/
+#define CONFIG_I2C_DCDC_TYPE
 
 /**************************************************************************
 Summary:
@@ -559,14 +654,13 @@ typedef enum
     * ********************************Globals******************************************* *
     * *********************************************************************************************** *
   Summary:
-    This structure contains port specific Type C and PD configuration and status parameters. 
+    This structure contains port specific Type C and PD configuration and status parameters.
+	sPerPortData is referred from _GlobalCfgStatusData.	
   Description:
-    This structure contains the following per port configuration and status
-    \parameters. This structure consists of value based and bit mapped elements. 
+	This structure contains global configuration and status parameters that are either Integer 
+	Datatypes, Bit-Mapped bytes or another structure.
     
-	<b>Value based elements:</b>
-    
-    Following elements of the structure are value based.
+	<b>1. Members that are Integer data types:</b>
 	
     <table>
     Name                            Size in   R/W Config   R/W Run   \Description
@@ -589,7 +683,9 @@ typedef enum
 																		Voltage is specified in mV 
 																		and Current in mA.
                                                                       * This array is common for 
-																	     Source and Sink.
+																	    Source and Sink. It is 
+																		valid only when 
+																		u8NewPDOSelect is set to 1.
     u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
 																		advertised to Port Partner. 
                                                                       * During run time, this array 
@@ -630,22 +726,57 @@ typedef enum
                                                                         2. 0x012C = 3A
                                                                         3. 0x01F4 = 5A
                                                                         4. 0x03FF = 10.24A
-    u16MaximumOperatingCurInmA      2                                * Maximum allowable current or 
+    u16MaximumOperatingCurInmA      2          R/W         R          * Maximum allowable current or 
 																		system's maximum operating
                                                                         current in terms of mA
-    u16aMinPDOPreferredCurInmA[7]   14                               * Preferred minimum current 
+    u16aMinPDOPreferredCurInmA[7]   14         R/W         R          * Preferred minimum current 
 																		range for the PDO by which 
 																		the Sink may select without 
 																		setting Capability Mismatch 
 																		Bit with highest current 
 																		preferred.
                                                                       * This array is applicable 
-																	    only for Sink Operation. 
-                                                                        
-    u16MinimumOperatingCurInmA      2                                * Minimum operating current by 
+																	    only for Sink Operation.                                                                     
+    u16MinimumOperatingCurInmA      2          R/W           R          * Minimum operating current by 
 																	    the System.
                                                                       * This variable is applicable 
 																	    only for Sink Operation. 
+  	u16DAC_I_MaxOutVoltInmV         2          R/W         R           * Defines the maximum voltage 
+																		on DAC_I with a maximum of 
+																		2.5V in terms of mV 
+																	  * This is applicable only for
+																		Sink operation. 
+	u16DAC_I_MinOutVoltInmV         2		   R/W		   R   		   * Defines the minimum voltage 
+																		on DAC_I with a minimum of 
+																		0V in terms of mV 
+																	  * This is applicable only for
+																		Sink operation. 
+	u16DAC_I_CurrentInd_MaxInA      2		   R/W		   R    	   * Defines which current in
+																		terms of mA corresponding 
+																		to maximum output voltage 
+																	  * It can take either 3A or 5A 
+																	    value. 
+																	  * If it is 5A and maximum 
+																		output voltage is 2.5V and if
+                                                                        direction mentioned in 
+                                                                        u8DAC_I_Direction is High 
+                                                                        Amperage - Max Voltage, then 
+																		1. 0.5A > DAC_I = 0.25V 
+																		2. 1.5A > DAC_I = 0.75V
+																		3. 2.0A > DAC_I = 1V
+																		4. 3.0A > DAC_I = 1.5V 
+																		5. 4.0A > DAC_I = 2.0V
+																		6. 5.0A > DAC_I = 2.5V
+																	  * If it is 3A and maximum 
+																		output voltage is 2.5V, then
+																		1. 0.5A > DAC_I = 0.42V 
+																		2. 1.5A > DAC_I = 1.25V
+																		3. 2.0A > DAC_I = 1.67V
+																		4. 3.0A > DAC_I = 2.5V
+																		5. 4.0A > DAC_I = 2.5V
+																		6. 5.0A > DAC_I = 2.5V
+																	  * This is applicable only for 
+																		Sink operation. 
     u16PowerGoodTimerInms           2         R/W          R         * After an automatic fault 
 																		recovery, 
 																		u16PowerGoodTimerInms
@@ -685,7 +816,9 @@ typedef enum
                                                                         configured as Sink.
     u8NewPDOCnt                     1         R/W          R/W       * Number of New PDOs Supported.
                                                                       * This variable is common for 
-																	    both Source and Sink.
+																	    both Source and Sink. It is
+																		valid only when 
+																		u8NewPDOSelect is set to 1.
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
     u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
@@ -955,7 +1088,8 @@ typedef enum
 																		eUPD_OUTPUT_PIN_MODES_TYPE.
 	u8aVSELTruthTable[8]            8         R/W          R         * Index 0 defines the assertion 
 																		and deassertion to be driven
-                                                                        on VSEL[2:0] pins(defined in u8aPio_VSEL[3]) by the PSF 
+                                                                        on VSEL[2:0] pins(defined in 
+																		u8aPio_VSEL[3]) by the PSF 
 																		as per u8aMode_VSEL[3] to 
 																		have an output voltage of 
 																		VSafe0V out of DC/DC 
@@ -992,74 +1126,6 @@ typedef enum
 																		EN_SINK pin
 																	  * This is applicable only for 
 																		Sink operation. 
-    u8SnkPio_1_5A_IND               1         R/W          R         * Defines the UPD350 PIO number 
-																		used for 1.5A_IND pin 
-																	  * This is applicable only for 
-																		Sink operation. 
-	u8Mode_1_5A_IND                 1         R/W          R         * Defines the PIO mode for 
-																		1.5A_IND pin 
-																	  * This is applicable only for
-																		Sink operation. 
-	u8SnkPio_3A_IND                 1         R/W          R         * Defines the UPD350 PIO 
-																		number used for 3A_IND pin
-																	  * This is applicable only for 
-																	    Sink operation. 
-	u8Mode_3A_IND                   1         R/W          R         * Defines the PIO mode for 
-																		3A_IND pin 
-																	  * This is applicable only for 
-																		Sink operation. 
-	u8PIO_SNK_PD_NEG_CMPLT          1         R/W          R         * Defines the UPD350 PIO number
-																		for SNK_PD_NEG_CMPLT pin 
-																	  * This is applicable only for 
-																	    Sink operation. 
-	u8Mode_SNK_PD_NEG_CMPLT         1         R/W          R         * Defines the PIO mode for 
-																		SNK_PD_NEG_CMPLT pin 
-																	  * This is applicable only for
-																		Sink operation. 
-	u8PIO_SNK_CAP_MISMATCH          1         R/W          R         * Defines the UPD350 PIO number
-																	    for SNK_CAP_MISMATCH
-																	  * This is applicable only for
-																		Sink operation. 
-	u8Mode_SNK_CAP_MISMATCH         1         R/W          R         * Defines the PIO mode for 
-																		SNK_CAP_MISMATCH pin
-																	  * This is applicable only for 
-																		Sink operation. 
-	u16DAC_I_MaxOutVoltInmV        1                                * Defines the maximum voltage 
-																		on DAC_I with a maximum of 
-																		2.5V in terms of mV 
-																	  * This is applicable only for
-																		Sink operation. 
-	u16DAC_I_MinOutVoltInmV        1								 * Defines the minimum voltage 
-																		on DAC_I with a minimum of 
-																		0V in terms of mV 
-																	  * This is applicable only for
-																		Sink operation. 
-	u16DAC_I_CurrentInd_MaxInA       1								 * Defines which current in
-																		terms of mA corresponding 
-																		to maximum output voltage 
-																	  * It can take either 3A or 5A 
-																	    value. 
-																	  * If it is 5A and maximum 
-																		output voltage is 2.5V and if
-                                                                        direction mentioned in 
-                                                                        u8DAC_I_Direction is High 
-                                                                        Amperage - Max Voltage, then 
-																		1. 0.5A > DAC_I = 0.25V 
-																		2. 1.5A > DAC_I = 0.75V
-																		3. 2.0A > DAC_I = 1V
-																		4. 3.0A > DAC_I = 1.5V 
-																		5. 4.0A > DAC_I = 2.0V
-																		6. 5.0A > DAC_I = 2.5V
-																	  * If it is 3A and maximum 
-																		output voltage is 2.5V, then
-																		1. 0.5A > DAC_I = 0.42V 
-																		2. 1.5A > DAC_I = 1.25V
-																		3. 2.0A > DAC_I = 1.67V
-																		4. 3.0A > DAC_I = 2.5V
-																		5. 4.0A > DAC_I = 2.5V
-																		6. 5.0A > DAC_I = 2.5V
-																	  * This is applicable only for 
-																		Sink operation. 
 	u8DAC_I_Direction               1              	                 * Specifies the direction of 
 																	     DAC_I to allow user invert 
 																		 direction of DAC_I if 
@@ -1068,17 +1134,18 @@ typedef enum
    																		      Max Voltage 
 																		 2. 1- High Amperage - 
 																			  Min Voltage 
-																	   * This is applicable only 
-																		 for Sink operation. 	
+																	  * This is applicable only 
+																		 for Sink operation. 
+	u8aReserved1[2]					2								 Reserved					 
+	u8aReserved2[2]					2								 Reserved					 
+	u8aReserved3[3]					3								 Reserved					 		
     </table>
     
     
     
-    <b>Bit mapped elements:</b>
+    <b>2. Members that are Bit-Mapped bytes:</b>
     
-    Following elements of the structure are bit mapped.
-    
-    <b>u32CfgData</b>:
+    <b>a. u32CfgData</b>:
     
     u32CfgData variable holds the Port Configuration Data. It's size is 4 bytes.
     <table>
@@ -1107,7 +1174,7 @@ typedef enum
     32:10   RW           R         Reserved
     </table>
 	
-	<b>u32PortConnectStatus</b>: 
+	<b>b. u32PortConnectStatus</b>: 
 	u32PortConnectStatus variable holds the connection status of the port. It's size is 4 bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
@@ -1188,7 +1255,7 @@ typedef enum
 	31:17	R			 R         Reserved 				
 	</table>
 
-	<b>u16PortIOStatus</b>: 
+	<b>c. u16PortIOStatus</b>: 
 	u16PortIOStatus variable holds the IO status of the port. It's size is 2 bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
@@ -1230,7 +1297,7 @@ typedef enum
     15:11   R            R         Reserved 
 	</table>
 	
-	<b>u16PortStatusChange</b>: 
+	<b>d. u16PortStatusChange</b>: 
 	u16PortStatusChange variable defines the port connection status change bits. It's size is 2 
 	bytes. 
 	<table> 
@@ -1305,7 +1372,7 @@ typedef enum
 	15:12   R            R 		   Reserved 
 	</table> 	
 	
-	<b>u16PortIntrMask</b>: 
+	<b>e. u16PortIntrMask</b>: 
 	u16PortIntrMask variable defines the port interrupt mask bits. It's size is 2 bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
@@ -1346,7 +1413,8 @@ typedef enum
                                     * '1' Mask this event from generating interrupt pin toggle.	
     11      RC           RC        VCONN Fault Mask 
                                     * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
+                                    * '1' Mask this event from generating interrupt pin toggle.
+    15:12  						   Reserved 									
 	</table> 								
 	
   Remarks:
@@ -1410,14 +1478,6 @@ typedef struct _PortCfgStatus
     #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
-    UINT8 u8SnkPio_1_5A_IND; 
-    UINT8 u8Mode_1_5A_IND;  
-    UINT8 u8SnkPio_3A_IND;  
-    UINT8 u8Mode_3A_IND;    
-    UINT8 u8PIO_SNK_PD_NEG_CMPLT; 
-    UINT8 u8Mode_SNK_PD_NEG_CMPLT; 
-    UINT8 u8PIO_SNK_CAP_MISMATCH; 
-    UINT8 u8Mode_SNK_CAP_MISMATCH; 
     UINT8 u8DAC_I_Direction; 
     UINT8 u8aReserved3[3];
     #endif
@@ -1427,12 +1487,13 @@ typedef struct _PortCfgStatus
  /**********************************************************************
    Summary:
      This structure contains port specific Power Balancing Configuration parameters.
+	 sPBPerPortData is referred from _GlobalCfgStatusData.
    Description:
-     This structure contains the following Power Balancing configuration
-     parameters. This structure consists of value based and bit mapped elements.
+	 This structure contains global configuration and status parameters that are either Integer 
+	 Datatypes, Bit-Mapped bytes or another structure. This structure is used only when either of 
+	 the macros INCLUDE_POWER_BALANCING or INCLUDE_POWER_THROTTLING is set to '1'.
 	
-    <b>Value based elements:</b> 
-	Following elements of the structure are value based.
+    <b>1. Members that are Integer data types:</b> 
 	
 	<table> 	
     Name                            Size in   R/W Config   R/W Run   \Description
@@ -1478,11 +1539,10 @@ typedef struct _PortCfgStatus
 																	  * Note : Values above 5A 
 																	    (0x01F5 - 0x0FFF) are not 
 																		supported	 
+	u8aReserved4[3]					3						          Reserved 											
 	</table>	
 
-    <b>Bit mapped elements:</b>
-    
-    Following elements of the structure are bit mapped.
+    <b>2. Members that are Bit-Mapped bytes:</b>
     
     <b>u8PBEnablePriority</b>:
     
@@ -1518,9 +1578,11 @@ typedef struct _PBPortCfgStatus
  /**********************************************************************
    Summary:
      This structure contains port specific PPS configuration parameters.
+	 sPPSPerPortData is referred from _GlobalCfgStatusData.
    Description:
-     This structure contains the following PPS configuration
-     parameters.
+     This structure contains the following PPS configuration parameters. 
+	 This structure is used only when INCLUDE_PD_SOURCE_PPS is set to '1'.
+	 
 	<table> 	
     Name                            Size in   R/W Config   R/W Run   \Description
                                      Bytes     time         time      
@@ -1528,8 +1590,8 @@ typedef struct _PBPortCfgStatus
     u8PPSEnable                     1         R/W          R         PPS Enable/Disable.
 																	  * '0' = Disable 
 																	  * '1' = Enable 
-    u8PPSEnable                     1         R/W          R         Defines the PPS APDOs. 
-	
+    u32aPPSApdo[3]                  12        R/W          R         Defines the PPS APDOs. 
+	u8aReserved5[3]				    3                                Reserved 
 	</table> 																 												  																 																  
    Remarks:
      None                                                               
@@ -1546,14 +1608,14 @@ typedef struct _PPSPortCfgStatus
 #endif 
   /**********************************************************************
    Summary:
-     This structure contains the system level and port specific Configuration and Status parameters 
-	 of PSF including Type C, PD, PB, PT and PPS parameters. 
+	This structure contains the system level, Port specific configurations and Status
+	parameters of PSF for Type C, PD, PB, PT and PPS parameters.
+	gasCfgStatusData is the defined variable of this structure.
    Description:
-     This structure contains the following global configuration and 
-	 status parameters. This structure consists of value based and bit mapped elements.
+     This structure contains global configuration and status parameters that are either Integer 
+	 Datatypes, Bit-Mapped bytes or another structure.
 	
-    <b>Value based elements:</b> 
-	Following elements of the structure are value based.
+    <b>1. Members that are Integer data types:</b> 
 	
 	<table> 	
     Name                            Size in   R/W Config   R/W Run   \Description
@@ -1616,7 +1678,12 @@ typedef struct _PPSPortCfgStatus
 																		1. 0x00 = Bank A 
 																		2. 0x01 = Bank B
 																	    3. 0x10 = Bank C 
-																		4. 0x11 = Shutdown mode 
+																		4. 0x11 = Shutdown mode
+																	  *	This variable is used only 
+																	    when either of
+																        INCLUDE_POWER_BALANCING or
+																	    INCLUDE_POWER_THROTTLING is 
+																		set to '1'. 			
 	u16SystemPowerBankA 	        2         R/W          R         * Defines the Total System 
 																		Power of Bank A. Each unit 
 																		is 0.25W 
@@ -1625,7 +1692,12 @@ typedef struct _PPSPortCfgStatus
 																		2. 0x01E0 = 120W
 																	    3. 0x0320 = 200W 
 																	  * A setting of 0x0000 and 
-																	    0x0321-0xFFFF is invalid. 																		
+																	    0x0321-0xFFFF is invalid. 													 
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'. 
 	u16MinPowerBankA    	        2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank A. 
 																		Each unit is 0.25W 
@@ -1635,6 +1707,12 @@ typedef struct _PPSPortCfgStatus
 																	    3. 0x0190 = 100W 
 																	  * A setting of 0x0000 and 
 																	    0x0191-0xFFFF is invalid.
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.	
+																		
 	u16SystemPowerBankB 	        2         R/W          R         * Defines the Total System 
 																		Power of Bank B. Each unit 
 																		is 0.25W 
@@ -1644,6 +1722,12 @@ typedef struct _PPSPortCfgStatus
 																	    3. 0x0320 = 200W 
 																	  * A setting of 0x0000 and 
 																	    0x0321-0xFFFF is invalid. 
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.																
+																		
 	u16MinPowerBankB    	        2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank B. 
 																		Each unit is 0.25W 
@@ -1653,6 +1737,12 @@ typedef struct _PPSPortCfgStatus
 																	    3. 0x0190 = 100W 
 																	  * A setting of 0x0000 and 
 																	    0x0191-0xFFFF is invalid.
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.
+																		
 	u16SystemPowerBankC 	        2         R/W          R         * Defines the Total System 
 																		Power of Bank C. Each unit 
 																		is 0.25W 
@@ -1661,7 +1751,13 @@ typedef struct _PPSPortCfgStatus
 																		2. 0x01E0 = 120W
 																	    3. 0x0320 = 200W 
 																	  * A setting of 0x0000 and 
-																	    0x0321-0xFFFF is invalid. 
+																	    0x0321-0xFFFF is invalid.
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.
+																		
 	u16MinPowerBankC    	        2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank C. 
 																		Each unit is 0.25W 
@@ -1670,7 +1766,13 @@ typedef struct _PPSPortCfgStatus
 																		2. 0x003C = 15W
 																	    3. 0x0190 = 100W 
 																	  * A setting of 0x0000 and 
-																	    0x0191-0xFFFF is invalid.	
+																	    0x0191-0xFFFF is invalid.
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.
+																		
 	u16SharedPowerCapacity    	     2         R/W          R        * Defines the currently 
 																		available shared power 
 																		capacity from which power 
@@ -1686,13 +1788,22 @@ typedef struct _PPSPortCfgStatus
 																		1. 0x0001 = 0.25W 
 																		2. 0x003C = 15W
 																	    3. 0x0190 = 100W 
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.
+    u8aReserved6[2]				     2 								 Reserved 	
+    u8aReserved7[3]				     3								 Reserved 
+    u8aReserved8[3]				     3 								 Reserved 
+    u16aReserved1				     2 								 Reserved 	
+																	
+																		
 	</table> 															  										
 
-    <b>Bit mapped elements:</b>
-    
-    Following elements of the structure are bit mapped.
-    
-    <b>u8PBEnableSelect</b>:
+    <b>2. Members that are Bit-Mapped bytes:</b>
+
+    <b>a. u8PBEnableSelect</b>:
     
     u8PBEnableSelect defines PB Enable/Disable for the system and also the Power Balancing algorithm. 
 	It's size is 1 byte. 
@@ -1706,8 +1817,23 @@ typedef struct _PPSPortCfgStatus
 									* 0010-1111 = Reserved
 	4       R/W          R         PD Power balancing Enable/Disable for the system								
 									* 0 = PD Balancing is disabled 
-									* 1 = PD Balancing is enabled 									
+									* 1 = PD Balancing is enabled
+    7:5                            Reserved  									
 	</table>								
+	
+	<b>3. Members that are another structures:</b>
+	<table>
+    Structure        \Description     
+    ------           --------------------
+	sPerPortData     Includes Type C and PD parameters of a port, say default Source PDOs, default 
+					  Sink PDOs, currently negotiated voltage and current values, under voltage and 
+					  over voltage threshold values, etc., Tag for this structure is _PortCfgStatus.
+	sPPSPerPortData  Includes PPS parameters of a port, say PPS Enable/Disable option and list of 
+						Augmented PDOs supported. Tag for this structure is _PPSPortCfgStatus. 
+	sPBPerPortData   Includes Power Balancing parameters of a port, say maximum power and maximum 
+						current. Tag for this structure is _PBPortCfgStatus.						
+ 									
+	</table>
 	
    Remarks:
      None                                                               
@@ -1756,7 +1882,24 @@ typedef struct _GlobalCfgStatusData
 #endif
 } GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
 
-extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData; 
+ /**********************************************************************
+   Summary:
+     This is an instance of _GlobalCfgStatusData.
+   Description:
+     gasCfgStatusData is the global structure which defines the overall system level configuration 
+	 and status parameters of PSF. This structure contains the system level and port specific 
+	 Configuration and Status parameters of PSF including Type C, PD, PB, PT and PPS parameters.
+	 
+	 It is mandatory that the user has to initialize the configuration parameters for the PSF 
+	 stack to funtion properly. This can be done through MCHP_PSF_HOOK_BOOT_TIME_CONFIG which 
+	 initializes the parameters defined in gasCfgStatusData during compile time. For accessing 
+	 the configuration registers and reading the status registers at run time, an I2C slave
+	 interface shall be used by the user application. 																 												  																 																  
+   Remarks:
+     None                                                               
+   **********************************************************************/
+   
+extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
 
 #include "PSFSink_App.h"
 #include "PSFSink_BootCfg.h"

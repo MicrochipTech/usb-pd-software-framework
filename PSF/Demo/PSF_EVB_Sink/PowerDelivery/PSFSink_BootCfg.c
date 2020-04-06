@@ -73,10 +73,10 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
 #endif
     /*Assigning maximum operating current and minimum operating current to 
      * 3000mA and 1000mA respectively*/
-    gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = DPM_3000mA;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = CFG_PORT_SINK_MAX_OPERATING_CURRENT_InmA;
     
 #if (TRUE == INCLUDE_PD_SINK)
-    gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA = DPM_1000mA;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA = CFG_PORT_SINK_MIN_OPERATING_CURRENT_InmA;
 #endif    
     gasCfgStatusData.sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
     gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;
