@@ -407,7 +407,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
         }
     
 		#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-			/* Disable EN_VBUS gasPortConfigurationData.sPortCSRData[u8PortNum].u8Pio_VBUS_EN*/
+			/* Disable EN_VBUS gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN*/
 			UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
 									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
 			u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;

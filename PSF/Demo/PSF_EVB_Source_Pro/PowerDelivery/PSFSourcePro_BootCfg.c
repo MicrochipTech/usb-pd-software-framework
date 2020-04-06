@@ -66,11 +66,6 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt = CFG_PORT_SOURCE_NUM_OF_PDOS;
 
-    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
-    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;  
-    
     gasCfgStatusData.sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
     gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;
     gasCfgStatusData.sPerPortData[u8PortNum].u8OVThresholdPercentage = CFG_OVER_VOLTAGE_FACTOR;
@@ -139,7 +134,7 @@ void CFG_PBPerPortParams (UINT8 u8PortNum)
 // Section: Interface Functions                                               */
 /* ************************************************************************** */
 /* ************************************************************************** */
-void PSF_LoadConfig()
+void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA gasCfgStatusData)
 {
     UINT8 u8PortNum = 0;
     UINT16 u16StackVersion = SYSTEM_FW_REV;

@@ -321,6 +321,28 @@ Example :
 // Section: DC-DC Buck boost controller configurations
 // *****************************************************************************
 // *****************************************************************************
+
+/**************************************************************************
+Summary:
+    Macro to indicate GPIO based DC-DC Controller. 
+Description:
+	PWRCTRL_DEFAULT_PSF_GPIO_CONFIG defines the default GPIO based DC-DC Controller used by PSF.  
+Remarks:
+	None.                                 
+  **************************************************************************/
+#define PWRCTRL_DEFAULT_PSF_GPIO_CONFIG     1
+
+/**************************************************************************
+Summary:
+    Macro to indicate I2C based DC-DC Controller. 
+Description:
+	I2C_DC_DC_CONTROL_CONFIG defines the default GPIO based DC-DC Controller used by PSF.  
+Remarks:
+	None.                                 
+  **************************************************************************/
+#define I2C_DC_DC_CONTROL_CONFIG            2
+
+
 /**************************************************************************
 Summary:
     DC DC Buck Boost Controller default configuration option.
@@ -339,8 +361,6 @@ Example:
 	#define CONFIG_DCDC_CTRL    (If undefined, Default DC DC control provided by stack is not used)
 	</code>                                  
   **************************************************************************/
-#define PWRCTRL_DEFAULT_PSF_GPIO_CONFIG     1
-#define I2C_DC_DC_CONTROL_CONFIG            2
 #define CONFIG_DCDC_CTRL        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 
 /**************************************************************************
@@ -558,14 +578,13 @@ typedef enum
     * ********************************Globals******************************************* *
     * *********************************************************************************************** *
   Summary:
-    This structure contains port specific Type C and PD configuration and status parameters. 
+    This structure contains port specific Type C and PD configuration and status parameters.
+	sPerPortData is referred from _GlobalCfgStatusData.	
   Description:
-    This structure contains the following per port configuration and status
-    \parameters. This structure consists of value based and bit mapped elements. 
+	This structure contains global configuration and status parameters that are either Integer 
+	Datatypes, Bit-Mapped bytes or another structure.
     
-	<b>Value based elements:</b>
-    
-    Following elements of the structure are value based.
+	<b>1. Members that are Integer data types:</b>
 	
     <table>
     Name                            Size in   R/W Config   R/W Run   \Description
@@ -576,19 +595,20 @@ typedef enum
 																		in mV and Current is 
 																		specified in mA.
                                                                       * This array should be used 
-																	    only for Source Operation. 
+																	    for Source Operation. 
     u32aSinkPDO[7]                  28        R/W          R         * Upto 7 fixed Sink PDOs where 
 																		Voltage is specified in mV
                                                                         and Current is specified in 
 																		mA.
                                                                       * This array should be used 
-																	    only when the port is 
-																		configured as Sink.
+																	    for Sink operation.
     u32aNewPDO[7]                   28        R/W          R/W       * Upto 7 fixed New PDOs where 
 																		Voltage is specified in mV 
 																		and Current in mA.
                                                                       * This array is common for 
-																	     Source and Sink.
+																	    Source and Sink. It is 
+																		valid only when 
+																		u8NewPDOSelect is set to 1.
     u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
 																		advertised to Port Partner. 
                                                                       * During run time, this array 
@@ -629,10 +649,10 @@ typedef enum
                                                                         2. 0x012C = 3A
                                                                         3. 0x01F4 = 5A
                                                                         4. 0x03FF = 10.24A
-    u16MaximumOperatingCurInmA      2                                * Maximum allowable current or 
+    u16MaximumOperatingCurInmA      2         R/W          R         * Maximum allowable current or 
 																		system's maximum operating
                                                                         current in terms of mA
-    u16aMinPDOPreferredCurInmA[7]   14                               * Preferred minimum current 
+    u16aMinPDOPreferredCurInmA[7]   14        R/W          R         * Preferred minimum current 
 																		range for the PDO by which 
 																		the Sink may select without 
 																		setting Capability Mismatch 
@@ -641,7 +661,7 @@ typedef enum
                                                                       * This array is applicable 
 																	    only for Sink Operation. 
                                                                         
-    u16MinimumOperatingCurInmA      2                                * Minimum operating current by 
+    u16MinimumOperatingCurInmA      2         R/W          R         * Minimum operating current by 
 																	    the System.
                                                                       * This variable is applicable 
 																	    only for Sink Operation. 
@@ -684,7 +704,9 @@ typedef enum
                                                                         configured as Sink.
     u8NewPDOCnt                     1         R/W          R/W       * Number of New PDOs Supported.
                                                                       * This variable is common for 
-																	    both Source and Sink.
+																	    both Source and Sink. It is
+																		valid only when 
+																		u8NewPDOSelect is set to 1.
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
     u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
@@ -954,7 +976,8 @@ typedef enum
 																		eUPD_OUTPUT_PIN_MODES_TYPE.
 	u8aVSELTruthTable[8]            8         R/W          R         * Index 0 defines the assertion 
 																		and deassertion to be driven
-                                                                        on VSEL[2:0] pins(defined in u8aPio_VSEL[3]) by the PSF 
+                                                                        on VSEL[2:0] pins(defined in 
+																		u8aPio_VSEL[3]) by the PSF 
 																		as per u8aMode_VSEL[3] to 
 																		have an output voltage of 
 																		VSafe0V out of DC/DC 
@@ -1059,7 +1082,7 @@ typedef enum
 																		6. 5.0A > DAC_I = 2.5V
 																	  * This is applicable only for 
 																		Sink operation. 
-	u8DAC_I_Direction               1              	                 * Specifies the direction of 
+	u8DAC_I_Direction               1         R/W     	   R         * Specifies the direction of 
 																	     DAC_I to allow user invert 
 																		 direction of DAC_I if 
 																		 required 
@@ -1067,17 +1090,18 @@ typedef enum
    																		      Max Voltage 
 																		 2. 1- High Amperage - 
 																			  Min Voltage 
-																	   * This is applicable only 
-																		 for Sink operation. 	
+																	  * This is applicable only 
+																		 for Sink operation. 
+	u8aReserved1[2]					2								 Reserved					 
+	u8aReserved2[2]					2								 Reserved					 
+	u8aReserved3[2]					2								 Reserved					 		
     </table>
     
     
     
-    <b>Bit mapped elements:</b>
+    <b>2. Members that are Bit-Mapped bytes:</b>
     
-    Following elements of the structure are bit mapped.
-    
-    <b>u32CfgData</b>:
+    <b>a. u32CfgData</b>:
     
     u32CfgData variable holds the Port Configuration Data. It's size is 4 bytes.
     <table>
@@ -1106,7 +1130,7 @@ typedef enum
     32:10   RW           R         Reserved
     </table>
 	
-	<b>u32PortConnectStatus</b>: 
+	<b>b. u32PortConnectStatus</b>: 
 	u32PortConnectStatus variable holds the connection status of the port. It's size is 4 bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
@@ -1187,7 +1211,7 @@ typedef enum
 	31:17	R			 R         Reserved 				
 	</table>
 
-	<b>u16PortIOStatus</b>: 
+	<b>c. u16PortIOStatus</b>: 
 	u16PortIOStatus variable holds the IO status of the port. It's size is 2 bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
@@ -1226,10 +1250,10 @@ typedef enum
     10      R            R         Capability Mismatch  
                                     * '0' Asserted 
                                     * '1' De-asserted
-    15:11   R            R         Reserved 
+    15:11                          Reserved 
 	</table>
 	
-	<b>u16PortStatusChange</b>: 
+	<b>d. u16PortStatusChange</b>: 
 	u16PortStatusChange variable defines the port connection status change bits. It's size is 2 
 	bytes. 
 	<table> 
@@ -1301,10 +1325,10 @@ typedef enum
       									been detected
                                     * '1' Since the last read of this register, 1 or more VCONN 
 										faults have been detected										  
-	15:12   R            R 		   Reserved 
+	15:12                  		   Reserved 
 	</table> 	
 	
-	<b>u16PortIntrMask</b>: 
+	<b>e. u16PortIntrMask</b>: 
 	u16PortIntrMask variable defines the port interrupt mask bits. It's size is 2 bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
@@ -1345,7 +1369,8 @@ typedef enum
                                     * '1' Mask this event from generating interrupt pin toggle.	
     11      RC           RC        VCONN Fault Mask 
                                     * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
+                                    * '1' Mask this event from generating interrupt pin toggle.
+    15:12  						   Reserved 									
 	</table> 								
 	
   Remarks:
@@ -1426,12 +1451,13 @@ typedef struct _PortCfgStatus
  /**********************************************************************
    Summary:
      This structure contains port specific Power Balancing Configuration parameters.
+	 sPBPerPortData is referred from _GlobalCfgStatusData.
    Description:
-     This structure contains the following Power Balancing configuration
-     parameters. This structure consists of value based and bit mapped elements.
+	 This structure contains global configuration and status parameters that are either Integer 
+	 Datatypes, Bit-Mapped bytes or another structure. This structure is used only when either of 
+	 the macros INCLUDE_POWER_BALANCING or INCLUDE_POWER_THROTTLING is set to '1'.
 	
-    <b>Value based elements:</b> 
-	Following elements of the structure are value based.
+    <b>1. Members that are Integer data types:</b> 
 	
 	<table> 	
     Name                            Size in   R/W Config   R/W Run   \Description
@@ -1477,11 +1503,10 @@ typedef struct _PortCfgStatus
 																	  * Note : Values above 5A 
 																	    (0x01F5 - 0x0FFF) are not 
 																		supported	 
+	u8aReserved4[3]					3						          Reserved 											
 	</table>	
 
-    <b>Bit mapped elements:</b>
-    
-    Following elements of the structure are bit mapped.
+    <b>2. Members that are Bit-Mapped bytes:</b>
     
     <b>u8PBEnablePriority</b>:
     
@@ -1496,7 +1521,7 @@ typedef struct _PortCfgStatus
                                     * '1' Enable
 	3:1     R/W          R/W       Selects the port Priority 								
 									* 000b is the highest priority
-    7:4     R/W          R/W       Reserved 									
+    7:4     			           Reserved 									
    Remarks:
      None                                                               
    **********************************************************************/
@@ -1517,9 +1542,11 @@ typedef struct _PBPortCfgStatus
  /**********************************************************************
    Summary:
      This structure contains port specific PPS configuration parameters.
+	 sPPSPerPortData is referred from _GlobalCfgStatusData.
    Description:
-     This structure contains the following PPS configuration
-     parameters.
+     This structure contains the following PPS configuration parameters. 
+	 This structure is used only when INCLUDE_PD_SOURCE_PPS is set to '1'.
+	 
 	<table> 	
     Name                            Size in   R/W Config   R/W Run   \Description
                                      Bytes     time         time      
@@ -1527,8 +1554,8 @@ typedef struct _PBPortCfgStatus
     u8PPSEnable                     1         R/W          R         PPS Enable/Disable.
 																	  * '0' = Disable 
 																	  * '1' = Enable 
-    u8PPSEnable                     1         R/W          R         Defines the PPS APDOs. 
-	
+    u32aPPSApdo[3]                  12        R/W          R         Defines the PPS APDOs. 
+	u8aReserved5[3]				    3                                Reserved 
 	</table> 																 												  																 																  
    Remarks:
      None                                                               
@@ -1545,14 +1572,14 @@ typedef struct _PPSPortCfgStatus
 #endif 
   /**********************************************************************
    Summary:
-     This structure contains the system level and port specific Configuration and Status parameters 
-	 of PSF including Type C, PD, PB, PT and PPS parameters. 
+	This structure contains the system level, Port specific configurations and Status
+	parameters of PSF for Type C, PD, PB, PT and PPS parameters.
+	gasCfgStatusData is the defined variable of this structure.
    Description:
-     This structure contains the following global configuration and 
-	 status parameters. This structure consists of value based and bit mapped elements.
+     This structure contains global configuration and status parameters that are either Integer 
+	 Datatypes, Bit-Mapped bytes or another structure.
 	
-    <b>Value based elements:</b> 
-	Following elements of the structure are value based.
+    <b>1. Members that are Integer data types:</b> 
 	
 	<table> 	
     Name                            Size in   R/W Config   R/W Run   \Description
@@ -1615,7 +1642,12 @@ typedef struct _PPSPortCfgStatus
 																		1. 0x00 = Bank A 
 																		2. 0x01 = Bank B
 																	    3. 0x10 = Bank C 
-																		4. 0x11 = Shutdown mode 
+																		4. 0x11 = Shutdown mode
+																	  *	This variable is used only 
+																	    when either of
+																        INCLUDE_POWER_BALANCING or
+																	    INCLUDE_POWER_THROTTLING is 
+																		set to '1'. 			
 	u16SystemPowerBankA 	        2         R/W          R         * Defines the Total System 
 																		Power of Bank A. Each unit 
 																		is 0.25W 
@@ -1624,7 +1656,12 @@ typedef struct _PPSPortCfgStatus
 																		2. 0x01E0 = 120W
 																	    3. 0x0320 = 200W 
 																	  * A setting of 0x0000 and 
-																	    0x0321-0xFFFF is invalid. 																		
+																	    0x0321-0xFFFF is invalid. 													 
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'. 
 	u16MinPowerBankA    	        2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank A. 
 																		Each unit is 0.25W 
@@ -1634,6 +1671,12 @@ typedef struct _PPSPortCfgStatus
 																	    3. 0x0190 = 100W 
 																	  * A setting of 0x0000 and 
 																	    0x0191-0xFFFF is invalid.
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.	
+																		
 	u16SystemPowerBankB 	        2         R/W          R         * Defines the Total System 
 																		Power of Bank B. Each unit 
 																		is 0.25W 
@@ -1643,6 +1686,12 @@ typedef struct _PPSPortCfgStatus
 																	    3. 0x0320 = 200W 
 																	  * A setting of 0x0000 and 
 																	    0x0321-0xFFFF is invalid. 
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.																
+																		
 	u16MinPowerBankB    	        2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank B. 
 																		Each unit is 0.25W 
@@ -1652,6 +1701,12 @@ typedef struct _PPSPortCfgStatus
 																	    3. 0x0190 = 100W 
 																	  * A setting of 0x0000 and 
 																	    0x0191-0xFFFF is invalid.
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.
+																		
 	u16SystemPowerBankC 	        2         R/W          R         * Defines the Total System 
 																		Power of Bank C. Each unit 
 																		is 0.25W 
@@ -1660,7 +1715,13 @@ typedef struct _PPSPortCfgStatus
 																		2. 0x01E0 = 120W
 																	    3. 0x0320 = 200W 
 																	  * A setting of 0x0000 and 
-																	    0x0321-0xFFFF is invalid. 
+																	    0x0321-0xFFFF is invalid.
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.
+																		
 	u16MinPowerBankC    	        2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank C. 
 																		Each unit is 0.25W 
@@ -1669,7 +1730,13 @@ typedef struct _PPSPortCfgStatus
 																		2. 0x003C = 15W
 																	    3. 0x0190 = 100W 
 																	  * A setting of 0x0000 and 
-																	    0x0191-0xFFFF is invalid.	
+																	    0x0191-0xFFFF is invalid.
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.
+																		
 	u16SharedPowerCapacity    	     2         R/W          R        * Defines the currently 
 																		available shared power 
 																		capacity from which power 
@@ -1685,13 +1752,22 @@ typedef struct _PPSPortCfgStatus
 																		1. 0x0001 = 0.25W 
 																		2. 0x003C = 15W
 																	    3. 0x0190 = 100W 
+																	  *	This variable is used only 
+																		when either of 
+																		INCLUDE_POWER_BALANCING or 
+																		INCLUDE_POWER_THROTTLING is 
+																		set to '1'.
+    u8aReserved6[2]				     2 								 Reserved 	
+    u8aReserved7[3]				     3								 Reserved 
+    u8aReserved8[3]				     3 								 Reserved 
+    u16aReserved1				     2 								 Reserved 	
+																	
+																		
 	</table> 															  										
 
-    <b>Bit mapped elements:</b>
-    
-    Following elements of the structure are bit mapped.
-    
-    <b>u8PBEnableSelect</b>:
+    <b>2. Members that are Bit-Mapped bytes:</b>
+
+    <b>a. u8PBEnableSelect</b>:
     
     u8PBEnableSelect defines PB Enable/Disable for the system and also the Power Balancing algorithm. 
 	It's size is 1 byte. 
@@ -1705,8 +1781,23 @@ typedef struct _PPSPortCfgStatus
 									* 0010-1111 = Reserved
 	4       R/W          R         PD Power balancing Enable/Disable for the system								
 									* 0 = PD Balancing is disabled 
-									* 1 = PD Balancing is enabled 									
+									* 1 = PD Balancing is enabled
+    7:5                            Reserved  									
 	</table>								
+	
+	<b>3. Members that are another structures:</b>
+	<table>
+    Structure        \Description     
+    ------           --------------------
+	sPerPortData     Includes Type C and PD parameters of a port, say default Source PDOs, default 
+					  Sink PDOs, currently negotiated voltage and current values, under voltage and 
+					  over voltage threshold values, etc., Tag for this structure is _PortCfgStatus.
+	sPPSPerPortData  Includes PPS parameters of a port, say PPS Enable/Disable option and list of 
+						Augmented PDOs supported. Tag for this structure is _PPSPortCfgStatus. 
+	sPBPerPortData   Includes Power Balancing parameters of a port, say maximum power and maximum 
+						current. Tag for this structure is _PBPortCfgStatus.						
+ 									
+	</table>
 	
    Remarks:
      None                                                               
@@ -1755,6 +1846,23 @@ typedef struct _GlobalCfgStatusData
 #endif
 } GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
 
+ /**********************************************************************
+   Summary:
+     This is an instance of _GlobalCfgStatusData.
+   Description:
+     gasCfgStatusData is the global structure which defines the overall system level configuration 
+	 and status parameters of PSF. This structure contains the system level and port specific 
+	 Configuration and Status parameters of PSF including Type C, PD, PB, PT and PPS parameters.
+	 
+	 It is mandatory that the user has to initialize the configuration parameters for the PSF 
+	 stack to funtion properly. This can be done through MCHP_PSF_HOOK_BOOT_TIME_CONFIG which 
+	 initializes the parameters defined in gasCfgStatusData during compile time. For accessing 
+	 the configuration registers and reading the status registers at run time, an I2C slave
+	 interface shall be used by the user application. 																 												  																 																  
+   Remarks:
+     None                                                               
+   **********************************************************************/
+   
 extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
 
 #include "PSFSourceLite_App.h"
