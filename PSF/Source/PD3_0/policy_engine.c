@@ -626,8 +626,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     {
                         /*kill the timer CONFIG_PE_SENDER_RESPONSE_TIMEOUTID*/
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Accept Msg Received\r\n");
-                        PE_KillPolicyEngineTimer (u8PortNum);
-
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                                    DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS;
+                        
+						PE_KillPolicyEngineTimer (u8PortNum);
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                     }
@@ -686,6 +688,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                             }
                             else if ((PRL_GET_MESSAGE_TYPE(u32Header)) == PE_CTRL_REJECT)
                             {
+                                /*Set the status that last request was rejected*/
+                                gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                                            DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS;
                                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_READY;
                                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
                             }
@@ -710,6 +715,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     if (ePE_SNK_TRANSITION_SINK_WAIT_FOR_PSRDY_SS == \
                         gasPolicy_Engine[u8PortNum].ePESubState)
                     {
+                        /*Set the port connect status as PS_RDY received for last request*/
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                                                DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS;
                         /*Kill the timer CONFIG_PE_PSTRANSITION_TIMEOUTID*/
                         PE_KillPolicyEngineTimer (u8PortNum);
 

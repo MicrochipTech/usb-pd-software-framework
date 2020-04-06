@@ -77,31 +77,6 @@ void SAMD20_SetMCUIdle()
     TC0_TimerStart();
 }
 
-void SAMD20_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent)
-{
-    if ((UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH == u8PDEvent)
-    {
-        UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
-        UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-        UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-        UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_CLEAR);      
-    }
-    else if ((UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH == u8PDEvent)
-    {
-        UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
-        UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-        UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-        UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SET);           
-    }
-    else if ((UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT == u8PDEvent)
-    {
-        UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2, UPD_DISABLE_GPIO);
-    }
-    else
-    {
-        /* Do Nothing for other PD Events */
-    } 
-}
 /* ************************************************************************** */
 /* ************************************************************************** */
 // Section: Interface Functions                                               */
@@ -116,22 +91,52 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
     {
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
-            SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
+            UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2, UPD_DISABLE_GPIO);
+             gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
+                    ~(DPM_PORT_IO_CAP_MISMATCH_STATUS | DPM_PORT_IO_PS_RDY_RECVD_STATUS);
+            SNK_PD_NEG_CMPLT_Clear();
+            SNK_CAP_MISMATCH_Clear();
             break;
         }
-        
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
-            SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
+            UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
+            UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
+            UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+            UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_CLEAR);
+            break;
+        }
+        case eMCHP_PSF_TYPEC_CC2_ATTACH:
+        {
+            UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
+            UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
+            UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+            UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SET);
+            break;
+        }
+        case eMCHP_PSF_CAPS_MISMATCH:
+        {
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
+            SNK_CAP_MISMATCH_Set();
+            break;
+        }
+        case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
+        {
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
+                    ~(DPM_PORT_IO_CAP_MISMATCH_STATUS | DPM_PORT_IO_PS_RDY_RECVD_STATUS);
+            SNK_PD_NEG_CMPLT_Clear();
+            SNK_CAP_MISMATCH_Clear();
             break;
         }
         
-        case eMCHP_PSF_TYPEC_CC2_ATTACH:
+        case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
         {
-            SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
-            break;
+             gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= \
+                     DPM_PORT_IO_PS_RDY_RECVD_STATUS;
+            SNK_PD_NEG_CMPLT_Set();
+            break; 
         }
-		
+        
 		case eMCHP_PSF_UPDS_IN_IDLE:
 		{
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
@@ -153,12 +158,7 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             u8RetVal = TRUE;
             break;
         }
-        
-        case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
-        {
-            break; 
-        }
-        
+               
         case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD: 
         {
             break; 
@@ -167,8 +167,7 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         case eMCHP_PSF_GET_SINK_CAPS_RCVD:
         {
             break;            
-        }
-        
+        }        
         default:
             break;
     }

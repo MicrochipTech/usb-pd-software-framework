@@ -40,7 +40,6 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Included Files
@@ -49,19 +48,15 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include "PSF_Config.h"
-#if(CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-#include "peripheral/sercom/i2cm/plib_sercom3_i2c.h"
-#endif
-#include "peripheral/nvmctrl/plib_nvmctrl.h"
-#include "peripheral/evsys/plib_evsys.h"
-#include "peripheral/sercom/spim/plib_sercom0_spi.h"
 #include "peripheral/sercom/usart/plib_sercom3_usart.h"
+#include "peripheral/nvmctrl/plib_nvmctrl.h"
+#include "peripheral/sercom/spim/plib_sercom0_spi.h"
 #include "peripheral/port/plib_port.h"
 #include "peripheral/clock/plib_clock.h"
 #include "peripheral/nvic/plib_nvic.h"
 #include "peripheral/eic/plib_eic.h"
 #include "peripheral/tc/plib_tc0.h"
+#include "peripheral/dac/plib_dac.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility

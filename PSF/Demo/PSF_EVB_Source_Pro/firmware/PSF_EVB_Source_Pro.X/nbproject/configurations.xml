@@ -77,6 +77,9 @@
           <logicalFolder name="f1" displayName="CMSIS" projectFiles="true">
             <logicalFolder name="f1" displayName="Core" projectFiles="true">
               <logicalFolder name="f1" displayName="Include" projectFiles="true">
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armcc.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang_ltm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_iccarm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_gcc.h</itemPath>
@@ -209,7 +212,6 @@
           <itemPath>../../../../Source/PB/pb_mngr.c</itemPath>
         </logicalFolder>
         <logicalFolder name="PD3_0" displayName="PD3_0" projectFiles="true">
-          <itemPath>../../../../Source/PD3_0/debug.c</itemPath>
           <itemPath>../../../../Source/PD3_0/int_globals.c</itemPath>
           <itemPath>../../../../Source/PD3_0/pd_main.c</itemPath>
           <itemPath>../../../../Source/PD3_0/pd_timer.c</itemPath>
@@ -279,13 +281,9 @@
       </makeCustomizationType>
       <AtmelIceTool>
         <property key="AutoSelectMemRanges" value="auto"/>
-        <property key="communication.activationmode" value="nohv"/>
         <property key="communication.interface" value="swd"/>
         <property key="communication.speed" value="4.000"/>
         <property key="debugoptions.useswbreakpoints" value="true"/>
-        <property key="firmware.path"
-                  value="Press to browse for a specific firmware version"/>
-        <property key="firmware.update.action" value="firmware.update.use.latest"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
@@ -330,7 +328,7 @@
         <property key="place-data-into-section" value="true"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
-        <property key="preprocessor-macros" value="nCONFIG_HOOK_DEBUG_MSG"/>
+        <property key="preprocessor-macros" value=""/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
         <property key="toplevel-reordering" value=""/>

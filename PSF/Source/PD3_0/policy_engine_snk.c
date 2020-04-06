@@ -44,7 +44,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 	UINT32 u32Transmit_TmrID_TxSt = SET_TO_ZERO;
 	UINT8 u8IsTransmit= FALSE;
 
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     UINT32 u32PDODebug = SET_TO_ZERO;
 #endif
     
@@ -77,8 +77,15 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
             /*Explicit Contract becomes invaild once this state is reached 
             from Hard Reset or Initial Power up*/
-            gasPolicy_Engine[u8PortNum].u8PEPortSts &= (~PE_EXPLICIT_CONTRACT);	  
-
+            gasPolicy_Engine[u8PortNum].u8PEPortSts &= (~PE_EXPLICIT_CONTRACT);
+            
+            /*Reset the all the sink status set*/
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                        ~(DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS |
+                            DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS |
+                            DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS |
+                            DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS);
+            
             gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_DISCOVERY;
             
             #if (FALSE != INCLUDE_PDFU)
@@ -87,7 +94,6 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 PE_FwUpdtInitialize();
             }
             #endif
-            
             break;
         }            
 
@@ -157,7 +163,10 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
         case ePE_SNK_EVALUATE_CAPABILITY:
         {            
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY: Entered the state\r\n");
-                    
+              
+            /* Notify the new source capability is received*/
+            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
+            
             /*Reset the HardResetCounter*/
             gasPolicy_Engine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	
             
@@ -302,13 +311,19 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     gasPolicy_Engine[u8PortNum].u8PEPortSts |= (PE_EXPLICIT_CONTRACT);
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
                     
-#ifdef CONFIG_HOOK_DEBUG_MSG                    
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)                    
                     u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
                     DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
-#endif
+#endif                  
                     /*Notify that contract is established*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                     
+                    if (DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS == \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus)
+                    {
+                        /* Notify the capability mismatch*/
+                        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MISMATCH);
+                    }
                     break;
                 }
                 

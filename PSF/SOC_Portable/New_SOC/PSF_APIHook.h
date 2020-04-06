@@ -881,13 +881,14 @@ Function:
     MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
 Summary:
     Initializes all the hardware modules related to port power functionality especially DC-DC buck 
-    boost controller and load switch.
+    boost controller and load switch. Additionaly, in case of sink functionality, this hook may be 
+    defined with APIs to initialize a DAC.
 Description:
     PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define.
     User can chose to implement their own DC-DC buck booster control or modify the default using 
     this hook. This hook is to initialize the hardware modules related to port power functionality. 
-    Implementation of this function depends on the type of DC-DC buck boost controller and load
-    switch used. Define relevant function that has no argument without return type.
+    Implementation of this function depends on the type of DC-DC buck boost controller, load
+    switch or DAC used. Define relevant function that has no argument without return type.
 Conditions:
     API implementation must make sure the Port Power(VBUS) of all ports must be set to 0V.
 Input:
@@ -904,7 +905,8 @@ Example:
         }
     </code>
 Remarks:
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined                        
+    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.
+    A DAC may initialized under this hook if PSF is configured as SINK.                        
 *****************************************************************************/
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)                       
 
@@ -995,7 +997,7 @@ Summary:
     Enables or disables sink hardware circuitry and configures it to sinks the VBUS voltage for 
     a given port based on the sink requested voltage and current.
 Description:
-    This hook is to enable or disable sink hardware circuitry and configure it for Sink requested 
+    This hook is to enable or disable sink hardware circuitry and configure it for Sink  
     requested current and voltage.Implementation of this function depends on the type of Sink 
     circuitry used. Define relevant function that has UINT8,UINT16,UINT16 arguments without return type.
 Conditions:
@@ -1011,9 +1013,9 @@ Return:
 Example:
     <code>
         #define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16Voltage, u16Current)\
-            hw_SinkCircuitary_enab_dis_(u8PortNum, u16Voltage, u16Current)
-        void hw_SinkCircuitary_enab_dis_(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current);
-        void hw_SinkCircuitary_enab_dis_(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current)
+            hw_Configure_SinkCircuitary(u8PortNum, u16Voltage, u16Current)
+        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current);
+        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current)
         {
             if(u16Voltage == Vsafe0V)
             {
@@ -1021,7 +1023,8 @@ Example:
             }
             else
             {
-                //Enable the Sink circuitary for "u8PortNum" Port and configure it to drain u16Voltage 
+                //Enable the Sink circuitary for "u8PortNum" Port and 
+                    configure it to drain u16Voltage 
             }
             //Conifgure Sink circuitary for u16Current current rating
         }
@@ -1152,7 +1155,7 @@ Remarks:
 **************************************************************************/
 #define MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum)     
 
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if CONFIG_HOOK_DEBUG_MSG
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1672,7 +1675,13 @@ Description:
     
     <b> eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify DPM when
     Sink capabilities has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Sink_Caps message initiated by PSF on request from DPM.   
+    as a response to the Get_Sink_Caps message initiated by PSF on request from DPM.
+    
+    <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
+    mismatch with Source partner PDOs in a PD negotiation.
+    
+    <b> eMCHP_PSF_NEW_SRC_CAPS_RCVD</b>: It is notified by PSF when new source capability
+    message is received from the Source Partner.
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1686,7 +1695,9 @@ eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
 eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
 eMCHP_PSF_GET_SINK_CAPS_RCVD,        // Sink Caps received from Port Partner
-eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD     // Sink Caps not received from Port Partner
+eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD,    // Sink Caps not received from Port Partner
+eMCHP_PSF_CAPS_MISMATCH,            // Capability mismatch with Source Port Partner
+eMCHP_PSF_NEW_SRC_CAPS_RCVD         // New source capability message is received from Source Partner
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************
@@ -1748,8 +1759,67 @@ Example:
 Remarks:
 User definition of this Hook function is optional.                          
 *******************************************************************************/  
-
 #define MCHP_PSF_HOOK_SET_MCU_IDLE          
+
+/******************************************************************************
+***********************************DAC_I***************************************
+*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_DRIVE_DAC_I()
+Summary:
+    Indicates the implicit/explicit current capability of attached source partner.
+Description:
+    This hook is called to indicate the sink hardware of the implicit/explicit 
+    current capability of attached source partner. The current capability is 
+    indicated thorough a voltage level on Digital to Analog Converter(DAC)'s 
+    output pin. The voltage level on DAC's output pin is calculated based on 
+    per port Configuration parameters, which were configured using 
+    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData) hook.
+  
+    In gasCfgStatusData structure, if u16DAC_I_CurrentInd_MaxInA is 5000mA, 
+    u16DAC_I_MaxOutVoltInmV is 2500mV, u16DAC_I_MinOutVoltInmV is 0V and direction 
+    mentioned in u8DAC_I_Direction is High Amperage - Max Voltage, then 
+        1. 0.5A > DAC_I = 0.25V 
+        2. 1.5A > DAC_I = 0.75V
+        3. 2.0A > DAC_I = 1V
+        4. 3.0A > DAC_I = 1.5V 
+        5. 4.0A > DAC_I = 2.0V
+        6. 5.0A > DAC_I = 2.5V
+    In gasCfgStatusData structure, if u16DAC_I_CurrentInd_MaxInA is 3000mA, 
+    u16DAC_I_MaxOutVoltInmV is 2500mV, u16DAC_I_MinOutVoltInmV is 0V and direction 
+    mentioned in u8DAC_I_Direction is High Amperage - Max Voltage, then 																	  * If it is 3A and maximum 
+        1. 0.5A > DAC_I = 0.42V 
+        2. 1.5A > DAC_I = 1.25V
+        3. 2.0A > DAC_I = 1.67V
+        4. 3.0A > DAC_I = 2.5V
+        5. 4.0A > DAC_I = 2.5V
+        6. 5.0A > DAC_I = 2.5V
+    This is applicable only for Sink operation.
+
+    A suitable function that initializes DAC from SoC may be 
+    implemented in this hook. 
+Conditions:
+    SoC should support a DAC. And the DAC should be initialized under 
+    MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)   SAMD20_Drive_DAC_I(u16DACData)
+        void SAMD20_Drive_DAC_I(UINT16 u16DACData);
+        void SAMD20_Drive_DAC_I(UINT16 u16DACData)
+        {
+            //Implement user specific application to output volatge provided under 
+            //u16DACData argument in DAC's output pin
+        }
+    </code>
+Remarks:
+    This hook is applicable only if INCLUDE_PD_SINK macro is 1. Definition of this
+    hook is not mandatory.
+*******************************************************************************/ 
+#define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData) 
+
+
 
 #endif /*_PSF_API_HOOK_H_*/
 

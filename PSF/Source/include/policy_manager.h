@@ -96,6 +96,8 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_PDO_CURRENT(X)                  ((X & 0x000003FF))
 #define DPM_GET_PDO_VOLTAGE(X)                  ((X & 0x000FFC00) >> 10)	/*in 50mv units*/
 #define DPM_GET_PDO_USB_COMM_CAP(X)             ((X & 0x04000000) >> 26)
+#define DPM_MAX_PDO_CNT                          7
+
 /*******************************************************************************/
 
 // *****************************************************************************
@@ -154,7 +156,7 @@ Source/Sink Power delivery objects*/
 #define DPM_VCONN_ON             1
 #define DPM_VCONN_OFF            0
 
-/*********Macros for u8VbusOnorOff argument of DPM_TypeCVBus5VOnOff API*********/
+/*********Macros for u8VbusOnorOff argument of DPM_TypeCSrcVBus5VOnOff API*********/
 #define DPM_VBUS_ON              1
 #define DPM_VBUS_OFF             0
 
@@ -164,11 +166,18 @@ Source/Sink Power delivery objects*/
 
 /*defines to set u16SinkOperatingCurrInmA */
 #define DPM_0mA     0
+#define DPM_500mA   500
 #define DPM_900mA   900
+#define DPM_1000mA  1000
 #define DPM_1500mA  1500
+#define DPM_2000mA  2000
 #define DPM_3000mA  3000
+#define DPM_4000mA  4000
 #define DPM_5000mA  5000
+
+/*defines to convert voltage and current in terms of 50mV and 10mA to mV and mA respectively*/
 #define DPM_10mA    10
+#define DPM_50mV    50
 
 /***************************************u8PowerFaultISR defines*************** */
 #define DPM_POWER_FAULT_OVP				BIT(0)
@@ -215,14 +224,24 @@ Source/Sink Power delivery objects*/
 #define DPM_SINK_MODE_A     0x00
 #define DPM_SINK_MODE_B      BIT(0)
 
+/*********************u8DAC_I_Direction defines****************/
+#define DPM_DAC_DIR_HIGH_AMP_MAX_VOLT 0
+#define DPM_DAC_DIR_HIGH_AMP_MIN_VOLT 1
+
 #define DPM_SINK_CONFIG_NO_USB_SUSP_POS        2
 #define DPM_SINK_CONFIG_NO_USB_SUSP_MASK       BIT(2)
 
 #define DPM_SINK_CONFIG_GIVE_BACK_FLAG_POS  3
 #define DPM_SINK_CONFIG_GIVE_BACK_FLAG_MASK BIT(3)
 
+/*********************Defines for evaluating and sorting PDOs******************/
+#define DPM_2_DIMENSION_TO_STORE_INDEX_AND_PWR 2
+#define DPM_PDO_WITH_MAX_PWR 0
+#define DPM_PDO_PWR 0
+#define DPM_PDO_INDEX 1
+#define DPM_NEXT_PWR_INDEX(x) (x+1)
 
-
+#define DPM_4BYTES_FOR_EACH_PDO_OF(PDO_Count) (PDO_Count*4)
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -574,7 +593,7 @@ void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence);
 
 /**************************************************************************************************
     Function:
-        void DPM_TypeCVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+        void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Summary:
         This API drives the VBUS line of a given port to either 0V or 5V.
     Devices Supported:
@@ -594,7 +613,7 @@ void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_TypeCVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
 
 /**************************************************************************************************
     Function:

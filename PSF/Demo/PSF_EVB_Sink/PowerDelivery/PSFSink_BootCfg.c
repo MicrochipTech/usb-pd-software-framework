@@ -69,13 +69,12 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[4] = CFG_PORT_SINK_PDO_5_PREFERRED_MIN_CURRENT;
     gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[5] = CFG_PORT_SINK_PDO_6_PREFERRED_MIN_CURRENT;
     gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[6] = CFG_PORT_SINK_PDO_7_PREFERRED_MIN_CURRENT;
-    
-   
+
     /*Assigning maximum operating current and minimum operating current to 
      * 3000mA and 1000mA respectively*/
-    gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = 3000;
-    gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA = 1000;
-    
+    gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = CFG_PORT_SINK_MAX_OPERATING_CURRENT_InmA;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA = CFG_PORT_SINK_MIN_OPERATING_CURRENT_InmA;
+        
     gasCfgStatusData.sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
     gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;
     gasCfgStatusData.sPerPortData[u8PortNum].u8OVThresholdPercentage = CFG_OVER_VOLTAGE_FACTOR;
@@ -97,6 +96,13 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
 	gasCfgStatusData.sPerPortData[u8PortNum].u8SinkConfigSel = ((CFG_PORT_SINK_MODE_A)| \
                                                                  (CFG_PORT_SINK_USB_SUSP << DPM_SINK_CONFIG_NO_USB_SUSP_POS) |\
                                                                  (CFG_PORT_SINK_GIVE_BACK_FLAG << DPM_SINK_CONFIG_GIVE_BACK_FLAG_POS));
+    
+    gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_CurrentInd_MaxInA = CFG_PORT_SINK_DAC_I_CUR_INDICATION_MAX;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MaxOutVoltInmV = CFG_PORT_SINK_DAC_I_MAX_OP_VOLTAGE;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MinOutVoltInmV = CFG_PORT_SINK_DAC_I_MIN_OP_VOLTAGE;
+    gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_Direction = CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
+    
+    
 }
 
 

@@ -211,22 +211,18 @@ void TypeC_InitPort (UINT8 u8PortNum)
     if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
     {
         /*Setting the VBUS to vSafe0V before entering the State machine*/
-        DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
     }
     else
     {
+        /* u16SinkOperatingCurrInmA current will be set to 0mA during initialization of DPM*/
         /* Enable threshold to detect 5V*/
         TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
-        
         /*Disable the Sink circuitry to stop sinking the power from source*/
-        PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, \
-                gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
-      
+        PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
     }
-    
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: TypeC Port initialization completed\r\n");             
-    
 }
 /*******************************************************************************************/
 /*********************************TypeC State machine**************************************/
@@ -234,12 +230,13 @@ void TypeC_InitPort (UINT8 u8PortNum)
 void TypeC_RunStateMachine (UINT8 u8PortNum)
 {
 
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     UINT32 u32PDODebug = SET_TO_ZERO;
 #endif
-        
+
     UINT8 u8CC1_MatchISR = SET_TO_ZERO;
     UINT8 u8CC2_MatchISR  = SET_TO_ZERO;
+    
     UINT8 u8IntStsISR = SET_TO_ZERO;
     
     /*Handle CC and VBUS Interrupt if any*/
@@ -249,6 +246,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
     u8CC1_MatchISR = gasTypeCcontrol[u8PortNum].u8CC1_MatchISR;
     u8CC2_MatchISR = gasTypeCcontrol[u8PortNum].u8CC2_MatchISR;
+    
     u8IntStsISR = gasTypeCcontrol[u8PortNum].u8IntStsISR;
 
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
@@ -256,7 +254,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
     switch (gasTypeCcontrol[u8PortNum].u8TypeCState)
     {      
       /*-----------------------------------------TypeC Source States------------------------------*/
-      
 #if (TRUE == INCLUDE_PD_SOURCE)
       
         case TYPEC_UNATTACHED_SRC:
@@ -381,8 +378,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Check for VBUS Absence before moving to Attached SRC state */
                     if ((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_0V_PRES))
                     {
-#ifdef CONFIG_HOOK_DEBUG_MSG
-                        u32PDODebug = 0;
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+                        u32PDODebug = SET_TO_ZERO;
                         DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif                       
                         if ((u8CC1_MatchISR == u8CC2_MatchISR))
@@ -428,7 +425,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                          "SRC State\r\n");
                    
                     /*Drive VBus for vSafe5V*/
-                    DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
+                    DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
                     
                     /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach Vsafe5V*/
@@ -482,7 +479,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_5V_PRES))
                     {
                       
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
                         switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
                         {
                             case TYPEC_DFP_DEFAULT_CURRENT:
@@ -623,7 +620,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             case TYPEC_UNATTACH_WAIT_SRC_TPD_TO_SS:
             {    
                 /*Disable VBUS by driving to vSafe0V*/
-                DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+                DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                 
                /*Start the VBUS OFF timer for monitoring the time taken for 
                 power module to reach Vsafe0V*/
@@ -663,8 +660,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             {
                 if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_0V_PRES))
                 {
-#ifdef CONFIG_HOOK_DEBUG_MSG
-                    u32PDODebug = 0;
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+                    u32PDODebug = SET_TO_ZERO;
                     DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
                     /*Kill the VBUS ON timer since Vsafe0V is reached*/
@@ -699,9 +696,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;;
                     PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+         
                     PRL_EnableRx (u8PortNum, FALSE);
                     
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_ATTACHED_STATUS);
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &=\
+                                ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_RP_VAL_DETECT_MASK_STATUS);
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
@@ -717,8 +716,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_0V_PRES))
                     {
                       
-#ifdef CONFIG_HOOK_DEBUG_MSG
-                        u32PDODebug = 0;
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+                        u32PDODebug = SET_TO_ZERO;
                         DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif 
                         /* Configure VBUS threshold to detect 5V*/
@@ -750,7 +749,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
           
         case TYPEC_ATTACHWAIT_SNK:
         {
-          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
 		    {   
                 /*This SubState is used to start a tCCDebounce Software timer for Source attachment*/ 
@@ -961,7 +959,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
                     {                    
                         /*Disable VBUS by driving to vSafe0V*/
-                        DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+                        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                         
                          /*Disable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                         PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
@@ -1026,8 +1024,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     if(((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == TYPEC_VBUS_0V_PRES))
                     {
-                        #ifdef CONFIG_HOOK_DEBUG_MSG
-                        u32PDODebug = 0;
+                        #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+                        u32PDODebug = SET_TO_ZERO;
                         DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
                         #endif                   
                         /*Setting VBUS Comparator OFF once the VBUS line goes off to 0V*/
@@ -1344,7 +1342,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         if (TRUE == u8HandleUV)
         {   
-            u16Data = 0;
+            u16Data = SET_TO_ZERO;
             /* Read the sample En to determine whether under voltage is enabled */
             UPD_RegisterReadISR (u8PortNum, TYPEC_VBUS_SAMP_EN, (UINT8 *)&u16Data, BYTE_LEN_1);
             /* Verifying whether under voltage is enabled */
@@ -1391,7 +1389,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
              u16Data =(UINT16)((u16Data * TYPEC_VBUS_THRX_UNITS_MILLI_V)
                               /gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor);
 
-            for (UINT8 u8Index = 0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
+            for (UINT8 u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
             {
                 /* PDO voltage for which VBUS Threshold was configured is determined */
                 if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index])) 
@@ -2385,7 +2383,7 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum)
 void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
 {
   	UINT16 u16PrevVolt = DPM_GetVBUSVoltage(u8PortNum);
-	UINT8 u8SampleEn = 0;
+	UINT8 u8SampleEn = SET_TO_ZERO;
     float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor;  
 	
 	/*Setting the VBUS Comparator OFF*/
@@ -2436,8 +2434,8 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
         #endif /*endif of INCLUDE_UPD_PIO_OVERRIDE_SUPPORT*/
         #endif /*endif of INCLUDE_POWER_FAULT_HANDLING*/
             
-      UINT16 u16MinVoltageThr =0;
-      UINT16 u16MaxVoltageThr = 0;
+      UINT16 u16MinVoltageThr = SET_TO_ZERO;
+      UINT16 u16MaxVoltageThr = SET_TO_ZERO;
       
 	  switch(u16Voltage)
 	  {
@@ -2552,7 +2550,7 @@ void TypeC_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCSubState)
 void TypeC_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
 {
     gasTypeCcontrol[u8PortNum].u8TypeCState = u8TypeCState;
-    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = 0;
+    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = SET_TO_ZERO;
     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = MAX_CONCURRENT_TIMERS;
   
 }
@@ -2563,10 +2561,10 @@ void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     
     if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
     {   
-        gasDPM[u8PortNum].u8VCONNErrCounter = 0;
+        gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;
         
         /*Disable VBUS by driving to vSafe0V*/
-        DPM_TypeCVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
         
         /*Disable VCONN by switching off the VCONN FETS which was enabled previously*/
         TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);
@@ -2596,29 +2594,40 @@ void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
 {
     UINT16 u16ReturnVal;
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+    UINT32 u32PDODebug = SET_TO_ZERO;
+#endif
     switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
     {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                ~DPM_PORT_RP_VAL_DETECT_MASK_STATUS; 
         case TYPEC_DFP_DEFAULT_CURRENT:
         {
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
             u32PDODebug = DPM_DEBUG_PDO_5V_9MA;
 #endif
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_RP_VAL_DETECT_DEFAULT_USB_STATUS;
             u16ReturnVal = DPM_900mA;
             break;  
         }
         case TYPEC_DFP_1A5_CURRENT:
         {
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
             u32PDODebug = DPM_DEBUG_PDO_5V_1P5A;
 #endif
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_RP_VAL_DETECT_1_5A_STATUS;
             u16ReturnVal = DPM_1500mA;
             break;  
         }
         case TYPEC_DFP_3A0_CURRENT:
         {
-#ifdef CONFIG_HOOK_DEBUG_MSG                          
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)                          
             u32PDODebug = DPM_DEBUG_PDO_5V_3A;
 #endif                            
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_RP_VAL_DETECT_3A_STATUS;
             u16ReturnVal = DPM_3000mA;
             break;  
         }
@@ -2629,7 +2638,7 @@ UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
         }
     }
     
-#ifdef CONFIG_HOOK_DEBUG_MSG                    
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)                    
    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif                    
     

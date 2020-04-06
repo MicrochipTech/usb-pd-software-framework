@@ -1,3 +1,21 @@
+/*******************************************************************************
+  Digital-to-Analog Converter (DAC) PLIB
+
+  Company:
+    Microchip Technology Inc.
+
+  File Name:
+    plib_dac.h
+
+  Summary:
+    DAC PLIB Header file
+
+  Description:
+    This file defines the interface to the DAC peripheral library. This
+    library provides access to and control of the associated peripheral
+    instance.
+
+*******************************************************************************/
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
@@ -23,34 +41,30 @@
 *******************************************************************************/
 // DOM-IGNORE-END
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <device.h> /* for ARM CMSIS __BKPT() */
+#ifndef PLIB_DAC_H
+#define PLIB_DAC_H
 
-#ifdef __cplusplus
+// *****************************************************************************
+// *****************************************************************************
+// Section: Included Files
+// *****************************************************************************
+// *****************************************************************************
+/* This section lists the other files that are included in this file.
+*/
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+
+#ifdef __cplusplus // Provide C++ Compatibility
 extern "C" {
 #endif
 
-/* Harmony specific
- * We implement only the syscalls we want over the stubs provided by libpic32c
- */
-extern void _exit(int status);
+void DAC_Initialize(void);
+void DAC_DataWrite(uint16_t data);
 
-extern void _exit(int status)
-{
-    /* Software breakpoint */
-#ifdef __DEBUG
-    __BKPT(0);
-#endif
-
-    /* halt CPU */
-    while (1)
-    {
-    }
-}
-
-#ifdef __cplusplus
+#ifdef __cplusplus  // Provide C++ Compatibility
 }
 #endif
+
+#endif /* PLIB_DAC_H */

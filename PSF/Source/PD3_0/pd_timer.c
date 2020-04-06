@@ -37,7 +37,7 @@ UINT8 PDTimer_Init()
 {
 	/*Setting all the PD Software timer's state to Non Active during PD stack initialization*/
 
-	for (UINT8 u8TimerID = 0; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
+	for (UINT8 u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
 	{
 		gasPDTimers[u8TimerID].u8TimerSt_PortNum = RESET_TO_ZERO;
 
@@ -55,7 +55,7 @@ UINT8 PDTimer_Start (UINT32 u32Timeout_ticks, PDTimerCallback pfnTimerCallback, 
 {
 	UINT8 u8TimerID;
     /*Find the unused PD Software timer and start the given timeout value with the found timer*/    
-	for (u8TimerID = 0; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
+	for (u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
 	{
 		if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE ) == PDTIMER_NON_ACTIVE) || \
                 ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE)== PDTIMER_EXPIRED))
@@ -91,7 +91,7 @@ void PDTimer_WaitforTicks (UINT32 u32Timeout_ticks)
     ++u32Timeout_ticks;
     
     /*Find the unused PD Software timer and start the given timeout value with the found timer*/    
-	for (u8TimerID = 0; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
+	for (u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
 	{
 
 		if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE ) == PDTIMER_NON_ACTIVE) || ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE)== PDTIMER_EXPIRED))
@@ -163,7 +163,7 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
 
     /*Setting the PD Software timers of a given port number to "Non Active"  state will disable 
     the PDTimer ISR Handler from calling the callback function*/
-    for (UINT8 u8TimerID = 0; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
+    for (UINT8 u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
     {
         if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE) == PDTIMER_ACTIVE)\
           && ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_PORT_NUM) == u8PortNum)
@@ -189,7 +189,7 @@ void PDTimer_InterruptHandler (void)
 
 	MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
 	
-	for (UINT8 u8TimerID = 0; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
+	for (UINT8 u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
 	{
          
       /*Checking for a "Active" State PD Software timer*/
