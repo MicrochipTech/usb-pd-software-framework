@@ -220,7 +220,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
     PB_RENEG_SUBSTATE eRenegSubState; /* Sub-states of PB State Machine */
     GET_SINK_CAP_SS eGetSinkCapSS;    /* Get Sink caps sub-states */
     UINT8 u8AttachSeqNo;              /* Sequence in which ports are attached */
-    UINT8 u8PortStatusMask;     /* Bit - Position 
+    UINT8 u8PBPortStatusMask;     /* Bit - Position 
         0     Attach 
         1     InitialNegotiationDone 
         2     IsPortInMinimalPower 

@@ -51,7 +51,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
         case eMCHP_PSF_TYPEC_CC2_ATTACH: 
             
             PB_InitiateNegotiationWrapper(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
-            gasPBIntPortParam[u8PortNum].u8PortStatusMask |= PB_PORT_STATUS_ATTACH;
+            gasPBIntPortParam[u8PortNum].u8PBPortStatusMask |= PB_PORT_STATUS_ATTACH;
             gasPBIntPortParam[u8PortNum].u8AttachSeqNo = gu8AttachSeq++;
             
             break; 
@@ -100,7 +100,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             gasCfgStatusData.u16SharedPowerCapacity += u16GivebackPwr;
             
              /*Reset all the state variables and the flags associated with the port*/
-            gasPBIntPortParam[u8PortNum].u8PortStatusMask = FALSE; 
+            gasPBIntPortParam[u8PortNum].u8PBPortStatusMask = FALSE; 
             
             PB_UpdateAttachSeq (u8PortNum);
             
@@ -169,7 +169,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             u32SinkRDO = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
             
             /* If initial negotiation complete, go ahead and publish max caps */
-            if (gasPBIntPortParam[u8PortNum].u8PortStatusMask & PB_PORT_STATUS_INITIAL_NEG_DONE)
+            if (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_INITIAL_NEG_DONE)
             {   
                 if (ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS == gasPBIntPortParam[u8PortNum].eRenegSubState)
                 {
@@ -182,12 +182,12 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                      * Hence we need to again Renegotiate this port as well other ports
                      * based on the priority
                      */    
-                    if (gasPBIntPortParam[u8PortNum].u8PortStatusMask & PB_PORT_STATUS_RENEG_AGAIN)
+                    if (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_RENEG_AGAIN)
                     {
                         /*Refill pool with excess power */
                         (void)PB_ReleaseExcessPwr (u8PortNum);
                         
-                        gasPBIntPortParam[u8PortNum].u8PortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);
+                        gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);
                         
                         /*Change the port state to Negotiation Pending*/
                         PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
@@ -217,9 +217,9 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                      * Hence we need to again Renegotiate this port as well other ports
                      * based on the priority
                      */  
-                    if (gasPBIntPortParam[u8PortNum].u8PortStatusMask & PB_PORT_STATUS_RENEG_AGAIN)
+                    if (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_RENEG_AGAIN)
                     {
-                        gasPBIntPortParam[u8PortNum].u8PortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);
+                        gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);
                         
                         /*Change the port state to Negotiation Pending*/
                         PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
@@ -286,9 +286,9 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     /*Refill pool with excess power */
                     (void)PB_ReleaseExcessPwr (u8PortNum);
                     
-                    if (gasPBIntPortParam[u8PortNum].u8PortStatusMask & PB_PORT_STATUS_RENEG_AGAIN)
+                    if (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_RENEG_AGAIN)
                     {   
-                        gasPBIntPortParam[u8PortNum].u8PortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);        
+                        gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);        
                         
                         /*Change the port state to Negotiation Pending*/
                         PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
@@ -348,7 +348,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                 PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkRDO);
                 
                 /*This notification is to indicate the completion of Initial 15W negotiation */
-                gasPBIntPortParam[u8PortNum].u8PortStatusMask |= PB_PORT_STATUS_INITIAL_NEG_DONE;              
+                gasPBIntPortParam[u8PortNum].u8PBPortStatusMask |= PB_PORT_STATUS_INITIAL_NEG_DONE;              
                 
                 /* If negotiation is on going for any other port, make this port 
                  as pending. We should complete the negotiation for a port and then
@@ -401,7 +401,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             
         case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD:
             
-            if (TRUE == (gasPBIntPortParam[u8PortNum].u8PortStatusMask & PB_PORT_STATUS_ATTACH))
+            if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))
             {
                 if (ePB_SINK_CAPS_INITIATED == gasPBIntPortParam[u8PortNum].eGetSinkCapSS)
                 {
@@ -418,7 +418,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
              1. Get Sink Caps
              2. Renegotiation*/
             
-            if (TRUE == (gasPBIntPortParam[u8PortNum].u8PortStatusMask & PB_PORT_STATUS_ATTACH))
+            if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))
             {
                 if (ePB_GET_SINKCAPS_SENT_SS == gasPBIntPortParam[u8PortNum].eRenegSubState)
                 {

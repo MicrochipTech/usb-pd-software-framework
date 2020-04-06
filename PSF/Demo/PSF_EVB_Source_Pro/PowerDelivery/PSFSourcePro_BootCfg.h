@@ -174,7 +174,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                                             ((current)/CFG_PDO_CURRENT_UNIT))
 
-void PSF_LoadConfig(); 
+void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA gasCfgStatusData); 
 
 #endif /* _PSFSOURCEPRO_BOOTCFG_H */
 

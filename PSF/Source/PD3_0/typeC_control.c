@@ -1352,13 +1352,13 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             /* Verifying whether under voltage is enabled */
             if (TYPEC_UNDER_VOLT_THR3_MATCH & u16Data)
             {
-                #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+                #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)     
                     /*When PIO override is disabled; VBUS_EN is disabled by FW on Power fault*/
-                    /* Disable EN_VBUS gasUpdPioDcDcConfig[u8PortNum].u8Pio_VBUS_EN*/
-                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8Pio_VBUS_EN),\
+                    /* Disable EN_VBUS gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN */
+                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
                                         (UINT8 *)&u16Data, BYTE_LEN_1);
                     u16Data &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasUpdPioDcDcConfig[u8PortNum].u8Pio_VBUS_EN),\
+                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
                                             (UINT8 *)&u16Data, BYTE_LEN_1);
                 #endif   
                /* under voltage is considered if VBUS not lowered as part of Over voltage*/
@@ -1375,7 +1375,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
              gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP;
             #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                 /*When PIO override is disabled; VBUS_EN is disabled by FW on Power fault*/
-                /* Disable EN_VBUS gasCfgStatusData.sPortCSRData[u8PortNum].u8Pio_VBUS_EN*/
+                /* Disable EN_VBUS gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN*/
                 UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
 									(UINT8 *)&u16Data, BYTE_LEN_1);
                 u16Data &= ~ UPD_CFG_PIO_DATAOUTPUT;
