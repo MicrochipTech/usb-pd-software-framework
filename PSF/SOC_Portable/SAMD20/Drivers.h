@@ -422,25 +422,6 @@ void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u
 
 /**************************************************************************
     Function:
-        void SAMD20_DACInitialisation()
-    Summary:
-        Wrapper to initialize DAC from SoC.
-    Description:
-        This API serves as a wrapper between PSF stack's MCHP_PSF_HOOK_DAC_INITIALIZE()
-        and Harmony generated code to initialize the Digital to Analog Converter(DAC).
-    Conditions:
-        None.
-    Input:
-        None.
-    Return:
-        None.
-    Remarks:
-        None                    
-**************************************************************************/
-void SAMD20_DACInitialisation(void);
-
-/**************************************************************************
-    Function:
         void SAMD20_Drive_DAC_I(UINT16 u16DACData)
     Summary:
         Wrapper to initialize DAC from SoC.
@@ -465,7 +446,7 @@ void SAMD20_Drive_DAC_I(UINT16 u16DACData);
 
 
 /*Debug UART APIs*/
-#if CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 void SAMD20_UART_Initialisation(void);
 
 void SAMD20_UART_Write_Char(char);

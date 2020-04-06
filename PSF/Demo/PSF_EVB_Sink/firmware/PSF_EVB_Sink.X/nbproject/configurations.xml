@@ -202,7 +202,6 @@
           <itemPath>../../../../Source/PB/pb_mngr.c</itemPath>
         </logicalFolder>
         <logicalFolder name="PD3_0" displayName="PD3_0" projectFiles="true">
-          <itemPath>../../../../Source/PD3_0/debug.c</itemPath>
           <itemPath>../../../../Source/PD3_0/int_globals.c</itemPath>
           <itemPath>../../../../Source/PD3_0/pd_main.c</itemPath>
           <itemPath>../../../../Source/PD3_0/pd_timer.c</itemPath>
@@ -351,6 +350,9 @@
         <property key="preprocessor-macros" value=""/>
         <property key="warning-level" value=""/>
       </C32-AS>
+      <C32-CO>
+        <property key="coverage-enable" value=""/>
+      </C32-CO>
       <C32-LD>
         <property key="additional-options-use-response-files" value="false"/>
         <property key="additional-options-write-sla" value="false"/>

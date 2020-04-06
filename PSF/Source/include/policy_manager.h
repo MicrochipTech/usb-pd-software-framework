@@ -241,7 +241,7 @@ Source/Sink Power delivery objects*/
 #define DPM_PDO_INDEX 1
 #define DPM_NEXT_PWR_INDEX(x) (x+1)
 
-#define DPM_4BYTES_FOR_EACH_PDO_OF(x) (x*4)
+#define DPM_4BYTES_FOR_EACH_PDO_OF(PDO_Count) (PDO_Count*4)
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
