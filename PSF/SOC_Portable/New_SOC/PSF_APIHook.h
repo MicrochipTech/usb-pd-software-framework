@@ -995,7 +995,7 @@ Summary:
     Enables or disables sink hardware circuitry and configures it to sinks the VBUS voltage for 
     a given port based on the sink requested voltage and current.
 Description:
-    This hook is to enable or disable sink hardware circuitry and configure it for Sink requested 
+    This hook is to enable or disable sink hardware circuitry and configure it for Sink  
     requested current and voltage.Implementation of this function depends on the type of Sink 
     circuitry used. Define relevant function that has UINT8,UINT16,UINT16 arguments without return type.
 Conditions:
@@ -1011,9 +1011,9 @@ Return:
 Example:
     <code>
         #define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16Voltage, u16Current)\
-            hw_SinkCircuitary_enab_dis_(u8PortNum, u16Voltage, u16Current)
-        void hw_SinkCircuitary_enab_dis_(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current);
-        void hw_SinkCircuitary_enab_dis_(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current)
+            hw_Configure_SinkCircuitary(u8PortNum, u16Voltage, u16Current)
+        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current);
+        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current)
         {
             if(u16Voltage == Vsafe0V)
             {
@@ -1021,7 +1021,8 @@ Example:
             }
             else
             {
-                //Enable the Sink circuitary for "u8PortNum" Port and configure it to drain u16Voltage 
+                //Enable the Sink circuitary for "u8PortNum" Port and 
+                    configure it to drain u16Voltage 
             }
             //Conifgure Sink circuitary for u16Current current rating
         }
@@ -1152,7 +1153,7 @@ Remarks:
 **************************************************************************/
 #define MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum)     
 
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if CONFIG_HOOK_DEBUG_MSG
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1756,8 +1757,40 @@ Example:
 Remarks:
 User definition of this Hook function is optional.                          
 *******************************************************************************/  
-
 #define MCHP_PSF_HOOK_SET_MCU_IDLE          
+
+/***********************************DAC_I**************************************/
+#if (TRUE == INCLUDE_PD_SINK)
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_DRIVE_DAC_I()
+Summary:
+    Indicates the implicit/explicit current capability of attached source partner.
+Description:
+    This hook is called to indicate the sink hardware of the implicit/explicit 
+    current capability of attached source partner. The current capability is 
+    indicated thorough a voltage level on Digital to Analog Converter(DAC)'s 
+    output pin. The voltage level on DAC's output pin is calculated based on 
+    per port Configuration parameters, which were configured using 
+    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData) hook.
+    A suitable function that initializes DAC from SoC needs to be 
+    implemented in this hook. This hook will be enabled only if INCLUDE_PD_SINK 
+    is set to 1. 
+Conditions:
+    SoC should support a DAC. And the DAC should be initialized under 
+    MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)   SAMD20_Drive_DAC_I(u16DACData)
+    </code>
+Remarks:
+    None.
+*******************************************************************************/ 
+#define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData) 
+
+#endif /*(TRUE == INCLUDE_PD_SINK)*/
 
 #endif /*_PSF_API_HOOK_H_*/
 

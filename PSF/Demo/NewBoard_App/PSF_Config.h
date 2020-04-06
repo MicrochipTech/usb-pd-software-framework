@@ -438,6 +438,33 @@ Example:
   **************************************************************************/
 #define CONFIG_I2C_DCDC_TYPE
 
+/**************************************************************************
+Summary:
+    Print status messages from PSF stack through UART interface
+Description:
+    Setting CONFIG_HOOK_DEBUG_MSG to 1, prints status messages from PSF stack through
+    UART interface. 
+	
+Remarks:
+    The following hook APIs should be defined with appropriate UART functions to view 
+    status messages from PSF stack.
+    1. MCHP_PSF_HOOK_DEBUG_INIT()
+    2. MCHP_PSF_HOOK_PRINT_CHAR(byData)
+    3. MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth) 
+    4. MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage) 
+
+Example:
+    <code>
+	#define CONFIG_HOOK_DEBUG_MSG    0
+	#define CONFIG_HOOK_DEBUG_MSG    1
+    </code>
+
+Note:
+    None.
+**************************************************************************/
+#define CONFIG_HOOK_DEBUG_MSG                       
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: PDFU Configuration
@@ -643,13 +670,14 @@ typedef enum
 																		in mV and Current is 
 																		specified in mA.
                                                                       * This array should be used 
-																	    for Source Operation. 
+																	    only for Source Operation. 
     u32aSinkPDO[7]                  28        R/W          R         * Upto 7 fixed Sink PDOs where 
 																		Voltage is specified in mV
                                                                         and Current is specified in 
 																		mA.
                                                                       * This array should be used 
-																	    for Sink operation.
+																	    only when the port is 
+																		configured as Sink.
     u32aNewPDO[7]                   28        R/W          R/W       * Upto 7 fixed New PDOs where 
 																		Voltage is specified in mV 
 																		and Current in mA.
@@ -689,7 +717,7 @@ typedef enum
                                                                         4. 0x12C = 15V
                                                                         5. 0x190= 20V
                                                                         6. 0x3FF = 51.15V
-    u16NegoVoltageIn10mA            2         R            R         * Negotiated Current from the 
+    u16NegoCurrentIn10mA            2         R            R         * Negotiated Current from the 
 																		Port Bits 9: 0 from the RDO.
                                                                         Ampere is in 10mA steps. 
 																		Sample values are,
@@ -697,22 +725,57 @@ typedef enum
                                                                         2. 0x012C = 3A
                                                                         3. 0x01F4 = 5A
                                                                         4. 0x03FF = 10.24A
-    u16MaximumOperatingCurInmA      2         R/W          R         * Maximum allowable current or 
+    u16MaximumOperatingCurInmA      2          R/W         R          * Maximum allowable current or 
 																		system's maximum operating
                                                                         current in terms of mA
-    u16aMinPDOPreferredCurInmA[7]   14        R/W          R         * Preferred minimum current 
+    u16aMinPDOPreferredCurInmA[7]   14         R/W         R          * Preferred minimum current 
 																		range for the PDO by which 
 																		the Sink may select without 
 																		setting Capability Mismatch 
 																		Bit with highest current 
 																		preferred.
                                                                       * This array is applicable 
-																	    only for Sink Operation. 
-                                                                        
-    u16MinimumOperatingCurInmA      2         R/W          R         * Minimum operating current by 
+																	    only for Sink Operation.                                                                     
+    u16MinimumOperatingCurInmA      2          R/W           R          * Minimum operating current by 
 																	    the System.
                                                                       * This variable is applicable 
 																	    only for Sink Operation. 
+  	u16DAC_I_MaxOutVoltInmV         2          R/W         R           * Defines the maximum voltage 
+																		on DAC_I with a maximum of 
+																		2.5V in terms of mV 
+																	  * This is applicable only for
+																		Sink operation. 
+	u16DAC_I_MinOutVoltInmV         2		   R/W		   R   		   * Defines the minimum voltage 
+																		on DAC_I with a minimum of 
+																		0V in terms of mV 
+																	  * This is applicable only for
+																		Sink operation. 
+	u16DAC_I_CurrentInd_MaxInA      2		   R/W		   R    	   * Defines which current in
+																		terms of mA corresponding 
+																		to maximum output voltage 
+																	  * It can take either 3A or 5A 
+																	    value. 
+																	  * If it is 5A and maximum 
+																		output voltage is 2.5V and if
+                                                                        direction mentioned in 
+                                                                        u8DAC_I_Direction is High 
+                                                                        Amperage - Max Voltage, then 
+																		1. 0.5A > DAC_I = 0.25V 
+																		2. 1.5A > DAC_I = 0.75V
+																		3. 2.0A > DAC_I = 1V
+																		4. 3.0A > DAC_I = 1.5V 
+																		5. 4.0A > DAC_I = 2.0V
+																		6. 5.0A > DAC_I = 2.5V
+																	  * If it is 3A and maximum 
+																		output voltage is 2.5V, then
+																		1. 0.5A > DAC_I = 0.42V 
+																		2. 1.5A > DAC_I = 1.25V
+																		3. 2.0A > DAC_I = 1.67V
+																		4. 3.0A > DAC_I = 2.5V
+																		5. 4.0A > DAC_I = 2.5V
+																		6. 5.0A > DAC_I = 2.5V
+																	  * This is applicable only for 
+																		Sink operation. 
     u16PowerGoodTimerInms           2         R/W          R         * After an automatic fault 
 																		recovery, 
 																		u16PowerGoodTimerInms
@@ -770,7 +833,7 @@ typedef enum
                                                                         3. Clear all New PDO 
 																		    registers
                                                                         4. Clear this bit
-    u8SinkModeSelect                1         R/W         R          * Sink Selection mode for 
+    u8SinkConfigSel                1         R/W                    * Sink Selection mode for 
 																		operation.
                                                                         1. '0x00' Mode A: Prefer 
 																			  Higher Voltage and 
@@ -1062,72 +1125,7 @@ typedef enum
 																		EN_SINK pin
 																	  * This is applicable only for 
 																		Sink operation. 
-    u8SnkPio_1_5A_IND               1         R/W          R         * Defines the UPD350 PIO number 
-																		used for 1.5A_IND pin 
-																	  * This is applicable only for 
-																		Sink operation. 
-	u8Mode_1_5A_IND                 1         R/W          R         * Defines the PIO mode for 
-																		1.5A_IND pin 
-																	  * This is applicable only for
-																		Sink operation. 
-	u8SnkPio_3A_IND                 1         R/W          R         * Defines the UPD350 PIO 
-																		number used for 3A_IND pin
-																	  * This is applicable only for 
-																	    Sink operation. 
-	u8Mode_3A_IND                   1         R/W          R         * Defines the PIO mode for 
-																		3A_IND pin 
-																	  * This is applicable only for 
-																		Sink operation. 
-	u8PIO_SNK_PD_NEG_CMPLT          1         R/W          R         * Defines the UPD350 PIO number
-																		for SNK_PD_NEG_CMPLT pin 
-																	  * This is applicable only for 
-																	    Sink operation. 
-	u8Mode_SNK_PD_NEG_CMPLT         1         R/W          R         * Defines the PIO mode for 
-																		SNK_PD_NEG_CMPLT pin 
-																	  * This is applicable only for
-																		Sink operation. 
-	u8PIO_SNK_CAP_MISMATCH          1         R/W          R         * Defines the UPD350 PIO number
-																	    for SNK_CAP_MISMATCH
-																	  * This is applicable only for
-																		Sink operation. 
-	u8Mode_SNK_CAP_MISMATCH         1         R/W          R         * Defines the PIO mode for 
-																		SNK_CAP_MISMATCH pin
-																	  * This is applicable only for 
-																		Sink operation. 
-	u8DAC_I_MaxOutVoltIn10mV        1         R/W          R         * Defines the maximum voltage 
-																		on DAC_I with a maximum of 
-																		2.5V in terms of 10mV 
-																	  * This is applicable only for
-																		Sink operation. 
-	u8DAC_I_MinOutVoltIn10mV        1		  R/W		   R 	     * Defines the minimum voltage 
-																		on DAC_I with a minimum of 
-																		0V in terms of 10mV 
-																	  * This is applicable only for
-																		Sink operation. 
-	u8DAC_I_CurrentInd_MaxInA       1		  R/W		   R		 * Defines which current in
-																		terms of A corresponding 
-																		to maximum output voltage 
-																	  * It can take either 3A or 5A 
-																	    value. 
-																	  * If it is 5A and maximum 
-																		output voltage is 2.5V, then 
-																		1. 0.5A > DAC_I = 0.25V 
-																		2. 1.5A > DAC_I = 0.75V
-																		3. 2.0A > DAC_I = 1V
-																		4. 3.0A > DAC_I = 1.5V 
-																		5. 4.0A > DAC_I = 2.0V
-																		6. 5.0A > DAC_I = 2.5V
-																	  * If it is 3A and maximum 
-																		output voltage is 2.5V, then
-																		1. 0.5A > DAC_I = 0.42V 
-																		2. 1.5A > DAC_I = 1.25V
-																		3. 2.0A > DAC_I = 1.67V
-																		4. 3.0A > DAC_I = 2.5V
-																		5. 4.0A > DAC_I = 2.5V
-																		6. 5.0A > DAC_I = 2.5V
-																	  * This is applicable only for 
-																		Sink operation. 
-	u8DAC_I_Direction               1         R/W     	   R         * Specifies the direction of 
+	u8DAC_I_Direction               1              	                 * Specifies the direction of 
 																	     DAC_I to allow user invert 
 																		 direction of DAC_I if 
 																		 required 
@@ -1139,7 +1137,7 @@ typedef enum
 																		 for Sink operation. 
 	u8aReserved1[2]					2								 Reserved					 
 	u8aReserved2[2]					2								 Reserved					 
-	u8aReserved3[2]					2								 Reserved					 		
+	u8aReserved3[3]					3								 Reserved					 		
     </table>
     
     
@@ -1295,7 +1293,7 @@ typedef enum
     10      R            R         Capability Mismatch  
                                     * '0' Asserted 
                                     * '1' De-asserted
-    15:11                          Reserved 
+    15:11   R            R         Reserved 
 	</table>
 	
 	<b>d. u16PortStatusChange</b>: 
@@ -1370,7 +1368,7 @@ typedef enum
       									been detected
                                     * '1' Since the last read of this register, 1 or more VCONN 
 										faults have been detected										  
-	15:12                  		   Reserved 
+	15:12   R            R 		   Reserved 
 	</table> 	
 	
 	<b>e. u16PortIntrMask</b>: 
@@ -1434,11 +1432,14 @@ typedef struct _PortCfgStatus
 	UINT32 u32PortConnectStatus;	
     UINT16 u16AllocatedPowerIn250mW;   
     UINT16 u16NegoVoltageIn50mV;      
-    UINT16 u16NegoVoltageIn10mA;      
+    UINT16 u16NegoCurrentIn10mA;      
     UINT16 u16MaximumOperatingCurInmA; 
     #if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
-    UINT16 u16MinimumOperatingCurInmA; 
+    UINT16 u16MinimumOperatingCurInmA;
+    UINT16 u16DAC_I_MaxOutVoltInmV; 
+    UINT16 u16DAC_I_MinOutVoltInmV; 
+    UINT16 u16DAC_I_CurrentInd_MaxInA;  
     #endif
     UINT16 u16PortIOStatus;
     UINT16 u16PortStatusChange;
@@ -1450,7 +1451,7 @@ typedef struct _PortCfgStatus
     UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerPDOCnt;          
     UINT8 u8NewPDOSelect;           
-    UINT8 u8SinkModeSelect;         
+    UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
     UINT8 u8OVThresholdPercentage;  
@@ -1476,19 +1477,8 @@ typedef struct _PortCfgStatus
     #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
-    UINT8 u8SnkPio_1_5A_IND; 
-    UINT8 u8Mode_1_5A_IND;  
-    UINT8 u8SnkPio_3A_IND;  
-    UINT8 u8Mode_3A_IND;    
-    UINT8 u8PIO_SNK_PD_NEG_CMPLT; 
-    UINT8 u8Mode_SNK_PD_NEG_CMPLT; 
-    UINT8 u8PIO_SNK_CAP_MISMATCH; 
-    UINT8 u8Mode_SNK_CAP_MISMATCH; 
-    UINT8 u8DAC_I_MaxOutVoltIn10mV; 
-    UINT8 u8DAC_I_MinOutVoltIn10mV; 
-    UINT8 u8DAC_I_CurrentInd_MaxInA;  
     UINT8 u8DAC_I_Direction; 
-    UINT8 u8aReserved3[2];
+    UINT8 u8aReserved3[3];
     #endif
 	 
    } PORT_CFG_STATUS, *PPORT_CFG_STATUS;
@@ -1566,7 +1556,7 @@ typedef struct _PortCfgStatus
                                     * '1' Enable
 	3:1     R/W          R/W       Selects the port Priority 								
 									* 000b is the highest priority
-    7:4     			           Reserved 									
+    7:4     R/W          R/W       Reserved 									
    Remarks:
      None                                                               
    **********************************************************************/
