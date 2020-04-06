@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #include <PSF_APIHook.h>
 
-#if CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 /**************************************************************************************/
     /* Define to print a string */
     #define DEBUG_PRINT_PORT_STR(byPortNum,string)    MCHP_PSF_HOOK_PRINT_INTEGER(byPortNum,1); \

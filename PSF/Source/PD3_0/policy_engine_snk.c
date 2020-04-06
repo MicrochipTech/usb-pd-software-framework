@@ -44,7 +44,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 	UINT32 u32Transmit_TmrID_TxSt = SET_TO_ZERO;
 	UINT8 u8IsTransmit= FALSE;
 
-#if CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     UINT32 u32PDODebug = SET_TO_ZERO;
 #endif
     
@@ -311,7 +311,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     gasPolicy_Engine[u8PortNum].u8PEPortSts |= (PE_EXPLICIT_CONTRACT);
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
                     
-#if CONFIG_HOOK_DEBUG_MSG                    
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)                    
                     u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
                     DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif                  

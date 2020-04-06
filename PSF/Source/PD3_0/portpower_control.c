@@ -205,6 +205,10 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_15_IND_STATUS;
     }
+    else
+    {
+        //Do nothing
+    }
    
     PWRCTRL_Drive_DAC_I(u8PortNum, u16Current);
     
@@ -267,7 +271,10 @@ void PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
                 (u16MaxOpVoltInmV - u16MinOpVoltInmV )) / u16MaxCurIndInmA);
 
     }
-    
+    else
+    {
+        //Do nothing
+    }
     
     //value calculated in u16DacData should reflect in DAC_I pin
     MCHP_PSF_HOOK_DRIVE_DAC_I(u16DacData);

@@ -198,7 +198,6 @@
       </logicalFolder>
       <logicalFolder name="Source" displayName="Source" projectFiles="true">
         <logicalFolder name="PD3_0" displayName="PD3_0" projectFiles="true">
-          <itemPath>../../../../Source/PD3_0/debug.c</itemPath>
           <itemPath>../../../../Source/PD3_0/int_globals.c</itemPath>
           <itemPath>../../../../Source/PD3_0/pd_main.c</itemPath>
           <itemPath>../../../../Source/PD3_0/pd_timer.c</itemPath>

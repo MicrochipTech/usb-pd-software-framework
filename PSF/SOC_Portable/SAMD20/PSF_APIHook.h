@@ -886,13 +886,14 @@ Function:
     MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
 Summary:
     Initializes all the hardware modules related to port power functionality especially DC-DC buck 
-    boost controller and load switch.
+    boost controller and load switch. Additionaly, in case of sink functionality, this hook may be 
+    defined with APIs to initialize a DAC.
 Description:
     PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define.
     User can chose to implement their own DC-DC buck booster control or modify the default using 
     this hook. This hook is to initialize the hardware modules related to port power functionality. 
-    Implementation of this function depends on the type of DC-DC buck boost controller and load
-    switch used. Define relevant function that has no argument without return type.
+    Implementation of this function depends on the type of DC-DC buck boost controller, load
+    switch or DAC used. Define relevant function that has no argument without return type.
 Conditions:
     API implementation must make sure the Port Power(VBUS) of all ports must be set to 0V.
 Input:
@@ -909,10 +910,11 @@ Example:
         }
     </code>
 Remarks:
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined                        
+    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.
+    A DAC may initialized under this hook if PSF is configured as SINK.                        
 *****************************************************************************/
 #if (TRUE == INCLUDE_PD_SINK)
-#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  SAMD20_DACInitialisation();
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  DAC_Initialize();
 #else
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
 #endif
@@ -1163,7 +1165,7 @@ Remarks:
 **************************************************************************/
 #define MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum)     
 
-#if CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1771,9 +1773,9 @@ User definition of this Hook function is optional.
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_SET_MCU_IDLE          SAMD20_SetMCUIdle()
 
-/***********************************DAC_I**************************************/
-#if (TRUE == INCLUDE_PD_SINK)
-/*******************************************************************************
+/******************************************************************************
+***********************************DAC_I***************************************
+*******************************************************************************
 Function:
     MCHP_PSF_HOOK_DRIVE_DAC_I()
 Summary:
@@ -1785,9 +1787,29 @@ Description:
     output pin. The voltage level on DAC's output pin is calculated based on 
     per port Configuration parameters, which were configured using 
     MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData) hook.
-    A suitable function that initializes DAC from SoC needs to be 
-    implemented in this hook. This hook will be enabled only if INCLUDE_PD_SINK 
-    is set to 1. 
+  
+    In gasCfgStatusData structure, if u16DAC_I_CurrentInd_MaxInA is 5000mA, 
+    u16DAC_I_MaxOutVoltInmV is 2500mV, u16DAC_I_MinOutVoltInmV is 0V and direction 
+    mentioned in u8DAC_I_Direction is High Amperage - Max Voltage, then 
+        1. 0.5A > DAC_I = 0.25V 
+        2. 1.5A > DAC_I = 0.75V
+        3. 2.0A > DAC_I = 1V
+        4. 3.0A > DAC_I = 1.5V 
+        5. 4.0A > DAC_I = 2.0V
+        6. 5.0A > DAC_I = 2.5V
+    In gasCfgStatusData structure, if u16DAC_I_CurrentInd_MaxInA is 3000mA, 
+    u16DAC_I_MaxOutVoltInmV is 2500mV, u16DAC_I_MinOutVoltInmV is 0V and direction 
+    mentioned in u8DAC_I_Direction is High Amperage - Max Voltage, then 																	  * If it is 3A and maximum 
+        1. 0.5A > DAC_I = 0.42V 
+        2. 1.5A > DAC_I = 1.25V
+        3. 2.0A > DAC_I = 1.67V
+        4. 3.0A > DAC_I = 2.5V
+        5. 4.0A > DAC_I = 2.5V
+        6. 5.0A > DAC_I = 2.5V
+    This is applicable only for Sink operation.
+
+    A suitable function that initializes DAC from SoC may be 
+    implemented in this hook. 
 Conditions:
     SoC should support a DAC. And the DAC should be initialized under 
     MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
@@ -1796,13 +1818,20 @@ Return:
 Example:
     <code>
         #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)   SAMD20_Drive_DAC_I(u16DACData)
+        void SAMD20_Drive_DAC_I(UINT16 u16DACData);
+        void SAMD20_Drive_DAC_I(UINT16 u16DACData)
+        {
+            //Implement user specific application to output volatge provided under 
+            //u16DACData argument in DAC's output pin
+        }
     </code>
 Remarks:
-    None.
+    This hook is applicable only if INCLUDE_PD_SINK macro is 1. Definition of this
+    hook is not mandatory.
 *******************************************************************************/ 
 #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)  SAMD20_Drive_DAC_I(u16DACData)
 
-#endif /*(TRUE == INCLUDE_PD_SINK)*/
+
 
 #endif /*_PSF_API_HOOK_H_*/
 
