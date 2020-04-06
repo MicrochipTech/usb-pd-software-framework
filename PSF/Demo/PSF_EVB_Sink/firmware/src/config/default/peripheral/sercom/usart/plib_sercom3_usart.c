@@ -41,15 +41,12 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
-//#ifdef CONFIG_HOOK_DEBUG_MSG
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
-#ifdef CONFIG_HOOK_DEBUG_MSG
-
-
 #include "plib_sercom3_usart.h"
 #include <string.h>
 
@@ -280,5 +277,3 @@ void SERCOM3_USART_Write_Char(char byWriteChar)
     { 
     }
 }
-
-#endif //CONFIG_HOOK_DEBUG_MSG

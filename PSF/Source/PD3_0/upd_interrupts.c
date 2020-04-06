@@ -44,8 +44,8 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
               
         MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
         
-        UINT16 u16InterruptStatus = 0;
-        UINT16 u16Data = 0;
+        UINT16 u16InterruptStatus = SET_TO_ZERO;
+        UINT16 u16Data = SET_TO_ZERO;
 
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         UINT8 u8ReadData = 0x00;

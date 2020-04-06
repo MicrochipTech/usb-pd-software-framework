@@ -64,7 +64,9 @@
 #endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
-
+#if (TRUE == INCLUDE_PD_SINK)
+#include "../../firmware/src/config/default/peripheral/dac/plib_dac.h"
+#endif
 // *****************************************************************************
 // *****************************************************************************
 // Section: SAMD20 Configuration
@@ -395,8 +397,56 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
 **************************************************************************/
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
 
+#if(TRUE == INCLUDE_PD_SINK)
+/**************************************************************************
+    Function:
+        void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current)
+    Summary:
+        Function to configure sink Hardware
+    Description:
+        It is a wrapper for PSF stack's MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW function
+    Conditions:
+        None.
+    Input:
+        u8PortNum -  PortNumber; Value passed will be less than CONFIG_PD_PORT_COUNT
+        u16VBUSVoltage -  Voltage value in mV to which sink circuitry has to be configured
+                           if required
+        u16Current -   Current value in mA for which sink hardware circuitry has to be
+                        configured.
+    Return:
+        None.
+    Remarks:
+        None                    
+**************************************************************************/
+void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current);
+
+/**************************************************************************
+    Function:
+        void SAMD20_Drive_DAC_I(UINT16 u16DACData)
+    Summary:
+        Wrapper to initialize DAC from SoC.
+    Description:
+        This API serves as a wrapper between PSF stack's MCHP_PSF_HOOK_DRIVE_DAC_I()
+        and Harmony generated code to output a voltage on output pin of SoC's
+        Digital to Analog Converter(DAC) to indicate the implicit/explicit current
+        capability of attached source partner.
+    Conditions:
+        None.
+    Input:
+        None.
+    Return:
+        None.
+    Remarks:
+        None                    
+**************************************************************************/
+void SAMD20_Drive_DAC_I(UINT16 u16DACData);
+
+#endif /*INCLUDE_PD_SINK*/
+
+
+
 /*Debug UART APIs*/
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 void SAMD20_UART_Initialisation(void);
 
 void SAMD20_UART_Write_Char(char);
@@ -406,6 +456,7 @@ void SAMD20_UART_Write_Int(UINT32, UINT8);
 void SAMD20_UART_Write_String(char*);
 
 #endif //CONFIG_HOOK_DEBUG_MSG
+
 
 #endif /*_DRIVERS_H */
 

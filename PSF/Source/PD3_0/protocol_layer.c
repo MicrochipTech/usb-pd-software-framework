@@ -281,7 +281,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 					   PRLTxCallback pfnTxCallback, UINT32  u32PkdPEstOnTxStatus)
 {
   
-	UINT8 u8MsgId, u8Pkt_Len, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = 0;
+	UINT8 u8MsgId, u8Pkt_Len, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = SET_TO_ZERO;
     
     #if (TRUE == INCLUDE_PD_3_0)
     UINT16 u16MsgDataIndex;
@@ -317,7 +317,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 		if (pu8DataBuffer != NULL)
 		{
 			/* copying message data*/
-			for (u16MsgDataIndex = 0; 
+			for (u16MsgDataIndex = SET_TO_ZERO; 
 					u16MsgDataIndex <= PRL_GET_DATA_SIZE(gasExtendedMsgBuff [u8PortNum].u16ExtendedMsgHeader); 
 						u16MsgDataIndex++)
 			{
@@ -564,7 +564,7 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 	if (pu8DataBuffer != NULL)
 	{
 		/* Load the Data Object or data*/
-		for (u8DataIndex = 0; u8DataIndex < u8DataObjSizeinBytes; u8DataIndex++)
+		for (u8DataIndex = SET_TO_ZERO; u8DataIndex < u8DataObjSizeinBytes; u8DataIndex++)
 		{
 			pu8TxPkt [++u8Pktindex] = pu8DataBuffer [u8DataIndex];
 		}
@@ -678,7 +678,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
         if (pu8DataBuffer != NULL)
         {
 		  	/* data from global buffer is copied to local buffer */
-            for (u16DataSize = 0; 
+            for (u16DataSize = SET_TO_ZERO; 
 				 u16DataSize < (PRL_GET_OBJECT_COUNT(gasPRLRecvBuff[u8PortNum].u16Header) * PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES); 
 				 u16DataSize++)
             {
@@ -701,7 +701,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
         if (pu8DataBuffer != NULL)
         {
 		  	/* data from global buffer is copied to local buffer */
-            for (u16DataSize = 0;	\
+            for (u16DataSize = SET_TO_ZERO;	\
 			  u16DataSize < (PRL_GET_DATA_SIZE(gasExtendedMsgBuff[u8PortNum].u16ExtendedMsgHeader));	\
 			  u16DataSize++)
             {
@@ -918,7 +918,7 @@ void PRL_TxRxMsgID_Reset(UINT8 u8PortNum, UINT8 u8SOPType)
 											Protocol Layer message reeption transition to PRL_Rx_WAIT_FOR_PHY_MESSAGE state */
   
   	/* corresponding Tx & RX Message ID of SOP type is reset is reset */
-	UINT8 u8RxSOPSelect = 0;
+	UINT8 u8RxSOPSelect = SET_TO_ZERO;
 	
 	/* PRL_SOP_TYPE value is 0, it cannot be masked. Always SOP_TYPE & NON_SOP_TYPE message
 		counter reset must be called separately */

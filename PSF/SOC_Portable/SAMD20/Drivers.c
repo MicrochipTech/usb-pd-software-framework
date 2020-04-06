@@ -79,7 +79,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #define SERCOMn_SPI_WriteRead(n,pTransmitData,txSize,pReceiveData,rxSize)\
  SERCOM##n##_SPI_WriteRead(pTransmitData,txSize,pReceiveData,rxSize)
 
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     /*Debug UART drivers*/
     #define SAMD20UART_Init(n) SERCOMn_UART_Initialise(n)
     #define SERCOMn_UART_Initialise(n) SERCOM##n##_USART_Initialise()
@@ -177,11 +177,13 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
             /*PORT_PIN_PA10*/
             SPI_SS_0_Clear();
         }
+        #if (TRUE == INCLUDE_PD_SOURCE) 
         else if(PORT1 == u8PortNum)
         {
             /*PORT_PIN_PA01*/
             SPI_SS_1_Clear();
         } 
+        #endif
     }
     else
     {
@@ -190,10 +192,12 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
         {
             SPI_SS_0_Set();
         }
+        #if (TRUE == INCLUDE_PD_SOURCE) 
         else if(PORT1 == u8PortNum)
         {
             SPI_SS_1_Set();
         }
+        #endif
     }
 }
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
@@ -356,7 +360,7 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen)
    char *cdest = (char *)pdest;
  
    // Copy contents of src[] to dest[]
-   for (int i=0; i<ilen; i++)
+   for (int i=SET_TO_ZERO; i<ilen; i++)
        cdest[i] = csrc[i];
    
    return pdest;
@@ -368,7 +372,7 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
     UINT8 *pu8Obj1 = (UINT8 *)pau8Data2;
     UINT8 *pu8Obj2 = (UINT8 *)pau8Data2;
 	
-	for (i = 0; i < ilen; i++)
+	for (i = SET_TO_ZERO; i < ilen; i++)
     {
     	if (pu8Obj1[i] != pu8Obj2[i])
             return (pu8Obj1[i] - pu8Obj2[i]);            	
@@ -379,9 +383,50 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 
 /*****************************************************************************/
 /*****************************************************************************/
+/*********************************Sink APIs*****************************/
+/*****************************************************************************/
+#if (TRUE == INCLUDE_PD_SINK)
+
+void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current)
+{
+    /* Clear the 1.5A_IND and 3A_IND */
+    SNK_1_5A_IND_Clear();
+    SNK_3A_IND_Clear();
+    
+    if (u16Current >= DPM_3000mA)
+    {
+        SNK_3A_IND_Set();
+    }
+    else if (u16Current >= DPM_1500mA)
+    {
+        SNK_1_5A_IND_Set();
+    }
+    else
+    {
+        //Do nothing
+    }
+}
+
+
+void SAMD20_Drive_DAC_I(UINT16 u16DACData)
+{
+    /*SAMD20 intenally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
+    /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
+    /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
+
+    UINT32 u32DACCalculate = u16DACData * 0x3FF;
+
+    u16DACData = (UINT16)(u32DACCalculate / 3300);
+    DAC_DataWrite(u16DACData);
+    
+}
+#endif
+
+/*****************************************************************************/
+/*****************************************************************************/
 /*********************************UART APIs*****************************/
 /*****************************************************************************/
-#ifdef CONFIG_HOOK_DEBUG_MSG
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 
 void SAMD20_UART_Initialisation(void)
 {
@@ -405,6 +450,7 @@ void SAMD20_UART_Write_String(char* pbyMessage)
 
 
 #endif //CONFIG_HOOK_DEBUG_MSG
+
 /* *****************************************************************************
  End of File
  */

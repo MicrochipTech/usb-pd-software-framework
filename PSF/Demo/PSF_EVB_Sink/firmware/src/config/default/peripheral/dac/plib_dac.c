@@ -1,20 +1,22 @@
 /*******************************************************************************
-  NVIC PLIB Implementation
+  Digital-to-Analog Converter (DAC) PLIB
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    plib_nvic.c
+    plib_dac.c
 
   Summary:
-    NVIC PLIB Source File
+    DAC PLIB Implementation file
 
   Description:
-    None
+    This file defines the interface to the DAC peripheral library. This
+    library provides access to and control of the associated peripheral
+    instance.
 
 *******************************************************************************/
-
+// DOM-IGNORE-BEGIN
 /*******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
@@ -37,34 +39,46 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
+// DOM-IGNORE-END
 
+// *****************************************************************************
+// *****************************************************************************
+// Section: Included Files
+// *****************************************************************************
+// *****************************************************************************
+/* This section lists the other files that are included in this file.
+*/
+
+#include "plib_dac.h"
 #include "device.h"
-#include "plib_nvic.h"
 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: NVIC Implementation
-// *****************************************************************************
-// *****************************************************************************
+/* (DAC DATA) Mask DATA[15:10] Bit */
+#define DAC_DATA_MSB_MASK                    (0x03FFU)
 
-void NVIC_Initialize( void )
+
+void DAC_Initialize(void)
 {
+    /* Set Reference Voltage */
+    DAC_REGS->DAC_CTRLB = DAC_CTRLB_REFSEL(1) | DAC_CTRLB_EOEN_Msk ;
 
-    /* Enable NVIC Controller */
-    __DMB();
-    __enable_irq();
+    DAC_REGS->DAC_EVCTRL = 0;
+    
+    /* Enable DAC */
+    DAC_REGS->DAC_CTRLA = DAC_CTRLA_ENABLE_Msk | DAC_CTRLA_RUNSTDBY_Msk;	
+    while(DAC_REGS->DAC_STATUS)
+    {
+        /* Wait for Synchronization after Enabling DAC */
+    }
+    
+}
 
-    /* Enable the interrupt sources and configure the priorities as configured
-     * from within the "Interrupt Manager" of MHC. */
-    NVIC_SetPriority(EIC_IRQn, 3);
-    NVIC_EnableIRQ(EIC_IRQn);
-    NVIC_SetPriority(SERCOM0_IRQn, 3);
-    NVIC_EnableIRQ(SERCOM0_IRQn);
-    NVIC_SetPriority(TC0_IRQn, 3);
-    NVIC_EnableIRQ(TC0_IRQn);
-
-
-
-    return;
+void DAC_DataWrite(uint16_t data)
+{
+    /* Write Data to DATA Register for conversion(DATA[9:0]) */
+    DAC_REGS->DAC_DATA = DAC_DATA_MSB_MASK & DAC_DATA_DATA(data);
+    while(DAC_REGS->DAC_STATUS)
+    {
+        /* Wait for Synchronization after writing Data to DATA Register */
+    }
 }

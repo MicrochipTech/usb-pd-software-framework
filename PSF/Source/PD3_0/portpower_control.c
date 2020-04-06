@@ -73,6 +73,8 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
 
     PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
 
+
+    
     /*Hook to modify or overwrite the default Port Power control initialization */
     MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
 
@@ -180,6 +182,7 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
     /* Hook to modify or overwrite the Port Control DC_DC_EN enable/disable */
     MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn); 
 }
+
 /************************************************************************************/
 void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
@@ -189,8 +192,92 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
     {
         u16Current = gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
     }
+    
+    /* clear the 3A and 1.5A IND status*/
+    gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= \
+            ~(DPM_PORT_IO_30_IND_STATUS | DPM_PORT_IO_15_IND_STATUS);
+    
+    if (u16Current >= DPM_3000mA)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_30_IND_STATUS;
+    }
+    else if (u16Current >= DPM_1500mA)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_15_IND_STATUS;
+    }
+    else
+    {
+        //Do nothing
+    }
+   
+    PWRCTRL_Drive_DAC_I(u8PortNum, u16Current);
+    
     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16VBUSVoltage,u16Current);
     
     #endif
+}
 
+void PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
+{
+#if (TRUE == INCLUDE_PD_SINK)
+    UINT16 u16MaxNegoCurInmA =0, u16DacData =0;
+    UINT16 u16MaxOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MaxOutVoltInmV;
+    UINT16 u16MinOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MinOutVoltInmV;
+    UINT16 u16MaxCurIndInmA = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_CurrentInd_MaxInA;
+    
+    //Approximate the current value
+    if(u16VBUSCurrent > DPM_5000mA)
+    {
+        u16MaxNegoCurInmA = DPM_5000mA;
+    }
+    else if(u16VBUSCurrent > DPM_4000mA)
+    {
+        u16MaxNegoCurInmA = DPM_4000mA;
+    }
+    else if(u16VBUSCurrent > DPM_3000mA)
+    {
+        u16MaxNegoCurInmA = DPM_3000mA;
+    }
+    else if(u16VBUSCurrent > DPM_2000mA)
+    {
+        u16MaxNegoCurInmA = DPM_2000mA;
+    }
+    else if(u16VBUSCurrent > DPM_1500mA)
+    {
+        u16MaxNegoCurInmA = DPM_1500mA;
+    }
+    else if(u16VBUSCurrent > DPM_500mA)
+    {
+        u16MaxNegoCurInmA = DPM_500mA;
+    }
+    else
+    {
+        u16MaxNegoCurInmA = DPM_0mA;
+    }
+    
+    if (u16MaxNegoCurInmA > u16MaxCurIndInmA)
+    {
+        u16MaxNegoCurInmA = u16MaxCurIndInmA;
+    }
+    
+    if(DPM_DAC_DIR_HIGH_AMP_MAX_VOLT == gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_Direction)
+    {
+        u16DacData = u16MinOpVoltInmV + ((u16MaxNegoCurInmA *\
+                (u16MaxOpVoltInmV - u16MinOpVoltInmV )) / u16MaxCurIndInmA);          
+    }
+    else if(DPM_DAC_DIR_HIGH_AMP_MIN_VOLT == gasCfgStatusData.sPerPortData[u8PortNum].u8DAC_I_Direction)
+    {
+        u16DacData = u16MaxOpVoltInmV - ((u16MaxNegoCurInmA *\
+                (u16MaxOpVoltInmV - u16MinOpVoltInmV )) / u16MaxCurIndInmA);
+
+    }
+    else
+    {
+        //Do nothing
+    }
+    
+    //value calculated in u16DacData should reflect in DAC_I pin
+    MCHP_PSF_HOOK_DRIVE_DAC_I(u16DacData);
+    
+#endif //#if (TRUE == INCLUDE_PD_SINK)
 }
