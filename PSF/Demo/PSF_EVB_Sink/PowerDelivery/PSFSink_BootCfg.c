@@ -111,7 +111,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
 // Section: Interface Functions                                               */
 /* ************************************************************************** */
 /* ************************************************************************** */
-void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA gasCfgStatusData)
+void PSF_LoadConfig()
 {
     UINT8 u8PortNum = 0;
     UINT16 u16StackVersion = SYSTEM_FW_REV;
