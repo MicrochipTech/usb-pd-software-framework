@@ -242,7 +242,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PORT_IO_PS_RDY_RECVD_STATUS                  BIT(9)
 #define PORT_IO_CAP_MISMATCH_STATUS                  BIT(10)
 
-void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA gasCfgStatusData); 
+void PSF_LoadConfig(); 
 
 #endif /* _PSFSINK_BOOTCFG_H */
 

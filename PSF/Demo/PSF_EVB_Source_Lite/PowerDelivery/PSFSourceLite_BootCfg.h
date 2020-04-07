@@ -175,7 +175,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                                             ((current)/CFG_PDO_CURRENT_UNIT))
 
 
-void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA gasCfgStatusData); 
+void PSF_LoadConfig(); 
 
 #endif /* _PSFSOURCELITE_BOOTCFG_H */
 
