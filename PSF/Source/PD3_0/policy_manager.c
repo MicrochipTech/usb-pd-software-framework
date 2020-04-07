@@ -976,7 +976,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             /*Increment the fault count*/
             gasDPM[u8PortNum].u8VBUSPowerFaultCount++;
             
-            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= CFG_MAX_VBUS_POWER_FAULT_COUNT)
+            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= \
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt)
             {
 				/* Disable the receiver*/
                 //PRL_EnableRx (u8PortNum, FALSE);
