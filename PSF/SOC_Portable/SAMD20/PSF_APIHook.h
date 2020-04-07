@@ -1730,10 +1730,10 @@ Input:
                         one of the values from enum eMCHP_PSF_NOTIFICATION.                   
 Return:
     UINT8 - Except for eMCHP_PSF_VCONN_PWR_FAULT and eMCHP_PSF_VBUS_PWR_FAULT the return value is 
-            ignored by PSF.
-            For eMCHP_PSF_VCONN_PWR_FAULT and eMCHP_PSF_VBUS_PWR_FAULT event, user can return 
-                TRUE - if the Power fault shall be handled by PSF
-                FALSE - if the Power fault occurrence is ignored.
+            ignored by PSF. For eMCHP_PSF_VCONN_PWR_FAULT and eMCHP_PSF_VBUS_PWR_FAULT event, 
+			user can return 
+             TRUE - if the Power fault shall be handled by PSF
+             FALSE - if the Power fault occurrence is ignored.
 Example:
     <code>
         #define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)\
@@ -1773,9 +1773,12 @@ User definition of this Hook function is optional.
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_SET_MCU_IDLE          SAMD20_SetMCUIdle()
 
-/******************************************************************************
-***********************************DAC_I***************************************
-*******************************************************************************
+// *****************************************************************************
+// *****************************************************************************
+// Section:  DAC 
+// *****************************************************************************
+// *****************************************************************************
+/*******************************************************************************
 Function:
     MCHP_PSF_HOOK_DRIVE_DAC_I()
 Summary:
