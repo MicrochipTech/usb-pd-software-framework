@@ -41,7 +41,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSF_CONFIG_H_
 #define _PSF_CONFIG_H_
 
-#include "generic_defs.h"
 //DOM-IGNORE-END
 
 // *****************************************************************************
@@ -49,7 +48,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: File includes - USER_APPLICATION FILES CAN GO HERE
 // *****************************************************************************
 // *****************************************************************************
-
+	#include "generic_defs.h"
 // *****************************************************************************
 // *****************************************************************************
 // Section: FEATURE INCLUDE/EXCLUDE AT COMPILE TIME
@@ -399,7 +398,6 @@ Remarks:
   **************************************************************************/
 #define I2C_DC_DC_CONTROL_CONFIG            2
 
-
 /**************************************************************************
 Summary:
     DC DC Buck Boost Controller default configuration option.
@@ -730,53 +728,54 @@ typedef enum
 																		system's maximum operating
                                                                         current in terms of mA
     u16aMinPDOPreferredCurInmA[7]   14         R/W         R          * Preferred minimum current 
-																		range for the PDO by which 
-																		the Sink may select without 
-																		setting Capability Mismatch 
-																		Bit with highest current 
-																		preferred.
-                                                                      * This array is applicable 
-																	    only for Sink Operation.                                                                     
-    u16MinimumOperatingCurInmA      2          R/W           R          * Minimum operating current by 
-																	    the System.
-                                                                      * This variable is applicable 
-																	    only for Sink Operation. 
+																		 range for the PDO by which 
+																		 the Sink may select without 
+																		 setting Capability Mismatch 
+																		 Bit with highest current 
+																		 preferred.
+                                                                        * This array is applicable 
+																	      only for Sink Operation.                                                                     
+    u16MinimumOperatingCurInmA      2          R/W         R          * Minimum operating current by 
+																	     the System.
+                                                                        * This variable is applicable 
+																	      only for Sink Operation. 
   	u16DAC_I_MaxOutVoltInmV         2          R/W         R           * Defines the maximum voltage 
 																		on DAC_I with a maximum of 
 																		2.5V in terms of mV 
 																	  * This is applicable only for
 																		Sink operation. 
-	u16DAC_I_MinOutVoltInmV         2		   R/W		   R   		   * Defines the minimum voltage 
-																		on DAC_I with a minimum of 
-																		0V in terms of mV 
-																	  * This is applicable only for
-																		Sink operation. 
+	u16DAC_I_MinOutVoltInmV         2		   R/W		   R   		  * Defines the minimum voltage 
+																		 on DAC_I with a minimum of 
+																		 0V in terms of mV 
+																	    * This is applicable only for
+																		  Sink operation. 
 	u16DAC_I_CurrentInd_MaxInA      2		   R/W		   R    	   * Defines which current in
-																		terms of mA corresponding 
-																		to maximum output voltage 
-																	  * It can take either 3A or 5A 
-																	    value. 
-																	  * If it is 5A and maximum 
-																		output voltage is 2.5V and if
-                                                                        direction mentioned in 
-                                                                        u8DAC_I_Direction is High 
-                                                                        Amperage - Max Voltage, then 
-																		1. 0.5A > DAC_I = 0.25V 
-																		2. 1.5A > DAC_I = 0.75V
-																		3. 2.0A > DAC_I = 1V
-																		4. 3.0A > DAC_I = 1.5V 
-																		5. 4.0A > DAC_I = 2.0V
-																		6. 5.0A > DAC_I = 2.5V
-																	  * If it is 3A and maximum 
-																		output voltage is 2.5V, then
-																		1. 0.5A > DAC_I = 0.42V 
-																		2. 1.5A > DAC_I = 1.25V
-																		3. 2.0A > DAC_I = 1.67V
-																		4. 3.0A > DAC_I = 2.5V
-																		5. 4.0A > DAC_I = 2.5V
-																		6. 5.0A > DAC_I = 2.5V
-																	  * This is applicable only for 
-																		Sink operation. 
+																		 terms of mA corresponding 
+																		 to maximum output voltage 
+																		* It can take either 3A or 5A 
+																	      value. 
+																		* If it is 5A and maximum 
+																		  output voltage is 2.5V and if
+                                                                          direction mentioned in 
+                                                                          u8DAC_I_Direction is High 
+                                                                          Amperage - Max Voltage, then 
+																		  1. 0.5A > DAC_I = 0.25V 
+																		  2. 1.5A > DAC_I = 0.75V
+																		  3. 2.0A > DAC_I = 1V
+																		  3. 2.0A > DAC_I = 1V
+																		  4. 3.0A > DAC_I = 1.5V 
+																		  5. 4.0A > DAC_I = 2.0V
+																		  6. 5.0A > DAC_I = 2.5V
+																	    * If it is 3A and maximum 
+																		  output voltage is 2.5V, then
+																		  1. 0.5A > DAC_I = 0.42V 
+																		  2. 1.5A > DAC_I = 1.25V
+																		  3. 2.0A > DAC_I = 1.67V
+																		  4. 3.0A > DAC_I = 2.5V
+																		  5. 4.0A > DAC_I = 2.5V
+																		  6. 5.0A > DAC_I = 2.5V
+																	    * This is applicable only for 
+																		  Sink operation. 
     u16PowerGoodTimerInms           2         R/W          R         * After an automatic fault 
 																		recovery, 
 																		u16PowerGoodTimerInms
@@ -834,14 +833,17 @@ typedef enum
                                                                         3. Clear all New PDO 
 																		    registers
                                                                         4. Clear this bit
-    u8SinkConfigSel                1         R/W                    * Sink Selection mode for 
-																		operation.
-                                                                        1. '0x00' Mode A: Prefer 
-																			  Higher Voltage and 
-																			  Wattage
-                                                                        2. '0x01' Mode B: Prefer 
-																		      Lower Voltage and 
-																			  Wattage
+    u8SinkConfigSel                 1         R/W          R         * BIT[1:0] - Sink Selection mode for operation.
+                                                                        1. '0x00' Mode A: Prefer Higher Voltage and Wattage
+                                                                        2. '0x01' Mode B: Prefer Lower Voltage and Wattage
+                                                                      * BIT2 - No USB Suspend Flag
+																		1. '1':Set the flag to '1' in RDO request
+																		2. '0':Set the flag to '0' in RDO request
+                                                                      * BIT3 - GiveBackFlag
+                                                                        1. '1':Set the flag to '1' in RDO request 
+																				enabling GotoMin feature 
+																		2. Set the flag to '0' in RDO request
+																			 disabling GotoMin Feature
     u8FaultInDebounceInms           1         R/W          R         * Debounce timer value in terms 
 																        of milliseconds for VBUS
                                                                         overcurrent fault conditions
@@ -1126,7 +1128,7 @@ typedef enum
 																		EN_SINK pin
 																	  * This is applicable only for 
 																		Sink operation. 
-	u8DAC_I_Direction               1              	                 * Specifies the direction of 
+	u8DAC_I_Direction               1         R/W          R       	  * Specifies the direction of 
 																	     DAC_I to allow user invert 
 																		 direction of DAC_I if 
 																		 required 
@@ -1136,9 +1138,10 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		 for Sink operation. 
+	u16aReserved1[1]				2								 Reserved					 
 	u8aReserved1[2]					2								 Reserved					 
-	u8aReserved2[2]					2								 Reserved					 
-	u8aReserved3[3]					3								 Reserved					 		
+	u8aReserved2[2]					2								 Reserved
+	u8aReserved3[1]					1								 Reserved					 		
     </table>
     
     
@@ -1262,38 +1265,38 @@ typedef enum
              time         time      
     ------  -----------  --------  --------------------
     0       R            R         EN_DC_DC Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted 
+                                    * '1' Asserted 
+                                    * '0' De-asserted 
     1       R            R         VSEL0 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     2       R            R         VSEL1 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     3       R            R         VSEL2 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     4       R            R         EN_VBUS Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     5       R            R         VBUS_DIS Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     6       R            R         EN_SINK Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     7       R            R         1.5_IND Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     8       R            R         3.0_IND Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     9       R            R         PS_RDY Received 
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     10      R            R         Capability Mismatch  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     15:11   R            R         Reserved 
 	</table>
 	
@@ -1435,17 +1438,18 @@ typedef struct _PortCfgStatus
     UINT16 u16NegoVoltageIn50mV;      
     UINT16 u16NegoCurrentIn10mA;      
     UINT16 u16MaximumOperatingCurInmA; 
-    #if (TRUE == INCLUDE_PD_SINK)
-    UINT16 u16aMinPDOPreferredCurInmA[7]; 
-    UINT16 u16MinimumOperatingCurInmA;
-    UINT16 u16DAC_I_MaxOutVoltInmV; 
-    UINT16 u16DAC_I_MinOutVoltInmV; 
-    UINT16 u16DAC_I_CurrentInd_MaxInA;  
-    #endif
     UINT16 u16PortIOStatus;
     UINT16 u16PortStatusChange;
     UINT16 u16PortIntrMask;
-    UINT16 u16PowerGoodTimerInms;   
+    UINT16 u16PowerGoodTimerInms;
+	#if (TRUE == INCLUDE_PD_SINK)
+    UINT16 u16aMinPDOPreferredCurInmA[7]; 
+    UINT16 u16MinimumOperatingCurInmA;
+    UINT16 u16DAC_I_MaxOutVoltInmV; 
+    UINT16 u16DAC_I_MinOutVoltInmV;
+	UINT16 u16DAC_I_CurrentInd_MaxInA; 
+    UINT16 u16aReserved1[1];
+    #endif
     UINT8 u8SourcePDOCnt;			
     UINT8 u8SinkPDOCnt;             
     UINT8 u8NewPDOCnt;              
@@ -1479,7 +1483,7 @@ typedef struct _PortCfgStatus
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction; 
-    UINT8 u8aReserved3[3];
+    UINT8 u8aReserved3[1];
     #endif
 	 
    } PORT_CFG_STATUS, *PPORT_CFG_STATUS;
@@ -1796,7 +1800,7 @@ typedef struct _PPSPortCfgStatus
     u8aReserved6[2]				     2 								 Reserved 	
     u8aReserved7[3]				     3								 Reserved 
     u8aReserved8[3]				     3 								 Reserved 
-    u16aReserved1				     2 								 Reserved 	
+    u16aReserved2				     2 								 Reserved 	
 																	
 																		
 	</table> 															  										
@@ -1873,7 +1877,7 @@ typedef struct _GlobalCfgStatusData
 #endif
 #if (TRUE == INCLUDE_POWER_BALANCING)    
     UINT16 u16SharedPowerCapacity; 
-    UINT16 u16Reserved1;
+    UINT16 u16Reserved2;
     PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	
 #endif 
     
