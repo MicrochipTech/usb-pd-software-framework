@@ -613,11 +613,18 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     UINT8 u8SinkPDOIndex;
     UINT32 u32SinkPDO;
     UINT16 u16MinPDOPreferredCurIn10mA;
+    UINT16 u16SinkRDOCurIn10mA;
     UINT8 u8SinkMode = (gasCfgStatusData.sPerPortData[u8PortNum].u8SinkConfigSel & DPM_SINK_CONFIG_SINK_MODE_SEL_MASK);
     UINT8 u8SinkGiveBackFlag = ((gasCfgStatusData.sPerPortData[u8PortNum].u8SinkConfigSel & \
             DPM_SINK_CONFIG_GIVE_BACK_FLAG_MASK) >> DPM_SINK_CONFIG_GIVE_BACK_FLAG_POS);
     UINT8 u8SinkNoUSBSusp = ((gasCfgStatusData.sPerPortData[u8PortNum].u8SinkConfigSel & \
             DPM_SINK_CONFIG_NO_USB_SUSP_MASK) >> DPM_SINK_CONFIG_NO_USB_SUSP_POS);
+    
+    /*Clear partner variable*/
+    for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = SET_TO_ZERO;
+    }
     
 	/*Update received source capabilities to partner variable*/
     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, 
@@ -685,17 +692,26 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     /* Check DPM whether minumum PDO current matches*/
     for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8Recevd_SrcPDOCnt; u8SrcIndex++)
     {
-        u8SrcPDOIndex = u8SinkPower[u8SrcIndex][DPM_PDO_INDEX];
+        u8SrcPDOIndex = u8SrcPower[u8SrcIndex][DPM_PDO_INDEX];
         u32RcvdSrcPDO = pu32RecvdSrcCapsPayload[u8SrcPDOIndex];
         for(u8SinkIndex = SET_TO_ZERO; u8SinkIndex < u8SinkPDOCnt; u8SinkIndex++)
         {
-            u8SinkPDOIndex = u8SrcPower[u8SinkIndex][DPM_PDO_INDEX];
+            u8SinkPDOIndex = u8SinkPower[u8SinkIndex][DPM_PDO_INDEX];
             u32SinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[u8SinkPDOIndex];
             u16MinPDOPreferredCurIn10mA = (gasCfgStatusData.sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[u8SinkPDOIndex] /10);
     
             if((DPM_GET_PDO_VOLTAGE(u32RcvdSrcPDO) == DPM_GET_PDO_VOLTAGE(u32SinkPDO))
                     && (DPM_GET_PDO_CURRENT(u32RcvdSrcPDO) >= u16MinPDOPreferredCurIn10mA))
             {
+                if(DPM_GET_PDO_CURRENT(u32RcvdSrcPDO) > DPM_GET_PDO_CURRENT(u32SinkPDO))
+                {
+                    u16SinkRDOCurIn10mA = DPM_GET_PDO_CURRENT(u32SinkPDO);
+                }
+                else
+                {
+                    //u16SinkRDOCurIn10mA will be greater than or equal to u16SinkRDOCurIn10mA
+                    u16SinkRDOCurIn10mA = DPM_GET_PDO_CURRENT(u32RcvdSrcPDO);
+                }
                 if(u8SinkGiveBackFlag)
                 {
                     /*if go to min supported Form request message with minimum current */
@@ -703,7 +719,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                     gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = \
                             DPM_FORM_DATA_REQUEST((u8SrcPDOIndex + 1), u8CapMismatch,
                             u8SinkGiveBackFlag, DPM_GET_PDO_USB_COMM_CAP(u32SinkPDO),\
-                            u8SinkNoUSBSusp, u16MinPDOPreferredCurIn10mA,\
+                            u8SinkNoUSBSusp, u16SinkRDOCurIn10mA,\
                             (gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA/DPM_10mA));      
                 }
                 else
@@ -712,10 +728,10 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                     gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = \
                             DPM_FORM_DATA_REQUEST((u8SrcPDOIndex + 1), u8CapMismatch,
                             u8SinkGiveBackFlag, DPM_GET_PDO_USB_COMM_CAP(u32SinkPDO),\
-                            u8SinkNoUSBSusp, u16MinPDOPreferredCurIn10mA,\
+                            u8SinkNoUSBSusp, u16SinkRDOCurIn10mA,\
                                                 DPM_GET_PDO_CURRENT(u32SinkPDO));
                 }
-                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = u16MinPDOPreferredCurIn10mA * DPM_10mA;
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = u16SinkRDOCurIn10mA * DPM_10mA;
                 /*Updating the globals with Sink PDO selected */
                 gasDPM[u8PortNum].u32NegotiatedPDO = u32RcvdSrcPDO;
                 /*Updating the globals with Sink PDO index selected*/
@@ -723,7 +739,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 /*Update Negotiated value*/
                  gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = DPM_GET_PDO_VOLTAGE(u32SinkPDO);
                 /*Update Negotiated value*/
-                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16MinPDOPreferredCurIn10mA;              
+                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16SinkRDOCurIn10mA;              
                 
                  DPM_SetPortPower (u8PortNum);
                 

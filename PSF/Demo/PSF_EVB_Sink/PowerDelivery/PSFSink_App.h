@@ -33,11 +33,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSFSINK_APP_H
 #define _PSFSINK_APP_H
 
-/* Defines major and minor version of PDSource Application*/
+/* Defines major and minor version of PDSink Application*/
 
-/*v1.00 release*/
+/*v1.02 release*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x00
+#define APP_REV_MINOR	0x02
 
 /* ************************************************************************** */
 /* ************************************************************************** */
