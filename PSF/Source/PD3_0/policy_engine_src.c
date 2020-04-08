@@ -248,13 +248,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     /* Update Advertised PDO registers */
                     DPM_UpdateAdvertisedPDOParam(u8PortNum); 
-                       
-                    /* Reset New PDO Parameters if NewPDOSlct is enabled */
-                    if (gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSelect)
-                    {                                                
-                        DPM_ResetNewPDOParameters(u8PortNum);
-                    }
-                    
+                                           
                     /* Reset CapsCounter and HardReset Counter to 0 */
                     gasPolicy_Engine[u8PortNum].u8CapsCounter = RESET_TO_ZERO;
                     gasPolicy_Engine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;
@@ -512,6 +506,12 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                        accepted and PS_RDY message sent */
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                                         DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS; 
+  
+                    /* Reset New PDO Parameters if NewPDOSlct is enabled */
+                    if (gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSelect)
+                    {                                                
+                        DPM_ResetNewPDOParameters(u8PortNum);
+                    }                    
                     
                     DPM_EnablePowerFaultDetection(u8PortNum);
                     
