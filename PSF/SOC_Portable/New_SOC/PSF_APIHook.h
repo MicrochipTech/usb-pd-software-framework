@@ -1572,8 +1572,8 @@ Remarks:
     single threaded environment where MchpPSF_RUN is called in a while(1)
     loop, it took maximum of 74.57us and 0.1439 ms execution time for 1
     port and 2 source port solution respectively. In Multi threaded SAMD20
-    configured for 48MHz environment, MchpPSF_RUN has to be called for
-    every 2ms for Successful 2-Port Source only operation.                
+    configured for 48MHz environment, MchpPSF_RUN can be called for
+    every 1ms to 5ms for Successful 2-Port Source only operation.                
   *************************************************************************/
 void MchpPSF_RUN(void);
 
