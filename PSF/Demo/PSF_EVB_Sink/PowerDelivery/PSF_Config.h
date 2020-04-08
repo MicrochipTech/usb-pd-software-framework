@@ -461,7 +461,7 @@ Example:
 Note:
     None.
 **************************************************************************/
-#define CONFIG_HOOK_DEBUG_MSG                       0
+#define CONFIG_HOOK_DEBUG_MSG      0                 
 
 
 // *****************************************************************************
@@ -739,11 +739,11 @@ typedef enum
 																	     the System.
                                                                         * This variable is applicable 
 																	      only for Sink Operation. 
-  	u16DAC_I_MaxOutVoltInmV         2          R/W         R           * Defines the maximum voltage 
+  	u16DAC_I_MaxOutVoltInmV         2          R/W         R          * Defines the maximum voltage 
 																		on DAC_I with a maximum of 
 																		2.5V in terms of mV 
-																	  * This is applicable only for
-																		Sink operation. 
+																		* This is applicable only for
+																		  Sink operation. 
 	u16DAC_I_MinOutVoltInmV         2		   R/W		   R   		  * Defines the minimum voltage 
 																		 on DAC_I with a minimum of 
 																		 0V in terms of mV 
@@ -1128,20 +1128,20 @@ typedef enum
 																		EN_SINK pin
 																	  * This is applicable only for 
 																		Sink operation. 
-	u8DAC_I_Direction               1         R/W          R       	  * Specifies the direction of 
-																	     DAC_I to allow user invert 
-																		 direction of DAC_I if 
-																		 required 
+	u8DAC_I_Direction               1         R/W          R       	 * Specifies the direction of 
+																	    DAC_I to allow user invert 
+																		direction of DAC_I if 
+																		required 
 																		 1. 0 - High Amperage -
    																		      Max Voltage 
 																		 2. 1- High Amperage - 
 																			  Min Voltage 
-																	  * This is applicable only 
-																		 for Sink operation. 
-	u16aReserved1[1]				2								 Reserved					 
+																		* This is applicable only 
+																		  for Sink operation. 
+	u16Reserved1    				2								 Reserved					 
 	u8aReserved1[2]					2								 Reserved					 
 	u8aReserved2[2]					2								 Reserved
-	u8aReserved3[1]					1								 Reserved					 		
+	u8Reserved3    					1								 Reserved					 		
     </table>
     
     
@@ -1174,7 +1174,7 @@ typedef enum
     9       RW           R         VCONN OCS Enable
                                     * '0' Disable
                                     * '1' Enable
-    32:10   RW           R         Reserved
+    32:10                          Reserved
     </table>
 	
 	<b>b. u32PortConnectStatus</b>: 
@@ -1255,7 +1255,7 @@ typedef enum
 									* '01' USB Power 
 								    * '10' 1.5A 
 									* '11' 3.0A 
-	31:17	R			 R         Reserved 				
+	31:17	 			           Reserved 				
 	</table>
 
 	<b>c. u16PortIOStatus</b>: 
@@ -1297,7 +1297,7 @@ typedef enum
     10      R            R         Capability Mismatch  
                                     * '1' Asserted 
                                     * '0' De-asserted
-    15:11   R            R         Reserved 
+    15:11                          Reserved 
 	</table>
 	
 	<b>d. u16PortStatusChange</b>: 
@@ -1372,7 +1372,7 @@ typedef enum
       									been detected
                                     * '1' Since the last read of this register, 1 or more VCONN 
 										faults have been detected										  
-	15:12   R            R 		   Reserved 
+	15:12                  		   Reserved 
 	</table> 	
 	
 	<b>e. u16PortIntrMask</b>: 
@@ -1448,7 +1448,7 @@ typedef struct _PortCfgStatus
     UINT16 u16DAC_I_MaxOutVoltInmV; 
     UINT16 u16DAC_I_MinOutVoltInmV;
 	UINT16 u16DAC_I_CurrentInd_MaxInA; 
-    UINT16 u16aReserved1[1];
+    UINT16 u16Reserved1;
     #endif
     UINT8 u8SourcePDOCnt;			
     UINT8 u8SinkPDOCnt;             
@@ -1483,7 +1483,7 @@ typedef struct _PortCfgStatus
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction; 
-    UINT8 u8aReserved3[1];
+    UINT8 u8Reserved3;    
     #endif
 	 
    } PORT_CFG_STATUS, *PPORT_CFG_STATUS;
@@ -1561,7 +1561,7 @@ typedef struct _PortCfgStatus
                                     * '1' Enable
 	3:1     R/W          R/W       Selects the port Priority 								
 									* 000b is the highest priority
-    7:4     R/W          R/W       Reserved 									
+    7:4                            Reserved 									
    Remarks:
      None                                                               
    **********************************************************************/
@@ -1638,8 +1638,6 @@ typedef struct _PPSPortCfgStatus
 	u8PSFMajorVersion               1         R/W          R         Defines PSF Stack Major Version 
 
 	u8PSFMinorVersion               1         R/W          R         Defines PSF Stack Minor Version 
-
-	u16Reserved               	    2         R/W          R         Reserved 
 
 	u16ProducdID               	    2         R/W          R         * Defines the Product Identifier 
 																		Value. 
@@ -1800,8 +1798,7 @@ typedef struct _PPSPortCfgStatus
     u8aReserved6[2]				     2 								 Reserved 	
     u8aReserved7[3]				     3								 Reserved 
     u8aReserved8[3]				     3 								 Reserved 
-    u16aReserved2				     2 								 Reserved 	
-																	
+    u16Reserved2 				     2 								 Reserved 																
 																		
 	</table> 															  										
 
