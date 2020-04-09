@@ -98,6 +98,9 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_PDO_USB_COMM_CAP(X)             ((X & 0x04000000) >> 26)
 #define DPM_MAX_PDO_CNT                          7
 
+#define DPM_MAX_APDO_COUNT                       3 
+#define DPM_PPS_APDO_EN_DIS_MAS                  0x02 
+#define DPM_PPS_ENABLE                           0x01 
 /*******************************************************************************/
 
 // *****************************************************************************
