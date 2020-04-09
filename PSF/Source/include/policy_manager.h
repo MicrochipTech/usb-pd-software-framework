@@ -98,9 +98,6 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_PDO_USB_COMM_CAP(X)             ((X & 0x04000000) >> 26)
 #define DPM_MAX_PDO_CNT                          7
 
-#define DPM_MAX_APDO_COUNT                       3 
-#define DPM_PPS_APDO_EN_DIS_MAS                  0x02 
-#define DPM_PPS_ENABLE                           0x01 
 /*******************************************************************************/
 
 // *****************************************************************************
@@ -245,6 +242,34 @@ Source/Sink Power delivery objects*/
 #define DPM_NEXT_PWR_INDEX(x) (x+1)
 
 #define DPM_4BYTES_FOR_EACH_PDO_OF(PDO_Count) (PDO_Count*4)
+ 
+/*********************PPS Defines ******************/
+#define DPM_PPS_ENABLE                           0x01 
+#define DPM_MAX_APDO_COUNT                       3 
+#define DPM_PPS_APDO_EN_DIS_MASK                 0x02 
+
+#define DPM_APDO_MAX_CURRENT_UNIT                50 
+#define DPM_APDO_MIN_VOLTAGE_UNIT                100
+#define DPM_APDO_MAX_VOLTAGE_UNIT                100
+
+#define DPM_APDO_MIN_VOLTAGE_POS                 8
+#define DPM_APDO_MAX_VOLTAGE_POS                 17 
+#define DPM_APDO_PWR_LIMITED_POS                 27 
+
+#define DPM_APDO_MAX_CURRENT_MASK                0x0000007F 
+#define DPM_GET_APDO_MAX_CURRENT(u32Apdo)        ((u32Apdo) & DPM_APDO_MAX_CURRENT_MASK)      
+#define DPM_GET_APDO_MAX_CURRENT_IN_mA(u32Apdo)  ((DPM_GET_APDO_MAX_CURRENT(u32Apdo)) * DPM_APDO_MAX_CURRENT_UNIT)
+
+#define DPM_APDO_MIN_VOLTAGE_MASK                0x0000FF00 
+#define DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)        ((u32Apdo) & DPM_APDO_MIN_VOLTAGE_MASK)
+#define DPM_GET_APDO_MIN_VOLTAGE_IN_mV(u32Apdo)  ((DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)) * DPM_APDO_MIN_VOLTAGE_UNIT) 
+
+#define DPM_APDO_MAX_VOLTAGE_MASK                0x01FE0000 
+#define DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)        ((u32Apdo) & DPM_APDO_MAX_VOLTAGE_MASK)
+#define DPM_GET_APDO_MAX_VOLTAGE_IN_mV(u32Apdo)  ((DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)) * DPM_APDO_MAX_VOLTAGE_UNIT) 
+
+#define DPM_3A_IN_50mA                           (DPM_3000mA / 50) 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -294,6 +319,7 @@ typedef enum PDOtype
     ePDO_FIXED = 0x00,
     ePDO_BATTERY = 0x01,
     ePDO_VARIABLE = 0x02,
+    ePDO_PROGRAMMABLE = 0x03,
     ePDO_INVALID = 0xFF
 } ePDOtypes;
 
@@ -1075,6 +1101,27 @@ UINT8 DPM_ComparePDOs(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification);
+
+/**************************************************************************************************
+    Function:
+        void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
+    Summary:
+        Includes APDOs in Source capabilities buffer.  
+    Description:
+        This API can be called to append the APDOs in the Source capabilities buffer. 
+        This API will ensure that the total Data Object count does not exceed 7.  
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        *u8pSrcPDOCnt - Number of PDOs included in Source caps buffer
+        *u32pSrcCap - Pointer to the array of Source caps buffer 
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
 
 #endif /*_POLICY_MANAGER_H_*/
 

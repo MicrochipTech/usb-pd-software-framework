@@ -321,10 +321,25 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 UINT32 DPM_CurrentCutDown (UINT32 u32PDO)
 {
     /* If PDO max current greater than E-Cable supported current, reset the current value */
-    if((u32PDO & PE_MAX_CURR_MASK) > DPM_CABLE_CURR_3A_UNIT)
+    if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
     {
-        u32PDO &= ~PE_MAX_CURR_MASK;
-        u32PDO |= DPM_CABLE_CURR_3A_UNIT;
+        if((u32PDO & PE_MAX_CURR_MASK) > DPM_CABLE_CURR_3A_UNIT)
+        {
+            u32PDO &= ~PE_MAX_CURR_MASK;
+            u32PDO |= DPM_CABLE_CURR_3A_UNIT;
+        }  
+    }
+    else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+    {
+        if (DPM_GET_APDO_MAX_CURRENT_IN_mA(u32PDO) > DPM_3000mA)
+        {
+            u32PDO &= ~(DPM_APDO_MAX_CURRENT_MASK);
+            u32PDO |= DPM_3A_IN_50mA; 
+        }
+    }
+    else
+    {
+        /* No support for Variable and Battery power supplies */
     }
     
     return u32PDO; 
@@ -345,15 +360,36 @@ void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32S
     } 
 }
 
+void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
+{
+    UINT8 u8APDOEnDisMask = DPM_PPS_APDO_EN_DIS_MASK; 
+   
+	for (UINT8 byIndex = INDEX_0; byIndex < DPM_MAX_APDO_COUNT; byIndex++)
+    {
+        /* At any point PDO + APDO Count should not exceed 7 */
+        if ((*u8pSrcPDOCnt) < DPM_MAX_PDO_CNT)
+        {
+            /* Check if APDO is enabled */
+            if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & u8APDOEnDisMask) 
+            {
+                /* Include the APDO in Source capabilities message */
+                *(u32pSrcCap + (*u8pSrcPDOCnt)) = gasCfgStatusData.sPPSPerPortData[u8PortNum].u32aPPSApdo[byIndex];
+
+                /* Increment Source caps PDO count */
+                (*u8pSrcPDOCnt)++; 
+            }
+            /* Left shift the mask to check for next APDO */
+            u8APDOEnDisMask <<= 1;
+        }
+    }   
+}
+
 /* Get the source capabilities from the port configuration structure */
 void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu32DataObj)
 {   
   
     UINT8 u8RaPresence = SET_TO_ZERO;
 	UINT32 *pu32SrcCap;
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)    
-    UINT8 u8APDOEnDisMask = DPM_PPS_APDO_EN_DIS_MAS;
-#endif 
 	/* Get the source PDO count */
     if (gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSelect)
     {
@@ -368,29 +404,12 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
         pu32SrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[0];        
     }
  
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)    
-    /* Check if PPS is enabled for the port */
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
     if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & DPM_PPS_ENABLE) 
     {
-		for (UINT8 byIndex = INDEX_0; byIndex < DPM_MAX_APDO_COUNT; byIndex++)
-		{
-           /* Check if APDO is enabled */
-		   if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & u8APDOEnDisMask) 
-		   {
-                /* Include the APDO in Source capabilities message */
-                *(pu32SrcCap + (*u8pSrcPDOCnt)) = gasCfgStatusData.sPPSPerPortData[u8PortNum].u32aPPSApdo[byIndex];
-                (*u8pSrcPDOCnt)++; 
-		   }
-           /* Let shift the mask to check for next APDO */
-		   u8APDOEnDisMask <<= 1;
-		}   /* *u8pSrcPDOCnt will be equal to PDO + APDO count */ 
-        
-		if ((*u8pSrcPDOCnt) > DPM_MAX_PDO_CNT) 
-		{
-			*u8pSrcPDOCnt = DPM_MAX_PDO_CNT; // Maximum number of data objects can be 7. This is to prevent error done by user. 
-		}
+        DPM_IncludeAPDOs (u8PortNum, u8pSrcPDOCnt, pu32SrcCap); 
     }
-#endif 
+#endif     
     
     DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
    
@@ -455,7 +474,16 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
         (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
             gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt));           
     }
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
 
+    if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & DPM_PPS_ENABLE) 
+    {    
+        /* Add APDOs and APDO count to the Advertised PDO registers */
+        DPM_IncludeAPDOs (u8PortNum, &gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt, 
+                                    &gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0]); 
+    }
+    
+#endif
     /* Update the Port Connection Status register by comparing the Fixed and 
        Advertised Source PDOs */
     if (0 == DPM_ComparePDOs(u8PortNum))
