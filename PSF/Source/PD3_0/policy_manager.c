@@ -351,6 +351,9 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
   
     UINT8 u8RaPresence = SET_TO_ZERO;
 	UINT32 *pu32SrcCap;
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)    
+    UINT8 u8APDOEnDisMask = DPM_PPS_APDO_EN_DIS_MAS;
+#endif 
 	/* Get the source PDO count */
     if (gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSelect)
     {
@@ -364,6 +367,30 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
    
         pu32SrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[0];        
     }
+ 
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)    
+    /* Check if PPS is enabled for the port */
+    if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & DPM_PPS_ENABLE) 
+    {
+		for (UINT8 byIndex = INDEX_0; byIndex < DPM_MAX_APDO_COUNT; byIndex++)
+		{
+           /* Check if APDO is enabled */
+		   if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & u8APDOEnDisMask) 
+		   {
+                /* Include the APDO in Source capabilities message */
+                *(pu32SrcCap + (*u8pSrcPDOCnt)) = gasCfgStatusData.sPPSPerPortData[u8PortNum].u32aPPSApdo[byIndex];
+                (*u8pSrcPDOCnt)++; 
+		   }
+           /* Let shift the mask to check for next APDO */
+		   u8APDOEnDisMask <<= 1;
+		}   /* *u8pSrcPDOCnt will be equal to PDO + APDO count */ 
+        
+		if ((*u8pSrcPDOCnt) > DPM_MAX_PDO_CNT) 
+		{
+			*u8pSrcPDOCnt = DPM_MAX_PDO_CNT; // Maximum number of data objects can be 7. This is to prevent error done by user. 
+		}
+    }
+#endif 
     
     DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
    
@@ -390,7 +417,7 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
     }   
     else
     {
-        DPM_ChangeCapabilities (u8PortNum, pu32DataObj, &pu32SrcCap[0],*u8pSrcPDOCnt);  
+        DPM_ChangeCapabilities (u8PortNum, pu32DataObj, &pu32SrcCap[INDEX_0],*u8pSrcPDOCnt);  
     }     
 }
 
@@ -400,7 +427,7 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = RESET_TO_ZERO; 
         
-    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < CFG_MAX_PDO_COUNT; u8PDOIndex++)
+    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < DPM_MAX_PDO_CNT; u8PDOIndex++)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8PDOIndex] = RESET_TO_ZERO; 
     }    
