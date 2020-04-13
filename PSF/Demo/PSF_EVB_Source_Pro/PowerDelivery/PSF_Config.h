@@ -1539,7 +1539,7 @@ typedef struct _PortCfgStatus
     Name                            Size in   R/W Config   R/W Run   \Description
                                      Bytes     time         time      
     ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
-    u16MaxPrtPwrBankA               2         R/W          R         * Maximum Port Power Bank A in 
+    u16MaxPrtPwrBankAIn250mW        2         R/W          R         * Maximum Port Power Bank A in 
 																		0.25W steps. 
 																	  * Unit/LSB = 0.25W
 																	  * Sample values this variable
@@ -1549,7 +1549,7 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.
-    u16MaxPrtPwrBankB               2         R/W          R         * Maximum Port Power Bank B in 
+    u16MaxPrtPwrBankBIn250mW        2         R/W          R         * Maximum Port Power Bank B in 
 																		0.25W steps. 
 																	  * Unit/LSB = 0.25W
 																	  * Sample values this variable
@@ -1559,7 +1559,7 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.	
-    u16MaxPrtPwrBankC               2         R/W          R         * Maximum Port Power Bank A in 
+    u16MaxPrtPwrBankCIn250mW        2         R/W          R         * Maximum Port Power Bank A in 
 																		0.25W steps. 
 																	  * Unit/LSB = 0.25W
 																	  * Sample values this variable
@@ -1569,7 +1569,7 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.	
-    u16MaxPrtCurrent                2         R/W          R         * Maximum allowable current for 
+    u16MaxPrtCurrentIn10mA          2         R/W          R         * Maximum allowable current for 
 													                    ports in 10mA steps 
 																	  * Sample values this variable
 																	    can take are, 
@@ -1606,10 +1606,10 @@ typedef struct _PortCfgStatus
 
 typedef struct _PBPortCfgStatus
 {
-    UINT16 u16MaxPrtPwrBankA; 
-    UINT16 u16MaxPrtPwrBankB; 
-    UINT16 u16MaxPrtPwrBankC; 
-    UINT16 u16MaxPrtCurrent; 
+    UINT16 u16MaxPrtPwrBankAIn250mW; 
+    UINT16 u16MaxPrtPwrBankBIn250mW; 
+    UINT16 u16MaxPrtPwrBankCIn250mW; 
+    UINT16 u16MaxPrtCurrentIn10mA; 
     UINT8 u8PBEnablePriority; 
     UINT8 u8aReserved4[3];
 } PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
@@ -1724,7 +1724,7 @@ typedef struct _PPSPortCfgStatus
 																        INCLUDE_POWER_BALANCING or
 																	    INCLUDE_POWER_THROTTLING is 
 																		set to '1'. 			
-	u16SystemPowerBankA 	        2         R/W          R         * Defines the Total System 
+	u16SystemPowerBankAIn250mW 	    2         R/W          R         * Defines the Total System 
 																		Power of Bank A. Each unit 
 																		is 0.25W 
 																	  * Sample values are, 
@@ -1738,7 +1738,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_BALANCING or 
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'. 
-	u16MinPowerBankA    	        2         R/W          R         * Defines the Guaranteed  
+	u16MinPowerBankAIn250mW    	    2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank A. 
 																		Each unit is 0.25W 
 																	  * Sample values are, 
@@ -1753,7 +1753,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.	
 																		
-	u16SystemPowerBankB 	        2         R/W          R         * Defines the Total System 
+	u16SystemPowerBankBIn250mW 	    2         R/W          R         * Defines the Total System 
 																		Power of Bank B. Each unit 
 																		is 0.25W 
 																	  * Sample values are, 
@@ -1768,7 +1768,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.																
 																		
-	u16MinPowerBankB    	        2         R/W          R         * Defines the Guaranteed  
+	u16MinPowerBankBIn250mW    	    2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank B. 
 																		Each unit is 0.25W 
 																	  * Sample values are, 
@@ -1783,7 +1783,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
 																		
-	u16SystemPowerBankC 	        2         R/W          R         * Defines the Total System 
+	u16SystemPowerBankCIn250mW 	    2         R/W          R         * Defines the Total System 
 																		Power of Bank C. Each unit 
 																		is 0.25W 
 																	  * Sample values are, 
@@ -1798,7 +1798,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
 																		
-	u16MinPowerBankC    	        2         R/W          R         * Defines the Guaranteed  
+	u16MinPowerBankCIn250mW    	    2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank C. 
 																		Each unit is 0.25W 
 																	  * Sample values are, 
@@ -1813,7 +1813,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
 																		
-	u16SharedPowerCapacity    	     2         R/W          R        * Defines the currently 
+	u16SharedPwrCapacityIn250mW     2         R/W          R        * Defines the currently 
 																		available shared power 
 																		capacity from which power 
 																		is allocated to ports that 
@@ -1833,10 +1833,10 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_BALANCING or 
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
-    u8aReserved6[2]				     2 								 Reserved 	
-    u8aReserved7[3]				     3								 Reserved 
-    u8aReserved8[3]				     3 								 Reserved 
-    u16aReserved1				     2 								 Reserved 	
+    u8aReserved6[2]				    2 								Reserved 	
+    u8aReserved7[3]				    3								Reserved 
+    u8aReserved8[3]				    3 								Reserved 
+    u16aReserved1				    2 								Reserved 	
 																	
 																		
 	</table> 															  										
@@ -1904,15 +1904,15 @@ typedef struct _GlobalCfgStatusData
 #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
     UINT8 u8PwrThrottleCfg;	
     UINT8 u8aReserved8[3];
-    UINT16 u16SystemPowerBankA; 
-    UINT16 u16MinPowerBankA;   
-    UINT16 u16SystemPowerBankB; 
-    UINT16 u16MinPowerBankB;   
-    UINT16 u16SystemPowerBankC; 
-    UINT16 u16MinPowerBankC;    
+    UINT16 u16SystemPowerBankAIn250mW; 
+    UINT16 u16MinPowerBankAIn250mW;   
+    UINT16 u16SystemPowerBankBIn250mW; 
+    UINT16 u16MinPowerBankBIn250mW;   
+    UINT16 u16SystemPowerBankCIn250mW; 
+    UINT16 u16MinPowerBankCIn250mW;    
 #endif
 #if (TRUE == INCLUDE_POWER_BALANCING)    
-    UINT16 u16SharedPowerCapacity; 
+    UINT16 u16SharedPwrCapacityIn250mW; 
     UINT16 u16Reserved1;
     PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	
 #endif 

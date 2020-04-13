@@ -97,7 +97,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                 PB_SetRenegotiationPendingForLowPriorityPorts (u8PortNum);
             }
             
-            gasCfgStatusData.u16SharedPowerCapacity += u16GivebackPwr;
+            gasCfgStatusData.u16SharedPwrCapacityIn250mW += u16GivebackPwr;
             
              /*Reset all the state variables and the flags associated with the port*/
             gasPBIntPortParam[u8PortNum].u8PBPortStatusMask = FALSE; 
@@ -133,11 +133,11 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                          /*There is no power in the lower priority port. Just advertise whatever power
                              available in the pool*/             
                             /*Initiate renegotiation for the port with new wattage*/
-                            PB_InitiateNegotiationWrapper (u8PortNum, gasCfgStatusData.u16SharedPowerCapacity + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
+                            PB_InitiateNegotiationWrapper (u8PortNum, gasCfgStatusData.u16SharedPwrCapacityIn250mW + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
                             
                             PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS); 
                             
-                            gasCfgStatusData.u16SharedPowerCapacity = 0;
+                            gasCfgStatusData.u16SharedPwrCapacityIn250mW = 0;
                             gsPBIntSysParam.u8RecoveringMode = FALSE;
                         }                       
                     }
@@ -252,12 +252,12 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                                          available in the pool*/             
                                         /*Initiate renegotiation for the port with new wattage */
                                         PB_InitiateNegotiationWrapper (gsPBIntSysParam.u8RecoverPortNum, \
-                                                gasCfgStatusData.u16SharedPowerCapacity + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
+                                                gasCfgStatusData.u16SharedPwrCapacityIn250mW + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
                                         
                                         PB_ChangePortStates (gsPBIntSysParam.u8RecoverPortNum, \
                                                 ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS);;
                                                 
-                                        gasCfgStatusData.u16SharedPowerCapacity = 0;
+                                        gasCfgStatusData.u16SharedPwrCapacityIn250mW = 0;
                                         gsPBIntSysParam.u8RecoveringMode = FALSE;
                                     }
                                 }       
@@ -324,14 +324,14 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                         if (u8PortNum == gsPBIntSysParam.u8RecoverPortNum)
                         {
                             /*Refill the pool with the power more than the */
-                            gasCfgStatusData.u16SharedPowerCapacity +=  (u16PrevNegPwr - gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);                               
+                            gasCfgStatusData.u16SharedPwrCapacityIn250mW +=  (u16PrevNegPwr - gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);                               
                         }
                     }
                     else
                     {
                         if (gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW < u16PrevNegPwr)
                         {    
-                            gasCfgStatusData.u16SharedPowerCapacity += (u16PrevNegPwr - gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
+                            gasCfgStatusData.u16SharedPwrCapacityIn250mW += (u16PrevNegPwr - gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
                             
                             /*Renegotiate the same port to the newly negotiated power*/ 
                             PB_InitiateNegotiationWrapper (u8PortNum, gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW); 

@@ -1114,7 +1114,7 @@ Remarks:
 		// Select Throttling Bank B
 		gasCfgStatusData.u8PwrThrottleCfg = 0x01;
 		// Set 120W as Total system Power of Bank A
-		gasCfgStatusData.u16SystemPowerBankA = 0x01E0U;
+		gasCfgStatusData.u16SystemPowerBankAIn250mW = 0x01E0U;
 		// Configure per port parameters
 		// Set Port 1's VBUS Maximum Fault Count as 3
 		gasCfgStatusData.sPerPortData[0].u8VBUSMaxFaultCnt = 0x03; // 0 is the port number
@@ -1122,7 +1122,7 @@ Remarks:
 		gasCfgStatusData.sPerPortData[0].u8Pio_DC_DC_EN = 0x06; // 0 is the port number
 		// Configure per port PB parameters
 		// Set Port 2's maximum port power for Bank C as 60W
-		gasCfgStatusData.sPBPerPortData[1].u16MaxPrtPwrBankC = 0x00F0U; // 1 is the port number
+		gasCfgStatusData.sPBPerPortData[1].u16MaxPrtPwrBankCIn250mW = 0x00F0U; // 1 is the port number
 		}
     </code>
   Remarks:

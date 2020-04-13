@@ -46,15 +46,15 @@ void PB_Init(void)
         /* Get the Total System Power based on currently selected Throttling bank */
         if (DPM_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
         {
-            u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankA;
+            u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankAIn250mW;
         }
         else if (DPM_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
         {
-            u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankB;
+            u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankBIn250mW;
         }
         else if (DPM_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
         {
-            u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankC; 
+            u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankCIn250mW; 
         }
         else
         {
@@ -66,7 +66,7 @@ void PB_Init(void)
         gsPBIntSysParam.u8ReclaimPortNum = SET_TO_ZERO; 
         gsPBIntSysParam.u8RecoverPortNum = SET_TO_ZERO; 
         gsPBIntSysParam.u8RecoveringMode = FALSE;         
-        gasCfgStatusData.u16SharedPowerCapacity = gsPBIntSysParam.u16TotalSysPwrIn250mW; 
+        gasCfgStatusData.u16SharedPwrCapacityIn250mW = gsPBIntSysParam.u16TotalSysPwrIn250mW; 
         
         /* Initialize Port Parameters only if the Port role is Source and 
            PB is enabled for the port */
@@ -78,7 +78,7 @@ void PB_Init(void)
                 {
                     PB_InitializePortParam(u8PortNum); 
                     /* Deduct the Minimum Guaranteed Power from available Shared Capacity */
-                    gasCfgStatusData.u16SharedPowerCapacity -= gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW; 
+                    gasCfgStatusData.u16SharedPwrCapacityIn250mW -= gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW; 
                 }
             }            
         }
@@ -102,18 +102,18 @@ void PB_InitializePortParam(UINT8 u8PortNum)
        currently selected throttling bank */
     if (DPM_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
     {
-        u16MinPwr = gasCfgStatusData.u16MinPowerBankA;
-        u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankA; 
+        u16MinPwr = gasCfgStatusData.u16MinPowerBankAIn250mW; //ram: var name change
+        u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW; 
     }
     else if (DPM_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
     {
-        u16MinPwr = gasCfgStatusData.u16MinPowerBankB;
-        u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankB; 
+        u16MinPwr = gasCfgStatusData.u16MinPowerBankBIn250mW;
+        u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW; 
     }
     else if (DPM_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
     {
-        u16MinPwr = gasCfgStatusData.u16MinPowerBankC;
-        u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankC; 
+        u16MinPwr = gasCfgStatusData.u16MinPowerBankCIn250mW;
+        u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW; 
     }
     else
     {
@@ -278,14 +278,14 @@ UINT8 PB_NegotiateIfRequiredPwrAvailableInPool(UINT8 u8PortNum)
     UINT8 u8RequiredPwrAvailable = FALSE; 
     
     /* Include the current negotiated power of the port along with pool power. */
-    u16AvailablePwr = gasCfgStatusData.u16SharedPowerCapacity + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW;
+    u16AvailablePwr = gasCfgStatusData.u16SharedPwrCapacityIn250mW + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW;
     
     /* Check if required power is available in pool */
     if (u16AvailablePwr >= gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW)
     {
         /* Exclude Negotiated power while reducing the pool power since it would have 
            been already deducted */
-        gasCfgStatusData.u16SharedPowerCapacity -= (gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW \
+        gasCfgStatusData.u16SharedPwrCapacityIn250mW -= (gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW \
                                             - gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);                       
         
         /* Initiate Negotiation with new wattage value */
@@ -453,7 +453,7 @@ UINT8 PB_ReclaimPower(UINT8 u8PortNum)
         gsPBIntSysParam.u8RecoverPortNum = u8PortNum;
         gsPBIntSysParam.u8ReclaimPortNum = u8LowPriorityPort;
         
-        u16AvailablePwr = gasCfgStatusData.u16SharedPowerCapacity + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW;
+        u16AvailablePwr = gasCfgStatusData.u16SharedPwrCapacityIn250mW + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW;
         
         /*This is the power that must be recovered from the lower priority port*/
         u16RecoverPower = gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW - u16AvailablePwr;
@@ -462,7 +462,7 @@ UINT8 PB_ReclaimPower(UINT8 u8PortNum)
                             u16RecoverPower), gasPBIntPortParam[gsPBIntSysParam.u8ReclaimPortNum].u16MinGuaranteedPwrIn250mW);
         
         /*Update the pool with the power we recovered*/
-        gasCfgStatusData.u16SharedPowerCapacity += (gasPBIntPortParam[gsPBIntSysParam.u8ReclaimPortNum].u16NegotiatedPwrIn250mW \
+        gasCfgStatusData.u16SharedPwrCapacityIn250mW += (gasPBIntPortParam[gsPBIntSysParam.u8ReclaimPortNum].u16NegotiatedPwrIn250mW \
                                                     - u16RenegotiatePwr);
         
         /* Renegotiate the lower priority port with new power */
@@ -506,7 +506,7 @@ void PB_SinkCapsReceivedHandler(UINT8 u8PortNum)
         {
             /*There is no power in the lower priority port. Just advertise 
              whatever power is available in the pool */  
-            u16AvailablePwrIn250mW = gasCfgStatusData.u16SharedPowerCapacity + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW;
+            u16AvailablePwrIn250mW = gasCfgStatusData.u16SharedPwrCapacityIn250mW + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW;
             
             /*Initiate renegotiation for the port with u16AvailablePwr */
             PB_InitiateNegotiationWrapper (u8PortNum, u16AvailablePwrIn250mW);
@@ -514,7 +514,7 @@ void PB_SinkCapsReceivedHandler(UINT8 u8PortNum)
             /* Change the states of the port */
             PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS);
             
-            gasCfgStatusData.u16SharedPowerCapacity = 0;
+            gasCfgStatusData.u16SharedPwrCapacityIn250mW = 0;
             gsPBIntSysParam.u8RecoveringMode = FALSE;
         }        
     }
@@ -532,7 +532,7 @@ UINT8 PB_ReleaseExcessPwr(UINT8 u8PortNum)
     u16ExcessPwr = gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW - \
                             gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW; 
     
-    gasCfgStatusData.u16SharedPowerCapacity += u16ExcessPwr; 
+    gasCfgStatusData.u16SharedPwrCapacityIn250mW += u16ExcessPwr; 
     
     /*After giving back the excess power make the required power same as negotiated power*/
     
@@ -705,7 +705,7 @@ void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
         u16CurrentIn10mA = (UINT16)(((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT)); 
         
         /* In PB, current value of a port should not exceed PORT_MAX_I */ 
-        u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrent); 
+        u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrentIn10mA); 
         
         /* Load the New PDO registers with the new PDO values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8Index] = \
