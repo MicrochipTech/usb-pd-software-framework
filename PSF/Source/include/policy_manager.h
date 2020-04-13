@@ -243,7 +243,25 @@ Source/Sink Power delivery objects*/
 
 #define DPM_4BYTES_FOR_EACH_PDO_OF(PDO_Count) (PDO_Count*4)
  
-/*********************PPS Defines ******************/
+/****************** Power Balancing Defines ***********/
+/* PB Enable for System */
+#define DPM_PB_ENABLE                         0x10
+
+/* PB Enable for the port */
+#define DPM_PB_PORT_ENABLE                    0x01
+
+/* Power Throttling Bank values */
+#define DPM_PD_THROTTLE_BANK_A                0U 
+#define DPM_PD_THROTTLE_BANK_B                1U
+#define DPM_PD_THROTTLE_BANK_C                2U
+#define DPM_PD_THROTTLE_SHUTDOWN_MODE         3U
+
+/* Macro to know if PB is enabled for the system and for the port */
+#define DPM_IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE) && \
+                             (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)) \
+                                    ? TRUE : FALSE)   
+
+/*********************PPS APDO Defines ******************/
 #define DPM_PPS_ENABLE                           0x01 
 #define DPM_MAX_APDO_COUNT                       3 
 #define DPM_PPS_APDO_EN_DIS_MASK                 0x02 

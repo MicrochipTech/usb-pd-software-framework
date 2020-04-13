@@ -120,15 +120,15 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_PDO_6_VSEL_MAPPING        0x00
 #define CFG_PORT_PDO_7_VSEL_MAPPING        0x00
 
-#define CFG_VCONN_OCS_ENABLE               1 << TYPEC_VCONN_OCS_EN_POS
+#define CFG_VCONN_OCS_ENABLE               (1 << TYPEC_VCONN_OCS_EN_POS)
 #define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2
 #define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5
 
 /* Power Throttling Bank values */
-#define CFG_PD_THROTTLE_BANK_A             0x00U 
-#define CFG_PD_THROTTLE_BANK_B             0x01U
-#define CFG_PD_THROTTLE_BANK_C             0x10U
-#define CFG_PD_THROTTLE_SHUTDOWN_MODE      0x11U
+#define CFG_PD_THROTTLE_BANK_A             0U 
+#define CFG_PD_THROTTLE_BANK_B             1U
+#define CFG_PD_THROTTLE_BANK_C             2U
+#define CFG_PD_THROTTLE_SHUTDOWN_MODE      3U
 
 /* Default Total System Power Bank A is 120W */
 #define CFG_PB_TOT_SYS_POWER_BANKA            0x01E0U
@@ -154,7 +154,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Default PB Enable for System with Algorithm as FCFS */
 #define CFG_PB_ENABLE                         0x10U 
 /* Default Enable PB for port 0 with Priority as 0*/
-#define CFG_PB_PORT_ENABLE                    0x0001U
+#define CFG_PB_PORT_ENABLE                    0x01U
 
 #define CFG_PDO_VOLTAGE_POS                   10 
 #define CFG_PDO_VOLTAGE_UNIT                  50
@@ -238,8 +238,7 @@ enum ePwrSupplyType
                                         (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
                                         (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
                                         (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
-                                            
-                                                    
+
 void PSF_LoadConfig(); 
 
 #endif /* _PSFSOURCEPRO_BOOTCFG_H */

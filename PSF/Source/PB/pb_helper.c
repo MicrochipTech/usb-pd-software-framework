@@ -41,18 +41,18 @@ void PB_Init(void)
     UINT16 u16TotSysPwr = 0; 
         
     /* Initialize System parameters only if PB is enabled for the system */
-    if (gasCfgStatusData.u8PBEnableSelect & CFG_PB_ENABLE)
+    if (gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE)
     {
         /* Get the Total System Power based on currently selected Throttling bank */
-        if (CFG_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
+        if (DPM_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
         {
             u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankA;
         }
-        else if (CFG_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+        else if (DPM_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
         {
             u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankB;
         }
-        else if (CFG_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+        else if (DPM_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
         {
             u16TotSysPwr = gasCfgStatusData.u16SystemPowerBankC; 
         }
@@ -74,7 +74,7 @@ void PB_Init(void)
         {
             if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {    
-                if (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & CFG_PB_PORT_ENABLE)
+                if (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)
                 {
                     PB_InitializePortParam(u8PortNum); 
                     /* Deduct the Minimum Guaranteed Power from available Shared Capacity */
@@ -94,23 +94,23 @@ void PB_InitializePortParam(UINT8 u8PortNum)
     gasPBIntPortParam[u8PortNum].eRenegSubState            = ePB_IDLE_SS; 
     gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW   = SET_TO_ZERO; 
     gasPBIntPortParam[u8PortNum].eGetSinkCapSS             = ePB_SINK_CAPS_NOT_INITIATED; 
-    gasPBIntPortParam[u8PortNum].u8PBPortStatusMask          = FALSE; 
+    gasPBIntPortParam[u8PortNum].u8PBPortStatusMask        = FALSE; 
     gasPBIntPortParam[u8PortNum].ePBPortState              = ePB_IDLE_STATE;
     gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW  = SET_TO_ZERO; 
     
     /* Get the Guaranteed Minimum Power and Maximum Power based on 
        currently selected throttling bank */
-    if (CFG_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
+    if (DPM_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
     {
         u16MinPwr = gasCfgStatusData.u16MinPowerBankA;
         u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankA; 
     }
-    else if (CFG_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (DPM_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
     {
         u16MinPwr = gasCfgStatusData.u16MinPowerBankB;
         u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankB; 
     }
-    else if (CFG_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (DPM_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
     {
         u16MinPwr = gasCfgStatusData.u16MinPowerBankC;
         u16MaxPwr = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankC; 
