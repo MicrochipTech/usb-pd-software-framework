@@ -198,7 +198,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     else
                     {                      
                         /* Start a timer for 200 ms and change state as WAIT_FOR_ASYNC_REQ*/
-                        gu8PBTimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(gsPBIntSysParam.u32AsyncReqWaitTimerInms), PB_TimerEnd, u8PortNum, PB_TIMER_EXPIRED_EVENT);
+                        gu8PBTimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(gsPBIntSysParam.u32AsyncReqWaitTimerInms), PB_AsynTimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
 
                         PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_WAIT_FOR_ASYNC_REQ_SS);
 
@@ -385,20 +385,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                 PB_SinkCapsReceivedHandler (u8PortNum);
             }            
             break; 
-            
-        case PB_TIMER_EXPIRED_EVENT:   
-            
-            /* We did not receive any asynchronous request within the time period. So,
-              go ahead and refill the pool with excess power */
-            (void)PB_ReleaseExcessPwr (u8PortNum);
-            
-            /*Initiate Negotiation for the port with the negotiated Power*/
-            PB_InitiateNegotiationWrapper (u8PortNum, gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
-            
-            PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_SECOND_RENEGOTIATION_IN_PROGRESS_SS);
-            
-            break; 
-            
+
         case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD:
             
             if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))

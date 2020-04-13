@@ -678,10 +678,16 @@ UINT8 PB_PortInWaitForAsyncTimerState(void)
     return u8PortNum;
 }
 
-void PB_TimerEnd(UINT8 u8PortNum, UINT8 u8PBEvent)
+void PB_AsynTimerCB(UINT8 u8PortNum, UINT8 u8Dummy)
 {
-    /* Handle Timer expired event. */
-    (void)PB_HandleDPMEvents (u8PortNum, u8PBEvent); 
+    /* We did not receive any asynchronous request within the time period. So,
+    go ahead and refill the pool with excess power */
+    (void)PB_ReleaseExcessPwr (u8PortNum);
+            
+    /*Initiate Negotiation for the port with the negotiated Power*/
+    PB_InitiateNegotiationWrapper (u8PortNum, gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
+            
+    PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_SECOND_RENEGOTIATION_IN_PROGRESS_SS);
 }
 
 void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
