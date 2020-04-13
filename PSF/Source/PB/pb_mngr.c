@@ -39,10 +39,10 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
 {
     UINT32 u32SourcePDO            = SET_TO_ZERO; 
     UINT32 u32SinkRDO              = SET_TO_ZERO;
-    UINT16 u16GivebackPwr          = SET_TO_ZERO;
-    UINT16 u16PrevNegPwr           = SET_TO_ZERO;
-    UINT8 u8NegotiationInProgress  = FALSE;   
-    UINT8 u8AvailablePwrSufficient = FALSE;
+    UINT16 u16GivebackPwrIn250mW   = SET_TO_ZERO;
+    UINT16 u16PrevNegPwrIn250mW    = SET_TO_ZERO;
+    UINT8 u8IsNegotiationInProgress = FALSE;   
+    UINT8 u8IsAvailablePwrSufficient = FALSE;
         
     switch(eDPM_EVENT)
     {
@@ -65,7 +65,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                (ePB_RENEGOTIATION_COMPLETED_STATE == gasPBIntPortParam[u8PortNum].ePBPortState) || \
                (ePB_RENEGOTIATION_PENDING_STATE == gasPBIntPortParam[u8PortNum].ePBPortState))
             {
-                u16GivebackPwr = gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW - \
+                u16GivebackPwrIn250mW = gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW - \
                              gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;
             }
              /*The give back power is calculated based on Neg Power since, the required power will have 
@@ -74,12 +74,12 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
              recovering port*/
             else if (ePB_PWR_RECOVERING_STATE == gasPBIntPortParam[u8PortNum].ePBPortState)
             {
-                u16GivebackPwr = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW - \
+                u16GivebackPwrIn250mW = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW - \
                             gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;
             }
             else
             {
-                u16GivebackPwr = 0;
+                u16GivebackPwrIn250mW = 0;
             }
             
             /*If the Timer for the port is started, kill the timer*/
@@ -97,7 +97,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                 PB_SetRenegotiationPendingForLowPriorityPorts (u8PortNum);
             }
             
-            gasCfgStatusData.u16SharedPwrCapacityIn250mW += u16GivebackPwr;
+            gasCfgStatusData.u16SharedPwrCapacityIn250mW += u16GivebackPwrIn250mW;
             
              /*Reset all the state variables and the flags associated with the port*/
             gasPBIntPortParam[u8PortNum].u8PBPortStatusMask = FALSE; 
@@ -120,9 +120,9 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     /*If the recovering mode is on and the detach occurred for the reclaiming
                      port, then see if there is enough power for Recover Port. If not
                      again Reclaim*/
-                    u8AvailablePwrSufficient = PB_NegotiateIfRequiredPwrAvailableInPool (gsPBIntSysParam.u8RecoverPortNum);
+                    u8IsAvailablePwrSufficient = PB_NegotiateIfRequiredPwrAvailableInPool (gsPBIntSysParam.u8RecoverPortNum);
                     
-                    if (u8AvailablePwrSufficient)
+                    if (u8IsAvailablePwrSufficient)
                     {
                         gsPBIntSysParam.u8RecoveringMode = FALSE;
                     }
@@ -154,9 +154,9 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             /*If there is any port which is already negotiating then don't do 
             anything. Else renegotiate the next higher priority port in 
             Pending state*/
-            u8NegotiationInProgress = PB_IsNegotiationInProgressForOtherPort(u8PortNum);
+            u8IsNegotiationInProgress = PB_IsNegotiationInProgressForOtherPort(u8PortNum);
 
-            if (!u8NegotiationInProgress)
+            if (!u8IsNegotiationInProgress)
             {
                 PB_InitiateNextPortNegotiation ();
             }
@@ -198,7 +198,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     else
                     {                      
                         /* Start a timer for 200 ms and change state as WAIT_FOR_ASYNC_REQ*/
-                        gu8PBTimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(gsPBIntSysParam.u32AsyncReqWaitTimer), PB_TimerEnd, u8PortNum, PB_TIMER_EXPIRED_EVENT);
+                        gu8PBTimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(gsPBIntSysParam.u32AsyncReqWaitTimerInms), PB_TimerEnd, u8PortNum, PB_TIMER_EXPIRED_EVENT);
 
                         PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_WAIT_FOR_ASYNC_REQ_SS);
 
@@ -238,9 +238,9 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                                 /*If the Reclaim port's Neg is complete, see if the 
                                  * Recover port has enough port to Reneg. Else Reclaim
                                  */
-                                u8AvailablePwrSufficient = PB_NegotiateIfRequiredPwrAvailableInPool (gsPBIntSysParam.u8RecoverPortNum);
+                                u8IsAvailablePwrSufficient = PB_NegotiateIfRequiredPwrAvailableInPool (gsPBIntSysParam.u8RecoverPortNum);
 
-                                if (u8AvailablePwrSufficient)
+                                if (u8IsAvailablePwrSufficient)
                                 {
                                     gsPBIntSysParam.u8RecoveringMode = FALSE;
                                 }
@@ -310,7 +310,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                         when some other client had initiated the negotiation or
                         an async request from the sink */ 
 
-                    u16PrevNegPwr = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW;    
+                    u16PrevNegPwrIn250mW = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW;    
                     
                     PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkRDO);
                     
@@ -324,14 +324,14 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                         if (u8PortNum == gsPBIntSysParam.u8RecoverPortNum)
                         {
                             /*Refill the pool with the power more than the */
-                            gasCfgStatusData.u16SharedPwrCapacityIn250mW +=  (u16PrevNegPwr - gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);                               
+                            gasCfgStatusData.u16SharedPwrCapacityIn250mW +=  (u16PrevNegPwrIn250mW - gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);                               
                         }
                     }
                     else
                     {
-                        if (gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW < u16PrevNegPwr)
+                        if (gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW < u16PrevNegPwrIn250mW)
                         {    
-                            gasCfgStatusData.u16SharedPwrCapacityIn250mW += (u16PrevNegPwr - gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
+                            gasCfgStatusData.u16SharedPwrCapacityIn250mW += (u16PrevNegPwrIn250mW - gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
                             
                             /*Renegotiate the same port to the newly negotiated power*/ 
                             PB_InitiateNegotiationWrapper (u8PortNum, gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW); 
@@ -353,9 +353,9 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                 /* If negotiation is on going for any other port, make this port 
                  as pending. We should complete the negotiation for a port and then
                  only we have to initiate negotiation for other ports. */
-                u8NegotiationInProgress = PB_IsNegotiationInProgressForOtherPort (u8PortNum);
+                u8IsNegotiationInProgress = PB_IsNegotiationInProgressForOtherPort (u8PortNum);
                 
-                if (u8NegotiationInProgress)
+                if (u8IsNegotiationInProgress)
                 {
                     PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
                 }
