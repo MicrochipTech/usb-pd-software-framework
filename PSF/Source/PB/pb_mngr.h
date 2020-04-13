@@ -41,7 +41,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */ 
 
 /* Asynchronous Request Wait time value - 200ms */
-#define PB_ASYN_REQ_WAIT_TIMER                  0xC8  
+#define PB_ASYN_REQ_WAIT_TIMER_IN_MS            0xC8  
 
 /* Macro to define the Timer Expired event */
 #define PB_TIMER_EXPIRED_EVENT                  0xEF
@@ -94,6 +94,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Power is represented in terms of 250mW */
 #define PB_POWER_UINTS_MILLI_W                  250000
+
+/* Macros to define Excess Power */
+#define PB_ZERO_EXCESS_POWER                    0x0000
+
+/* Macro to denote invalid Port */
+#define PB_INVALID_PORT                         0xFF 
 
 /* Macro to get the voltage value from Fixed PDO */
 #define PB_GET_VOLTAGE_FROM_FIXED_PDO(u32PDO)   (UINT16)(((UINT32)u32PDO & \
@@ -187,7 +193,7 @@ typedef enum GetSinkCapsState
 **********************************************************************************/
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntSysParam 
 {
-    UINT32 u32AsyncReqWaitTimer;   /* Asynchronous Request Wait timer value*/
+    UINT32 u32AsyncReqWaitTimerInms; /* Asynchronous Request Wait timer value*/
     UINT16 u16TotalSysPwrIn250mW; /* Max Shared capacity of the system */
     UINT16 u16PoolPowerIn250mW;    /* Currently available pool power */
     UINT8 u8ReclaimPortNum;        /* Port from which power is reclaimed */
