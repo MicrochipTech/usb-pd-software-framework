@@ -43,9 +43,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Asynchronous Request Wait time value - 200ms */
 #define PB_ASYN_REQ_WAIT_TIMER_IN_MS            0xC8  
 
-/* Macro to define the Timer Expired event */
-#define PB_TIMER_EXPIRED_EVENT                  0xEF
-
 /* Macros to indicate Reclaim status of ports */
 #define PB_RECLAIM_FAILED                       0x00
 #define PB_RECLAIM_SUCCESS                      0x01
@@ -785,7 +782,7 @@ void PB_InitiateNextPortNegotiation(void);
 UINT8 PB_PortInWaitForAsyncTimerState(void);
 /**************************************************************************************************
     Function:
-        void PB_TimerEnd (UINT8 u8PortNum, UINT8 u8Dummy);
+        void PB_AsynTimerCB (UINT8 u8PortNum, UINT8 u8Dummy);
 
     Summary:
         This is the API registered as callback for Timer expiry.   
@@ -808,7 +805,7 @@ UINT8 PB_PortInWaitForAsyncTimerState(void);
         None. 
 
 **************************************************************************************************/
-void PB_TimerEnd(UINT8, UINT8);
+void PB_AsynTimerCB(UINT8, UINT8);
 /**************************************************************************************************
     Function:
         void PB_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
