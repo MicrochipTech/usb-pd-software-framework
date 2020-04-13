@@ -113,7 +113,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = 0;
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = 0; 
                                    
-            if (gsPBIntSysParam.u8RecoveringMode)
+            if (TRUE == gsPBIntSysParam.u8RecoveringMode) 
             {
                 if (u8PortNum == gsPBIntSysParam.u8ReclaimPortNum)
                 {
@@ -231,7 +231,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     {
                         PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_COMPLETED_STATE, ePB_IDLE_SS);
                         
-                        if (gsPBIntSysParam.u8RecoveringMode)
+                        if (TRUE == gsPBIntSysParam.u8RecoveringMode)
                         {                           
                             if (u8PortNum == gsPBIntSysParam.u8ReclaimPortNum)
                             {
@@ -314,7 +314,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     
                     PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkRDO);
                     
-                    if (gsPBIntSysParam.u8RecoveringMode)
+                    if (TRUE == gsPBIntSysParam.u8RecoveringMode)
                     {
                         if (u8PortNum == gsPBIntSysParam.u8ReclaimPortNum)
                         {
