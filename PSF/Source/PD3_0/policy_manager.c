@@ -1260,7 +1260,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     UINT8 u8Return = TRUE; 
     
 #if (TRUE == INCLUDE_POWER_BALANCING)
-    if (TRUE == IS_PB_ENABLED(u8PortNum))
+    if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
     {
         u8Return = PB_HandleDPMEvents(u8PortNum, (UINT8)eDPMNotification);
     }

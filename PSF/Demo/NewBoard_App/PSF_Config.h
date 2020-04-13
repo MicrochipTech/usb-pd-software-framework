@@ -1681,8 +1681,8 @@ typedef struct _PPSPortCfgStatus
 																	  * Possible values are, 
 																		1. 0x00 = Bank A 
 																		2. 0x01 = Bank B
-																	    3. 0x10 = Bank C 
-																		4. 0x11 = Shutdown mode
+																	    3. 0x02 = Bank C 
+																		4. 0x03 = Shutdown mode
 																	  *	This variable is used only 
 																	    when either of
 																        INCLUDE_POWER_BALANCING or
