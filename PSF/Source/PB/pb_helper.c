@@ -717,6 +717,17 @@ void PB_HandleReclaimPortDetachOrRenegCmplt(void)
     
 }
 
+void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum)
+{
+    gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);
+                        
+    /*Change the port state to Negotiation Pending*/
+    PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
+                        
+    /*Find out the highest port in pending state*/
+    PB_InitiateNextPortNegotiation ();    
+}
+
 void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
 {
     float fVoltageInmV = SET_TO_ZERO; 

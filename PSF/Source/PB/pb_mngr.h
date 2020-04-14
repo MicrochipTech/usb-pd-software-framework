@@ -864,6 +864,34 @@ void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW);
 
 **************************************************************************************************/
 void PB_HandleReclaimPortDetachOrRenegCmplt(void); 
+
+/**************************************************************************************************
+    Function:
+        void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum); 
+
+    Summary:
+        This API is used to handle the detach event of higher priority port.  
+
+    Description:
+        This API can be called to handle the detach event of higher priority
+        port. It clears the Reneg again status bit and initiates Renegotiation 
+        for the next high priority port in the system. 
+ 
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number 
+
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum); 
+
 #endif /* _PB_MNGR_H */
 
 /* *****************************************************************************
