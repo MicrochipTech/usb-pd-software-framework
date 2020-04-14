@@ -42,7 +42,6 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
     UINT16 u16GivebackPwrIn250mW   = SET_TO_ZERO;
     UINT16 u16PrevNegPwrIn250mW    = SET_TO_ZERO;
     UINT8 u8IsNegotiationInProgress = FALSE;   
-    UINT8 u8IsAvailablePwrSufficient = FALSE;
         
     switch(eDPM_EVENT)
     {
@@ -120,27 +119,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     /*If the recovering mode is on and the detach occurred for the reclaiming
                      port, then see if there is enough power for Recover Port. If not
                      again Reclaim*/
-                    u8IsAvailablePwrSufficient = PB_NegotiateIfRequiredPwrAvailableInPool (gsPBIntSysParam.u8RecoverPortNum);
-                    
-                    if (u8IsAvailablePwrSufficient)
-                    {
-                        gsPBIntSysParam.u8RecoveringMode = FALSE;
-                    }
-                    else
-                    {
-                        if (PB_RECLAIM_FAILED == PB_ReclaimPower (gsPBIntSysParam.u8RecoverPortNum))
-                        {
-                         /*There is no power in the lower priority port. Just advertise whatever power
-                             available in the pool*/             
-                            /*Initiate renegotiation for the port with new wattage*/
-                            PB_InitiateNegotiationWrapper (u8PortNum, gasCfgStatusData.u16SharedPwrCapacityIn250mW + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
-                            
-                            PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS); 
-                            
-                            gasCfgStatusData.u16SharedPwrCapacityIn250mW = 0;
-                            gsPBIntSysParam.u8RecoveringMode = FALSE;
-                        }                       
-                    }
+                    PB_HandleReclaimPortDetachOrRenegCmplt();
                 }
                 
                 if (u8PortNum == gsPBIntSysParam.u8RecoverPortNum)
@@ -236,34 +215,10 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                             if (u8PortNum == gsPBIntSysParam.u8ReclaimPortNum)
                             {
                                 /*If the Reclaim port's Neg is complete, see if the 
-                                 * Recover port has enough port to Reneg. Else Reclaim
+                                 * Recover port has enough power to Reneg. Else Reclaim
                                  */
-                                u8IsAvailablePwrSufficient = PB_NegotiateIfRequiredPwrAvailableInPool (gsPBIntSysParam.u8RecoverPortNum);
-
-                                if (u8IsAvailablePwrSufficient)
-                                {
-                                    gsPBIntSysParam.u8RecoveringMode = FALSE;
-                                }
-                                else
-                                {
-                                    if (PB_RECLAIM_FAILED == PB_ReclaimPower (gsPBIntSysParam.u8RecoverPortNum))
-                                    {
-                                       /*There is no power in the lower priority port. Just advertise whatever power
-                                         available in the pool*/             
-                                        /*Initiate renegotiation for the port with new wattage */
-                                        PB_InitiateNegotiationWrapper (gsPBIntSysParam.u8RecoverPortNum, \
-                                                gasCfgStatusData.u16SharedPwrCapacityIn250mW + gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW);
-                                        
-                                        PB_ChangePortStates (gsPBIntSysParam.u8RecoverPortNum, \
-                                                ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS);;
-                                                
-                                        gasCfgStatusData.u16SharedPwrCapacityIn250mW = 0;
-                                        gsPBIntSysParam.u8RecoveringMode = FALSE;
-                                    }
-                                }       
+                                PB_HandleReclaimPortDetachOrRenegCmplt();
                             }
-
-
                         }        
                         else
                         {
@@ -272,7 +227,6 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
 
                             PB_InitiateNextPortNegotiation ();
                         } 
-
                     }
                 }
                 
