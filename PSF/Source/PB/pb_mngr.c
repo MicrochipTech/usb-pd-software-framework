@@ -79,7 +79,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             }
             else
             {
-                u16GivebackPwrIn250mW = 0;
+                u16GivebackPwrIn250mW = SET_TO_ZERO;
             }
             
             /*If the Timer for the port is started, kill the timer*/
@@ -104,14 +104,14 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             
             PB_UpdateAttachSeq (u8PortNum);
             
-            gasPBIntPortParam[u8PortNum].u8AttachSeqNo = 0x00;            
-            gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW = 0;
-            gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = 0;
+            gasPBIntPortParam[u8PortNum].u8AttachSeqNo = SET_TO_ZERO;            
+            gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW = SET_TO_ZERO;
+            gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = SET_TO_ZERO;
             gasPBIntPortParam[u8PortNum].eRenegSubState = ePB_IDLE_SS;
             gasPBIntPortParam[u8PortNum].ePBPortState = ePB_IDLE_STATE;
             gasPBIntPortParam[u8PortNum].eGetSinkCapSS = ePB_SINK_CAPS_NOT_INITIATED;      
-            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = 0;
-            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = 0; 
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = SET_TO_ZERO;
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = SET_TO_ZERO; 
                                    
             if (TRUE == gsPBIntSysParam.u8RecoveringMode) 
             {
