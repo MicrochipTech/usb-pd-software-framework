@@ -70,7 +70,7 @@ void PB_Init(void)
         
         /* Initialize Port Parameters only if the Port role is Source and 
            PB is enabled for the port */
-        for (u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+        for (u8PortNum = INDEX_0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
         {
             if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {    
@@ -140,7 +140,7 @@ void PB_ChangePortStates(UINT8 u8PortNum, PB_PORT_STATES ePortState, PB_RENEG_SU
 void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
 {
     UINT16 u16NegVoltIn50mV;
-    UINT16 u16CurrentIn10mA = 0;
+    UINT16 u16CurrentIn10mA = SET_TO_ZERO;
     UINT16 u16TempPwrIn10mW;
     float fNegotiatedVoltageInV; 
     
@@ -225,12 +225,12 @@ void PB_InitiateGetSinkCapsWrapper(UINT8 u8PortNum)
 
 void PB_CalculateRequiredPortPower(UINT8 u8PortNum, UINT8 u8SinkPDOCnt, const UINT32 *pu32SinkCap)
 {
-    UINT16 u16PortMaxRequiredPwrIn250mW = 0;  
-    UINT16 u16TempPwrIn10mW = 0, u16TempCurrIn10mA = 0, u16TempVoltIn50mV = 0; 
+    UINT16 u16PortMaxRequiredPwrIn250mW = SET_TO_ZERO;  
+    UINT16 u16TempPwrIn10mW = SET_TO_ZERO, u16TempCurrIn10mA = SET_TO_ZERO, u16TempVoltIn50mV = SET_TO_ZERO; 
     UINT8  u8PDOCnt;
-    float fPDOVoltageInV = 0; 
+    float fPDOVoltageInV = SET_TO_ZERO; 
     
-    for (u8PDOCnt = 0; u8PDOCnt < u8SinkPDOCnt; u8PDOCnt++)
+    for (u8PDOCnt = INDEX_0; u8PDOCnt < u8SinkPDOCnt; u8PDOCnt++)
     {
         if ((ePDO_FIXED == (ePDOtypes)PB_GET_PDO_TYPE (pu32SinkCap[u8PDOCnt])) || \
                 (ePDO_VARIABLE == (ePDOtypes)PB_GET_PDO_TYPE (pu32SinkCap[u8PDOCnt])))
@@ -274,7 +274,7 @@ void PB_CalculateRequiredPortPower(UINT8 u8PortNum, UINT8 u8SinkPDOCnt, const UI
 UINT8 PB_NegotiateIfRequiredPwrAvailableInPool(UINT8 u8PortNum)
 {
     UINT16 u16AvailablePwrIn250mW; 
-    UINT16 u16NewWattageIn250mW = 0; 
+    UINT16 u16NewWattageIn250mW = SET_TO_ZERO; 
     UINT8 u8IsRequiredPwrAvailable = FALSE;
     
     /* Include the current negotiated power of the port along with pool power. */
@@ -399,7 +399,7 @@ UINT8 PB_IdentifyLowestPriorityPort(UINT8 u8PortNum)
     UINT8 u8LoopPortNum;
     UINT8 u8LowPriorityPort = u8PortNum;  
     
-    for (u8LoopPortNum = 0; u8LoopPortNum < CONFIG_PD_PORT_COUNT ; u8LoopPortNum++)
+    for (u8LoopPortNum = INDEX_0; u8LoopPortNum < CONFIG_PD_PORT_COUNT ; u8LoopPortNum++)
     {    
         if (u8LoopPortNum != u8PortNum)
         {
@@ -438,9 +438,9 @@ UINT8 PB_IdentifyLowestPriorityPort(UINT8 u8PortNum)
 
 UINT8 PB_ReclaimPower(UINT8 u8PortNum)
 {
-    UINT16 u16RecoverPwrIn250mW = 0; 
-    UINT16 u16RenegotiatePwrIn250mW = 0;
-    UINT16 u16AvailablePwrIn250mW = 0;    
+    UINT16 u16RecoverPwrIn250mW = SET_TO_ZERO; 
+    UINT16 u16RenegotiatePwrIn250mW = SET_TO_ZERO;
+    UINT16 u16AvailablePwrIn250mW = SET_TO_ZERO;    
     UINT8 u8ReclaimStatus = PB_RECLAIM_FAILED;
     UINT8 u8LowPriorityPort;  
     
@@ -488,7 +488,7 @@ void PB_SinkCapsReceivedHandler(UINT8 u8PortNum)
 {
     UINT8 u8SinkPDOCnt; 
     UINT32 *pu32SinkCap; 
-    UINT16 u16AvailablePwrIn250mW = 0; 
+    UINT16 u16AvailablePwrIn250mW = SET_TO_ZERO; 
     UINT8 u8IsAvailablePwrSufficient; 
    
     /* Get the Sink capabilities from DPM */
@@ -550,7 +550,7 @@ void PB_SetRenegotiationPendingForLowPriorityPorts(UINT8 u8PortNum)
 {
     UINT8 u8LowPriorityPort;
     
-    for (u8LowPriorityPort = 0; u8LowPriorityPort < CONFIG_PD_PORT_COUNT ; u8LowPriorityPort++)
+    for (u8LowPriorityPort = INDEX_0; u8LowPriorityPort < CONFIG_PD_PORT_COUNT ; u8LowPriorityPort++)
     {
         if (u8LowPriorityPort != u8PortNum)
         {
@@ -583,7 +583,7 @@ void PB_UpdateAttachSeq(UINT8 u8PortNum)
 {
     UINT8 u8OtherPorts;
     
-    for (u8OtherPorts = 0; u8OtherPorts < CONFIG_PD_PORT_COUNT ; u8OtherPorts++)
+    for (u8OtherPorts = INDEX_0; u8OtherPorts < CONFIG_PD_PORT_COUNT ; u8OtherPorts++)
     {
         if (u8OtherPorts != u8PortNum)
         {
@@ -602,7 +602,7 @@ UINT8 PB_IsNegotiationInProgressForOtherPort (UINT8 u8PortNum)
     UINT8 u8OtherPorts;
     UINT8 u8RetVal = FALSE;
    
-    for (u8OtherPorts = 0; u8OtherPorts < CONFIG_PD_PORT_COUNT ; u8OtherPorts++)
+    for (u8OtherPorts = INDEX_0; u8OtherPorts < CONFIG_PD_PORT_COUNT ; u8OtherPorts++)
     {
         if (u8OtherPorts != u8PortNum)
         {
@@ -622,7 +622,7 @@ UINT8 PB_IdentifyHighestPriorityPortInPendingState(void)
     UINT8 u8LoopPortNum;
     UINT8 u8NextPort = PB_INVALID_PORT;
    
-    for (u8LoopPortNum = 0; u8LoopPortNum < CONFIG_PD_PORT_COUNT; u8LoopPortNum++)
+    for (u8LoopPortNum = INDEX_0; u8LoopPortNum < CONFIG_PD_PORT_COUNT; u8LoopPortNum++)
     {
         if (ePB_RENEGOTIATION_PENDING_STATE == gasPBIntPortParam[u8LoopPortNum].ePBPortState)
         {
@@ -667,7 +667,7 @@ UINT8 PB_PortInWaitForAsyncTimerState(void)
 {
     UINT8 u8PortNum = PB_INVALID_PORT;
     UINT8 u8Loop;
-    for (u8Loop = 0; u8Loop < CONFIG_PD_PORT_COUNT ; u8Loop++)
+    for (u8Loop = INDEX_0; u8Loop < CONFIG_PD_PORT_COUNT ; u8Loop++)
     {
         if (ePB_WAIT_FOR_ASYNC_REQ_SS == gasPBIntPortParam[u8Loop].eRenegSubState)
         {
@@ -692,8 +692,8 @@ void PB_AsynTimerCB(UINT8 u8PortNum, UINT8 u8Dummy)
 
 void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
 {
-    float fVoltageInmV = 0; 
-    UINT16 u16CurrentIn10mA = 0; 
+    float fVoltageInmV = SET_TO_ZERO; 
+    UINT16 u16CurrentIn10mA = SET_TO_ZERO; 
     
     /* Enable New PDO Select. Load the New PDO Count which is same as Fixed PDO 
        count */
