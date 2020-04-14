@@ -1813,7 +1813,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
 																		
-	u16SharedPwrCapacityIn250mW     2         R/W          R        * Defines the currently 
+	u16SharedPwrCapacityIn250mW     2         R/W          R         * Defines the currently 
 																		available shared power 
 																		capacity from which power 
 																		is allocated to ports that 
