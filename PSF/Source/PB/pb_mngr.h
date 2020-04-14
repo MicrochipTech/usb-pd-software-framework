@@ -836,6 +836,34 @@ void PB_AsynTimerCB(UINT8, UINT8);
 **************************************************************************************************/
 void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
 
+/**************************************************************************************************
+    Function:
+        void PB_HandleReclaimPortDetachOrRenegCmplt(void);
+
+    Summary:
+        This API is used to handle the detach event or Renegotiation complete
+        event of Reclaiming Port. 
+
+    Description:
+        This API can be called to handle the detach event or Renegotiation complete
+        event that occurred for a Reclaiming port. This API checks if sufficient power
+        is available for the recovering port. If yes, it clears the recovering mode 
+        status. Else, it initiates reclaiming power from the next low priority port. 
+ 
+    Conditions:
+        None.
+
+    Input:
+        None.
+
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void PB_HandleReclaimPortDetachOrRenegCmplt(void); 
 #endif /* _PB_MNGR_H */
 
 /* *****************************************************************************

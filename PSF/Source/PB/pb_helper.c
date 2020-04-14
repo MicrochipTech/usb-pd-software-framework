@@ -690,6 +690,33 @@ void PB_AsynTimerCB(UINT8 u8PortNum, UINT8 u8Dummy)
     PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_SECOND_RENEGOTIATION_IN_PROGRESS_SS);
 }
 
+void PB_HandleReclaimPortDetachOrRenegCmplt(void)
+{
+    UINT8 u8IsAvailablePwrSufficient = PB_NegotiateIfRequiredPwrAvailableInPool (gsPBIntSysParam.u8RecoverPortNum);
+                    
+    if (u8IsAvailablePwrSufficient)
+    {
+        gsPBIntSysParam.u8RecoveringMode = FALSE;
+    }
+    else
+    {
+        if (PB_RECLAIM_FAILED == PB_ReclaimPower (gsPBIntSysParam.u8RecoverPortNum))
+        {
+            /*There is no power in the lower priority port. Just advertise whatever power
+            available in the pool*/             
+            /*Initiate renegotiation for the recovering port with new wattage*/
+            PB_InitiateNegotiationWrapper (gsPBIntSysParam.u8RecoverPortNum, \
+                    (UINT16)(gasCfgStatusData.u16SharedPwrCapacityIn250mW + gasPBIntPortParam[gsPBIntSysParam.u8RecoverPortNum].u16NegotiatedPwrIn250mW));
+                            
+            PB_ChangePortStates(gsPBIntSysParam.u8RecoverPortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS); 
+                            
+            gasCfgStatusData.u16SharedPwrCapacityIn250mW = SET_TO_ZERO;
+            gsPBIntSysParam.u8RecoveringMode = FALSE;
+        }                       
+    }
+    
+}
+
 void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
 {
     float fVoltageInmV = SET_TO_ZERO; 
