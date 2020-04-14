@@ -166,13 +166,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                         /*Refill pool with excess power */
                         (void)PB_ReleaseExcessPwr (u8PortNum);
                         
-                        gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);
-                        
-                        /*Change the port state to Negotiation Pending*/
-                        PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
-                        
-                        /*Find out the highest port in pending state*/
-                        PB_InitiateNextPortNegotiation ();
+                        PB_HandleHighPriorityPortDetach (u8PortNum); 
                     }      
                     else
                     {                      
@@ -198,13 +192,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                      */  
                     if (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_RENEG_AGAIN)
                     {
-                        gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);
-                        
-                        /*Change the port state to Negotiation Pending*/
-                        PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
-                        
-                        /*Find out the highest port in pending state*/
-                        PB_InitiateNextPortNegotiation ();
+                        PB_HandleHighPriorityPortDetach (u8PortNum); 
                     }
                     else
                     {
@@ -242,13 +230,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     
                     if (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_RENEG_AGAIN)
                     {   
-                        gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_RENEG_AGAIN);        
-                        
-                        /*Change the port state to Negotiation Pending*/
-                        PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
-                        
-                        /*Find out the highest port in pending state*/
-                        PB_InitiateNextPortNegotiation ();
+                         PB_HandleHighPriorityPortDetach (u8PortNum); 
                     }
                     else
                     {
