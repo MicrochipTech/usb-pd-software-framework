@@ -746,7 +746,7 @@ void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
         fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index]); 
         
         /* Calculate new current value based on new power */
-        u16CurrentIn10mA = (UINT16)(((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT)); 
+        u16CurrentIn10mA = ROUND_OFF_FLOAT_TO_INT((float)(((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT))); 
         
         /* In PB, current value of a port should not exceed PORT_MAX_I */ 
         u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrentIn10mA); 
