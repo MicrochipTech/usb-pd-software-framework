@@ -184,7 +184,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16CurrentIn10mA; 
     
     /* Calculate power in terms of 10mW */
-    u16TempPwrIn10mW = (UINT16) ((UINT16)fNegotiatedVoltageInV * u16CurrentIn10mA);
+    u16TempPwrIn10mW = (UINT16) (fNegotiatedVoltageInV * u16CurrentIn10mA);
     
     /* Convert the power in terms of 250 mW */
     gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW = PB_CONVERT_POWER_FROM_10mW_TO_250mW(u16TempPwrIn10mW); 
@@ -245,9 +245,11 @@ void PB_CalculateRequiredPortPower(UINT8 u8PortNum, UINT8 u8SinkPDOCnt, const UI
             }
             
             fPDOVoltageInV = PB_CONVERT_PDO_VOLTAGE_FROM_50mV_TO_V (u16TempVoltIn50mV);
+            
             u16TempCurrIn10mA = PB_GET_CURRENT_FROM_PDO (pu32SinkCap[u8PDOCnt]);
-            u16TempPwrIn10mW =  (UINT16)(u16TempCurrIn10mA * (UINT16) fPDOVoltageInV); 
-                
+            
+            u16TempPwrIn10mW =  (UINT16)(u16TempCurrIn10mA * fPDOVoltageInV); 
+            
             if (u16TempPwrIn10mW > u16PortMaxRequiredPwrIn250mW)
             {
                 /* Now power will be in units of 10mW */
