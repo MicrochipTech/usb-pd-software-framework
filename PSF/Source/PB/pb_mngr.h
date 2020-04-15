@@ -782,7 +782,7 @@ void PB_InitiateNextPortNegotiation(void);
 UINT8 PB_PortInWaitForAsyncTimerState(void);
 /**************************************************************************************************
     Function:
-        void PB_AsynTimerCB (UINT8 u8PortNum, UINT8 u8Dummy);
+        void PB_AsyncTimerCB (UINT8 u8PortNum, UINT8 u8Dummy);
 
     Summary:
         This is the API registered as callback for Timer expiry.   
@@ -805,7 +805,7 @@ UINT8 PB_PortInWaitForAsyncTimerState(void);
         None. 
 
 **************************************************************************************************/
-void PB_AsynTimerCB(UINT8, UINT8);
+void PB_AsyncTimerCB(UINT8, UINT8);
 /**************************************************************************************************
     Function:
         void PB_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
