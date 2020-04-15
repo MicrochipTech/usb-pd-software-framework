@@ -678,7 +678,7 @@ UINT8 PB_PortInWaitForAsyncTimerState(void)
     return u8PortNum;
 }
 
-void PB_AsynTimerCB(UINT8 u8PortNum, UINT8 u8Dummy)
+void PB_AsyncTimerCB(UINT8 u8PortNum, UINT8 u8Dummy)
 {
     /* We did not receive any asynchronous request within the time period. So,
     go ahead and refill the pool with excess power */

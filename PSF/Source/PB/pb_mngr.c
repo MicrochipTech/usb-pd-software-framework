@@ -171,7 +171,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     else
                     {                      
                         /* Start a timer for 200 ms and change state as WAIT_FOR_ASYNC_REQ*/
-                        gu8PBTimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(gsPBIntSysParam.u32AsyncReqWaitTimerInms), PB_AsynTimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
+                        gu8PBTimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(gsPBIntSysParam.u32AsyncReqWaitTimerInms), PB_AsyncTimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
 
                         PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_WAIT_FOR_ASYNC_REQ_SS);
 
