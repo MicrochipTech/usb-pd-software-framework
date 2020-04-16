@@ -1653,6 +1653,9 @@ Description:
     <b>eMCHP_PSF_TYPEC_CC2_ATTACH:</b> This event is posted by PSF Type C state machine when port
 	partner Type C attach is detected in CC2 pin.
     
+    <b>eMCHP_PSF_TYPEC_ERROR_RECOVERY:</b> This event is posted by PSF Type C state machine when 
+    the port has entered Type C Error Recovery state.
+  
     <b>eMCHP_PSF_UPDS_IN_IDLE: </b>This event is posted by Power management control. PSF runs an
 	algorithm backend for Power management control. If there is no activity in UPD350 for 
 	CONFIG_PORT_UPD_IDLE_TIMEOUT_MS corresponding UPD350 is put to low power mode. When all the
