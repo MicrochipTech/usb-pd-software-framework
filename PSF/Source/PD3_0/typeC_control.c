@@ -1509,10 +1509,10 @@ void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal)
 {  
      UINT16 u16CCControlReg1Val;
      
-     /* Register Read added to avoid over writting the register CC_CTL1 register */
+     /* Register Read added to avoid over writing the register CC_CTL1 register */
      UPD_RegisterRead (u8PortNum, TYPEC_CC_CTL1, (UINT8 *)&u16CCControlReg1Val, BYTE_LEN_2);
      
-     /*Clearing the Existing Pull Down and Pull up resisor values*/
+     /*Clearing the Existing Pull Down and Pull up resistor values*/
      u16CCControlReg1Val &= TYPEC_CC1_CC2_RP_MASK;
      u16CCControlReg1Val &= TYPEC_CC1_CC2_PD_MASK;  
      
@@ -1708,7 +1708,7 @@ void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
     /*VCONN discharge complete can occur while the sink is still attached or detached for source port*/
     /*VCONN discharge complete can occur while the source is still attached or detached for sink port*/
     
-    /*Detach Event occured during this VCONN Discharge process will be handled since the 
+    /*Detach Event occurred during this VCONN Discharge process will be handled since the 
     TypeC_Reset_VCONNDIS_Settings function will again restart the CC Comparator*/
     TypeC_Reset_VCONNDIS_Settings(u8PortNum);
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_DISCHARGE_ON_MASK;     
@@ -2070,7 +2070,7 @@ void TypeC_SetDefaultRpValue (UINT8 u8PortNum)
 #endif
 /*INCLUDE_PD_SOURCE*/
 
-#if (INCLUDE_VCONN_SWAP_SUPPORT| INCLUDE_PD_SOURCE)
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
 
 void TypeC_Reset_VCONNDIS_Settings (UINT8 u8PortNum)
 {
@@ -2090,9 +2090,10 @@ void TypeC_Reset_VCONNDIS_Settings (UINT8 u8PortNum)
         while VCONN Discharge*/
         TypeC_SetDefaultRpValue (u8PortNum);
     }
-    else
     #endif
+
     #if (TRUE == INCLUDE_PD_SINK)
+    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SINK)
     {
         TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP);
           
