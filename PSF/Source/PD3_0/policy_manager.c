@@ -360,30 +360,6 @@ void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32S
     } 
 }
 
-void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
-{
-    UINT8 u8APDOEnDisMask = DPM_PPS_APDO_EN_DIS_MASK; 
-   
-	for (UINT8 byIndex = INDEX_0; byIndex < DPM_MAX_APDO_COUNT; byIndex++)
-    {
-        /* At any point PDO + APDO Count should not exceed 7 */
-        if ((*u8pSrcPDOCnt) < DPM_MAX_PDO_CNT)
-        {
-            /* Check if APDO is enabled */
-            if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & u8APDOEnDisMask) 
-            {
-                /* Include the APDO in Source capabilities message */
-                *(u32pSrcCap + (*u8pSrcPDOCnt)) = gasCfgStatusData.sPPSPerPortData[u8PortNum].u32aPPSApdo[byIndex];
-
-                /* Increment Source caps PDO count */
-                (*u8pSrcPDOCnt)++; 
-            }
-            /* Left shift the mask to check for next APDO */
-            u8APDOEnDisMask <<= 1;
-        }
-    }   
-}
-
 /* Get the source capabilities from the port configuration structure */
 void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu32DataObj)
 {   
@@ -404,12 +380,12 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
         pu32SrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[0];        
     }
  
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
-    if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & DPM_PPS_ENABLE) 
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)    
+    if (TRUE == DPM_IS_PPS_ENABLED(u8PortNum))
     {
         DPM_IncludeAPDOs (u8PortNum, u8pSrcPDOCnt, pu32SrcCap); 
-    }
-#endif     
+    }   
+#endif
     
     DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
    
@@ -474,16 +450,16 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
         (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
             gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt));           
     }
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
 
-    if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & DPM_PPS_ENABLE) 
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+    if (TRUE == DPM_IS_PPS_ENABLED(u8PortNum))
     {    
         /* Add APDOs and APDO count to the Advertised PDO registers */
         DPM_IncludeAPDOs (u8PortNum, &gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt, 
                                     &gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0]); 
     }
-    
 #endif
+    
     /* Update the Port Connection Status register by comparing the Fixed and 
        Advertised Source PDOs */
     if (0 == DPM_ComparePDOs(u8PortNum))
@@ -518,6 +494,34 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
       gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8PDOIndex] = u32DataBuf[u8PDOIndex];   
     }    
 }
+void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
+{
+    #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+
+    UINT8 u8APDOEnDisMask = DPM_PPS_APDO_EN_DIS_MASK; 
+   
+	for (UINT8 byIndex = INDEX_0; byIndex < DPM_MAX_APDO_COUNT; byIndex++)
+    {
+        /* At any point PDO + APDO Count should not exceed 7 */
+        if ((*u8pSrcPDOCnt) < DPM_MAX_PDO_CNT)
+        {
+            /* Check if APDO is enabled */
+            if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & u8APDOEnDisMask) 
+            {
+                /* Include the APDO in Source capabilities message */
+                *(u32pSrcCap + (*u8pSrcPDOCnt)) = gasCfgStatusData.sPPSPerPortData[u8PortNum].u32aPPSApdo[byIndex];
+
+                /* Increment Source caps PDO count */
+                (*u8pSrcPDOCnt)++; 
+            }
+            /* Left shift the mask to check for next APDO */
+            u8APDOEnDisMask <<= 1;
+        }
+    }   
+    
+    #endif 
+}
+
 #endif /*INCLUDE_PD_SOURCE*/  
 
 /*********************************DPM VDM Cable APIs**************************************/
