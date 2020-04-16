@@ -158,7 +158,12 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             u8RetVal = TRUE;
             break;
         }
-               
+        
+        case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
+        {
+            break; 
+        }
+        
         case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD: 
         {
             break; 
