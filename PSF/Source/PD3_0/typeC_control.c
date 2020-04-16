@@ -950,6 +950,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ERROR_RECOVERY: Entered"\
                                          "ERROR RECOVERY State\r\n"); 
                     
+                    (void) DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY); 
+                    
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
                     

@@ -56,6 +56,10 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             break; 
             
         case eMCHP_PSF_TYPEC_DETACH_EVENT: 
+            /* fallthrough */
+        case eMCHP_PSF_TYPEC_ERROR_RECOVERY:
+            /* fallthrough */
+        case eMCHP_PSF_VBUS_PWR_FAULT: 
             
             /* Give power back to pool.On the following condition, the giveback 
             power is calculated based on the Required Power. This is because, 

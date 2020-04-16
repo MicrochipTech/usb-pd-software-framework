@@ -154,6 +154,11 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             break;
         }
         
+        case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
+        {
+            break; 
+        }
+        
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
         {
             break; 
