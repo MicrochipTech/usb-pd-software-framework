@@ -261,6 +261,10 @@ Source/Sink Power delivery objects*/
                              (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)) \
                                     ? TRUE : FALSE)   
 
+/* Macro to know if PPS is enabled for the port */
+#define DPM_IS_PPS_ENABLED(u8PortNum)  ((gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & \
+                                        DPM_PPS_ENABLE) ? TRUE : FALSE)
+
 /*********************PPS APDO Defines ******************/
 #define DPM_PPS_ENABLE                           0x01 
 #define DPM_MAX_APDO_COUNT                       3 
