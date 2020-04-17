@@ -61,87 +61,94 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             /* fallthrough */
         case eMCHP_PSF_VBUS_PWR_FAULT: 
             
-            /* Give power back to pool.On the following condition, the giveback 
-            power is calculated based on the Required Power. This is because, 
-            the Port Required Power will have the power subtracted from pool power*/   
-            if ((ePB_RENEGOTIATION_IN_PROGRESS_STATE == gasPBIntPortParam[u8PortNum].ePBPortState) || \
-               (ePB_RENEGOTIATION_COMPLETED_STATE == gasPBIntPortParam[u8PortNum].ePBPortState) || \
-               (ePB_RENEGOTIATION_PENDING_STATE == gasPBIntPortParam[u8PortNum].ePBPortState))
+            /* In case of power fault, this case statement would get executed. 
+               Immediately followed by that, we may get a detach notification. 
+               This check would prevent the processing of detach event multiple 
+               times in a same port */
+            if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))
             {
-                u16GivebackPwrIn250mW = gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW - \
-                             gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;
-            }
-             /*The give back power is calculated based on Neg Power since, the required power will have 
-             the max power required for the port but Neg power will have the actual power that is
-             withdrawn from the pool power. This can happen only when a detach occurs for the 
-             recovering port*/
-            else if (ePB_PWR_RECOVERING_STATE == gasPBIntPortParam[u8PortNum].ePBPortState)
-            {
-                u16GivebackPwrIn250mW = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW - \
-                            gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;
-            }
-            else
-            {
-                u16GivebackPwrIn250mW = SET_TO_ZERO;
-            }
-            
-            /*If the Timer for the port is started, kill the timer*/
-            if (ePB_WAIT_FOR_ASYNC_REQ_SS == gasPBIntPortParam[u8PortNum].eRenegSubState)
-            {
-                PDTimer_Kill (gu8PBTimerID);              
-            }
-            
-            /*Set Renegotiation pending for lower priority ports only if the 
-             port is attached and a PD contract is negotiated*/
-            
-            if (ePB_IDLE_STATE != gasPBIntPortParam[u8PortNum].ePBPortState)
-            {
-                /*Set negotiation pending for all the lower priority ports*/
-                PB_SetRenegotiationPendingForLowPriorityPorts (u8PortNum);
-            }
-            
-            gasCfgStatusData.u16SharedPwrCapacityIn250mW += u16GivebackPwrIn250mW;
-            
-             /*Reset all the state variables and the flags associated with the port*/
-            gasPBIntPortParam[u8PortNum].u8PBPortStatusMask = FALSE; 
-            
-            PB_UpdateAttachSeq (u8PortNum);
-            
-            gasPBIntPortParam[u8PortNum].u8AttachSeqNo = SET_TO_ZERO;            
-            gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW = SET_TO_ZERO;
-            gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = SET_TO_ZERO;
-            gasPBIntPortParam[u8PortNum].eRenegSubState = ePB_IDLE_SS;
-            gasPBIntPortParam[u8PortNum].ePBPortState = ePB_IDLE_STATE;
-            gasPBIntPortParam[u8PortNum].eGetSinkCapSS = ePB_SINK_CAPS_NOT_INITIATED;      
-            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = SET_TO_ZERO;
-            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = SET_TO_ZERO; 
-                                   
-            if (TRUE == gsPBIntSysParam.u8RecoveringMode) 
-            {
-                if (u8PortNum == gsPBIntSysParam.u8ReclaimPortNum)
+                /* Give power back to pool.On the following condition, the giveback 
+                power is calculated based on the Required Power. This is because, 
+                the Port Required Power will have the power subtracted from pool power*/   
+                if ((ePB_RENEGOTIATION_IN_PROGRESS_STATE == gasPBIntPortParam[u8PortNum].ePBPortState) || \
+                   (ePB_RENEGOTIATION_COMPLETED_STATE == gasPBIntPortParam[u8PortNum].ePBPortState) || \
+                   (ePB_RENEGOTIATION_PENDING_STATE == gasPBIntPortParam[u8PortNum].ePBPortState))
                 {
-                    /*If the recovering mode is on and the detach occurred for the reclaiming
-                     port, then see if there is enough power for Recover Port. If not
-                     again Reclaim*/
-                    PB_HandleReclaimPortDetachOrRenegCmplt();
+                    u16GivebackPwrIn250mW = gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW - \
+                                 gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;
                 }
-                
-                if (u8PortNum == gsPBIntSysParam.u8RecoverPortNum)
+                 /*The give back power is calculated based on Neg Power since, the required power will have 
+                 the max power required for the port but Neg power will have the actual power that is
+                 withdrawn from the pool power. This can happen only when a detach occurs for the 
+                 recovering port*/
+                else if (ePB_PWR_RECOVERING_STATE == gasPBIntPortParam[u8PortNum].ePBPortState)
                 {
-                    /*If the detach is for a Recover Port, then already the power
-                     is refilled.*/
-                    gsPBIntSysParam.u8RecoveringMode = FALSE;
-                }                   
-            } 
-            
-            /*If there is any port which is already negotiating then don't do 
-            anything. Else renegotiate the next higher priority port in 
-            Pending state*/
-            u8IsNegotiationInProgress = PB_IsNegotiationInProgressForOtherPort(u8PortNum);
+                    u16GivebackPwrIn250mW = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW - \
+                                gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;
+                }
+                else
+                {
+                    u16GivebackPwrIn250mW = SET_TO_ZERO;
+                }
 
-            if (!u8IsNegotiationInProgress)
-            {
-                PB_InitiateNextPortNegotiation ();
+                /*If the Timer for the port is started, kill the timer*/
+                if (ePB_WAIT_FOR_ASYNC_REQ_SS == gasPBIntPortParam[u8PortNum].eRenegSubState)
+                {
+                    PDTimer_Kill (gu8PBTimerID);              
+                }
+
+                /*Set Renegotiation pending for lower priority ports only if the 
+                 port is attached and a PD contract is negotiated*/
+
+                if (ePB_IDLE_STATE != gasPBIntPortParam[u8PortNum].ePBPortState)
+                {
+                    /*Set negotiation pending for all the lower priority ports*/
+                    PB_SetRenegotiationPendingForLowPriorityPorts (u8PortNum);
+                }
+
+                gasCfgStatusData.u16SharedPwrCapacityIn250mW += u16GivebackPwrIn250mW;
+
+                 /*Reset all the state variables and the flags associated with the port*/
+                gasPBIntPortParam[u8PortNum].u8PBPortStatusMask = FALSE; 
+
+                PB_UpdateAttachSeq (u8PortNum);
+
+                gasPBIntPortParam[u8PortNum].u8AttachSeqNo = SET_TO_ZERO;            
+                gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW = SET_TO_ZERO;
+                gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = SET_TO_ZERO;
+                gasPBIntPortParam[u8PortNum].eRenegSubState = ePB_IDLE_SS;
+                gasPBIntPortParam[u8PortNum].ePBPortState = ePB_IDLE_STATE;
+                gasPBIntPortParam[u8PortNum].eGetSinkCapSS = ePB_SINK_CAPS_NOT_INITIATED;      
+                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = SET_TO_ZERO;
+                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = SET_TO_ZERO; 
+
+                if (TRUE == gsPBIntSysParam.u8RecoveringMode) 
+                {
+                    if (u8PortNum == gsPBIntSysParam.u8ReclaimPortNum)
+                    {
+                        /*If the recovering mode is on and the detach occurred for the reclaiming
+                         port, then see if there is enough power for Recover Port. If not
+                         again Reclaim*/
+                        PB_HandleReclaimPortDetachOrRenegCmplt();
+                    }
+
+                    if (u8PortNum == gsPBIntSysParam.u8RecoverPortNum)
+                    {
+                        /*If the detach is for a Recover Port, then already the power
+                         is refilled.*/
+                        gsPBIntSysParam.u8RecoveringMode = FALSE;
+                    }                   
+                } 
+
+                /*If there is any port which is already negotiating then don't do 
+                anything. Else renegotiate the next higher priority port in 
+                Pending state*/
+                u8IsNegotiationInProgress = PB_IsNegotiationInProgressForOtherPort(u8PortNum);
+
+                if (!u8IsNegotiationInProgress)
+                {
+                    PB_InitiateNextPortNegotiation ();
+                }
             }
             
             break; 

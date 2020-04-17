@@ -1043,11 +1043,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 }
 
-                /*Device waits in this substate until the tErrorRecovery software timer expires*/
+                /*Device waits in this sub-state until the tErrorRecovery software timer expires*/
                 case TYPEC_ERROR_RECOVERY_IDLE_SS:                  
                     break;
 
-                /*Device enters this substate after the tErrorRecovery software timer is expired*/
+                /*Device enters this sub-state after the tErrorRecovery software timer is expired*/
                 case TYPEC_ERROR_RECOVERY_TO_SS: 
                 {    
                     
@@ -1070,7 +1070,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
                         
                         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                        /*Enable PIO ovveride enable*/
+                        /*Enable PIO override enable*/
                         UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
                         #endif
                     }
