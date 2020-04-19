@@ -1251,10 +1251,12 @@ UINT8 DPM_HandleClientRequest(UINT8 u8PortNum,eMCHP_PSF_DPM_ClientRequest eDPMCl
         }
         case eMCHP_PSF_DPM_HANDLE_VBUS_FAULT:
         {
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
             /**VBUS OCS flag is set for DPM to handle the VBUS fault*/
             MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
             MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+#endif
             break;
         }
         case eMCHP_PSF_DPM_GET_SNK_CAPS:
