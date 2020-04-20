@@ -35,9 +35,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Defines major and minor version of PDSink Application*/
 
-/*v1.02 release*/
+/*v1.03 release*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x02
+#define APP_REV_MINOR	0x03
 
 /* ************************************************************************** */
 /* ************************************************************************** */
