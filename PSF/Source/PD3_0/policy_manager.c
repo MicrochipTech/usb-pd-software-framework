@@ -958,6 +958,12 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         }
         if(gasDPM[u8PortNum].u8PowerFaultISR & ~DPM_POWER_FAULT_VCONN_OCS)
         { 
+            #if(TRUE == INCLUDE_PD_SINK)
+            /*Resetting EN_SINK IO status here as the EN_SINK is reset at 
+               on detection of fault at ISR itself*/
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= \
+                    ~(DPM_PORT_IO_EN_SINK_STATUS);
+            #endif     
             if(FALSE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_VBUS_PWR_FAULT))
             {
                 /*Clear the Power fault flag and return*/
@@ -967,8 +973,6 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
              /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
             PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);    
             
-            /*Clear EN_SINK*/
-            PWRCTRL_ConfigEnSink(u8PortNum, FALSE);
             
             #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
             /*Clear PIO override enable*/

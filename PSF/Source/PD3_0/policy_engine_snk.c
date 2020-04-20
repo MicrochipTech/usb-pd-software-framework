@@ -177,9 +177,6 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             /* Notify the new source capability is received*/
             (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
             
-            /*Disable EN_SINK*/
-            PWRCTRL_ConfigEnSink(u8PortNum, FALSE);
-            
             /*Reset the HardResetCounter*/
             gasPolicy_Engine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	
             
