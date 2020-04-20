@@ -1697,6 +1697,12 @@ Description:
     
     <b> eMCHP_PSF_NEW_SRC_CAPS_RCVD</b>: It is notified by PSF when new source capability
     message is received from the Source Partner.
+  
+   <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
+    Busy due to which it cannot process any of the client requests, say 
+    Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
+    application through u8ClientRequest variable in sPerPortDatastructure. On 
+    receiving this notification, the application can re-initiate the request.
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1713,7 +1719,8 @@ eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
 eMCHP_PSF_GET_SINK_CAPS_RCVD,        // Sink Caps received from Port Partner
 eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD,    // Sink Caps not received from Port Partner
 eMCHP_PSF_CAPS_MISMATCH,            // Capability mismatch with Source Port Partner
-eMCHP_PSF_NEW_SRC_CAPS_RCVD         // New source capability message is received from Source Partner
+eMCHP_PSF_NEW_SRC_CAPS_RCVD,        // New source capability message is received from Source Partner
+eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************

@@ -49,9 +49,18 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             /* fallthrough */
         case eMCHP_PSF_TYPEC_CC2_ATTACH: 
             
-            PB_InitiateNegotiationWrapper(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
             gasPBIntPortParam[u8PortNum].u8PBPortStatusMask |= PB_PORT_STATUS_ATTACH;
             gasPBIntPortParam[u8PortNum].u8AttachSeqNo = gu8AttachSeq++;
+            
+            /* Update the PDOs in New PDO registers */
+            PB_UpdatePDO(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
+                    
+            /* Enable New PDO for the DPM to advertise New PDOs since the 
+               first negotiation cannot be treated as a client request. */
+            DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO);
+                    
+            gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = \
+                                gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;   
             
             break; 
             
@@ -343,11 +352,11 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     PB_InitiateGetSinkCapsWrapper (u8PortNum);
                 }
             }
-            break; 
-#if 0  /* To-do : Decide if PPM_Busy is needed */           
-        case eNOTIFY_PPM_BUSY:
+            break;  
             
-            /*If the PPM Busy notification is received that means the request was 
+        case eMCHP_PSF_BUSY:
+            
+            /*If the DPM Busy notification is received that means the request was 
              rejected. There are only 2 client request as of now.
              1. Get Sink Caps
              2. Renegotiation*/
@@ -370,7 +379,6 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                 }
             }
             break; 
-#endif 
         
         default : 
             break; 
