@@ -90,7 +90,6 @@ static void DFLL_Initialize(void)
 
 static void GCLK0_Initialize(void)
 {
-    
     GCLK_REGS->GCLK_GENCTRL = GCLK_GENCTRL_SRC(7) | GCLK_GENCTRL_GENEN_Msk | GCLK_GENCTRL_ID(0);
 
     while((GCLK_REGS->GCLK_STATUS & GCLK_STATUS_SYNCBUSY_Msk) == GCLK_STATUS_SYNCBUSY_Msk)
@@ -119,6 +118,7 @@ void CLOCK_Initialize (void)
     GCLK1_Initialize();
     DFLL_Initialize();
     GCLK0_Initialize();
+
 
 
     /* Selection of the Generator and write Lock for EIC */
