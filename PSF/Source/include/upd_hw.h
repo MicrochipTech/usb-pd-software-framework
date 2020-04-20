@@ -938,7 +938,8 @@ void UPD_FaultInInit (UINT8 u8PortNum);
 
     Conditions:
         confined to INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define.
-        PIO Override concept is applicable only if the VBUS_EN and FAULT_IN pin are UPD's PIO.
+        PIO Override concept is applicable only if the VBUS_EN and FAULT_IN pin are UPD's PIO
+        in case of Source. EN_SINK and FAULT_IN in case of Sink.
 
     Input:
         u8PortNum - Port number of the device.
@@ -950,6 +951,7 @@ void UPD_FaultInInit (UINT8 u8PortNum);
     Remarks:
         Fault_IN for the port is obtained from gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN 
         VBUS_EN for the port is obtained from gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN
+        EN_SINK for the port is obtained from gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK
 
 **************************************************************************************************/
 void UPD_ConfigPIOOvrforPwrFault (UINT8 u8PortNum);
