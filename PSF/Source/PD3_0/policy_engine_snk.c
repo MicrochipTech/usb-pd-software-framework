@@ -147,7 +147,23 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     {
                         /*if u8HardResetCounter is greater than PE_N_HARD_RESET_COUNT*/
                         /*Stay in PE_SNK_Wait_for_Capabilities State if HardReset Counter Overflowed*/
-                        /*Do Nothing and Wait for Source capability message*/
+                        /*Update EN_SINK based on implicit current from source 
+                          and Wait for Source capability message*/
+                        /*u16SinkOperatingCurrInmA has current based on the Rp value*/
+                        if(gasDPM[u8PortNum].u16SinkOperatingCurrInmA >= \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA)
+                        {
+                            /*Set EN_SINK if implicit current is satisfies the 
+                              minimum operating current required by sink*/
+                            PWRCTRL_ConfigEnSink(u8PortNum, TRUE);
+
+                        }
+                        else
+                        {
+                            /*Clear EN_SINK if implicit current is less than the 
+                              minimum operating current required by sink*/
+                            PWRCTRL_ConfigEnSink(u8PortNum, FALSE);
+                        }
                     }
 
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS;                    
