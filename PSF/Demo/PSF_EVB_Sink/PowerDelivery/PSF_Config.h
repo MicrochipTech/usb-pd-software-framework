@@ -147,15 +147,15 @@ Summary:
     PIO Override Feature code inclusion.
 Description:
     PIO override is UPD350 specific feature which changes the state of a PIO without software
-    intervention. PSF use this feature to disable VBUS_EN, FAULT_IN or EN_SINK instantly on 
+    intervention. PSF use this feature to disable EN_VBUS, FAULT_IN or EN_SINK instantly on 
     detection of a Power Fault Condition. Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
     as 1 enables this feature. User can set this define to 0 to reduce code size of PSF 
     if PIO override based power faulting is not required.
 Remarks:
-    To use this feature, VBUS_EN, EN_SINK and FAULT_IN Pin of the system should be UPD350 PIOs.
+    To use this feature, EN_VBUS, EN_SINK and FAULT_IN Pin of the system should be UPD350 PIOs.
     It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus INCLUDE_POWER_FAULT_HANDLING
     should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define to be effective. 
-    Recommended default value is 1 if UPD350 PIOs are used for VBUS_EN, EN_SINK and FAULT_IN.
+    Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS, EN_SINK and FAULT_IN.
 Example:
     <code>
     #define INCLUDE_UPD_PIO_OVERRIDE_SUPPORT	1(Include UPD350 PIO Override support for Power 
@@ -943,21 +943,21 @@ typedef enum
                                                                         fault, VCONN will be enabled
 																		only after a physical detach
                                                                         and reattach.
-    u8Pio_VBUS_EN                   1         R/W          R         * Defines the UPD350 PIO number
-																		used for VBUS_EN pin 
+    u8Pio_EN_VBUS                   1         R/W          R         * Defines the UPD350 PIO number
+																		used for EN_VBUS pin 
 																		functionality for the Port.
                                                                       * This variable is applicable 
                                                                         only when PSF is configured 
                                                                         as source. So, INCLUDE_PD_SOURCE
                                                                         macro should be set to 1 to use
                                                                         this variable.
-                                                                      * VBUS_EN is to enable VBUS 
+                                                                      * EN_VBUS is to enable VBUS 
 																	    drive out of DC/DC
-                                                                        controller. VBUS_EN pin 
+                                                                        controller. EN_VBUS pin 
 																		connects to a load switch 
 																		device such as a power FET 
 																		or load switch IC. It is 
-																		driven as per u8Mode_VBUS_EN configuration mode whenever 
+																		driven as per u8Mode_EN_VBUS configuration mode whenever 
 																		stack requires VBUS to 
 																		driven high as well as low.
                                                                       * The range of valid values is
@@ -982,9 +982,9 @@ typedef enum
 																		autonomous action is taken 
 																		by the UPD350 in a fault 
 																		condition.
-    u8Mode_VBUS_EN                  1         R/W          R         *  Defines the PIO mode of the 
-																		 UPD350 PIO VBUS_EN defined 
-																		 in u8Pio_VBUS_EN. 
+    u8Mode_EN_VBUS                  1         R/W          R         *  Defines the PIO mode of the 
+																		 UPD350 PIO EN_VBUS defined 
+																		 in u8Pio_EN_VBUS. 
                                                                       * This variable is applicable 
                                                                         only when PSF is configured 
                                                                         as source. So, INCLUDE_PD_SOURCE
@@ -1168,12 +1168,15 @@ typedef enum
                                                                         4. '100' 20V (VSEL2 
 																		     asserted)
 	u8Pio_EN_SINK                   1         R/W          R         * Defines the UPD350 PIO 
-																		number used for EN_SINK pin
+																		number used for EN_SINK pin.
 																	  * This is applicable only for
 																		Sink operation.
                                                                       * This pin is to indicate that 
                                                                         sink is enabled and it can 
                                                                         sink power from source partner.
+                                                                      * The range of valid values is
+ 																	    0 to 15 which correspond to
+                                                                        UPD350 PIO0 to PIO15.
                                                                       * By defining     
 																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
 																		as '1', The PIO Override 
@@ -1187,6 +1190,9 @@ typedef enum
 																		EN_SINK pin
 																	  * This is applicable only for 
 																		Sink operation. 
+                                                                      * It takes values only 
+																	    from enum 
+																		eUPD_OUTPUT_PIN_MODES_TYPE.
 	u8DAC_I_Direction               1         R/W          R       	 * Specifies the direction of 
 																	    DAC_I to allow user invert 
 																		direction of DAC_I if 
@@ -1335,7 +1341,7 @@ typedef enum
     3       R            R         VSEL2 Status  
                                     * '1' Asserted 
                                     * '0' De-asserted
-    4       R            R         VBUS_EN Status  
+    4       R            R         EN_VBUS Status  
                                     * '1' Asserted 
                                     * '0' De-asserted
     5       R            R         VBUS_DIS Status  
@@ -1529,8 +1535,8 @@ typedef struct _PortCfgStatus
     UINT8 u8mode_VBUS_DIS;
     UINT8 u8aReserved1[2];
 #if (TRUE == INCLUDE_PD_SOURCE)
-    UINT8 u8Pio_VBUS_EN;
-    UINT8 u8Mode_VBUS_EN;
+    UINT8 u8Pio_EN_VBUS;
+    UINT8 u8Mode_EN_VBUS;
     UINT8 u8Pio_DC_DC_EN;
     UINT8 u8Mode_DC_DC_EN;
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 

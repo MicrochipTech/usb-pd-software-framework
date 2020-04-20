@@ -408,10 +408,10 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
     
 		#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
             UINT8 u8VBUSEn;
-            /*When PIO override is disabled; disable VBUS_EN/EN_SINK based on the
+            /*When PIO override is disabled; disable EN_VBUS/EN_SINK based on the
              role on a power fault*/
             #if (TRUE==INCLUDE_PD_SOURCE)
-            u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN;
+            u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
             #else
             u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
             #endif
@@ -439,8 +439,8 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 	UINT8 u8PIONum;
     
     #if (TRUE == INCLUDE_PD_SOURCE)
-	/* Get the PIO number for VBUS_EN */
-	u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN;
+	/* Get the PIO number for EN_VBUS */
+	u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
     #else
     u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
     #endif
@@ -466,7 +466,7 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 	/* Configure the Source for override 2 as Fault_IN/PRT_CTL pin low from Load switch */
 	UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR2_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN);
 	
-	/* VBUS_EN is configured as override Pin in output mode */
+	/* EN_VBUS is configured as override Pin in output mode */
 	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, BIT(u8PIONum));
     
     /* Override 0*/
