@@ -1464,21 +1464,23 @@ typedef struct _PortCfgStatus
     UINT8 u8VCONNOCSDebounceInms;
     UINT8 u8VBUSMaxFaultCnt;
     UINT8 u8VCONNMaxFaultCnt;
-    UINT8 u8Pio_VBUS_EN;
-    UINT8 u8Mode_VBUS_EN;
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;
     UINT8 u8Pio_VBUS_DIS;
     UINT8 u8mode_VBUS_DIS;
+    UINT8 u8aReserved1[2];
+#if (TRUE == INCLUDE_PD_SOURCE)
+    UINT8 u8Pio_VBUS_EN;
+    UINT8 u8Mode_VBUS_EN;
     UINT8 u8Pio_DC_DC_EN;
     UINT8 u8Mode_DC_DC_EN;
-    UINT8 u8aReserved1[2];
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 
     UINT8 u8aPio_VSEL[3];
     UINT8 u8aMode_VSEL[3];
 	UINT8 u8aVSELTruthTable[8];
     UINT8 u8aReserved2[2];
 	#endif
+#endif
     #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
