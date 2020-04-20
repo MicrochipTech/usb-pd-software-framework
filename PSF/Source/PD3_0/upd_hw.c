@@ -407,11 +407,18 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
         }
     
 		#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-			/* Disable EN_VBUS gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN*/
-			UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
+            UINT8 u8VBUSEn;
+            /*When PIO override is disabled; disable VBUS_EN/EN_SINK based on the
+             role on a power fault*/
+            #if (TRUE==INCLUDE_PD_SOURCE)
+            u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN;
+            #else
+            u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+            #endif
+			UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
 									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
 			u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
-			UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
+			UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
 										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
 		#endif
 	}
@@ -429,14 +436,19 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 	/* Override 0 - Overvoltage Threshold*/
     /* Override 1 - UnderVoltage Threshold */
   	/* Override 2 - Fault Low*/
-	
+	UINT8 u8PIONum;
+    
+    #if (TRUE == INCLUDE_PD_SOURCE)
 	/* Get the PIO number for EN_VBUS */
-	UINT8 u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN;
-	/*Setting Monitoring bit as '1' checks whether voltage exceeds the configured source 
+	u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN;
+    #else
+    u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+    #endif
+
+    /*Setting Monitoring bit as '1' checks whether voltage exceeds the configured source 
         selection VBUS threshold value or the source selection PIO goes high */
     /* Setting Monitoring bit as '0' checks whether voltage falls below the source 
             selection VBUS threshold value or the source selection PIO goes low */
-    
 	/* Enable monitoring for Override 0 - Overvoltage alone */
 	UPD_RegWriteByte (u8PortNum, UPD_PIO_MON_VAL, UPD_PIO_OVR_0 );
 	
