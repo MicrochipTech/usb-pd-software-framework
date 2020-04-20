@@ -439,7 +439,7 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 	UINT8 u8PIONum;
     
     #if (TRUE == INCLUDE_PD_SOURCE)
-	/* Get the PIO number for EN_VBUS */
+	/* Get the PIO number for VBUS_EN */
 	u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN;
     #else
     u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
