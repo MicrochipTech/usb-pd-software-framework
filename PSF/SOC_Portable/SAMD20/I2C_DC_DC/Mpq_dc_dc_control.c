@@ -199,6 +199,7 @@ static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current)
         __NOP();
 }*/
  
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING) 
 UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
 {
     UINT16 u16FaultStatus;
@@ -225,10 +226,10 @@ UINT8 MPQDCDC_FaultHandler()
        PSF handles all the faults in a similar manner. Thereby, we reduce 
        one I2C read/write */
     
-    /* Raise a client request to DPM for handling the fault */
+    /* Inform DPM to handle the VBUS Fault */
     if((u16FaultMask & MPQ_IOUT_OC_FAULT) || (u16FaultMask & MPQ_VOUT_FAULT))
     {        
-        u8RetVal = DPM_HandleClientRequest(u8PortNum, eMCHP_PSF_DPM_HANDLE_VBUS_FAULT);
+        DPM_HandleVBUSFault(u8PortNum);
     } 
     
     /* Clear the Fault condition by sending 'CLEAR_FAULTS' command, so that 
@@ -238,7 +239,8 @@ UINT8 MPQDCDC_FaultHandler()
     
     return u8RetVal;
 }
-        
+#endif         
+		
 void MPQDCDC_HandleAlertISR(UINT8 u8PortNum)
 {
     /* Update the DC-DC Alert Port Mask with the port number */
