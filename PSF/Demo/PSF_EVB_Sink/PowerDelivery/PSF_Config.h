@@ -724,17 +724,17 @@ typedef enum
                                                                         2. 0x012C = 3A
                                                                         3. 0x01F4 = 5A
                                                                         4. 0x03FF = 10.24A
-    u16MaximumOperatingCurInmA      2          R/W         R          * Maximum allowable current or 
+    u16MaximumOperatingCurInmA      2          R/W         R         * Maximum allowable current or 
 																		system's maximum operating
                                                                         current in terms of mA
-    u16aMinPDOPreferredCurInmA[7]   14         R/W         R          * Preferred minimum current 
-																		 range for the PDO by which 
-																		 the Sink may select without 
-																		 setting Capability Mismatch 
-																		 Bit with highest current 
-																		 preferred.
-                                                                        * This array is applicable 
-																	      only for Sink Operation.                                                                     
+    u16aMinPDOPreferredCurInmA[7]   14         R/W         R         * Preferred minimum current 
+																		range for the PDO by which 
+																		the Sink may select without 
+																		setting Capability Mismatch 
+																		Bit with highest current 
+																		preferred.
+                                                                       * This array is applicable 
+																	     only for Sink Operation.                                                                     
     u16MinimumOperatingCurInmA      2          R/W         R          * Minimum operating current by 
 																	     the System.
                                                                         * This variable is applicable 
@@ -744,8 +744,8 @@ typedef enum
                                                                           than or equal to the current
                                                                           with which sink is operating.
   	u16DAC_I_MaxOutVoltInmV         2          R/W         R          * Defines the maximum voltage 
-																		on DAC_I with a maximum of 
-																		2.5V in terms of mV 
+																		  on DAC_I with a maximum of 
+																		  2.5V in terms of mV 
 																		* This is applicable only for
 																		  Sink operation. 
 	u16DAC_I_MinOutVoltInmV         2		   R/W		   R   		  * Defines the minimum voltage 
@@ -754,8 +754,8 @@ typedef enum
 																	    * This is applicable only for
 																		  Sink operation. 
 	u16DAC_I_CurrentInd_MaxInA      2		   R/W		   R    	   * Defines which current in
-																		 terms of mA corresponding 
-																		 to maximum output voltage 
+																		  terms of mA corresponding 
+																		  to maximum output voltage 
 																		* It can take either 3A or 5A 
 																	      value. 
 																		* If it is 5A and maximum 
@@ -1201,7 +1201,7 @@ typedef enum
    																		      Max Voltage 
 																		 2. 1- High Amperage - 
 																			  Min Voltage 
-																		* This is applicable only 
+																	  * This is applicable only 
 																		  for Sink operation. 
 	u16Reserved1    				2								 Reserved					 
 	u8aReserved1[2]					2								 Reserved					 
