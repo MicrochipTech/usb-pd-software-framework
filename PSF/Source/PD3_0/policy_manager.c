@@ -967,6 +967,9 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
              /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
             PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);    
             
+            /*Clear EN_SINK*/
+            PWRCTRL_ConfigEnSink(u8PortNum, FALSE);
+            
             #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
             /*Clear PIO override enable*/
             UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);

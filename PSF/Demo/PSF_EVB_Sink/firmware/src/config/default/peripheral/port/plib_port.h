@@ -84,15 +84,6 @@
 #define SNK_1_5A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 1)
 #define SNK_1_5A_IND_PIN                  PORT_PIN_PA01
 
-/*** Macros for SNK_PD_NEG_CMPLT pin ***/
-#define SNK_PD_NEG_CMPLT_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 3)
-#define SNK_PD_NEG_CMPLT_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 3)
-#define SNK_PD_NEG_CMPLT_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 3)
-#define SNK_PD_NEG_CMPLT_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 3)) & 0x01)
-#define SNK_PD_NEG_CMPLT_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 3)
-#define SNK_PD_NEG_CMPLT_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 3)
-#define SNK_PD_NEG_CMPLT_PIN                  PORT_PIN_PA03
-
 /*** Macros for SNK_CAP_MISMATCH pin ***/
 #define SNK_CAP_MISMATCH_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 4)
 #define SNK_CAP_MISMATCH_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 4)
