@@ -147,15 +147,15 @@ Summary:
     PIO Override Feature code inclusion.
 Description:
     PIO override is UPD350 specific feature which changes the state of a PIO without software
-    intervention. PSF use this feature to disable EN_VBUS instantly on detection of a 
-    Power Fault Condition. Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature.
-    User can set this define to 0 to reduce code size of PSF if PIO override based 
-    power faulting is not required.
+    intervention. PSF use this feature to disable VBUS_EN, FAULT_IN or EN_SINK instantly on 
+    detection of a Power Fault Condition. Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
+    as 1 enables this feature. User can set this define to 0 to reduce code size of PSF 
+    if PIO override based power faulting is not required.
 Remarks:
-    To use this feature, EN_VBUS and FAULT_IN Pin of the system should be UPD350 PIOs.
+    To use this feature, VBUS_EN, EN_SINK and FAULT_IN Pin of the system should be UPD350 PIOs.
     It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus INCLUDE_POWER_FAULT_HANDLING
     should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define to be effective. 
-    Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS and FAULT_IN.
+    Recommended default value is 1 if UPD350 PIOs are used for VBUS_EN, EN_SINK and FAULT_IN.
 Example:
     <code>
     #define INCLUDE_UPD_PIO_OVERRIDE_SUPPORT	1(Include UPD350 PIO Override support for Power 
@@ -738,7 +738,11 @@ typedef enum
     u16MinimumOperatingCurInmA      2          R/W         R          * Minimum operating current by 
 																	     the System.
                                                                         * This variable is applicable 
-																	      only for Sink Operation. 
+																	      only for Sink Operation.
+                                                                        * EN_SINK will be set if current
+                                                                          in this variable is greater
+                                                                          than or equal to the current
+                                                                          with which sink is operating.
   	u16DAC_I_MaxOutVoltInmV         2          R/W         R          * Defines the maximum voltage 
 																		on DAC_I with a maximum of 
 																		2.5V in terms of mV 
@@ -940,11 +944,16 @@ typedef enum
 																		only after a physical detach
                                                                         and reattach.
     u8Pio_VBUS_EN                   1         R/W          R         * Defines the UPD350 PIO number
-																		used for EN_VBUS pin 
+																		used for VBUS_EN pin 
 																		functionality for the Port.
-                                                                      * EN_VBUS is to enable VBUS 
+                                                                      * This variable is applicable 
+                                                                        only when PSF is configured 
+                                                                        as source. So, INCLUDE_PD_SOURCE
+                                                                        macro should be set to 1 to use
+                                                                        this variable.
+                                                                      * VBUS_EN is to enable VBUS 
 																	    drive out of DC/DC
-                                                                        controller. EN_VBUS pin 
+                                                                        controller. VBUS_EN pin 
 																		connects to a load switch 
 																		device such as a power FET 
 																		or load switch IC. It is 
@@ -974,8 +983,13 @@ typedef enum
 																		by the UPD350 in a fault 
 																		condition.
     u8Mode_VBUS_EN                  1         R/W          R         *  Defines the PIO mode of the 
-																		 UPD350 PIO EN_VBUS defined 
+																		 UPD350 PIO VBUS_EN defined 
 																		 in u8Pio_VBUS_EN. 
+                                                                      * This variable is applicable 
+                                                                        only when PSF is configured 
+                                                                        as source. So, INCLUDE_PD_SOURCE
+                                                                        macro should be set to 1 to use
+                                                                        this variable.
 																	  * It takes values only from 
 																	    enum 
 																		eUPD_OUTPUT_PIN_MODES_TYPE.
@@ -1000,6 +1014,15 @@ typedef enum
 																		and 
 																		INCLUDE_POWER_FAULT_HANDLING
 																		defined as '1'. 
+                                                                      * By defining     
+																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
+																		as '1', The PIO Override 
+																		feature of the UPD350 shall 
+																		be utilized in this
+                                                                        pin to ensure that fast and 
+																		autonomous action is taken 
+																		by the UPD350 in a fault 
+																		condition.
 	u8Mode_FAULT_IN                 1         R/W          R         * Defines the PIO mode of the 
 																	    UPD350 PIO FAULT_IN defined 
 																	    in u8Pio_FAULT_IN. 
@@ -1043,7 +1066,12 @@ typedef enum
 																	  * It can take values from 0
 																	    to 15 and to disable the 
 																		funtionality from stack, 
-																		user can define it as 0xFF. 
+																		user can define it as 0xFF.
+                                                                      * This variable is applicable 
+                                                                        only when PSF is configured 
+                                                                        as source. So, INCLUDE_PD_SOURCE
+                                                                        macro should be set to 1 to use
+                                                                        this variable. 
 																	  * It is applicable only when 
 																	    CONFIG_DCDC_CTRL is defined 
 																		as 
@@ -1054,6 +1082,11 @@ typedef enum
 																	  * It takes values only 
 																	    from enum 
 																		eUPD_OUTPUT_PIN_MODES_TYPE
+                                                                      * This variable is applicable 
+                                                                        only when PSF is configured 
+                                                                        as source. So, INCLUDE_PD_SOURCE
+                                                                        macro should be set to 1 to use
+                                                                        this variable.
 	u8aPio_VSEL[3]                  3         R/W          R         * Defines the UPD350 PIO as 
 																	    voltage selector pins
 																	    (VSEL[2:0]). 
@@ -1076,7 +1109,12 @@ typedef enum
 																		user can define a value of 
 																		0xFF. Index 0 to 2 of this 
 																		array correponds to VSEL0 to
-																		VSEL2. 
+																		VSEL2.
+                                                                      * This variable is applicable 
+                                                                        only when PSF is configured 
+                                                                        as source. So, INCLUDE_PD_SOURCE
+                                                                        macro should be set to 1 to use
+                                                                        this variable. 
 																	  * It is applicable only when
 																	    CONFIG_DCDC_CTRL is defined 
 																		as 
@@ -1088,6 +1126,15 @@ typedef enum
 																	  * It takes values only from 
 																		enum 
 																		eUPD_OUTPUT_PIN_MODES_TYPE.
+                                                                      * This variable is applicable 
+                                                                        only when PSF is configured 
+                                                                        as source. So, INCLUDE_PD_SOURCE
+                                                                        macro should be set to 1 to use
+                                                                        this variable.
+ 																	  * It is applicable only when
+																	    CONFIG_DCDC_CTRL is defined 
+																		as 
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 	u8aVSELTruthTable[8]            8         R/W          R         * Index 0 defines the assertion 
 																		and deassertion to be driven
                                                                         on VSEL[2:0] pins(defined in 
@@ -1123,7 +1170,19 @@ typedef enum
 	u8Pio_EN_SINK                   1         R/W          R         * Defines the UPD350 PIO 
 																		number used for EN_SINK pin
 																	  * This is applicable only for
-																		Sink operation. 
+																		Sink operation.
+                                                                      * This pin is to indicate that 
+                                                                        sink is enabled and it can 
+                                                                        sink power from source partner.
+                                                                      * By defining     
+																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
+																		as '1', The PIO Override 
+																		feature of the UPD350 shall 
+																		be utilized in this
+                                                                        pin to ensure that fast and 
+																		autonomous action is taken 
+																		by the UPD350 in a fault 
+																		condition. 
 	u8Mode_EN_SINK                  1         R/W          R         * Defines the PIO mode for 
 																		EN_SINK pin
 																	  * This is applicable only for 
@@ -1276,7 +1335,7 @@ typedef enum
     3       R            R         VSEL2 Status  
                                     * '1' Asserted 
                                     * '0' De-asserted
-    4       R            R         EN_VBUS Status  
+    4       R            R         VBUS_EN Status  
                                     * '1' Asserted 
                                     * '0' De-asserted
     5       R            R         VBUS_DIS Status  

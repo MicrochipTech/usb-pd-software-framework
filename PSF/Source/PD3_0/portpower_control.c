@@ -100,7 +100,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_DE_ASSERT);
         
-        /* Clear the status of EN_VBUS and VSEL 2:0 */
+        /* Clear the status of VBUS_EN and VSEL 2:0 */
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= 
                 ~(DPM_PORT_IO_EN_VBUS_STATUS | DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
     }
