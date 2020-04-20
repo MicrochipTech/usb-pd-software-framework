@@ -149,7 +149,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
 /************************************************************************************/
 void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
 { 
-    UINT8 u8VbusDisMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN;
+    UINT8 u8VbusDisMode = gasCfgStatusData.sPerPortData[u8PortNum].u8mode_VBUS_DIS;
     if (u8EnaDisVBUSDIS == TRUE)
     {
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
