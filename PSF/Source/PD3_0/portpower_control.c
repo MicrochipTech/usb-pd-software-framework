@@ -198,19 +198,32 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
 void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
 {
    #if (TRUE == INCLUDE_PD_SINK)
+
     UINT8 u8EnSinkMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK; 
     UINT8 u8EnSinkPio = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
-    
-    if (TRUE == u8EnaDisEnSink)
-    {
-        UPD_GPIOUpdateOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_ASSERT);
+
+    /*u16SinkOperatingCurrInmA has current based on the Rp value*/
+    if(gasDPM[u8PortNum].u16SinkOperatingCurrInmA >= \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA)
+    {    
+        /*Set EN_SINK if implicit current is satisfies the 
+        minimum operating current required by sink*/
         
-        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_SINK_STATUS;
+        if (TRUE == u8EnaDisEnSink) 
+        {
+            UPD_GPIOUpdateOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_ASSERT);
+
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_SINK_STATUS;
+        }
+        else
+        {
+            /*Ideally this use case will not get hit*/
+        }
     }
     else
     {
         UPD_GPIOUpdateOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_DE_ASSERT);
-        
+
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(DPM_PORT_IO_EN_SINK_STATUS);
     }
     

@@ -149,21 +149,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         /*Stay in PE_SNK_Wait_for_Capabilities State if HardReset Counter Overflowed*/
                         /*Update EN_SINK based on implicit current from source 
                           and Wait for Source capability message*/
-                        /*u16SinkOperatingCurrInmA has current based on the Rp value*/
-                        if(gasDPM[u8PortNum].u16SinkOperatingCurrInmA >= \
-                            gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA)
-                        {
-                            /*Set EN_SINK if implicit current is satisfies the 
-                              minimum operating current required by sink*/
-                            PWRCTRL_ConfigEnSink(u8PortNum, TRUE);
 
-                        }
-                        else
-                        {
-                            /*Clear EN_SINK if implicit current is less than the 
-                              minimum operating current required by sink*/
-                            PWRCTRL_ConfigEnSink(u8PortNum, FALSE);
-                        }
+                        PWRCTRL_ConfigEnSink(u8PortNum, TRUE);
                     }
 
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS;                    
@@ -189,6 +176,9 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
               
             /* Notify the new source capability is received*/
             (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
+            
+            /*Disable EN_SINK*/
+            PWRCTRL_ConfigEnSink(u8PortNum, FALSE);
             
             /*Reset the HardResetCounter*/
             gasPolicy_Engine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	
@@ -338,8 +328,12 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
                     DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif                  
+                    /*Set EN_SINK*/
+                    PWRCTRL_ConfigEnSink(u8PortNum, TRUE);
+
                     /*Notify that contract is established*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
+                    
                     
                     if ((DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS & \
                             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus))

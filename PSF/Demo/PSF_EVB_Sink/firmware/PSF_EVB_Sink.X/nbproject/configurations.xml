@@ -19,18 +19,18 @@
             <logicalFolder name="f5" displayName="nvic" projectFiles="true">
               <itemPath>../src/config/default/peripheral/nvic/plib_nvic.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f1" displayName="nvmctrl" projectFiles="true">
+            <logicalFolder name="f2" displayName="nvmctrl" projectFiles="true">
               <itemPath>../src/config/default/peripheral/nvmctrl/plib_nvmctrl.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f3" displayName="port" projectFiles="true">
               <itemPath>../src/config/default/peripheral/port/plib_port.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f2" displayName="sercom" projectFiles="true">
-              <logicalFolder name="f1" displayName="spim" projectFiles="true">
+            <logicalFolder name="f1" displayName="sercom" projectFiles="true">
+              <logicalFolder name="f2" displayName="spim" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h</itemPath>
                 <itemPath>../src/config/default/peripheral/sercom/spim/plib_sercom_spi_common.h</itemPath>
               </logicalFolder>
-              <logicalFolder name="usart" displayName="usart" projectFiles="true">
+              <logicalFolder name="f1" displayName="usart" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom3_usart.h</itemPath>
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom_usart_common.h</itemPath>
               </logicalFolder>
@@ -79,6 +79,9 @@
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_iccarm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_gcc.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armcc.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang_ltm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/tz_context.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/core_cm0plus.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/mpu_armv7.h</itemPath>
@@ -155,17 +158,17 @@
             <logicalFolder name="f5" displayName="nvic" projectFiles="true">
               <itemPath>../src/config/default/peripheral/nvic/plib_nvic.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f1" displayName="nvmctrl" projectFiles="true">
+            <logicalFolder name="f2" displayName="nvmctrl" projectFiles="true">
               <itemPath>../src/config/default/peripheral/nvmctrl/plib_nvmctrl.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f3" displayName="port" projectFiles="true">
               <itemPath>../src/config/default/peripheral/port/plib_port.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f2" displayName="sercom" projectFiles="true">
-              <logicalFolder name="f1" displayName="spim" projectFiles="true">
+            <logicalFolder name="f1" displayName="sercom" projectFiles="true">
+              <logicalFolder name="f2" displayName="spim" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/spim/plib_sercom0_spi.c</itemPath>
               </logicalFolder>
-              <logicalFolder name="usart" displayName="usart" projectFiles="true">
+              <logicalFolder name="f1" displayName="usart" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom3_usart.c</itemPath>
               </logicalFolder>
             </logicalFolder>

@@ -94,7 +94,6 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2, UPD_DISABLE_GPIO);
              gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
                     ~(DPM_PORT_IO_CAP_MISMATCH_STATUS | DPM_PORT_IO_PS_RDY_RECVD_STATUS);
-            SNK_PD_NEG_CMPLT_Clear();
             SNK_CAP_MISMATCH_Clear();
             break;
         }
@@ -124,7 +123,6 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         {
             gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
                     ~(DPM_PORT_IO_CAP_MISMATCH_STATUS | DPM_PORT_IO_PS_RDY_RECVD_STATUS);
-            SNK_PD_NEG_CMPLT_Clear();
             SNK_CAP_MISMATCH_Clear();
             break;
         }
@@ -133,7 +131,6 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         {
              gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= \
                      DPM_PORT_IO_PS_RDY_RECVD_STATUS;
-            SNK_PD_NEG_CMPLT_Set();
             break; 
         }
         
