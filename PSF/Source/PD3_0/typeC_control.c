@@ -1349,10 +1349,10 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             if (TYPEC_UNDER_VOLT_THR3_MATCH & u16Data)
             {
                 #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)     
-                    /*When PIO override is disabled; VBUS_EN/EN_SINK is disabled by FW on Power fault*/
+                    /*When PIO override is disabled; EN_VBUS/EN_SINK is disabled by FW on Power fault*/
                     UINT8 u8VBUSEn;
                     #if (TRUE==INCLUDE_PD_SOURCE)
-                        u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN;
+                        u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
                     #else
                         u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
                     #endif
@@ -1376,10 +1376,10 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                 checks for only over voltage bit being set are not*/
             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP;
             #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                /*When PIO override is disabled; VBUS_EN/EN_SINK is disabled by FW on Power fault*/
+                /*When PIO override is disabled; EN_VBUS/EN_SINK is disabled by FW on Power fault*/
                 UINT8 u8VBUSEn;
                 #if (TRUE==INCLUDE_PD_SOURCE)
-                    u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN;
+                    u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
                 #else
                     u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
                 #endif

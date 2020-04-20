@@ -57,8 +57,8 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
                                         gasCfgStatusData.sPerPortData[u8PortNum].u8mode_VBUS_DIS);
     #if (TRUE == INCLUDE_PD_SOURCE)
-    UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, \
-                                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN);
+    UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, \
+                                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS);
 
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
                                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN);
@@ -91,23 +91,23 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
     #if (TRUE == INCLUDE_PD_SOURCE)
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
 
-    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN;
+    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
     UINT8 u8VSELAssert; 
     
     if (PWRCTRL_VBUS_0V == u16VBUSVoltage)
     {
-        /*De-assert VBUS_EN if voltage is 0V*/
-        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
+        /*De-assert EN_VBUS if voltage is 0V*/
+        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_DE_ASSERT);
         
-        /* Clear the status of VBUS_EN and VSEL 2:0 */
+        /* Clear the status of EN_VBUS and VSEL 2:0 */
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= 
                 ~(DPM_PORT_IO_EN_VBUS_STATUS | DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
     }
     else
     {
-        /*Assert VBUS_EN*/
-        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
+        /*Assert EN_VBUS*/
+        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
         
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
