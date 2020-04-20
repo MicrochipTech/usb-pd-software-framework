@@ -194,7 +194,7 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
     /* Hook to modify or overwrite the Port Control DC_DC_EN enable/disable */
     MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn); 
 }
-
+/***********************************************************************************************/
 void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
 {
    #if (TRUE == INCLUDE_PD_SINK)
@@ -202,23 +202,25 @@ void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
     UINT8 u8EnSinkMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK; 
     UINT8 u8EnSinkPio = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
 
-    /*u16SinkOperatingCurrInmA has current based on the Rp value*/
-    if(gasDPM[u8PortNum].u16SinkOperatingCurrInmA >= \
+    if(gasDPM[u8PortNum].u16SinkOperatingCurrInmA < 
                             gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA)
     {    
-        /*Set EN_SINK if implicit current is satisfies the 
-        minimum operating current required by sink*/
-        
-        if (TRUE == u8EnaDisEnSink) 
-        {
-            UPD_GPIOUpdateOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_ASSERT);
+        /*When EN_SINK is enabeled for Type-C alone Source detection, this check 
+         make sure the minimum operating current of Sink is satisfied by the 
+         Rp value presented by Source. Based on Rp value of Source detected, 
+         u16SinkOperatingCurrInmA variable is updated*/
+        u8EnaDisEnSink = FALSE;
+    }
+    else
+    {
+        /*do nothing*/
+    }
+    
+    if (TRUE == u8EnaDisEnSink) 
+    {
+       UPD_GPIOUpdateOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_ASSERT);
 
-            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_SINK_STATUS;
-        }
-        else
-        {
-            /*Ideally this use case will not get hit*/
-        }
+       gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_SINK_STATUS;
     }
     else
     {
@@ -238,6 +240,17 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
     if (u16Current > gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA)
     {
         u16Current = gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
+    }
+    
+    if (TYPEC_VBUS_0V == u16VBUSVoltage)
+    {
+        /*Disable EN_SINK Voltage is VSafe0V*/
+        PWRCTRL_ConfigEnSink(u8PortNum, FALSE);
+    }
+    else
+    {
+        /* EN_SINK is enabled when PSF detects a Type-C alone device or
+          when PD negotiation is complete.*/
     }
     
     /* clear the 3A and 1.5A IND status*/

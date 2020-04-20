@@ -704,10 +704,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
-                   
-                    /*Clear EN_SINK*/
-                    PWRCTRL_ConfigEnSink(u8PortNum, FALSE);
-                    
+                                 
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK: Entered"\
                                         "UNATTACHED SNK State\r\n");
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_VSAFE0V_WAIT_SS;
