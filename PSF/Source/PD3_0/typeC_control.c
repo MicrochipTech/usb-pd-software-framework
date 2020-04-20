@@ -283,6 +283,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = RESET_TO_ZERO; 
                     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
                     
+                    /* Clear all the client requests for the port since the 
+                       port is detached. */
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
+                    
                     /* Notify external DPM of Type C Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
                      

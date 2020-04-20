@@ -204,19 +204,20 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
 }
 
 void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattageIn250mW)
-{    
+{
+    /* Update the PDOs in New PDO registers */
     PB_UpdatePDO(u8PortNum, u16NewWattageIn250mW); 
     
-    /* To-do: Do we need to re initiate the request in case of failure */
-    (void) DPM_HandleClientRequest(u8PortNum, eMCHP_PSF_DPM_RENEGOTIATE);  
+    /* Raise Renegotiation request to DPM */
+    DPM_SET_RENEGOTIATE_REQ(u8PortNum); 
             
     gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = u16NewWattageIn250mW;   
 }
 
 void PB_InitiateGetSinkCapsWrapper(UINT8 u8PortNum)
 {
-    /* To-do: Do we need to re initiate the request in case of failure */
-    (void) DPM_HandleClientRequest (u8PortNum, eMCHP_PSF_DPM_GET_SNK_CAPS);
+    /* Raise Get Sink caps request to DPM */
+    DPM_SET_GET_SINK_CAPS_REQ(u8PortNum);
     
     PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_GET_SINKCAPS_SENT_SS);
     
@@ -735,9 +736,7 @@ void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
     float fVoltageInmV = SET_TO_ZERO; 
     UINT16 u16CurrentIn10mA = SET_TO_ZERO; 
     
-    /* Enable New PDO Select. Load the New PDO Count which is same as Fixed PDO 
-       count */
-    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSelect = TRUE; 
+    /* Load the New PDO Count which is same as Fixed PDO count */
     gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt; 
     
     /* In Power Balancing, voltages remain fixed irrespective of the power 

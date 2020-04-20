@@ -789,16 +789,7 @@ typedef enum
 																		port partner.
                                                                       * This variable is common for 
 																	    Source and Sink.
-    u8NewPDOSelect                  1         R/W          R/W       * 0 = Clear
-                                                                      * 1 = Set, when Set the below 
-																	    steps are done by PSF.
-                                                                        1. Load New Source PDO
-                                                                        2. Advertise New PDOs to 
-																		    Port partner
-                                                                        3. Clear all New PDO 
-																		    registers
-                                                                        4. Clear this bit
-    u8SinkConfigSel                1         R/W                    * Sink Selection mode for 
+    u8SinkConfigSel                 1         R/W                    * Sink Selection mode for 
 																		operation.
                                                                         1. '0x00' Mode A: Prefer 
 																			  Higher Voltage and 
@@ -1449,6 +1440,58 @@ typedef enum
     15:12  						   Reserved 									
 	</table> 								
 	
+	<b>f. u8ClientRequest</b>: 
+	u8ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
+	can make use of this variable to request PSF to handle the mentioned client requests. Only one 
+	client request could be handled by PSF at a given time. So, it is recommended that the 
+	application could raise a single request at a time i.e set only one of the bits in this variable.
+	
+	In case PSF is busy, it cannot handle any of the client requests. In this case, the 
+	u8ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
+	PSF, so that the application initiate the request again by setting the respective bit in this 
+	variable. If the request is accepted and processed, a response notification would be posted by 
+	PSF as mentioned in the below table.
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R/W          R/W       Renegotiation Request 
+                                    * '0' PSF has not received any renegotiation request.
+                                    * '1' PSF has received a renegotiation request. 
+									Before initiating the request, user has to fill the Source 
+									capabilities in u32aNewPDO array and the PDO count in 
+									u8NewPDOCnt. 
+									Once the request is processed by PSF, u32aNewPDO array and 
+									u8NewPDOCnt would be cleared and 
+									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted. 
+    1       R/W          R/W       Get Sink capabilities Request 
+                                    * '0' PSF has not received any request for getting the sink 
+									      capabilities.
+                                    * '1' PSF has received a request for getting the sink 
+									      capabilities. 
+									Once the request is processed by PSF, 
+									eMCHP_PSF_GET_SINK_CAPS_RCVD or eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD
+									notification would be posted depending on the Sink partner's 
+									response to Get_Sink_Caps message. User can read the received 
+									sink capabilities from u32aPartnerPDO array. 
+    2       R/W          R/W       Send Alert Request 
+                                    * '0' PSF has not received any request for sending the alert
+									      message to the port partner.
+                                    * '1' PSF has received a request to send the alert
+									      message to the port partner.										  
+    3       R/W          R/W       Get Status Request 
+                                    * '0' PSF has not received any request for getting the partner 
+									      status.
+                                    * '1' PSF has received a request for getting the sink 
+									      capabilities.
+    4       R/W          R/W       Get Sink capabilities Extended Request 
+                                    * '0' PSF has not received any request for getting the extended 
+										  sink capabilities.
+                                    * '1' PSF has received a request for getting the extended sink 
+									      capabilities.
+	7:5  						   Reserved 									
+	</table> 								
+ 
   Remarks:
     None                                                                                                                                
   ***************************************************************************************************************************************/
@@ -1483,7 +1526,7 @@ typedef struct _PortCfgStatus
     UINT8 u8NewPDOCnt;              
     UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerPDOCnt;          
-    UINT8 u8NewPDOSelect;           
+    UINT8 u8ClientRequest;           
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
