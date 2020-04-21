@@ -54,11 +54,11 @@ static void UPD_GPIOGenericOutputInit(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8Pi
 
 void PWRCTRL_initialization(UINT8 u8PortNum)
 {
-    UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, \
-                                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN);
-
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
                                         gasCfgStatusData.sPerPortData[u8PortNum].u8mode_VBUS_DIS);
+    #if (TRUE == INCLUDE_PD_SOURCE)
+    UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, \
+                                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS);
 
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
                                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN);
@@ -73,7 +73,13 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
 
     PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
 
+    #endif
 
+    #if (TRUE == INCLUDE_PD_SINK)
+    
+    UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK, \
+                                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK);
+    #endif
     
     /*Hook to modify or overwrite the default Port Power control initialization */
     MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
@@ -82,15 +88,16 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
 /************************************************************************************/
 void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
+    #if (TRUE == INCLUDE_PD_SOURCE)
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
 
-    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN;
+    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
     UINT8 u8VSELAssert; 
     
     if (PWRCTRL_VBUS_0V == u16VBUSVoltage)
     {
-        /*De-assert VBUS_EN if voltage is 0V*/
-        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
+        /*De-assert EN_VBUS if voltage is 0V*/
+        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_DE_ASSERT);
         
         /* Clear the status of EN_VBUS and VSEL 2:0 */
@@ -99,8 +106,8 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
     }
     else
     {
-        /*Assert VBUS_EN*/
-        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
+        /*Assert EN_VBUS*/
+        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                 u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
         
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
@@ -133,6 +140,8 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
     MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_SET_POWER(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current); 
     
     #endif /*CONFIG_DCDC_CTRL*/
+
+    #endif
     
     /*Hook to modify or overwrite the default Port Power control VBUS drive */
     MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS (u8PortNum, u16VBUSVoltage, u16Current);
@@ -140,7 +149,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
 /************************************************************************************/
 void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
 { 
-    UINT8 u8VbusDisMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN;
+    UINT8 u8VbusDisMode = gasCfgStatusData.sPerPortData[u8PortNum].u8mode_VBUS_DIS;
     if (u8EnaDisVBUSDIS == TRUE)
     {
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
@@ -163,6 +172,7 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
 
 void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
 {
+    #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8DCDCEnMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN; 
     UINT8 u8DCDCEnPio = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN;
     
@@ -179,10 +189,49 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
         gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(DPM_PORT_IO_EN_DC_DC_STATUS);
     }
     
+    #endif
+    
     /* Hook to modify or overwrite the Port Control DC_DC_EN enable/disable */
     MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn); 
 }
+/***********************************************************************************************/
+void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
+{
+   #if (TRUE == INCLUDE_PD_SINK)
 
+    UINT8 u8EnSinkMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK; 
+    UINT8 u8EnSinkPio = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+
+    if(gasDPM[u8PortNum].u16SinkOperatingCurrInmA < 
+                            gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA)
+    {    
+        /*When EN_SINK is enabeled for Type-C alone Source detection, this check 
+         make sure the minimum operating current of Sink is satisfied by the 
+         Rp value presented by Source. Based on Rp value of Source detected, 
+         u16SinkOperatingCurrInmA variable is updated*/
+        u8EnaDisEnSink = FALSE;
+    }
+    else
+    {
+        /*do nothing*/
+    }
+    
+    if (TRUE == u8EnaDisEnSink) 
+    {
+       UPD_GPIOUpdateOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_ASSERT);
+
+       gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_SINK_STATUS;
+    }
+    else
+    {
+        UPD_GPIOUpdateOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_DE_ASSERT);
+
+        gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= ~(DPM_PORT_IO_EN_SINK_STATUS);
+    }
+    
+    #endif
+    
+}
 /************************************************************************************/
 void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
@@ -191,6 +240,17 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
     if (u16Current > gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA)
     {
         u16Current = gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
+    }
+    
+    if (TYPEC_VBUS_0V == u16VBUSVoltage)
+    {
+        /*Disable EN_SINK Voltage is VSafe0V*/
+        PWRCTRL_ConfigEnSink(u8PortNum, FALSE);
+    }
+    else
+    {
+        /* EN_SINK is enabled when PSF detects a Type-C alone device or
+          when PD negotiation is complete.*/
     }
     
     /* clear the 3A and 1.5A IND status*/

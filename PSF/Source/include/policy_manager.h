@@ -219,8 +219,7 @@ Source/Sink Power delivery objects*/
 #define DPM_PORT_IO_EN_SINK_STATUS                   BIT(6)
 #define DPM_PORT_IO_15_IND_STATUS                    BIT(7)
 #define DPM_PORT_IO_30_IND_STATUS                    BIT(8)
-#define DPM_PORT_IO_PS_RDY_RECVD_STATUS              BIT(9)
-#define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(10)
+#define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(9)
 
 /*********************u8SinkConfigSel defines******************/
 #define DPM_SINK_CONFIG_SINK_MODE_SEL_MASK  (BIT(0) | BIT(1))
