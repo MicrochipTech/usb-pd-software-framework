@@ -122,9 +122,9 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
 
 void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
-    /*Assert VBUS_EN*/
-    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN;
-    UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
+    /*Assert EN_VBUS */
+    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
+    UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS,
                                     u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
     
 /*    if (u16PrevCurrent[u8PortNum] != u16Current)
