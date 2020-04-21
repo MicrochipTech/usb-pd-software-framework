@@ -735,8 +735,9 @@ typedef enum
 																		preferred.
                                                                        * This array is applicable 
 																	     only for Sink Operation.                                                                     
-    u16MinimumOperatingCurInmA      2          R/W         R          * Minimum operating current by 
-																	     the System.
+    u16MinimumOperatingCurInmA      2          R/W         R          * Minimum current required by 
+																	     the sink hardware to be 
+                                                                         operational.
                                                                         * This variable is applicable 
 																	      only for Sink Operation.
                                                                         * When a Gotomin message is 
@@ -1145,12 +1146,22 @@ typedef enum
 																		number used for EN_SINK pin.
 																	  * This is applicable only for
 																		Sink operation.
-																	  * This pin is asserted if
-																		the implicit or explicit current
-																		is greater than or equal to the
-																		current mentioned under 
-																		u16MinimumOperatingCurInmA 
-																		variable.
+																	  * This pin is asserted in the 
+                                                                        following conditions:
+																		1. If the source supports Power
+                                                                           delivery, the PD negotiated 
+                                                                           current should be greater than
+                                                                           or equal to the current 
+                                                                           mentioned under 
+																		   u16MinimumOperatingCurInmA 
+																		   variable.
+                                                                        2. If the source does not support
+                                                                           Power delivery and is Type-C only,
+                                                                           the Rp value in source partner
+                                                                           should be greater than or equal
+                                                                           to the current mentioned under 
+																		   u16MinimumOperatingCurInmA 
+																		   variable.
 																	  * This pin is de-asserted during a
 																	    hard reset, a power fault recovery
 																		or a detach.
