@@ -682,14 +682,14 @@ typedef enum
 																		and Current in mA.
                                                                       * This array is common for 
 																	    Source and Sink. It is 
-																		valid only when 
-																		u8NewPDOSelect is set to 1.
+																		valid only when Bit 0 of  
+																		u8ClientRequest is set to 1.
     u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
 																		advertised to Port Partner. 
                                                                       * During run time, this array 
 																	    holds the value of current
-                                                                        u32aNewPDO[7] if 
-																		u8NewPDOSelect is enabled 
+                                                                        u32aNewPDO[7] if Bit 0 of 
+																		u8ClientRequest is enabled 
 																		else holds the value of 
 																		current u32aSourcePDO[7]
     u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Source PDOs 
@@ -821,8 +821,8 @@ typedef enum
     u8NewPDOCnt                     1         R/W          R/W       * Number of New PDOs Supported.
                                                                       * This variable is common for 
 																	    both Source and Sink. It is
-																		valid only when 
-																		u8NewPDOSelect is set to 1.
+																		valid only when Bit 0 of 
+																		u8ClientRequest is set to 1.
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
     u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
