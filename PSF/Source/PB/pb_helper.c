@@ -147,10 +147,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     /*we need to calculate the power the sink is drawing and 
      give back the rest to the pool*/
     u16NegVoltIn50mV = PB_GET_VOLTAGE_FROM_FIXED_PDO(u32PDO); 
-    
-    /* Update the global status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = u16NegVoltIn50mV; 
-    
+       
     /* Convert the voltage from 50mV units to V */
     fNegotiatedVoltageInV = PB_CONVERT_PDO_VOLTAGE_FROM_50mV_TO_V(u16NegVoltIn50mV); 
     

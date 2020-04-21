@@ -394,19 +394,6 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         u8IsTransmit = TRUE;
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;
                     }
-                    else
-                    {
-                        /* Clear the AS_SOURCE_PD_CONTRACT_GOOD bit in Connection 
-                           Status register */
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                        ~(DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS);    
-                        
-                        /* If PSRDY is not sent, power will not be allocated to the 
-                           port. So, Set the Power related Status registers to 0 */
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = RESET_TO_ZERO; 
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = RESET_TO_ZERO; 
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
-                    }
                     break;  
                 }
                 
