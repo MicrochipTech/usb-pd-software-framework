@@ -74,9 +74,9 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     UINT32 u32I2CCmd;
     UINT8 u8Return = TRUE;
 
-    /*Assert VBUS_EN*/
-    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_VBUS_EN;
-    UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN, 
+    /*Assert EN_VBUS*/
+    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
+    UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                                     u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
     
     /* Set EN_VBUS Status in Port IO status register */

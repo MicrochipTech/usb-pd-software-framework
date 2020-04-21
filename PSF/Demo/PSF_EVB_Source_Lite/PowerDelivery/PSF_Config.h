@@ -816,7 +816,7 @@ typedef enum
                                                                         fault, VCONN will be enabled
 																		only after a physical detach
                                                                         and reattach.
-    u8Pio_VBUS_EN                   1         R/W          R         * Defines the UPD350 PIO number
+    u8Pio_EN_VBUS                   1         R/W          R         * Defines the UPD350 PIO number
 																		used for EN_VBUS pin 
 																		functionality for the Port.
                                                                       * EN_VBUS is to enable VBUS 
@@ -825,7 +825,7 @@ typedef enum
 																		connects to a load switch 
 																		device such as a power FET 
 																		or load switch IC. It is 
-																		driven as per u8Mode_VBUS_EN configuration mode whenever 
+																		driven as per u8Mode_EN_VBUS configuration mode whenever 
 																		stack requires VBUS to 
 																		driven high as well as low.
                                                                       * The range of valid values is
@@ -850,9 +850,9 @@ typedef enum
 																		autonomous action is taken 
 																		by the UPD350 in a fault 
 																		condition.
-    u8Mode_VBUS_EN                  1         R/W          R         *  Defines the PIO mode of the 
+    u8Mode_EN_VBUS                  1         R/W          R         *  Defines the PIO mode of the 
 																		 UPD350 PIO EN_VBUS defined 
-																		 in u8Pio_VBUS_EN. 
+																		 in u8Pio_EN_VBUS. 
 																	  * It takes values only from 
 																	    enum 
 																		eUPD_OUTPUT_PIN_MODES_TYPE.
@@ -1459,8 +1459,8 @@ typedef struct _PortCfgStatus
     UINT8 u8VCONNOCSDebounceInms;
     UINT8 u8VBUSMaxFaultCnt;
     UINT8 u8VCONNMaxFaultCnt;
-    UINT8 u8Pio_VBUS_EN;
-    UINT8 u8Mode_VBUS_EN;
+    UINT8 u8Pio_EN_VBUS;
+    UINT8 u8Mode_EN_VBUS;
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;
     UINT8 u8Pio_VBUS_DIS;

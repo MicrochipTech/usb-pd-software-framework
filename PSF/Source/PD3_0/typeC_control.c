@@ -708,7 +708,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
-                   
+                                 
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK: Entered"\
                                         "UNATTACHED SNK State\r\n");
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_VSAFE0V_WAIT_SS;
@@ -1355,13 +1355,19 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             if (TYPEC_UNDER_VOLT_THR3_MATCH & u16Data)
             {
                 #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)     
-                    /*When PIO override is disabled; VBUS_EN is disabled by FW on Power fault*/
-                    /* Disable EN_VBUS gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN */
-                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
-                                        (UINT8 *)&u16Data, BYTE_LEN_1);
-                    u16Data &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
-                                            (UINT8 *)&u16Data, BYTE_LEN_1);
+                    /*When PIO override is disabled; EN_VBUS/EN_SINK is disabled by FW on Power fault*/
+                    UINT8 u8VBUSEn;
+                    #if (TRUE==INCLUDE_PD_SOURCE)
+                        u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
+                    #else
+                        u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+                    #endif
+/
+                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
+                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+                    u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
+                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
+										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
                 #endif   
                /* under voltage is considered if VBUS not lowered as part of Over voltage*/
                 if (!gasDPM[u8PortNum].u8HRCompleteWait)
@@ -1374,15 +1380,21 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         {
             /* Over voltage is checked before desired voltage as TYPEC_VBUS_MATCH_OVER_V 
                 checks for only over voltage bit being set are not*/
-             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP;
+            gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP;
             #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                /*When PIO override is disabled; VBUS_EN is disabled by FW on Power fault*/
-                /* Disable EN_VBUS gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN*/
-                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
-									(UINT8 *)&u16Data, BYTE_LEN_1);
-                u16Data &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_EN),\
-										(UINT8 *)&u16Data, BYTE_LEN_1);
+                /*When PIO override is disabled; EN_VBUS/EN_SINK is disabled by FW on Power fault*/
+                UINT8 u8VBUSEn;
+                #if (TRUE==INCLUDE_PD_SOURCE)
+                    u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
+                #else
+                    u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+                #endif
+
+                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+                u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
+                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
+										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
             #endif
         }
         else

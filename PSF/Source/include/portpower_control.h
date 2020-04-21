@@ -155,6 +155,30 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn);
 
 /****************************************************************************
     Function:
+        void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
+    Summary:
+        API to configure EN_SINK as required
+    Description:
+        This API enables or disables EN_SINK based on u8EnaDisEnSink 
+        parameter for the port. Also, updates the enable/disable status in 
+        Port I/O Status register. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Corresponding Port Number. Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8EnaDisEnSink - u8EnaDisEnSink takes following value 
+                           'TRUE' Enables EN_SINK 
+                           'FALSE' Disables EN_SINK
+    Return:
+      None.
+    Remarks:
+      None.
+
+**************************************************************************************************/
+void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink);
+
+/****************************************************************************
+    Function:
         void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
     Summary:
         API to configure Sink Hardware
