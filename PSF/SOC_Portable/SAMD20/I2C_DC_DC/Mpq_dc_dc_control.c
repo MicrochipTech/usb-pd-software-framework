@@ -199,7 +199,6 @@ static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current)
         __NOP();
 }*/
  
-#if (TRUE == INCLUDE_POWER_FAULT_HANDLING) 
 UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
 {
     UINT16 u16FaultStatus;
@@ -238,8 +237,7 @@ UINT8 MPQDCDC_FaultHandler()
     u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_2);           
     
     return u8RetVal;
-}
-#endif         
+}         
 		
 void MPQDCDC_HandleAlertISR(UINT8 u8PortNum)
 {
