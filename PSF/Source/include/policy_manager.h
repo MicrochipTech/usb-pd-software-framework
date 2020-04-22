@@ -64,17 +64,23 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CURR_DATA_ROLE_MASK             BIT(1)
 #define DPM_CURR_PD_SPEC_REV_MASK          (BIT(2) | BIT(3))
 #define DPM_VDM_STATE_ACTIVE_MASK           BIT(4)
+#define DPM_CURR_RDO_TYPE_MASK             (BIT(5) | BIT(6))
+#define DPM_PPS_PS_RDY_TIMER_VAL_MASK       BIT(7)
 
 /*Bit position for u8DPM_Status variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
 #define DPM_CURR_DATA_ROLE_POS             1
 #define DPM_CURR_PD_SPEC_REV_POS           2
 #define DPM_VDM_STATE_ACTIVE_POS           4
+#define DPM_CURR_RDO_TYPE_POS              5
+#define DPM_PPS_PS_RDY_TIMER_VAL_POS       7 
 
 /*Defines for getting data from u8DPM_Status variable*/
 #define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
 #define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)          ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
 #define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
+#define DPM_GET_CURRENT_RDO_TYPE(u8PortNum)           ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_RDO_TYPE_MASK) >> DPM_CURR_RDO_TYPE_POS)
+#define DPM_GET_PPS_PS_RDY_TIMER_VAL(u8PortNum)       ((gasDPM[u8PortNum].u8DPM_Status & DPM_PPS_PS_RDY_TIMER_VAL_MASK) >> DPM_PPS_PS_RDY_TIMER_VAL_POS)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -288,14 +294,42 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_APDO_MAX_CURRENT_IN_mA(u32Apdo)  ((DPM_GET_APDO_MAX_CURRENT(u32Apdo)) * DPM_APDO_MAX_CURRENT_UNIT)
 
 #define DPM_APDO_MIN_VOLTAGE_MASK                0x0000FF00 
-#define DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)        ((u32Apdo) & DPM_APDO_MIN_VOLTAGE_MASK)
+#define DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)        (((u32Apdo) & DPM_APDO_MIN_VOLTAGE_MASK) >> DPM_APDO_MIN_VOLTAGE_POS)
 #define DPM_GET_APDO_MIN_VOLTAGE_IN_mV(u32Apdo)  ((DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)) * DPM_APDO_MIN_VOLTAGE_UNIT) 
 
 #define DPM_APDO_MAX_VOLTAGE_MASK                0x01FE0000 
-#define DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)        ((u32Apdo) & DPM_APDO_MAX_VOLTAGE_MASK)
+#define DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)        (((u32Apdo) & DPM_APDO_MAX_VOLTAGE_MASK) >> DPM_APDO_MAX_VOLTAGE_POS)
 #define DPM_GET_APDO_MAX_VOLTAGE_IN_mV(u32Apdo)  ((DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)) * DPM_APDO_MAX_VOLTAGE_UNIT) 
 
 #define DPM_3A_IN_50mA                           (DPM_3000mA / 50) 
+
+/*********************PPS RDO Defines ******************/ 
+/* Defines for return values of DPM_GET_CURRENT_RDO_TYPE macro */
+#define DPM_FIXED_RDO                            0U
+#define DPM_BATTERY_RDO                          1U
+#define DPM_VARIABLE_RDO                         2U
+#define DPM_PROGRAMMABLE_RDO                     3U
+
+#define DPM_PROG_RDO_OP_VOLTAGE_MASK             0x000FFE00
+#define DPM_PROG_RDO_OPR_CURRENT_MASK            0x0000007F
+
+#define DPM_PROG_RDO_OP_VOLTAGE_POS              9 
+
+#define DPM_PROG_RDO_OP_VOLTAGE_UNIT             20
+#define DPM_PROG_RDO_OPR_CURRENT_UNIT            50
+
+#define DPM_GET_OP_VOLTAGE_FROM_PROG_RDO(u32Rdo)       (((u32Rdo) & DPM_PROG_RDO_OP_VOLTAGE_MASK) >> DPM_PROG_RDO_OP_VOLTAGE_POS)  
+#define DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(u32Rdo) ((DPM_GET_OP_VOLTAGE_FROM_PROG_RDO(u32Rdo)) * DPM_PROG_RDO_OP_VOLTAGE_UNIT)   
+
+#define DPM_GET_PROG_RDO_OPR_CURRENT(u32Rdo)         ((u32Rdo) & DPM_PROG_RDO_OPR_CURRENT_MASK)  
+#define DPM_GET_PROG_RDO_OPR_CURRENT_IN_mA(u32Rdo)   ((DPM_GET_PROG_RDO_OPR_CURRENT(u32Rdo)) * DPM_PROG_RDO_OPR_CURRENT_UNIT)   
+
+/* vPpsSmallStep of USB PD Spec 3.0 */
+#define DPM_PPS_VOLTAGE_SMALL_STEP               500
+
+/*********************PPS PS_RDY Timer Defines ******************/ 
+#define DPM_PPS_TMR_SRC_TRANS_LARGE                  1
+#define DPM_PPS_TMR_SRC_TRANS_SMALL                  0 
 
 // *****************************************************************************
 // *****************************************************************************
@@ -314,6 +348,14 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                             //Bit 1 - Status of Data Role <p />
                             //Bit 3:2 - Status of PD Spec Revision <p />
                             //Bit 4 - Status of Vconn Swap support
+                            //Bits 6:5 - Type of current RDO 
+                            //      00 - Fixed  
+                            //      01 - Variable
+                            //      10 - Battery
+                            //      11 - Programmable
+                            //Bit 7 - PPS PS_RDY Timer Value
+                            //    0 - tPpsSrcTransSmall
+                            //    1 - tPpsSrcTransLarge
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
@@ -1137,6 +1179,29 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         None.
 **************************************************************************************************/
 void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
+
+/**************************************************************************************************
+    Function:
+        void DPM_DeterminePPSPSRdyTimer(UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UINT16 u16RDOOpVoltInmV)
+    Summary:
+        Determines if PS_RDY needs to be sent within tPpsSrcTransLarge 
+        or tPpsSrcTransSmall in case of PPS enabled.  
+    Description:
+        This API is used to determine if PS_RDY needs to be sent within 
+        tPpsSrcTransLarge or tPpsSrcTransSmall. 
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u16PrevRDOVoltInmV - Previous RDO Output voltage
+        u16RDOOpVoltInmV - Current RDO Output voltage 
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+
+void DPM_DeterminePPSPSRdyTimer(UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UINT16 u16RDOOpVoltInmV); 
 
 /**************************************************************************************************
     Function:

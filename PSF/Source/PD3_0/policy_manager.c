@@ -275,6 +275,10 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     UINT16 u16SinkReqCurrVal = SET_TO_ZERO;
     UINT16 u16SrcPDOCurrVal = SET_TO_ZERO;
     UINT8 u8RaPresence = SET_TO_ZERO;
+    UINT32 u32PDO = SET_TO_ZERO; 
+    UINT32 u32RDO = SET_TO_ZERO; 
+    UINT16 u16PrevRDOVoltInmV = SET_TO_ZERO; 
+    UINT16 u16RDOOpVoltInmV = SET_TO_ZERO; 
     
     /* Get the status of E-Cable presence and ACK status */
     u8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) & \
@@ -284,14 +288,54 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     /* Get the Requested PDO object position from received buffer */
     u8SinkReqObjPos= ((u8DataBuf[INDEX_3]) & PE_REQUEST_OBJ_MASK) >> PE_REQUEST_OBJ_POS;
     
-    /* Get the Requested current value */
-    u16SinkReqCurrVal = (UINT16)(((MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], 
-            u8DataBuf[INDEX_2], u8DataBuf[INDEX_3])) & PE_REQUEST_OPR_CUR_MASK) >> PE_REQUEST_OPR_CUR_START_POS);
-	
-    /* Get the current value of Requested Source PDO */
-    u16SrcPDOCurrVal = ((gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8SinkReqObjPos-1]) & \
-                     PE_REQUEST_MAX_CUR_MASK); 
+    /* Get the PDO/APDO from Advertised PDO Array */
+    u32PDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8SinkReqObjPos-1]; 
     
+    /* Form the RDO */
+    u32RDO = MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], 
+                                        u8DataBuf[INDEX_2], u8DataBuf[INDEX_3]);
+    
+    if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+    {
+        /* Get the Requested current value */
+        u16SinkReqCurrVal = (UINT16)((u32RDO & PE_REQUEST_OPR_CUR_MASK) >> PE_REQUEST_OPR_CUR_START_POS);
+        
+        /* Get the current value of Requested Source PDO */
+        u16SrcPDOCurrVal = (u32PDO & PE_REQUEST_MAX_CUR_MASK);       
+    }
+    else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+    {     
+        /* Get the Requested current value */ 
+        u16SinkReqCurrVal = DPM_GET_PROG_RDO_OPR_CURRENT(u32RDO); 
+                
+        /* Get the current value of Requested Source PDO */
+        u16SrcPDOCurrVal = DPM_GET_APDO_MAX_CURRENT(u32PDO); 
+         
+        /* Get the RDO Output Voltage */
+        u16RDOOpVoltInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(u32RDO);
+        
+        if (ePDO_FIXED == (ePDOtypes)DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+        {
+            /* If previous request is for a fixed PDO, calculate previous output
+               voltage from gasDPM[u8PortNum].u32NegotiatedPDO */
+            u16PrevRDOVoltInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
+        }
+        else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+        {
+            /* If previous request is for a PPS APDO, calculate previous output
+               voltage from gasCfgStatusData.sPerPortData[u8PortNum].u32RDO */            
+            u16PrevRDOVoltInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
+        }
+        else
+        {
+            /* Do Nothing */
+        }
+    }
+    else
+    {
+        /* No support for Variable and Battery power supplies */
+    }
+  
     /* If Requested Max current is greater current value of Requested Source PDO or
         Requested object position is invalid, received request is invalid request */ 
     u8RetVal = (u16SinkReqCurrVal > u16SrcPDOCurrVal) ? DPM_INVALID_REQUEST : (((u8SinkReqObjPos<= FALSE) || \
@@ -299,21 +343,56 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
                 DPM_INVALID_REQUEST : (u8RaPresence == FALSE) ? DPM_VALID_REQUEST : \
                 (u16SinkReqCurrVal > gasDPM[u8PortNum].u16MaxCurrSupportedin10mA) ? \
                 DPM_INVALID_REQUEST : DPM_VALID_REQUEST;   
+   
+    if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+    {
+        if ((u16RDOOpVoltInmV >= DPM_GET_APDO_MIN_VOLTAGE_IN_mV(u32PDO)) && 
+                (u16RDOOpVoltInmV <= DPM_GET_APDO_MAX_VOLTAGE_IN_mV(u32PDO)))
+        {
+            u8RetVal &= DPM_VALID_REQUEST; 
+        }
+        else 
+        {
+            u8RetVal &= DPM_INVALID_REQUEST; 
+        }
+    }
     
     /* If request is valid set the Negotiated PDO as requested */
     if(u8RetVal == DPM_VALID_REQUEST)
     {
-        gasDPM[u8PortNum].u32NegotiatedPDO = (gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8SinkReqObjPos-1]);
+        gasDPM[u8PortNum].u32NegotiatedPDO = u32PDO; 
         gasDPM[u8PortNum].u8NegotiatedPDOIndex = u8SinkReqObjPos;
-        gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], 
-                                        u8DataBuf[INDEX_2], u8DataBuf[INDEX_3]);
-        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16SrcPDOCurrVal; 
-        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = \
-                ((DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO)) / DPM_PDO_VOLTAGE_UNIT);
-        /* Update the allocated power in terms of 250mW */
-        gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW =    
-                ((gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV * gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA) / 
-                (DPM_PDO_VOLTAGE_UNIT * DPM_PDO_CURRENT_UNIT)); 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = u32RDO;
+        
+        if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+        {
+            /* Set the current RDO Type as Fixed */
+            gasDPM[u8PortNum].u8DPM_Status &= ~(DPM_CURR_RDO_TYPE_MASK); 
+            
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16SrcPDOCurrVal; 
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = \
+                    ((DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO)) / DPM_PDO_VOLTAGE_UNIT);
+            /* Update the allocated power in terms of 250mW */
+            gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW =    
+                    ((gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV * gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA) / 
+                    (DPM_PDO_VOLTAGE_UNIT * DPM_PDO_CURRENT_UNIT));             
+        }       
+        else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+        {
+            /* Set the current RDO Type as Programmable */
+            gasDPM[u8PortNum].u8DPM_Status |= DPM_CURR_RDO_TYPE_MASK;
+            
+            /* Determine the timer value that must be used for sending PS_RDY 
+               in case of Prog RDO based on the voltage step difference */
+            DPM_DeterminePPSPSRdyTimer(u8PortNum, u16PrevRDOVoltInmV, u16RDOOpVoltInmV);    
+            
+            /* To-do: The above 3 parameters need to be updated for PPS, units 
+            differ b/w Fixed and PPS voltages, currents. */
+        }
+        else
+        {
+            /* Do Nothing */
+        }
         DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Requested is Valid \r\n");
     }
 
@@ -497,6 +576,30 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
       gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8PDOIndex] = u32DataBuf[u8PDOIndex];   
     }    
 }
+
+void DPM_DeterminePPSPSRdyTimer (UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UINT16 u16CurrRDOVoltInmV)
+{
+    #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+
+    /* Calculate the Voltage difference based on whether the transition is 
+       positive or negative */
+    UINT16 u16vPpsStepmV = ((u16CurrRDOVoltInmV > u16PrevRDOVoltInmV) ? \
+         (u16CurrRDOVoltInmV - u16PrevRDOVoltInmV) : (u16PrevRDOVoltInmV - u16CurrRDOVoltInmV)); 
+    
+    /* Use tPpsSrcTransLarge for voltage steps larger than vPpsSmallStep */
+    if (u16vPpsStepmV > DPM_PPS_VOLTAGE_SMALL_STEP)
+    {
+        gasDPM[u8PortNum].u8DPM_Status |= DPM_PPS_PS_RDY_TIMER_VAL_MASK;         
+    }
+    /* Else, use tPpsSrcTransSmall */
+    else
+    {
+        gasDPM[u8PortNum].u8DPM_Status &= ~(DPM_PPS_PS_RDY_TIMER_VAL_MASK);         
+    }
+    
+    #endif 
+}
+ 
 void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
 {
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
