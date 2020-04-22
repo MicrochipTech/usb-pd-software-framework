@@ -829,14 +829,24 @@ typedef enum
 																		port partner.
                                                                       * This variable is common for 
 																	    Source and Sink.
-    u8SinkConfigSel                 1         R/W                    * Sink Selection mode for 
-																		operation.
+    u8SinkConfigSel                 1         R/W          R         * BIT[1:0] - Sink Selection 
+																	    mode for operation.
                                                                         1. '0x00' Mode A: Prefer 
-																			  Higher Voltage and 
-																			  Wattage
+																		Higher Voltage and Wattage
                                                                         2. '0x01' Mode B: Prefer 
-																		      Lower Voltage and 
-																			  Wattage
+																		Lower Voltage and Wattage
+                                                                      * BIT2 - No USB Suspend Flag
+																		1. '1':Set the flag to '1' 
+																		in RDO request
+																		2. '0':Set the flag to '0' 
+																		in RDO request
+                                                                      * BIT3 - GiveBackFlag
+                                                                        1. '1':Set the flag to '1' 
+																		in RDO request 
+																	    enabling GotoMin feature 
+																		2. Set the flag to '0' in 
+																		RDO request
+																	    disabling GotoMin Feature
     u8FaultInDebounceInms           1         R/W          R         * Debounce timer value in terms 
 																        of milliseconds for VBUS
                                                                         overcurrent fault conditions
@@ -1466,7 +1476,8 @@ typedef enum
 	
 	<b>f. u8ClientRequest</b>: 
 	u8ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
-	can make use of this variable to request PSF to handle the mentioned client requests. Only one 
+	can make use of this variable to request PSF to handle the mentioned client requests. Except 
+	VBUS Power Fault Request, all the other requests cannot coexist i.e Only one 
 	client request could be handled by PSF at a given time. So, it is recommended that the 
 	application could raise a single request at a time i.e set only one of the bits in this variable.
 	
@@ -1513,7 +1524,12 @@ typedef enum
 										  sink capabilities.
                                     * '1' PSF has received a request for getting the extended sink 
 									      capabilities.
-	7:5  						   Reserved 									
+    5       R/W          R/W       Handle VBUS Power Fault Request 
+                                    * '0' PSF has not received any request for handling the VBUS  
+										  Power Fault. 
+                                    * '1' PSF has received a request for handling the VBUS  
+										  Power Fault. 					  
+	7:6  						   Reserved 									
 	</table> 								
  
   Remarks:

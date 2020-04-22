@@ -342,8 +342,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #define DPM_CLIENT_REQ_SEND_ALERT                BIT(2)
 #define DPM_CLIENT_REQ_GET_STATUS                BIT(3)
 #define DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD        BIT(4)
+#define DPM_CLIENT_REQ_HANDLE_VBUS_FAULT         BIT(5)
 
-/* Applications can use the below macros to raise a client request to DPM */
+/* Macros to raise a client request to DPM */
 #define DPM_SET_RENEGOTIATE_REQ(u8PortNum)     (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
                                                             |= DPM_CLIENT_REQ_RENEGOTIATE)
 
@@ -358,6 +359,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 
 #define DPM_SET_GET_STATUS_EXTD_REQ(u8PortNum)  (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
                                                             |= DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD)
+
+#define DPM_SET_VBUS_FAULT_HANDLING_REQ(u8PortNum) (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+                                                            |= DPM_CLIENT_REQ_HANDLE_VBUS_FAULT)
 
 /* Enumeration to define the types of PDO */ 
 typedef enum PDOtype
@@ -1143,7 +1147,8 @@ void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
         PSF has inbuilt fault mechanism to handle VCONN OCS, VBUS OCS 
         through FAULT_IN pin, Over Voltage and Under voltage. If external 
         VBUS fault is detected by the system, for PSF to handle this fault,
-        this API can be called.  
+        this API would be called if a client request has been raised to 
+        handle the fault condition. 
     Conditions:
         None
     Input:
@@ -1179,5 +1184,27 @@ void DPM_HandleVBUSFault(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_ClearAllClientRequests(UINT8 u8PortNum);  
+    Summary:
+        Clears all the pending Client requests raised by applications. 
+    Description:
+        This API can be called in scenarios where clearing of all the existing
+        client requests is needed, say when a detach has occurred in a port
+        or before sending Busy notification in case of DPM not able 
+        to handle the request. 
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_ClearAllClientRequests(UINT8 u8PortNum); 
+
 #endif /*_POLICY_MANAGER_H_*/
 
