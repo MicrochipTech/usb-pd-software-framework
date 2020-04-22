@@ -80,7 +80,7 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
                                     u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
     
     /* Set EN_VBUS Status in Port IO status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= MPQ_SET_PORT_IO_EN_VBUS_STATUS;
     
     /* Clear the faults */
     u32I2CCmd = MPQ_CMD_CLEAR_FAULT;
@@ -225,10 +225,10 @@ UINT8 MPQDCDC_FaultHandler()
        PSF handles all the faults in a similar manner. Thereby, we reduce 
        one I2C read/write */
     
-    /* Inform DPM to handle the VBUS Fault */
+    /* Inform PSF to handle the VBUS Fault */
     if((u16FaultMask & MPQ_IOUT_OC_FAULT) || (u16FaultMask & MPQ_VOUT_FAULT))
     {        
-        DPM_HandleVBUSFault(u8PortNum);
+        gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest |= MPQ_CLIENT_REQ_HANDLE_VBUS_FAULT;
     } 
     
     /* Clear the Fault condition by sending 'CLEAR_FAULTS' command, so that 

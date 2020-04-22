@@ -80,6 +80,7 @@ UINT8 MchpPSF_Init(void)
     MCHP_PSF_HOOK_DEBUG_INIT();
     #endif
     
+    /* To-do: Needs to be checked */
 //    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();

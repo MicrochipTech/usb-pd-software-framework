@@ -1141,6 +1141,14 @@ void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	/* Resetting the VCONN fault Count*/
 	gasDPM[u8PortNum].u8VCONNPowerFaultCount = RESET_TO_ZERO;
 }
+
+void DPM_HandleVBUSFault(UINT8 u8PortNum)
+{
+    /**VBUS OCS flag is set for DPM to handle the VBUS fault*/
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+    gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
+    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
+} 
 #endif 
 
 /*************************************VBUS & VCONN on/off Timer APIS*********************************/
@@ -1245,16 +1253,6 @@ void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable)
 
 /*******************************************************************************/
 
-void DPM_HandleVBUSFault(UINT8 u8PortNum)
-{
-#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-    /**VBUS OCS flag is set for DPM to handle the VBUS fault*/
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
-#endif
-} 
-
 /************************DPM Notification Handler ******************************/
 UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 {
@@ -1275,7 +1273,12 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     return u8Return;
 }
 
-/************************DPM Client Request Handler ******************************/ 
+/************************DPM Client Request Handling APIs ******************************/ 
+void DPM_ClearAllClientRequests(UINT8 u8PortNum) 
+{
+    gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
+}
+
 void DPM_ClientRequestHandler(UINT8 u8PortNum)
 {
     /* Check if at least one request is initiated by any application. This 
@@ -1355,10 +1358,20 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
                DPM cannot handle any of the Client Requests. So, clear the 
                flag and send Busy notification, so that the application can 
                re-initiate the request on receiving the Busy notification */
-            gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
+            DPM_ClearAllClientRequests(u8PortNum);
             
             (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_BUSY); 
         }
+        
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+        /* Check for VBUS Fault Handling request. Policy Engine Idle check 
+           is not needed for this. */
+        if (DPM_CLIENT_REQ_HANDLE_VBUS_FAULT & gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
+        {
+            /* Call the DPM API that sets the VBUS OCS Flag */
+            DPM_HandleVBUSFault(u8PortNum); 
+        }
+#endif         
     }
 }
 

@@ -90,6 +90,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define MPQ_IOUT_OC_FAULT               0x0010U
 #define MPQ_VOUT_FAULT                  0x8000U 
 #define MPQ_1MV_COUNT                   ((float)1.024)
+
+/* Macro to raise client request to PSF for handling VBUS Fault */
+#define MPQ_CLIENT_REQ_HANDLE_VBUS_FAULT   0x20
+
+/* Macro for setting the EN_VBUS Status */
+#define MPQ_SET_PORT_IO_EN_VBUS_STATUS     0x0010 
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: Data Structure                                                    */
