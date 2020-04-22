@@ -45,119 +45,119 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Type C Timeout configuration
 // *****************************************************************************
 
-/*  CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS defines the tCCDebounce timeout specified in the USB 
-    Type C Specification. Default value of CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS is set as 
+/*  TYPEC_TCCDEBOUNCE_TIMEOUT_MS defines the tCCDebounce timeout specified in the USB 
+    Type C Specification. Default value of TYPEC_TCCDEBOUNCE_TIMEOUT_MS is set as 
     150 milliseconds. */
-#define CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS			MILLISECONDS_TO_TICKS(150)
+#define TYPEC_TCCDEBOUNCE_TIMEOUT_MS			MILLISECONDS_TO_TICKS(150)
 
-/*  CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS defines the tPDDebounce timeout specified in the 
+/*  TYPEC_TPDEBOUNCE_TIMEOUT_MS defines the tPDDebounce timeout specified in the 
     USB Type C Specification. Default value of this macro is set as 10 milliseconds.*/
-#define CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS			MILLISECONDS_TO_TICKS(10)
+#define TYPEC_TPDEBOUNCE_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
 
-/*  CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS defines the tErrorRecovery timeout specified in the 
-    USB Type C Specification.  Default value of CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS is set as 
+/*  TYPEC_ERRORRECOVERY_TIMEOUT_MS defines the tErrorRecovery timeout specified in the 
+    USB Type C Specification.  Default value of TYPEC_ERRORRECOVERY_TIMEOUT_MS is set as 
     500 milliseconds.*/
-#define CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS       MILLISECONDS_TO_TICKS(500)
+#define TYPEC_ERRORRECOVERY_TIMEOUT_MS          MILLISECONDS_TO_TICKS(500)
 
-/*  CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS defines the tVCONNDischarge timeout specified in the 
-    USB Type C Specification. Default value of CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS is set 
+/*  TYPEC_VCONNDISCHARGE_TIMEOUT_MS defines the tVCONNDischarge timeout specified in the 
+    USB Type C Specification. Default value of TYPEC_VCONNDISCHARGE_TIMEOUT_MS is set 
     as 35 milliseconds. */ 
-#define CONFIG_TYPEC_VCONNDISCHARGE_TIMEOUT_MS      MILLISECONDS_TO_TICKS(35)
+#define TYPEC_VCONNDISCHARGE_TIMEOUT_MS         MILLISECONDS_TO_TICKS(35)
 
-/*  CONFIG_TYPEC_VBUS_ON_TIMER_MS defines the tVBUSON specified in the USB-TypeC Specification. 
-    Default value of CONFIG_TYPEC_VBUS_ON_TIMER_MS is set as 275 milliseconds.*/
-#define CONFIG_TYPEC_VBUS_ON_TIMER_MS			    MILLISECONDS_TO_TICKS(275)
+/*  TYPEC_VBUS_ON_TIMER_MS defines the tVBUSON specified in the USB-TypeC Specification. 
+    Default value of TYPEC_VBUS_ON_TIMER_MS is set as 275 milliseconds.*/
+#define TYPEC_VBUS_ON_TIMER_MS			        MILLISECONDS_TO_TICKS(275)
 
-/*  CONFIG_TYPEC_VBUS_OFF_TIMER_MS defines the tVBUSOFF specified in the USB-TypeC Specification. 
-    Default value of CONFIG_TYPEC_VBUS_OFF_TIMER_MS is set as 650 milliseconds.*/
-#define CONFIG_TYPEC_VBUS_OFF_TIMER_MS              MILLISECONDS_TO_TICKS(650)
+/*  TYPEC_VBUS_OFF_TIMER_MS defines the tVBUSOFF specified in the USB-TypeC Specification. 
+    Default value of TYPEC_VBUS_OFF_TIMER_MS is set as 650 milliseconds.*/
+#define TYPEC_VBUS_OFF_TIMER_MS                 MILLISECONDS_TO_TICKS(650)
 
-/*  CONFIG_TYPEC_VCONNON_TIMEOUT_MS defines the tVCONNON specified in the USB-Type C Specification. 
-    Default value of CONFIG_TYPEC_VCONNON_TIMEOUT_MS is set as 10 milliseconds.*/
-#define CONFIG_TYPEC_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
+/*  TYPEC_VCONNON_TIMEOUT_MS defines the tVCONNON specified in the USB-Type C Specification. 
+    Default value of TYPEC_VCONNON_TIMEOUT_MS is set as 10 milliseconds.*/
+#define TYPEC_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
 
-/*  CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS defines the tVCONNOFF specified in the USB-Type C Specification. 
-    Default value of CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.*/
-#define CONFIG_TYPEC_VCONNOFF_TIMEOUT_MS            MILLISECONDS_TO_TICKS(25)
+/*  TYPEC_VCONNOFF_TIMEOUT_MS defines the tVCONNOFF specified in the USB-Type C Specification. 
+    Default value of TYPEC_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.*/
+#define TYPEC_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
 
 // *****************************************************************************
 // Section: Policy Engine Timeout configuration
 // *****************************************************************************
 
-/*  CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS defines the SourceCapabilityTimer specified in the 
-    USB-PD Specification. Default value of CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS is set as 
+/*  PE_SOURCECAPABILITY_TIMEOUT_MS defines the SourceCapabilityTimer specified in the 
+    USB-PD Specification. Default value of PE_SOURCECAPABILITY_TIMEOUT_MS is set as 
     150 milliseconds.*/
-#define CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS          MILLISECONDS_TO_TICKS(150)
+#define PE_SOURCECAPABILITY_TIMEOUT_MS          MILLISECONDS_TO_TICKS(150)
 
-/*  CONFIG_PE_SRC_READY_TIMEOUT_MS defines the tSrcReady specified in the PD 3.0 Specification. 
-    Default value of CONFIG_PE_SRC_READY_TIMEOUT_MS is set as 285 milliseconds.*/
-#define CONFIG_PE_SRC_READY_TIMEOUT_MS                 MILLISECONDS_TO_TICKS(285)
+/*  PE_SRC_READY_TIMEOUT_MS defines the tSrcReady specified in the PD 3.0 Specification. 
+    Default value of PE_SRC_READY_TIMEOUT_MS is set as 285 milliseconds.*/
+#define PE_SRC_READY_TIMEOUT_MS                 MILLISECONDS_TO_TICKS(285)
 
-/*  CONFIG_PE_VCONNON_TIMEOUT_MS defines the tVCONNSourceOn specified in the USB PD Specification. 
-    Default value of CONFIG_PE_VCONNON_TIMEOUT_MS is set as 50 milliseconds. */
-#define CONFIG_PE_VCONNON_TIMEOUT_MS                   MILLISECONDS_TO_TICKS(50)
+/*  PE_VCONNON_TIMEOUT_MS defines the tVCONNSourceOn specified in the USB PD Specification. 
+    Default value of PE_VCONNON_TIMEOUT_MS is set as 50 milliseconds. */
+#define PE_VCONNON_TIMEOUT_MS                   MILLISECONDS_TO_TICKS(50)
 
-/*  CONFIG_PE_VCONNON_SELF_TIMEOUT_MS defines the Self timer used to monitor VCONN ON
+/*  PE_VCONNON_SELF_TIMEOUT_MS defines the Self timer used to monitor VCONN ON
     and send hard reset in case of VCONN ON Failure. The value of Self timer is 
-    set to a value greater than tVCONNSourceOn. Default value of CONFIG_PE_VCONNON_SELF_TIMEOUT_MS 
+    set to a value greater than tVCONNSourceOn. Default value of PE_VCONNON_SELF_TIMEOUT_MS 
     is set as 75 milliseconds.*/
-#define CONFIG_PE_VCONNON_SELF_TIMEOUT_MS			   MILLISECONDS_TO_TICKS(75)
+#define PE_VCONNON_SELF_TIMEOUT_MS			   MILLISECONDS_TO_TICKS(75)
 
-/*  CONFIG_PE_VCONNOFF_TIMEOUT_MS defines the tVCONNSourceOff specified in the USB PD Specification. 
-    Default value of CONFIG_PE_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.*/
-#define CONFIG_PE_VCONNOFF_TIMEOUT_MS                  MILLISECONDS_TO_TICKS(25)
+/*  PE_VCONNOFF_TIMEOUT_MS defines the tVCONNSourceOff specified in the USB PD Specification. 
+    Default value of PE_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.*/
+#define PE_VCONNOFF_TIMEOUT_MS                 MILLISECONDS_TO_TICKS(25)
 
-/*  CONFIG_PE_NORESPONSE_TIMEOUT_MS defines the NoResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_NORESPONSE_TIMEOUT_MS is set as 5.5 seconds.*/
-#define CONFIG_PE_NORESPONSE_TIMEOUT_MS                MILLISECONDS_TO_TICKS(5500)
+/*  PE_NORESPONSE_TIMEOUT_MS defines the NoResponseTimer specified in the USB-PD Specification. 
+    Default value of PE_NORESPONSE_TIMEOUT_MS is set as 5.5 seconds.*/
+#define PE_NORESPONSE_TIMEOUT_MS        MILLISECONDS_TO_TICKS(5500)
 
-/*  CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS defines the SenderResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS is set as 24 milliseconds.*/
-#define CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(24)
+/*  PE_SENDERRESPONSE_TIMEOUT_MS defines the SenderResponseTimer specified in the USB-PD Specification. 
+    Default value of PE_SENDERRESPONSE_TIMEOUT_MS is set as 24 milliseconds.*/
+#define PE_SENDERRESPONSE_TIMEOUT_MS    MILLISECONDS_TO_TICKS(24)
 
-/*  CONFIG_PE_SINKWAITCAP_TIMEOUT_MS defines the SinkWaitCapTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SINKWAITCAP_TIMEOUT_MS is set as 465 milliseconds.*/
-#define CONFIG_PE_SINKWAITCAP_TIMEOUT_MS               MILLISECONDS_TO_TICKS(465)
+/*  PE_SINKWAITCAP_TIMEOUT_MS defines the SinkWaitCapTimer specified in the USB-PD Specification. 
+    Default value of PE_SINKWAITCAP_TIMEOUT_MS is set as 465 milliseconds.*/
+#define PE_SINKWAITCAP_TIMEOUT_MS               MILLISECONDS_TO_TICKS(465)
 
-/*  CONFIG_PE_PSTRANSITION_TIMEOUT_MS defines the PSTransitionTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_PSTRANSITION_TIMEOUT_MS is set as 500 milliseconds.*/
-#define CONFIG_PE_PSTRANSITION_TIMEOUT_MS              MILLISECONDS_TO_TICKS(500)
+/*  PE_PSTRANSITION_TIMEOUT_MS defines the PSTransitionTimer specified in the USB-PD Specification. 
+    Default value of PE_PSTRANSITION_TIMEOUT_MS is set as 500 milliseconds.*/
+#define PE_PSTRANSITION_TIMEOUT_MS              MILLISECONDS_TO_TICKS(500)
 
-/*  CONFIG_PE_SINKREQUEST_TIMEOUT_MS defines the SinkRequestTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SINKREQUEST_TIMEOUT_MS is set as 100 milliseconds.*/
-#define CONFIG_PE_SINKREQUEST_TIMEOUT_MS               MILLISECONDS_TO_TICKS(100)
+/*  PE_SINKREQUEST_TIMEOUT_MS defines the SinkRequestTimer specified in the USB-PD Specification. 
+    Default value of PE_SINKREQUEST_TIMEOUT_MS is set as 100 milliseconds.*/
+#define PE_SINKREQUEST_TIMEOUT_MS               MILLISECONDS_TO_TICKS(100)
 
-/*  CONFIG_PE_VDMRESPONSE_TIMEOUT_MS defines the VDMResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_VDMRESPONSE_TIMEOUT_MS is set as 28 milliseconds.*/
-#define CONFIG_PE_VDMRESPONSE_TIMEOUT_MS               MILLISECONDS_TO_TICKS(28)
+/*  PE_VDMRESPONSE_TIMEOUT_MS defines the VDMResponseTimer specified in the USB-PD Specification. 
+    Default value of PE_VDMRESPONSE_TIMEOUT_MS is set as 28 milliseconds.*/
+#define PE_VDMRESPONSE_TIMEOUT_MS               MILLISECONDS_TO_TICKS(28)
 
-/*  CONFIG_PE_PSHARDRESET_TIMEOUT_MS defines the PSHardResetTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_PSHARDRESET_TIMEOUT_MS is set as 28 milliseconds.*/
-#define CONFIG_PE_PSHARDRESET_TIMEOUT_MS               MILLISECONDS_TO_TICKS(28)
+/*  PE_PSHARDRESET_TIMEOUT_MS defines the PSHardResetTimer specified in the USB-PD Specification. 
+    Default value of PE_PSHARDRESET_TIMEOUT_MS is set as 28 milliseconds.*/
+#define PE_PSHARDRESET_TIMEOUT_MS               MILLISECONDS_TO_TICKS(28)
 
-/*  CONFIG_PE_SRCRECOVER_TIMEOUT_MS defines the tSrcRecover specified in the USB-PD Specification. 
-    Default value of CONFIG_PE_SRCRECOVER_TIMEOUT_MS is set as 800 milliseconds.*/
-#define CONFIG_PE_SRCRECOVER_TIMEOUT_MS                MILLISECONDS_TO_TICKS(800)
+/*  PE_SRCRECOVER_TIMEOUT_MS defines the tSrcRecover specified in the USB-PD Specification. 
+    Default value of PE_SRCRECOVER_TIMEOUT_MS is set as 800 milliseconds.*/
+#define PE_SRCRECOVER_TIMEOUT_MS                MILLISECONDS_TO_TICKS(800)
 
-/*  CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS defines the tSrcTransistionTimer specified in the 
+/*  PE_SRCTRANSISTION_TIMEOUT_MS defines the tSrcTransistionTimer specified in the 
     USB-PD Specification. By default, it is set to 28 milliseconds.*/
-#define CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS	           MILLISECONDS_TO_TICKS(28)
+#define PE_SRCTRANSISTION_TIMEOUT_MS	           MILLISECONDS_TO_TICKS(28)
 
-/*  CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS defines the ChunkSenderRequestTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS is set as 26 milliseconds.*/
-#define CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS       MILLISECONDS_TO_TICKS(26)
+/*  PRL_CHUNKSENDERREQUEST_TIMEOUT_MS defines the ChunkSenderRequestTimer specified in the USB-PD Specification. 
+    Default value of PRL_CHUNKSENDERREQUEST_TIMEOUT_MS is set as 26 milliseconds.*/
+#define PRL_CHUNKSENDERREQUEST_TIMEOUT_MS       MILLISECONDS_TO_TICKS(26)
 
-/*  CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS defines the ChunkSenderResponseTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS is set as 26 milliseconds.*/
-#define CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS      MILLISECONDS_TO_TICKS(26)
+/*  PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS defines the ChunkSenderResponseTimer specified in the USB-PD Specification. 
+    Default value of PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS is set as 26 milliseconds.*/
+#define PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS      MILLISECONDS_TO_TICKS(26)
 
-/*  CONFIG_PRL_SINKTX_TIMEOUT_MS defines the SinkTxTimer specified in the USB-PD Specification. 
-    Default value of CONFIG_PRL_SINKTX_TIMEOUT_MS is set as 16 milliseconds.*/
-#define CONFIG_PRL_SINKTX_TIMEOUT_MS				   MILLISECONDS_TO_TICKS(16)
+/*  PRL_SINKTX_TIMEOUT_MS defines the SinkTxTimer specified in the USB-PD Specification. 
+    Default value of PRL_SINKTX_TIMEOUT_MS is set as 16 milliseconds.*/
+#define PRL_SINKTX_TIMEOUT_MS				   MILLISECONDS_TO_TICKS(16)
 
-/*  CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS defines the BISTContModeTimer specified in the USB-PD Specification.
-    Default value of CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS is set as 45 milliseconds.*/
-#define CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(45)                                             
+/*  PRL_BIST_CONTMODE_TIMEOUT_MS defines the BISTContModeTimer specified in the USB-PD Specification.
+    Default value of PRL_BIST_CONTMODE_TIMEOUT_MS is set as 45 milliseconds.*/
+#define PRL_BIST_CONTMODE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(45)                                             
 
 
 #endif /* _TIMER_DEFS_H */

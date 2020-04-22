@@ -260,7 +260,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					/* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_SRC_HARD_RESET sate and ePE_SRC_HARD_RESET_ENTRY_SS sub state if timeout happens */
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                           CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS,
+                                                           PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChangeAndTimeoutValidateCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
                     
@@ -348,7 +348,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS;
                     
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            (CONFIG_PE_SRCTRANSISTION_TIMEOUT_MS),
+                                                            (PE_SRCTRANSISTION_TIMEOUT_MS),
                                                             PE_SubStateChange_TimerCB,u8PortNum,  
                                                             (UINT8)ePE_SRC_TRANSITION_SUPPLY_POWER_ON);
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;
@@ -361,7 +361,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DPM_SetPortPower(u8PortNum);
                     /* Start tSrcReady timer */
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                              (CONFIG_PE_SRC_READY_TIMEOUT_MS),
+                                                              (PE_SRC_READY_TIMEOUT_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;
@@ -544,7 +544,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					/* Start Source Capability  Timer, if timed out set the PE sub-state to 
 						ePE_SRC_DISCOVERY_EXIT_SS */
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                              (CONFIG_PE_SOURCECAPABILITY_TIMEOUT_MS),
+                                                              (PE_SOURCECAPABILITY_TIMEOUT_MS),
                                                               PE_SubStateChange_TimerCB,u8PortNum,  
                                                               (UINT8) ePE_SRC_DISCOVERY_EXIT_SS);
                     
@@ -617,7 +617,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* Start the PSHardResetTimer, if timed out set the PE sub-state to
 						ePE_SRC_HARD_RESET_EXIT_SS */
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                              (CONFIG_PE_PSHARDRESET_TIMEOUT_MS),
+                                                              (PE_PSHARDRESET_TIMEOUT_MS),
                                                               PE_SubStateChange_TimerCB, u8PortNum,  
                                                               (UINT8) ePE_SRC_HARD_RESET_EXIT_SS);
                     
@@ -664,7 +664,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* Start PSHardResetTimer, if timed out set PE sub-state to
 						ePE_SRC_HARD_RESET_RECEIVED_EXIT_SS */
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                              (CONFIG_PE_PSHARDRESET_TIMEOUT_MS),
+                                                              (PE_PSHARDRESET_TIMEOUT_MS),
                                                               PE_SubStateChange_TimerCB, u8PortNum,  
                                                               (UINT8) ePE_SRC_HARD_RESET_RECEIVED_EXIT_SS);
                     
@@ -716,7 +716,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                      /*Start the VBUS OFF timer for monitoring the time taken for 
                     power module to reach Vsafe0V*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                              (CONFIG_TYPEC_VBUS_OFF_TIMER_MS),
+                                                              (TYPEC_VBUS_OFF_TIMER_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                    
@@ -737,7 +737,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         /*This Timeout is implemented outside of the PD Specification to track 
                         VCONN Turn OFF error*/
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
-                                                                  CONFIG_PE_VCONNOFF_TIMEOUT_MS,\
+                                                                  PE_VCONNOFF_TIMEOUT_MS,\
                                                                   DPM_VCONNOFFErrorTimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO);
@@ -764,7 +764,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         /* Start tSRCRecovery timer, if timedout set the PE sub-state to
                         ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS*/
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            (CONFIG_PE_SRCRECOVER_TIMEOUT_MS),
+                                                            (PE_SRCRECOVER_TIMEOUT_MS),
                                                             PE_SubStateChange_TimerCB,u8PortNum,  
                                                             (UINT8) ePE_SRC_TRANSITION_TO_DEFAULT_SRCRECOVER_TIMEOUT_SS);
 
@@ -810,7 +810,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                      /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach Vsafe5V*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                              (CONFIG_TYPEC_VBUS_ON_TIMER_MS),
+                                                              (TYPEC_VBUS_ON_TIMER_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                     
@@ -873,7 +873,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                             /*This Timeout is implemented outside of the PD Specification to track 
                             VCONN Turn ON error*/
                             gasPolicy_Engine[u8PortNum].u8PETimerID  =PDTimer_Start (
-                                                             CONFIG_TYPEC_VCONNON_TIMEOUT_MS,
+                                                             TYPEC_VCONNON_TIMEOUT_MS,
                                                               DPM_VCONNONTimerErrorCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                         
@@ -905,7 +905,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                   
                     /*Start NoResponse timer */
                     gasPolicy_Engine[u8PortNum].u8PENoResponseTimerID = PDTimer_Start (
-                                                        (CONFIG_PE_NORESPONSE_TIMEOUT_MS),
+                                                        (PE_NORESPONSE_TIMEOUT_MS),
                                                         PE_NoResponseTimerCB, u8PortNum,  
                                                         (UINT8)SET_TO_ZERO);
                     
@@ -955,7 +955,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT sub state if timeout happens */
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                           CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS,
+                                                           PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChange_TimerCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT_SS); 
                     
@@ -1074,7 +1074,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_SOFT_RESET-GOODCRC_RECEIVED_SS\r\n");
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS,
+                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChange_TimerCB,u8PortNum,  
                                                             (UINT8)ePE_SRC_SEND_SOFT_RESET_SENDER_RESPONSE_TIMEDOUT);
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_SOFT_RESET_IDLE_SS;
@@ -1206,7 +1206,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					/* Start the VDMIDentityRequest Sender Response timer, if timed out set the PE
 						sub-state to ePE_SRC_VDM_IDENTITY_REQUEST_SENDER_RESPONSE_TIMEOUT */
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            (CONFIG_PE_VDMRESPONSE_TIMEOUT_MS),
+                                                            (PE_VDMRESPONSE_TIMEOUT_MS),
                                                             PE_SubStateChangeAndTimeoutValidateCB,u8PortNum,  
                                                             (UINT8)ePE_SRC_VDM_IDENTITY_REQUEST_SENDER_RESPONSE_TIMEOUT);
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS;

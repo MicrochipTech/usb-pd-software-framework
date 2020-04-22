@@ -410,7 +410,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         if (ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
                             gasPolicy_Engine[u8PortNum].ePESubState)
                         {
-                            /*Kill the CONFIG_PE_SINK_WAIT_CAP_TIMEOUT since the source
+                            /*Kill the PE_SINK_WAIT_CAP_TIMEOUT since the source
                             capability message has been received*/
                             PE_KillPolicyEngineTimer (u8PortNum);
                             PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,\
@@ -594,7 +594,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     if (ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS == \
                         gasPolicy_Engine[u8PortNum].ePESubState)
                     {
-                        /*kill the timer CONFIG_PE_SENDER_RESPONSE_TIMEOUTID*/
+                        /*kill the timer PE_SENDER_RESPONSE_TIMEOUTID*/
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Gotomin Msg Received\r\n");
                         PE_KillPolicyEngineTimer (u8PortNum);
 
@@ -624,7 +624,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     if (ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS == \
                         gasPolicy_Engine[u8PortNum].ePESubState)
                     {
-                        /*kill the timer CONFIG_PE_SENDER_RESPONSE_TIMEOUTID*/
+                        /*kill the timer PE_SENDER_RESPONSE_TIMEOUTID*/
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Accept Msg Received\r\n");
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
                                     DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS;
@@ -638,7 +638,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                              gasPolicy_Engine[u8PortNum].ePESubState)
                     {
                          DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SEND_SOFT_RESET: Accept Msg received\r\n");
-                        /*kill the timer CONFIG_PE_SENDER_RESPONSE_TIMEOUTID*/
+                        /*kill the timer PE_SENDER_RESPONSE_TIMEOUTID*/
                          PE_KillPolicyEngineTimer (u8PortNum);
 
                          PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_WAIT_FOR_CAPABILITIES,\
@@ -679,7 +679,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                             is received before timeout*/
                             if ((PRL_GET_MESSAGE_TYPE (u32Header)) == PE_CTRL_WAIT)
                             {
-                                gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start (CONFIG_PE_SINKREQUEST_TIMEOUT_MS, PE_StateChange_TimerCB,\
+                                gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start (PE_SINKREQUEST_TIMEOUT_MS, PE_StateChange_TimerCB,\
                                                u8PortNum,(UINT8) ePE_SNK_SELECT_CAPABILITY);
 
                                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_READY;
@@ -718,7 +718,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         /*Set the port connect status as PS_RDY received for last request*/
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
                                                 DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS;
-                        /*Kill the timer CONFIG_PE_PSTRANSITION_TIMEOUTID*/
+                        /*Kill the timer PE_PSTRANSITION_TIMEOUTID*/
                         PE_KillPolicyEngineTimer (u8PortNum);
 
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_READY,\
@@ -1068,7 +1068,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     /*Set the timer callback to transition to ePE_SRC_HARD_RESET state
                      * ePE_SRC_HARD_RESET_ENTRY_SS sub state if timeout happens*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
-                                                              CONFIG_PE_VCONNON_TIMEOUT_MS,\
+                                                              PE_VCONNON_TIMEOUT_MS,\
                                                               PE_SubStateChangeAndTimeoutValidateCB,\
                                                               u8PortNum,\
                                                               (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
@@ -1107,7 +1107,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     /*This Timeout is implemented outside of the PD Specification to track 
                     VCONN Turn OFF error*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
-                                                              CONFIG_PE_VCONNOFF_TIMEOUT_MS,\
+                                                              PE_VCONNOFF_TIMEOUT_MS,\
                                                               DPM_VCONNOFFErrorTimerCB,\
                                                               u8PortNum,\
                                                               (UINT8)SET_TO_ZERO);
@@ -1165,7 +1165,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     failure*/
                     /*Start the VCONN_ON_self timer*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
-                                                              CONFIG_PE_VCONNON_SELF_TIMEOUT_MS,\
+                                                              PE_VCONNON_SELF_TIMEOUT_MS,\
                                                               DPM_VCONNONTimerErrorCB,\
                                                               u8PortNum,\
                                                               (UINT8)SET_TO_ZERO);
@@ -1301,7 +1301,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                         /* BIST_CARRIER_MODE is configured*/
                         PRL_ConfigureBISTCarrierMode (u8PortNum, TRUE);
                         /* BISTContModeTimer is started */
-                        (void)PDTimer_Start (CONFIG_PRL_BIST_CONTMODE_TIMEOUT_MS, PE_SubStateChange_TimerCB,\
+                        (void)PDTimer_Start (PRL_BIST_CONTMODE_TIMEOUT_MS, PE_SubStateChange_TimerCB,\
                                 u8PortNum,(UINT8)ePE_BIST_MODE_EXIT_SS);
                     }
                     else
@@ -1469,14 +1469,14 @@ void PE_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PEState)
 	gasPolicy_Engine[u8PortNum].ePEState = (ePolicyState) u8PEState;
 
     /*Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
-    Timeout has occured*/
+    Timeout has occurred*/
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 }
 
 void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState)
 {
     /*Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
-    Timeout has occured*/
+    Timeout has occurred*/
     gasPolicy_Engine[u8PortNum].ePESubState = (ePolicySubState) u8PESubState;
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 }

@@ -133,12 +133,12 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
                     if (gasPolicy_Engine[u8PortNum].u8HardResetCounter <= PE_N_HARD_RESET_COUNT)
                     {
-                        /*Start the CONFIG_PE_SINKWAITCAP_TIMEOUT_MS to wait for the source 
+                        /*Start the PE_SINKWAITCAP_TIMEOUT_MS to wait for the source 
                         capability message*/
                         /*Set the timer callback to transition to 
                         ePE_SNK_HARD_RESET and ePE_SNK_HARD_RESET_SEND_SS sub state if timeout happens*/
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start(\
-                                                                 CONFIG_PE_SINKWAITCAP_TIMEOUT_MS,\
+                                                                 PE_SINKWAITCAP_TIMEOUT_MS,\
                                                                  PE_SubStateChangeAndTimeoutValidateCB,\
                                                                  u8PortNum, \
                                                                  (UINT8)ePE_SNK_HARD_RESET_SEND_SS);
@@ -244,11 +244,11 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     
                 case ePE_SNK_SELECT_CAPABILITY_REQ_SENT_SS:
                 {
-                    /*Start the CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS for the Sink Data request message sent*/
+                    /*Start the PE_SENDERRESPONSE_TIMEOUT_MS for the Sink Data request message sent*/
                     /*Set the timer callback to transition to 
                     ePE_SNK_HARD_RESET state and ePE_SNK_HARD_RESET_SEND_SS sub state if timeout happens*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start(\
-                                                              CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS,\
+                                                              PE_SENDERRESPONSE_TIMEOUT_MS,\
                                                               PE_SubStateChangeAndTimeoutValidateCB,\
                                                               u8PortNum,(UINT8) ePE_SNK_HARD_RESET_SEND_SS);
                     
@@ -282,11 +282,11 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                             DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO),\
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                     
-                    /*Initialize and run CONFIG_PE_PSTRANSITION_TIMEOUT_MS*/
+                    /*Initialize and run PE_PSTRANSITION_TIMEOUT_MS*/
                     /*Set the timer callback to transition to 
                     ePE_SNK_HARD_RESET and ePE_SNK_HARD_RESET_SEND_SS sub state if timeout happens*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start(\
-                                                              CONFIG_PE_PSTRANSITION_TIMEOUT_MS,\
+                                                              PE_PSTRANSITION_TIMEOUT_MS,\
                                                               PE_SubStateChangeAndTimeoutValidateCB,\
                                                               u8PortNum, (UINT8)ePE_SNK_HARD_RESET_SEND_SS);
                     
@@ -416,7 +416,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         /*This Timeout is implemented outside of the PD Specification to track 
                         VCONN Turn OFF error*/
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
-                                                                  CONFIG_PE_VCONNOFF_TIMEOUT_MS,\
+                                                                  PE_VCONNOFF_TIMEOUT_MS,\
                                                                   DPM_VCONNOFFErrorTimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO);                 
@@ -626,7 +626,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Set the timer callback to transition to ePE_SNK_HARD_RESET state
                      * and ePE_SNK_HARD_RESET_SEND_SS sub state if timeout happens*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start(
-                                                              CONFIG_PE_SENDERRESPONSE_TIMEOUT_MS,\
+                                                              PE_SENDERRESPONSE_TIMEOUT_MS,\
                                                               PE_SubStateChangeAndTimeoutValidateCB,\
                                                               u8PortNum,\
                                                               (UINT8) ePE_SNK_HARD_RESET_SEND_SS);
