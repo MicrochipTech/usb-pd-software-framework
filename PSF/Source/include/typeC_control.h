@@ -233,7 +233,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_UFP_DFP_3A0			TYPEC_CC_THRES4_MATCH  
 
 /*Defines holding CC THRES match reflected in CC match register for different types of UFP attach 
-and powered cable attach event for DFP when the CC thrshold match register is set to detect both 
+and powered cable attach event for DFP when the CC threshold match register is set to detect both 
 powered cable and UFP*/
 #define TYPEC_PWD_CABLE_ATT_DEF    (TYPEC_DFP_UFP_DEF | TYPEC_DFP_ACT_DEF )		
 #define TYPEC_PWD_CABLE_ATT_1A5	   (TYPEC_DFP_UFP_1A5 | TYPEC_DFP_ACT_1A5 )       
