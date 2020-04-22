@@ -360,7 +360,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                                                               "SRC State\r\n");
                     
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                      (CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
+                                                      (TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_SubStateChange_TimerCB, u8PortNum,\
                                                       TYPEC_ATTACHWAIT_SRC_TCC_TO_SS);
                    
@@ -434,7 +434,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach Vsafe5V*/
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
-                                                              (CONFIG_TYPEC_VBUS_ON_TIMER_MS),
+                                                              (TYPEC_VBUS_ON_TIMER_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
 					
@@ -520,7 +520,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             VCONN to reach its Min value*/
                             /*Failure to reach the VCONN Min will result in Error Recovery state*/
                             gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
-                                                         CONFIG_TYPEC_VCONNON_TIMEOUT_MS,
+                                                         TYPEC_VCONNON_TIMEOUT_MS,
                                                           TypeC_VCONNONErrorTimerCB, u8PortNum,  
                                                           (UINT8)SET_TO_ZERO);
                             
@@ -611,7 +611,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 /* Start a Debounce timer of tPDDebounce for detach event*/
                 gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                  (CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
+                                                  (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
                                                   TypeC_SubStateChange_TimerCB, u8PortNum,\
                                                   TYPEC_UNATTACH_WAIT_SRC_TPD_TO_SS);
                 
@@ -629,7 +629,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                /*Start the VBUS OFF timer for monitoring the time taken for 
                 power module to reach Vsafe0V*/
                 gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
-                                                              (CONFIG_TYPEC_VBUS_OFF_TIMER_MS),
+                                                              (TYPEC_VBUS_OFF_TIMER_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
 				
@@ -761,7 +761,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SNK: Entered"\
                                          "ATTACHWAIT SNK State\r\n");                  
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                      (CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
+                                                      (TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_SubStateChange_TimerCB, u8PortNum,\
                                                       TYPEC_ATTACHWAIT_SNK_TCC_TO_SS);
                     
@@ -780,7 +780,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHWAIT_SNK_TPDDEB_SS:
                 {                  
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                      (CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
+                                                      (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_StateChange_TimerCB, u8PortNum,\
                                                       TYPEC_UNATTACHED_SNK);
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHWAIT_SNK_IDLE_SS;
@@ -872,7 +872,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     /* Start a Debounce timer of tPDDebounce for detach event*/
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                       (CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
+                                                       (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
                                                        TypeC_SubStateChange_TimerCB, u8PortNum,\
                                                        TYPEC_ATTACHED_SNK_TPD_TO_SS);
                     
@@ -1037,7 +1037,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Setting VBUS Comparator OFF once the VBUS line goes off to 0V*/
                         TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
                         gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                  (CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS),\
+                                  (TYPEC_ERRORRECOVERY_TIMEOUT_MS),\
                                   TypeC_SubStateChange_TimerCB, u8PortNum,\
                                   TYPEC_ERROR_RECOVERY_TO_SS);
                         

@@ -1280,7 +1280,7 @@ UINT8 PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 		
 		/* Spec Reference: PRL_Tx_Src_Pending - Start sinkTxTimer*/
         /* SinkTxTimer is started. */
-		gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = PDTimer_Start (CONFIG_PRL_SINKTX_TIMEOUT_MS,\
+		gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = PDTimer_Start (PRL_SINKTX_TIMEOUT_MS,\
                                                         PRL_CASinkTxTimerOut_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
 		
 		
@@ -1383,7 +1383,7 @@ void PRL_TCHChunkSMStateChange_TCHCB (UINT8 u8PortNum, UINT8 u8TimerID, UINT8 Tx
 			gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent++;
 			
 			/* Start ChunkSenderRequestTimer*/
-			gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = PDTimer_Start (CONFIG_PRL_CHUNKSENDERREQUEST_TIMEOUT_MS, 
+			gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = PDTimer_Start (PRL_CHUNKSENDERREQUEST_TIMEOUT_MS, 
 																		 PRL_ChunkStateChange_TimerCB, 
 																		 u8PortNum, 
 																		 PRL_TCH_CHUNKSENDERREQUEST_TIMEOUT_ST);
@@ -1426,7 +1426,7 @@ void PRL_RCHChunkSMStateChange_RCHCB (UINT8 u8PortNum, UINT8 u8TimerID, UINT8 Tx
 	if (gasPRL[u8PortNum].u8TxStateISR == PRL_TX_DONE_ST)
 	{
 	  	/* if GOODCRC is received, SenderRequestTimer is started*/
-		gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = PDTimer_Start (CONFIG_PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS, 
+		gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = PDTimer_Start (PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS, 
 																	 PRL_ChunkStateChange_TimerCB, 
 																	 u8PortNum, 
 																	 PRL_RCH_CHUNK_RECV_ERROR_ST);
