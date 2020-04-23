@@ -562,12 +562,36 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */
                     (void)PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
                     #endif
+
+                    /* Start the SourcePPSCommTimer in case the current explicit 
+                       contract is for a PPS APDO */
+                    if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    {
+                        gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                                  (PE_SOURCE_PPS_COMM_TIMEOUT_MS),
+                                                                  PE_SubStateChange_TimerCB,u8PortNum,  
+                                                                  (UINT8) ePE_SRC_READY_PPS_COMM_TIMER_EXPIRED_SS);
+                    }
+
                     /* Notify that PD contract is established*/    
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                     
                     break;
                 }
-                
+
+                case ePE_SRC_READY_PPS_COMM_TIMER_EXPIRED_SS: 
+                {
+                    /* PE would never enter this state when the current explicit
+                       contract is for a Fixed PDO */
+                    /* Send Hard Reset when SourcePPSCommTimer Expires */
+                    if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    {
+                        gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;                    
+                    }
+                    break;
+                }                     
+           
                 case ePE_SRC_READY_END_AMS_SS:
                 { 
                     break;
