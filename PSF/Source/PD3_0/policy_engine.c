@@ -887,7 +887,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             {
                 case ePE_SEND_NOT_SUPPORTED_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_NOT_SUPPORTED: Enterted the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_NOT_SUPPORTED: Entered the state\r\n");
 
                     u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_NOT_SUPPORTED, \
                                                     PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -937,7 +937,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             {
                 case ePE_SEND_REJECT_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_REJECT: Enterted the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_REJECT: Entered the state\r\n");
 
                     u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT, \
                                                     PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -1016,10 +1016,10 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             {
                 case ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-SEND_ACCEPT_SS: Enterted the SubState \r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-SEND_ACCEPT_SS: Entered the SubState \r\n");
 
                      /*Send Accept message*/
-                    /*Set the PD message transmitter API to Send Accept Messsage*/
+                    /*Set the PD message transmitter API to Send Accept Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,\
                                          PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -1058,7 +1058,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 }
                 case ePE_VCS_ACCEPT_SWAP_ACCEPT_SENT_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-ACCEPT_SENT_SS: Enterted the SubState \r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-ACCEPT_SENT_SS: Entered the SubState \r\n");
 
                     /*Check whether the Port is currently sourcing VCONN and
                     transition accordingly*/
@@ -1089,7 +1089,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             {
                 case ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS:
                 {
-                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_WAIT_FOR_VCONN-START_TIMER_SS: Enterted the SubState \r\n");
+                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_WAIT_FOR_VCONN-START_TIMER_SS: Entered the SubState \r\n");
 
                     /*If PS RDY message is not received from port partner, then transition to Hard
                     reset state*/
@@ -1235,7 +1235,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             {
                 case ePE_VCS_SEND_PS_RDY_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_PS_RDY-ENTRY_SS: Enterted the SubState \r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_PS_RDY-ENTRY_SS: Entered the SubState \r\n");
                     /*Send PS_RDY message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY,\
