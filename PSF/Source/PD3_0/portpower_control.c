@@ -135,12 +135,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
         }       
     }   
     
-    #elif (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-
-    MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_SET_POWER(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current); 
-    
     #endif /*CONFIG_DCDC_CTRL*/
-
     #endif
     
     /*Hook to modify or overwrite the default Port Power control VBUS drive */

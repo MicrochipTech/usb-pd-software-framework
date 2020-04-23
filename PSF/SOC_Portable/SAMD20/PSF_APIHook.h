@@ -285,214 +285,23 @@ Remarks:
             SAMD20_SPIReaddriver(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)
 
 // *****************************************************************************
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-
-/*********************************************************************************************
-Function:
-    MCHP_PSF_HOOK_I2C_DCDC_INTF_INIT()
-Summary:
-    Initialize the I2C hardware interface of SOC used for communicating with I2C based DCDC Converter.
-Description:
-    If I2C based DCDC converter is used to deliver power, PSF will require an I2C hardware interface from SOC to communicate with the DCDC converter.  
- 
-    This Hook is used to initialize the SOC's Hardware interface for I2C communication with I2C based DCDC converter. It is called 
-    during initialization of PSF. Define relevant function that has no arguments but a return type 
-    UINT8 that indicates whether initialization is successful. 
-Conditions:
-	This hook API should be called if I2C based DCDC converter is used to deliver power.
-Return:
-    UINT8 - Return TRUE if initialization was successful or else return FALSE. 
-Example:
-
-    <code>
-        #define MCHP_PSF_HOOK_I2C_DCDC_INTF_INIT()      hw_i2c_init()
-        UINT8 hw_i2c_init(void);
-        UINT8 hw_i2c_init(void)
-        {
-            //Initialise SOC's I2C master
-            //Return TRUE if initialsation is successful else FALSE
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory if I2C based DCDC converter is used to deliver power.   
-**************************************************************************/
-
-#define MCHP_PSF_HOOK_I2C_DCDC_INTF_INIT() SAMD20_I2CDCDCInitialisation()
-
-/*********************************************************************************************
-Function:
-    MCHP_PSF_HOOK_I2C_DCDC_READ(u16Address,pu8ReadBuf,u8ReadLen)
-Summary:
-    Initiates a read transfer from I2C based DCDC converter via I2C.
-Description:
-    This hook is called to read registers of I2C based DCDC converter. Define 
-    relevant function that has UINT8, UINT8*, UINT8 arguments with a return type UINT8.
-Conditions:
-    None.
-Input:
-    u16Address -  Address of I2C DCDC converter.
-    pu8ReadBuf - PSF shall pass the pointer to the buffer in which data read via I2C Hardware bus should be stored. 
-                 Data type of the pointer buffer must be UINT8*.
-    u8ReadLen - PSF shall pass the Number of bytes to be read on the I2C Hardware bus. 
-                Data type of this parameter must be UINT8.
-Return:
-    UINT8 - Return TRUE if read was successful or else return FALSE.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_I2C_DCDC_READ(u16Address,pu8ReadBuf,u8ReadLen)\   
-					I2C_Read (u16Address,pu8ReadBuf,u8ReadLen)
-        UINT8 I2C_Read(UINT16 u16Address,UINT8* pu8ReadBuf,UINT8 u8ReadLen);
-        UINT8 I2C_Read(UINT16 u16Address,UINT8* pu8ReadBuf,UINT8 u8ReadLen)
-        {
-			// Select I2C address for the UPD350 I2C slave using u16Address 
-            for(UINT8 u8Rxcount = 0; u8Rxcount < u8ReadLen; u8Rxcount++)
-            {
-                //Read data bytes from I2C bus
-            }
-            // Return TRUE if the read is successful; else FALSE
-        }
-    </code>
-
-Remarks:
-    User definition of this Hook function is mandatory if I2C based DCDC converter is used to deliver power.                                       
-*********************************************************************************************/
-#define MCHP_PSF_HOOK_I2C_DCDC_READ(u16Address,pu8ReadBuf,u8ReadLen)       \
-            SAMD20_I2CDCDCReadDriver(u16Address,pu8ReadBuf,u8ReadLen)
-
-/*********************************************************************************************
-Function:
-    MCHP_PSF_HOOK_I2C_DCDC_WRITE(u16Address,pu8WriteBuf,u8WriteLen)
-Summary:
-    Initiates a write transfer to I2C based DCDC converter via I2C.
-Description:
-    This hook is called to write to registers of I2C based DCDC converter. Define 
-    relevant function that has UINT8, UINT8*, UINT8 arguments with a return type UINT8.
-Conditions:
-    None.
-Input:
-    u16Address -  Address of I2C DCDC converter. Data type of this parameter must be UINT16.
-    pu8WriteBuf - PSF shall pass the pointer to the buffer which has the data to be written on the
-                  I2C Hardware bus. Data type of the pointer buffer must be UINT8*.
-    u8WriteLen - PSF shall pass the Number of bytes to be written on the I2C Hardware bus. Data
-                 type of this parameter must be UINT8.
-Return:
-    UINT8 - Return TRUE if write was successful or else return FALSE.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_I2C_DCDC_WRITE(u16Address,pu8WriteBuf,u8WriteLen)\   
-					I2C_Write (u16Address,pu8WriteBuf,u8WriteLen)
-        UINT8 I2C_Write(UINT16 u16Address,UINT8* pu8WriteBuf,UINT8 u8WriteLen);
-        UINT8 I2C_Write(UINT16 u16Address,UINT8* pu8WriteBuf,UINT8 u8WriteLen)
-        {
-			// Select I2C address for the UPD350 I2C slave using u16Address 
-            for(UINT8 u8Txcount = 0; u8Txcount < u8WriteLen; u8Txcount++)
-            {
-                //Write data bytes to I2C bus
-            }
-            // Return TRUE if the write is successful; else FALSE
-        }
-    </code>
-
-Remarks:
-    User definition of this Hook function is mandatory if I2C based DCDC converter is used to deliver power.                                       
-*********************************************************************************************/
-#define MCHP_PSF_HOOK_I2C_DCDC_WRITE(u16Address,pu8WriteBuf,u8WriteLen)     \
-            SAMD20_I2CDCDCWriteDriver(u16Address,pu8WriteBuf,u8WriteLen)
-
-/*********************************************************************************************
-Function:
-    MCHP_PSF_HOOK_I2C_DCDC_WRITE_READ(u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
-Summary:
-    Initiates a write and read transfer from I2C based DCDC converter via I2C.
-Description:
-    This hook is called to write and read registers of I2C based DCDC converter. Define 
-    relevant function that has UINT8, UINT8*, UINT8 arguments with a return type UINT8.
-Conditions:
-    None.
-Input:
-    u16Address -  Address of I2C DCDC converter. Data type of this parameter must be UINT8.
-	pu8WriteBuf - PSF shall pass the pointer to the buffer which has the data to be written on the
-                  I2C Hardware bus. Data type of the pointer buffer must be UINT8*.
-    u8WriteLen - PSF shall pass the Number of bytes to be written on the I2C Hardware bus. Data
-                 type of this parameter must be UINT8.
-    pu8ReadBuf - PSF shall pass the pointer to the buffer in which data read via I2C Hardware bus should be stored. Data type of the pointer buffer must be UINT8*.
-    u8ReadLen - PSF shall pass the Number of bytes to be read on the I2C Hardware bus. Data
-                 type of this parameter must be UINT8.
-Return:
-    UINT8 - Return TRUE if write and read was successful or else return FALSE.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_I2C_DCDC_WRITE_READ(u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)\   
-					I2C_WriteRead (u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
-        UINT8 I2C_WriteRead (UINT16 u16Address,UINT8* pu8WriteBuf,UINT8 u8WriteLen,UINT8* pu8ReadBuf,UINT8 u8ReadLen);
-        UINT8 I2C_WriteRead (UINT16 u16Address,UINT8* pu8WriteBuf,UINT8 u8WriteLen,UINT8* pu8ReadBuf,UINT8 u8ReadLen)
-        {
-			// Select I2C address for the UPD350 I2C slave using u16Address 
-			
-			for(UINT8 u8Txcount = 0; u8Txcount < u8WriteLen; u8Txcount++)
-            {
-                //Write data bytes to I2C bus
-            }
-			
-            for(UINT8 u8Rxcount = 0; u8Rxcount < u8ReadLen; u8Rxcount++)
-            {
-                //Read data bytes from I2C bus
-            }
-            // Return TRUE if the write is successful; else FALSE
-        }
-    </code>
-
-Remarks:
-    This Hook function may be used if I2C based DCDC converter is used to deliver power.                                       
-*********************************************************************************************/
-#define MCHP_PSF_HOOK_I2C_DCDC_WRITE_READ(u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
-            SAMD20_I2CDCDCWriteReadDriver(u16Address,pu8WriteBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
-
-/***********************************************************************
-Function:
-    MCHP_PSF_HOOK_I2C_DCDC_IsBusy()
-Summary:
-    Returns the busy status of I2C hardware interface of SOC used for communicating with I2C based DCDC Converter.
-Description:
-    This Hook is to check the busy status of the SOC's Hardware interface for I2C communication with I2C based DCDC converter. Define relevant function that has no arguments but a return type 
-    UINT8 that indicates whether the I2C hardware interface is busy.
-Conditions:
-	This hook API may be called if I2C based DCDC converter is used to deliver power.
-Return:
-    UINT8 - Return TRUE if I2C hardware interface is busy or else return FALSE. 
-Example:
-
-    <code>
-        #define MCHP_PSF_HOOK_I2C_DCDC_IsBusy()      hw_i2c_isBusy()
-        UINT8 hw_i2c_isBusy(void);
-        UINT8 hw_i2c_isBusy(void)
-        {
-			//Get I2C busy status
-            //Return TRUE if I2C interface is busy else FALSE
-        }
-    </code>
-Remarks:
-	None
-**************************************************************************/
-#define MCHP_PSF_HOOK_I2C_DCDC_ISBUSY() SAMD20_I2CDCDCIsBusyDriver()
-
 /* *****************************************************************************
 Function:
-	MCHP_PSF_HOOK_I2CDCDCAlertInit(byPortNum)
+	MCHP_PSF_HOOK_DCDCAlertInit(byPortNum)
 Summary:
-    Configures GPIO of SOC as Input enables external interrupt for that GPIO.
+    Configures GPIO of SOC as Input enables external interrupt for that DC DC Alert
 Description:
     This Hook is used to configure a GPIO in input mode and enables external interrupt for that pin. 
-	For each port, this hook can be used to assign alert pin of I2C based DCDC converter to a GPIO. 
-	Whenever, an interrupt is fired from alert pin of I2C based DCDC converter, the SOC can call a callback function to execute the necessary fault handling operations.
+	For each port, this hook can be used to assign alert pin for DC-DC Buck boost converter to a GPIO. 
+	Whenever, an interrupt is fired from alert pin of DC-DC Buck boost converter, the SOC can call a callback function to execute the necessary fault handling operations.
 Conditions:
-	This hook API may be called if I2C based DCDC converter is used to deliver power.
+	This hook API may be called if DC-DC Buck boost converter is used to deliver power.
 Return:
 	None.
 Example:
 
     <code>
-        #define MCHP_PSF_HOOK_I2CDCDCAlertInit()      hw_alertinit()
+        #define MCHP_PSF_HOOK_DCDCAlertInit()      hw_alertinit()
         void hw_alertinit(void);
         void hw_alertinit(void)
         {
@@ -502,21 +311,11 @@ Example:
         }
     </code>
 Remarks:
-	None
+	User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is I2C_DC_DC_CONTROL_CONFIG
 **************************************************************************/
-#define MCHP_PSF_HOOK_I2CDCDCALERTINIT(byPortNum) SAMD20_I2CDCDCAlertInit(byPortNum)
+#define MCHP_PSF_HOOK_DCDCALERTINIT(byPortNum) SAMD20_I2CDCDCAlertInit(byPortNum)
 
 // *****************************************************************************
-//#if (CONFIG_I2C_DCDC_TYPE == MPQ)
-
-    #define MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_INIT(byPortNum) MPQDCDC_Initialize(byPortNum)
-
-    #define MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_SET_POWER(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current) \
-        MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current)
-
-//#endif //#if (CONFIG_I2C_DCDC_TYPE == MPQ)
-#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-
 // Section: PDTimer configuration
 // *****************************************************************************
 // *****************************************************************************
@@ -910,11 +709,14 @@ Example:
         }
     </code>
 Remarks:
+    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is I2C_DC_DC_CONTROL_CONFIG
     User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.
     A DAC may initialized under this hook if PSF is configured as SINK.                        
 *****************************************************************************/
 #if (TRUE == INCLUDE_PD_SINK)
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  DAC_Initialize();
+#elif (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  MPQDCDC_Initialize(u8PortNum);
 #else
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
 #endif
@@ -953,7 +755,8 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.                      
 ****************************************************************************/
-#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u16VBUSVolatge,u16Current)
+#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u16VBUSVolatge,u16Current)  \
+        MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current)
 
 /*******************************************************************************************
 Function:

@@ -423,25 +423,6 @@ Example:
 					
 /**************************************************************************
 Summary:
-    Default I2C DC DC Controller Type.
-Description:
-	CONFIG_I2C_DCDC_TYPE is to define the default I2C DC-DC control provided by the PSF stack.
-    This macro is valid only when CONFIG_DCDC_CTRL is set to I2C_DC_DC_CONTROL_CONFIG. If 
-	CONFIG_I2C_DCDC_TYPE defined as MPQ, Monolithic MPQ4230 I2C DC-DC Controller 
-    is used. If CONFIG_I2C_DCDC_TYPE defined as ONSEMI, On Semi I2C DC-DC 
-    Controller is used. 
-Remarks:
-	None.
-Example:
-	<code>
-	#define CONFIG_I2C_DCDC_TYPE    MPQ (Uses Monolithic I2C DC-DC contol)
-    #define CONFIG_I2C_DCDC_TYPE    ONSEMI (Uses OnSemi I2C DC-DC contol)	
-	</code>                                  
-  **************************************************************************/
-#define CONFIG_I2C_DCDC_TYPE        MPQ
-
-/**************************************************************************
-Summary:
     Print status messages from PSF stack through UART interface
 Description:
     Setting CONFIG_HOOK_DEBUG_MSG to 1, prints status messages from PSF stack through

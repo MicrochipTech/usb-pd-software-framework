@@ -81,6 +81,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define MPQ_STATUS_TEMPERATURE_CMD      0x7DU
 #define MPQ_STATUS_CML_CMD              0x7EU
 
+#define MPQ_REGISTER_COUNTS_1V          1024U
+#define MPQ_1V_IN_MILLIVOLT             1000U
+
 /* Offset Values */
 #define MPQ_CURRENT_OFFSET_VALUE        5
 
