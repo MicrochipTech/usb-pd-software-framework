@@ -200,21 +200,38 @@ void DPM_VConnOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable)
 /**************************DPM APIs for VBUS* *********************************/
 void DPM_SetPortPower(UINT8 u8PortNum)
 {
-    UINT16 u16PDOVoltage,u16PDOCurrent;
+    UINT16 u16VoltageInmV = SET_TO_ZERO;
+    UINT16 u16CurrentInmA = SET_TO_ZERO;
     
     if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
     {
-        u16PDOVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
-        u16PDOCurrent = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
-		TypeC_ConfigureVBUSThr(u8PortNum, u16PDOVoltage, u16PDOCurrent, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+        if (DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+        {
+            u16VoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
+            u16CurrentInmA = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
+            TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);            
+        }
+        else if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+        {
+            /* VBUS Voltage to be driven for PPS is the voltage 
+             requested by Sink in the RDO's Output Voltage field */
+           u16VoltageInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);   
+           u16CurrentInmA = DPM_GET_APDO_MAX_CURRENT_IN_mA(gasDPM[u8PortNum].u32NegotiatedPDO); 
+           /* Note: For PPS, Configuring the VBUS Threshold is not needed 
+              since a PPS Source should not rely on checking the voltage on VBUS. */
+        }
+        else
+        {
+            /* No support for Battery and Variable power supplies */
+        }
         PWRCTRL_SetPortPower (u8PortNum, gasDPM[u8PortNum].u8NegotiatedPDOIndex, 
-                u16PDOVoltage, u16PDOCurrent);
+                u16VoltageInmV, u16CurrentInmA);
     }
     else
     {
-        u16PDOVoltage = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV *50; 
-        u16PDOCurrent = gasDPM[u8PortNum].u16SinkOperatingCurrInmA;
-        TypeC_ConfigureVBUSThr(u8PortNum, u16PDOVoltage, u16PDOCurrent, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+        u16VoltageInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV *50; 
+        u16CurrentInmA = gasDPM[u8PortNum].u16SinkOperatingCurrInmA;
+        TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
     }
 }
 
