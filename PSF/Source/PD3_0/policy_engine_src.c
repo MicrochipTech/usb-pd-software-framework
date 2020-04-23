@@ -70,11 +70,19 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 	/* Ra Presence Check */
     UINT8 u8RaPresence = FALSE;
 
+    /* Negotiated Voltage that is to be driven in VBUS*/
+    UINT16 u16DrivenVoltage = SET_TO_ZERO; 
+    
+    /* Actual Voltage in VBUS */
+    UINT16 u16VBUSVoltage = SET_TO_ZERO; 
+    
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)    
     /* Added for negotiated PDO debug message */
     UINT32 u32PDODebug = SET_TO_ZERO;
 #endif
-    
+    /* PS_RDY Timer value to be used in case of PPS contract */
+    UINT32 u32PpsSrcTransTmr = SET_TO_ZERO; 
+            
     /* Get the Type-C state from DPM */
     DPM_GetTypeCStates(u8PortNum, &u8TypeCState, &u8TypeCSubState);
     DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
@@ -374,44 +382,77 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     /* Drive the Power to as requested by port partner*/
                     DPM_SetPortPower(u8PortNum);
-                    /* Start tSrcReady timer */
-                    gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                    
+                    if (DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    {
+                         /* Start tSrcReady timer */
+                        gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (PE_SRC_READY_TIMEOUT_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
-                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;                        
+                    }
+                    else if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    {
+                        /* Get the PPS timer value that needs to be used for sending PS_RDY */
+                        if (DPM_PPS_TMR_SRC_TRANS_LARGE == DPM_GET_PPS_PS_RDY_TIMER_VAL(u8PortNum))
+                        {
+                            u32PpsSrcTransTmr = PE_PPS_SRCTRANSLARGE_TIMEOUT_MS; 
+                        }
+                        else
+                        {
+                            u32PpsSrcTransTmr = PE_PPS_SRCTRANSSMALL_TIMEOUT_MS; 
+                        }
+                        /* Start tPpsSrcTransSmall/tPpsSrcTransLarge timer */
+                        gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                              u32PpsSrcTransTmr,
+                                                              PE_SubStateChange_TimerCB, u8PortNum,  
+                                                              (UINT8)ePE_SRC_TRANSITION_SUPPLY_EXIT_SS);                                                       
+                        
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;
+                    }
+                    else
+                    {
+                        /* No support for Battery and Variable power supplies */
+                    }
                     break;
                 }
                 
                 case ePE_SRC_TRANSITION_SUPPLY_EXIT_SS:
                 {
-					/* Get the driven voltage status */
-                    UINT16 u16DrivenVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
-   		
-					/* If the voltage reached the driven voltage level send the PS_RDY message */
-                    if(u16DrivenVoltage == DPM_GetVBUSVoltage(u8PortNum))
+                    /* Checking VBUS Voltage is not needed for PPS. */
+                    if (DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
                     {
-                        /* Kill tSrcReady Timer */
+                        /* Get the driven voltage status */
+                        u16DrivenVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
+                        u16VBUSVoltage = DPM_GetVBUSVoltage(u8PortNum);
+                    }
+                    
+                    /* If the voltage reached the driven voltage level send the PS_RDY message */
+                    if(((DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum)) && (u16DrivenVoltage == u16VBUSVoltage)) || 
+                            (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum)))
+                    {
+                        /* Kill tSrcReady timer in case of Fixed supply. 
+                           tPpsSrcTransSmall or tPpsSrcTransLarge Timer in case of PPS. */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_SUPPLY-EXIT_SS\r\n");
                         u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
-                                            PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+                                                PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                         u8TransmitSOP = PRL_SOP_TYPE;
                         u32pTransmit_DataObj = NULL;
                         Transmit_cb = PE_StateChange_TransmitCB;
-                        
-                        
+
                         u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, ePE_SRC_READY_ENTRY_SS, \
-                                                    ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
-                        
-                        
+                                                        ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);                     
+
                         u8IsTransmit = TRUE;
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;
                     }
+                    
                     break;  
                 }
-                
+                    
                 case ePE_SRC_TRANSITION_SUPPLY_IDLE_SS:
                 {
                     
