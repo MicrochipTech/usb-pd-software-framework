@@ -313,7 +313,11 @@ Example:
 Remarks:
 	User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is I2C_DC_DC_CONTROL_CONFIG
 **************************************************************************/
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 #define MCHP_PSF_HOOK_DCDCALERTINIT(byPortNum) SAMD20_I2CDCDCAlertInit(byPortNum)
+#else
+#define MCHP_PSF_HOOK_DCDCALERTINIT(byPortNum)
+#endif
 
 // *****************************************************************************
 // Section: PDTimer configuration
@@ -755,8 +759,12 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.                      
 ****************************************************************************/
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 #define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u16VBUSVolatge,u16Current)  \
         MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current)
+#else
+#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u16VBUSVolatge,u16Current)
+#endif
 
 /*******************************************************************************************
 Function:
