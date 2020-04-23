@@ -1698,19 +1698,44 @@ typedef struct _PBPortCfgStatus
      This structure contains port specific PPS configuration parameters.
 	 sPPSPerPortData is referred from _GlobalCfgStatusData.
    Description:
-     This structure contains the following PPS configuration parameters. 
+     This structure contains the following PPS configuration parameters that 
+     are either Integer Datatypes or Bit-Mapped bytes.  
 	 This structure is used only when INCLUDE_PD_SOURCE_PPS is set to '1'.
 	 
+	<b>1. Members that are Integer Datatypes:</b> 
+	
 	<table> 	
     Name                            Size in   R/W Config   R/W Run   \Description
                                      Bytes     time         time      
     ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
-    u8PPSEnable                     1         R/W          R         PPS Enable/Disable.
-																	  * '0' = Disable 
-																	  * '1' = Enable 
     u32aPPSApdo[3]                  12        R/W          R         Defines the PPS APDOs. 
 	u8aReserved5[3]				    3                                Reserved 
-	</table> 																 												  																 																  
+	</table> 
+
+    <b>2. Members that are Bit-Mapped bytes:</b> 
+	
+	<b>a. u8PPSCfgData:</b> 
+	u8PPSCfgData variable holds the PPS Configuration Data. It's size is 1 byte. 
+	
+    <table>
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       RW           R         PPS Enable/Disable  
+                                    * '0' Disable
+                                    * '1' Enable 
+    1       RW           R         APDO1 Enable/Disable 
+                                    * '0' Disable 
+                                    * '1' Enable
+    2       RW           R         APDO2 Enable/Disable 
+                                    * '0' Disable 
+                                    * '1' Enable
+    3       RW           R         APDO3 Enable/Disable 
+                                    * '0' Disable 
+                                    * '1' Enable
+    7:4                            Reserved
+    </table>
+	
    Remarks:
      None                                                               
    **********************************************************************/
@@ -1718,7 +1743,7 @@ typedef struct _PBPortCfgStatus
 
 typedef struct _PPSPortCfgStatus
 {
-    UINT8 u8PPSEnable;
+    UINT8 u8PPSCfgData;
     UINT8 u8aReserved5[3];
     UINT32 u32aPPSApdo[3];  
 } PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;

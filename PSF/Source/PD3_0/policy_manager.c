@@ -612,7 +612,7 @@ void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
         if ((*u8pSrcPDOCnt) < DPM_MAX_PDO_CNT)
         {
             /* Check if APDO is enabled */
-            if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & u8APDOEnDisMask) 
+            if (gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSCfgData & u8APDOEnDisMask) 
             {
                 /* Include the APDO in Source capabilities message */
                 *(u32pSrcCap + (*u8pSrcPDOCnt)) = gasCfgStatusData.sPPSPerPortData[u8PortNum].u32aPPSApdo[byIndex];
