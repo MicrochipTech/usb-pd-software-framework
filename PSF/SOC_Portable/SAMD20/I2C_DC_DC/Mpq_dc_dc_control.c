@@ -54,10 +54,10 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
             
     for(int i=0; i<3; i++)
     {
-        if (TRUE == MCHP_PSF_HOOK_I2C_DCDC_WRITE (u8I2CAddress, pu8I2CCmd, u8Length))
+        if (TRUE == SAMD20_I2CDCDCWriteDriver (u8I2CAddress, pu8I2CCmd, u8Length))
         {
             /* wait for the current transfer to complete */ 
-            while(MCHP_PSF_HOOK_I2C_DCDC_ISBUSY( ));
+            while(SAMD20_I2CDCDCIsBusyDriver( ));
             __NOP(); 
             
             u8RetVal = TRUE;
@@ -73,6 +73,8 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     UINT8 u8length;
     UINT32 u32I2CCmd;
     UINT8 u8Return = TRUE;
+
+    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 
     /*Assert EN_VBUS*/
     UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
@@ -116,6 +118,8 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     u32I2CCmd = MPQ_CMD_CURRENT_THRESHOLD;
     u8length = I2C_CMD_LENGTH_2;
     u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CCmd, u8length);
+
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
 
     return u8Return;
 }
@@ -166,7 +170,7 @@ static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage)
     {
         u8length = I2C_CMD_LENGTH_3;
         u32I2CDCDCVoltage = (UINT32)u16VBUSVoltage;
-        u32I2CDCDCVoltage = (UINT32) ((u32I2CDCDCVoltage * 1024U)/1000U);
+        u32I2CDCDCVoltage = (UINT32) ((u32I2CDCDCVoltage * MPQ_REGISTER_COUNTS_1V)/MPQ_1V_IN_MILLIVOLT);
         u32I2CDCDCVoltage = u32I2CDCDCVoltage << 8;
         u32I2CDCDCVoltage = u32I2CDCDCVoltage | MPQ_CMD_WRITE_VOLTAGE;
 
@@ -203,7 +207,7 @@ UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
 {
     UINT16 u16FaultStatus;
     
-    (void)MCHP_PSF_HOOK_I2C_DCDC_WRITE_READ(u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
+    (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
 
     return u16FaultStatus;
 }

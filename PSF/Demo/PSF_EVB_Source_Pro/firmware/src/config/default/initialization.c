@@ -120,6 +120,8 @@ void SYS_Initialize ( void* data )
     PORT_Initialize();
 
     CLOCK_Initialize();
+    
+    SAMD20_I2CDCDCInitialisation();
 
 	//SPI initialisation is done as part of MchpPSF_Init by PSF stack
     //SERCOM0_SPI_Initialize();
