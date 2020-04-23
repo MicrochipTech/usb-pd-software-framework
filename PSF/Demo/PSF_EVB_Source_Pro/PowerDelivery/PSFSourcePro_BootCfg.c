@@ -133,7 +133,7 @@ void CFG_PPSPerPortParams (UINT8 u8PortNum)
     #if (TRUE == INCLUDE_PD_SOURCE_PPS) 
     /* To-do: Rename the variable as u8PPSCfgData */
     /* Enable PPS Port Configuration parameters */
-    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable = ((CFG_PPS_APDO_3_ENABLE << CFG_PPS_APDO_3_ENABLE_POS) | \
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSCfgData = ((CFG_PPS_APDO_3_ENABLE << CFG_PPS_APDO_3_ENABLE_POS) | \
                         (CFG_PPS_APDO_2_ENABLE << CFG_PPS_APDO_2_ENABLE_POS) | \
                         (CFG_PPS_APDO_1_ENABLE << CFG_PPS_APDO_1_ENABLE_POS) |
                         (CFG_PPS_ENABLE)); 

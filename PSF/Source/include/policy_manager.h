@@ -273,7 +273,7 @@ Source/Sink Power delivery objects*/
                                     ? TRUE : FALSE)   
 
 /* Macro to know if PPS is enabled for the port */
-#define DPM_IS_PPS_ENABLED(u8PortNum)  ((gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & \
+#define DPM_IS_PPS_ENABLED(u8PortNum)  ((gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSCfgData & \
                                         DPM_PPS_ENABLE) ? TRUE : FALSE)
 
 /*********************PPS APDO Defines ******************/
