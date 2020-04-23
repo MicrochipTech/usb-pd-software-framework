@@ -71,10 +71,10 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     UINT8 u8RaPresence = FALSE;
 
     /* Negotiated Voltage that is to be driven in VBUS*/
-    UINT16 u16DrivenVoltage = SET_TO_ZERO; 
+    UINT16 u16DrivenVoltageInmV = SET_TO_ZERO; 
     
     /* Actual Voltage in VBUS */
-    UINT16 u16VBUSVoltage = SET_TO_ZERO; 
+    UINT16 u16VBUSVoltageInmV = SET_TO_ZERO; 
     
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)    
     /* Added for negotiated PDO debug message */
@@ -424,12 +424,12 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     if (DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
                     {
                         /* Get the driven voltage status */
-                        u16DrivenVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
-                        u16VBUSVoltage = DPM_GetVBUSVoltage(u8PortNum);
+                        u16DrivenVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
+                        u16VBUSVoltageInmV = DPM_GetVBUSVoltage(u8PortNum);
                     }
                     
                     /* If the voltage reached the driven voltage level send the PS_RDY message */
-                    if(((DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum)) && (u16DrivenVoltage == u16VBUSVoltage)) || 
+                    if(((DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum)) && (u16DrivenVoltageInmV == u16VBUSVoltageInmV)) || 
                             (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum)))
                     {
                         /* Kill tSrcReady timer in case of Fixed supply. 
