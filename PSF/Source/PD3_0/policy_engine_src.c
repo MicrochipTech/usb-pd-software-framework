@@ -331,7 +331,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     Transmit_cb = PE_StateChange_TransmitCB;
       
                     u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_TRANSITION_SUPPLY, \
-                                                ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED, \
+                                                ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED_SS, \
                                                 ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;
@@ -342,20 +342,35 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     break;  
                 }
                 
-                case ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED:
+                case ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED_SS:
                 {
                     /* Set AS_SOURCE_RDO_ACCEPTED bit in Port Connection Status */
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS;
                     
-                    gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            (PE_SRCTRANSISTION_TIMEOUT_MS),
-                                                            PE_SubStateChange_TimerCB,u8PortNum,  
-                                                            (UINT8)ePE_SRC_TRANSITION_SUPPLY_POWER_ON);
-                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;
+                    /* If the request is for a Fixed PDO, Start the 
+                       Source Transition timer. */
+                    if (DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    {
+                        gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                                (PE_SRCTRANSISTION_TIMEOUT_MS),
+                                                                PE_SubStateChange_TimerCB,u8PortNum,  
+                                                                (UINT8)ePE_SRC_TRANSITION_SUPPLY_POWER_ON_SS);
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;                        
+                    }
+                    /* In case of programmable RDO, Source transition timer is 
+                       not needed. Go ahead and drive the port power. */
+                    else if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    {
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_POWER_ON_SS;
+                    }
+                    else
+                    {
+                        /* No support for Battery and Variable power supplies */
+                    }
                     break;
                 }
                 
-                case ePE_SRC_TRANSITION_SUPPLY_POWER_ON:
+                case ePE_SRC_TRANSITION_SUPPLY_POWER_ON_SS:
                 {
                     /* Drive the Power to as requested by port partner*/
                     DPM_SetPortPower(u8PortNum);

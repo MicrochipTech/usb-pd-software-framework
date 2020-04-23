@@ -159,6 +159,20 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     Default value of PRL_BIST_CONTMODE_TIMEOUT_MS is set as 45 milliseconds.*/
 #define PRL_BIST_CONTMODE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(45)                                             
 
+/* PE_PPS_SRCTRANSLARGE_TIMEOUT_MS defines the tPpsSrcTransLarge specified 
+   in the USB PD Specification. Default value of PE_PPS_SRCTRANSLARGE_TIMEOUT_MS
+   is set as 250 milliseconds. */
+#define PE_PPS_SRCTRANSLARGE_TIMEOUT_MS         MILLISECONDS_TO_TICKS(250)
+
+/* PE_PPS_SRCTRANSSMALL_TIMEOUT_MS defines the tPpsSrcTransLarge specified 
+   in the USB PD Specification. Default value of PE_PPS_SRCTRANSSMALL_TIMEOUT_MS
+   is set as 15 milliseconds. */
+#define PE_PPS_SRCTRANSSMALL_TIMEOUT_MS         MILLISECONDS_TO_TICKS(15)
+
+/* PE_SOURCE_PPS_COMM_TIMEOUT_MS defines the SourcePPSCommTimer specified 
+   in the USB PD Specification. Default value of PE_SOURCE_PPS_COMM_TIMEOUT_MS
+   is set as 12 seconds. */
+#define PE_SOURCE_PPS_COMM_TIMEOUT_MS           MILLISECONDS_TO_TICKS(12000)
 
 #endif /* _TIMER_DEFS_H */
 
