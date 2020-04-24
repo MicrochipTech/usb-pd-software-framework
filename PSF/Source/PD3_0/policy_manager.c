@@ -216,7 +216,7 @@ void DPM_SetPortPower(UINT8 u8PortNum)
             /* VBUS Voltage to be driven for PPS is the voltage 
              requested by Sink in the RDO's Output Voltage field */
            u16VoltageInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);   
-           u16CurrentInmA = DPM_GET_APDO_MAX_CURRENT_IN_mA(gasDPM[u8PortNum].u32NegotiatedPDO); 
+           u16CurrentInmA = DPM_GET_PROG_RDO_OPR_CURRENT_IN_mA(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO); 
            /* Note: For PPS, Configuring the VBUS Threshold is not needed 
               since a PPS Source should not rely on checking the voltage on VBUS. */
         }
