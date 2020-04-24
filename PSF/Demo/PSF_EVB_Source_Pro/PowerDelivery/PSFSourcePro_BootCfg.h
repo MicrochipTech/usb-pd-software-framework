@@ -151,8 +151,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PB_MAX_PORT_POWER_BANKC           0x00F0U
 /* Default Max Port current is 3A */
 #define CFG_PB_MAX_PORT_CURRENT               0x012CU
-/* Default PB Enable for System with Algorithm as FCFS */
-#define CFG_PB_ENABLE                         0x10U 
+
+/* Note: By default, PB is disabled for the system since support for 
+   PPS + PB coexistence is planned for future phases. If PB needs to be 
+   enabled, change the value of following macro to 0x10U. This will
+   enable PB for the system with FCFS as Selection Algorithm. */
+#define CFG_PB_ENABLE                         0x00U 
 /* Default Enable PB for port 0 with Priority as 0*/
 #define CFG_PB_PORT_ENABLE                    0x01U
 
@@ -203,7 +207,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_APDO_MAX_CURRENT_UNIT              50
 
 /* Macros for PPS Config Data Enable/Disable */
-#define CFG_PPS_ENABLE                         0U 
+#define CFG_PPS_ENABLE                         1U 
 #define CFG_PPS_APDO_1_ENABLE                  1U
 #define CFG_PPS_APDO_2_ENABLE                  0U
 #define CFG_PPS_APDO_3_ENABLE                  0U 
