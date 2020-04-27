@@ -211,6 +211,7 @@ void DPM_SetPortPower(UINT8 u8PortNum)
             u16CurrentInmA = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
             TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);            
         }
+#if (TRUE == INCLUDE_PD_SOURCE_PPS) 
         else if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
         {
             /* VBUS Voltage to be driven for PPS is the voltage 
@@ -220,6 +221,7 @@ void DPM_SetPortPower(UINT8 u8PortNum)
            /* Note: For PPS, Configuring the VBUS Threshold is not needed 
               since a PPS Source should not rely on checking the voltage on VBUS. */
         }
+#endif 
         else
         {
             /* No support for Battery and Variable power supplies */
@@ -294,9 +296,10 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     UINT8 u8RaPresence = SET_TO_ZERO;
     UINT32 u32PDO = SET_TO_ZERO; 
     UINT32 u32RDO = SET_TO_ZERO; 
+#if (TRUE == INCLUDE_PD_SOURCE_PPS) 
     UINT16 u16PrevRDOVoltInmV = SET_TO_ZERO; 
     UINT16 u16RDOOpVoltInmV = SET_TO_ZERO; 
-    
+#endif 
     /* Get the status of E-Cable presence and ACK status */
     u8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) & \
                     (~((gasPolicy_Engine[u8PortNum].u8PEPortSts & \
@@ -320,6 +323,8 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         /* Get the current value of Requested Source PDO */
         u16SrcPDOCurrVal = (u32PDO & PE_REQUEST_MAX_CUR_MASK);       
     }
+    
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)    
     else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
     {     
         /* Get the Requested current value */ 
@@ -348,6 +353,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
             /* Do Nothing */
         }
     }
+#endif 
     else
     {
         /* No support for Variable and Battery power supplies */
@@ -361,6 +367,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
                 (u16SinkReqCurrVal > gasDPM[u8PortNum].u16MaxCurrSupportedin10mA) ? \
                 DPM_INVALID_REQUEST : DPM_VALID_REQUEST;   
    
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)     
     if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
     {
         if ((u16RDOOpVoltInmV >= DPM_GET_APDO_MIN_VOLTAGE_IN_mV(u32PDO)) && 
@@ -373,6 +380,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
             u8RetVal &= DPM_INVALID_REQUEST; 
         }
     }
+#endif 
     
     /* If request is valid set the Negotiated PDO as requested */
     if(u8RetVal == DPM_VALID_REQUEST)
@@ -394,6 +402,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
                     ((gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV * gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA) / 
                     (DPM_PDO_VOLTAGE_UNIT * DPM_PDO_CURRENT_UNIT));             
         }       
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)        
         else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current RDO Type as Programmable */
@@ -406,6 +415,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
             /* To-do: The above 3 parameters need to be updated for PPS, units 
             differ b/w Fixed and PPS voltages, currents. */
         }
+#endif 
         else
         {
             /* Do Nothing */
@@ -428,6 +438,7 @@ UINT32 DPM_CurrentCutDown (UINT32 u32PDO)
             u32PDO |= DPM_CABLE_CURR_3A_UNIT;
         }  
     }
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)    
     else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
     {
         if (DPM_GET_APDO_MAX_CURRENT_IN_mA(u32PDO) > DPM_3000mA)
@@ -436,6 +447,7 @@ UINT32 DPM_CurrentCutDown (UINT32 u32PDO)
             u32PDO |= DPM_3A_IN_50mA; 
         }
     }
+#endif 
     else
     {
         /* No support for Variable and Battery power supplies */
@@ -594,6 +606,8 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
     }    
 }
 
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+
 void DPM_DeterminePPSPSRdyTimer (UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UINT16 u16CurrRDOVoltInmV)
 {
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
@@ -645,6 +659,7 @@ void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
     #endif 
 }
 
+#endif /*INCLUDE_PD_SOURCE_PPS*/ 
 #endif /*INCLUDE_PD_SOURCE*/  
 
 /*********************************DPM VDM Cable APIs**************************************/

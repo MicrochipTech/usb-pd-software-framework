@@ -80,9 +80,12 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     /* Added for negotiated PDO debug message */
     UINT32 u32PDODebug = SET_TO_ZERO;
 #endif
+    
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)    
     /* PS_RDY Timer value to be used in case of PPS contract */
     UINT32 u32PpsSrcTransTmr = SET_TO_ZERO; 
-            
+#endif 
+    
     /* Get the Type-C state from DPM */
     DPM_GetTypeCStates(u8PortNum, &u8TypeCState, &u8TypeCSubState);
     DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
@@ -365,12 +368,15 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                                 (UINT8)ePE_SRC_TRANSITION_SUPPLY_POWER_ON_SS);
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;                        
                     }
+                    
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
                     /* In case of programmable RDO, Source transition timer is 
                        not needed. Go ahead and drive the port power. */
                     else if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
                     {
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_POWER_ON_SS;
                     }
+#endif 
                     else
                     {
                         /* No support for Battery and Variable power supplies */
@@ -392,6 +398,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                               (UINT8)SET_TO_ZERO);
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;                        
                     }
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
                     else if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
                     {
                         /* Get the PPS timer value that needs to be used for sending PS_RDY */
@@ -411,6 +418,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;
                     }
+#endif 
                     else
                     {
                         /* No support for Battery and Variable power supplies */
@@ -563,6 +571,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     (void)PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
                     #endif
 
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
                     /* Start the SourcePPSCommTimer in case the current explicit 
                        contract is for a PPS APDO */
                     if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
@@ -572,13 +581,16 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                                   PE_SubStateChange_TimerCB,u8PortNum,  
                                                                   (UINT8) ePE_SRC_READY_PPS_COMM_TIMER_EXPIRED_SS);
                     }
-
+#endif 
+                    
                     /* Notify that PD contract is established*/    
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                     
                     break;
                 }
 
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+                
                 case ePE_SRC_READY_PPS_COMM_TIMER_EXPIRED_SS: 
                 {
                     /* PE would never enter this state when the current explicit
@@ -590,7 +602,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;                    
                     }
                     break;
-                }                     
+                }
+#endif 
            
                 case ePE_SRC_READY_END_AMS_SS:
                 { 
