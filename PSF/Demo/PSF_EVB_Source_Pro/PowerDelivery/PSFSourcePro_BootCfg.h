@@ -174,6 +174,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE    0x03U
 
 /************************* PPS APDO Fields *******************/
+#if (TRUE == INCLUDE_PD_SOURCE_PPS) 
+
 /* APDO Minimum Voltage */
 #define CFG_PORT_SOURCE_APDO_1_MIN_VOLTAGE    3300
 #define CFG_PORT_SOURCE_APDO_2_MIN_VOLTAGE    0
@@ -217,6 +219,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PPS_APDO_2_ENABLE_POS              2
 #define CFG_PPS_APDO_3_ENABLE_POS              3 
 
+/* Macro used to form PPS APDO */
+#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) << CFG_APDO_PWR_SUPPLY_TYPE_POS) | \
+                                        ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
+                                        (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
+                                        (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
+                                        (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
+#endif
+
 /* Macro used to form Fixed PDO 1 */
 #define CFG_FORM_FIXED_PDO1(voltage,current,usbCommn,usbSusp,unconstrainedPwr)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
                                          ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
@@ -227,13 +237,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Macro used to form Fixed PDOs 2 to 7 */
 #define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                                             ((current)/CFG_PDO_CURRENT_UNIT))
-
-/* Macro used to form PPS APDO */
-#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) << CFG_APDO_PWR_SUPPLY_TYPE_POS) | \
-                                        ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
-                                        (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
-                                        (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
-                                        (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
 
 void PSF_LoadConfig(); 
 
