@@ -1034,7 +1034,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 	  	/* Checks whether received message is Chunk Response or Request */
         if (PRL_IS_REQUEST_CHUNK_MSG(u16ExtendedMsgHeader))
         {
-		  	/* CONFIG_PRL_CHUNK_SENDER_REQUEST_TIMEOUT_MS is killed on receiveing Chunk Request */
+		  	/* CONFIG_PRL_CHUNK_SENDER_REQUEST_TIMEOUT_MS is killed on receiving Chunk Request */
             PRL_KillCAorChunkSMTimer (u8PortNum);
 			
             if ((PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader) == gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent)
@@ -1053,7 +1053,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 			  	/* Spec Ref: TCH_Report_Error - Report Error to Policy Engine. 
 												Entered on condition 
 											(Chunk Request Rcvd & Chunk Number != Chunk Number to Send) */
-				/* if Chunk number doesnot match, error state is assigned.
+				/* if Chunk number does not match, error state is assigned.
 					It is transmission error, Thus PE is informed through call back*/
                 PRL_TxOriginalCBfromCH (u8PortNum, PRL_TX_FAILED_ST);
             }
@@ -1070,7 +1070,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 															Received Extended Message & (Chunking = 1 & Chunked = 1)*/
 		  
 			/* if the received chunk is 1st response, then Chunk SM is enabled
-				ChunkSM related gloabals are updated & Chunk response is stored in global*/
+				ChunkSM related globals are updated & Chunk response is stored in global*/
 		  
             if (PRL_FIRST_CHUNK_PACKET == PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader))
             {
@@ -1115,7 +1115,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 				/* Extended message header is copied to the global*/
                 gasExtendedMsgBuff [u8PortNum].u16ExtendedMsgHeader = u16ExtendedMsgHeader;
 				
-				/* Total Chunk packtet to be sent is updated*/
+				/* Total Chunk packet to be sent is updated*/
                 PRL_UpdateTotalChunkNumVar (u8PortNum);
 				
             }
@@ -1130,7 +1130,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 					&& PRL_IS_MSG_CHUNKED(u16ExtendedMsgHeader))
             {
 			  	/* Spec Ref: RCH_Processing_Extended_Message: If expected Chunk Number: 
-							Append data to Extended_Messsage_Buffer;
+							Append data to Extended_Message_Buffer;
 							Increment Chunk_Number_Expected and adjust Num bytes received. */
 			
 				/* Data Buffer is copied*/
@@ -1193,7 +1193,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
                 /* Chunk SM is reset*/
                 PRL_ResetChunkSM (u8PortNum);
                     
-                /* Spec Ref: On RCH_WAITING_CHUNK if other message receiced Report RCH_Report_Error*/
+                /* Spec Ref: On RCH_WAITING_CHUNK if other message received Report RCH_Report_Error*/
                 u8Return = PRL_RET_RCV_CHUNK_ERROR;
             }
             else
@@ -1209,7 +1209,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
 		 	
     }/*end of else for IsExtendedMsg*/
     
-    /* if the message is received in process of Collision avoidance, the pending message is disacarded
+    /* if the message is received in process of Collision avoidance, the pending message is discarded
         by setting the Tx state to PRL_TX_IDLE_ST*/
     if ((PRL_TX_MSG_BUFFERED_ON_CA_ST == gasPRL [u8PortNum].u8TxStateISR) ||
            (PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST == gasPRL [u8PortNum].u8TxStateISR) || 

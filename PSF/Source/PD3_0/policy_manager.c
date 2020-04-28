@@ -205,14 +205,14 @@ void DPM_SetPortPower(UINT8 u8PortNum)
     
     if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
     {
-        if (DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+        if (DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
         {
             u16VoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
             u16CurrentInmA = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
             TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);            
         }
 #if (TRUE == INCLUDE_PD_SOURCE_PPS) 
-        else if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+        else if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
         {
             /* VBUS Voltage to be driven for PPS is the voltage 
              requested by Sink in the RDO's Output Voltage field */
@@ -274,13 +274,33 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
 
 void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 {	
-	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-	/* Obtain voltage from negotiated PDO*/
-    UINT16 u16PDOVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
-    UINT16 u16PDOCurrent = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
-	/* set the threshold to detect fault*/
-	TypeC_ConfigureVBUSThr(u8PortNum, u16PDOVoltage, u16PDOCurrent, TYPEC_CONFIG_PWR_FAULT_THR);
-	#endif
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+    
+    UINT16 u16PDOVoltageInmV = SET_TO_ZERO; 
+    UINT16 u16PDOCurrentInmA = SET_TO_ZERO; 
+    
+    if (DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+    {        
+        /* Obtain voltage from negotiated PDO*/
+        u16PDOVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
+        u16PDOCurrentInmA = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
+    }
+#if (TRUE == INCLUDE_PD_SOURCE_PPS) 
+    else if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+    {
+        u16PDOVoltageInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
+        u16PDOCurrentInmA = DPM_GET_PROG_RDO_OPR_CURRENT_IN_mA(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO); 
+    }
+#endif 
+    else
+    {
+        /* No support for Battery and Variable power supplies */
+    }
+    
+    /* set the threshold to detect fault*/
+    TypeC_ConfigureVBUSThr(u8PortNum, u16PDOVoltageInmV, u16PDOCurrentInmA, TYPEC_CONFIG_PWR_FAULT_THR);
+    
+#endif
 }
 /*******************************************************************************/
 #if (TRUE == INCLUDE_PD_SOURCE)
@@ -336,13 +356,13 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         /* Get the RDO Output Voltage */
         u16RDOOpVoltInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(u32RDO);
         
-        if (ePDO_FIXED == (ePDOtypes)DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+        if (ePDO_FIXED == (ePDOtypes)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
         {
             /* If previous request is for a fixed PDO, calculate previous output
                voltage from gasDPM[u8PortNum].u32NegotiatedPDO */
             u16PrevRDOVoltInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
         }
-        else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+        else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
         {
             /* If previous request is for a PPS APDO, calculate previous output
                voltage from gasCfgStatusData.sPerPortData[u8PortNum].u32RDO */            
@@ -391,8 +411,8 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         
         if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
-            /* Set the current RDO Type as Fixed */
-            gasDPM[u8PortNum].u8DPM_Status &= ~(DPM_CURR_RDO_TYPE_MASK); 
+            /* Set the current Explicit Contract Type as Fixed Supply */
+            gasDPM[u8PortNum].u8DPM_Status &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
             
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16SrcPDOCurrVal; 
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = \
@@ -401,12 +421,12 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
             gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW =    
                     ((gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV * gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA) / 
                     (DPM_PDO_VOLTAGE_UNIT * DPM_PDO_CURRENT_UNIT));             
-        }       
+        }
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)        
         else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
-            /* Set the current RDO Type as Programmable */
-            gasDPM[u8PortNum].u8DPM_Status |= DPM_CURR_RDO_TYPE_MASK;
+            /* Set the current Explicit Contract Type as PPS */
+            gasDPM[u8PortNum].u8DPM_Status |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;
             
             /* Determine the timer value that must be used for sending PS_RDY 
                in case of Prog RDO based on the voltage step difference */
@@ -610,8 +630,6 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
 
 void DPM_DeterminePPSPSRdyTimer (UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UINT16 u16CurrRDOVoltInmV)
 {
-    #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-
     /* Calculate the Voltage difference based on whether the transition is 
        positive or negative */
     UINT16 u16vPpsStepmV = ((u16CurrRDOVoltInmV > u16PrevRDOVoltInmV) ? \
@@ -627,14 +645,10 @@ void DPM_DeterminePPSPSRdyTimer (UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UIN
     {
         gasDPM[u8PortNum].u8DPM_Status &= ~(DPM_PPS_PS_RDY_TIMER_VAL_MASK);         
     }
-    
-    #endif 
 }
  
 void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
 {
-    #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-
     UINT8 u8APDOEnDisMask = DPM_PPS_APDO_EN_DIS_MASK; 
    
 	for (UINT8 byIndex = INDEX_0; byIndex < DPM_MAX_APDO_COUNT; byIndex++)
@@ -654,9 +668,33 @@ void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
             /* Left shift the mask to check for next APDO */
             u8APDOEnDisMask <<= 1;
         }
-    }   
-    
-    #endif 
+    }      
+}
+
+void DPM_StorePartnerAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf)
+{
+    /* Store the Alert Information received from Port Partner */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlertInfo = \
+                    MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], \
+                                        u8DataBuf[INDEX_2], u8DataBuf[INDEX_3]);
+}
+
+void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr)
+{
+    /* Store/Clear the Status information received from Port Partner */
+    for (UINT8 u8Index = INDEX_0; u8Index < PE_STATUS_DATA_BLOCK_SIZE; u8Index++)
+    {
+        if (DPM_STORE_PARTNER_STATUS == u8StrClr)
+        {
+            gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = \
+                                                   u8DataBuf[u8Index];   
+        }
+        else
+        {
+            gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = \
+                                                     RESET_TO_ZERO;               
+        }
+    }        
 }
 
 #endif /*INCLUDE_PD_SOURCE_PPS*/ 
@@ -1471,11 +1509,30 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             {
                 /* This will be taken care of during PPS implementation */
             }
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
             /* Check for Get Status Request */
             else if (DPM_CLIENT_REQ_GET_STATUS & gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
             {
-                /* This will be taken care of during PPS implementation */ 
+                /*To-do: Get_Status initiation is now handled through 
+                 client request. It needs to be changed once the strategy
+                 to initiate Get_Status is finalized. */
+                /* Clear the request since the request is accepted and going to be handled */
+                gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest &= 
+                                          ~(DPM_CLIENT_REQ_GET_STATUS);                
+                
+                /* Check for Port Power Role */
+                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+                {
+                    /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;                    
+                }
+                else
+                {
+                    /* TBD for Sink */
+                }                
             }
+#endif 
             /* Check for Get Sink Caps Extended Request */
             else if (DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD & gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
             {

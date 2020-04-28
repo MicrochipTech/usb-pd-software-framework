@@ -164,18 +164,44 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             break; 
         }
         
-        case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD: 
+        case eMCHP_PSF_SINK_CAPS_NOT_RCVD: 
         {
             break; 
         }  
         
-        case eMCHP_PSF_GET_SINK_CAPS_RCVD:
+        case eMCHP_PSF_SINK_CAPS_RCVD:
         {
             break;            
         }
         
+        case eMCHP_PSF_SINK_ALERT_RCVD: 
+        {
+            /* To-do: Get_Status Transmission should be initiated by Stack. 
+               It should not be done by application */
+            /* Raise a client request to initiate Get Sink Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest = 0x08;                                                           
+            break; 
+        }
+        
+        case eMCHP_PSF_SINK_STATUS_NOT_RCVD:
+        {
+            break; 
+        }
+
+        case eMCHP_PSF_SINK_STATUS_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_BUSY:
+        {
+            break; 
+        }
+        
         default:
+        {
             break;
+        }
     }
 
     return u8RetVal;

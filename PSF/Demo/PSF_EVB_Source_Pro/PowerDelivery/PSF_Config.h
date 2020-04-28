@@ -674,7 +674,7 @@ typedef enum
 																		u8ClientRequest is enabled 
 																		else holds the value of 
 																		current u32aSourcePDO[7]
-    u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Source PDOs 
+    u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Partner PDOs 
 																		where Voltage is specified 
 																		in mV and Current is 
 																		specified in mA
@@ -686,6 +686,12 @@ typedef enum
 																		of no RDO has been received.
                                                                       * This variable is common for 
 																	    Source and Sink.
+    u32PartnerAlertInfo             4         R            R         * Complete Alert information 
+																		received from Partner, Will 
+																		be blank of no Alert has 
+																		been received.
+                                                                      * This variable is common for 
+																	    Source and Sink.	
     u16AllocatedPowerIn250mW        2         R            R         * Allocated Power for the Port 
 																		PD contract in 0.25W steps
     u16NegoVoltageIn50mV            2         R            R         * Negotiated Voltage from the 
@@ -998,6 +1004,15 @@ typedef enum
 																	  * It takes values only 
 																	    from enum 
 																		eUPD_OUTPUT_PIN_MODES_TYPE
+	u8aPartnerStatus[6]             6         R            R         * Store the Status information 
+																		received from Port Partner. 
+																	  * This array would hold a valid 
+																		value if 
+																		eMCHP_PSF_SINK_STATUS_RCVD
+																		notification is posted. It 
+																		would be 0 when 
+																		eMCHP_PSF_SINK_STATUS_NOT_RCVD
+																		notification is posted. 
 	u8aPio_VSEL[3]                  3         R/W          R         * Defines the UPD350 PIO as 
 																	    voltage selector pins
 																	    (VSEL[2:0]). 
@@ -1150,7 +1165,6 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		 for Sink operation. 
-	u8aReserved1[2]					2								 Reserved					 
 	u8aReserved2[2]					2								 Reserved					 
 	u8aReserved3[2]					2								 Reserved					 		
     </table>
@@ -1462,7 +1476,7 @@ typedef enum
                                     * '1' PSF has received a request for getting the sink 
 									      capabilities. 
 									Once the request is processed by PSF, 
-									eMCHP_PSF_GET_SINK_CAPS_RCVD or eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD
+									eMCHP_PSF_SINK_CAPS_RCVD or eMCHP_PSF_SINK_CAPS_NOT_RCVD
 									notification would be posted depending on the Sink partner's 
 									response to Get_Sink_Caps message. User can read the received 
 									sink capabilities from u32aPartnerPDO array. 
@@ -1503,6 +1517,7 @@ typedef struct _PortCfgStatus
     UINT32 u32aPartnerPDO[7];       
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
+	UINT32 u32PartnerAlertInfo; 
     UINT16 u16AllocatedPowerIn250mW;   
     UINT16 u16NegoVoltageIn50mV;      
     UINT16 u16NegoCurrentIn10mA;      
@@ -1540,7 +1555,7 @@ typedef struct _PortCfgStatus
     UINT8 u8mode_VBUS_DIS;
     UINT8 u8Pio_DC_DC_EN;
     UINT8 u8Mode_DC_DC_EN;
-    UINT8 u8aReserved1[2];
+    UINT8 u8aPartnerStatus[6];
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 
     UINT8 u8aPio_VSEL[3];
     UINT8 u8aMode_VSEL[3];
