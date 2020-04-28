@@ -1482,8 +1482,28 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             }
             break; 
         }
-#endif 
-                    
+        
+        /************* ePE_SRC_SEND_SOURCE_ALERT **********/
+        case ePE_SRC_SEND_SOURCE_ALERT:
+        {
+            /* To be implemented */
+            break; 
+        }
+        
+        /************* ePE_SRC_GIVE_SOURCE_STATUS **********/
+        case ePE_SRC_GIVE_SOURCE_STATUS:
+        {
+            /* To be implemented */
+            break; 
+        }
+        
+        /************* ePE_SRC_GIVE_PPS_STATUS **********/
+        case ePE_SRC_GIVE_PPS_STATUS:
+        {
+            /* To be implemented */
+            break; 
+        }
+#endif                
         default:
         {         
             break;

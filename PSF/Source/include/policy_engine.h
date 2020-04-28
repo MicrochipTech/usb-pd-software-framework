@@ -228,6 +228,9 @@ typedef enum {
     ePE_SRC_VDM_IDENTITY_NAKED,
     ePE_SRC_SINK_ALERT_RECEIVED, 
     ePE_SRC_GET_SINK_STATUS,
+    ePE_SRC_SEND_SOURCE_ALERT,
+    ePE_SRC_GIVE_SOURCE_STATUS,
+    ePE_SRC_GIVE_PPS_STATUS,
 	//----------------Sink Specific Policy Engine States-------------------------//
 	ePE_SNK_STARTUP,
 	ePE_SNK_DISCOVERY,
