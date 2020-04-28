@@ -60,26 +60,26 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_NEW_PDO_STATUS(u8PortNum)             ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_NEW_PDO_ENABLE_MASK) >> DPM_NEW_PDO_ENABLE_POS)
 
 /*Bit definition for u8DPM_Status variable*/
-#define DPM_CURR_POWER_ROLE_MASK            BIT(0)
-#define DPM_CURR_DATA_ROLE_MASK             BIT(1)
-#define DPM_CURR_PD_SPEC_REV_MASK          (BIT(2) | BIT(3))
-#define DPM_VDM_STATE_ACTIVE_MASK           BIT(4)
-#define DPM_CURR_RDO_TYPE_MASK             (BIT(5) | BIT(6))
-#define DPM_PPS_PS_RDY_TIMER_VAL_MASK       BIT(7)
+#define DPM_CURR_POWER_ROLE_MASK              BIT(0)
+#define DPM_CURR_DATA_ROLE_MASK               BIT(1)
+#define DPM_CURR_PD_SPEC_REV_MASK            (BIT(2) | BIT(3))
+#define DPM_VDM_STATE_ACTIVE_MASK             BIT(4)
+#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK (BIT(5) | BIT(6))
+#define DPM_PPS_PS_RDY_TIMER_VAL_MASK         BIT(7)
 
 /*Bit position for u8DPM_Status variable*/
-#define DPM_CURR_POWER_ROLE_POS            0
-#define DPM_CURR_DATA_ROLE_POS             1
-#define DPM_CURR_PD_SPEC_REV_POS           2
-#define DPM_VDM_STATE_ACTIVE_POS           4
-#define DPM_CURR_RDO_TYPE_POS              5
-#define DPM_PPS_PS_RDY_TIMER_VAL_POS       7 
+#define DPM_CURR_POWER_ROLE_POS              0
+#define DPM_CURR_DATA_ROLE_POS               1
+#define DPM_CURR_PD_SPEC_REV_POS             2
+#define DPM_VDM_STATE_ACTIVE_POS             4
+#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  5
+#define DPM_PPS_PS_RDY_TIMER_VAL_POS         7 
 
 /*Defines for getting data from u8DPM_Status variable*/
 #define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
 #define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)          ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
 #define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
-#define DPM_GET_CURRENT_RDO_TYPE(u8PortNum)           ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_RDO_TYPE_MASK) >> DPM_CURR_RDO_TYPE_POS)
+#define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)  ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
 #define DPM_GET_PPS_PS_RDY_TIMER_VAL(u8PortNum)       ((gasDPM[u8PortNum].u8DPM_Status & DPM_PPS_PS_RDY_TIMER_VAL_MASK) >> DPM_PPS_PS_RDY_TIMER_VAL_POS)
 
 // *****************************************************************************
@@ -304,11 +304,11 @@ Source/Sink Power delivery objects*/
 #define DPM_3A_IN_50mA                           (DPM_3000mA / 50) 
 
 /*********************PPS RDO Defines ******************/ 
-/* Defines for return values of DPM_GET_CURRENT_RDO_TYPE macro */
-#define DPM_FIXED_RDO                            0U
-#define DPM_BATTERY_RDO                          1U
-#define DPM_VARIABLE_RDO                         2U
-#define DPM_PROGRAMMABLE_RDO                     3U
+/* Defines for return values of DPM_GET_CURRENT_EXPLICIT_CONTRACT macro */
+#define DPM_PD_FIXED_SUPPLY_CONTRACT             0U
+#define DPM_PD_BATTERY_SUPPLY_CONTRACT           1U
+#define DPM_PD_VARIABLE_SUPPLY_CONTRACT          2U
+#define DPM_PD_PPS_CONTRACT                      3U
 
 #define DPM_PROG_RDO_OP_VOLTAGE_MASK             0x000FFE00
 #define DPM_PROG_RDO_OPR_CURRENT_MASK            0x0000007F
@@ -331,6 +331,9 @@ Source/Sink Power delivery objects*/
 #define DPM_PPS_TMR_SRC_TRANS_LARGE                  1
 #define DPM_PPS_TMR_SRC_TRANS_SMALL                  0 
 
+/******************Partner Status Store/Clear Defines **********/
+#define DPM_STORE_PARTNER_STATUS                     1
+#define DPM_CLEAR_PARTNER_STATUS                     0 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -1185,10 +1188,11 @@ void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
         void DPM_DeterminePPSPSRdyTimer(UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UINT16 u16RDOOpVoltInmV)
     Summary:
         Determines if PS_RDY needs to be sent within tPpsSrcTransLarge 
-        or tPpsSrcTransSmall in case of PPS enabled.  
+        or tPpsSrcTransSmall in case of PPS contract.  
     Description:
         This API is used to determine if PS_RDY needs to be sent within 
-        tPpsSrcTransLarge or tPpsSrcTransSmall. 
+        tPpsSrcTransLarge or tPpsSrcTransSmall in case the current explicit
+        contract is for a Programmable APDO.
     Conditions:
         None
     Input:
@@ -1270,6 +1274,48 @@ void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable);
         None.
 **************************************************************************************************/
 void DPM_ClearAllClientRequests(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_StoreSinkAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf);  
+    Summary:
+        Stores the details of Alert message received from Port Partner.  
+    Description:
+        This API is used by DPM to store the details of Alert message 
+        received from Port Partner, which can later be used by the application.
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8DataBuf - Pointer which holds the data objects of received alert message.
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_StorePartnerAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr);
+    Summary:
+        Stores or Clears the details of Status message received from Port Partner.  
+    Description:
+        This API is used by DPM to store or clear the details of Status message 
+        received from Port Partner, which can later be used by the application.
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8DataBuf - Pointer which holds the data objects of received alert message.
+        u8StrClr - TRUE - Store the Data in Status array, 
+                   FALSE - Clear the Status array 
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr);
 
 #endif /*_POLICY_MANAGER_H_*/
 

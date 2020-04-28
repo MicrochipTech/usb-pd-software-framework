@@ -330,7 +330,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             
             break;  
             
-        case eMCHP_PSF_GET_SINK_CAPS_RCVD: 
+        case eMCHP_PSF_SINK_CAPS_RCVD: 
             
             if (ePB_SINK_CAPS_INITIATED == gasPBIntPortParam[u8PortNum].eGetSinkCapSS)
             {
@@ -340,7 +340,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             }            
             break; 
 
-        case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD:
+        case eMCHP_PSF_SINK_CAPS_NOT_RCVD:
             
             if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))
             {

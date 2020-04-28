@@ -360,7 +360,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     /* If the request is for a Fixed PDO, Start the 
                        Source Transition timer. */
-                    if (DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    if (DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                                 (PE_SRCTRANSISTION_TIMEOUT_MS),
@@ -372,7 +372,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
                     /* In case of programmable RDO, Source transition timer is 
                        not needed. Go ahead and drive the port power. */
-                    else if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    else if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_POWER_ON_SS;
                     }
@@ -389,7 +389,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* Drive the Power to as requested by port partner*/
                     DPM_SetPortPower(u8PortNum);
                     
-                    if (DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    if (DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                          /* Start tSrcReady timer */
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
@@ -398,8 +398,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                               (UINT8)SET_TO_ZERO);
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;                        
                     }
+
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
-                    else if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    else if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         /* Get the PPS timer value that needs to be used for sending PS_RDY */
                         if (DPM_PPS_TMR_SRC_TRANS_LARGE == DPM_GET_PPS_PS_RDY_TIMER_VAL(u8PortNum))
@@ -429,7 +430,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_TRANSITION_SUPPLY_EXIT_SS:
                 {
                     /* Checking VBUS Voltage is not needed for PPS. */
-                    if (DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    if (DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         /* Get the driven voltage status */
                         u16DrivenVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
@@ -437,8 +438,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
                     
                     /* If the voltage reached the driven voltage level send the PS_RDY message */
-                    if(((DPM_FIXED_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum)) && (u16DrivenVoltageInmV == u16VBUSVoltageInmV)) || 
-                            (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum)))
+                    if(((DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)) && 
+                            (u16DrivenVoltageInmV == u16VBUSVoltageInmV)) || 
+                            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
                     {
                         /* Kill tSrcReady timer in case of Fixed supply. 
                            tPpsSrcTransSmall or tPpsSrcTransLarge Timer in case of PPS. */
@@ -574,7 +576,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
                     /* Start the SourcePPSCommTimer in case the current explicit 
                        contract is for a PPS APDO */
-                    if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                                   (PE_SOURCE_PPS_COMM_TIMEOUT_MS),
@@ -595,8 +597,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     /* PE would never enter this state when the current explicit
                        contract is for a Fixed PDO */
-                    /* Send Hard Reset when SourcePPSCommTimer Expires */
-                    if (DPM_PROGRAMMABLE_RDO == DPM_GET_CURRENT_RDO_TYPE(u8PortNum))
+                    /* In case of PPS contract, Send Hard Reset when 
+                       SourcePPSCommTimer Expires */
+                    if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;                    
@@ -1042,7 +1045,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS: 
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS\r\n"); 
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_IDLE_SS; 
                     
                     /* Start Sender Response timer and Set the timer callback to transition to 
@@ -1060,25 +1063,25 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                    /* Sink caps not received within tSenderResponse. Send 
                       SINK_CAPS_NOT_RECEIVED notification and move to 
                       PE_SRC_READY state */ 
-                   DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT\r\n"); 
+                   DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT_SS\r\n"); 
                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY; 
                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
                    
-                   (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD);
+                   (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_CAPS_NOT_RCVD);
                    
                    break;  
                 }   
                 
                 case ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS\r\n"); 
                     /* Pass the received sink caps to DPM and send notification */         
                     DPM_StoreSinkCapabilities (u8PortNum, (UINT16) u32Header, (UINT32*) pu8DataBuf); 
                     
                     gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY; 
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
                     
-                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_GET_SINK_CAPS_RCVD);
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_CAPS_RCVD);
                     
                     break; 
                 }
@@ -1372,6 +1375,115 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             break;  
         }
         
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)        
+        
+            /************* PE_SRC_SINK_ALERT_RECEIVED *******/
+        case ePE_SRC_SINK_ALERT_RECEIVED: 
+        {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_SINK_ALERT_RECEIVED\r\n"); 
+            /* Inform the DPM of the details of the Sink alert */
+            DPM_StorePartnerAlertInfo(u8PortNum, pu8DataBuf);
+            
+            gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY; 
+            gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+                    
+            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_ALERT_RCVD);
+            
+            break; 
+        }       
+            /************* ePE_SRC_GET_SINK_STATUS **********/
+        case ePE_SRC_GET_SINK_STATUS:
+        {
+            switch(gasPolicy_Engine[u8PortNum].ePESubState)
+            {
+                case ePE_SRC_GET_SINK_STATUS_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_ENTRY_SS\r\n"); 
+                    
+                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_STATUS, \
+                                            PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+
+                    u8TransmitSOP = PRL_SOP_TYPE;
+                    u32pTransmit_DataObj = NULL;
+                    Transmit_cb = PE_StateChange_TransmitCB;                 
+                        
+                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS, \
+                                                    ePE_SRC_READY, ePE_SRC_READY_END_AMS_SS);
+                                                
+                    u8IsTransmit = TRUE;                                             
+                   
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_IDLE_SS;
+                    
+                    break; 
+                }
+                
+                case ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS\r\n"); 
+                    
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_IDLE_SS; 
+                    
+                    /* Start Sender Response timer and Set the timer callback to transition to 
+					ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS sub state if timeout happens */
+                    gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
+                                                            PE_SubStateChange_TimerCB, u8PortNum,  
+                                                            (UINT8)ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS); 
+                    
+                    break;
+                }
+                
+                case ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS:
+                {
+                   /* Sink Status not received within tSenderResponse. Send 
+                      SINK_STATUS_NOT_RECEIVED notification and move to 
+                      PE_SRC_READY state */ 
+                   DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS\r\n"); 
+                   
+                   /* Clear the Partner Status array. It should not contain 
+                      the previous Status information since posting not received 
+                      notification along with some data in Partner Status array 
+                      would create confusion for the application */
+                   DPM_StoreOrClearPartnerStatus (u8PortNum, pu8DataBuf, 
+                                                    DPM_CLEAR_PARTNER_STATUS); 
+                   
+                   gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY; 
+                   gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+                   
+                   (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_STATUS_NOT_RCVD);
+                    
+                    break;
+                }
+                
+                case ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS\r\n"); 
+                    
+                    /* Pass the received Sink Status to DPM and send notification */         
+                    DPM_StoreOrClearPartnerStatus (u8PortNum, pu8DataBuf, DPM_STORE_PARTNER_STATUS); 
+                    
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY; 
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+                    
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_STATUS_RCVD);
+                    
+                    break;
+                }
+                
+                case ePE_SRC_GET_SINK_STATUS_IDLE_SS:
+                {
+                    break; 
+                }    
+                
+                default:
+                {
+                    break;
+                } 
+            }
+            break; 
+        }
+#endif 
+                    
         default:
         {         
             break;

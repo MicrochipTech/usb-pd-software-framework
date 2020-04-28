@@ -204,6 +204,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Capability max current check */
 #define PE_MAX_CURR_MASK        0x1FF
 
+#define PE_STATUS_DATA_BLOCK_SIZE           6 
 
 typedef enum {
     /* Source Policy Engine Main State */ 
@@ -225,6 +226,8 @@ typedef enum {
     ePE_SRC_VDM_IDENTITY_REQUEST,
     ePE_SRC_VDM_IDENTITY_ACKED,
     ePE_SRC_VDM_IDENTITY_NAKED,
+    ePE_SRC_SINK_ALERT_RECEIVED, 
+    ePE_SRC_GET_SINK_STATUS,
 	//----------------Sink Specific Policy Engine States-------------------------//
 	ePE_SNK_STARTUP,
 	ePE_SNK_DISCOVERY,
@@ -324,6 +327,12 @@ typedef enum {
     ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS,
     ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_SS,
     ePE_SRC_VDM_IDENTITY_REQUEST_SENDER_RESPONSE_TIMEOUT,
+    /* ePE_SRC_GET_SINK_STATUS */
+    ePE_SRC_GET_SINK_STATUS_ENTRY_SS, 
+    ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS,
+    ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS, 
+    ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS,
+    ePE_SRC_GET_SINK_STATUS_IDLE_SS,
     //----------------Sink Specific Policy Engine SubStates-------------------------//
     /*ePE_SNK_WAIT_FOR_CAPABILITIES*/
     ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS,
@@ -429,6 +438,7 @@ typedef enum {
 #define PE_DATA_VENDOR_DEFINED      15
 
 /*Macros for Extended message type */
+#define PE_EXT_STATUS               2 
 #define PE_EXT_FW_UPDATE_REQUEST    10
 #define PE_EXT_FW_UPDATE_RESPONSE   11
 
@@ -624,14 +634,14 @@ UINT8 PE_ValidateMessage(UINT8 u8PortNum, UINT32 u32Header);
         PE_HandleRcvdMsgAndTimeoutEvents (UINT8 u8PortNum, ePolicyState eNextState , ePolicySubState eNextSubState);
 
     Summary:
-        This API is called to see whether timeout set for the received message has occured before 
+        This API is called to see whether timeout set for the received message has occurred before 
         or after the reception of message in protocol layer.
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-        This API is called to see whether timeout set for the received message has occured before 
+        This API is called to see whether timeout set for the received message has occurred before 
         or after the reception of message in protocol layer
 
     Conditions:
