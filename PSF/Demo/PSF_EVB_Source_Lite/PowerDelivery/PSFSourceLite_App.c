@@ -164,12 +164,12 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             break; 
         }
         
-        case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD: 
+        case eMCHP_PSF_SINK_CAPS_NOT_RCVD: 
         {
             break; 
         }  
         
-        case eMCHP_PSF_GET_SINK_CAPS_RCVD:
+        case eMCHP_PSF_SINK_CAPS_RCVD:
         {
             break;            
         }
