@@ -205,7 +205,7 @@ void  PRL_Init (UINT8 u8PortNum)
 	/* Enable Mac Overall Interrupt */
 	UPD_RegByteSetBit (u8PortNum, UPDINTR_INT_EN, UPDINTR_MAC_INT);
 	
-	/* Intialise gasPRL globals*/
+	/* Initialize gasPRL globals*/
 	gasPRL[u8PortNum].u32PkdPEstOnTxStatus = CLR_VAL;
 	gasPRL[u8PortNum].pFnTxCallback = NULL;
 	gasPRL[u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;
@@ -331,7 +331,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 		gasChunkSM [u8PortNum].u32pkdTmrID_TxSt = u32PkdPEstOnTxStatus;
 		gasChunkSM [u8PortNum].pFnTxCallback = pfnTxCallback;
 		
-		/* Total Chunk packtet to be sent is updated*/
+		/* Total Chunk packet to be sent is updated*/
 		PRL_UpdateTotalChunkNumVar (u8PortNum);
 		
 		/* Assigning Chunk state to PRL_TCH_SEND_RESPONSE_CHUNK_ST */
@@ -436,7 +436,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	
 	/* Tx_Discard handling*/
 	
-	if ((gasPRL[u8PortNum].u8RxRcvdISR) &&                			/* Checks whetehr a message is received */
+	if ((gasPRL[u8PortNum].u8RxRcvdISR) &&                			/* Checks whether a message is received */
             (PRL_SOP_TYPE == gasPRLRecvBuff[u8PortNum].u8SOPtype))     /* Checks whether received message is PRL_SOP_TYPE type*/
 	{
 	  	/* Spec Ref: PRL_Tx_Discard_Message - If any message is currently awaiting tranmission discard and Increment MessageID Counter
@@ -1085,7 +1085,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
                         || (gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST))
                     {
                         /* Chunk Rx Handling*/
-                        /* Spec Ref: On RCH_WAITING_CHUNK if other message receiced Report RCH_Report_Error*/
+                        /* Spec Ref: On RCH_WAITING_CHUNK if other message received Report RCH_Report_Error*/
                         gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
                     }
                     else
@@ -1121,7 +1121,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
             }
             else
             {
-			  	/* CONFIG_PRL_CHUNK_SENDER_RESPONSE_TIMEOUT_MS is killed on receiveing Chunk Response if it is not first Chunk Response packet*/
+			  	/* CONFIG_PRL_CHUNK_SENDER_RESPONSE_TIMEOUT_MS is killed on receiving Chunk Response if it is not first Chunk Response packet*/
                 PRL_KillCAorChunkSMTimer (u8PortNum);
             }
 			
@@ -1368,10 +1368,10 @@ void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum)
 void PRL_TCHChunkSMStateChange_TCHCB (UINT8 u8PortNum, UINT8 u8TimerID, UINT8 TxDoneSt, UINT8 TxAbortSt, UINT8 TxFailSt)
 {
   	/* Callback for Chunk Request Messages*/ 
-	/* Policy engine state is assgined based  on Tx Interrupt status*/
+	/* Policy engine state is assigned based  on Tx Interrupt status*/
 	if (gasPRL[u8PortNum].u8TxStateISR == PRL_TX_DONE_ST)
 	{
-		/* Checks whetheter GoodCRC received is not last Chunk Response packet*/
+		/* Checks whether GoodCRC received is not last Chunk Response packet*/
 		if (gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent != gasChunkSM [u8PortNum].u8TotalChunkPkt)
 		{
 		  	/* TCH_WAIT_CHUNK_REQUEST - Increment Chunk Number to Send
@@ -1683,7 +1683,7 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
         }
 		
 		case PRL_TCH_WAIT_FOR_REQUEST_CHUNK_STATUS_ST:
-		/* Idle wait state till we receive a GOODCRC or Transmission Error for sent Chunk paccket*/
+		/* Idle wait state till we receive a GOODCRC or Transmission Error for sent Chunk packet*/
 		case PRL_TCH_EXPECT_CHUNK_REQUEST_WAIT_ST:
 		/* Idle state waiting for Chunk Request to be received*/
 		default:

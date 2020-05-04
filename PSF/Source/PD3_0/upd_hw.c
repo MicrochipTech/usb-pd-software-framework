@@ -663,7 +663,7 @@ void UPD_CheckAndDisablePorts (void)
                     }
                     else
                     {
-                        /* If the VID and PID doesnt match, Disable the ports */
+                        /* If the VID and PID doesn't match, Disable the ports */
                         gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
                                 ~(TYPEC_PORT_ENDIS_MASK);
                         

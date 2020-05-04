@@ -200,7 +200,7 @@ void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
     if(gasDPM[u8PortNum].u16SinkOperatingCurrInmA < 
                             gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA)
     {    
-        /*When EN_SINK is enabeled for Type-C alone Source detection, this check 
+        /*When EN_SINK is enabled for Type-C alone Source detection, this check 
          make sure the minimum operating current of Sink is satisfied by the 
          Rp value presented by Source. Based on Rp value of Source detected, 
          u16SinkOperatingCurrInmA variable is updated*/

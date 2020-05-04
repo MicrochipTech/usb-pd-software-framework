@@ -351,7 +351,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                             //Bit 1 - Status of Data Role <p />
                             //Bit 3:2 - Status of PD Spec Revision <p />
                             //Bit 4 - Status of Vconn Swap support
-                            //Bits 6:5 - Type of current RDO 
+                            //Bits 6:5 - Type of current Explicit Contract 
                             //      00 - Fixed  
                             //      01 - Variable
                             //      10 - Battery

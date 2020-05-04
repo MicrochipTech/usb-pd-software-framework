@@ -336,7 +336,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 }
               
-                /*Source waits in this substate for sink attachment*/
+                /*Source waits in this sub-state for sink attachment*/
                 case TYPEC_UNATTACHED_SRC_IDLE_SS:
                     break; 
                     
@@ -370,11 +370,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }   
                     
                     
-                /*Source waits in this substate until the tCCDebounce timer timeouts*/
+                /*Source waits in this sub-state until the tCCDebounce timer timeouts*/
                 case TYPEC_ATTACHWAIT_SRC_IDLE_SS:
                     break;
                 
-                /*Source enters this substate after the tCCDebounce timer timeouts*/
+                /*Source enters this sub-state after the tCCDebounce timer timeouts*/
                 case TYPEC_ATTACHWAIT_SRC_TCC_TO_SS:
                 {
                   
@@ -422,7 +422,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
           
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
             {   
-                /*Source Drives VBUS and VCONN required in this substate*/
+                /*Source Drives VBUS and VCONN required in this sub-state*/
                 case TYPEC_ATTACHED_SRC_DRIVE_PWR_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC: Entered ATTACHED"\
@@ -659,7 +659,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             case TYPEC_UNATTACH_WAIT_SRC_IDLE_SS:
                 break;
              
-            /*Wait in this substate until the VBUS goes to 0V before moving into Unattached state*/
+            /*Wait in this sub-state until the VBUS goes to 0V before moving into Unattached state*/
             case TYPEC_UNATTACH_WAIT_SRC_CHECK_VBUS_0V_SS:
             {
                 if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_0V_PRES))
@@ -735,13 +735,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_UNATTACHED_SNK_INIT_SS:
                 {
                     /*DPM power fault handler resets SM by polling this state TYPEC_UNATTACHED_SNK_INIT_SS
-                    in the hanlder for Sink unattach.
+                    in the handler for Sink unattach.
                     Any module can reset its reset its SM by polling this state*/
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_IDLE_SS;                    
                     break;
                 }
                                    
-                /*Sink Waits in this Substate for Source attachment*/    
+                /*Sink Waits in this Sub-state for Source attachment*/    
                 case TYPEC_UNATTACHED_SNK_IDLE_SS:
                     break;
                     
@@ -771,7 +771,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                    
                     
-                /*Sink Waits in this substate until either the tCCDebounce or tPDDebounce timer 
+                /*Sink Waits in this sub-state until either the tCCDebounce or tPDDebounce timer 
                 expires */
                 case TYPEC_ATTACHWAIT_SNK_IDLE_SS:
                     break;
@@ -789,7 +789,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                     
                 
-                /*Sink enters this substate after the tCCDebounce timer is expired */
+                /*Sink enters this sub-state after the tCCDebounce timer is expired */
                 case TYPEC_ATTACHWAIT_SNK_TCC_TO_SS:
                 {                  
                     /*Check for VBUS Presence before moving to Attached SNK state */
@@ -814,7 +814,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
             {
                  /*Sink enables the CC Communication channel and notifies the external DPM
-                 about the Type C Attached event this substate */
+                 about the Type C Attached event this sub-state */
                 case TYPEC_ATTACHED_SNK_ENTRY_SS:
                 {  
                     /* Assign Operating current based on the Rp value*/
@@ -864,7 +864,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHED_SNK_RUN_SM_SS:	
                     break;
                 
-                /*Sink enters this substate to start a tPDDeounce timer for source detach event*/
+                /*Sink enters this sub-state to start a tPDDeounce timer for source detach event*/
                 case TYPEC_ATTACHED_SNK_TPDDEB_SS:
                 {
                     /*Kill all the timers for a port before starting a Type C Debounce timer*/
@@ -882,7 +882,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                    
                 
-                /*Sink enters this substate after the tPDDeounce timer is expired or VBUS drops below 
+                /*Sink enters this sub-state after the tPDDeounce timer is expired or VBUS drops below 
                 VSinkDisconnect*/
                 case TYPEC_ATTACHED_SNK_TPD_TO_SS:
                 {    
@@ -925,7 +925,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 } 
                 
-                /*Sink waits in this substate until the tPDDeounce timer expires or until the VCONN 
+                /*Sink waits in this sub-state until the tPDDeounce timer expires or until the VCONN 
                 Discharge is completed*/
                 case TYPEC_ATTACHED_SNK_IDLE_SS:                  
                     break;
@@ -1186,7 +1186,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         if (u8Data & TYPEC_CC_MATCH_VLD)
         {
             /*Clearing the CC Match valid interrupt */
-            /*This Interrupt is usually ocurred while switching on the CC Comparator
+            /*This Interrupt is usually occurred while switching on the CC Comparator
             and Comparator has finished one round of sampling*/
             UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
             
@@ -1809,8 +1809,8 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
     if (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VSINKDISCONNECT_STATUS_MASK)
     {
         /*Voltage dropped to vSinkDisconnect in Attached Sink State before the Source CC detach 
-        event occured*/
-        /*VSinkDisconnect event occured after the CC detach event is not processed
+        event occurred*/
+        /*VSinkDisconnect event occurred after the CC detach event is not processed
         which is a violation of specification*/
         /*This is done for easy handling*/
         if((TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
@@ -1853,7 +1853,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
                 case TYPEC_UNATTACH_WAIT_SRC:
                 {     
                   
-                    /*Setting the Substate to verify whether VBUS has reached to 0V before moving into 
+                    /*Setting the Sub-state to verify whether VBUS has reached to 0V before moving into 
                     unattached state */
                     /*This condition occurs when VCONN Discharge is completed*/
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  =  TYPEC_UNATTACH_WAIT_SRC_CHECK_VBUS_0V_SS;                  
@@ -1972,7 +1972,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Sink is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1_MatchISR > gasTypeCcontrol[u8PortNum].u8CC2_MatchISR) ? 2 : 1),"\r\n");
             
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Persent in CC");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1_MatchISR > gasTypeCcontrol[u8PortNum].u8CC2_MatchISR) ? 1 : 2),"\r\n");
             
             if(u8TypeCState == TYPEC_UNATTACHED_SRC)
@@ -1993,7 +1993,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             {   
                 /*Consider the CC Sample values as valid Audio accessory attach only at the 
                 unattached state*/
-                /*This avoids unwanted transistion in attached state*/
+                /*This avoids unwanted transition in attached state*/
                 if(u8TypeCState == TYPEC_UNATTACHED_SRC)
                 {                
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: AUDIO ACCESSORY is present\r\n");
@@ -2039,7 +2039,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             {    
                   /*Consider the CC Sample values as valid Debug accessory attach only at the 
                 unattached state*/
-                /*This avoids unwanted transistion in attached state*/              
+                /*This avoids unwanted transition in attached state*/              
                 if(u8TypeCState == TYPEC_UNATTACHED_SRC)
                 {
                   
@@ -2171,7 +2171,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                  
                  }
                  
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Source is Persent in CC");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Source is Present in CC");
                 DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1_MatchISR > gasTypeCcontrol[u8PortNum].u8CC2_MatchISR) ? 1 : 2),"\r\n");
                                                              
             }
@@ -2370,7 +2370,7 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
      /*Return TYPEC_SINK_TXNG if the current Rp Value set by source is TYPEC_SINK_TXNG 1.5A Rp*/
      UINT8 u8RpStatus = TYPEC_SINK_TXNG;
     
-    /*Setting the collsion avoidance active bit in u8PortSts variable*/
+    /*Setting the collision avoidance active bit in u8PortSts variable*/
      gasTypeCcontrol[u8PortNum].u8PortSts  |= (TYPEC_COLLISION_AVOIDANCE_ACT);
     
      /*Return True if the current Rp Value set by source is TYPEC_SINK_TXOK*/
@@ -2448,7 +2448,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 	{
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-			/* PIO override for undervoltage and overvoltage is cleared*/
+			/* PIO override for under-voltage and overvoltage is cleared*/
             UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN, (UPD_PIO_OVR_0 | UPD_PIO_OVR_1));
         #endif /*endif of INCLUDE_UPD_PIO_OVERRIDE_SUPPORT*/
         #endif /*endif of INCLUDE_POWER_FAULT_HANDLING*/
@@ -2547,7 +2547,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 								   
 void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
 {
-	/* Set the timer Id to Max Cont Value*/
+	/* Set the timer Id to Max Concurrent Value*/
  	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	
 	/* Reset the fault Count*/
