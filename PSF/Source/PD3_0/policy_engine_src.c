@@ -49,10 +49,10 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 	/* Type-C state and sub-state */
     UINT8 u8TypeCState = TYPEC_INVALID_STATE, u8TypeCSubState = TYPEC_INVALID_STATE;
 
-	/* Transmit Msg Type - SOP SOP' SOP" */
+	/* Transmit Message Type - SOP SOP' SOP" */
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
 
-	/* Transmit Msg Header */
+	/* Transmit Message Header */
 	UINT16 u16Transmit_Header = SET_TO_ZERO;
 
 	/* Transmit Data Object */
@@ -223,7 +223,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         if(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_PDCONNECTED_STS_MASK)
                         {
                             /*The Protocol Layer indicates that the Message has not been sent , so
-                             Send Soft reset since pd connected presently*/
+                             Send Soft reset since PD connected presently*/
                             u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
                                                         ePE_SRC_SEND_CAP_GOODCRC_RECEIVED_SS, \
                                                           ePE_SRC_SEND_SOFT_RESET, ePE_SRC_SEND_SOFT_RESET_SOP_SS);                                                  

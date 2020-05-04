@@ -924,7 +924,7 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
         }
     }
     
-    /* Check DPM whether minumum PDO current matches*/
+    /* Check DPM whether minimum PDO current matches*/
     for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8Recevd_SrcPDOCnt; u8SrcIndex++)
     {
         u8SrcPDOIndex = u8SrcPower[u8SrcIndex][DPM_PDO_INDEX];

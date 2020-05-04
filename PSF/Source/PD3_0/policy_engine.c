@@ -61,7 +61,7 @@ void PE_InitPort (UINT8 u8PortNum)
         /*Setting the CapsCounter to 0 */
         gasPolicy_Engine[u8PortNum].u8CapsCounter = SET_TO_ZERO;
 
-        /*Setting Initial Soource Policy Engine State as Startup State*/
+        /*Setting Initial Source Policy Engine State as Startup State*/
         gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_STARTUP;
         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
 
@@ -84,7 +84,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
     UINT8 u8aDataBuf[260] = {SET_TO_ZERO};
     /*Received message type*/
     UINT8 u8SOPType = PRL_SOP_TYPE;
-    /* Received Msg Header */
+    /* Received Message Header */
     UINT32 u32Header;
     UINT8 u8RetVal;
 
@@ -97,7 +97,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
     /*Check the HardReset Flag in DPMStatus variable if any hard reset is received*/
     /*State transition for Hard reset reception is done in foreground to avoid the policy
-    state and substate corruption*/
+    state and sub-state corruption*/
 
     if (gasPolicy_Engine[u8PortNum].u8HardResetRecvdISR)
     {
@@ -121,7 +121,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
 	u8RetVal = PRL_ReceiveMsg (u8PortNum, &u8SOPType, &u32Header, u8aDataBuf, NULL);
 
-    /* If any new Msg is received, pass it to the Receive Handler */
+    /* If any new Message is received, pass it to the Receive Handler */
     if ((PRL_RET_MSG_RCVD & u8RetVal) || (PRL_RET_EXT_MSG_RCVD & u8RetVal))
     {
         /*Setting the Specification Revision as per section 6.2.1.1.5 from
@@ -727,7 +727,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         gasPolicy_Engine[u8PortNum].ePESubState)
                     {
                         /*kill the timer PE_SENDER_RESPONSE_TIMEOUTID*/
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Accept Msg Received\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Accept Message Received\r\n");
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
                                     DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS;
                         
@@ -739,7 +739,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     else if (ePE_SNK_SEND_SOFT_RESET_WAIT_FOR_ACCEPT_SS == \
                              gasPolicy_Engine[u8PortNum].ePESubState)
                     {
-                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SEND_SOFT_RESET: Accept Msg received\r\n");
+                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SEND_SOFT_RESET: Accept Message received\r\n");
                         /*kill the timer PE_SENDER_RESPONSE_TIMEOUTID*/
                          PE_KillPolicyEngineTimer (u8PortNum);
 
