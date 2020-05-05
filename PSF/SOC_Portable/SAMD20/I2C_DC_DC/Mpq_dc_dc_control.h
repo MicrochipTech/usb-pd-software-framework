@@ -105,7 +105,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Section: Data Structure                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-extern UINT8 gu8MPQAlertPortMsk;
+volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT];
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions
@@ -199,7 +199,7 @@ void MPQDCDC_HandleAlertISR(UINT8 u8PortNum);
 
 /****************************************************************************
     Function:
-        void MPQDCDC_FaultHandler(void); 
+        void MPQDCDC_FaultHandler(UINT8 u8PortNum); 
     Summary:
         Wrapper function for DPM's HandleClientRequest API.  
     Description:
@@ -208,13 +208,15 @@ void MPQDCDC_HandleAlertISR(UINT8 u8PortNum);
     Conditions:
         None.
     Input:
-        None.
+        u8PortNum - Port Number for which fault to be handled
     Return:
       None
     Remarks:
         None
 **************************************************************************************************/
 
-UINT8 MPQDCDC_FaultHandler(void);
+UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum);
+
+UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum);
 
 #endif /*_MPQ_DCDC_CONTROL_H_*/

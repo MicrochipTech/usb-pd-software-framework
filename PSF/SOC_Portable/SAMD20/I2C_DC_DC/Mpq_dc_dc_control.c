@@ -35,19 +35,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <psf_stdinc.h>
 #include <Drivers.h>
 
+/***********************************************************************************/
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+
+volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT] = {0};
+        
+static const UINT8 u8aMPQI2CSlvAddr[4] = {MPQ_I2C_SLV_ADDR_PORT_1,MPQ_I2C_SLV_ADDR_PORT_2, MPQ_I2C_SLV_ADDR_PORT_3, MPQ_I2C_SLV_ADDR_PORT_4};
 UINT8 u16PrevCurrent[CONFIG_PD_PORT_COUNT] = {0};
 UINT8 u16PrevVoltage[CONFIG_PD_PORT_COUNT] = {0};
 
 static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage);
 static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current);
 /*****************************************************************************/
-
-/***********************************************************************************/
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-
-UINT8 gu8MPQAlertPortMsk = 0;
-        
-static const UINT8 u8aMPQI2CSlvAddr[4] = {MPQ_I2C_SLV_ADDR_PORT_1,MPQ_I2C_SLV_ADDR_PORT_2, MPQ_I2C_SLV_ADDR_PORT_3, MPQ_I2C_SLV_ADDR_PORT_4};
         
 UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
 {
@@ -74,6 +73,7 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     UINT8 u8length;
     UINT32 u32I2CCmd;
     UINT8 u8Return = TRUE;
+    UINT16 i;
 
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 
@@ -85,9 +85,14 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     /* Set EN_VBUS Status in Port IO status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= MPQ_SET_PORT_IO_EN_VBUS_STATUS;
     
+    /* Delay for I2C module to stabilize after DC DC Enable*/
+    for(i=0;i<65000;i++)
+    {
+         __NOP();
+    }
     /* Clear the faults */
     u32I2CCmd = MPQ_CMD_CLEAR_FAULT;
-    u8length = I2C_CMD_LENGTH_2;
+    u8length = I2C_CMD_LENGTH_1;
     u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CCmd, u8length);           
 
     /* Mask the faults */
@@ -212,15 +217,16 @@ UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
     UINT16 u16FaultStatus;
     
     (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
+    /* wait for the current transfer to complete */ 
+    while(SAMD20_I2CDCDCIsBusyDriver( ));
 
     return u16FaultStatus;
 }
 
-UINT8 MPQDCDC_FaultHandler()
+UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum)
 {
     UINT16 u16FaultMask = SET_TO_ZERO;  
     UINT16 u16I2CCmd = SET_TO_ZERO; 
-    UINT8 u8PortNum = gu8MPQAlertPortMsk - 1; 
     UINT8 u8RetVal = TRUE; 
     
     /* Send 'STATUS_WORD' command to know which fault has occurred */
@@ -242,7 +248,9 @@ UINT8 MPQDCDC_FaultHandler()
     /* Clear the Fault condition by sending 'CLEAR_FAULTS' command, so that 
        Alert line gets de asserted */
     u16I2CCmd = MPQ_CMD_CLEAR_FAULT;
-    u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_2);           
+    u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_1);           
+    /* wait for the current transfer to complete */ 
+    while(SAMD20_I2CDCDCIsBusyDriver( ));
     
     return u8RetVal;
 }         
@@ -250,11 +258,29 @@ UINT8 MPQDCDC_FaultHandler()
 void MPQDCDC_HandleAlertISR(UINT8 u8PortNum)
 {
     /* Update the DC-DC Alert Port Mask with the port number */
-    gu8MPQAlertPortMsk = u8PortNum + 1;
-/*    if (u8PortNum > SET_TO_ZERO)
-    {
-        gu8DCDCAlertPortMsk <<= u8PortNum; 
-    } */ 
+    gu8MPQAlertPortMsk[u8PortNum] = 1;
 }
+
+UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum)
+{
+    volatile UINT16 u16VoltageOutput;
+    UINT32 u32VotageAvg = 0;
+    UINT8 u8Cmd,i;
+    
+    u8Cmd = 0x8B;
+    
+    for(i=0; i<5;i++)
+    { 
+        (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,1U,(UINT8*)&u16VoltageOutput,2U);
+        
+        /* wait for the current transfer to complete */ 
+        while(SAMD20_I2CDCDCIsBusyDriver( ));
+        
+        u32VotageAvg += u16VoltageOutput;
+    }
+    u16VoltageOutput = (UINT16) (u32VotageAvg/((UINT16)5));
+    return u16VoltageOutput;
+}
+
 
 #endif

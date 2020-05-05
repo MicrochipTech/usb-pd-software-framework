@@ -55,6 +55,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 int main ( void )
 {
+//    UINT8 i = 0;
     /* Initialize all modules */
     SYS_Initialize ( NULL );
 
@@ -73,11 +74,13 @@ int main ( void )
 
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING) 
 
-        if(FALSE != gu8MPQAlertPortMsk)
-        {           
-            MPQDCDC_FaultHandler(); 
-            
-            gu8MPQAlertPortMsk = FALSE;
+        for(i=0; i<CONFIG_PD_PORT_COUNT;i++)
+        { 
+            if(gu8MPQAlertPortMsk[i])
+            {
+                MPQDCDC_FaultHandler(i); 
+                gu8MPQAlertPortMsk[i] = FALSE;
+            }
         }
         
         #endif
