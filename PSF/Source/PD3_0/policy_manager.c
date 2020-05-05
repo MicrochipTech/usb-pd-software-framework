@@ -150,6 +150,10 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     /* Run Policy engine State machine*/
     PE_RunStateMachine(u8PortNum);
 	
+    #if (TRUE == INCLUDE_POWER_THROTTLING)
+    PT_RunStateMachine(u8PortNum);
+    #endif     
+
 	/* Power Fault handling*/
 	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 		DPM_PowerFaultHandler(u8PortNum);
@@ -497,6 +501,16 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
   
     UINT8 u8RaPresence = SET_TO_ZERO;
 	UINT32 *pu32SrcCap;
+    
+#if (TRUE == INCLUDE_POWER_THROTTLING)
+    if (FALSE == DPM_IS_PB_ENABLED(u8PortNum))
+    {
+        /* If PB is disabled, update the Source caps based on currently 
+           active PT Bank. If PB is enabled, this would be taken care by PB */
+        DPM_CalcSrcCapsFromCurrPTBank(u8PortNum); 
+    }
+#endif 
+    
 	/* Get the source PDO count */
     if (DPM_ENABLE_NEW_PDO == DPM_GET_NEW_PDO_STATUS(u8PortNum))
     {
@@ -1567,3 +1581,58 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     }
 }
 
+/************************  DPM Renegotiation APIs **********************/
+void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
+{
+    float fVoltageInmV = SET_TO_ZERO; 
+    UINT16 u16CurrentIn10mA = SET_TO_ZERO; 
+    
+    /* Load the New PDO Count which is same as Fixed PDO count */
+    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt; 
+    
+    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt; u8Index++)
+    {
+        /* Get the voltage value from 32aSourcePDO[7] */
+        fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index]); 
+        
+        /* Calculate new current value based on new power */
+        u16CurrentIn10mA = ROUND_OFF_FLOAT_TO_INT((float)(((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT))); 
+        
+        if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
+        {    
+            /* In PB, current value of a port should not exceed PORT_MAX_I */ 
+            u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrentIn10mA); 
+        }
+        else
+        {
+            u16CurrentIn10mA = MIN(u16CurrentIn10mA, (gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA / DPM_PDO_CURRENT_UNIT));
+        }
+        
+        /* Load the New PDO registers with the new PDO values */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8Index] = \
+                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index] & ~(PB_FIXED_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
+
+    }
+}
+
+void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum)
+{
+    /* Get current PT Bank */
+    UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK;
+    
+    if (PD_THROTTLE_BANK_B == u8CurrPTBank)
+    {
+        DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
+        DPM_UpdatePDO(u8PortNum, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW);
+    }
+    else if (PD_THROTTLE_BANK_C == u8CurrPTBank)
+    {
+        DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
+        DPM_UpdatePDO(u8PortNum, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW);        
+    }
+    else
+    {
+        /* New PDO should not be enabled for Bank A since the source caps
+           would be advertised from u32aSourcePDO[7] array */
+    }
+}

@@ -108,6 +108,13 @@ extern DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 #endif 
 /**************************************************************************************************/ 
        
+/********************Power Throttling globals************************************/
+#if (TRUE == INCLUDE_POWER_THROTTLING)
+    /* Holds the previously selected Throttling Bank. */
+    extern UINT8 gu8PrevPTBank [CONFIG_PD_PORT_COUNT]; 
+#endif 
+/**************************************************************************************************/  
+
 // *****************************************************************************
 // *****************************************************************************
 //  Section: Interface Routines

@@ -261,12 +261,6 @@ Source/Sink Power delivery objects*/
 /* PB Enable for the port */
 #define DPM_PB_PORT_ENABLE                    0x01
 
-/* Power Throttling Bank values */
-#define DPM_PD_THROTTLE_BANK_A                0U 
-#define DPM_PD_THROTTLE_BANK_B                1U
-#define DPM_PD_THROTTLE_BANK_C                2U
-#define DPM_PD_THROTTLE_SHUTDOWN_MODE         3U
-
 /* Macro to know if PB is enabled for the system and for the port */
 #define DPM_IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE) && \
                              (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)) \
@@ -334,6 +328,11 @@ Source/Sink Power delivery objects*/
 /******************Partner Status Store/Clear Defines **********/
 #define DPM_STORE_PARTNER_STATUS                     1
 #define DPM_CLEAR_PARTNER_STATUS                     0 
+
+/* Macro to get current PT Bank */ 
+#define DPM_GET_CURRENT_PT_BANK             gasCfgStatusData.u8PwrThrottleCfg
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -1316,6 +1315,61 @@ void DPM_StorePartnerAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf);
         None.
 **************************************************************************************************/
 void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr);
+
+/**************************************************************************************************
+    Function:
+        void DPM_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
+
+    Summary:
+        This API is used to form the PDOs as per power wattage value given.   
+
+    Description:
+        This API updates the u32aNewPDO[7] array by calculating the current 
+        value using power value that is given as input to this API and voltage
+        value derived from u32aSourcePDO[7] array
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number.
+        u16PowerIn250mW - Power value in terms of 250mW
+
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum); 
+
+    Summary:
+        This API calculates the Source capabilities based on the currently 
+        active throttling bank.
+
+    Description:
+        This API calculates the Source capabilities based on the currently 
+        active throttling bank.        
+ 
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number.
+
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum); 
 
 #endif /*_POLICY_MANAGER_H_*/
 

@@ -124,6 +124,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2
 #define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5
 
+#define CFG_MAX_PORT_CURRENT               3000U 
+
 /* Power Throttling Bank values */
 #define CFG_PD_THROTTLE_BANK_A             0U 
 #define CFG_PD_THROTTLE_BANK_B             1U
