@@ -686,12 +686,6 @@ typedef enum
 																		of no RDO has been received.
                                                                       * This variable is common for 
 																	    Source and Sink.
-    u32PartnerAlertInfo             4         R            R         * Complete Alert information 
-																		received from Partner, Will 
-																		be blank of no Alert has 
-																		been received.
-                                                                      * This variable is common for 
-																	    Source and Sink.	
     u16AllocatedPowerIn250mW        2         R            R         * Allocated Power for the Port 
 																		PD contract in 0.25W steps
     u16NegoVoltageIn50mV            2         R            R         * Negotiated Voltage from the 
@@ -1004,15 +998,6 @@ typedef enum
 																	  * It takes values only 
 																	    from enum 
 																		eUPD_OUTPUT_PIN_MODES_TYPE
-	u8aPartnerStatus[6]             6         R            R         * Store the Status information 
-																		received from Port Partner. 
-																	  * This array would hold a valid 
-																		value if 
-																		eMCHP_PSF_SINK_STATUS_RCVD
-																		notification is posted. It 
-																		would be 0 when 
-																		eMCHP_PSF_SINK_STATUS_NOT_RCVD
-																		notification is posted. 
 	u8aPio_VSEL[3]                  3         R/W          R         * Defines the UPD350 PIO as 
 																	    voltage selector pins
 																	    (VSEL[2:0]). 
@@ -1165,6 +1150,7 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		 for Sink operation. 
+    u8aReserved1[2]					2								 Reserved	
 	u8aReserved2[2]					2								 Reserved					 
 	u8aReserved3[2]					2								 Reserved					 		
     </table>
@@ -1517,7 +1503,6 @@ typedef struct _PortCfgStatus
     UINT32 u32aPartnerPDO[7];       
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
-	UINT32 u32PartnerAlertInfo; 
     UINT16 u16AllocatedPowerIn250mW;   
     UINT16 u16NegoVoltageIn50mV;      
     UINT16 u16NegoCurrentIn10mA;      
@@ -1555,7 +1540,7 @@ typedef struct _PortCfgStatus
     UINT8 u8mode_VBUS_DIS;
     UINT8 u8Pio_DC_DC_EN;
     UINT8 u8Mode_DC_DC_EN;
-    UINT8 u8aPartnerStatus[6];
+    UINT8 u8aReserved1[2];
     #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 
     UINT8 u8aPio_VSEL[3];
     UINT8 u8aMode_VSEL[3];
@@ -1686,7 +1671,23 @@ typedef struct _PBPortCfgStatus
                                      Bytes     time         time      
     ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
     u32aPPSApdo[3]                  12        R/W          R         Defines the PPS APDOs. 
-	u8aReserved5[3]				    3                                Reserved 
+	u8aReserved5[1]				    3                                Reserved 
+    u32PartnerAlertInfo             4         R            R         * Complete Alert information 
+																		received from Partner, Will 
+																		be blank of no Alert has 
+																		been received.
+                                                                      * This variable is common for 
+																	    Source and Sink.	
+	u8aPartnerStatus[6]             6         R            R         * Store the Status information 
+																		received from Port Partner. 
+																	  * This array would hold a valid 
+																		value if 
+																		eMCHP_PSF_SINK_STATUS_RCVD
+																		notification is posted. It 
+																		would be 0 when 
+																		eMCHP_PSF_SINK_STATUS_NOT_RCVD
+																		notification is posted. 
+
 	</table> 
 
     <b>2. Members that are Bit-Mapped bytes:</b> 
@@ -1720,9 +1721,11 @@ typedef struct _PBPortCfgStatus
 
 typedef struct _PPSPortCfgStatus
 {
+    UINT32 u32aPPSApdo[3]; 
+    UINT32 u32PartnerAlertInfo; 
+    UINT8 u8aPartnerStatus[6];
     UINT8 u8PPSCfgData;
-    UINT8 u8aReserved5[3];
-    UINT32 u32aPPSApdo[3];  
+    UINT8 u8aReserved5[1];
 } PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
 
 #endif 

@@ -674,7 +674,7 @@ void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
 void DPM_StorePartnerAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf)
 {
     /* Store the Alert Information received from Port Partner */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlertInfo = \
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlertInfo = \
                     MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], \
                                         u8DataBuf[INDEX_2], u8DataBuf[INDEX_3]);
 }
@@ -686,13 +686,13 @@ void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8St
     {
         if (DPM_STORE_PARTNER_STATUS == u8StrClr)
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = \
+            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = \
                                                    u8DataBuf[u8Index];   
         }
         else
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = \
-                                                     RESET_TO_ZERO;               
+            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = \
+                                                    RESET_TO_ZERO;               
         }
     }        
 }
