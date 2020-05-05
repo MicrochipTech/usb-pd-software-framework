@@ -9,7 +9,7 @@
 
   Description:
     This header file contains the data structures, constant definitions and 
-	function prototypes for Policy Balancing. 
+	function prototypes for Power Balancing. 
 *******************************************************************************/
 /*******************************************************************************
 Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
@@ -806,35 +806,6 @@ UINT8 PB_PortInWaitForAsyncTimerState(void);
 
 **************************************************************************************************/
 void PB_AsyncTimerCB(UINT8, UINT8);
-/**************************************************************************************************
-    Function:
-        void PB_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
-
-    Summary:
-        This API is used to form the PDOs as per power wattage value given.   
-
-    Description:
-        In PB, voltages will remain fixed. But, current varies as per the 
-        power value that is to be advertised. This API calculates the current 
-        value using power value that is given as input to this API and voltage
-        value that is arrived from the PDO initialized during configuration time
-        and updates the current value in the PDO. 
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port number.
-        u16PowerIn250mW - Power value in terms of 250mW
-
-    Return:
-        None. 
-
-    Remarks:
-        None. 
-
-**************************************************************************************************/
-void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
 
 /**************************************************************************************************
     Function:

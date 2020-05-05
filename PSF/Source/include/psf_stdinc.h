@@ -38,6 +38,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #if (TRUE == INCLUDE_POWER_BALANCING)
 #include <pb_mngr.h>
 #endif
+#if (TRUE == INCLUDE_POWER_THROTTLING)
+#include <pt_mngr.h>
+#endif 
 #include <int_globals.h>
 #include <policy_engine_fwup.h>
 #include <ProjectVersion.h>

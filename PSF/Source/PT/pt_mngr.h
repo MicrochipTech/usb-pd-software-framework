@@ -1,22 +1,18 @@
 /*******************************************************************************
-  Main Source File
+  Power Throttling Header File 
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    main.c
-
-  Summary:
-    This file contains the "main" function for a project.
+    pt_mngr.h
 
   Description:
-    This file contains the "main" function for a project.  The
-    "main" function calls the "SYS_Initialize" function to initialize the state
-    machines of all modules in the system
- *******************************************************************************/
+    This header file contains the data structures, constant definitions and 
+	function prototypes for Power Throttling. 
+*******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -35,65 +31,39 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
+#ifndef _PT_MNGR_H    /* Guard against multiple inclusion */
+#define _PT_MNGR_H
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: Constants                                                         */
+/* ************************************************************************** */
+/* ************************************************************************** */ 
+/* Power Throttling Bank values */
+#define PD_THROTTLE_BANK_A                0U 
+#define PD_THROTTLE_BANK_B                1U
+#define PD_THROTTLE_BANK_C                2U
+#define PD_THROTTLE_SHUTDOWN_MODE         3U
+
+/***************************************************************************************/
 // *****************************************************************************
 // *****************************************************************************
-// Section: Included Files
+// Section: Data Structures
 // *****************************************************************************
 // *****************************************************************************
 
-#include <stddef.h>                     // Defines NULL
-#include <stdbool.h>                    // Defines true
-#include <stdlib.h>                     // Defines EXIT_FAILURE
-#include "definitions.h"                // SYS function prototypes
-#include "psf_stdinc.h"                 // PSF include file
-
 // *****************************************************************************
 // *****************************************************************************
-// Section: Main Entry Point
+// Section: Interface Functions
 // *****************************************************************************
 // *****************************************************************************
 
-int main ( void )
-{
-    /* Initialize all modules */
-    SYS_Initialize ( NULL );
+void PT_Init(UINT8 u8PortNum); 
 
-	/*PSF init called*/
-	(void)MchpPSF_Init();
+void PT_RunStateMachine(UINT8 u8PortNum); 
 
-    while ( true )
-    {
-        /* Maintain state machines of all polled MPLAB Harmony modules. */
-        SYS_Tasks ( );
-		
-		/*PSF stack Run*/
-		MchpPSF_RUN();
-        
-        #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)   
+#endif /* _PT_MNGR_H */
 
-        #if (TRUE == INCLUDE_POWER_FAULT_HANDLING) 
-
-        for(UINT8 i=0; i<CONFIG_PD_PORT_COUNT;i++)
-        { 
-            if(gu8MPQAlertPortMsk[i])
-            {
-                MPQDCDC_FaultHandler(i); 
-                gu8MPQAlertPortMsk[i] = FALSE;
-            }
-        }
-        
-        #endif
-
-        #endif
-    }
-
-    /* Execution should not come here during normal operation */
-
-    return ( EXIT_FAILURE );
-}
-
-
-/*******************************************************************************
+/* *****************************************************************************
  End of File
-*/
-
+ */

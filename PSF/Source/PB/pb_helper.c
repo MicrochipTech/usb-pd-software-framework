@@ -44,15 +44,15 @@ void PB_Init(void)
     if (gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE)
     {
         /* Get the Total System Power based on currently selected Throttling bank */
-        if (DPM_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
+        if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
         {
             u16TotSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
         }
-        else if (DPM_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+        else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
         {
             u16TotSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankBIn250mW;
         }
-        else if (DPM_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+        else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
         {
             u16TotSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankCIn250mW; 
         }
@@ -100,17 +100,17 @@ void PB_InitializePortParam(UINT8 u8PortNum)
     
     /* Get the Guaranteed Minimum Power and Maximum Power based on 
        currently selected throttling bank */
-    if (DPM_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
+    if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
     {
         u16MinPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW; 
         u16MaxPwrIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW; 
     }
-    else if (DPM_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
     {
         u16MinPwrIn250mW = gasCfgStatusData.u16MinPowerBankBIn250mW;
         u16MaxPwrIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW; 
     }
-    else if (DPM_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
     {
         u16MinPwrIn250mW = gasCfgStatusData.u16MinPowerBankCIn250mW;
         u16MaxPwrIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW; 
@@ -203,7 +203,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
 void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattageIn250mW)
 {
     /* Update the PDOs in New PDO registers */
-    PB_UpdatePDO(u8PortNum, u16NewWattageIn250mW); 
+    DPM_UpdatePDO(u8PortNum, u16NewWattageIn250mW); 
     
     /* Raise Renegotiation request to DPM */
     DPM_SET_RENEGOTIATE_REQ(u8PortNum); 
@@ -728,32 +728,4 @@ void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum)
     PB_InitiateNextPortNegotiation ();    
 }
 
-void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
-{
-    float fVoltageInmV = SET_TO_ZERO; 
-    UINT16 u16CurrentIn10mA = SET_TO_ZERO; 
-    
-    /* Load the New PDO Count which is same as Fixed PDO count */
-    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt; 
-    
-    /* In Power Balancing, voltages remain fixed irrespective of the power 
-       value advertised. Only current varies with power. */
-    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt; u8Index++)
-    {
-        /* Get the voltage value from PDO */
-        fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index]); 
-        
-        /* Calculate new current value based on new power */
-        u16CurrentIn10mA = ROUND_OFF_FLOAT_TO_INT((float)(((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT))); 
-        
-        /* In PB, current value of a port should not exceed PORT_MAX_I */ 
-        u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrentIn10mA); 
-        
-        /* Load the New PDO registers with the new PDO values */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8Index] = \
-                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index] & ~(PB_FIXED_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
-
-    }
-
-}
 #endif

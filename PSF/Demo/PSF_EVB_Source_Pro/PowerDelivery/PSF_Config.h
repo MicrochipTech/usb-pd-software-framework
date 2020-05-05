@@ -241,7 +241,7 @@ Example:
     #define INCLUDE_POWER_THROTTLING	0(Exclude PT functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_THROTTLING        0 
+#define INCLUDE_POWER_THROTTLING        1
 
 /**************************************************************************************************
 Summary:

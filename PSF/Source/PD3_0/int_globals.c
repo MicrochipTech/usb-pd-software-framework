@@ -97,6 +97,13 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 #endif 
 /**************************************************************************************************/ 
     
+/********************Power Throttling globals************************************/
+#if (TRUE == INCLUDE_POWER_THROTTLING)
+    /* Holds the previously selected Throttling Bank. */
+    UINT8 gu8PrevPTBank [CONFIG_PD_PORT_COUNT]; 
+#endif 
+/**************************************************************************************************/  
+    
 /********************Configuration and Status register ************************************/    
 GLOBAL_CFG_STATUS_DATA gasCfgStatusData;
 /**************************************************************************************************/ 
@@ -119,6 +126,10 @@ void IntGlobals_PDInitialization(void)
 #if (FALSE != INCLUDE_PDFU)
         PE_FwUpdtInitialize();
 #endif
+        
+#if (TRUE == INCLUDE_POWER_THROTTLING)
+        PT_Init(u8PortNum); 
+#endif 
     }
     
 #if (TRUE == INCLUDE_POWER_BALANCING)

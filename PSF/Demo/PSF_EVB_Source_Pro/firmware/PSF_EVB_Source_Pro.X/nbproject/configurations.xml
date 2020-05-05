@@ -138,6 +138,9 @@
         <logicalFolder name="f1" displayName="PB" projectFiles="true">
           <itemPath>../../../../Source/PB/pb_mngr.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f2" displayName="PT" projectFiles="true">
+          <itemPath>../../../../Source/PT/pt_mngr.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -225,6 +228,9 @@
           <itemPath>../../../../Source/PD3_0/typeC_control.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_hw.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="PT" displayName="PT" projectFiles="true">
+          <itemPath>../../../../Source/PT/pt_mngr.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
@@ -434,7 +440,7 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC;..\..\PowerDelivery"/>
+                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC;..\..\PowerDelivery;..\..\..\..\Source\PT"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>
