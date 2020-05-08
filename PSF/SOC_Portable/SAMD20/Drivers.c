@@ -177,7 +177,7 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
             /*PORT_PIN_PA10*/
             SPI_SS_0_Clear();
         }
-        #if (TRUE == INCLUDE_PD_SOURCE) 
+        #if (TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP) 
         else if(PORT1 == u8PortNum)
         {
             /*PORT_PIN_PA01*/
@@ -192,7 +192,7 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
         {
             SPI_SS_0_Set();
         }
-        #if (TRUE == INCLUDE_PD_SOURCE) 
+        #if (TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP) 
         else if(PORT1 == u8PortNum)
         {
             SPI_SS_1_Set();
@@ -283,6 +283,7 @@ void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
         EIC_CallbackRegister((EIC_PIN)SAMD20_PORT0_EIC_PIN, SAMD20_UPD350AlertCallback, PORT0);
         EIC_InterruptEnable((EIC_PIN)SAMD20_PORT0_EIC_PIN);
     }
+#if (TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP)
     else if (PORT1 == u8PortNum)
     {
         PORT_PinInputEnable((PORT_PIN)SAMD20_PORT1_EIC_PIN);
@@ -290,6 +291,7 @@ void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
         EIC_CallbackRegister((EIC_PIN)SAMD20_PORT1_EIC_PIN, SAMD20_UPD350AlertCallback, PORT1);
         EIC_InterruptEnable((EIC_PIN)SAMD20_PORT1_EIC_PIN);
     }
+#endif
 }
 
 /*****************************************************************************/

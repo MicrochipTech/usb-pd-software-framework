@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PDSourcePro_App.c
+    PDSink_App.c
 
   Summary:
     User Application Source file
