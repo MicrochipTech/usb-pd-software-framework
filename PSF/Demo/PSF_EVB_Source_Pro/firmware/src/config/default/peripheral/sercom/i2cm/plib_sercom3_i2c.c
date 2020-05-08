@@ -218,8 +218,7 @@ static void SERCOM3_I2C_InitiateRead(uint16_t address)
 
 void SERCOM3_I2C_CallbackRegister(SERCOM_I2C_CALLBACK callback, uintptr_t contextHandle)
 {
-    //sercom3I2CObj.callback = callback;
-    sercom3I2CObj.callback = NULL;
+    sercom3I2CObj.callback = callback;
 
     sercom3I2CObj.context  = contextHandle;
 }

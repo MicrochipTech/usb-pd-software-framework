@@ -58,7 +58,7 @@
 #endif
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
 #include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"
-#include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom3_usart.h"
+#include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 #include "../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h"
 #endif
@@ -129,7 +129,7 @@
 #define SAMD20_I2C_INSTANCE     3
 #endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
-#define SAMD20_UART_INSTANCE  3
+#define SAMD20_UART_INSTANCE  1
 
 // *****************************************************************************
 // *****************************************************************************
