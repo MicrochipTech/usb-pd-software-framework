@@ -116,15 +116,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 **************************************************************************************************/
 #define PE_N_BUSY_COUNT                 7
 
-/*Default Power role and PD spec assignment based on the includes at compile time*/
-#if (TRUE == INCLUDE_PD_SOURCE)
-    /*Current PD ROLE*/
-    #define CONFIG_PD_DEFAULT_ROLE  PD_ROLE_SOURCE
-#else
-	/*Current PD ROLE*/
-    #define CONFIG_PD_DEFAULT_ROLE  PD_ROLE_SINK
-#endif
-
 #if (TRUE == INCLUDE_PD_3_0)
 	/*Current Spec Role*/
 	#define CONFIG_PD_DEFAULT_SPEC_REV  PD_SPEC_REVISION_3_0

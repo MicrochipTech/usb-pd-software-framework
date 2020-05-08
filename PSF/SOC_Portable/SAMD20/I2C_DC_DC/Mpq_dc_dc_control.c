@@ -37,7 +37,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 UINT8 u16PrevCurrent[CONFIG_PD_PORT_COUNT] = {0};
 
+#if(CONFIG_DCDC_CTRL != PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
 static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage);
+#endif
 //static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current);
 /*****************************************************************************/
 
