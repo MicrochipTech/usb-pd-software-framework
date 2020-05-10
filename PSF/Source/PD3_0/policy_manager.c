@@ -55,10 +55,12 @@ void DPM_Init(UINT8 u8PortNum)
         u8DPM_Status |= (PD_ROLE_DFP << DPM_CURR_DATA_ROLE_POS);
         
         /* Set Port Power Role as Source in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS; 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SOURCE; 
         
         /* Set Port Data Role as DFP in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS; 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_DATA_ROLE_STATUS_MASK);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS_DFP;
         
         /* During initialization, Advertised PDOs and Advertised PDO Count are 
            updated with Default Source PDOs and Source PDO Count */
@@ -70,7 +72,7 @@ void DPM_Init(UINT8 u8PortNum)
                         gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;  
 
     }       
-    else
+    else if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== (PD_ROLE_SINK))
     {
         /* Set the Default Port Power Role as Sink in DPM Status variable */
         u8DPM_ConfigData |= (PD_ROLE_SINK << DPM_DEFAULT_POWER_ROLE_POS);
@@ -85,10 +87,13 @@ void DPM_Init(UINT8 u8PortNum)
         u8DPM_Status |= (PD_ROLE_UFP << DPM_CURR_DATA_ROLE_POS);
         
         /* Set Port Power Role as Sink in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS); 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SINK; 
         
         /* Set Port Data Role as UFP in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS);         
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_DATA_ROLE_STATUS_MASK);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS_UFP;
+ 
         /*On initialization Advertised PDO is updated to Sink's PDO*/
         (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
             gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
@@ -96,6 +101,27 @@ void DPM_Init(UINT8 u8PortNum)
         /*Advertised PDO Count is updated to SinkPDO Count*/
         gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
                         gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+        
+        gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+    }
+    else
+    {
+        /* Set Port Power Role as Source in DPM Configure variable*/
+        u8DPM_ConfigData |= (PD_ROLE_DRP << DPM_DEFAULT_POWER_ROLE_POS); 
+        
+        /* Set Port Power Role as Source in DPM Status variable */
+        u8DPM_Status |= (PD_ROLE_DRP << DPM_CURR_POWER_ROLE_POS);
+        
+        /* Set Port Data Role as DFP in DPM Status variable */
+        u8DPM_Status |= (PD_ROLE_TOGGLING << DPM_CURR_DATA_ROLE_POS);
+        
+        /* Set Port Power Role as Source in Port Connection Status register */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_DRP; 
+        
+        /* Set Port Data Role as DFP in Port Connection Status register */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_DATA_ROLE_STATUS_MASK);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS_TOGGLING;
         
         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
     }
@@ -264,7 +290,7 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 	#endif
 }
 /*******************************************************************************/
-#if (TRUE == INCLUDE_PD_SOURCE)
+#if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
 
 /****************************** DPM Source related APIs*****************************************/
 /* Validate the received Request message */
@@ -583,7 +609,7 @@ UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
 }
 /******************************************************************************/
 
-#if (TRUE == INCLUDE_PD_SINK)
+#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
 /****************************** DPM Sink related APIs*****************************************/
 void DPM_Get_Sink_Capabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
 {   
@@ -1020,7 +1046,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         }
         if(gasDPM[u8PortNum].u8PowerFaultISR & ~DPM_POWER_FAULT_VCONN_OCS)
         { 
-            #if(TRUE == INCLUDE_PD_SINK)
+            #if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
             /*Resetting EN_SINK IO status here as the EN_SINK is reset at 
                on detection of fault at ISR itself*/
             gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= \

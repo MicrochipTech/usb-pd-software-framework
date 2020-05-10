@@ -44,10 +44,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Power Role */
 #define PD_ROLE_SINK            0
 #define PD_ROLE_SOURCE          1
+#define PD_ROLE_DRP             2
 
 /* Data role */
-#define PD_ROLE_UFP    0
-#define PD_ROLE_DFP    1
+#define PD_ROLE_UFP             0
+#define PD_ROLE_DFP             1
+#define PD_ROLE_TOGGLING        2
 
 /***************************************************
           Port supported Spec Revision

@@ -1554,7 +1554,7 @@ typedef struct _PortCfgStatus
     UINT16 u16PortStatusChange;
     UINT16 u16PortIntrMask;
     UINT16 u16PowerGoodTimerInms;
-	#if (TRUE == INCLUDE_PD_SINK)
+	#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
     UINT16 u16MinimumOperatingCurInmA;
     UINT16 u16DAC_I_MaxOutVoltInmV; 
@@ -1581,7 +1581,7 @@ typedef struct _PortCfgStatus
     UINT8 u8Pio_VBUS_DIS;
     UINT8 u8mode_VBUS_DIS;
     UINT8 u8aReserved1[2];
-#if (TRUE == INCLUDE_PD_SOURCE)
+#if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
     UINT8 u8Pio_DC_DC_EN;
@@ -1593,7 +1593,7 @@ typedef struct _PortCfgStatus
     UINT8 u8aReserved2[2];
 	#endif
 #endif
-    #if (TRUE == INCLUDE_PD_SINK)
+    #if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction; 

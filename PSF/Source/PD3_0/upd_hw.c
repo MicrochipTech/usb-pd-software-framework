@@ -410,7 +410,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
             UINT8 u8VBUSEn;
             /*When PIO override is disabled; disable EN_VBUS/EN_SINK based on the
              role on a power fault*/
-            #if (TRUE==INCLUDE_PD_SOURCE)
+            #if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
             u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
             #else
             u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
@@ -438,7 +438,7 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
   	/* Override 2 - Fault Low*/
 	UINT8 u8PIONum;
     
-    #if (TRUE == INCLUDE_PD_SOURCE)
+    #if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
 	/* Get the PIO number for EN_VBUS */
 	u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
     #else

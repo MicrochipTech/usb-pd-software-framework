@@ -44,7 +44,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define HW_VERSION              0x00U
 #define SILICON_VERSION         0x00U
 
-#define CFG_PORT_POWER_ROLE                1U
+/**************************Defines for power roles*****************************/
+#define CFG_PORT_POWER_ROLE_SINK        0U
+#define CFG_PORT_POWER_ROLE_SOURCE      1U
+#define CFG_PORT_POWER_ROLE_DRP         2U
+
+#define CFG_PORT_POWER_ROLE                CFG_PORT_POWER_ROLE_SINK
 #define CFG_PORT_RP_CURRENT_VALUE          (3U << TYPEC_PORT_RPVAL_POS)
 #define CFG_PORT_ENABLE                    (1U << TYPEC_PORT_ENDIS_POS)
 #define CFG_PORT_SOURCE_NUM_OF_PDOS        4U
@@ -68,9 +73,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_SOURCE_PDO_6_VOLTAGE      0
 #define CFG_PORT_SOURCE_PDO_7_VOLTAGE      0
 
-#define CFG_PORT_SINK_NUM_OF_PDOS          0U
-#define CFG_PORT_SINK_HIGHER_CAPABILITY    0U
-#define CFG_PORT_SINK_UNCONSTARINED_PWR    0U
+#define CFG_PORT_SINK_NUM_OF_PDOS          4U
+#define CFG_PORT_SINK_HIGHER_CAPABILITY    1U
+#define CFG_PORT_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_SINK_USB_COMM             0U
 
 #define CFG_PORT_SINK_PDO_1_CURRENT        3000U 
@@ -89,13 +94,36 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_SINK_PDO_6_VOLTAGE        0
 #define CFG_PORT_SINK_PDO_7_VOLTAGE        0
 
+#define CFG_PORT_SINK_PDO_1_PREFERRED_MIN_CURRENT 2000
+#define CFG_PORT_SINK_PDO_2_PREFERRED_MIN_CURRENT 2000
+#define CFG_PORT_SINK_PDO_3_PREFERRED_MIN_CURRENT 2000
+#define CFG_PORT_SINK_PDO_4_PREFERRED_MIN_CURRENT 2000
+#define CFG_PORT_SINK_PDO_5_PREFERRED_MIN_CURRENT 0
+#define CFG_PORT_SINK_PDO_6_PREFERRED_MIN_CURRENT 0
+#define CFG_PORT_SINK_PDO_7_PREFERRED_MIN_CURRENT 0
+
 #define CFG_MAX_PDO_COUNT                 7
 #define CFG_OVER_VOLTAGE_FACTOR			  115
 #define CFG_UNDER_VOLTAGE_FACTOR		  85
 #define CFG_MAX_VBUS_POWER_FAULT_COUNT	  3
 #define CFG_MAX_VCONN_FAULT_COUNT		  3
 #define CFG_POWER_GOOD_TIMER_MS			  10000
+#define CFG_PORT_SINK_MODE_A              0x00
+#define CFG_PORT_SINK_MODE_B              0x01
+#define CFG_PORT_SINK_GIVE_BACK_FLAG      0
+#define CFG_PORT_SINK_USB_SUSP            0
 
+
+/*********************DAC_I defines******************/
+#define CFG_PORT_SINK_DAC_I_MAX_OP_VOLTAGE             2500
+#define CFG_PORT_SINK_DAC_I_MIN_OP_VOLTAGE             0
+#define CFG_PORT_SINK_DAC_I_CUR_INDICATION_MAX         5000
+#define CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT      0
+#define CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MIN_VOLT      1
+
+/*****************Sink Hardware defines**************/
+#define CFG_PORT_SINK_MIN_OPERATING_CURRENT_InmA             1000
+#define CFG_PORT_SINK_MAX_OPERATING_CURRENT_InmA             3000
 #define CFG_PORT_UPD_EN_VBUS               eUPD_PIO3
 #define CFG_PORT_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_UPD_VBUS_DIS_PIO_NO       eUPD_PIO4
@@ -110,7 +138,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_UPD_VSEL0_PIO_MODE        ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_UPD_VSEL1_PIO_MODE        ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_UPD_VSEL2_PIO_MODE        ePUSH_PULL_ACTIVE_HIGH
+#define CFG_PORT_UPD_EN_SNK                eUPD_PIO6
 
+#define CFG_PORT_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_VSAFE0V_VSEL_MAPPING      0x00
 #define CFG_PORT_PDO_1_VSEL_MAPPING        0x00
 #define CFG_PORT_PDO_2_VSEL_MAPPING        0x01
@@ -162,6 +192,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PDO_USB_SUSPEND_POS               28 
 #define CFG_PDO_USB_COMMN_POS                 26 
 #define CFG_PDO_UNCONSTRAINED_PWR             27 
+#define CFG_PDO_HIGHER_CAPABILITY_POS         28
 
 /* Power Supply type - Bits 31:10 of Power Data Object */
 enum ePwrSupplyType
@@ -228,6 +259,14 @@ enum ePwrSupplyType
                                          (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                          ((current)/CFG_PDO_CURRENT_UNIT))            
 
+/* Macro used to form Sink Fixed PDO 1 */
+#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,usbCommn,unconstrainedPwr,HigherCapability)  \
+                                         (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS) | \
+                                         ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
+                                         ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
+                                         (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+                                         ((current)/CFG_PDO_CURRENT_UNIT))  
+
 /* Macro used to form Fixed PDOs 2 to 7 */
 #define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                                             ((current)/CFG_PDO_CURRENT_UNIT))
@@ -238,6 +277,39 @@ enum ePwrSupplyType
                                         (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
                                         (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
                                         (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
+
+/* Port Connection Status parameters */
+#define PORT_CONNECT_STS_ATTACHED                             BIT(0)
+#define PORT_CONNECT_STS_ORIENTATION_FLIPPED                  BIT(1)
+#define PORT_CONNECT_STS_DATA_ROLE                            (BIT(2)|BIT(3))
+#define PORT_CONNECT_STS_POWER_ROLE                           (BIT(4)|BIT(5))
+#define PORT_CONNECT_STS_VCONN_STATUS                         BIT(6)
+#define PORT_CONNECT_STS_CABLE_REDUCED_SRC_CAPABILITIES       BIT(7)
+#define PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES      BIT(8)
+#define PORT_CONNECT_STS_SOURCE_CAPABILITY_MISMATCH           BIT(9)
+#define PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD              BIT(10)
+#define PORT_CONNECT_STS_AS_SRC_RDO_ACCEPTED                  BIT(11)
+#define PORT_CONNECT_STS_AS_SRC_RDO_REJECTED                  BIT(12)
+#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_ACCEPT               BIT(13)
+#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_REJECT               BIT(14)
+#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_PS_RDY               BIT(15)
+#define PORT_CONNECT_STS_SINK_CAPABILITY_MISMATCH             BIT(16)
+#define PORT_CONNECT_STS_RP_VAL_DETECT_DEFAULT_USB            BIT(17)
+#define PORT_CONNECT_STS_RP_VAL_DETECT_1_5A                   BIT(18)
+#define PORT_CONNECT_STS_RP_VAL_DETECT_3A                    (BIT(17)|BIT(18))
+#define PORT_CONNECT_STS_RP_VAL_DETECT_MASK                  (BIT(17)|BIT(18))
+
+/* Port IO Status parameters */
+#define PORT_IO_EN_DC_DC_STATUS                      BIT(0)
+#define PORT_IO_VSEL0_STATUS                         BIT(1)
+#define PORT_IO_VSEL1_STATUS                         BIT(2)
+#define PORT_IO_VSEL2_STATUS                         BIT(3)
+#define PORT_IO_EN_VBUS_STATUS                       BIT(4)
+#define PORT_IO_VBUS_DIS_STATUS                      BIT(5)
+#define PORT_IO_EN_SINK_STATUS                       BIT(6)
+#define PORT_IO_15_IND_STATUS                        BIT(7)
+#define PORT_IO_30_IND_STATUS                        BIT(8)
+#define PORT_IO_CAP_MISMATCH_STATUS                  BIT(9)
 
 void PSF_LoadConfig(); 
 
