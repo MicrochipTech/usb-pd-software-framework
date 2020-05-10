@@ -166,15 +166,15 @@ Summary:
     PIO Override Feature code inclusion.
 Description:
     PIO override is UPD350 specific feature which changes the state of a PIO without software
-    intervention. PSF use this feature to disable EN_VBUS instantly on detection of a 
-    Power Fault Condition. Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature.
-    User can set this define to 0 to reduce code size of PSF if PIO override based 
-    power faulting is not required.
+    intervention. PSF uses this feature to disable EN_VBUS(in case of source operation) or  
+	EN_SINK(in case of sink operation) instantly on detection of a Power Fault Condition.
+	Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature. User can set this
+	define to 0 to reduce code size of PSF if PIO override based power faulting is not required.
 Remarks:
-    To use this feature, EN_VBUS and FAULT_IN Pin of the system should be UPD350 PIOs.
-    It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus INCLUDE_POWER_FAULT_HANDLING
-    should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define to be effective. 
-    Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS and FAULT_IN.
+    To use this feature, EN_VBUS or EN_SINK and FAULT_IN Pin of the system should be UPD350 PIOs.
+	It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus INCLUDE_POWER_FAULT_HANDLING
+	should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define to be effective. 
+	Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS, EN_SINK and FAULT_IN.
 Example:
     <code>
     #define INCLUDE_UPD_PIO_OVERRIDE_SUPPORT	1(Include UPD350 PIO Override support for Power 
@@ -210,7 +210,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
+    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -239,7 +239,7 @@ Example:
     #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_BALANCING  		1
+#define INCLUDE_POWER_BALANCING  		0
 
 /**************************************************************************************************
 Summary:
@@ -340,7 +340,7 @@ Example:
     #define CONFIG_PD_PORT_COUNT        2 (Number of PD ports enabled in PSF Stack is 2)
     </code>
 **********************************************************************/
-#define CONFIG_PD_PORT_COUNT            2
+#define CONFIG_PD_PORT_COUNT            1
 
 /**************************************************************************
 Summary:
@@ -416,7 +416,6 @@ Remarks:
 	None.                                 
   **************************************************************************/
 #define I2C_DC_DC_CONTROL_CONFIG            2
-
 
 /**************************************************************************
 Summary:
@@ -688,13 +687,14 @@ typedef enum
 																		in mV and Current is 
 																		specified in mA.
                                                                       * This array should be used 
-																	    for Source Operation. 
+																	    only for Source Operation. 
     u32aSinkPDO[7]                  28        R/W          R         * Upto 7 fixed Sink PDOs where 
 																		Voltage is specified in mV
                                                                         and Current is specified in 
 																		mA.
                                                                       * This array should be used 
-																	    for Sink operation.
+																	    only when the port is 
+																		configured as Sink.
     u32aNewPDO[7]                   28        R/W          R/W       * Upto 7 fixed New PDOs where 
 																		Voltage is specified in mV 
 																		and Current in mA.
@@ -742,22 +742,63 @@ typedef enum
                                                                         2. 0x012C = 3A
                                                                         3. 0x01F4 = 5A
                                                                         4. 0x03FF = 10.24A
-    u16MaximumOperatingCurInmA      2         R/W          R         * Maximum allowable current or 
+    u16MaximumOperatingCurInmA      2          R/W         R         * Maximum allowable current or 
 																		system's maximum operating
                                                                         current in terms of mA
-    u16aMinPDOPreferredCurInmA[7]   14        R/W          R         * Preferred minimum current 
+    u16aMinPDOPreferredCurInmA[7]   14         R/W         R         * Preferred minimum current 
 																		range for the PDO by which 
 																		the Sink may select without 
 																		setting Capability Mismatch 
 																		Bit with highest current 
 																		preferred.
-                                                                      * This array is applicable 
-																	    only for Sink Operation. 
-                                                                        
-    u16MinimumOperatingCurInmA      2         R/W          R         * Minimum operating current by 
-																	    the System.
-                                                                      * This variable is applicable 
-																	    only for Sink Operation. 
+                                                                       * This array is applicable 
+																	     only for Sink Operation.                                                                     
+    u16MinimumOperatingCurInmA      2          R/W         R          * Minimum current required by 
+																	     the sink hardware to be 
+                                                                         operational.
+                                                                        * This variable is applicable 
+																	      only for Sink Operation.
+                                                                        * When a Gotomin message is 
+																		  issued by source, sink reduces
+																		  its operating current to the 
+																		  value provided in this variable.
+  	u16DAC_I_MaxOutVoltInmV         2          R/W         R          * Defines the maximum voltage 
+																		  on DAC_I with a maximum of 
+																		  2.5V in terms of mV 
+																		* This is applicable only for
+																		  Sink operation. 
+	u16DAC_I_MinOutVoltInmV         2		   R/W		   R   		  * Defines the minimum voltage 
+																		 on DAC_I with a minimum of 
+																		 0V in terms of mV 
+																	    * This is applicable only for
+																		  Sink operation. 
+	u16DAC_I_CurrentInd_MaxInA      2		   R/W		   R    	   * Defines which current in
+																		  terms of mA corresponding 
+																		  to maximum output voltage 
+																		* It can take either 3A or 5A 
+																	      value. 
+																		* If it is 5A and maximum 
+																		  output voltage is 2.5V and if
+                                                                          direction mentioned in 
+                                                                          u8DAC_I_Direction is High 
+                                                                          Amperage - Max Voltage, then 
+																		  1. 0.5A > DAC_I = 0.25V 
+																		  2. 1.5A > DAC_I = 0.75V
+																		  3. 2.0A > DAC_I = 1V
+																		  3. 2.0A > DAC_I = 1V
+																		  4. 3.0A > DAC_I = 1.5V 
+																		  5. 4.0A > DAC_I = 2.0V
+																		  6. 5.0A > DAC_I = 2.5V
+																	    * If it is 3A and maximum 
+																		  output voltage is 2.5V, then
+																		  1. 0.5A > DAC_I = 0.42V 
+																		  2. 1.5A > DAC_I = 1.25V
+																		  3. 2.0A > DAC_I = 1.67V
+																		  4. 3.0A > DAC_I = 2.5V
+																		  5. 4.0A > DAC_I = 2.5V
+																		  6. 5.0A > DAC_I = 2.5V
+																	    * This is applicable only for 
+																		  Sink operation. 
     u16PowerGoodTimerInms           2         R/W          R         * After an automatic fault 
 																		recovery, 
 																		u16PowerGoodTimerInms
@@ -922,13 +963,16 @@ typedef enum
     u8Pio_EN_VBUS                   1         R/W          R         * Defines the UPD350 PIO number
 																		used for EN_VBUS pin 
 																		functionality for the Port.
+                                                                      * This variable is applicable 
+                                                                        only for source operation.
                                                                       * EN_VBUS is to enable VBUS 
 																	    drive out of DC/DC
                                                                         controller. EN_VBUS pin 
 																		connects to a load switch 
 																		device such as a power FET 
 																		or load switch IC. It is 
-																		driven as per u8Mode_EN_VBUS configuration mode whenever 
+																		driven as per u8Mode_EN_VBUS
+																		configuration mode whenever 
 																		stack requires VBUS to 
 																		driven high as well as low.
                                                                       * The range of valid values is
@@ -956,6 +1000,8 @@ typedef enum
     u8Mode_EN_VBUS                  1         R/W          R         *  Defines the PIO mode of the 
 																		 UPD350 PIO EN_VBUS defined 
 																		 in u8Pio_EN_VBUS. 
+                                                                      * This variable is applicable 
+                                                                        only for source operation.
 																	  * It takes values only from 
 																	    enum 
 																		eUPD_OUTPUT_PIN_MODES_TYPE.
@@ -1023,7 +1069,9 @@ typedef enum
 																	  * It can take values from 0
 																	    to 15 and to disable the 
 																		funtionality from stack, 
-																		user can define it as 0xFF. 
+																		user can define it as 0xFF.
+                                                                      * This variable is applicable 
+                                                                        only for source operation.
 																	  * It is applicable only when 
 																	    CONFIG_DCDC_CTRL is defined 
 																		as 
@@ -1034,6 +1082,8 @@ typedef enum
 																	  * It takes values only 
 																	    from enum 
 																		eUPD_OUTPUT_PIN_MODES_TYPE
+                                                                      * This variable is applicable 
+                                                                        only for source operation.
 	u8aPio_VSEL[3]                  3         R/W          R         * Defines the UPD350 PIO as 
 																	    voltage selector pins
 																	    (VSEL[2:0]). 
@@ -1056,7 +1106,9 @@ typedef enum
 																		user can define a value of 
 																		0xFF. Index 0 to 2 of this 
 																		array correponds to VSEL0 to
-																		VSEL2. 
+																		VSEL2.
+                                                                      * This variable is applicable 
+                                                                        only for source operation.
 																	  * It is applicable only when
 																	    CONFIG_DCDC_CTRL is defined 
 																		as 
@@ -1068,6 +1120,12 @@ typedef enum
 																	  * It takes values only from 
 																		enum 
 																		eUPD_OUTPUT_PIN_MODES_TYPE.
+                                                                      * This variable is applicable 
+                                                                        only for source operation.
+ 																	  * It is applicable only when
+																	    CONFIG_DCDC_CTRL is defined 
+																		as 
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 	u8aVSELTruthTable[8]            8         R/W          R         * Index 0 defines the assertion 
 																		and deassertion to be driven
                                                                         on VSEL[2:0] pins(defined in 
@@ -1101,94 +1159,61 @@ typedef enum
                                                                         4. '100' 20V (VSEL2 
 																		     asserted)
 	u8Pio_EN_SINK                   1         R/W          R         * Defines the UPD350 PIO 
-																		number used for EN_SINK pin
+																		number used for EN_SINK pin.
 																	  * This is applicable only for
-																		Sink operation. 
+																		Sink operation.
+																	  * This pin is asserted in the 
+                                                                        following conditions:
+																		1. If the source supports Power
+                                                                           delivery, the PD negotiated 
+                                                                           current should be greater than
+                                                                           or equal to the current 
+                                                                           mentioned under 
+																		   u16MinimumOperatingCurInmA 
+																		   variable.
+                                                                        2. If the source does not support
+                                                                           Power delivery and is Type-C only,
+                                                                           the Rp value in source partner
+                                                                           should be greater than or equal
+                                                                           to the current mentioned under 
+																		   u16MinimumOperatingCurInmA 
+																		   variable.
+																	  * This pin is de-asserted during a
+																	    hard reset, a power fault recovery
+																		or a detach.
+                                                                      * The range of valid values is
+ 																	    0 to 15 which correspond to
+                                                                        UPD350 PIO0 to PIO15.
+                                                                      * By defining     
+																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
+																		as '1', The PIO Override 
+																		feature of the UPD350 shall 
+																		be utilized in this
+                                                                        pin to ensure that fast and 
+																		autonomous action is taken 
+																		by the UPD350 in a fault 
+																		condition. 
 	u8Mode_EN_SINK                  1         R/W          R         * Defines the PIO mode for 
 																		EN_SINK pin
 																	  * This is applicable only for 
 																		Sink operation. 
-    u8SnkPio_1_5A_IND               1         R/W          R         * Defines the UPD350 PIO number 
-																		used for 1.5A_IND pin 
-																	  * This is applicable only for 
-																		Sink operation. 
-	u8Mode_1_5A_IND                 1         R/W          R         * Defines the PIO mode for 
-																		1.5A_IND pin 
-																	  * This is applicable only for
-																		Sink operation. 
-	u8SnkPio_3A_IND                 1         R/W          R         * Defines the UPD350 PIO 
-																		number used for 3A_IND pin
-																	  * This is applicable only for 
-																	    Sink operation. 
-	u8Mode_3A_IND                   1         R/W          R         * Defines the PIO mode for 
-																		3A_IND pin 
-																	  * This is applicable only for 
-																		Sink operation. 
-	u8PIO_SNK_PD_NEG_CMPLT          1         R/W          R         * Defines the UPD350 PIO number
-																		for SNK_PD_NEG_CMPLT pin 
-																	  * This is applicable only for 
-																	    Sink operation. 
-	u8Mode_SNK_PD_NEG_CMPLT         1         R/W          R         * Defines the PIO mode for 
-																		SNK_PD_NEG_CMPLT pin 
-																	  * This is applicable only for
-																		Sink operation. 
-	u8PIO_SNK_CAP_MISMATCH          1         R/W          R         * Defines the UPD350 PIO number
-																	    for SNK_CAP_MISMATCH
-																	  * This is applicable only for
-																		Sink operation. 
-	u8Mode_SNK_CAP_MISMATCH         1         R/W          R         * Defines the PIO mode for 
-																		SNK_CAP_MISMATCH pin
-																	  * This is applicable only for 
-																		Sink operation. 
-	u16DAC_I_MaxOutVoltInmV        1                                * Defines the maximum voltage 
-																		on DAC_I with a maximum of 
-																		2.5V in terms of mV 
-																	  * This is applicable only for
-																		Sink operation. 
-	u16DAC_I_MinOutVoltInmV        1								 * Defines the minimum voltage 
-																		on DAC_I with a minimum of 
-																		0V in terms of mV 
-																	  * This is applicable only for
-																		Sink operation. 
-	u16DAC_I_CurrentInd_MaxInA       1								 * Defines which current in
-																		terms of mA corresponding 
-																		to maximum output voltage 
-																	  * It can take either 3A or 5A 
-																	    value. 
-																	  * If it is 5A and maximum 
-																		output voltage is 2.5V and if
-                                                                        direction mentioned in 
-                                                                        u8DAC_I_Direction is High 
-                                                                        Amperage - Max Voltage, then 
-																		1. 0.5A > DAC_I = 0.25V 
-																		2. 1.5A > DAC_I = 0.75V
-																		3. 2.0A > DAC_I = 1V
-																		4. 3.0A > DAC_I = 1.5V 
-																		5. 4.0A > DAC_I = 2.0V
-																		6. 5.0A > DAC_I = 2.5V
-																	  * If it is 3A and maximum 
-																		output voltage is 2.5V, then
-																		1. 0.5A > DAC_I = 0.42V 
-																		2. 1.5A > DAC_I = 1.25V
-																		3. 2.0A > DAC_I = 1.67V
-																		4. 3.0A > DAC_I = 2.5V
-																		5. 4.0A > DAC_I = 2.5V
-																		6. 5.0A > DAC_I = 2.5V
-																	  * This is applicable only for 
-																		Sink operation. 
-	u8DAC_I_Direction               1         R/W     	   R         * Specifies the direction of 
-																	     DAC_I to allow user invert 
-																		 direction of DAC_I if 
-																		 required 
+                                                                      * It takes values only 
+																	    from enum 
+																		eUPD_OUTPUT_PIN_MODES_TYPE.
+	u8DAC_I_Direction               1         R/W          R       	 * Specifies the direction of 
+																	    DAC_I to allow user invert 
+																		direction of DAC_I if 
+																		required 
 																		 1. 0 - High Amperage -
    																		      Max Voltage 
 																		 2. 1- High Amperage - 
 																			  Min Voltage 
 																	  * This is applicable only 
-																		 for Sink operation. 
+																		  for Sink operation. 
+	u16Reserved1    				2								 Reserved					 
 	u8aReserved1[2]					2								 Reserved					 
-	u8aReserved2[2]					2								 Reserved					 
-	u8aReserved3[2]					2								 Reserved					 		
+	u8aReserved2[2]					2								 Reserved
+	u8Reserved3    					1								 Reserved					 		
     </table>
     
     
@@ -1221,7 +1246,7 @@ typedef enum
     9       RW           R         VCONN OCS Enable
                                     * '0' Disable
                                     * '1' Enable
-    32:10   RW           R         Reserved
+    32:10                          Reserved
     </table>
 	
 	<b>b. u32PortConnectStatus</b>: 
@@ -1302,7 +1327,7 @@ typedef enum
 									* '01' USB Power 
 								    * '10' 1.5A 
 									* '11' 3.0A 
-	31:17	R			 R         Reserved 				
+	31:17	 			           Reserved 				
 	</table>
 
 	<b>c. u16PortIOStatus</b>: 
@@ -1312,38 +1337,38 @@ typedef enum
              time         time      
     ------  -----------  --------  --------------------
     0       R            R         EN_DC_DC Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted 
+                                    * '1' Asserted 
+                                    * '0' De-asserted 
     1       R            R         VSEL0 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     2       R            R         VSEL1 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     3       R            R         VSEL2 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     4       R            R         EN_VBUS Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     5       R            R         VBUS_DIS Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     6       R            R         EN_SINK Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     7       R            R         1.5_IND Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     8       R            R         3.0_IND Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     9       R            R         PS_RDY Received 
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     10      R            R         Capability Mismatch  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     15:11                          Reserved 
 	</table>
 	
@@ -1543,17 +1568,18 @@ typedef struct _PortCfgStatus
     UINT16 u16NegoVoltageIn50mV;      
     UINT16 u16NegoCurrentIn10mA;      
     UINT16 u16MaximumOperatingCurInmA; 
-    #if (TRUE == INCLUDE_PD_SINK)
-    UINT16 u16aMinPDOPreferredCurInmA[7]; 
-    UINT16 u16MinimumOperatingCurInmA;
-    UINT16 u16DAC_I_MaxOutVoltInmV; 
-    UINT16 u16DAC_I_MinOutVoltInmV; 
-    UINT16 u16DAC_I_CurrentInd_MaxInA;  
-    #endif
     UINT16 u16PortIOStatus;
     UINT16 u16PortStatusChange;
     UINT16 u16PortIntrMask;
-    UINT16 u16PowerGoodTimerInms;   
+    UINT16 u16PowerGoodTimerInms;
+	#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
+    UINT16 u16aMinPDOPreferredCurInmA[7]; 
+    UINT16 u16MinimumOperatingCurInmA;
+    UINT16 u16DAC_I_MaxOutVoltInmV; 
+    UINT16 u16DAC_I_MinOutVoltInmV;
+	UINT16 u16DAC_I_CurrentInd_MaxInA; 
+    UINT16 u16Reserved1;
+    #endif
     UINT8 u8SourcePDOCnt;			
     UINT8 u8SinkPDOCnt;             
     UINT8 u8NewPDOCnt;              
@@ -1568,12 +1594,13 @@ typedef struct _PortCfgStatus
     UINT8 u8VCONNOCSDebounceInms;
     UINT8 u8VBUSMaxFaultCnt;
     UINT8 u8VCONNMaxFaultCnt;
-    UINT8 u8Pio_EN_VBUS;
-    UINT8 u8Mode_EN_VBUS;
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;
     UINT8 u8Pio_VBUS_DIS;
     UINT8 u8mode_VBUS_DIS;
+#if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
+    UINT8 u8Pio_EN_VBUS;
+    UINT8 u8Mode_EN_VBUS;
     UINT8 u8Pio_DC_DC_EN;
     UINT8 u8Mode_DC_DC_EN;
     UINT8 u8aReserved1[2];
@@ -1583,19 +1610,18 @@ typedef struct _PortCfgStatus
 	UINT8 u8aVSELTruthTable[8];
     UINT8 u8aReserved2[2];
 	#endif
-    #if (TRUE == INCLUDE_PD_SINK)
+#endif
+    #if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8SnkPio_1_5A_IND; 
     UINT8 u8Mode_1_5A_IND;  
     UINT8 u8SnkPio_3A_IND;  
     UINT8 u8Mode_3A_IND;    
-    UINT8 u8PIO_SNK_PD_NEG_CMPLT; 
-    UINT8 u8Mode_SNK_PD_NEG_CMPLT; 
     UINT8 u8PIO_SNK_CAP_MISMATCH; 
     UINT8 u8Mode_SNK_CAP_MISMATCH; 
     UINT8 u8DAC_I_Direction; 
-    UINT8 u8aReserved3[3];
+    UINT8 u8Reserved3;    
     #endif
 	 
    } PORT_CFG_STATUS, *PPORT_CFG_STATUS;
@@ -1673,7 +1699,7 @@ typedef struct _PortCfgStatus
                                     * '1' Enable
 	3:1     R/W          R/W       Selects the port Priority 								
 									* 000b is the highest priority
-    7:4     			           Reserved 									
+    7:4                            Reserved 									
    Remarks:
      None                                                               
    **********************************************************************/
@@ -1750,8 +1776,6 @@ typedef struct _PPSPortCfgStatus
 	u8PSFMajorVersion               1         R/W          R         Defines PSF Stack Major Version 
 
 	u8PSFMinorVersion               1         R/W          R         Defines PSF Stack Minor Version 
-
-	u16Reserved               	    2         R/W          R         Reserved 
 
 	u16ProducdID               	    2         R/W          R         * Defines the Product Identifier 
 																		Value. 
@@ -1909,11 +1933,10 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_BALANCING or 
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
-    u8aReserved6[2]				    2 								Reserved 	
-    u8aReserved7[3]				    3								Reserved 
-    u8aReserved8[3]				    3 								Reserved 
-    u16aReserved1				    2 								Reserved 	
-																	
+    u8aReserved6[2]				     2 								 Reserved 	
+    u8aReserved7[3]				     3								 Reserved 
+    u8aReserved8[3]				     3 								 Reserved 
+    u16Reserved2 				     2 								 Reserved 																
 																		
 	</table> 															  										
 
@@ -1975,7 +1998,9 @@ typedef struct _GlobalCfgStatusData
     PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; 
 #if (TRUE == INCLUDE_POWER_BALANCING)
     UINT8 u8PBEnableSelect;	
-    UINT8 u8aReserved7[3];	
+    UINT16 u16SharedPwrCapacityIn250mW; 
+    UINT8 u8Reserved7;	
+    PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];
 #endif 
 #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
     UINT8 u8PwrThrottleCfg;	
@@ -1987,11 +2012,7 @@ typedef struct _GlobalCfgStatusData
     UINT16 u16SystemPowerBankCIn250mW; 
     UINT16 u16MinPowerBankCIn250mW;    
 #endif
-#if (TRUE == INCLUDE_POWER_BALANCING)    
-    UINT16 u16SharedPwrCapacityIn250mW; 
-    UINT16 u16Reserved1;
-    PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	
-#endif 
+
     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
     PPS_PORT_CFG_STATUS sPPSPerPortData[CONFIG_PD_PORT_COUNT]; 

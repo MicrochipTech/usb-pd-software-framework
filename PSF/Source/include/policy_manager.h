@@ -41,17 +41,17 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 /***************************Define to get DPM Status*****************************************/
 /*Bit definition for u8DPM_ConfigData variable*/
-#define DPM_DEFAULT_POWER_ROLE_MASK           BIT(0)
-#define DPM_DEFAULT_DATA_ROLE_MASK            BIT(1)
-#define DPM_DEFAULT_PD_SPEC_REV_MASK         (BIT(2) | BIT(3))
-#define DPM_VCONN_SWAP_SUPPORT_MASK           BIT(4) 
-#define DPM_NEW_PDO_ENABLE_MASK               BIT(5)
+#define DPM_DEFAULT_POWER_ROLE_MASK          (BIT(0)|BIT(1))
+#define DPM_DEFAULT_DATA_ROLE_MASK           (BIT(2)|BIT(3))
+#define DPM_DEFAULT_PD_SPEC_REV_MASK         (BIT(4)|BIT(5))
+#define DPM_VCONN_SWAP_SUPPORT_MASK           BIT(6) 
+#define DPM_NEW_PDO_ENABLE_MASK               BIT(7)
 
 /*Bit position for u8DPM_ConfigData variable*/
 #define DPM_DEFAULT_POWER_ROLE_POS           0
-#define DPM_DEFAULT_DATA_ROLE_POS            1
-#define DPM_DEFAULT_PD_SPEC_REV_POS          2
-#define DPM_NEW_PDO_ENABLE_POS               5 
+#define DPM_DEFAULT_DATA_ROLE_POS            2
+#define DPM_DEFAULT_PD_SPEC_REV_POS          4
+#define DPM_NEW_PDO_ENABLE_POS               7 
 
 /*Defines for getting data from u8DPM_ConfigData variable*/
 #define DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_DEFAULT_POWER_ROLE_MASK) >> DPM_DEFAULT_POWER_ROLE_POS)
@@ -60,16 +60,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_NEW_PDO_STATUS(u8PortNum)             ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_NEW_PDO_ENABLE_MASK) >> DPM_NEW_PDO_ENABLE_POS)
 
 /*Bit definition for u8DPM_Status variable*/
-#define DPM_CURR_POWER_ROLE_MASK            BIT(0)
-#define DPM_CURR_DATA_ROLE_MASK             BIT(1)
-#define DPM_CURR_PD_SPEC_REV_MASK          (BIT(2) | BIT(3))
-#define DPM_VDM_STATE_ACTIVE_MASK           BIT(4)
+#define DPM_CURR_POWER_ROLE_MASK            (BIT(0)|BIT(1))
+#define DPM_CURR_DATA_ROLE_MASK             (BIT(2)|BIT(3))
+#define DPM_CURR_PD_SPEC_REV_MASK           (BIT(4)|BIT(5))
+#define DPM_VDM_STATE_ACTIVE_MASK           BIT(6)
 
 /*Bit position for u8DPM_Status variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
-#define DPM_CURR_DATA_ROLE_POS             1
-#define DPM_CURR_PD_SPEC_REV_POS           2
-#define DPM_VDM_STATE_ACTIVE_POS           4
+#define DPM_CURR_DATA_ROLE_POS             2
+#define DPM_CURR_PD_SPEC_REV_POS           4
+#define DPM_VDM_STATE_ACTIVE_POS           6
 
 /*Defines for getting data from u8DPM_Status variable*/
 #define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
@@ -191,23 +191,29 @@ Source/Sink Power delivery objects*/
 /* ****************************** Port Connection Status parameters *********** */
 #define DPM_PORT_ATTACHED_STATUS                              BIT(0)
 #define DPM_PORT_ORIENTATION_FLIPPED_STATUS                   BIT(1)
-#define DPM_PORT_DATA_ROLE_STATUS                             BIT(2)
-#define DPM_PORT_POWER_ROLE_STATUS                            BIT(3)
-#define DPM_PORT_VCONN_STATUS                                 BIT(4)
-#define DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS        BIT(5)
-#define DPM_PORT_PD_BAL_REDUCED_SRC_CAPABILITIES_STATUS       BIT(6)
-#define DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS               BIT(7)
-#define DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS               BIT(8)
-#define DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS                   BIT(9)
-#define DPM_PORT_AS_SRC_RDO_REJECTED_STATUS                   BIT(10)
-#define DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS                BIT(11)
-#define DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS                BIT(12)
-#define DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS                BIT(13)
-#define DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS              BIT(14)
-#define DPM_PORT_RP_VAL_DETECT_DEFAULT_USB_STATUS             BIT(15)
-#define DPM_PORT_RP_VAL_DETECT_1_5A_STATUS                    BIT(16)
-#define DPM_PORT_RP_VAL_DETECT_3A_STATUS                     (BIT(15)|BIT(16))
-#define DPM_PORT_RP_VAL_DETECT_MASK_STATUS                   (BIT(15)|BIT(16))
+#define DPM_PORT_DATA_ROLE_STATUS_MASK                        (BIT(2)|BIT(3))
+#define DPM_PORT_DATA_ROLE_STATUS_UFP                         (0 << 2)
+#define DPM_PORT_DATA_ROLE_STATUS_DFP                         (1 << 2)
+#define DPM_PORT_DATA_ROLE_STATUS_TOGGLING                    (2 << 2)
+#define DPM_PORT_POWER_ROLE_STATUS_MASK                       (BIT(4)|BIT(5))
+#define DPM_PORT_POWER_ROLE_STATUS_SINK                       (0 << 4)
+#define DPM_PORT_POWER_ROLE_STATUS_SOURCE                     (1 << 4)
+#define DPM_PORT_POWER_ROLE_STATUS_DRP                        (2 << 4)
+#define DPM_PORT_VCONN_STATUS                                 BIT(6)
+#define DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS        BIT(7)
+#define DPM_PORT_PD_BAL_REDUCED_SRC_CAPABILITIES_STATUS       BIT(8)
+#define DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS               BIT(9)
+#define DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS               BIT(10)
+#define DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS                   BIT(11)
+#define DPM_PORT_AS_SRC_RDO_REJECTED_STATUS                   BIT(12)
+#define DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS                BIT(13)
+#define DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS                BIT(14)
+#define DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS                BIT(15)
+#define DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS              BIT(16)
+#define DPM_PORT_RP_VAL_DETECT_DEFAULT_USB_STATUS             BIT(17)
+#define DPM_PORT_RP_VAL_DETECT_1_5A_STATUS                    BIT(18)
+#define DPM_PORT_RP_VAL_DETECT_3A_STATUS                     (BIT(17)|BIT(18))
+#define DPM_PORT_RP_VAL_DETECT_MASK_STATUS                   (BIT(17)|BIT(18))
 
 /* *************************Port IO Status parameters *********************** */
 #define DPM_PORT_IO_EN_DC_DC_STATUS                  BIT(0)
@@ -305,15 +311,15 @@ Source/Sink Power delivery objects*/
 /*Structure of Device Policy Manager*/
 typedef struct MCHP_PSF_STRUCT_PACKED_START
 {
-  UINT8 u8DPM_ConfigData;   //Bit 0 - Default Port Role <p />
-                            //Bit 1 - Default Data Role <p />
-                            //Bit 3:2 - Default PD Spec Revision <p />
-                            //Bit 4 - Default Vconn Swap support
-                            //Bit 5 - New PDO Enable <p /> 
-  UINT8 u8DPM_Status;       //Bit 0 - Status of Port Role <p />
-                            //Bit 1 - Status of Data Role <p />
-                            //Bit 3:2 - Status of PD Spec Revision <p />
-                            //Bit 4 - Status of Vconn Swap support
+  UINT8 u8DPM_ConfigData;   //Bit 1:0 - Default Port Role <p />
+                            //Bit 3:2 - Default Data Role <p />
+                            //Bit 5:4 - Default PD Spec Revision <p />
+                            //Bit 6 - Default Vconn Swap support
+                            //Bit 7 - New PDO Enable <p /> 
+  UINT8 u8DPM_Status;       //Bit 1:0 - Status of Port Role <p />
+                            //Bit 3:2 - Status of Data Role <p />
+                            //Bit 5:4 - Status of PD Spec Revision <p />
+                            //Bit 6 - Status of Vconn Swap support
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA

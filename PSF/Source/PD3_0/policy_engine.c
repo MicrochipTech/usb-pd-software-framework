@@ -56,7 +56,7 @@ void PE_InitPort (UINT8 u8PortNum)
     gasPolicy_Engine[u8PortNum].u32MsgHeader = SET_TO_ZERO;
     gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = SET_TO_ZERO;
 
-    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
+    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) != PD_ROLE_SINK)
     {
         /*Setting the CapsCounter to 0 */
         gasPolicy_Engine[u8PortNum].u8CapsCounter = SET_TO_ZERO;
@@ -151,13 +151,13 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
     if(DPM_GET_CURRENT_POWER_ROLE (u8PortNum) == PD_ROLE_SOURCE)
     {
-        #if (TRUE == INCLUDE_PD_SOURCE)
+        #if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
         PE_SrcRunStateMachine (u8PortNum, u8DataBuf, u8SOPType,u32Header);
         #endif
     }
     else if(DPM_GET_CURRENT_POWER_ROLE (u8PortNum) == PD_ROLE_SINK)
     {
-        #if (TRUE == INCLUDE_PD_SINK)
+        #if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
         PE_SnkRunStateMachine (u8PortNum, u8DataBuf, u8SOPType,u32Header);
         #endif
     }
@@ -587,7 +587,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
         {
             switch (PRL_GET_MESSAGE_TYPE (u32Header))
             {
-                #if (TRUE == INCLUDE_PD_SINK)
+                #if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
                 case PE_CTRL_GOTO_MIN:
                 {
                     /*GotoMin message is received for Sink Data request*/

@@ -913,7 +913,7 @@ Remarks:
     User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.
     A DAC may initialized under this hook if PSF is configured as SINK.                        
 *****************************************************************************/
-#if (TRUE == INCLUDE_PD_SINK)
+#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  DAC_Initialize();
 #else
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)

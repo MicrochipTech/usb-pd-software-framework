@@ -66,7 +66,7 @@
 #endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
-#if (TRUE == INCLUDE_PD_SINK)
+#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
 #include "../../firmware/src/config/default/peripheral/dac/plib_dac.h"
 #endif
 // *****************************************************************************
@@ -124,7 +124,9 @@
 #define SAMD20_SPI_INSTANCE     0
 #define SAMD20_PORT0_EIC_PIN    EIC_PIN_14
 #if(TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP)
+/*ToDo
 #define SAMD20_PORT1_EIC_PIN    EIC_PIN_15
+ */
 #endif
 
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
@@ -134,6 +136,14 @@
 #endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
 #define SAMD20_UART_INSTANCE  1
+
+/*Drivers to drive GPIOs in SAMD20*/
+#define SAMD20_GPIO_Set(u8PioNumber)         (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << u8PioNumber)
+#define SAMD20_GPIO_Clear(u8PioNumber)       (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << u8PioNumber)
+#define SAMD20_GPIO_Toggle(u8PioNumber)      (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << u8PioNumber)
+#define SAMD20_GPIO_Get(u8PioNumber)         (((PORT_REGS->GROUP[0].PORT_IN >> u8PioNumber)) & 0x01)
+#define SAMD20_GPIO_OutputEnable(u8PioNumber)(PORT_REGS->GROUP[0].PORT_DIRSET = 1 << u8PioNumber)
+#define SAMD20_GPIO_InputEnable(u8PioNumber) (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << u8PioNumber)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -401,7 +411,7 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
 **************************************************************************/
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
 
-#if(TRUE == INCLUDE_PD_SINK)
+#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
 /**************************************************************************
     Function:
         void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current)
@@ -445,7 +455,7 @@ void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u
 **************************************************************************/
 void SAMD20_Drive_DAC_I(UINT16 u16DACData);
 
-#endif /*INCLUDE_PD_SINK*/
+#endif /*INCLUDE_PD_SINK || INCLUDE_PD_DRP*/
 
 
 
