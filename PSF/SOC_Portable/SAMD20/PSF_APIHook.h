@@ -1114,7 +1114,7 @@ Remarks:
 		// Select Throttling Bank B
 		gasCfgStatusData.u8PwrThrottleCfg = 0x01;
 		// Set 120W as Total system Power of Bank A
-		gasCfgStatusData.u16SystemPowerBankA = 0x01E0U;
+		gasCfgStatusData.u16SystemPowerBankAIn250mW = 0x01E0U;
 		// Configure per port parameters
 		// Set Port 1's VBUS Maximum Fault Count as 3
 		gasCfgStatusData.sPerPortData[0].u8VBUSMaxFaultCnt = 0x03; // 0 is the port number
@@ -1122,7 +1122,7 @@ Remarks:
 		gasCfgStatusData.sPerPortData[0].u8Pio_DC_DC_EN = 0x06; // 0 is the port number
 		// Configure per port PB parameters
 		// Set Port 2's maximum port power for Bank C as 60W
-		gasCfgStatusData.sPBPerPortData[1].u16MaxPrtPwrBankC = 0x00F0U; // 1 is the port number
+		gasCfgStatusData.sPBPerPortData[1].u16MaxPrtPwrBankCIn250mW = 0x00F0U; // 1 is the port number
 		}
     </code>
   Remarks:
@@ -1653,6 +1653,9 @@ Description:
     <b>eMCHP_PSF_TYPEC_CC2_ATTACH:</b> This event is posted by PSF Type C state machine when port
 	partner Type C attach is detected in CC2 pin.
     
+    <b>eMCHP_PSF_TYPEC_ERROR_RECOVERY:</b> This event is posted by PSF Type C state machine when 
+    the port has entered Type C Error Recovery state.
+  
     <b>eMCHP_PSF_UPDS_IN_IDLE: </b>This event is posted by Power management control. PSF runs an
 	algorithm backend for Power management control. If there is no activity in UPD350 for 
 	CONFIG_PORT_UPD_IDLE_TIMEOUT_MS corresponding UPD350 is put to low power mode. When all the
@@ -1694,6 +1697,12 @@ Description:
     
     <b> eMCHP_PSF_NEW_SRC_CAPS_RCVD</b>: It is notified by PSF when new source capability
     message is received from the Source Partner.
+  
+   <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
+    Busy due to which it cannot process any of the client requests, say 
+    Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
+    application through u8ClientRequest variable in sPerPortDatastructure. On 
+    receiving this notification, the application can re-initiate the request.
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1702,6 +1711,7 @@ typedef enum MCHP_PSF_NOTIFICATION
 eMCHP_PSF_TYPEC_DETACH_EVENT = 1,   // Detach event has occurred
 eMCHP_PSF_TYPEC_CC1_ATTACH,         // Port partner attached at CC1 orientation
 eMCHP_PSF_TYPEC_CC2_ATTACH,         // Port partner attached at CC2 orientation
+eMCHP_PSF_TYPEC_ERROR_RECOVERY,     // Entered Error recovery State
 eMCHP_PSF_UPDS_IN_IDLE,             // All the UPD350s are in Idle
 eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
@@ -1709,7 +1719,8 @@ eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
 eMCHP_PSF_GET_SINK_CAPS_RCVD,        // Sink Caps received from Port Partner
 eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD,    // Sink Caps not received from Port Partner
 eMCHP_PSF_CAPS_MISMATCH,            // Capability mismatch with Source Port Partner
-eMCHP_PSF_NEW_SRC_CAPS_RCVD         // New source capability message is received from Source Partner
+eMCHP_PSF_NEW_SRC_CAPS_RCVD,        // New source capability message is received from Source Partner
+eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************

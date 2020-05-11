@@ -226,7 +226,7 @@ void  PRL_Init (UINT8 u8PortNum)
 	PRL_ResetChunkSM (u8PortNum);
     #endif
     
-    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Intialisation Done\r\n");
+    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Initialization Done\r\n");
 }
 
 

@@ -201,12 +201,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_GET_VDM_CMD_TYPE_NAK				2
 #define PE_GET_VDM_CMD_TYPE_BUSY			3
 
-/* Capability max currnet check */
+/* Capability max current check */
 #define PE_MAX_CURR_MASK        0x1FF
 
 
 typedef enum {
-    /* Source Policy Enigne Main State */ 
+    /* Source Policy Engine Main State */ 
 	ePE_SRC_STARTUP,
 	ePE_SRC_DISCOVERY,
 	ePE_SRC_SEND_CAPABILITIES,

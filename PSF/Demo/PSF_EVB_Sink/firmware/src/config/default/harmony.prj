@@ -19,8 +19,8 @@
           <Name dnOrder="1">initialization.c</Name>
           <LogicalPath dnOrder="2">config/default/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">CE777D6FFA0EB5BE7EC481FAC6457728</GeneratedChecksum>
-          <UserChecksum dnOrder="5">2C2063557D45E55109DDDAEA2CE771C2</UserChecksum>
+          <GeneratedChecksum dnOrder="4">D0304F97B60FDB8FCC01E5831DAC8A4E</GeneratedChecksum>
+          <UserChecksum dnOrder="5">025A9C969419CBD49D6EE1E7C7BCCBFD</UserChecksum>
         </File>
         <File dnOrder="2">
           <Type dnOrder="0">SOURCE</Type>
@@ -36,7 +36,7 @@
           <LogicalPath dnOrder="2">config/default/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">328F1E09E0DD9BEE901C4562A3E5180A</GeneratedChecksum>
-          <UserChecksum dnOrder="5">328F1E09E0DD9BEE901C4562A3E5180A</UserChecksum>
+          <UserChecksum dnOrder="5">0D061464696B9E5D276A90A352736879</UserChecksum>
         </File>
         <File dnOrder="4">
           <Type dnOrder="0">SOURCE</Type>
@@ -51,8 +51,8 @@
           <Name dnOrder="1">plib_clock.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/clock/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/clock/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">F292BDCF0730ACB76D4179E6AC7948F6</GeneratedChecksum>
-          <UserChecksum dnOrder="5">F292BDCF0730ACB76D4179E6AC7948F6</UserChecksum>
+          <GeneratedChecksum dnOrder="4">D7ADF25201744A0A66199455AC40C67C</GeneratedChecksum>
+          <UserChecksum dnOrder="5">D7ADF25201744A0A66199455AC40C67C</UserChecksum>
         </File>
         <File dnOrder="6">
           <Type dnOrder="0">SOURCE</Type>
@@ -91,8 +91,8 @@
           <Name dnOrder="1">plib_port.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">3A0F9871EF94033E0B4EBA15B69A60F2</GeneratedChecksum>
-          <UserChecksum dnOrder="5">3A0F9871EF94033E0B4EBA15B69A60F2</UserChecksum>
+          <GeneratedChecksum dnOrder="4">0E362B53C4FB07BF162FA417DFB7D5DA</GeneratedChecksum>
+          <UserChecksum dnOrder="5">0E362B53C4FB07BF162FA417DFB7D5DA</UserChecksum>
         </File>
         <File dnOrder="11">
           <Type dnOrder="0">SOURCE</Type>
@@ -104,11 +104,11 @@
         </File>
         <File dnOrder="12">
           <Type dnOrder="0">SOURCE</Type>
-          <Name dnOrder="1">plib_sercom3_usart.c</Name>
+          <Name dnOrder="1">plib_sercom1_usart.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/sercom/usart/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">537D4F55F64B5FB27820D69166598E24</GeneratedChecksum>
-          <UserChecksum dnOrder="5">112A23A7DB8CDD19FC8CD682CDB27070</UserChecksum>
+          <GeneratedChecksum dnOrder="4">8BE7A49E5AC127022D1AE64431A628E3</GeneratedChecksum>
+          <UserChecksum dnOrder="5">8BE7A49E5AC127022D1AE64431A628E3</UserChecksum>
         </File>
         <File dnOrder="13">
           <Type dnOrder="0">SOURCE</Type>
@@ -259,8 +259,8 @@
           <Name dnOrder="1">definitions.h</Name>
           <LogicalPath dnOrder="2">config/default/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">1C9487D0E95E69D942A29FF616576C72</GeneratedChecksum>
-          <UserChecksum dnOrder="5">1C9487D0E95E69D942A29FF616576C72</UserChecksum>
+          <GeneratedChecksum dnOrder="4">1B26360F940C3B7AE7F3AD1522D9CFB5</GeneratedChecksum>
+          <UserChecksum dnOrder="5">1B26360F940C3B7AE7F3AD1522D9CFB5</UserChecksum>
         </File>
         <File dnOrder="32">
           <Type dnOrder="0">HEADER</Type>
@@ -356,7 +356,7 @@
           <LogicalPath dnOrder="2">config/default/peripheral/eic/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/eic/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">EE886B31B28CC1EFCB099D73D16076C2</GeneratedChecksum>
-          <UserChecksum dnOrder="5">EE886B31B28CC1EFCB099D73D16076C2</UserChecksum>
+          <UserChecksum dnOrder="5">ED3D0FC8AC87EA625DFA43D1FA75A2F9</UserChecksum>
         </File>
         <File dnOrder="44">
           <Type dnOrder="0">HEADER</Type>
@@ -392,11 +392,11 @@
         </File>
         <File dnOrder="48">
           <Type dnOrder="0">HEADER</Type>
-          <Name dnOrder="1">plib_sercom3_usart.h</Name>
+          <Name dnOrder="1">plib_sercom1_usart.h</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/sercom/usart/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">938ED612D275FF9DC7FA1BDFCF211719</GeneratedChecksum>
-          <UserChecksum dnOrder="5">6C9C65FFB4A4F649D774DF0A9A7EC5E5</UserChecksum>
+          <GeneratedChecksum dnOrder="4">F23A473404313EF6761E27058E55292A</GeneratedChecksum>
+          <UserChecksum dnOrder="5">F23A473404313EF6761E27058E55292A</UserChecksum>
         </File>
         <File dnOrder="49">
           <Type dnOrder="0">HEADER</Type>
@@ -412,7 +412,7 @@
           <LogicalPath dnOrder="2">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/sercom/usart/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">ECBB2330CAAAF4DDF9F34EEC552438D5</GeneratedChecksum>
-          <UserChecksum dnOrder="5">F506DC02FF7E876EA29B518BFD3C9A16</UserChecksum>
+          <UserChecksum dnOrder="5">ECBB2330CAAAF4DDF9F34EEC552438D5</UserChecksum>
         </File>
         <File dnOrder="51">
           <Type dnOrder="0">HEADER</Type>

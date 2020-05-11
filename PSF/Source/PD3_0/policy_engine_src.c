@@ -248,13 +248,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     /* Update Advertised PDO registers */
                     DPM_UpdateAdvertisedPDOParam(u8PortNum); 
-                       
-                    /* Reset New PDO Parameters if NewPDOSlct is enabled */
-                    if (gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOSelect)
-                    {                                                
-                        DPM_ResetNewPDOParameters(u8PortNum);
-                    }
-                    
+                                           
                     /* Reset CapsCounter and HardReset Counter to 0 */
                     gasPolicy_Engine[u8PortNum].u8CapsCounter = RESET_TO_ZERO;
                     gasPolicy_Engine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;
@@ -400,19 +394,6 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         u8IsTransmit = TRUE;
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;
                     }
-                    else
-                    {
-                        /* Clear the AS_SOURCE_PD_CONTRACT_GOOD bit in Connection 
-                           Status register */
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                        ~(DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS);    
-                        
-                        /* If PSRDY is not sent, power will not be allocated to the 
-                           port. So, Set the Power related Status registers to 0 */
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = RESET_TO_ZERO; 
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = RESET_TO_ZERO; 
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
-                    }
                     break;  
                 }
                 
@@ -512,6 +493,12 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                        accepted and PS_RDY message sent */
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                                         DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS; 
+  
+                    /* Reset New PDO Parameters if renegotiation was requested */
+                    if (DPM_ENABLE_NEW_PDO == DPM_GET_NEW_PDO_STATUS(u8PortNum)) 
+                    {                                                
+                        DPM_ResetNewPDOParameters(u8PortNum);
+                    }                    
                     
                     DPM_EnablePowerFaultDetection(u8PortNum);
                     

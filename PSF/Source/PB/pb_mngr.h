@@ -41,10 +41,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */ 
 
 /* Asynchronous Request Wait time value - 200ms */
-#define PB_ASYN_REQ_WAIT_TIMER                  0xC8  
-
-/* Macro to define the Timer Expired event */
-#define PB_TIMER_EXPIRED_EVENT                  0xEF
+#define PB_ASYN_REQ_WAIT_TIMER_IN_MS            0xC8  
 
 /* Macros to indicate Reclaim status of ports */
 #define PB_RECLAIM_FAILED                       0x00
@@ -95,10 +92,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Power is represented in terms of 250mW */
 #define PB_POWER_UINTS_MILLI_W                  250000
 
-/* Macro to know if PB is enabled for the system and for the port */
-#define IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & CFG_PB_ENABLE) && \
-                             (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & CFG_PB_PORT_ENABLE)) \
-                                    ? TRUE : FALSE)         
+/* Macros to define Excess Power */
+#define PB_ZERO_EXCESS_POWER                    0x0000
+
+/* Macro to denote invalid Port */
+#define PB_INVALID_PORT                         0xFF 
 
 /* Macro to get the voltage value from Fixed PDO */
 #define PB_GET_VOLTAGE_FROM_FIXED_PDO(u32PDO)   (UINT16)(((UINT32)u32PDO & \
@@ -192,7 +190,7 @@ typedef enum GetSinkCapsState
 **********************************************************************************/
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntSysParam 
 {
-    UINT32 u32AsyncReqWaitTimer;   /* Asynchronous Request Wait timer value*/
+    UINT32 u32AsyncReqWaitTimerInms; /* Asynchronous Request Wait timer value*/
     UINT16 u16TotalSysPwrIn250mW; /* Max Shared capacity of the system */
     UINT16 u16PoolPowerIn250mW;    /* Currently available pool power */
     UINT8 u8ReclaimPortNum;        /* Port from which power is reclaimed */
@@ -784,7 +782,7 @@ void PB_InitiateNextPortNegotiation(void);
 UINT8 PB_PortInWaitForAsyncTimerState(void);
 /**************************************************************************************************
     Function:
-        void PB_TimerEnd (UINT8 u8PortNum, UINT8 u8Dummy);
+        void PB_AsyncTimerCB (UINT8 u8PortNum, UINT8 u8Dummy);
 
     Summary:
         This is the API registered as callback for Timer expiry.   
@@ -807,7 +805,7 @@ UINT8 PB_PortInWaitForAsyncTimerState(void);
         None. 
 
 **************************************************************************************************/
-void PB_TimerEnd(UINT8, UINT8);
+void PB_AsyncTimerCB(UINT8, UINT8);
 /**************************************************************************************************
     Function:
         void PB_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
@@ -837,6 +835,62 @@ void PB_TimerEnd(UINT8, UINT8);
 
 **************************************************************************************************/
 void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
+
+/**************************************************************************************************
+    Function:
+        void PB_HandleReclaimPortDetachOrRenegCmplt(void);
+
+    Summary:
+        This API is used to handle the detach event or Renegotiation complete
+        event of Reclaiming Port. 
+
+    Description:
+        This API can be called to handle the detach event or Renegotiation complete
+        event that occurred for a Reclaiming port. This API checks if sufficient power
+        is available for the recovering port. If yes, it clears the recovering mode 
+        status. Else, it initiates reclaiming power from the next low priority port. 
+ 
+    Conditions:
+        None.
+
+    Input:
+        None.
+
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void PB_HandleReclaimPortDetachOrRenegCmplt(void); 
+
+/**************************************************************************************************
+    Function:
+        void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum); 
+
+    Summary:
+        This API is used to handle the detach event of higher priority port.  
+
+    Description:
+        This API can be called to handle the detach event of higher priority
+        port. It clears the Reneg again status bit and initiates Renegotiation 
+        for the next high priority port in the system. 
+ 
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number 
+
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum); 
 
 #endif /* _PB_MNGR_H */
 
