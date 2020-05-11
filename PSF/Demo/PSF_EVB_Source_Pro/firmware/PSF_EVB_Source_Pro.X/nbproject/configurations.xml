@@ -228,6 +228,7 @@
           <itemPath>../../../../Source/PD3_0/typeC_control.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_hw.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
         </logicalFolder>
         <logicalFolder name="PT" displayName="PT" projectFiles="true">
           <itemPath>../../../../Source/PT/pt_mngr.c</itemPath>
