@@ -1370,7 +1370,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
                 #endif   
                /* under voltage is considered if VBUS not lowered as part of Over voltage*/
-                if (!gasDPM[u8PortNum].u8HRCompleteWait)
+                if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
                 {
                     gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_UV;
                 }

@@ -247,6 +247,13 @@ Source/Sink Power delivery objects*/
 #define DPM_NEXT_PWR_INDEX(x) (x+1)
 
 #define DPM_4BYTES_FOR_EACH_PDO_OF(PDO_Count) (PDO_Count*4)
+
+/**************************Defines for u8PowerFaultFlags***********************/
+#define DPM_HR_COMPLETE_WAIT_POS              0
+#define DPM_TYPEC_ERR_RECOVERY_FLAG_POS       1
+#define DPM_HR_COMPLETE_WAIT_MASK             (1 << DPM_HR_COMPLETE_WAIT_POS)
+#define DPM_TYPEC_ERR_RECOVERY_FLAG_MASK      (1 << DPM_TYPEC_ERR_RECOVERY_FLAG_POS)
+
  
 /****************** New PDO Enable/Disable Defines ************/
 #define DPM_ENABLE_NEW_PDO                    1
@@ -372,8 +379,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
       UINT8 u8VCONNPowerFaultCount;     //VConn Power fault count     
       UINT8 u8VCONNGoodtoSupply;        //Vconn good to supply
 	  UINT8 u8PowerFaultISR;          //Power fault ISR flag
-	  UINT8 u8HRCompleteWait;         //Hard Reset complete wait flag
-      UINT8 u8TypeCErrRecFlag;        //Type-C Error Recovery Flag
+      UINT8 u8PowerFaultFlags;        //Flags required for power fault handling
+                                      //BIT 0 - Hard Reset complete wait flag
+                                      //BIT 1 - Type-C Error Recovery Flag
   #endif
   
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
