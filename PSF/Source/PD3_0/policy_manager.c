@@ -994,7 +994,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
             
-            gasDPM[u8PortNum].u8TypeCErrRecFlag = 0x01;
+            gasDPM[u8PortNum].u8TypeCErrRecFlag = SET_TO_ONE;
 						
             /*Increment the fault count*/
             gasDPM[u8PortNum].u8VBUSPowerFaultCount++;
@@ -1002,9 +1002,6 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= \
                     gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt)
             {
-				/* Disable the receiver*/
-                //PRL_EnableRx (u8PortNum, FALSE);
-				
 				/* kill all the timers*/
                 PDTimer_KillPortTimers (u8PortNum);
 				
@@ -1026,15 +1023,11 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SNK;
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
                 }
-				/* Assign an idle state wait for detach*/
-                //gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state");
                 
-                gasDPM[u8PortNum].u8TypeCErrRecFlag = 0x00;
+                gasDPM[u8PortNum].u8TypeCErrRecFlag = SET_TO_ZERO;
             }
-			  
-			/* Assign an idle state wait for detach*/
-            //gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         }
         else
         {          

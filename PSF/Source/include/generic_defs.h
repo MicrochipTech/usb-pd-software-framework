@@ -112,7 +112,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define CLR_VAL                                         0x00
 #define RESET_TO_ZERO									0
-#define SET_TO_ZERO									    0                                                
+#define SET_TO_ZERO									    0  
+#define SET_TO_ONE                                      1
 /********************************************************************************************/
 /* Defines for Port reference*/
 #define PORT0       0
