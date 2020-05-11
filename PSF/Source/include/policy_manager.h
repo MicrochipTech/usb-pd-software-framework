@@ -172,6 +172,7 @@ Source/Sink Power delivery objects*/
 
 /*defines to set u16SinkOperatingCurrInmA */
 #define DPM_0mA     0
+#define DPM_50mA    50
 #define DPM_500mA   500
 #define DPM_900mA   900
 #define DPM_1000mA  1000
@@ -183,6 +184,7 @@ Source/Sink Power delivery objects*/
 
 /*defines to convert voltage and current in terms of 50mV and 10mA to mV and mA respectively*/
 #define DPM_10mA    10
+#define DPM_20mV    20
 #define DPM_50mV    50
 
 /***************************************u8PowerFaultISR defines*************** */
@@ -343,6 +345,59 @@ Source/Sink Power delivery objects*/
 #define PD_THROTTLE_BANK_C                      2U
 #define PD_THROTTLE_SHUTDOWN_MODE               3U
 
+/************************u8AlertType variable possible values macros*********/
+/*Battery Status Change Event (Attach/Detach/Charging/discharging/idle)*/
+#define DPM_ALERT_TYPE_BATTERY_STATUS_CHANGE    BIT(1)
+/*OCP Applicable only for Source*/
+#define DPM_ALERT_TYPE_OCP                      BIT(2)
+#define DPM_ALERT_TYPE_OTP                      BIT(3)
+/*Operating Current Change*/
+#define DPM_ALERT_TYPE_OPR_CURRENT_CHANGE       BIT(4)
+/*Source Input Change Event */
+#define DPM_ALERT_TYPE_SRC_INPUT_CHANGE         BIT(5)       
+#define DPM_ALERT_TYPE_OVP                      BIT(6)
+
+#define DPM_ALERT_TYPE_FIELD_POS                24
+
+/************************u8StatusEventFlags variable possible values macros*********/
+#define DPM_EVENT_TYPE_OCP                      BIT(1)
+#define DPM_EVENT_TYPE_OTP                      BIT(2)       
+#define DPM_EVENT_TYPE_OVP                      BIT(3)
+#define DPM_EVENT_TYPE_CF_MODE                  BIT(4)
+#define DPM_EVENT_TYPE_CV_MODE                  ~BIT(4)
+
+/************************u8PowerStatus variable possible values macros*********/
+/*Source Power limited due to cable supported current*/
+#define DPM_PWRSTS_SRCPWR_LMD_CABLE_CURR     BIT(1)
+/*Source Power limited due to insufficient power available while sourcing other ports */
+#define DPM_PWRSTS_SRCPWR_LMD_INSUFF_PWR_AVAIL     BIT(2)
+/*Source Power limited due to insufficient external power */
+#define DPM_PWRSTS_SRCPWR_LMD_INSUFF_EXT_PWR    BIT(3)
+/*Source power limited due to Event Flag in place (Event flag must also be set)*/
+#define DPM_PWRSTS_SRCPWR_LMD_EVNT_FLAG         BIT(4)
+/*Source power limited due to temperature*/
+#define DPM_PWRSTS_SRCPWR_LMD_TEMP              BIT(5)
+
+
+/************************u8RealTimeFlags variable possible values macros*********/
+#define DPM_REAL_TIME_FLAG_PTF_NOT_SUPPORTED       0
+#define DPM_REAL_TIME_FLAG_PTF_NORMAL              BIT(1)
+#define DPM_REAL_TIME_FLAG_PTF_WARNING             BIT(2)
+#define DPM_REAL_TIME_FLAG_PTF_OVER_TEMP           (BIT(1) | BIT(2))
+#define DPM_REAL_TIME_FLAG_PTF_MASK                 (BIT(1) | BIT(2))
+
+#define DPM_REAL_TIME_FLAG_OMF_IN_CL_MODE          BIT(3)
+#define DPM_REAL_TIME_FLAG_OMF_IN_CV_MODE          ~BIT(3)
+
+/***************************PPS status Data block *********************/
+#define DPM_PPSSDB_OUTPUT_VOLTAGE_FIELD_POS       0
+#define DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS       2
+#define DPM_PPSSDB_REALTIME_FLAG_FIELD_POS        3
+
+#define DPM_PPSSDB_OUTPUT_VOLT_UNSUPPORTED_VAL    0xFFFF
+#define DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL    0xFF
+#define DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL 0xFFFFFFFF
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -351,6 +406,14 @@ Source/Sink Power delivery objects*/
 /*Structure of Device Policy Manager*/
 typedef struct MCHP_PSF_STRUCT_PACKED_START
 {
+  UINT32  u32NegotiatedPDO;     //NegotiatedPDO
+  UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
+  UINT16 u16SinkOperatingCurrInmA;   //Operating current
+  UINT16 u16PrevVBUSVoltageInmV;
+  
+  UINT8 u8DPMInternalEvents; //BIT(0) - DPM_INT_EVT_INFORM_DETACH
+                             // BIT(1) - DPM_INT_EVT_INITIATE_ALERT
+                             // BIT(2) -  DPM_INT_EVT_INITIATE_GET_STATUS
   UINT8 u8DPM_ConfigData;   //Bit 0 - Default Port Role <p />
                             //Bit 1 - Default Data Role <p />
                             //Bit 3:2 - Default PD Spec Revision <p />
@@ -365,25 +428,26 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                             //      01 - Variable
                             //      10 - Battery
                             //      11 - Programmable
+                            //Bit 7 - PPS PS_RDY Timer Value
+                            //    0 - tPpsSrcTransSmall
+                            //    1 - tPpsSrcTransLarge
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
-  UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
-  UINT16 u16SinkOperatingCurrInmA;   //Operating current
-  UINT16 u16PrevVBUSVoltageInmV; // Previous voltage driven in VBUS 
-  UINT32  u32NegotiatedPDO;     //NegotiatedPDO
- 
   #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+      UINT8 u8PowerFaultISR;          //Power fault ISR flag
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
       UINT8 u8VCONNPowerGoodTmrID;    //VConn PowerGood Timer ID
 	  UINT8 u8VBUSPowerFaultCount;      //VBUS Power fault count
       UINT8 u8VCONNPowerFaultCount;     //VConn Power fault count     
       UINT8 u8VCONNGoodtoSupply;        //Vconn good to supply
-	  UINT8 u8PowerFaultISR;          //Power fault ISR flag
-      UINT8 u8PowerFaultFlags;        //Flags required for power fault handling
+	  UINT8 u8PowerFaultFlags;        //Flags required for power fault handling
                                       //BIT 0 - Hard Reset complete wait flag
                                       //BIT 1 - Type-C Error Recovery Flag
   #endif
-  
+  UINT8 u8AlertType;
+  UINT8 u8StatusEventFlags;
+  UINT8 u8PowerStatus;
+  UINT8 u8RealTimeFlags;
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
 /************************ Client Request Defines ******************************/
@@ -392,10 +456,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 
 #define DPM_CLIENT_REQ_RENEGOTIATE               BIT(0)
 #define DPM_CLIENT_REQ_GET_SINK_CAPS             BIT(1)
-#define DPM_CLIENT_REQ_SEND_ALERT                BIT(2)
-#define DPM_CLIENT_REQ_GET_STATUS                BIT(3)
-#define DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD        BIT(4)
-#define DPM_CLIENT_REQ_HANDLE_VBUS_FAULT         BIT(5)
+#define DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD        BIT(2)
+#define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(3)
+#define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(4)
 
 /* Macros to raise a client request to DPM */
 #define DPM_SET_RENEGOTIATE_REQ(u8PortNum)     (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
@@ -404,17 +467,21 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #define DPM_SET_GET_SINK_CAPS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
                                                             |= DPM_CLIENT_REQ_GET_SINK_CAPS)
 
-#define DPM_SET_SEND_ALERT_REQ(u8PortNum)      (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
-                                                            |= DPM_CLIENT_REQ_SEND_ALERT)
-
-#define DPM_SET_GET_STATUS_REQ(u8PortNum)      (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
-                                                            |= DPM_CLIENT_REQ_GET_STATUS)
-
 #define DPM_SET_GET_STATUS_EXTD_REQ(u8PortNum)  (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
                                                             |= DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD)
 
-#define DPM_SET_VBUS_FAULT_HANDLING_REQ(u8PortNum) (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
-                                                            |= DPM_CLIENT_REQ_HANDLE_VBUS_FAULT)
+#define DPM_SET_VBUS_FAULT_OV_REQ(u8PortNum)    (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+                                                            |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV)
+
+#define DPM_SET_VBUS_FAULT_OCS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+                                                            |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
+
+/***************************Internal Events Defines**********************************/
+#define DPM_INT_EVT_INFORM_DETACH           BIT(0)
+#define DPM_INT_EVT_INITIATE_ALERT          BIT(1)
+#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(2)
+
+/**********************************************************************************/
 
 /* Enumeration to define the types of PDO */ 
 typedef enum PDOtype
@@ -1218,7 +1285,7 @@ UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_HandleVBUSFault(UINT8 u8PortNum); 
+        void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType); 
     Summary:
         Enables DPM to handle the VBUS Fault.   
     Description:
@@ -1231,13 +1298,14 @@ UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
         None
     Input:
         u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8FaultType - Type of Fault
     Return:
         None. 
     Remarks:
         None.
 **************************************************************************************************/
 
-void DPM_HandleVBUSFault(UINT8 u8PortNum); 
+void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType); 
 
 /**************************************************************************************************
     Function:
@@ -1380,6 +1448,99 @@ void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW);
 
 **************************************************************************************************/
 void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_InternalEventHandler(UINT8 u8PortNum); 
+    Summary:
+        This API handles the internal events posted to DPM
+    Description:
+        This API to handle the internal events posted to DPM by various layer.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        None. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_InternalEventHandler(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
+    Summary:
+        This API to register an internal events to DPM layer
+    Description:
+        Internal Events to be handled by DPM_InternalEventHandler shall be registered by
+        this API. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8EventType - Internal Event Type to be registered.
+    Return:
+        None. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType);
+
+/**************************************************************************************************
+    Function:
+        UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum)
+    Summary:
+        Returns Alert Data Object
+    Description:
+        API to return Alert Data Object for Alert message
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        UINT32 - Alert Data Type. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pu8StatusDO);
+    Summary:
+        Updates Status DO in the input array passed
+    Description:
+        API to get Status message Data Object
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        pu8StatusDO - Pointer to array of length 6 to be passed.
+    Return:
+        None. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pu8StatusDO);
+
+/**************************************************************************************************
+    Function:
+        UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum)
+    Summary:
+        Returns PPS status Data  Object
+    Description:
+        API to return PPS Status message Data Object.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        UINT32 - PPS status Data Type. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum);
 
 #endif /*_POLICY_MANAGER_H_*/
 
