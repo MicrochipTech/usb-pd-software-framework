@@ -107,7 +107,7 @@ void DPM_Init(UINT8 u8PortNum)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
 	gasDPM[u8PortNum].u8VBUSPowerFaultCount = RESET_TO_ZERO;
-	gasDPM[u8PortNum].u8HRCompleteWait = RESET_TO_ZERO;
+    gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_HRCompleteWait_MASK);
     /*VCONN OCS related variables*/
     gasDPM[u8PortNum].u8VCONNGoodtoSupply = TRUE;
     gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
@@ -848,7 +848,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         UPD_EnableFaultIn(u8PortNum);
 		
 		/* Reset Wait for HardReset Complete bit*/
-        gasDPM[u8PortNum].u8HRCompleteWait = SET_TO_ZERO;
+        gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_HRCompleteWait_MASK);
 		
 		/* Kill the timer*/
         PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
@@ -858,12 +858,12 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 		
 		/* Setting the power fault count to Zero */
-        if(gasDPM[u8PortNum].u8TypeCErrRecFlag == SET_TO_ZERO)
+        if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_TypeCErrRecFlag_MASK))
         {
             gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
         }
         
-        gasDPM[u8PortNum].u8TypeCErrRecFlag = SET_TO_ZERO;
+        gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_TypeCErrRecFlag_MASK);
         	
         
         /*******Resetting the VCONN OCS related variables************/
@@ -887,7 +887,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
         
     }	
-    if(gasDPM[u8PortNum].u8HRCompleteWait) 
+    if(TRUE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HRCompleteWait_MASK))
     { 
         if((gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS) ||
 				 (gasPolicy_Engine[u8PortNum].ePEState == ePE_SNK_STARTUP))
@@ -908,7 +908,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				/* set the fault count to zero */
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
 				
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: u8HRCompleteWait Reseted ");
+                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted ");
 				
                 if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                 {			
@@ -931,8 +931,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 UPD_EnableFaultIn(u8PortNum);
             }
 			/* Reset Wait for HardReset Complete bit*/
-            gasDPM[u8PortNum].u8HRCompleteWait = SET_TO_ZERO;
-			
+            
+            gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_HRCompleteWait_MASK);			
         }
     }
     if (gasDPM[u8PortNum].u8PowerFaultISR)
@@ -994,7 +994,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
             
-            gasDPM[u8PortNum].u8TypeCErrRecFlag = SET_TO_ONE;
+            gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_TypeCErrRecFlag_MASK;
 						
             /*Increment the fault count*/
             gasDPM[u8PortNum].u8VBUSPowerFaultCount++;
@@ -1008,7 +1008,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				/* set the fault count to zero */
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
 				
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: u8HRCompleteWait Resetted ");
+                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Resetted ");
 				
                 if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                 {			
@@ -1026,7 +1026,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state");
                 
-                gasDPM[u8PortNum].u8TypeCErrRecFlag = SET_TO_ZERO;
+                gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_TypeCErrRecFlag_MASK);
             }
         }
         else
@@ -1050,7 +1050,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             PE_SendHardResetMsg(u8PortNum);
 			
 			/* Set Wait for HardReset Complete bit*/
-            gasDPM[u8PortNum].u8HRCompleteWait = gasDPM[u8PortNum].u8PowerFaultISR;
+            gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_HRCompleteWait_MASK;
         }
         
         /* Enable DC_DC_EN to drive power*/        
