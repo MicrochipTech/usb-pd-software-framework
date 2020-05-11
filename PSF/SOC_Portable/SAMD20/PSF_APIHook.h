@@ -1675,6 +1675,65 @@ Remarks:
 *******************************************************************************/ 
 #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)  SAMD20_Drive_DAC_I(u16DACData)
 
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV(u8PortNum)
+Summary:
+    Gets the current output voltage driven in the VBUS.
+Description:
+    This hook is called when PSF needs to know about the present voltage driven
+    by external DC_DC controller. The function should be defined with return type
+    UINT32 and UINT8 type as input parameter. If the DC_DC controller doesnot 
+    have feature to get output voltage, return 0xFFFFFFFF to denote the feature
+    is not supported. 
+Conditions:
+    Output voltage is shall be written in terms of milliVolts.
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV(u8PortNum)   DCDC_GetOutVoltage(u8PortNum)
+        UINT32 DCDC_GetOutVoltage(UINT8 u8PortNum)
+        {
+            // return Output voltage driven by the external DC_DC controller
+            // in terms of milliVolts
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory when INCLUDE_PD_SOURCE_PPS is
+    defines as '1'.                          
+*******************************************************************************/  
+#define MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV        0xFFFFFFFF
+
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA(u8PortNum)
+Summary:
+    Gets the output current.
+Description:
+    This hook is called when PSF needs to know about the present current
+    by external DC_DC controller. The function should be defined with return type
+    UINT32 and UINT8 type as input parameter. If the DC_DC controller doesnot 
+    have feature to get output current, return 0xFFFFFFFF to denote the feature
+    is not supported. 
+Conditions:
+    Output voltage is shall be written in terms of mA.
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mV(u8PortNum)   DCDC_GetOutCurrent(u8PortNum)
+        UINT32 DCDC_GetOutCurrent(UINT8 u8PortNum)
+        {
+            // return Output current driven by the external DC_DC controller
+            // in terms of mA.
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory when INCLUDE_PD_SOURCE_PPS is
+    defines as '1'.                          
+*******************************************************************************/  
+#define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
 
 
 #endif /*_PSF_API_HOOK_H_*/
