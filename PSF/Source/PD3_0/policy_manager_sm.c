@@ -150,8 +150,9 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     /* Run Policy engine State machine*/
     PE_RunStateMachine(u8PortNum);
 	
+    /* Run Power Throttling State machine */
     #if (TRUE == INCLUDE_POWER_THROTTLING)
-    PT_RunStateMachine(u8PortNum);
+        PT_RunStateMachine(u8PortNum);
     #endif     
 
 	/* Power Fault handling*/

@@ -94,6 +94,7 @@ void PT_RunStateMachine(UINT8 u8PortNum)
         
         if (TRUE == u8InitiateRenegotiation)
         {
+#if (TRUE == INCLUDE_POWER_BALANCING)
             if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
             {
                 /* Send a notification to PB to trigger renegotiation based on 
@@ -101,9 +102,12 @@ void PT_RunStateMachine(UINT8 u8PortNum)
             }
             else
             {
-                /* Raise a DPM client request to trigger renegotiation */
-                DPM_SET_RENEGOTIATE_REQ(u8PortNum); 
-            }                                
+                DPM_SET_RENEGOTIATE_REQ(u8PortNum);
+            }
+#else 
+            /* Raise a DPM client request to trigger renegotiation */
+            DPM_SET_RENEGOTIATE_REQ(u8PortNum); 
+#endif 
         }
     }
 }

@@ -39,11 +39,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Section: Constants                                                         */
 /* ************************************************************************** */
 /* ************************************************************************** */ 
-/* Power Throttling Bank values */
-#define PD_THROTTLE_BANK_A                0U 
-#define PD_THROTTLE_BANK_B                1U
-#define PD_THROTTLE_BANK_C                2U
-#define PD_THROTTLE_SHUTDOWN_MODE         3U
 
 /***************************************************************************************/
 // *****************************************************************************

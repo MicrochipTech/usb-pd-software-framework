@@ -65,22 +65,19 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CURR_PD_SPEC_REV_MASK            (BIT(2) | BIT(3))
 #define DPM_VDM_STATE_ACTIVE_MASK             BIT(4)
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK (BIT(5) | BIT(6))
-#define DPM_PPS_PS_RDY_TIMER_VAL_MASK         BIT(7)
 
 /*Bit position for u8DPM_Status variable*/
 #define DPM_CURR_POWER_ROLE_POS              0
 #define DPM_CURR_DATA_ROLE_POS               1
 #define DPM_CURR_PD_SPEC_REV_POS             2
 #define DPM_VDM_STATE_ACTIVE_POS             4
-#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  5
-#define DPM_PPS_PS_RDY_TIMER_VAL_POS         7 
+#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  5 
 
 /*Defines for getting data from u8DPM_Status variable*/
 #define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
 #define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)          ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
 #define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
 #define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)  ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
-#define DPM_GET_PPS_PS_RDY_TIMER_VAL(u8PortNum)       ((gasDPM[u8PortNum].u8DPM_Status & DPM_PPS_PS_RDY_TIMER_VAL_MASK) >> DPM_PPS_PS_RDY_TIMER_VAL_POS)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -321,10 +318,6 @@ Source/Sink Power delivery objects*/
 /* vPpsSmallStep of USB PD Spec 3.0 */
 #define DPM_PPS_VOLTAGE_SMALL_STEP               500
 
-/*********************PPS PS_RDY Timer Defines ******************/ 
-#define DPM_PPS_TMR_SRC_TRANS_LARGE                  1
-#define DPM_PPS_TMR_SRC_TRANS_SMALL                  0 
-
 /******************Partner Status Store/Clear Defines **********/
 #define DPM_STORE_PARTNER_STATUS                     1
 #define DPM_CLEAR_PARTNER_STATUS                     0 
@@ -332,6 +325,16 @@ Source/Sink Power delivery objects*/
 /* Macro to get current PT Bank */ 
 #define DPM_GET_CURRENT_PT_BANK             gasCfgStatusData.u8PwrThrottleCfg
 
+/* Power represented in terms of 250mW */
+#define DPM_POWER_UINTS_MILLI_W                 250000
+
+#define DPM_FIXED_PDO_CURRENT_MASK              0x000003FF 
+
+/* Power Throttling Bank values */
+#define PD_THROTTLE_BANK_A                      0U 
+#define PD_THROTTLE_BANK_B                      1U
+#define PD_THROTTLE_BANK_C                      2U
+#define PD_THROTTLE_SHUTDOWN_MODE               3U
 
 // *****************************************************************************
 // *****************************************************************************
@@ -355,13 +358,11 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                             //      01 - Variable
                             //      10 - Battery
                             //      11 - Programmable
-                            //Bit 7 - PPS PS_RDY Timer Value
-                            //    0 - tPpsSrcTransSmall
-                            //    1 - tPpsSrcTransLarge
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
   UINT16 u16SinkOperatingCurrInmA;   //Operating current
+  UINT16 u16PrevVBUSVoltageInmV; // Previous voltage driven in VBUS 
   UINT32  u32NegotiatedPDO;     //NegotiatedPDO
  
   #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
@@ -1184,7 +1185,7 @@ void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
 
 /**************************************************************************************************
     Function:
-        void DPM_DeterminePPSPSRdyTimer(UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UINT16 u16RDOOpVoltInmV)
+        UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
     Summary:
         Determines if PS_RDY needs to be sent within tPpsSrcTransLarge 
         or tPpsSrcTransSmall in case of PPS contract.  
@@ -1196,15 +1197,16 @@ void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
         None
     Input:
         u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u16PrevRDOVoltInmV - Previous RDO Output voltage
-        u16RDOOpVoltInmV - Current RDO Output voltage 
     Return:
-        None. 
+        PE_PPS_SRCTRANSLARGE_TIMEOUT_MS - If difference between previous and current 
+        RDO output voltages is greater than vPpsSmallStep
+        PE_PPS_SRCTRANSSMALL_TIMEOUT_MS - If difference between previous and current 
+        RDO output voltages is less than or equal to vPpsSmallStep
     Remarks:
         None.
 **************************************************************************************************/
 
-void DPM_DeterminePPSPSRdyTimer(UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UINT16 u16RDOOpVoltInmV); 
+UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

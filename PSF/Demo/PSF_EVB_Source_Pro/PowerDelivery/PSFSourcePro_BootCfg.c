@@ -73,7 +73,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt = CFG_MAX_VBUS_POWER_FAULT_COUNT;
     gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt = CFG_MAX_VCONN_FAULT_COUNT;
     gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimerInms = MILLISECONDS_TO_TICKS(CFG_POWER_GOOD_TIMER_MS);
-    gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = CFG_MAX_PORT_CURRENT; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16MaxSrcPrtCurrentIn10mA = CFG_MAX_PORT_CURRENT_IN_10mA; 
     
     gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS;
     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS_PIO_MODE;
@@ -124,7 +124,6 @@ void CFG_PBPerPortParams (UINT8 u8PortNum)
     gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_POWER_BANKA;
     gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW = CFG_PB_MAX_PORT_POWER_BANKB;
     gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW = CFG_PB_MAX_PORT_POWER_BANKC;
-    gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrentIn10mA = CFG_PB_MAX_PORT_CURRENT;
     gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority = ((u8PortNum << 1) | CFG_PB_PORT_ENABLE);
     #endif
 }
@@ -179,10 +178,13 @@ void PSF_LoadConfig()
     gasCfgStatusData.u8SiVersion = SILICON_VERSION; 
     gasCfgStatusData.u8PSFMajorVersion = HIBYTE(u16StackVersion); 
     gasCfgStatusData.u8PSFMinorVersion = LOBYTE(u16StackVersion);
+
+#if (TRUE == INCLUDE_POWER_BALANCING)    
+    gasCfgStatusData.u8PBEnableSelect = CFG_PB_ENABLE;  
+#endif 
     
 #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
     gasCfgStatusData.u8PwrThrottleCfg = CFG_PD_THROTTLE_BANK_A;
-    gasCfgStatusData.u8PBEnableSelect = CFG_PB_ENABLE;  
     gasCfgStatusData.u16SystemPowerBankAIn250mW = CFG_PB_TOT_SYS_POWER_BANKA;
     gasCfgStatusData.u16MinPowerBankAIn250mW = CFG_PB_MIN_POWER_BANKA;
     gasCfgStatusData.u16SystemPowerBankBIn250mW = CFG_PB_TOT_SYS_POWER_BANKB;
