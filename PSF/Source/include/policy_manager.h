@@ -246,10 +246,10 @@ Source/Sink Power delivery objects*/
 #define DPM_4BYTES_FOR_EACH_PDO_OF(PDO_Count) (PDO_Count*4)
 
 /**************************Defines for u8PowerFaultFlags***********************/
-#define DPM_HRCompleteWait_POS              0
-#define DPM_TypeCErrRecFlag_POS             1
-#define DPM_HRCompleteWait_MASK             (1 << DPM_HRCompleteWait_POS)
-#define DPM_TypeCErrRecFlag_MASK            (1 << DPM_TypeCErrRecFlag_POS)
+#define DPM_HR_COMPLETE_WAIT_POS              0
+#define DPM_TYPEC_ERR_RECOVERY_FLAG_POS       1
+#define DPM_HR_COMPLETE_WAIT_MASK             (1 << DPM_HR_COMPLETE_WAIT_POS)
+#define DPM_TYPEC_ERR_RECOVERY_FLAG_MASK      (1 << DPM_TYPEC_ERR_RECOVERY_FLAG_POS)
 
  
 /****************** New PDO Enable/Disable Defines ************/
