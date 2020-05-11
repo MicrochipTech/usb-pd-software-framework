@@ -283,7 +283,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = RESET_TO_ZERO; 
                     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
                     
-                    /* Notify external DPM of Type Detach event through a user defined call back*/
+                    /* Clear all the client requests for the port since the 
+                       port is detached. */
+                    DPM_ClearAllClientRequests(u8PortNum);
+                    
+                    /* Notify external DPM of Type C Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
                      
                     /* Disable the receiver*/
@@ -950,6 +954,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ERROR_RECOVERY: Entered"\
                                          "ERROR RECOVERY State\r\n"); 
                     
+                    (void) DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY); 
+                    
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
                     
@@ -1041,11 +1047,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 }
 
-                /*Device waits in this substate until the tErrorRecovery software timer expires*/
+                /*Device waits in this sub-state until the tErrorRecovery software timer expires*/
                 case TYPEC_ERROR_RECOVERY_IDLE_SS:                  
                     break;
 
-                /*Device enters this substate after the tErrorRecovery software timer is expired*/
+                /*Device enters this sub-state after the tErrorRecovery software timer is expired*/
                 case TYPEC_ERROR_RECOVERY_TO_SS: 
                 {    
                     
@@ -1068,7 +1074,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
                         
                         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                        /*Enable PIO ovveride enable*/
+                        /*Enable PIO override enable*/
                         UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
                         #endif
                     }
@@ -1521,10 +1527,10 @@ void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal)
 {  
      UINT16 u16CCControlReg1Val;
      
-     /* Register Read added to avoid over writting the register CC_CTL1 register */
+     /* Register Read added to avoid over writing the register CC_CTL1 register */
      UPD_RegisterRead (u8PortNum, TYPEC_CC_CTL1, (UINT8 *)&u16CCControlReg1Val, BYTE_LEN_2);
      
-     /*Clearing the Existing Pull Down and Pull up resisor values*/
+     /*Clearing the Existing Pull Down and Pull up resistor values*/
      u16CCControlReg1Val &= TYPEC_CC1_CC2_RP_MASK;
      u16CCControlReg1Val &= TYPEC_CC1_CC2_PD_MASK;  
      
@@ -1720,7 +1726,7 @@ void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
     /*VCONN discharge complete can occur while the sink is still attached or detached for source port*/
     /*VCONN discharge complete can occur while the source is still attached or detached for sink port*/
     
-    /*Detach Event occured during this VCONN Discharge process will be handled since the 
+    /*Detach Event occurred during this VCONN Discharge process will be handled since the 
     TypeC_Reset_VCONNDIS_Settings function will again restart the CC Comparator*/
     TypeC_Reset_VCONNDIS_Settings(u8PortNum);
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_DISCHARGE_ON_MASK;     
@@ -2082,7 +2088,7 @@ void TypeC_SetDefaultRpValue (UINT8 u8PortNum)
 #endif
 /*INCLUDE_PD_SOURCE*/
 
-#if (INCLUDE_VCONN_SWAP_SUPPORT| INCLUDE_PD_SOURCE)
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
 
 void TypeC_Reset_VCONNDIS_Settings (UINT8 u8PortNum)
 {
@@ -2102,9 +2108,10 @@ void TypeC_Reset_VCONNDIS_Settings (UINT8 u8PortNum)
         while VCONN Discharge*/
         TypeC_SetDefaultRpValue (u8PortNum);
     }
-    else
     #endif
+
     #if (TRUE == INCLUDE_PD_SINK)
+    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SINK)
     {
         TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP);
           

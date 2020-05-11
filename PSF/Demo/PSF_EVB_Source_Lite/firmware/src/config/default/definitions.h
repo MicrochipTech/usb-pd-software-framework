@@ -53,9 +53,9 @@
 #include "peripheral/sercom/i2cm/plib_sercom3_i2c.h"
 #endif
 #include "peripheral/nvmctrl/plib_nvmctrl.h"
+#include "peripheral/sercom/usart/plib_sercom1_usart.h"
 #include "peripheral/evsys/plib_evsys.h"
 #include "peripheral/sercom/spim/plib_sercom0_spi.h"
-#include "peripheral/sercom/usart/plib_sercom3_usart.h"
 #include "peripheral/port/plib_port.h"
 #include "peripheral/clock/plib_clock.h"
 #include "peripheral/nvic/plib_nvic.h"

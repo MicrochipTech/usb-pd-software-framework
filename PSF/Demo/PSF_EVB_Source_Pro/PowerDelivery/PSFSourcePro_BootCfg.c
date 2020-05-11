@@ -114,20 +114,47 @@ static void CFG_PerPortParams (UINT8 u8PortNum)
                                              CFG_PORT_PDO_6_VSEL_MAPPING;
     gasCfgStatusData.sPerPortData[u8PortNum].u8aVSELTruthTable[7] =  \
                                              CFG_PORT_PDO_7_VSEL_MAPPING;    
-#endif    
+#endif       
 }
 
 void CFG_PBPerPortParams (UINT8 u8PortNum)
 {   
     #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))
-    gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankA = CFG_PB_MAX_PORT_POWER_BANKA;
-    gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankB = CFG_PB_MAX_PORT_POWER_BANKB;
-    gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankC = CFG_PB_MAX_PORT_POWER_BANKC;
-    gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrent = CFG_PB_MAX_PORT_CURRENT;
+    gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_POWER_BANKA;
+    gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW = CFG_PB_MAX_PORT_POWER_BANKB;
+    gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW = CFG_PB_MAX_PORT_POWER_BANKC;
+    gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrentIn10mA = CFG_PB_MAX_PORT_CURRENT;
     gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority = ((u8PortNum << 1) | CFG_PB_PORT_ENABLE);
     #endif
 }
 
+void CFG_PPSPerPortParams (UINT8 u8PortNum)
+{
+    #if (TRUE == INCLUDE_PD_SOURCE_PPS) 
+    /* To-do: Rename the variable as u8PPSCfgData */
+    /* Enable PPS Port Configuration parameters */
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable = ((CFG_PPS_APDO_3_ENABLE << CFG_PPS_APDO_3_ENABLE_POS) | \
+                        (CFG_PPS_APDO_2_ENABLE << CFG_PPS_APDO_2_ENABLE_POS) | \
+                        (CFG_PPS_APDO_1_ENABLE << CFG_PPS_APDO_1_ENABLE_POS) |
+                        (CFG_PPS_ENABLE)); 
+    
+    /* Update the value of APDO1 */
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u32aPPSApdo[0] = CFG_FORM_PPS_APDO(CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE, 
+                        CFG_PORT_SOURCE_APDO_1_MIN_VOLTAGE, CFG_PORT_SOURCE_APDO_1_MAX_VOLTAGE, 
+                        CFG_PORT_SOURCE_APDO_1_MAX_CURRENT, CFG_PORT_SOURCE_APDO_1_PPS_PWR_LIMITED);  
+
+    /* Update the value of APDO2 */
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u32aPPSApdo[1] = CFG_FORM_PPS_APDO(CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE, 
+                        CFG_PORT_SOURCE_APDO_2_MIN_VOLTAGE, CFG_PORT_SOURCE_APDO_2_MAX_VOLTAGE, 
+                        CFG_PORT_SOURCE_APDO_2_MAX_CURRENT, CFG_PORT_SOURCE_APDO_2_PPS_PWR_LIMITED);  
+
+    /* Update the value of APDO3 */
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u32aPPSApdo[2] = CFG_FORM_PPS_APDO(CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE, 
+                        CFG_PORT_SOURCE_APDO_3_MIN_VOLTAGE, CFG_PORT_SOURCE_APDO_3_MAX_VOLTAGE, 
+                        CFG_PORT_SOURCE_APDO_3_MAX_CURRENT, CFG_PORT_SOURCE_APDO_3_PPS_PWR_LIMITED);  
+    
+    #endif 
+}
 /* ************************************************************************** */
 /* ************************************************************************** */
 // Section: Interface Functions                                               */
@@ -156,18 +183,19 @@ void PSF_LoadConfig()
 #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
     gasCfgStatusData.u8PwrThrottleCfg = CFG_PD_THROTTLE_BANK_A;
     gasCfgStatusData.u8PBEnableSelect = CFG_PB_ENABLE;  
-    gasCfgStatusData.u16SystemPowerBankA = CFG_PB_TOT_SYS_POWER_BANKA;
-    gasCfgStatusData.u16MinPowerBankA = CFG_PB_MIN_POWER_BANKA;
-    gasCfgStatusData.u16SystemPowerBankB = CFG_PB_TOT_SYS_POWER_BANKB;
-    gasCfgStatusData.u16MinPowerBankB = CFG_PB_MIN_POWER_BANKB;
-    gasCfgStatusData.u16SystemPowerBankC =CFG_PB_TOT_SYS_POWER_BANKC;
-    gasCfgStatusData.u16MinPowerBankC = CFG_PB_MIN_POWER_BANKC;
+    gasCfgStatusData.u16SystemPowerBankAIn250mW = CFG_PB_TOT_SYS_POWER_BANKA;
+    gasCfgStatusData.u16MinPowerBankAIn250mW = CFG_PB_MIN_POWER_BANKA;
+    gasCfgStatusData.u16SystemPowerBankBIn250mW = CFG_PB_TOT_SYS_POWER_BANKB;
+    gasCfgStatusData.u16MinPowerBankBIn250mW = CFG_PB_MIN_POWER_BANKB;
+    gasCfgStatusData.u16SystemPowerBankCIn250mW =CFG_PB_TOT_SYS_POWER_BANKC;
+    gasCfgStatusData.u16MinPowerBankCIn250mW = CFG_PB_MIN_POWER_BANKC;
 #endif     
     
     for (u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         CFG_PerPortParams (u8PortNum);  
-        CFG_PBPerPortParams (u8PortNum);   
+        CFG_PBPerPortParams (u8PortNum);
+        CFG_PPSPerPortParams (u8PortNum);
     }
 
 }

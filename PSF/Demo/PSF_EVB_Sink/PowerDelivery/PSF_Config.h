@@ -682,14 +682,14 @@ typedef enum
 																		and Current in mA.
                                                                       * This array is common for 
 																	    Source and Sink. It is 
-																		valid only when 
-																		u8NewPDOSelect is set to 1.
+																		valid only when Bit 0 of  
+																		u8ClientRequest is set to 1.
     u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
 																		advertised to Port Partner. 
                                                                       * During run time, this array 
 																	    holds the value of current
-                                                                        u32aNewPDO[7] if 
-																		u8NewPDOSelect is enabled 
+                                                                        u32aNewPDO[7] if Bit 0 of 
+																		u8ClientRequest is enabled 
 																		else holds the value of 
 																		current u32aSourcePDO[7]
     u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Source PDOs 
@@ -821,34 +821,32 @@ typedef enum
     u8NewPDOCnt                     1         R/W          R/W       * Number of New PDOs Supported.
                                                                       * This variable is common for 
 																	    both Source and Sink. It is
-																		valid only when 
-																		u8NewPDOSelect is set to 1.
+																		valid only when Bit 0 of 
+																		u8ClientRequest is set to 1.
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
     u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
 																		port partner.
                                                                       * This variable is common for 
 																	    Source and Sink.
-    u8NewPDOSelect                  1         R/W          R/W       * 0 = Clear
-                                                                      * 1 = Set, when Set the below 
-																	    steps are done by PSF.
-                                                                        1. Load New Source PDO
-                                                                        2. Advertise New PDOs to 
-																		    Port partner
-                                                                        3. Clear all New PDO 
-																		    registers
-                                                                        4. Clear this bit
-    u8SinkConfigSel                 1         R/W          R         * BIT[1:0] - Sink Selection mode for operation.
-                                                                        1. '0x00' Mode A: Prefer Higher Voltage and Wattage
-                                                                        2. '0x01' Mode B: Prefer Lower Voltage and Wattage
+    u8SinkConfigSel                 1         R/W          R         * BIT[1:0] - Sink Selection 
+																	    mode for operation.
+                                                                        1. '0x00' Mode A: Prefer 
+																		Higher Voltage and Wattage
+                                                                        2. '0x01' Mode B: Prefer 
+																		Lower Voltage and Wattage
                                                                       * BIT2 - No USB Suspend Flag
-																		1. '1':Set the flag to '1' in RDO request
-																		2. '0':Set the flag to '0' in RDO request
+																		1. '1':Set the flag to '1' 
+																		in RDO request
+																		2. '0':Set the flag to '0' 
+																		in RDO request
                                                                       * BIT3 - GiveBackFlag
-                                                                        1. '1':Set the flag to '1' in RDO request 
-																				enabling GotoMin feature 
-																		2. Set the flag to '0' in RDO request
-																			 disabling GotoMin Feature
+                                                                        1. '1':Set the flag to '1' 
+																		in RDO request 
+																	    enabling GotoMin feature 
+																		2. Set the flag to '0' in 
+																		RDO request
+																	    disabling GotoMin Feature
     u8FaultInDebounceInms           1         R/W          R         * Debounce timer value in terms 
 																        of milliseconds for VBUS
                                                                         overcurrent fault conditions
@@ -1476,6 +1474,64 @@ typedef enum
     15:12  						   Reserved 									
 	</table> 								
 	
+	<b>f. u8ClientRequest</b>: 
+	u8ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
+	can make use of this variable to request PSF to handle the mentioned client requests. Except 
+	VBUS Power Fault Request, all the other requests cannot coexist i.e Only one 
+	client request could be handled by PSF at a given time. So, it is recommended that the 
+	application could raise a single request at a time i.e set only one of the bits in this variable.
+	
+	In case PSF is busy, it cannot handle any of the client requests. In this case, the 
+	u8ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
+	PSF, so that the application initiate the request again by setting the respective bit in this 
+	variable. If the request is accepted and processed, a response notification would be posted by 
+	PSF as mentioned in the below table.
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R/W          R/W       Renegotiation Request 
+                                    * '0' PSF has not received any renegotiation request.
+                                    * '1' PSF has received a renegotiation request. 
+									Before initiating the request, user has to fill the Source 
+									capabilities in u32aNewPDO array and the PDO count in 
+									u8NewPDOCnt. 
+									Once the request is processed by PSF, u32aNewPDO array and 
+									u8NewPDOCnt would be cleared and 
+									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted. 
+    1       R/W          R/W       Get Sink capabilities Request 
+                                    * '0' PSF has not received any request for getting the sink 
+									      capabilities.
+                                    * '1' PSF has received a request for getting the sink 
+									      capabilities. 
+									Once the request is processed by PSF, 
+									eMCHP_PSF_GET_SINK_CAPS_RCVD or eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD
+									notification would be posted depending on the Sink partner's 
+									response to Get_Sink_Caps message. User can read the received 
+									sink capabilities from u32aPartnerPDO array. 
+    2       R/W          R/W       Send Alert Request 
+                                    * '0' PSF has not received any request for sending the alert
+									      message to the port partner.
+                                    * '1' PSF has received a request to send the alert
+									      message to the port partner.										  
+    3       R/W          R/W       Get Status Request 
+                                    * '0' PSF has not received any request for getting the partner 
+									      status.
+                                    * '1' PSF has received a request for getting the sink 
+									      capabilities.
+    4       R/W          R/W       Get Sink capabilities Extended Request 
+                                    * '0' PSF has not received any request for getting the extended 
+										  sink capabilities.
+                                    * '1' PSF has received a request for getting the extended sink 
+									      capabilities.
+    5       R/W          R/W       Handle VBUS Power Fault Request 
+                                    * '0' PSF has not received any request for handling the VBUS  
+										  Power Fault. 
+                                    * '1' PSF has received a request for handling the VBUS  
+										  Power Fault. 					  
+	7:6  						   Reserved 									
+	</table> 								
+ 
   Remarks:
     None                                                                                                                                
   ***************************************************************************************************************************************/
@@ -1511,7 +1567,7 @@ typedef struct _PortCfgStatus
     UINT8 u8NewPDOCnt;              
     UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerPDOCnt;          
-    UINT8 u8NewPDOSelect;           
+    UINT8 u8ClientRequest;           
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
@@ -1561,7 +1617,7 @@ typedef struct _PortCfgStatus
     Name                            Size in   R/W Config   R/W Run   \Description
                                      Bytes     time         time      
     ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
-    u16MaxPrtPwrBankA               2         R/W          R         * Maximum Port Power Bank A in 
+    u16MaxPrtPwrBankAIn250mW        2         R/W          R         * Maximum Port Power Bank A in 
 																		0.25W steps. 
 																	  * Unit/LSB = 0.25W
 																	  * Sample values this variable
@@ -1571,7 +1627,7 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.
-    u16MaxPrtPwrBankB               2         R/W          R         * Maximum Port Power Bank B in 
+    u16MaxPrtPwrBankBIn250mW        2         R/W          R         * Maximum Port Power Bank B in 
 																		0.25W steps. 
 																	  * Unit/LSB = 0.25W
 																	  * Sample values this variable
@@ -1581,7 +1637,7 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.	
-    u16MaxPrtPwrBankC               2         R/W          R         * Maximum Port Power Bank A in 
+    u16MaxPrtPwrBankCIn250mW        2         R/W          R         * Maximum Port Power Bank A in 
 																		0.25W steps. 
 																	  * Unit/LSB = 0.25W
 																	  * Sample values this variable
@@ -1591,7 +1647,7 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.	
-    u16MaxPrtCurrent                2         R/W          R         * Maximum allowable current for 
+    u16MaxPrtCurrentIn10mA          2         R/W          R         * Maximum allowable current for 
 													                    ports in 10mA steps 
 																	  * Sample values this variable
 																	    can take are, 
@@ -1628,10 +1684,10 @@ typedef struct _PortCfgStatus
 
 typedef struct _PBPortCfgStatus
 {
-    UINT16 u16MaxPrtPwrBankA; 
-    UINT16 u16MaxPrtPwrBankB; 
-    UINT16 u16MaxPrtPwrBankC; 
-    UINT16 u16MaxPrtCurrent; 
+    UINT16 u16MaxPrtPwrBankAIn250mW; 
+    UINT16 u16MaxPrtPwrBankBIn250mW; 
+    UINT16 u16MaxPrtPwrBankCIn250mW; 
+    UINT16 u16MaxPrtCurrentIn10mA; 
     UINT8 u8PBEnablePriority; 
     UINT8 u8aReserved4[3];
 } PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
@@ -1737,14 +1793,14 @@ typedef struct _PPSPortCfgStatus
 																	  * Possible values are, 
 																		1. 0x00 = Bank A 
 																		2. 0x01 = Bank B
-																	    3. 0x10 = Bank C 
-																		4. 0x11 = Shutdown mode
+																	    3. 0x02 = Bank C 
+																		4. 0x03 = Shutdown mode
 																	  *	This variable is used only 
 																	    when either of
 																        INCLUDE_POWER_BALANCING or
 																	    INCLUDE_POWER_THROTTLING is 
 																		set to '1'. 			
-	u16SystemPowerBankA 	        2         R/W          R         * Defines the Total System 
+	u16SystemPowerBankAIn250mW 	    2         R/W          R         * Defines the Total System 
 																		Power of Bank A. Each unit 
 																		is 0.25W 
 																	  * Sample values are, 
@@ -1758,7 +1814,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_BALANCING or 
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'. 
-	u16MinPowerBankA    	        2         R/W          R         * Defines the Guaranteed  
+	u16MinPowerBankAIn250mW    	    2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank A. 
 																		Each unit is 0.25W 
 																	  * Sample values are, 
@@ -1773,7 +1829,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.	
 																		
-	u16SystemPowerBankB 	        2         R/W          R         * Defines the Total System 
+	u16SystemPowerBankBIn250mW 	    2         R/W          R         * Defines the Total System 
 																		Power of Bank B. Each unit 
 																		is 0.25W 
 																	  * Sample values are, 
@@ -1788,7 +1844,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.																
 																		
-	u16MinPowerBankB    	        2         R/W          R         * Defines the Guaranteed  
+	u16MinPowerBankBIn250mW    	    2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank B. 
 																		Each unit is 0.25W 
 																	  * Sample values are, 
@@ -1803,7 +1859,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
 																		
-	u16SystemPowerBankC 	        2         R/W          R         * Defines the Total System 
+	u16SystemPowerBankCIn250mW 	    2         R/W          R         * Defines the Total System 
 																		Power of Bank C. Each unit 
 																		is 0.25W 
 																	  * Sample values are, 
@@ -1818,7 +1874,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
 																		
-	u16MinPowerBankC    	        2         R/W          R         * Defines the Guaranteed  
+	u16MinPowerBankCIn250mW    	    2         R/W          R         * Defines the Guaranteed  
 																		minimum Power of Bank C. 
 																		Each unit is 0.25W 
 																	  * Sample values are, 
@@ -1833,7 +1889,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
 																		
-	u16SharedPowerCapacity    	     2         R/W          R        * Defines the currently 
+	u16SharedPwrCapacityIn250mW     2         R/W          R        * Defines the currently 
 																		available shared power 
 																		capacity from which power 
 																		is allocated to ports that 
@@ -1923,15 +1979,15 @@ typedef struct _GlobalCfgStatusData
 #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
     UINT8 u8PwrThrottleCfg;	
     UINT8 u8aReserved8[3];
-    UINT16 u16SystemPowerBankA; 
-    UINT16 u16MinPowerBankA;   
-    UINT16 u16SystemPowerBankB; 
-    UINT16 u16MinPowerBankB;   
-    UINT16 u16SystemPowerBankC; 
-    UINT16 u16MinPowerBankC;    
+    UINT16 u16SystemPowerBankAIn250mW; 
+    UINT16 u16MinPowerBankAIn250mW;   
+    UINT16 u16SystemPowerBankBIn250mW; 
+    UINT16 u16MinPowerBankBIn250mW;   
+    UINT16 u16SystemPowerBankCIn250mW; 
+    UINT16 u16MinPowerBankCIn250mW;    
 #endif
 #if (TRUE == INCLUDE_POWER_BALANCING)    
-    UINT16 u16SharedPowerCapacity; 
+    UINT16 u16SharedPwrCapacityIn250mW; 
     UINT16 u16Reserved2;
     PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	
 #endif 

@@ -35,6 +35,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <psf_stdinc.h>
 #include <Drivers.h>
 
+UINT8 u16PrevCurrent[CONFIG_PD_PORT_COUNT] = {0};
+
+static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage);
+//static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current);
+/*****************************************************************************/
+
 /***********************************************************************************/
 #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
@@ -42,9 +48,6 @@ UINT8 gu8MPQAlertPortMsk = 0;
         
 static const UINT8 u8aMPQI2CSlvAddr[4] = {MPQ_I2C_SLV_ADDR_PORT_1,MPQ_I2C_SLV_ADDR_PORT_2, MPQ_I2C_SLV_ADDR_PORT_3, MPQ_I2C_SLV_ADDR_PORT_4};
         
-static UINT32 u32aPDOPower[5] ={SET_TO_ZERO, I2C_VALUE_PDO_ID_1, I2C_VALUE_PDO_ID_2, \
-                                         I2C_VALUE_PDO_ID_3, I2C_VALUE_PDO_ID_4};
-
 UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
 {
     UINT8 u8RetVal = FALSE;
@@ -77,9 +80,8 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
                                     u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
     
     /* Set EN_VBUS Status in Port IO status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
+    gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= MPQ_SET_PORT_IO_EN_VBUS_STATUS;
     
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     /* Clear the faults */
     u32I2CCmd = MPQ_CMD_CLEAR_FAULT;
     u8length = I2C_CMD_LENGTH_2;
@@ -120,35 +122,82 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
 
 void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
-    UINT8 u8length = SET_TO_ZERO;;
-    UINT32 u32I2CDCDCPower;
+    /*Assert EN_VBUS */
+    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
+    UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS,
+                                    u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
+    
+/*    if (u16PrevCurrent[u8PortNum] != u16Current)
+    {
+        if (u16Current > u16PrevCurrent[u8PortNum])
+        {
+            MPQDCDC_SetCurrentOutput (u8PortNum, u16Current);
+            MPQDCDC_SetVoltageOutput (u8PortNum, u16VBUSVoltage);
+        }
+        else
+        {
+            MPQDCDC_SetVoltageOutput (u8PortNum, u16VBUSVoltage);
+            MPQDCDC_SetCurrentOutput (u8PortNum, u16Current);
+        }
+        u16PrevCurrent[u8PortNum] = u16Current;
+    }
+    else
+    {
+        MPQDCDC_SetVoltageOutput (u8PortNum, u16VBUSVoltage);
+    } */
+    MPQDCDC_SetVoltageOutput (u8PortNum, u16VBUSVoltage);
+}
+
+static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage)
+{
+    UINT32 u32I2CDCDCVoltage = SET_TO_ZERO;
     UINT8 u8Return = TRUE;
+    UINT8 u8length = SET_TO_ZERO;
 
     if (PWRCTRL_VBUS_0V == u16VBUSVoltage)
     {
-        u32I2CDCDCPower = MPQ_CMD_DISABLE_VOUT;
+        u32I2CDCDCVoltage = MPQ_CMD_DISABLE_VOUT;
         u8length = I2C_CMD_LENGTH_2;
 
-        u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCPower, u8length);
+        u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCVoltage, u8length);
       
     }
     else 
     {
         u8length = I2C_CMD_LENGTH_3;
-        u32I2CDCDCPower = u32aPDOPower[u8PDOIndex];
+        u32I2CDCDCVoltage = (UINT32)u16VBUSVoltage;
+        u32I2CDCDCVoltage = (UINT32) ((u32I2CDCDCVoltage * 1024U)/1000U);
+        u32I2CDCDCVoltage = u32I2CDCDCVoltage << 8;
+        u32I2CDCDCVoltage = u32I2CDCDCVoltage | MPQ_CMD_WRITE_VOLTAGE;
 
-        u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCPower, u8length);
+        u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCVoltage, u8length);
 
-        u32I2CDCDCPower = MPQ_CMD_ENABLE_VBUS; 
+        u32I2CDCDCVoltage = MPQ_CMD_ENABLE_VBUS; 
         u8length = I2C_CMD_LENGTH_2;
 
-        u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCPower, u8length);
+        u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCVoltage, u8length);
     }
 
     if (u8Return)
         __NOP();
-
 }
+
+/*
+static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current)
+{
+    UINT32 u32I2CDCDCCurrent = SET_TO_ZERO;
+    UINT8 u8Return = TRUE;
+    UINT8 u8length = SET_TO_ZERO;
+    
+    u16Current = (u16Current + ((float) u16Current * ((float)MPQ_CURRENT_OFFSET_VALUE/ (float) 100)));
+    
+    u32I2CDCDCCurrent = (u16Current << 8) | MPQ_CMD_WRITE_CURRENT;
+    u8length = I2C_CMD_LENGTH_2;
+    u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCCurrent, u8length);
+
+    if (u8Return)
+        __NOP();
+}*/
  
 UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
 {
@@ -176,10 +225,10 @@ UINT8 MPQDCDC_FaultHandler()
        PSF handles all the faults in a similar manner. Thereby, we reduce 
        one I2C read/write */
     
-    /* Raise a client request to DPM for handling the fault */
+    /* Inform PSF to handle the VBUS Fault */
     if((u16FaultMask & MPQ_IOUT_OC_FAULT) || (u16FaultMask & MPQ_VOUT_FAULT))
     {        
-        u8RetVal = DPM_HandleClientRequest(u8PortNum, eMCHP_PSF_DPM_HANDLE_VBUS_FAULT);
+        gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest |= MPQ_CLIENT_REQ_HANDLE_VBUS_FAULT;
     } 
     
     /* Clear the Fault condition by sending 'CLEAR_FAULTS' command, so that 
@@ -188,8 +237,8 @@ UINT8 MPQDCDC_FaultHandler()
     u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_2);           
     
     return u8RetVal;
-}
-        
+}         
+		
 void MPQDCDC_HandleAlertISR(UINT8 u8PortNum)
 {
     /* Update the DC-DC Alert Port Mask with the port number */

@@ -44,17 +44,20 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_DEFAULT_POWER_ROLE_MASK           BIT(0)
 #define DPM_DEFAULT_DATA_ROLE_MASK            BIT(1)
 #define DPM_DEFAULT_PD_SPEC_REV_MASK         (BIT(2) | BIT(3))
-#define DPM_VCONN_SWAP_SUPPORT_MASK           BIT(4)
+#define DPM_VCONN_SWAP_SUPPORT_MASK           BIT(4) 
+#define DPM_NEW_PDO_ENABLE_MASK               BIT(5)
 
 /*Bit position for u8DPM_ConfigData variable*/
 #define DPM_DEFAULT_POWER_ROLE_POS           0
 #define DPM_DEFAULT_DATA_ROLE_POS            1
 #define DPM_DEFAULT_PD_SPEC_REV_POS          2
+#define DPM_NEW_PDO_ENABLE_POS               5 
 
 /*Defines for getting data from u8DPM_ConfigData variable*/
 #define DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_DEFAULT_POWER_ROLE_MASK) >> DPM_DEFAULT_POWER_ROLE_POS)
 #define DPM_GET_DEFAULT_DATA_ROLE(u8PortNum)          ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_DEFAULT_DATA_ROLE_MASK) >> DPM_DEFAULT_DATA_ROLE_POS)
 #define DPM_GET_DEFAULT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_DEFAULT_PD_SPEC_REV_MASK) >> DPM_DEFAULT_PD_SPEC_REV_POS)
+#define DPM_GET_NEW_PDO_STATUS(u8PortNum)             ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_NEW_PDO_ENABLE_MASK) >> DPM_NEW_PDO_ENABLE_POS)
 
 /*Bit definition for u8DPM_Status variable*/
 #define DPM_CURR_POWER_ROLE_MASK            BIT(0)
@@ -248,6 +251,59 @@ Source/Sink Power delivery objects*/
 #define DPM_HRCompleteWait_MASK             (1 << DPM_HRCompleteWait_POS)
 #define DPM_TypeCErrRecFlag_MASK            (1 << DPM_TypeCErrRecFlag_POS)
 
+ 
+/****************** New PDO Enable/Disable Defines ************/
+#define DPM_ENABLE_NEW_PDO                    1
+#define DPM_DISABLE_NEW_PDO                   0
+/****************** Power Balancing Defines ***********/
+/* PB Enable for System */
+#define DPM_PB_ENABLE                         0x10
+
+/* PB Enable for the port */
+#define DPM_PB_PORT_ENABLE                    0x01
+
+/* Power Throttling Bank values */
+#define DPM_PD_THROTTLE_BANK_A                0U 
+#define DPM_PD_THROTTLE_BANK_B                1U
+#define DPM_PD_THROTTLE_BANK_C                2U
+#define DPM_PD_THROTTLE_SHUTDOWN_MODE         3U
+
+/* Macro to know if PB is enabled for the system and for the port */
+#define DPM_IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE) && \
+                             (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)) \
+                                    ? TRUE : FALSE)   
+
+/* Macro to know if PPS is enabled for the port */
+#define DPM_IS_PPS_ENABLED(u8PortNum)  ((gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & \
+                                        DPM_PPS_ENABLE) ? TRUE : FALSE)
+
+/*********************PPS APDO Defines ******************/
+#define DPM_PPS_ENABLE                           0x01 
+#define DPM_MAX_APDO_COUNT                       3 
+#define DPM_PPS_APDO_EN_DIS_MASK                 0x02 
+
+#define DPM_APDO_MAX_CURRENT_UNIT                50 
+#define DPM_APDO_MIN_VOLTAGE_UNIT                100
+#define DPM_APDO_MAX_VOLTAGE_UNIT                100
+
+#define DPM_APDO_MIN_VOLTAGE_POS                 8
+#define DPM_APDO_MAX_VOLTAGE_POS                 17 
+#define DPM_APDO_PWR_LIMITED_POS                 27 
+
+#define DPM_APDO_MAX_CURRENT_MASK                0x0000007F 
+#define DPM_GET_APDO_MAX_CURRENT(u32Apdo)        ((u32Apdo) & DPM_APDO_MAX_CURRENT_MASK)      
+#define DPM_GET_APDO_MAX_CURRENT_IN_mA(u32Apdo)  ((DPM_GET_APDO_MAX_CURRENT(u32Apdo)) * DPM_APDO_MAX_CURRENT_UNIT)
+
+#define DPM_APDO_MIN_VOLTAGE_MASK                0x0000FF00 
+#define DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)        ((u32Apdo) & DPM_APDO_MIN_VOLTAGE_MASK)
+#define DPM_GET_APDO_MIN_VOLTAGE_IN_mV(u32Apdo)  ((DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)) * DPM_APDO_MIN_VOLTAGE_UNIT) 
+
+#define DPM_APDO_MAX_VOLTAGE_MASK                0x01FE0000 
+#define DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)        ((u32Apdo) & DPM_APDO_MAX_VOLTAGE_MASK)
+#define DPM_GET_APDO_MAX_VOLTAGE_IN_mV(u32Apdo)  ((DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)) * DPM_APDO_MAX_VOLTAGE_UNIT) 
+
+#define DPM_3A_IN_50mA                           (DPM_3000mA / 50) 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -260,6 +316,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                             //Bit 1 - Default Data Role <p />
                             //Bit 3:2 - Default PD Spec Revision <p />
                             //Bit 4 - Default Vconn Swap support
+                            //Bit 5 - New PDO Enable <p /> 
   UINT8 u8DPM_Status;       //Bit 0 - Status of Port Role <p />
                             //Bit 1 - Status of Data Role <p />
                             //Bit 3:2 - Status of PD Spec Revision <p />
@@ -284,13 +341,35 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
-/************************Client Request Enum******************************/
-typedef enum DPM_ClientRequest
-{    
-    eMCHP_PSF_DPM_RENEGOTIATE=1,
-    eMCHP_PSF_DPM_HANDLE_VBUS_FAULT,
-    eMCHP_PSF_DPM_GET_SNK_CAPS
-}eMCHP_PSF_DPM_ClientRequest;
+/************************ Client Request Defines ******************************/
+#define DPM_NO_CLIENT_REQ_PENDING                0x00 
+#define DPM_CLEAR_ALL_CLIENT_REQ                 0x00 
+
+#define DPM_CLIENT_REQ_RENEGOTIATE               BIT(0)
+#define DPM_CLIENT_REQ_GET_SINK_CAPS             BIT(1)
+#define DPM_CLIENT_REQ_SEND_ALERT                BIT(2)
+#define DPM_CLIENT_REQ_GET_STATUS                BIT(3)
+#define DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD        BIT(4)
+#define DPM_CLIENT_REQ_HANDLE_VBUS_FAULT         BIT(5)
+
+/* Macros to raise a client request to DPM */
+#define DPM_SET_RENEGOTIATE_REQ(u8PortNum)     (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+                                                            |= DPM_CLIENT_REQ_RENEGOTIATE)
+
+#define DPM_SET_GET_SINK_CAPS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+                                                            |= DPM_CLIENT_REQ_GET_SINK_CAPS)
+
+#define DPM_SET_SEND_ALERT_REQ(u8PortNum)      (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+                                                            |= DPM_CLIENT_REQ_SEND_ALERT)
+
+#define DPM_SET_GET_STATUS_REQ(u8PortNum)      (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+                                                            |= DPM_CLIENT_REQ_GET_STATUS)
+
+#define DPM_SET_GET_STATUS_EXTD_REQ(u8PortNum)  (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+                                                            |= DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD)
+
+#define DPM_SET_VBUS_FAULT_HANDLING_REQ(u8PortNum) (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+                                                            |= DPM_CLIENT_REQ_HANDLE_VBUS_FAULT)
 
 /* Enumeration to define the types of PDO */ 
 typedef enum PDOtype
@@ -298,42 +377,10 @@ typedef enum PDOtype
     ePDO_FIXED = 0x00,
     ePDO_BATTERY = 0x01,
     ePDO_VARIABLE = 0x02,
+    ePDO_PROGRAMMABLE = 0x03,
     ePDO_INVALID = 0xFF
 } ePDOtypes;
 
-/**************************************************************************************************
-Summary:
-	PSF DPM Client Request Type enum
-Description:
-    eMCHP_PSF_DPM_ClientRequest enum defines all the Client Request type 
-    DPM can handle in DPM_HandleClientRequest.
- 
-    eMCHP_PSF_DPM_RENEGOTIATE: To initiate a renegotiation between the port 
-    partner, this client request is posted. On completion of the request,
-    eMCHP_PSF_PD_CONTRACT_NEGOTIATED is posted in notification DPM callback.
- 
-    eMCHP_PSF_DPM_HANDLE_VBUS_FAULT: 
-    PSF has inbuilt fault mechanism to handle VCONN OCS, VBUS OCS through 
-    FAULT_IN pin, Over Voltage and Under voltage. If external VBUS fault is 
-    detected by the system, for PSF to handle this fault, Client request 
-    eMCHP_PSF_DPM_HANDLE_VBUS_FAULT shall be posted.
-    1)	When fault occurs at implicit contract, Type C error recovery is entered. 
-    When eMCHP_PSF_DPM_HANDLE_VBUS_FAULT is posted, PSF enters error recovery 
-    notifying eMCHP_PSF_ERROR_RECOVERY followed by Type C attach notifying 
-    eMCHP_PSF_TYPEC_CC1_ATTACH/ eMCHP_PSF_TYPEC_CC2_ATTACH indicating the request 
-    is processed completely.
-    2) When a fault is notified during an explicit contract through the client 
-    request, HardReset is sent followed by negotiation. It is indicated by 
-    eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification indicating request is 
-    processed completely.
-
-    eMCHP_PSF_DPM_GET_SNK_CAPS:
-    Application can get the sink capability by sending the Get_Sink_Cap 
-    Control message by raising a client request eMCHP_PSF_DPM_GET_SNK_CAPS.
-    On the request is complete, either eMCHP_PSF_GET_SINK_CAPS_RCVD or 
-    eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD notification is posted based on the response 
-    received for Get_Sink_Cap message.
-*******************************************************************************/	
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Routines
@@ -350,7 +397,7 @@ Description:
         Port initialization of Device policy manager initialize the member of DPM structure 
         "gasDPM[u8PortNum]"
     Conditions:
-        This API is called inside the PD Stack initialisation API call .
+        This API is called inside the PD Stack initialization API call .
     Input:
         u8PortNum - Port Number.
     Return:
@@ -949,27 +996,25 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_HandleClientRequest(UINT8 u8PortNum, eMCHP_PSF_DPM_ClientRequest ePDMClientRequestType)
+        void DPM_ClientRequestHandler(UINT8 u8PortNum);
     Summary:
         API handles client request from Application layer. 
     Devices Supported:
         UPD350 REV A
     Description:
-        Application layer can call this API for DPM to handle any Client request 
-        listed in eMCHP_PSF_DPM_ClientRequest enum than includes Renegotiation,
-        Power Fault handling.
+        Application layer sets the corresponding Client Request bit in
+        Configuration for the DPM to handle any Client request 
+        that includes Renegotiation, Get Sink caps, etc., 
     Conditions:
         None
     Input:
         u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        eMCHP_PSF_DPM_ClientRequest - Client Request Type requested by 
     Return:
-        TRUE - If the DPM is ready to handle the Client Request
-        FALSE - If the DPM is busy, Application layer has to retry later. 
+        None. 
     Remarks:
         None.
 **************************************************************************************************/
-UINT8 DPM_HandleClientRequest(UINT8 u8PortNum, eMCHP_PSF_DPM_ClientRequest ePDMClientRequestType);
+void DPM_ClientRequestHandler(UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:
@@ -1079,6 +1124,95 @@ UINT8 DPM_ComparePDOs(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification);
+
+/**************************************************************************************************
+    Function:
+        void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
+    Summary:
+        Includes APDOs in Source capabilities buffer.  
+    Description:
+        This API can be called to append the APDOs in the Source capabilities buffer. 
+        This API will ensure that the total Data Object count does not exceed 7.  
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        *u8pSrcPDOCnt - Number of PDOs included in Source caps buffer
+        *u32pSrcCap - Pointer to the array of Source caps buffer 
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
+
+/**************************************************************************************************
+    Function:
+        void DPM_HandleVBUSFault(UINT8 u8PortNum); 
+    Summary:
+        Enables DPM to handle the VBUS Fault.   
+    Description:
+        PSF has inbuilt fault mechanism to handle VCONN OCS, VBUS OCS 
+        through FAULT_IN pin, Over Voltage and Under voltage. If external 
+        VBUS fault is detected by the system, for PSF to handle this fault,
+        this API would be called if a client request has been raised to 
+        handle the fault condition. 
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+
+void DPM_HandleVBUSFault(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable); 
+    Summary:
+        Enables DPM to send Source capabilities from the u32aNewPDO Array.  
+    Description:
+        By default, Source capabilities would be taken from u32aSourcePDO 
+        array. If there is a client request for dynamic renegotiation, then Source
+        capabilities has to be taken from u32aNewPDO Array. Any application can 
+        update the u32aNewPDO Array with the source caps message and call this API
+        for the New PDOs to be advertised in the PD Bus. 
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8EnableDisable - TRUE - New PDOs are advertised. 
+                          FALSE - Default Source PDOs are advertised. 
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_ClearAllClientRequests(UINT8 u8PortNum);  
+    Summary:
+        Clears all the pending Client requests raised by applications. 
+    Description:
+        This API can be called in scenarios where clearing of all the existing
+        client requests is needed, say when a detach has occurred in a port
+        or before sending Busy notification in case of DPM not able 
+        to handle the request. 
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_ClearAllClientRequests(UINT8 u8PortNum); 
 
 #endif /*_POLICY_MANAGER_H_*/
 

@@ -82,7 +82,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     /*Debug UART drivers*/
     #define SAMD20UART_Init(n) SERCOMn_UART_Initialise(n)
-    #define SERCOMn_UART_Initialise(n) SERCOM##n##_USART_Initialise()
+    #define SERCOMn_UART_Initialise(n) SERCOM##n##_USART_Initialize()
 
     #define SAMD20UART_Write_Char(n, byData) SERCOMn_UART_Write_Char(n, byData)
     #define SERCOMn_UART_Write_Char(n, byData) SERCOM##n##_USART_Write_Char(byData)
