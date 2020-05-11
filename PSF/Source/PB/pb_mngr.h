@@ -89,9 +89,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PB_PORT_STATUS_CAPABILITY_MISMATCH  0x08U
 #define PB_PORT_STATUS_RENEG_AGAIN          0x10U
 
-/* Power is represented in terms of 250mW */
-#define PB_POWER_UINTS_MILLI_W                  250000
-
 /* Macros to define Excess Power */
 #define PB_ZERO_EXCESS_POWER                    0x0000
 

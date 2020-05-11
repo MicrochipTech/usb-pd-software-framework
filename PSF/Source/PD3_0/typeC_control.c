@@ -1410,6 +1410,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             for (UINT8 u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
             {
                 /* PDO voltage for which VBUS Threshold was configured is determined */
+                /* To-do : Do this only if the PDO is a fixed PDO */
                 if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index])) 
                 {
                     /*Setting the VBUS Status flag for corresponding voltage

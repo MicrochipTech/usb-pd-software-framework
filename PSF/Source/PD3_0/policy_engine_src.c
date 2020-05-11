@@ -403,14 +403,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     else if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         /* Get the PPS timer value that needs to be used for sending PS_RDY */
-                        if (DPM_PPS_TMR_SRC_TRANS_LARGE == DPM_GET_PPS_PS_RDY_TIMER_VAL(u8PortNum))
-                        {
-                            u32PpsSrcTransTmr = PE_PPS_SRCTRANSLARGE_TIMEOUT_MS; 
-                        }
-                        else
-                        {
-                            u32PpsSrcTransTmr = PE_PPS_SRCTRANSSMALL_TIMEOUT_MS; 
-                        }
+                        u32PpsSrcTransTmr = DPM_ReturnPPSSrcTransTmrVal(u8PortNum); 
+                        
                         /* Start tPpsSrcTransSmall/tPpsSrcTransLarge timer */
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               u32PpsSrcTransTmr,

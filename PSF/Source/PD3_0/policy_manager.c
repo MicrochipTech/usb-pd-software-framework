@@ -176,8 +176,7 @@ void DPM_SetPortPower(UINT8 u8PortNum)
         if (DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
         {
             u16VoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
-            u16CurrentInmA = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
-            TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);            
+            u16CurrentInmA = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);            
         }
 #if (TRUE == INCLUDE_PD_SOURCE_PPS) 
         else if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
@@ -186,14 +185,14 @@ void DPM_SetPortPower(UINT8 u8PortNum)
              requested by Sink in the RDO's Output Voltage field */
            u16VoltageInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);   
            u16CurrentInmA = DPM_GET_PROG_RDO_OPR_CURRENT_IN_mA(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO); 
-           /* Note: For PPS, Configuring the VBUS Threshold is not needed 
-              since a PPS Source should not rely on checking the voltage on VBUS. */
         }
 #endif 
         else
         {
             /* No support for Battery and Variable power supplies */
         }
+        TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);            
+        
         PWRCTRL_SetPortPower (u8PortNum, gasDPM[u8PortNum].u8NegotiatedPDOIndex, 
                 u16VoltageInmV, u16CurrentInmA);
     }
@@ -210,6 +209,7 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 	UINT16 u16Current;
 	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
 	{
+        /* To-do: Does u16Current need to be 0 during 0V */
 		u16Current = gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA;
         if (DPM_VBUS_ON == u8VbusOnorOff)
         {
@@ -228,16 +228,25 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 
 UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
 {
-  UINT8 u8VBUSPresence = ((gasTypeCcontrol[u8PortNum].u8IntStsISR & 
+    UINT8 u8VBUSPresence = SET_TO_ZERO; 
+    
+    if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+    {
+        return gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
+    }
+    else
+    {
+        u8VBUSPresence = ((gasTypeCcontrol[u8PortNum].u8IntStsISR & 
                           TYPEC_VBUS_PRESENCE_MASK) >> TYPEC_VBUS_PRESENCE_POS);
-  if (u8VBUSPresence!= TYPEC_VBUS_0V_PRES)
-  {
-      return DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[--u8VBUSPresence]);
-  }
-  else
-  {
-      return TYPEC_VBUS_0V_PRES;
-  }
+        if (u8VBUSPresence!= TYPEC_VBUS_0V_PRES)
+        {
+            return DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[--u8VBUSPresence]);
+        }
+        else
+        {
+            return TYPEC_VBUS_0V_PRES;
+        }
+    }
 }
 
 void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
@@ -285,9 +294,8 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     UINT32 u32PDO = SET_TO_ZERO; 
     UINT32 u32RDO = SET_TO_ZERO; 
 #if (TRUE == INCLUDE_PD_SOURCE_PPS) 
-    UINT16 u16PrevRDOVoltInmV = SET_TO_ZERO; 
     UINT16 u16RDOOpVoltInmV = SET_TO_ZERO; 
-#endif 
+#endif           
     /* Get the status of E-Cable presence and ACK status */
     u8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) & \
                     (~((gasPolicy_Engine[u8PortNum].u8PEPortSts & \
@@ -322,31 +330,32 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         u16SrcPDOCurrVal = DPM_GET_APDO_MAX_CURRENT(u32PDO); 
          
         /* Get the RDO Output Voltage */
-        u16RDOOpVoltInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(u32RDO);
-        
-        if (ePDO_FIXED == (ePDOtypes)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
-        {
-            /* If previous request is for a fixed PDO, calculate previous output
-               voltage from gasDPM[u8PortNum].u32NegotiatedPDO */
-            u16PrevRDOVoltInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
-        }
-        else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
-        {
-            /* If previous request is for a PPS APDO, calculate previous output
-               voltage from gasCfgStatusData.sPerPortData[u8PortNum].u32RDO */            
-            u16PrevRDOVoltInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
-        }
-        else
-        {
-            /* Do Nothing */
-        }
+        u16RDOOpVoltInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(u32RDO);        
     }
 #endif 
     else
     {
         /* No support for Variable and Battery power supplies */
     }
-  
+    
+    /* Update the Previous VBUS voltage */
+    if (ePDO_FIXED == (ePDOtypes)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+    {
+        /* If previous request is for a fixed PDO, calculate previous output
+           voltage from gasDPM[u8PortNum].u32NegotiatedPDO */
+        gasDPM[u8PortNum].u16PrevVBUSVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
+    }
+    else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+    {
+        /* If previous request is for a PPS APDO, calculate previous output
+           voltage from gasCfgStatusData.sPerPortData[u8PortNum].u32RDO */            
+        gasDPM[u8PortNum].u16PrevVBUSVoltageInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
+    }
+    else
+    {
+        /* Do Nothing */
+    }
+    
     /* If Requested Max current is greater current value of Requested Source PDO or
         Requested object position is invalid, received request is invalid request */ 
     u8RetVal = (u16SinkReqCurrVal > u16SrcPDOCurrVal) ? DPM_INVALID_REQUEST : (((u8SinkReqObjPos<= FALSE) || \
@@ -395,10 +404,6 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         {
             /* Set the current Explicit Contract Type as PPS */
             gasDPM[u8PortNum].u8DPM_Status |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;
-            
-            /* Determine the timer value that must be used for sending PS_RDY 
-               in case of Prog RDO based on the voltage step difference */
-            DPM_DeterminePPSPSRdyTimer(u8PortNum, u16PrevRDOVoltInmV, u16RDOOpVoltInmV);    
             
             /* To-do: The above 3 parameters need to be updated for PPS, units 
             differ b/w Fixed and PPS voltages, currents. */
@@ -467,12 +472,14 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
 	UINT32 *pu32SrcCap;
     
 #if (TRUE == INCLUDE_POWER_THROTTLING)
+#if (TRUE == INCLUDE_POWER_BALANCING)
     if (FALSE == DPM_IS_PB_ENABLED(u8PortNum))
     {
         /* If PB is disabled, update the Source caps based on currently 
            active PT Bank. If PB is enabled, this would be taken care by PB */
         DPM_CalcSrcCapsFromCurrPTBank(u8PortNum); 
     }
+#endif 
 #endif 
     
 	/* Get the source PDO count */
@@ -606,22 +613,24 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
 
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 
-void DPM_DeterminePPSPSRdyTimer (UINT8 u8PortNum, UINT16 u16PrevRDOVoltInmV, UINT16 u16CurrRDOVoltInmV)
+UINT32 DPM_ReturnPPSSrcTransTmrVal (UINT8 u8PortNum)
 {
+    UINT16 u16PrevRDOVoltInmV = gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
+    UINT16 u16CurrRDOVoltInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO); 
+    
     /* Calculate the Voltage difference based on whether the transition is 
-       positive or negative */
+       positive or negative. Use tPpsSrcTransLarge for voltage steps larger 
+       than vPpsSmallStep. Else, use tPpsSrcTransSmall */
     UINT16 u16vPpsStepmV = ((u16CurrRDOVoltInmV > u16PrevRDOVoltInmV) ? \
          (u16CurrRDOVoltInmV - u16PrevRDOVoltInmV) : (u16PrevRDOVoltInmV - u16CurrRDOVoltInmV)); 
     
-    /* Use tPpsSrcTransLarge for voltage steps larger than vPpsSmallStep */
     if (u16vPpsStepmV > DPM_PPS_VOLTAGE_SMALL_STEP)
     {
-        gasDPM[u8PortNum].u8DPM_Status |= DPM_PPS_PS_RDY_TIMER_VAL_MASK;         
+        return PE_PPS_SRCTRANSLARGE_TIMEOUT_MS; 
     }
-    /* Else, use tPpsSrcTransSmall */
     else
     {
-        gasDPM[u8PortNum].u8DPM_Status &= ~(DPM_PPS_PS_RDY_TIMER_VAL_MASK);         
+        return PE_PPS_SRCTRANSSMALL_TIMEOUT_MS; 
     }
 }
  
@@ -1039,6 +1048,8 @@ UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum)
 }
 
 /************************  DPM Renegotiation APIs **********************/
+#if (TRUE == INCLUDE_POWER_THROTTLING || (TRUE == INCLUDE_POWER_BALANCING))
+
 void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
 {
     float fVoltageInmV = SET_TO_ZERO; 
@@ -1053,25 +1064,22 @@ void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
         fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index]); 
         
         /* Calculate new current value based on new power */
-        u16CurrentIn10mA = ROUND_OFF_FLOAT_TO_INT((float)(((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT))); 
-        
-        if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
-        {    
-            /* In PB, current value of a port should not exceed PORT_MAX_I */ 
-            u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrentIn10mA); 
-        }
-        else
-        {
-            u16CurrentIn10mA = MIN(u16CurrentIn10mA, (gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA / DPM_PDO_CURRENT_UNIT));
-        }
+        u16CurrentIn10mA = ROUND_OFF_FLOAT_TO_INT((float)(((float)u16PowerIn250mW / fVoltageInmV) * (DPM_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT))); 
+          
+        /* In PB, current value of a port should not exceed PORT_MAX_I */ 
+        u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPerPortData[u8PortNum].u16MaxSrcPrtCurrentIn10mA); 
         
         /* Load the New PDO registers with the new PDO values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8Index] = \
-                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index] & ~(PB_FIXED_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
+                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index] & ~(DPM_FIXED_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
 
     }
 }
 
+#endif 
+
+#if (TRUE == INCLUDE_POWER_THROTTLING)
+/* To-do: Move this API to pt_mngr.c */
 void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum)
 {
     /* Get current PT Bank */
@@ -1093,3 +1101,5 @@ void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum)
            would be advertised from u32aSourcePDO[7] array */
     }
 }
+
+#endif /* INCLUDE_POWER_THROTTLING */ 

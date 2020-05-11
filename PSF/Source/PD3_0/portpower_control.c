@@ -139,7 +139,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
     #endif
     
     /*Hook to modify or overwrite the default Port Power control VBUS drive */
-    MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS (u8PortNum, u16VBUSVoltage, u16Current);
+    MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS (u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current);
 }
 /************************************************************************************/
 void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
