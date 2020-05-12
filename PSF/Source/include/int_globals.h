@@ -150,4 +150,33 @@ extern DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 void IntGlobals_PDInitialization(void);
 /*****************************************************************************/
 
+ /****************************************************************************
+    Function:
+        void IntGlobals_StackStructVersion(void)
+
+    Summary:
+        Internal PSF version and configuration structure version initialization API
+
+    Devices Supported:
+        None
+
+    Description:
+        Initializes the PSF version and configuration Structure version 
+
+    Conditions:
+        None
+
+    Input:
+        None
+
+    Return:
+        None
+
+    Remarks:
+        None
+
+*****************************************************************************/
+
+void IntGlobals_StackStructVersion(void);
+/*****************************************************************************/
 #endif /*_INT_GLOBALS_H_*/
