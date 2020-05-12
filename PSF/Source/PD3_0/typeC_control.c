@@ -1409,8 +1409,10 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 
             for (UINT8 u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
             {
-                /* PDO voltage for which VBUS Threshold was configured is determined */
-                /* To-do : Do this only if the PDO is a fixed PDO */
+                /* Fixed PDO voltage for which VBUS Threshold was configured is determined.
+                   For PPS, Source should not rely on VBUS voltage for sending 
+                   PS_RDY message. Hence, u8IntStsISR shall not be used during PPS 
+                   contract to know the voltage level.  */
                 if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index])) 
                 {
                     /*Setting the VBUS Status flag for corresponding voltage
@@ -2402,10 +2404,22 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum)
 /**************************************************************/
 void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
 {
-  	UINT16 u16PrevVolt = DPM_GetVBUSVoltage(u8PortNum);
+  	UINT16 u16PrevVolt = SET_TO_ZERO; 
+    
+    if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+    {
+        u16PrevVolt = gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
+    }
+    else
+    {
+        u16PrevVolt = DPM_GetVBUSVoltage(u8PortNum);
+    }
+           
 	UINT8 u8SampleEn = SET_TO_ZERO;
     float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor;  
-	
+	UINT16 au16VBUSThrVal[2] = {0}; 
+    
 	/*Setting the VBUS Comparator OFF*/
 	TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
 
@@ -2425,11 +2439,19 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
                                                           TypeC_PowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
         }
         
-        /* Over voltage threshold is set in TypeC_ConfigureVBUSThr */	
-        UINT16 au16VBUSThrVal[] = {(UINT16)((float)TYPEC_GET_OVER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor),
-                                   (UINT16)((float)TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor)
-                                    };
-
+        /* Over voltage threshold is set in TypeC_ConfigureVBUSThr */
+        if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+        {
+            au16VBUSThrVal[INDEX_0] = (UINT16)((float)TYPEC_GET_OVER_VOLTAGE_VBUS_THR(DPM_GET_APDO_MAX_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor);
+            au16VBUSThrVal[INDEX_1] = (UINT16)((float)TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(DPM_GET_APDO_MIN_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor);
+        }
+        else
+        {
+            au16VBUSThrVal[INDEX_0] = (UINT16)((float)TYPEC_GET_OVER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor); 
+            au16VBUSThrVal[INDEX_1] = (UINT16)((float)TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor);
+        }
+        	
         /*Setting the default threshold values in VBUS threshold X(0-4) registers*/ 
         UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_THR2, (UINT8 *)au16VBUSThrVal, sizeof(au16VBUSThrVal));  
 
@@ -2494,11 +2516,23 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 		
 	  	default:
 		{
-            /* Minimum valid PDO voltage configured in u16MinVoltageThr*/
-            u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(u16Voltage) * fVBUSCorrFactor)); 
-            
-            /* Maximum PDO voltage threshold is configured in u16MaxVoltageThr*/
-            u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MAX_VBUS_THR(u16Voltage) * fVBUSCorrFactor));
+            if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+                (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+            {
+                /* Minimum valid PDO voltage is configured in u16MinVoltageThr*/
+                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(DPM_GET_APDO_MIN_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor)); 
+                
+                /* Maximum PDO voltage threshold is configured in u16MaxVoltageThr*/
+                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(DPM_GET_APDO_MAX_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor)); 
+            }   
+            else
+            {
+                /* Minimum valid PDO voltage is configured in u16MinVoltageThr*/
+                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(u16Voltage) * fVBUSCorrFactor)); 
+
+                /* Maximum PDO voltage threshold is configured in u16MaxVoltageThr*/
+                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MAX_VBUS_THR(u16Voltage) * fVBUSCorrFactor));
+            }
             break;
 		}/* end of default*/
         

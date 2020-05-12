@@ -230,9 +230,13 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
 {
     UINT8 u8VBUSPresence = SET_TO_ZERO; 
     
-    if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+    /* u8IntStsISR shall be used only for fixed voltages. In case of PPS contract, 
+       voltage that is driven on VBUS is the output voltage requested by Sink 
+       in RDO */
+    if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
     {
-        return gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
+        return DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
     }
     else
     {
@@ -245,8 +249,8 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
         else
         {
             return TYPEC_VBUS_0V_PRES;
-        }
-    }
+        }     
+    }    
 }
 
 void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
