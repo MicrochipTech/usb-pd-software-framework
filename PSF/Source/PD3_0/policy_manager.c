@@ -683,7 +683,70 @@ void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8St
         }
     }        
 }
+/***********************Status API******************************************/
+UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum)
+{
+    /*Alert Data Object - BIT[31:24] - Type of Alert
+                          BIT[23:20] - Fixed Batteries - Always 0x00
+                          BIT[19:16] - Hot swappable Batteries -  NA - 0x00
+                          BIT[15:0] - Reserved  */
+    UINT32 u32AlertDO = (((UINT32)gasDPM[u8PortNum].u8AlertType) << DPM_ALERT_TYPE_FIELD_POS);
+    /*Clear the gasDPM[u8PortNum].u8AlertType values stored once message is informed
+     to PE through this function*/
+    gasDPM[u8PortNum].u8AlertType = SET_TO_ZERO;
+    return u32AlertDO;
+}
 
+void DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pau8StatusDO)
+{
+    /*Byte 0 - Internal Temperaure
+     Byte 1 - Present Input
+     Byte 2 - Present Battery Input
+     Byte 3 - Event Flags
+     Byte 4 - Temperature Status
+     Byte 5 - Power Status*/
+    pau8StatusDO[INDEX_0] = SET_TO_ZERO; /*Not Supported*/
+    pau8StatusDO[INDEX_1] = BIT(1);        /*External Power is set and DC*/
+    pau8StatusDO[INDEX_2] = SET_TO_ZERO;     /*Present Battery Input not applicable*/
+    pau8StatusDO[INDEX_3] = gasDPM[u8PortNum].u8StatusEventFlags;
+    pau8StatusDO[INDEX_4] = (gasDPM[u8PortNum].u8RealTimeFlags & DPM_REAL_TIME_FLAG_PTF_MASK);
+    pau8StatusDO[INDEX_5] = gasDPM[u8PortNum].u8PowerStatus;
+    
+    /*Clear the status variable once the Status details are provided to the policy Engine*/
+   gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;
+   gasDPM[u8PortNum].u8PowerStatus = RESET_TO_ZERO;
+}
+UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum) 
+{
+    /*PPS STatus Data Object - Byte[0-1] - Output Voltage
+                                Byte[2] - Output Current
+                                Byte [3] - Real Time Flag*/
+    
+    UINT32 u32OutputVoltageIn20mV = MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV;
+    UINT32 u32OutputCurrentIn50mA = MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA;
+    
+    if (MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV != DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL)
+    {
+        u32OutputVoltageIn20mV =  ((MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV) / DPM_20mV);
+    }
+    else
+    {
+        u32OutputVoltageIn20mV = DPM_PPSSDB_OUTPUT_VOLT_UNSUPPORTED_VAL;
+    }
+    
+    if (MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA != DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL)
+    {
+        u32OutputCurrentIn50mA =  ((MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA) / DPM_50mA);
+    }
+    else
+    {
+        u32OutputCurrentIn50mA = DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL;
+    }
+    UINT32 u32PPSStatusDO = (u32OutputVoltageIn20mV | \
+                                (u32OutputCurrentIn50mA << DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS) |\
+                                (((UINT32)gasDPM[u8PortNum].u8RealTimeFlags) << DPM_PPSSDB_REAL_TIME_FLAG_FIELD_POS));
+    return u32PPSStatusDO;
+}
 #endif /*INCLUDE_PD_SOURCE_PPS*/ 
 #endif /*INCLUDE_PD_SOURCE*/  
 
@@ -1102,69 +1165,5 @@ void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum)
     }
 }
 #endif
-/***********************Status API******************************************/
-UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum)
-{
-    /*Alert Data Object - BIT[31:24] - Type of Alert
-                          BIT[23:20] - Fixed Batteries - Always 0x00
-                          BIT[19:16] - Hot swappable Batteries -  NA - 0x00
-                          BIT[15:0] - Reserved  */
-    UINT32 u32AlertDO = (((UINT32)gasDPM[u8PortNum].u8AlertType) << DPM_ALERT_TYPE_FIELD_POS);
-    /*Clear the gasDPM[u8PortNum].u8AlertType values stored once message is informed
-     to PE through this function*/
-    gasDPM[u8PortNum].u8AlertType = SET_TO_ZERO;
-    return u32AlertDO;
-}
 
-void DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pau8StatusDO)
-{
-    /*Byte 0 - Internal Temperaure
-     Byte 1 - Present Input
-     Byte 2 - Present Battery Input
-     Byte 3 - Event Flags
-     Byte 4 - Temperature Status
-     Byte 5 - Power Status*/
-    pau8StatusDO[INDEX_0] = SET_TO_ZERO; /*Not Supported*/
-    pau8StatusDO[INDEX_1] = BIT(1);        /*External Power is set and DC*/
-    pau8StatusDO[INDEX_2] = SET_TO_ZERO;     /*Present Battery Input not applicable*/
-    pau8StatusDO[INDEX_3] = gasDPM[u8PortNum].u8StatusEventFlags;
-    pau8StatusDO[INDEX_4] = (gasDPM[u8PortNum].u8RealTimeFlags & DPM_REAL_TIME_FLAG_PTF_MASK);
-    pau8StatusDO[INDEX_5] = gasDPM[u8PortNum].u8PowerStatus;
-    
-    /*Clear the status variable once the Status details are provided to the policy Engine*/
-   gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;
-   gasDPM[u8PortNum].u8PowerStatus = RESET_TO_ZERO;
-}
-
-UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum) 
-{
-    /*PPS STatus Data Object - Byte[0-1] - Output Voltage
-                                Byte[2] - Output Current
-                                Byte [3] - Real Time Flag*/
-    
-    UINT32 u32OutputVoltageIn20mV = MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV;
-    UINT32 u32OutputCurrentIn50mA = MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA;
-    
-    if (MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV != DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL)
-    {
-        u32OutputVoltageIn20mV =  ((MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV) / DPM_20mV);
-    }
-    else
-    {
-        u32OutputVoltageIn20mV = DPM_PPSSDB_OUTPUT_VOLT_UNSUPPORTED_VAL;
-    }
-    
-    if (MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA != DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL)
-    {
-        u32OutputCurrentIn50mA =  ((MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA) / DPM_50mA);
-    }
-    else
-    {
-        u32OutputCurrentIn50mA = DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL;
-    }
-    UINT32 u32PPSStatusDO = (u32OutputVoltageIn20mV | \
-                                (u32OutputCurrentIn50mA << DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS) |\
-                                (((UINT32)gasDPM[u8PortNum].u8RealTimeFlags) << DPM_PPSSDB_REALTIME_FLAG_FIELD_POS));
-    return u32PPSStatusDO;
-}
 /************************************************************************************************************************/

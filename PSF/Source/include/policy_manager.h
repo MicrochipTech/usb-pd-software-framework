@@ -351,8 +351,8 @@ Source/Sink Power delivery objects*/
 /*OCP Applicable only for Source*/
 #define DPM_ALERT_TYPE_OCP                      BIT(2)
 #define DPM_ALERT_TYPE_OTP                      BIT(3)
-/*Operating Current Change*/
-#define DPM_ALERT_TYPE_OPR_CURRENT_CHANGE       BIT(4)
+/*Operating Condition Change*/
+#define DPM_ALERT_TYPE_OPR_COND_CHANGE       BIT(4)
 /*Source Input Change Event */
 #define DPM_ALERT_TYPE_SRC_INPUT_CHANGE         BIT(5)       
 #define DPM_ALERT_TYPE_OVP                      BIT(6)
@@ -368,31 +368,34 @@ Source/Sink Power delivery objects*/
 
 /************************u8PowerStatus variable possible values macros*********/
 /*Source Power limited due to cable supported current*/
-#define DPM_PWRSTS_SRCPWR_LMD_CABLE_CURR     BIT(1)
+#define DPM_PWRSTS_SRCPWR_LMT_CABLE_CURR     BIT(1)
 /*Source Power limited due to insufficient power available while sourcing other ports */
-#define DPM_PWRSTS_SRCPWR_LMD_INSUFF_PWR_AVAIL     BIT(2)
+#define DPM_PWRSTS_SRCPWR_LMT_INSUFF_PWR_AVAIL     BIT(2)
 /*Source Power limited due to insufficient external power */
-#define DPM_PWRSTS_SRCPWR_LMD_INSUFF_EXT_PWR    BIT(3)
+#define DPM_PWRSTS_SRCPWR_LMT_INSUFF_EXT_PWR    BIT(3)
 /*Source power limited due to Event Flag in place (Event flag must also be set)*/
-#define DPM_PWRSTS_SRCPWR_LMD_EVNT_FLAG         BIT(4)
+#define DPM_PWRSTS_SRCPWR_LMT_EVNT_FLAG         BIT(4)
 /*Source power limited due to temperature*/
-#define DPM_PWRSTS_SRCPWR_LMD_TEMP              BIT(5)
+#define DPM_PWRSTS_SRCPWR_LMT_TEMP              BIT(5)
 
 
 /************************u8RealTimeFlags variable possible values macros*********/
+/*PTF- Preset Tempaerature flag*/
 #define DPM_REAL_TIME_FLAG_PTF_NOT_SUPPORTED       0
 #define DPM_REAL_TIME_FLAG_PTF_NORMAL              BIT(1)
 #define DPM_REAL_TIME_FLAG_PTF_WARNING             BIT(2)
 #define DPM_REAL_TIME_FLAG_PTF_OVER_TEMP           (BIT(1) | BIT(2))
 #define DPM_REAL_TIME_FLAG_PTF_MASK                 (BIT(1) | BIT(2))
 
+/*OMF- Operating Mode Flag indicating Source operating mode.
+ When set it is Current Limit Mode, When cleared it is Constant Voltage mode*/
 #define DPM_REAL_TIME_FLAG_OMF_IN_CL_MODE          BIT(3)
-#define DPM_REAL_TIME_FLAG_OMF_IN_CV_MODE          ~BIT(3)
+#define DPM_REAL_TIME_FLAG_OMF_FIELD_MASK          BIT(3)
 
 /***************************PPS status Data block *********************/
 #define DPM_PPSSDB_OUTPUT_VOLTAGE_FIELD_POS       0
 #define DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS       2
-#define DPM_PPSSDB_REALTIME_FLAG_FIELD_POS        3
+#define DPM_PPSSDB_REAL_TIME_FLAG_FIELD_POS       3
 
 #define DPM_PPSSDB_OUTPUT_VOLT_UNSUPPORTED_VAL    0xFFFF
 #define DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL    0xFF
@@ -433,7 +436,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                             //    1 - tPpsSrcTransLarge
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
-  #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
       UINT8 u8PowerFaultISR;          //Power fault ISR flag
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
       UINT8 u8VCONNPowerGoodTmrID;    //VConn PowerGood Timer ID
@@ -443,11 +446,13 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 	  UINT8 u8PowerFaultFlags;        //Flags required for power fault handling
                                       //BIT 0 - Hard Reset complete wait flag
                                       //BIT 1 - Type-C Error Recovery Flag
-  #endif
+#endif
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
   UINT8 u8AlertType;
   UINT8 u8StatusEventFlags;
   UINT8 u8PowerStatus;
   UINT8 u8RealTimeFlags;
+#endif
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
 /************************ Client Request Defines ******************************/
@@ -1507,7 +1512,7 @@ UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pu8StatusDO);
+        DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pau8StatusDO);
     Summary:
         Updates Status DO in the input array passed
     Description:
@@ -1516,7 +1521,7 @@ UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum);
         None.
     Input:
         u8PortNum - Port number.
-        pu8StatusDO - Pointer to array of length 6 to be passed.
+        pau8StatusDO - Pointer to array of length 6 to be passed.
     Return:
         None. 
     Remarks:
