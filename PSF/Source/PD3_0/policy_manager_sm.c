@@ -277,12 +277,14 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 /* Enable Fault PIO to detect OCS as it would have been disabled as part of
                     Power fault handling*/
                 UPD_EnableFaultIn(u8PortNum);
+                #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                 /*On completion Hard Reset mechanism for VBUS fault initiate an alert message*/
                 if (gasDPM[u8PortNum].u8AlertType & (DPM_ALERT_TYPE_OVP | DPM_ALERT_TYPE_OCP |
-                    DPM_ALERT_TYPE_OPR_CURRENT_CHANGE))
+                    DPM_ALERT_TYPE_OPR_COND_CHANGE))
                 {
                     DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
                 }
+                #endif
             } /*end of else condition of VBUS max count exceed check*/
 			/* Reset Wait for HardReset Complete bit*/
             gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_HR_COMPLETE_WAIT_MASK);
@@ -397,14 +399,17 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             }
             if(gasDPM[u8PortNum].u8PowerFaultISR & ~DPM_POWER_FAULT_VCONN_OCS)
             {
+                #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                 /*If VBUS fault occurs in a Explicit contract, register the alert
                    type and wait for HardReset completion to initiate the Alert message*/
                 if (gasDPM[u8PortNum].u8PowerFaultISR & (DPM_POWER_FAULT_UV | DPM_POWER_FAULT_VBUS_OCS))
                 {   
                     /*if it is fixed supply set OCP else OPCC for PPS*/
-                    if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+                    if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
-                        gasDPM[u8PortNum].u8AlertType = DPM_ALERT_TYPE_OPR_CURRENT_CHANGE;
+                        /*Operating condition change  as Alert Type and OMF is set to Current Limit mode*/
+                        gasDPM[u8PortNum].u8AlertType = DPM_ALERT_TYPE_OPR_COND_CHANGE;
+                        gasDPM[u8PortNum].u8RealTimeFlags |= DPM_REAL_TIME_FLAG_OMF_IN_CL_MODE;
                     }
                     else
                     {
@@ -417,6 +422,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                     gasDPM[u8PortNum].u8AlertType = DPM_ALERT_TYPE_OVP;
                     gasDPM[u8PortNum].u8StatusEventFlags = DPM_EVENT_TYPE_OVP;
                 }
+               #endif /*INCLUDE_PD_SOURCE_PPS*/
                 /*Increment the fault count*/
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount++;            
             }
@@ -589,15 +595,18 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         {
             /*When detach event is notified, reset the Internal events*/
             gasDPM[u8PortNum].u8DPMInternalEvents = RESET_TO_ZERO;
+            #if (TRUE == INCLUDE_PD_SOURCE_PPS)
             /*Clear all the status registers*/
             gasDPM[u8PortNum].u8AlertType = SET_TO_ZERO;
             gasDPM[u8PortNum].u8StatusEventFlags = SET_TO_ZERO;
             gasDPM[u8PortNum].u8PowerStatus = SET_TO_ZERO;
             gasDPM[u8PortNum].u8RealTimeFlags = SET_TO_ZERO;
+            #endif
         }
         /* Initiate a sequence only when the Policy Engine is in PS_RDY state*/
         if(TRUE == PE_IsPolicyEngineIdle(u8PortNum))
         {
+            #if (TRUE == INCLUDE_PD_SOURCE_PPS)
             if (DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents\
                                                     & DPM_INT_EVT_INITIATE_ALERT))
             {
@@ -615,6 +624,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 /*Clear the Internal event since it is processed*/
                 gasDPM[u8PortNum].u8DPMInternalEvents &= ~DPM_INT_EVT_INITIATE_GET_STATUS;
             }
+            #endif
         } 
     }
 }

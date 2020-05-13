@@ -1687,7 +1687,7 @@ Description:
     have feature to get output voltage, return 0xFFFFFFFF to denote the feature
     is not supported. 
 Conditions:
-    Output voltage is shall be written in terms of milliVolts.
+    Output voltage shall be returned in terms of milliVolts.
 Return:
     None.
 Example:
@@ -1701,7 +1701,7 @@ Example:
     </code>
 Remarks:
     User definition of this Hook function is mandatory when INCLUDE_PD_SOURCE_PPS is
-    defines as '1'.                          
+    defined as '1'.                          
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV        0xFFFFFFFF
 
@@ -1717,7 +1717,7 @@ Description:
     have feature to get output current, return 0xFFFFFFFF to denote the feature
     is not supported. 
 Conditions:
-    Output voltage is shall be written in terms of mA.
+    Output voltage shall be returned in terms of mA.
 Return:
     None.
 Example:
@@ -1731,7 +1731,7 @@ Example:
     </code>
 Remarks:
     User definition of this Hook function is mandatory when INCLUDE_PD_SOURCE_PPS is
-    defines as '1'.                          
+    defined as '1'.                          
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
 
