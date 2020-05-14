@@ -40,6 +40,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 UINT8 MchpPSF_Init(void)
 {
     UINT8 u8InitStatus = TRUE;
+
+	/*Initialize PSF Stack and Structure version*/
+    IntGlobals_StackStructVersion();
     
     /* Load configurations */
     MCHP_PSF_HOOK_BOOT_TIME_CONFIG(&gasCfgStatusData);

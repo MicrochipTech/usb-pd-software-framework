@@ -105,7 +105,7 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 /**************************************************************************************************/  
     
 /********************Configuration and Status register ************************************/    
-GLOBAL_CFG_STATUS_DATA gasCfgStatusData;
+GLOBAL_CFG_STATUS_DATA gasCfgStatusData = {0};
 /**************************************************************************************************/ 
 
 /*******************************************************************/
@@ -138,4 +138,13 @@ void IntGlobals_PDInitialization(void)
 #endif 
 }
 
+void IntGlobals_StackStructVersion(void)
+{
+    gasCfgStatusData.u8MinorVersion = STRUCT_MINOR_VERSION;
+    gasCfgStatusData.u8MajorVersion = STRUCT_MAJOR_VERSION;
+    gasCfgStatusData.u8PSFMajorVersion = HIBYTE(SYSTEM_FW_REV); 
+    gasCfgStatusData.u8PSFMinorVersion = LOBYTE(SYSTEM_FW_REV);
+ 
+
+}
 /**************************************************************************************************/
