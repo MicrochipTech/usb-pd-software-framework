@@ -209,7 +209,6 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 	UINT16 u16Current;
 	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
 	{
-        /* To-do: Does u16Current need to be 0 during 0V */
 		u16Current = gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA;
         if (DPM_VBUS_ON == u8VbusOnorOff)
         {
