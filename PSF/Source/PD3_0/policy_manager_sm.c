@@ -496,7 +496,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
        check saves code execution time by letting the control not to check 
        for each if-else condition present inside in case this condition
        is false. */ 
-    if (DPM_NO_CLIENT_REQ_PENDING != gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
+    if (DPM_NO_CLIENT_REQ_PENDING == gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
     {
         return;
     }
