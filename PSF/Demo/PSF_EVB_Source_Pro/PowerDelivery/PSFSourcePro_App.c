@@ -179,7 +179,8 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             /* To-do: Get_Status Transmission should be initiated by Stack. 
                It should not be done by application */
             /* Raise a client request to initiate Get Sink Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest = 0x08;                                                           
+            /*TODO: Ram remove this client request as internal event is handled by stack it self*/
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest = 0x08;                                                           
             break; 
         }
         

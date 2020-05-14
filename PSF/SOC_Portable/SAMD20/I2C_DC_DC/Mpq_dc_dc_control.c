@@ -241,8 +241,9 @@ UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum)
     
     /* Inform PSF to handle the VBUS Fault */
     if((u16FaultMask & MPQ_IOUT_OC_FAULT) || (u16FaultMask & MPQ_VOUT_FAULT))
-    {        
-        gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest |= MPQ_CLIENT_REQ_HANDLE_VBUS_FAULT;
+    { 
+        /*Todo:Jega handle it new client request defines*/
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest |= MPQ_CLIENT_REQ_HANDLE_VBUS_FAULT;
     } 
     
     /* Clear the Fault condition by sending 'CLEAR_FAULTS' command, so that 

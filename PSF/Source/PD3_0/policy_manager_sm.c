@@ -279,8 +279,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 UPD_EnableFaultIn(u8PortNum);
                 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                 /*On completion Hard Reset mechanism for VBUS fault initiate an alert message*/
-                if (gasDPM[u8PortNum].u8AlertType & (DPM_ALERT_TYPE_OVP | DPM_ALERT_TYPE_OCP |
-                    DPM_ALERT_TYPE_OPR_COND_CHANGE))
+                if (gasDPM[u8PortNum].u8AlertType & (DPM_ALERT_TYPE_OVP | DPM_ALERT_TYPE_OCP))
                 {
                     DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
                 }
@@ -404,23 +403,13 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                    type and wait for HardReset completion to initiate the Alert message*/
                 if (gasDPM[u8PortNum].u8PowerFaultISR & (DPM_POWER_FAULT_UV | DPM_POWER_FAULT_VBUS_OCS))
                 {   
-                    /*if it is fixed supply set OCP else OPCC for PPS*/
-                    if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
-                    {
-                        /*Operating condition change  as Alert Type and OMF is set to Current Limit mode*/
-                        gasDPM[u8PortNum].u8AlertType = DPM_ALERT_TYPE_OPR_COND_CHANGE;
-                        gasDPM[u8PortNum].u8RealTimeFlags |= DPM_REAL_TIME_FLAG_OMF_IN_CL_MODE;
-                    }
-                    else
-                    {
-                        gasDPM[u8PortNum].u8AlertType = DPM_ALERT_TYPE_OCP;
-                    }
-                    gasDPM[u8PortNum].u8StatusEventFlags = DPM_EVENT_TYPE_OCP;
+                    gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OCP;
+                    gasDPM[u8PortNum].u8StatusEventFlags |= DPM_EVENT_TYPE_OCP;
                 }
                 else if (gasDPM[u8PortNum].u8PowerFaultISR & DPM_POWER_FAULT_OVP)
                 {
-                    gasDPM[u8PortNum].u8AlertType = DPM_ALERT_TYPE_OVP;
-                    gasDPM[u8PortNum].u8StatusEventFlags = DPM_EVENT_TYPE_OVP;
+                    gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OVP;
+                    gasDPM[u8PortNum].u8StatusEventFlags |= DPM_EVENT_TYPE_OVP;
                 }
                #endif /*INCLUDE_PD_SOURCE_PPS*/
                 /*Increment the fault count*/
@@ -459,7 +448,12 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType)
      detected by internal mechanism */
     if (!gasDPM[u8PortNum].u8PowerFaultISR)
     {
-        /**VBUS OCS flag is set for DPM to handle the VBUS fault*/
+        #if (TRUE ==  INCLUDE_PD_SOURCE)
+        /*Disable VBUS_EN on detection of external fault*/
+        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
+                gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_DE_ASSERT);
+        #endif
+        /*VBUS OCS flag is set for DPM to handle the VBUS fault*/
         MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
         gasDPM[u8PortNum].u8PowerFaultISR |= u8FaultType;
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
@@ -487,7 +481,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 /************************DPM Client Request Handling APIs ******************************/ 
 void DPM_ClearAllClientRequests(UINT8 u8PortNum) 
 {
-    gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
 }
 
 void DPM_ClientRequestHandler(UINT8 u8PortNum)
@@ -496,7 +490,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
        check saves code execution time by letting the control not to check 
        for each if-else condition present inside in case this condition
        is false. */ 
-    if (DPM_NO_CLIENT_REQ_PENDING != gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
+    if (DPM_NO_CLIENT_REQ_PENDING == gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
         return;
     }
@@ -505,10 +499,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     if(TRUE == PE_IsPolicyEngineIdle(u8PortNum))
     {            
         /* Check for renegotiation request */
-        if (DPM_CLIENT_REQ_RENEGOTIATE & gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
+        if (DPM_CLIENT_REQ_RENEGOTIATE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
         {
             /* Clear the request since the request is accepted and going to be handled */
-            gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest &= 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_RENEGOTIATE);                
             /* Enable New PDO Select in DPM Config */
             DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO);
@@ -525,10 +519,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             }
         } /*DPM_CLIENT_REQ_RENEGOTIATE*/
         /* Check for Get Sink caps request */
-        else if (DPM_CLIENT_REQ_GET_SINK_CAPS & gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
+        else if (DPM_CLIENT_REQ_GET_SINK_CAPS & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
         {
             /* Clear the request since the request is accepted and going to be handled */
-            gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest &= 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_GET_SINK_CAPS);                
 
             /* Check for Port Power Role */
@@ -544,7 +538,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             }
         }/*DPM_CLIENT_REQ_GET_SINK_CAPS*/
         /* Check for Get Sink Caps Extended Request */
-        else if (DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD & gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
+        else if (DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
         {
             /* This would be needed in future phases while supporting  
                Power Balancing on PPS ports */
@@ -567,15 +561,51 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
     /* Check for VBUS Fault Handling request. Policy Engine Idle check 
        is not needed for this has fault has to be handled with highest priority*/
-    if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV & gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
+    if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
         /* Call the DPM API that sets the VBUS OV flag*/
         DPM_HandleExternalVBUSFault(u8PortNum, DPM_POWER_FAULT_OVP); 
     }
-    else if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS & gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest)
+    else if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
-        /* Call the DPM API that sets the VBUS OCS flag*/
-        DPM_HandleExternalVBUSFault(u8PortNum, DPM_POWER_FAULT_VCONN_OCS);
+        /*Inform DPM to handle VBUS OCS only if it is Fixed supply else it is operating condition
+          change in case of PPS supply*/
+        #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+        if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+        {
+            /*Operating condition change  as Alert Type and OMF is set to Current Limit mode*/
+            gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OPR_COND_CHANGE;
+            gasDPM[u8PortNum].u8StatusEventFlags |= DPM_EVENT_TYPE_CL_MODE;
+            gasDPM[u8PortNum].u8RealTimeFlags |= DPM_REAL_TIME_FLAG_OMF_IN_CL_MODE;
+            /*Initiate Alert message*/
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
+            
+        }
+        else
+        #endif /*INCLUDE_PD_SOURCE_PPS*/
+        {
+            /*Fixed supply*/
+            /* Call the DPM API to handle external VBUS fault */
+            DPM_HandleExternalVBUSFault(u8PortNum, DPM_POWER_FAULT_VBUS_OCS);
+        }   
+    }
+    else if (DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {
+        #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+        if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+        {
+            /*Operating condition change  as Alert Type and OMF is set to Current Limit mode*/
+            gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OPR_COND_CHANGE;
+            gasDPM[u8PortNum].u8StatusEventFlags &= ~DPM_EVENT_TYPE_CL_CV_MODE_MASK;
+            gasDPM[u8PortNum].u8RealTimeFlags &= ~DPM_REAL_TIME_FLAG_OMF_FIELD_MASK;
+            /*Initiate Alert message*/
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
+        }
+        else
+        {
+            /*no need to handle of fixed supply*/
+        }
+        #endif
     }
 #endif         
 }
@@ -624,7 +654,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 /*Clear the Internal event since it is processed*/
                 gasDPM[u8PortNum].u8DPMInternalEvents &= ~DPM_INT_EVT_INITIATE_GET_STATUS;
             }
-            #endif
+            #endif /*INCLUDE_PD_SOURCE_PPS*/
         } 
     }
 }
