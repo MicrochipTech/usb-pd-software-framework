@@ -43,11 +43,12 @@ void PB_Init(void)
     if (gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE)
     {
         /* Bank A shall be the default bank selected at power on. */
-        gasCfgStatusData.u16SharedPwrCapacityIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;     
+        gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
         gsPBIntSysParam.u32AsyncReqWaitTimerInms = PB_ASYN_REQ_WAIT_TIMER_IN_MS; 
         gsPBIntSysParam.u8ReclaimPortNum = SET_TO_ZERO; 
         gsPBIntSysParam.u8RecoverPortNum = SET_TO_ZERO; 
-        gsPBIntSysParam.u8RecoveringMode = FALSE;         
+        gsPBIntSysParam.u8RecoveringMode = FALSE;  
+        gasCfgStatusData.u16SharedPwrCapacityIn250mW = gsPBIntSysParam.u16TotalSysPwrIn250mW; 
         
         /* Initialize Port Parameters only if the Port role is Source and 
            PB is enabled for the port */
