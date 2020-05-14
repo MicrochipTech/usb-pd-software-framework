@@ -901,7 +901,7 @@ Remarks:
 
 /*********************************************************************************************
   Function:
-        MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)
+        MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData)
   Summary:
     Updates the global and per port Configuration parameters.
   Description:
@@ -911,35 +911,34 @@ Remarks:
   Conditions:
     None.
   Input:
-    gasCfgStatusData -  Holds the structure pointer of the structure
+    pasCfgStatusData -  Holds the structure pointer of the structure
 						_GlobalCfgStatusData
   Return:
     None.
   Example:
     <code>
-		#define MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData) PSF_LoadConfig(gasCfgStatusData)
-		void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA gasCfgStatusData);
-		void PSF_LoadConfig(gasCfgStatusData)
+		#define MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData) PSF_LoadConfig(pasCfgStatusData)
+		void PSF_LoadConfig(pasCfgStatusData)
 		{
 		// Configure the global parameters
 		// Select Throttling Bank B
-		gasCfgStatusData.u8PwrThrottleCfg = 0x01;
+		pasCfgStatusData->u8PwrThrottleCfg = 0x01;
 		// Set 120W as Total system Power of Bank A
-		gasCfgStatusData.u16SystemPowerBankAIn250mW = 0x01E0U;
+		pasCfgStatusData->u16SystemPowerBankAIn250mW = 0x01E0U;
 		// Configure per port parameters
 		// Set Port 1's VBUS Maximum Fault Count as 3
-		gasCfgStatusData.sPerPortData[0].u8VBUSMaxFaultCnt = 0x03; // 0 is the port number
+		pasCfgStatusData->sPerPortData[0].u8VBUSMaxFaultCnt = 0x03; // 0 is the port number
 		// Configure PIO6 as the DC_DC_EN pin for Port 1
-		gasCfgStatusData.sPerPortData[0].u8Pio_DC_DC_EN = 0x06; // 0 is the port number
+		pasCfgStatusData->sPerPortData[0].u8Pio_DC_DC_EN = 0x06; // 0 is the port number
 		// Configure per port PB parameters
 		// Set Port 2's maximum port power for Bank C as 60W
-		gasCfgStatusData.sPBPerPortData[1].u16MaxPrtPwrBankCIn250mW = 0x00F0U; // 1 is the port number
+		pasCfgStatusData.sPBPerPortData[1]->u16MaxPrtPwrBankCIn250mW = 0x00F0U; // 1 is the port number
 		}
     </code>
   Remarks:
     User definition of this Hook function is mandatory                                          
   *********************************************************************************************/
-#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData)       PSF_LoadConfig()  	
+#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData)       PSF_LoadConfig(pasCfgStatusData)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1630,7 +1629,7 @@ Description:
     indicated thorough a voltage level on Digital to Analog Converter(DAC)'s 
     output pin. The voltage level on DAC's output pin is calculated based on 
     per port Configuration parameters, which were configured using 
-    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(gasCfgStatusData) hook.
+    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData) hook.
   
     In gasCfgStatusData structure, if u16DAC_I_CurrentInd_MaxInA is 5000mA, 
     u16DAC_I_MaxOutVoltInmV is 2500mV, u16DAC_I_MinOutVoltInmV is 0V and direction 
