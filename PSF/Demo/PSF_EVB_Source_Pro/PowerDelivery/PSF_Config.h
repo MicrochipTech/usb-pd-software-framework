@@ -665,13 +665,13 @@ typedef enum
                                                                       * This array is common for 
 																	    Source and Sink. It is 
 																		valid only when Bit 0 of  
-																		u8ClientRequest is set to 1.
+																		u32ClientRequest is set to 1.
     u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
 																		advertised to Port Partner. 
                                                                       * During run time, this array 
 																	    holds the value of current
                                                                         u32aNewPDO[7] if Bit 0 of 
-																		u8ClientRequest is enabled 
+																		u32ClientRequest is enabled 
 																		else holds the value of 
 																		current u32aSourcePDO[7]
     u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Partner PDOs 
@@ -773,7 +773,7 @@ typedef enum
                                                                       * This variable is common for 
 																	    both Source and Sink. It is
 																		valid only when Bit 0 of 
-																		u8ClientRequest is set to 1.
+																		u32ClientRequest is set to 1.
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
     u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
@@ -1441,15 +1441,15 @@ typedef enum
     15:12  						   Reserved 									
 	</table> 								
 	
-	<b>f. u8ClientRequest</b>: 
-	u8ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
+	<b>f. u32ClientRequest</b>: 
+	u32ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
 	can make use of this variable to request PSF to handle the mentioned client requests. Except 
 	VBUS Power Fault Request, all the other requests cannot coexist i.e Only one 
 	client request could be handled by PSF at a given time. So, it is recommended that the 
 	application could raise a single request at a time i.e set only one of the bits in this variable.
 	
 	In case PSF is busy, it cannot handle any of the client requests. In this case, the 
-	u8ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
+	u32ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
 	PSF, so that the application initiate the request again by setting the respective bit in this 
 	variable. If the request is accepted and processed, a response notification would be posted by 
 	PSF as mentioned in the below table.
@@ -1476,27 +1476,25 @@ typedef enum
 									notification would be posted depending on the Sink partner's 
 									response to Get_Sink_Caps message. User can read the received 
 									sink capabilities from u32aPartnerPDO array. 
-    2       R/W          R/W       Send Alert Request 
-                                    * '0' PSF has not received any request for sending the alert
-									      message to the port partner.
-                                    * '1' PSF has received a request to send the alert
-									      message to the port partner.										  
-    3       R/W          R/W       Get Status Request 
-                                    * '0' PSF has not received any request for getting the partner 
-									      status.
-                                    * '1' PSF has received a request for getting the sink 
-									      capabilities.
-    4       R/W          R/W       Get Sink capabilities Extended Request 
+    2       R/W          R/W       Get Sink capabilities Extended Request 
                                     * '0' PSF has not received any request for getting the extended 
 										  sink capabilities.
                                     * '1' PSF has received a request for getting the extended sink 
 									      capabilities.
-    5       R/W          R/W       Handle VBUS Power Fault Request 
-                                    * '0' PSF has not received any request for handling the VBUS  
-										  Power Fault. 
-                                    * '1' PSF has received a request for handling the VBUS  
-										  Power Fault. 					  
-	7:6  						   Reserved 									
+    3       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
+                                    * Set this bit to request PSF to process externally detected
+                                        over voltage VBUS fault.
+    4       R/W          R/W       Handle VBUS Power Fault Over current Request 
+                                    * Set this bit to request PSF to process externally detected
+                                        over current VBUS power fault or to inform PSF that Current
+                                        Limit mode is entered by external DC-DC controller.  
+    5       R/W          R/W       Handle VBUS Power Fault Over current exit Request 
+                                    * Set this bit to inform PSF that externally detected 
+                                        over current VBUS power fault condition is exited or 
+                                        Constant Voltage mode is entered by external DC-DC controller.
+
+				  
+	31:6  						   Reserved 									
 	</table> 								
  
   Remarks:
@@ -1513,6 +1511,7 @@ typedef struct _PortCfgStatus
     UINT32 u32aPartnerPDO[7];       
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
+    UINT32 u32ClientRequest; 
     UINT16 u16AllocatedPowerIn250mW;   
     UINT16 u16NegoVoltageIn50mV;      
     UINT16 u16NegoCurrentIn10mA;      
@@ -1533,8 +1532,7 @@ typedef struct _PortCfgStatus
     UINT8 u8SinkPDOCnt;             
     UINT8 u8NewPDOCnt;              
     UINT8 u8AdvertisedPDOCnt; 		
-    UINT8 u8PartnerPDOCnt;          
-    UINT8 u8ClientRequest;           
+    UINT8 u8PartnerPDOCnt;                    
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 

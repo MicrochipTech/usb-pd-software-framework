@@ -363,8 +363,8 @@ Source/Sink Power delivery objects*/
 #define DPM_EVENT_TYPE_OCP                      BIT(1)
 #define DPM_EVENT_TYPE_OTP                      BIT(2)       
 #define DPM_EVENT_TYPE_OVP                      BIT(3)
-#define DPM_EVENT_TYPE_CF_MODE                  BIT(4)
-#define DPM_EVENT_TYPE_CV_MODE                  ~BIT(4)
+#define DPM_EVENT_TYPE_CL_MODE                  BIT(4)
+#define DPM_EVENT_TYPE_CL_CV_MODE_MASK          BIT(4)
 
 /************************u8PowerStatus variable possible values macros*********/
 /*Source Power limited due to cable supported current*/
@@ -464,21 +464,22 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #define DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD        BIT(2)
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(3)
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(4)
+#define DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT      BIT(5)
 
 /* Macros to raise a client request to DPM */
-#define DPM_SET_RENEGOTIATE_REQ(u8PortNum)     (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+#define DPM_SET_RENEGOTIATE_REQ(u8PortNum)     (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_RENEGOTIATE)
 
-#define DPM_SET_GET_SINK_CAPS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+#define DPM_SET_GET_SINK_CAPS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_GET_SINK_CAPS)
 
-#define DPM_SET_GET_STATUS_EXTD_REQ(u8PortNum)  (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+#define DPM_SET_GET_STATUS_EXTD_REQ(u8PortNum)  (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD)
 
-#define DPM_SET_VBUS_FAULT_OV_REQ(u8PortNum)    (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+#define DPM_SET_VBUS_FAULT_OV_REQ(u8PortNum)    (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV)
 
-#define DPM_SET_VBUS_FAULT_OCS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+#define DPM_SET_VBUS_FAULT_OCS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
 
 /***************************Internal Events Defines**********************************/

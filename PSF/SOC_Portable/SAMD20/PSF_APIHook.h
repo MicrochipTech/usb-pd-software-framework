@@ -1527,7 +1527,7 @@ Description:
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
     Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
-    application through u8ClientRequest variable in sPerPortDatastructure. On 
+    application through u32ClientRequest variable in sPerPortDatastructure. On 
     receiving this notification, the application can re-initiate the request.
 Remarks:
     None                                                                                               
