@@ -38,35 +38,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 void PB_Init(void)
 {
     UINT8 u8PortNum; 
-    UINT16 u16TotSysPwrIn250mW = 0; 
         
     /* Initialize System parameters only if PB is enabled for the system */
     if (gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE)
     {
-        /* Get the Total System Power based on currently selected Throttling bank */
-        if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
-        {
-            u16TotSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
-        }
-        else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
-        {
-            u16TotSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankBIn250mW;
-        }
-        else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
-        {
-            u16TotSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankCIn250mW; 
-        }
-        else
-        {
-            /* Power Throttling Shutdown mode */
-        }
-    
-        gsPBIntSysParam.u16TotalSysPwrIn250mW = u16TotSysPwrIn250mW;
+        /* Bank A shall be the default bank selected at power on. */
+        gasCfgStatusData.u16SharedPwrCapacityIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;     
         gsPBIntSysParam.u32AsyncReqWaitTimerInms = PB_ASYN_REQ_WAIT_TIMER_IN_MS; 
         gsPBIntSysParam.u8ReclaimPortNum = SET_TO_ZERO; 
         gsPBIntSysParam.u8RecoverPortNum = SET_TO_ZERO; 
         gsPBIntSysParam.u8RecoveringMode = FALSE;         
-        gasCfgStatusData.u16SharedPwrCapacityIn250mW = gsPBIntSysParam.u16TotalSysPwrIn250mW; 
         
         /* Initialize Port Parameters only if the Port role is Source and 
            PB is enabled for the port */
@@ -87,8 +68,6 @@ void PB_Init(void)
 
 void PB_InitializePortParam(UINT8 u8PortNum)
 {
-    UINT16 u16MinPwrIn250mW = 0, u16MaxPwrIn250mW = 0;
-    
     /* Initialize all the Port specific parameters */ 
     gasPBIntPortParam[u8PortNum].u8AttachSeqNo             = SET_TO_ZERO; 
     gasPBIntPortParam[u8PortNum].eRenegSubState            = ePB_IDLE_SS; 
@@ -97,31 +76,9 @@ void PB_InitializePortParam(UINT8 u8PortNum)
     gasPBIntPortParam[u8PortNum].u8PBPortStatusMask        = FALSE; 
     gasPBIntPortParam[u8PortNum].ePBPortState              = ePB_IDLE_STATE;
     gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW  = SET_TO_ZERO; 
-    
-    /* Get the Guaranteed Minimum Power and Maximum Power based on 
-       currently selected throttling bank */
-    if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
-    {
-        u16MinPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW; 
-        u16MaxPwrIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW; 
-    }
-    else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
-    {
-        u16MinPwrIn250mW = gasCfgStatusData.u16MinPowerBankBIn250mW;
-        u16MaxPwrIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW; 
-    }
-    else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
-    {
-        u16MinPwrIn250mW = gasCfgStatusData.u16MinPowerBankCIn250mW;
-        u16MaxPwrIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW; 
-    }
-    else
-    {
-        /* Power Throttling Shutdown mode */
-    }
-    
-    gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = u16MinPwrIn250mW;
-    gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = u16MaxPwrIn250mW; 
+    /* Bank A shall be the default bank selected at power on. */
+    gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW;
+    gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW; 
 }
 
 void PB_ChangePortStates(UINT8 u8PortNum, PB_PORT_STATES ePortState, PB_RENEG_SUBSTATE ePortSubState)
