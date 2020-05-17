@@ -751,6 +751,17 @@ UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum)
                                 (((UINT32)gasDPM[u8PortNum].u8RealTimeFlags) << DPM_PPSSDB_REAL_TIME_FLAG_FIELD_POS));
     return u32PPSStatusDO;
 }
+
+void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+{
+	/* Set the timer Id to Max Concurrent Value*/
+ 	gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+	
+	/* Reset the status variable*/
+    gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;
+    gasDPM[u8PortNum].u8PowerStatus = RESET_TO_ZERO;
+	
+}
 #endif /*INCLUDE_PD_SOURCE_PPS*/ 
 #endif /*INCLUDE_PD_SOURCE*/  
 

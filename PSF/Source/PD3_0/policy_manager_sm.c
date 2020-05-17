@@ -626,11 +626,16 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /*When detach event is notified, reset the Internal events*/
             gasDPM[u8PortNum].u8DPMInternalEvents = RESET_TO_ZERO;
             #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+            /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
+            PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
             /*Clear all the status registers*/
             gasDPM[u8PortNum].u8AlertType = SET_TO_ZERO;
             gasDPM[u8PortNum].u8StatusEventFlags = SET_TO_ZERO;
             gasDPM[u8PortNum].u8PowerStatus = SET_TO_ZERO;
             gasDPM[u8PortNum].u8RealTimeFlags = SET_TO_ZERO;
+            /* Set the timer Id to Max Concurrent Value*/
+            gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+            
             #endif
         }
         /* Initiate a sequence only when the Policy Engine is in PS_RDY state*/
@@ -645,6 +650,12 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
 
                 /*Clear the Internal event since it is processed*/
                 gasDPM[u8PortNum].u8DPMInternalEvents &= ~DPM_INT_EVT_INITIATE_ALERT;
+                
+                /*start the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS to clear the status flag
+                  on timeout if there is no request for status*/
+                gasDPM[u8PortNum].u8StsClearTmrID = PDTimer_Start (DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS,\
+                                                          DPM_StatusFaultPersist_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
+                
             }
             else if (DPM_INT_EVT_INITIATE_GET_STATUS == (gasDPM[u8PortNum].u8DPMInternalEvents\
                                                     & DPM_INT_EVT_INITIATE_GET_STATUS))
