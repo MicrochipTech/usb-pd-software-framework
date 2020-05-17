@@ -452,6 +452,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8StatusEventFlags;
   UINT8 u8PowerStatus;
   UINT8 u8RealTimeFlags;
+  UINT8 u8StsClearTmrID;
 #endif
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
@@ -1547,6 +1548,25 @@ void DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pu8StatusDO);
         None. 
 **************************************************************************************************/
 UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+    Summary:
+        Timer callback for DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timeout
+    Description:
+        API to clear the status flags stored on DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timeout
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8DummyVariable - Dummy variable
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 #endif /*_POLICY_MANAGER_H_*/
 

@@ -174,6 +174,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    is set as 12 seconds. */
 #define PE_SOURCE_PPS_COMM_TIMEOUT_MS           MILLISECONDS_TO_TICKS(13000)
 
+
+// *****************************************************************************
+// Section: DPM Timeout configuration
+// *****************************************************************************
+/*Status Fault Persistence Timer -the port shall start a status fault persistence
+  timer on the occurrence of the one of the Fault status types. If the status
+  is not sent to the partner within the time defined in the 
+  DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS, the status shall be cleared.*/
+#define DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS    MILLISECONDS_TO_TICKS(19000)
+
 #endif /* _TIMER_DEFS_H */
 
 /* *****************************************************************************
