@@ -188,11 +188,12 @@ typedef enum GetSinkCapsState
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntSysParam 
 {
     UINT32 u32AsyncReqWaitTimerInms; /* Asynchronous Request Wait timer value*/
-    UINT16 u16TotalSysPwrIn250mW; /* Max Shared capacity of the system */
-    UINT16 u16PoolPowerIn250mW;    /* Currently available pool power */
+    UINT16 u16TotalSysPwrIn250mW;  /* Max Shared capacity of the system */
+    UINT16 u16Reserved1;           /* Reserved for future use */ 
     UINT8 u8ReclaimPortNum;        /* Port from which power is reclaimed */
     UINT8 u8RecoverPortNum;        /* Port which is in recovering mode */  
     UINT8 u8RecoveringMode;        /* Recover status of a port */
+    UINT8 u8Reserved2;             /* Reserved for future use */ 
 } MCHP_PSF_STRUCT_PACKED_END  PB_INT_SYS_PARAM;
 
 /*****************************************************************************
