@@ -1100,6 +1100,78 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             break; 
         }
 	  
+        case TYPEC_DISABLED: 
+        {
+            switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
+            {
+                /* As per Type C Spec, Disabled State Requirements are, 
+                The port shall not drive VBUS or VCONN, and shall 
+                present a high-impedance to ground (above zOPEN) on
+                its CC1 and CC2 pins. */ 
+                case TYPEC_DISABLED_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_DISABLED_ENTRY_SS\r\n"); 
+                    
+                    /* Disable the receiver*/
+                    PRL_EnableRx (u8PortNum, FALSE);
+                    
+                    /*Setting CC Comparator OFF*/
+                    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+                    
+                    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
+                    {
+                        /*Disable VBUS by driving to vSafe0V*/
+                        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+                        
+                        /* Clear TypeC Current Rp Val bits in u8PortSts so that in unattached
+                           SRC state, the Rp value from user configuration would be set. */
+                        gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+                        
+                        /*Setting the CC1 and CC2 line as Open Disconnect*/
+                        TypeC_SetPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS); 
+                    }
+                    else
+                    {
+                        gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+                        /*Disable the Sink circuitry to stop sinking the power from source*/
+                        PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+                        
+                         /*Setting the CC1 and CC2 line as Open Disconnect*/
+                        TypeC_SetPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS);                        
+                    }
+                    #if (INCLUDE_VCONN_SWAP_SUPPORT | INCLUDE_PD_SOURCE)
+                    /*Disable VCONN if the port sources the VCONN already or failed while trying to
+                    source VCONN*/
+                    if (((u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) \
+                        != TYPEC_VCONN_DISABLED) || (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_ON_REQ_MASK))
+                    {
+                        /*Clearing the VCONN ON Request mask if VCONN has turned ON*/
+                        gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
+
+                        /*Disable VCONN by switching off the VCONN FETS*/
+                        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);
+                    }
+                    #endif 
+                    
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_IDLE_SS;
+                            
+                    break; 
+                }
+                
+                case TYPEC_DISABLED_IDLE_SS:
+                {
+                    break; 
+                }
+                
+                default:
+                {
+                    break; 
+                }
+            }
+            break; 
+        }
+        
         case TYPEC_AUDIO_ACCESSORY:
             break;
               
@@ -1797,7 +1869,7 @@ void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
          /*Clearing the VCONN ON Request mask if VCONN has turned ON*/
          gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK; 
 
-         /*Clearing the CC Interupt flag since CC change is because of the VCONN ON event*/
+         /*Clearing the CC Interrupt flag since CC change is because of the VCONN ON event*/
          gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_CCINT_STATUS_MASK;
     
     }

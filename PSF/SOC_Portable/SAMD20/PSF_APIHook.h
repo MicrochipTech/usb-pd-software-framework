@@ -534,7 +534,7 @@ Summary:
 Description:
     This hook is called when PSF enters into a critical section. It must provide an implementation
     to disable the interrupts globally. This hook implementation must be very short, otherwise 
-    resposne time may be delayed and cause timing issues/conflicts. Define relevant function that 
+    response time may be delayed and cause timing issues/conflicts. Define relevant function that 
 	has no arguments without return type.
 Conditions:
     None.

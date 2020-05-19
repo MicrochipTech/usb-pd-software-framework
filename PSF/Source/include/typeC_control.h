@@ -216,8 +216,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CC_THRES7_MATCH      BIT(7)
 
 /*Defines holding CC THRES match for different types of UFP attach and powered cable attach event for DFP */
-/*TYPEC_DFP_ACT_DEF defines the Active cable attach event for DFP having default current as Type C curent*/
-/*TYPEC_DFP_UFP_1A5 defines the UFP attach event for DFP having 1.5A current as Type C curent*/
+/*TYPEC_DFP_ACT_DEF defines the Active cable attach event for DFP having default current as Type C current*/
+/*TYPEC_DFP_UFP_1A5 defines the UFP attach event for DFP having 1.5A current as Type C current*/
 #define TYPEC_DFP_ACT_DEF	        TYPEC_CC_THRES0_MATCH 
 #define TYPEC_DFP_ACT_1A5		    TYPEC_CC_THRES1_MATCH  
 #define TYPEC_DFP_ACT_3A0		    TYPEC_CC_THRES3_MATCH  
@@ -226,8 +226,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_DFP_UFP_3A0		    TYPEC_CC_THRES6_MATCH 
 
 /*Defines holding CC THRES match values for different types of DFP attach event for UFP */
-/*TYPEC_UFP_DFP_DEF defines the DFP with default current as Type C curent attach event for UFP*/
-/*TYPEC_UFP_DFP_3A0 defines the DFP with 3.0A as Type C curent attach event for UFP*/
+/*TYPEC_UFP_DFP_DEF defines the DFP with default current as Type C current attach event for UFP*/
+/*TYPEC_UFP_DFP_3A0 defines the DFP with 3.0A as Type C current attach event for UFP*/
 #define TYPEC_UFP_DFP_DEF		    TYPEC_CC_THRES0_MATCH  
 #define TYPEC_UFP_DFP_1A5			TYPEC_CC_THRES2_MATCH    
 #define TYPEC_UFP_DFP_3A0			TYPEC_CC_THRES4_MATCH  
@@ -415,7 +415,8 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_DEBUG_ACCESSORY_SNK               8
 #define TYPEC_ERROR_RECOVERY                    9
 #define TYPEC_AUDIO_ACCESSORY                  10
-#define TYPEC_INVALID_STATE                    11
+#define TYPEC_DISABLED                         11 
+#define TYPEC_INVALID_STATE                    12
 
 /*Setting invalid Substate as maximum value of UINT8*/
 #define TYPEC_INVALID_SUBSTATE                 255
@@ -472,13 +473,16 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ERROR_RECOVERY_IDLE_SS                    3
 #define TYPEC_ERROR_RECOVERY_TO_SS                      4
     
+/*Defines for TYPEC_DISABLED state's sub-states in TYPE C SM*/
+#define TYPEC_DISABLED_ENTRY_SS                         0
+#define TYPEC_DISABLED_IDLE_SS                          1 
 /*************************************************************/
 
 /*Defines for VCONN OCS Enable*/
 #define TYPEC_VCONN_OCS_EN                BIT(9)
 #define TYPEC_VCONN_OCS_EN_POS            9
 
-/*Masks used For getting Port Rp Currrent from gasCfgStatusData structure*/ 
+/*Masks used For getting Port Rp Current from gasCfgStatusData structure*/ 
 #define TYPEC_PORT_RPVAL_MASK	        (BIT(4) | BIT(3))
 #define TYPEC_PORT_RPVAL_POS            3
 
@@ -609,7 +613,7 @@ Summary:
 
   Description:
     This Structure holds the CC1,CC2,VBUS match register value.It also Stores the CC Debounce match 
-    value programmed ,CC interrupt occurence,VBUS interrupt occurence, Powered cable presence status
+    value programmed ,CC interrupt occurrence,VBUS interrupt occurrence, Powered cable presence status
 
   Remarks:
     Need to be packed always based on type of microcontroller.

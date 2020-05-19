@@ -475,14 +475,12 @@ void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* p
 	UINT32 *pu32SrcCap;
     
 #if (TRUE == INCLUDE_POWER_THROTTLING)
-#if (TRUE == INCLUDE_POWER_BALANCING)
     if (FALSE == DPM_IS_PB_ENABLED(u8PortNum))
     {
         /* If PB is disabled, update the Source caps based on currently 
            active PT Bank. If PB is enabled, this would be taken care by PB */
-        DPM_CalcSrcCapsFromCurrPTBank(u8PortNum); 
+        PT_CalculateSrcPDOs(u8PortNum); 
     }
-#endif 
 #endif 
     
 	/* Get the source PDO count */
@@ -1155,29 +1153,37 @@ void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
 
 #endif 
 
-#if (TRUE == INCLUDE_POWER_THROTTLING)
-/* To-do: Move this API to pt_mngr.c */
-void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum)
+/********************* DPM API for Port Enable/Disable ******************/
+void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 {
-    /* Get current PT Bank */
-    UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK;
-    
-    if (PD_THROTTLE_BANK_B == u8CurrPTBank)
+    if (FALSE == u8Enable)
     {
-        DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
-        DPM_UpdatePDO(u8PortNum, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW);
-    }
-    else if (PD_THROTTLE_BANK_C == u8CurrPTBank)
-    {
-        DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
-        DPM_UpdatePDO(u8PortNum, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW);        
+        /* Disable the port by changing Type C states to 
+           TYPEC_DISABLED and TYPEC_DISABLED_ENTRY_SS */
+        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
+        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS;
+
+        /* Change Policy Engine state and sub-state to invalid state */
+        gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+        gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
+        
+        /* Kill all the timers*/
+        PDTimer_KillPortTimers (u8PortNum);
     }
     else
     {
-        /* New PDO should not be enabled for Bank A since the source caps
-           would be advertised from u32aSourcePDO[7] array */
+        if (TYPEC_DISABLED == gasTypeCcontrol[u8PortNum].u8TypeCState)
+        {
+            /* Enable the port by changing Type C states to 
+               TYPEC_UNATTACHED_SRC and TYPEC_UNATTACHED_SRC_ENTRY_SS  */
+            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
+            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;        
+        }
+        else
+        {
+            /* Do nothing since the port shall only be enabled if it was 
+            previously in the disabled state */ 
+        }
     }
 }
-#endif
-
 /************************************************************************************************************************/

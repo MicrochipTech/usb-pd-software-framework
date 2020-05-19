@@ -861,6 +861,30 @@ void PB_HandleReclaimPortDetachOrRenegCmplt(void);
 **************************************************************************************************/
 void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum); 
 
+/**************************************************************************************************
+    Function:
+        void PB_OnPTBankSwitch(UINT8 u8PortNum); 
+
+    Summary:
+        This API is used to handle the Throttling Bank Switch Event.
+
+    Description:
+        This API can be called to update the global and per port PB parameters 
+        and initiate renegotiation for minimum guaranteed power based 
+        on the new PT bank.  
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port Number 
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void PB_OnPTBankSwitch(UINT8 u8PortNum); 
+
 #endif /* _PB_MNGR_H */
 
 /* *****************************************************************************
