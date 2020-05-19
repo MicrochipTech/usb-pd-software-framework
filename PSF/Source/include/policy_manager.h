@@ -431,9 +431,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                             //      01 - Variable
                             //      10 - Battery
                             //      11 - Programmable
-                            //Bit 7 - PPS PS_RDY Timer Value
-                            //    0 - tPpsSrcTransSmall
-                            //    1 - tPpsSrcTransLarge
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
