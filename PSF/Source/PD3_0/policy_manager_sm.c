@@ -582,11 +582,19 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
        is not needed for this has fault has to be handled with highest priority*/
     if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
+        /* Clear the client request since it is accepted */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                    ~(DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV);
+                
         /* Call the DPM API that sets the VBUS OV flag*/
         DPM_HandleExternalVBUSFault(u8PortNum, DPM_POWER_FAULT_OVP); 
     }
     else if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
+        /* Clear the client request since it is accepted */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &=
+                                    ~(DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS);
+                
         /*Inform DPM to handle VBUS OCS only if it is Fixed supply else it is operating condition
           change in case of PPS supply*/
         #if (TRUE == INCLUDE_PD_SOURCE_PPS)
@@ -610,6 +618,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     }
     else if (DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
+        /* Clear the client request since it is accepted */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &=
+                                ~(DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT);
+                
         #if (TRUE == INCLUDE_PD_SOURCE_PPS)
         if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
         {
@@ -625,6 +637,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             /*no need to handle of fixed supply*/
         }
         #endif
+    }
+    else
+    {
+        /* Do Nothing */
     }
 #endif         
 }
@@ -683,6 +699,10 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 //TBD
                 /*Clear the Internal event since it is processed*/
                 gasDPM[u8PortNum].u8DPMInternalEvents &= ~DPM_INT_EVT_INITIATE_GET_STATUS;
+            }
+            else
+            {
+                /* Do Nothing */
             }
             #endif /*INCLUDE_PD_SOURCE_PPS*/
         } 
