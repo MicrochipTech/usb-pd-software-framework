@@ -686,4 +686,54 @@ void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum)
     PB_InitiateNextPortNegotiation ();    
 }
 
+void PB_OnPTBankSwitch(UINT8 u8PortNum)
+{
+    /* Update global and per port parameters of PB */
+    if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg)
+    {
+        gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW;         
+    }
+    else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+    {
+        gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankBIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankBIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW; 
+    }
+    else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+    {
+        gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankCIn250mW;                
+        gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankCIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW;                 
+    }
+    else
+    {
+       // Do Nothing 
+    } 
+    
+    gasCfgStatusData.u16SharedPwrCapacityIn250mW = gsPBIntSysParam.u16TotalSysPwrIn250mW; 
+    
+    for (UINT8 u8Index = INDEX_0; u8Index < CONFIG_PD_PORT_COUNT; u8Index++)
+    {
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        {    
+            gasCfgStatusData.u16SharedPwrCapacityIn250mW -= gasPBIntPortParam[u8Index].u16MinGuaranteedPwrIn250mW; 
+        }
+    }   
+    
+    if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))
+    {
+        /* Clear the initial Negotiation Done status since renegotiation for 
+           port is going to start again with minimum guaranteed power value */
+        gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_INITIAL_NEG_DONE);
+        
+        PB_InitiateNegotiationWrapper(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW);
+    }
+    else
+    {
+        /* No need to do anything since we expect an attach notification from DPM */
+    }
+}
+
 #endif

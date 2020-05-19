@@ -724,7 +724,17 @@ typedef enum
                                                                         2. 0x012C = 3A
                                                                         3. 0x01F4 = 5A
                                                                         4. 0x03FF = 10.24A
-    u16MaximumOperatingCurInmA      2          R/W         R         * Maximum allowable current or 
+    u16MaxSrcPrtCurrentIn10mA       2         R/W          R         * Maximum allowable current for 
+													                    ports in 10mA steps 
+																	  * Sample values this variable
+																	    can take are, 
+																		1. 0x0032 = 0.5A
+																		2. 0x012C = 3A 
+																		3. 0x01F4 = 5A
+																	  * Note : Values above 5A 
+																	    (0x01F5 - 0x0FFF) are not 
+																		supported	 
+    u16MaximumOperatingCurInmA      2         R/W          R         * Maximum allowable current or 
 																		system's maximum operating
                                                                         current in terms of mA
     u16aMinPDOPreferredCurInmA[7]   14         R/W         R         * Preferred minimum current 
@@ -822,7 +832,7 @@ typedef enum
                                                                       * This variable is common for 
 																	    both Source and Sink. It is
 																		valid only when Bit 0 of 
-																		u8ClientRequest is set to 1.
+																		u32ClientRequest is set to 1.
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
     u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
@@ -1505,7 +1515,7 @@ typedef enum
                                     * '1' PSF has received a request for getting the sink 
 									      capabilities. 
 									Once the request is processed by PSF, 
-									eMCHP_PSF_GET_SINK_CAPS_RCVD or eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD
+									eMCHP_PSF_SINK_CAPS_RCVD or eMCHP_PSF_SINK_CAPS_NOT_RCVD
 									notification would be posted depending on the Sink partner's 
 									response to Get_Sink_Caps message. User can read the received 
 									sink capabilities from u32aPartnerPDO array. 
@@ -1548,13 +1558,14 @@ typedef struct _PortCfgStatus
     UINT16 u16AllocatedPowerIn250mW;   
     UINT16 u16NegoVoltageIn50mV;      
     UINT16 u16NegoCurrentIn10mA;      
-    UINT16 u16MaximumOperatingCurInmA; 
+    UINT16 u16MaxSrcPrtCurrentIn10mA; 
     UINT16 u16PortIOStatus;
     UINT16 u16PortStatusChange;
     UINT16 u16PortIntrMask;
     UINT16 u16PowerGoodTimerInms;
 	#if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
+    UINT16 u16MaximumOperatingCurInmA; 
     UINT16 u16MinimumOperatingCurInmA;
     UINT16 u16DAC_I_MaxOutVoltInmV; 
     UINT16 u16DAC_I_MinOutVoltInmV;
@@ -1645,17 +1656,7 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.	
-    u16MaxPrtCurrentIn10mA          2         R/W          R         * Maximum allowable current for 
-													                    ports in 10mA steps 
-																	  * Sample values this variable
-																	    can take are, 
-																		1. 0x0032 = 0.5A
-																		2. 0x012C = 3A 
-																		3. 0x01F4 = 5A
-																	  * Note : Values above 5A 
-																	    (0x01F5 - 0x0FFF) are not 
-																		supported	 
-	u8aReserved4[3]					3						          Reserved 											
+	u8aReserved4					1						          Reserved 											
 	</table>	
 
     <b>2. Members that are Bit-Mapped bytes:</b>
@@ -1678,16 +1679,15 @@ typedef struct _PortCfgStatus
      None                                                               
    **********************************************************************/
 
-#if (TRUE == INCLUDE_POWER_BALANCING) 
+#if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING)) 
 
 typedef struct _PBPortCfgStatus
 {
     UINT16 u16MaxPrtPwrBankAIn250mW; 
     UINT16 u16MaxPrtPwrBankBIn250mW; 
     UINT16 u16MaxPrtPwrBankCIn250mW; 
-    UINT16 u16MaxPrtCurrentIn10mA; 
     UINT8 u8PBEnablePriority; 
-    UINT8 u8aReserved4[3];
+    UINT8 u8aReserved4;
 } PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
 
 #endif 
@@ -1707,7 +1707,23 @@ typedef struct _PBPortCfgStatus
                                      Bytes     time         time      
     ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
     u32aPPSApdo[3]                  12        R/W          R         Defines the PPS APDOs. 
-	u8aReserved5[3]				    3                                Reserved 
+	u8aReserved5[1]				    3                                Reserved 
+    u32PartnerAlertInfo             4         R            R         * Complete Alert information 
+																		received from Partner, Will 
+																		be blank of no Alert has 
+																		been received.
+                                                                      * This variable is common for 
+																	    Source and Sink.	
+	u8aPartnerStatus[6]             6         R            R         * Store the Status information 
+																		received from Port Partner. 
+																	  * This array would hold a valid 
+																		value if 
+																		eMCHP_PSF_SINK_STATUS_RCVD
+																		notification is posted. It 
+																		would be 0 when 
+																		eMCHP_PSF_SINK_STATUS_NOT_RCVD
+																		notification is posted. 
+
 	</table> 
 
     <b>2. Members that are Bit-Mapped bytes:</b> 
@@ -1741,9 +1757,11 @@ typedef struct _PBPortCfgStatus
 
 typedef struct _PPSPortCfgStatus
 {
+    UINT32 u32aPPSApdo[3]; 
+    UINT32 u32PartnerAlertInfo; 
+    UINT8 u8aPartnerStatus[6];
     UINT8 u8PPSCfgData;
-    UINT8 u8aReserved5[3];
-    UINT32 u32aPPSApdo[3];  
+    UINT8 u8aReserved5[1];
 } PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
 
 #endif 
@@ -1995,23 +2013,17 @@ typedef struct _GlobalCfgStatusData
     UINT16 u16IDHeaderVDO; 
     
     PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; 
-#if (TRUE == INCLUDE_POWER_BALANCING)
-    UINT8 u8PBEnableSelect;	
-    UINT8 u8aReserved7[3];	
-#endif 
-#if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
+    
+#if (TRUE == INCLUDE_POWER_BALANCING || (TRUE == INCLUDE_POWER_THROTTLING))
+    UINT16 u16SharedPwrCapacityIn250mW;
+    UINT8 u8PBEnableSelect;	    
     UINT8 u8PwrThrottleCfg;	
-    UINT8 u8aReserved8[3];
     UINT16 u16SystemPowerBankAIn250mW; 
     UINT16 u16MinPowerBankAIn250mW;   
     UINT16 u16SystemPowerBankBIn250mW; 
     UINT16 u16MinPowerBankBIn250mW;   
     UINT16 u16SystemPowerBankCIn250mW; 
-    UINT16 u16MinPowerBankCIn250mW;    
-#endif
-#if (TRUE == INCLUDE_POWER_BALANCING)    
-    UINT16 u16SharedPwrCapacityIn250mW; 
-    UINT16 u16Reserved2;
+    UINT16 u16MinPowerBankCIn250mW;       
     PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	
 #endif 
     

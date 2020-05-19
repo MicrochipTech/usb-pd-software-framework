@@ -99,8 +99,8 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
     
 /********************Power Throttling globals************************************/
 #if (TRUE == INCLUDE_POWER_THROTTLING)
-    /* Holds the previously selected Throttling Bank. */
-    UINT8 gu8PrevPTBank [CONFIG_PD_PORT_COUNT]; 
+    /* Power Throttling Port Parameters */
+    PT_PORT_PARAM gasPTPortParam[CONFIG_PD_PORT_COUNT];  
 #endif 
 /**************************************************************************************************/  
     
@@ -144,7 +144,5 @@ void IntGlobals_StackStructVersion(void)
     gasCfgStatusData.u8MajorVersion = STRUCT_MAJOR_VERSION;
     gasCfgStatusData.u8PSFMajorVersion = HIBYTE(SYSTEM_FW_REV); 
     gasCfgStatusData.u8PSFMinorVersion = LOBYTE(SYSTEM_FW_REV);
- 
-
 }
 /**************************************************************************************************/

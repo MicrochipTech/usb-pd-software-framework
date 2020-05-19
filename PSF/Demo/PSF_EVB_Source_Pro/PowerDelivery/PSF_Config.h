@@ -652,13 +652,14 @@ typedef enum
 																		in mV and Current is 
 																		specified in mA.
                                                                       * This array should be used 
-																	    for Source Operation. 
+																	    only for Source Operation. 
     u32aSinkPDO[7]                  28        R/W          R         * Upto 7 fixed Sink PDOs where 
 																		Voltage is specified in mV
                                                                         and Current is specified in 
 																		mA.
                                                                       * This array should be used 
-																	    for Sink operation.
+																	    only when the port is 
+																		configured as Sink.
     u32aNewPDO[7]                   28        R/W          R/W       * Upto 7 fixed New PDOs where 
 																		Voltage is specified in mV 
 																		and Current in mA.
@@ -1195,7 +1196,7 @@ typedef enum
     9       RW           R         VCONN OCS Enable
                                     * '0' Disable
                                     * '1' Enable
-    32:10   RW           R         Reserved
+    32:10                          Reserved
     </table>
 	
 	<b>b. u32PortConnectStatus</b>: 
@@ -1276,7 +1277,7 @@ typedef enum
 									* '01' USB Power 
 								    * '10' 1.5A 
 									* '11' 3.0A 
-	31:17	R			 R         Reserved 				
+	31:17	 			           Reserved 				
 	</table>
 
 	<b>c. u16PortIOStatus</b>: 
@@ -1286,38 +1287,38 @@ typedef enum
              time         time      
     ------  -----------  --------  --------------------
     0       R            R         EN_DC_DC Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted 
+                                    * '1' Asserted 
+                                    * '0' De-asserted 
     1       R            R         VSEL0 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     2       R            R         VSEL1 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     3       R            R         VSEL2 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     4       R            R         EN_VBUS Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     5       R            R         VBUS_DIS Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     6       R            R         EN_SINK Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     7       R            R         1.5_IND Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     8       R            R         3.0_IND Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     9       R            R         PS_RDY Received 
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     10      R            R         Capability Mismatch  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     15:11                          Reserved 
 	</table>
 	
@@ -1636,7 +1637,7 @@ typedef struct _PortCfgStatus
                                     * '1' Enable
 	3:1     R/W          R/W       Selects the port Priority 								
 									* 000b is the highest priority
-    7:4     			           Reserved 									
+    7:4                            Reserved 									
    Remarks:
      None                                                               
    **********************************************************************/
@@ -1915,8 +1916,6 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
     u8aReserved6[2]				    2 								Reserved 	
-    u8aReserved7				    1								Reserved 
-    u8aReserved8[3]				    3 								Reserved 
     u16aReserved1				    2 								Reserved 	
 																	
 																		
@@ -1978,14 +1977,11 @@ typedef struct _GlobalCfgStatusData
     UINT16 u16IDHeaderVDO; 
     
     PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; 
-#if (TRUE == INCLUDE_POWER_BALANCING)
+    
+#if (TRUE == INCLUDE_POWER_BALANCING || (TRUE == INCLUDE_POWER_THROTTLING))
     UINT16 u16SharedPwrCapacityIn250mW;
-    UINT8 u8PBEnableSelect;	
-    UINT8 u8aReserved7;	
-#endif 
-#if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
+    UINT8 u8PBEnableSelect;	    
     UINT8 u8PwrThrottleCfg;	
-    UINT8 u8aReserved8[3];
     UINT16 u16SystemPowerBankAIn250mW; 
     UINT16 u16MinPowerBankAIn250mW;   
     UINT16 u16SystemPowerBankBIn250mW; 

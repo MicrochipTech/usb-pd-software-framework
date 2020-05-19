@@ -148,13 +148,13 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     TypeC_RunStateMachine (u8PortNum);
     
     /* Run Policy engine State machine*/
-    PE_RunStateMachine(u8PortNum);
-	
-    /* Run Power Throttling State machine */
-    #if (TRUE == INCLUDE_POWER_THROTTLING)
-        PT_RunStateMachine(u8PortNum);
-    #endif     
+    PE_RunStateMachine(u8PortNum);     
 
+    /* Handle Power Throttling Bank Switching */
+    #if (TRUE == INCLUDE_POWER_THROTTLING)
+        PT_HandleBankSwitch(u8PortNum);
+    #endif  
+        
 	/* Power Fault handling*/
 	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 		DPM_PowerFaultHandler(u8PortNum);
@@ -466,14 +466,24 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType)
 UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 {
     UINT8 u8Return = TRUE; 
+    
     #if (TRUE == INCLUDE_POWER_BALANCING)
     if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
     {
         u8Return = PB_HandleDPMEvents(u8PortNum, (UINT8)eDPMNotification);
     }
     #endif
+
+    #if (TRUE == INCLUDE_POWER_THROTTLING)
+    /* Busy is the only notification applicable for PT */
+    if (eMCHP_PSF_BUSY == eDPMNotification)
+    {
+        PT_HandleDPMBusy(u8PortNum); 
+    }
+    #endif 
     /* DPM notifications that need to be handled by stack applications must
        be added here before calling the user function. */
+    
     u8Return &= MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eDPMNotification); 
     return u8Return;
 }
@@ -490,7 +500,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
        check saves code execution time by letting the control not to check 
        for each if-else condition present inside in case this condition
        is false. */ 
-    if (DPM_NO_CLIENT_REQ_PENDING == gasCfsgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    if (DPM_NO_CLIENT_REQ_PENDING == gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
         return;
     }
@@ -504,6 +514,15 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             /* Clear the request since the request is accepted and going to be handled */
             gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_RENEGOTIATE);                
+            
+#if (TRUE == INCLUDE_POWER_THROTTLING)
+            /* Update the renegotiation request status as accepted
+               if it was initiated by PT Mngr */
+            if (ePT_RENEG_REQ_INITIATED == gasPTPortParam[u8PortNum].ePTRenegSts)
+            {
+                gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_ACCEPTED;
+            }
+#endif 
             /* Enable New PDO Select in DPM Config */
             DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO);
             /* Check for Port Power Role */

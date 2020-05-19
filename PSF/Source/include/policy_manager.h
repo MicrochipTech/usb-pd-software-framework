@@ -1431,33 +1431,6 @@ void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW);
 
 /**************************************************************************************************
     Function:
-        void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum); 
-
-    Summary:
-        This API calculates the Source capabilities based on the currently 
-        active throttling bank.
-
-    Description:
-        This API calculates the Source capabilities based on the currently 
-        active throttling bank.        
- 
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port number.
-
-    Return:
-        None. 
-
-    Remarks:
-        None. 
-
-**************************************************************************************************/
-void DPM_CalcSrcCapsFromCurrPTBank(UINT8 u8PortNum); 
-
-/**************************************************************************************************
-    Function:
         void DPM_InternalEventHandler(UINT8 u8PortNum); 
     Summary:
         This API handles the internal events posted to DPM
@@ -1567,6 +1540,27 @@ UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum);
         None. 
 **************************************************************************************************/
 void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+
+/**************************************************************************************************
+    Function:
+        void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable); 
+    Summary:
+        API to enable/disable a port 
+    Description:
+        This API can be called if a particular ports needs to be 
+        disabled or enabled.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8Enable - TRUE - Enable the port 
+                   FALSE - Disable the port 
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable); 
 
 #endif /*_POLICY_MANAGER_H_*/
 

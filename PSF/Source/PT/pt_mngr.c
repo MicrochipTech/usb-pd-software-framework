@@ -36,53 +36,66 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 void PT_Init(UINT8 u8PortNum)
 {
-    gu8PrevPTBank[u8PortNum] = PD_THROTTLE_BANK_A; 
+    gasPTPortParam[u8PortNum].u8PrevPTBank = PD_THROTTLE_BANK_A; 
+    
+    gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_NOT_INITIATED; 
 }
 
-void PT_RunStateMachine(UINT8 u8PortNum)
+void PT_HandleBankSwitch(UINT8 u8PortNum)
 {
     UINT8 u8CurrPTBank = gasCfgStatusData.u8PwrThrottleCfg; 
-    UINT8 u8PrevPTBank = gu8PrevPTBank[u8PortNum]; 
-    UINT8 u8InitiateRenegotiation = FALSE; 
+    UINT8 u8PrevPTBank = gasPTPortParam[u8PortNum].u8PrevPTBank; 
     
     if (u8CurrPTBank != u8PrevPTBank)
     {
-        gu8PrevPTBank[u8PortNum] = u8CurrPTBank; 
+        gasPTPortParam[u8PortNum].u8PrevPTBank = u8CurrPTBank; 
         
         switch(u8CurrPTBank)
         {
-            case PD_THROTTLE_BANK_A: 
-            {
-                /* To-do: Set Temperature status as Normal in Real Time Flags 
-                   of PPS_Status message */
-                /* To-do: Set Temperature status as Normal in Status message */
-                /* To-do: Clear Bit 5 in Power Status Field of Status message */
-                /* To-do: Trigger an alert message with type of alert as 
-                 Operating condition change */
-                
-                if (gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
-                {
-                    u8InitiateRenegotiation = TRUE; 
-                }
-                
-                break; 
-            }    
-            
+            case PD_THROTTLE_BANK_A:              
             case PD_THROTTLE_BANK_B:
             case PD_THROTTLE_BANK_C:
             {
-                if (gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
+                if (PD_THROTTLE_SHUTDOWN_MODE == u8PrevPTBank)
                 {
-                    u8InitiateRenegotiation = TRUE; 
-                }
+                    /* Enable the Port which would have been previously disabled */
+                    DPM_EnablePort(u8PortNum, TRUE); 
 
+                    /* No need to raise renegotiation request since an 
+                       attach interrupt is expected. */
+                }              
+                else
+                {
+                    if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
+                    {
+                        /* Inform PB to handle the PT Bank Switch event */
+                        #if (TRUE == INCLUDE_POWER_BALANCING)
+                        PB_OnPTBankSwitch (u8PortNum); 
+                        #endif 
+                    }
+                    else 
+                    {
+                        if (gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
+                        {
+                            /* Raise Client Request to trigger renegotiation */
+                            DPM_SET_RENEGOTIATE_REQ(u8PortNum);
+                            
+                            /* Change reneg status as initiated */
+                            gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_INITIATED;
+                        }
+                        else
+                        {
+                            /* Do nothing if the port is in unattached state. DPM 
+                            would advertise Source caps with the current PT bank. */
+                        }
+                    }
+                }               
                 break; 
             }
             
             case PD_THROTTLE_SHUTDOWN_MODE:
             {
-                /* To-do: To be implemented once requirement is clearly 
-                   defined by Systems team */
+                DPM_EnablePort(u8PortNum, FALSE); 
                 break; 
             }
             
@@ -90,27 +103,43 @@ void PT_RunStateMachine(UINT8 u8PortNum)
             {
                 break; 
             }
-        }
+        } 
         
-        if (TRUE == u8InitiateRenegotiation)
-        {
-#if (TRUE == INCLUDE_POWER_BALANCING)
-            if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
-            {
-                /* Send a notification to PB to trigger renegotiation based on 
-                   updated bank value. */                    
-            }
-            else
-            {
-                DPM_SET_RENEGOTIATE_REQ(u8PortNum);
-            }
-#else 
-            /* Raise a DPM client request to trigger renegotiation */
-            DPM_SET_RENEGOTIATE_REQ(u8PortNum); 
-#endif 
-        }
     }
 }
 
+void PT_CalculateSrcPDOs(UINT8 u8PortNum)
+{
+    /* Get current PT Bank */
+    UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK;
+    
+    if (PD_THROTTLE_BANK_B == u8CurrPTBank)
+    {
+        DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
+        DPM_UpdatePDO(u8PortNum, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW);
+    }
+    else if (PD_THROTTLE_BANK_C == u8CurrPTBank)
+    {
+        DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
+        DPM_UpdatePDO(u8PortNum, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW);        
+    }
+    else
+    {
+        /* New PDO should not be enabled for Bank A since the source caps
+           would be advertised from u32aSourcePDO[7] array */
+    }
+}
+
+void PT_HandleDPMBusy(UINT8 u8PortNum)
+{
+    /* If the request was not accepted, DPM_Busy notification would have 
+       been posted. Handle the busy notification by raising the client 
+       request again */
+    if (ePT_RENEG_REQ_INITIATED == gasPTPortParam[u8PortNum].ePTRenegSts)
+    {
+        /* Raise Client Request to trigger renegotiation */
+        DPM_SET_RENEGOTIATE_REQ(u8PortNum);        
+    }
+}
 
 #endif 
