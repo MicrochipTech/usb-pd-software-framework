@@ -115,8 +115,9 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     u8length = I2C_CMD_LENGTH_3;
     u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CCmd, u8length);
 
-    /* Unmask VOUT Voltage faults(UV, OV) and Current faults(OC) */
-    u32I2CCmd = MPQ_CMD_UNMASK_VOUT_AND_OC;
+    /* Unmask Current faults(OC) */
+    /* Vout fault is not unmasked as we have issue with MPQ module */
+    u32I2CCmd = MPQ_CMD_UNMASK_OC;
     u8length = I2C_CMD_LENGTH_2;
     u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CCmd, u8length);
 
@@ -238,20 +239,34 @@ UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum)
        which indicates whether it is OV or UV fault. Here, it is avoided since 
        PSF handles all the faults in a similar manner. Thereby, we reduce 
        one I2C read/write */
-    
-    /* Inform PSF to handle the VBUS Fault */
-    if((u16FaultMask & MPQ_IOUT_OC_FAULT) || (u16FaultMask & MPQ_VOUT_FAULT))
-    { 
-        /*Todo:Jega handle it new client request defines*/
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest |= MPQ_CLIENT_REQ_HANDLE_VBUS_FAULT;
-    } 
-    
-    /* Clear the Fault condition by sending 'CLEAR_FAULTS' command, so that 
-       Alert line gets de asserted */
-    u16I2CCmd = MPQ_CMD_CLEAR_FAULT;
-    u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_1);           
-    /* wait for the current transfer to complete */ 
-    while(SAMD20_I2CDCDCIsBusyDriver( ));
+    if (FALSE != u16FaultMask)
+    {
+        /* Inform PSF to handle the VBUS Fault */
+        if(FALSE != (u16FaultMask & MPQ_IOUT_OC_FAULT))
+        { 
+            /*Todo:Jega handle it new client request defines*/
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS;
+        } 
+
+        if(FALSE != (u16FaultMask & MPQ_IOUT_OC_EXIT_FAULT))
+        { 
+            /*Todo:Jega handle it new client request defines*/
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest |= DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT;
+        } 
+
+        if(FALSE != (u16FaultMask & MPQ_VOUT_OV_FAULT))
+        { 
+            /*Todo:Jega handle it new client request defines*/
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV;
+        } 
+
+        /* Clear the Fault condition by sending 'CLEAR_FAULTS' command, so that 
+           Alert line gets de asserted */
+        u16I2CCmd = MPQ_CMD_CLEAR_FAULT;
+        u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_1);           
+        /* wait for the current transfer to complete */ 
+        while(SAMD20_I2CDCDCIsBusyDriver( ));
+    }
     
     return u8RetVal;
 }         
