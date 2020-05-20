@@ -1119,17 +1119,17 @@ typedef enum
     Bit     R/W Config   R/W Run   \Description
              time         time      
     ------  -----------  --------  --------------------
-    0       RW           R         Port Enable/Disable
-                                    * '0' Disabled
-                                    * '1' Enabled
-    3:1     RW           R         Port Power Role
+    2:0     RW           R         Port Power Role
                                     * '000' Sink
-                                    * '001' Source
-    5:4     RW           R         Rp Selection
+                                    * '001' Source 
+    4:3     RW           R         Rp Selection
                                     * '00' Disabled
                                     * '01' USB Power
                                     * '10' 1.5A
-                                    * '11' 3.0A
+                                    * '11' 3.0A 
+    5       RW           R         Port Enable/Disable
+                                    * '0' Disabled
+                                    * '1' Enabled
     8:6     RW           R         USB Data
                                     * '000' No Data
                                     * '001' USB2
@@ -1138,7 +1138,7 @@ typedef enum
     9       RW           R         VCONN OCS Enable
                                     * '0' Disable
                                     * '1' Enable
-    32:10   RW           R         Reserved
+    32:10                          Reserved
     </table>
 	
 	<b>b. u32PortConnectStatus</b>: 
@@ -1219,7 +1219,7 @@ typedef enum
 									* '01' USB Power 
 								    * '10' 1.5A 
 									* '11' 3.0A 
-	31:17	R			 R         Reserved 				
+	31:17	 			           Reserved 				
 	</table>
 
 	<b>c. u16PortIOStatus</b>: 
@@ -1229,38 +1229,38 @@ typedef enum
              time         time      
     ------  -----------  --------  --------------------
     0       R            R         EN_DC_DC Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted 
+                                    * '1' Asserted 
+                                    * '0' De-asserted 
     1       R            R         VSEL0 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     2       R            R         VSEL1 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     3       R            R         VSEL2 Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     4       R            R         EN_VBUS Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     5       R            R         VBUS_DIS Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     6       R            R         EN_SINK Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     7       R            R         1.5_IND Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     8       R            R         3.0_IND Status  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     9       R            R         PS_RDY Received 
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     10      R            R         Capability Mismatch  
-                                    * '0' Asserted 
-                                    * '1' De-asserted
+                                    * '1' Asserted 
+                                    * '0' De-asserted
     15:11                          Reserved 
 	</table>
 	
