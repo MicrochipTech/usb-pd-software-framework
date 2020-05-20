@@ -144,12 +144,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_SUPPORTED_MSG            0
 #define PE_SUPPORTED_EXTDMSG         0x02u
 
-#define PE_REQUEST_OBJ_MASK         0x70
-#define PE_REQUEST_OBJ_POS          4
-#define PE_REQUEST_OPR_CUR_MASK     0xFFC00
-#define PE_REQUEST_OPR_CUR_START_POS      10
-#define PE_REQUEST_MAX_CUR_MASK     0x3FF
-#define PE_REQUEST_MAX_CUR_POS      9
+#define PE_REQUEST_OBJ_MASK            0x70
+#define PE_REQUEST_OBJ_POS             4
+#define PE_REQUEST_OPR_CUR_MASK        0xFFC00
+#define PE_REQUEST_OPR_CUR_START_POS   10
+#define PE_REQUEST_MAX_CUR_MASK        0x3FF
+#define PE_REQUEST_MAX_CUR_POS         9
+#define PE_REQUEST_CAP_MISMATCH_POS    26 
+#define PE_REQUEST_CAP_MISMATCH_MASK   (1 << PE_REQUEST_CAP_MISMATCH_POS)
 
 
 /*-------------- Port Status -----------------*/

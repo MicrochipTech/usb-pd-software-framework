@@ -664,7 +664,7 @@ void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Conditions:
         None.
     Input:
-        u8PortNum     - Port Number for which the sink capability to be returned
+        u8PortNum     - Port Number
         u8VConnEnable - Variable denoting either to turn on or off the VCONN
                       - DPM_VCONN_ON (Turn on VCONN)
                       - DPM_VCONN_OFF (Turn off VCONN)
@@ -687,7 +687,7 @@ void DPM_VConnOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
+        u8PortNum - Port Number 
     Return:
         UINT16
     Remarks:
@@ -706,7 +706,7 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum);
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
+        u8PortNum       - Port Number 
         *pu8TypeCState   -  Pointer holding the Type C State
         *pu8TypeCSubState - Pointer holding the Type C Sub State
     Return:
@@ -728,7 +728,7 @@ void DPM_GetTypeCStates(UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSu
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
+        u8PortNum       - Port Number 
         u8TypeCState   -  Type C State to be set
         u8TypeCSubState - Type C SubState to be set
     Return:
@@ -750,8 +750,8 @@ void DPM_SetTypeCState(UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubStat
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
-        *pu8RaPresence   - Pointer returning the Powered cable presence
+        u8PortNum       - Port Number 
+        *pu8RaPresence  - Pointer returning the Powered cable presence
     Return:
         None
     Remarks:
@@ -772,7 +772,7 @@ void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence);
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
+        u8PortNum       - Port Number
         u8VbusOnorOff   - Variable denoting either to turn on or off the VBUS
                         - DPM_VBUS_ON (Turn on VBUS)
                         - DPM_VBUS_OFF (Turn off VBUS)
@@ -796,7 +796,7 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Conditions:
         None.
     Input:
-        u8PortNum  - Port Number for which the sink capability to be returned
+        u8PortNum  - Port Number 
     Return:
         UINT8
 
@@ -810,7 +810,7 @@ UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum);
         void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
 
     Summary:
-        Device Policy Manager evaluates the received source capability aganist the sink capability and 
+        Device Policy Manager evaluates the received source capability against the sink capability and 
     chooses the nearest match PDO for the data request message
 
     Devices Supported:
