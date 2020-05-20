@@ -389,23 +389,23 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         gasDPM[u8PortNum].u8NegotiatedPDOIndex = u8SinkReqObjPos;
         gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = u32RDO;
         
+        /* Set Capability mismatch status */
+        if (u32RDO & PE_REQUEST_CAP_MISMATCH_MASK)
+        {
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
+                    DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS; 
+        }
+        else
+        {
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
+                        ~(DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS);                 
+        }
+
         if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as Fixed Supply */
             gasDPM[u8PortNum].u8DPM_Status &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
-            
-            /* Set Capability mismatch status */
-            if (u32RDO & PE_REQUEST_CAP_MISMATCH_MASK)
-            {
-                gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                        DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS; 
-            }
-            else
-            {
-                gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                        ~(DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS);                 
-            }
-            
+                        
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16SrcPDOCurrVal; 
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = \
                     ((DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO)) / DPM_PDO_VOLTAGE_UNIT);
@@ -418,10 +418,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as PPS */
-            gasDPM[u8PortNum].u8DPM_Status |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;
-            
-            /* To-do: The above 3 parameters need to be updated for PPS, units 
-            differ b/w Fixed and PPS voltages, currents. */
+            gasDPM[u8PortNum].u8DPM_Status |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;           
         }
 #endif 
         else
