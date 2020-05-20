@@ -199,7 +199,7 @@ Source/Sink Power delivery objects*/
 #define DPM_PORT_POWER_ROLE_STATUS                            BIT(3)
 #define DPM_PORT_VCONN_STATUS                                 BIT(4)
 #define DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS        BIT(5)
-#define DPM_PORT_PD_BAL_REDUCED_SRC_CAPABILITIES_STATUS       BIT(6)
+#define DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS              BIT(6)
 #define DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS               BIT(7)
 #define DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS               BIT(8)
 #define DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS                   BIT(9)
@@ -1180,7 +1180,7 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum);
         Updates the Advertised PDO registers and status bits once PDOs are advertised. 
     Description:
         This API sets the advertised PDO count, updates the registers and sets/clears  
-        the PD_BAL_REDUCED_SOURCE_CAPABILITIES bit in Port Connection Status 
+        the REDUCED_SOURCE_CAPABILITIES bit in Port Connection Status 
         after comparing the advertised PDOs with Fixed PDOs.       . 
     Conditions:
         None
