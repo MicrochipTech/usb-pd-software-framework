@@ -132,38 +132,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2
 #define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5
 
-/* Power Throttling Bank values */
-#define CFG_PD_THROTTLE_BANK_A             0x00U 
-#define CFG_PD_THROTTLE_BANK_B             0x01U
-#define CFG_PD_THROTTLE_BANK_C             0x10U
-#define CFG_PD_THROTTLE_SHUTDOWN_MODE      0x11U
-
-/* Default Total System Power Bank A is 120W */
-#define CFG_PB_TOT_SYS_POWER_BANKA            0x01E0U
-/* Guaranteed Minimum Power for Bank A is 15W */
-#define CFG_PB_MIN_POWER_BANKA                0x003CU
-/* Default Total System Power Bank B is 120W */
-#define CFG_PB_TOT_SYS_POWER_BANKB            0x01E0U
-/* Guaranteed Minimum Power for Bank A is 15W */
-#define CFG_PB_MIN_POWER_BANKB                0x003CU
-/* Default Total System Power Bank C is 120W */
-#define CFG_PB_TOT_SYS_POWER_BANKC            0x01E0U
-/* Guaranteed Minimum Power for Bank A is 15W */
-#define CFG_PB_MIN_POWER_BANKC                0x003CU
-
-/* Default Max Port Power for Bank A is 60W */
-#define CFG_PB_MAX_PORT_POWER_BANKA           0x00F0U
-/* Default Max Port Power for Bank B is 60W */
-#define CFG_PB_MAX_PORT_POWER_BANKB           0x00F0U
-/* Default Max Port Power for Bank C is 60W */
-#define CFG_PB_MAX_PORT_POWER_BANKC           0x00F0U
-/* Default Max Port current is 3A */
-#define CFG_PB_MAX_PORT_CURRENT               0x012CU
-/* Default PB Enable for System with Algorithm as FCFS */
-#define CFG_PB_ENABLE                         0x10U 
-/* Default Enable PB for port 0 with Priority as 0*/
-#define CFG_PB_PORT_ENABLE                    0x0001U
-
 #define CFG_PDO_VOLTAGE_POS                   10 
 #define CFG_PDO_VOLTAGE_UNIT                  50
 #define CFG_PDO_CURRENT_UNIT                  10
@@ -190,40 +158,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Macro used to form Fixed PDOs 2 to 7 */
 #define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                                             ((current)/CFG_PDO_CURRENT_UNIT))
-
-/* Port Connection Status parameters */
-#define PORT_CONNECT_STS_ATTACHED                             BIT(0)
-#define PORT_CONNECT_STS_ORIENTATION_FLIPPED                  BIT(1)
-#define PORT_CONNECT_STS_DATA_ROLE                            BIT(2)
-#define PORT_CONNECT_STS_POWER_ROLE                           BIT(3)
-#define PORT_CONNECT_STS_VCONN_STATUS                         BIT(4)
-#define PORT_CONNECT_STS_CABLE_REDUCED_SRC_CAPABILITIES       BIT(5)
-#define PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES      BIT(6)
-#define PORT_CONNECT_STS_SOURCE_CAPABILITY_MISMATCH           BIT(7)
-#define PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD              BIT(8)
-#define PORT_CONNECT_STS_AS_SRC_RDO_ACCEPTED                  BIT(9)
-#define PORT_CONNECT_STS_AS_SRC_RDO_REJECTED                  BIT(10)
-#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_ACCEPT               BIT(11)
-#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_REJECT               BIT(12)
-#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_PS_RDY               BIT(13)
-#define PORT_CONNECT_STS_SINK_CAPABILITY_MISMATCH             BIT(14)
-#define PORT_CONNECT_STS_RP_VAL_DETECT_DEFAULT_USB            BIT(15)
-#define PORT_CONNECT_STS_RP_VAL_DETECT_1_5A                   BIT(16)
-#define PORT_CONNECT_STS_RP_VAL_DETECT_3A                    (BIT(15)|BIT(16))
-#define PORT_CONNECT_STS_RP_VAL_DETECT_MASK                  (BIT(15)|BIT(16))
-
-/* Port IO Status parameters */
-#define PORT_IO_EN_DC_DC_STATUS                      BIT(0)
-#define PORT_IO_VSEL0_STATUS                         BIT(1)
-#define PORT_IO_VSEL1_STATUS                         BIT(2)
-#define PORT_IO_VSEL2_STATUS                         BIT(3)
-#define PORT_IO_EN_VBUS_STATUS                       BIT(4)
-#define PORT_IO_VBUS_DIS_STATUS                      BIT(5)
-#define PORT_IO_EN_SINK_STATUS                       BIT(6)
-#define PORT_IO_15_IND_STATUS                        BIT(7)
-#define PORT_IO_30_IND_STATUS                        BIT(8)
-#define PORT_IO_CAP_MISMATCH_STATUS                  BIT(9)
-
 void PSF_LoadConfig(); 
 
 #endif /* _PSFSINK_BOOTCFG_H */
