@@ -583,13 +583,13 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     {
         /* The advertised PDOs are equivalent to the default configured values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                            ~(DPM_PORT_PD_BAL_REDUCED_SRC_CAPABILITIES_STATUS);         
+                            ~(DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS);         
     }   
     else
     {
         /* The advertised PDOs have been reduced from default configured values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                            DPM_PORT_PD_BAL_REDUCED_SRC_CAPABILITIES_STATUS;                 
+                            DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS;                 
     }    
 }
 
