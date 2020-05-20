@@ -36,7 +36,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <Drivers.h>
 
 /***********************************************************************************/
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 
 volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT] = {0};
         

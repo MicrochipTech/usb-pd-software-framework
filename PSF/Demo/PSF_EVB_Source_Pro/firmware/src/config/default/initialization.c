@@ -121,7 +121,7 @@ void SYS_Initialize ( void* data )
 
     CLOCK_Initialize();
     
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
     SAMD20_I2CDCDCInitialisation();
 #endif 
 

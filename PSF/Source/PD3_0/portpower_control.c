@@ -63,7 +63,7 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
                                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN);
        
-    #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
+    #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
     for(UINT8 u8VSELIndex = SET_TO_ZERO; u8VSELIndex < PWRCTRL_VSEL_PIO_MAX_COUNT; u8VSELIndex++)
     {
         UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8aPio_VSEL[u8VSELIndex], \
@@ -89,7 +89,7 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
 void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
     #if (TRUE == INCLUDE_PD_SOURCE)
-    #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)
+    #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
 
     UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
     UINT8 u8VSELAssert; 

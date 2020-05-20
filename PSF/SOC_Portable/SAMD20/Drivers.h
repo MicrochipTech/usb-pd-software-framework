@@ -51,7 +51,7 @@
         
 #include "PSF_Config.h"
 
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG) 
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC) 
 #include "Mpq_dc_dc_control.h"
 #endif
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
@@ -59,7 +59,7 @@
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 #include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
 #endif 
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 #include "../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h"
 #endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
@@ -123,11 +123,11 @@
 #define SAMD20_PORT0_EIC_PIN    EIC_PIN_14
 #define SAMD20_PORT1_EIC_PIN    EIC_PIN_15
 
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 #define SAMD20_DCDC_ALERT0      PORT_PIN_PA02
 #define SAMD20_DCDC_ALERT1      PORT_PIN_PA03
 #define SAMD20_I2C_INSTANCE     3
-#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#endif //#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 
 #define SAMD20_UART_INSTANCE  1
 
@@ -249,7 +249,7 @@ UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writ
 UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength);
 
 /*****************************************************************************/
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 UINT8 SAMD20_I2CDCDCInitialisation (void);
 UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
 UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen);

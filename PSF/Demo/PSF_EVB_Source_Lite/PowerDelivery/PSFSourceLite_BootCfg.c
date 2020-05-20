@@ -78,7 +78,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_DC_DC_EN = (UINT8)CFG_PORT_UPD_DC_DC_EN_PIO_NO;
     pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_DC_DC_EN = (UINT8)CFG_PORT_UPD_DC_DC_EN_PIO_MODE;
 
-#if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG)  
+#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)  
     pasCfgStatusData->sPerPortData[u8PortNum].u8aPio_VSEL[0] =         \
                                                 (UINT8)CFG_PORT_UPD_VSEL0_PIO_NO;
     pasCfgStatusData->sPerPortData[u8PortNum].u8aPio_VSEL[1] =         \
