@@ -311,9 +311,9 @@ Example:
         }
     </code>
 Remarks:
-	User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is I2C_DC_DC_CONTROL_CONFIG
+	User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is PWRCTRL_I2C_DC_DC
 **************************************************************************/
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 #define MCHP_PSF_HOOK_DCDCALERTINIT(byPortNum) SAMD20_I2CDCDCAlertInit(byPortNum)
 #else
 #define MCHP_PSF_HOOK_DCDCALERTINIT(byPortNum)
@@ -713,13 +713,13 @@ Example:
         }
     </code>
 Remarks:
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is I2C_DC_DC_CONTROL_CONFIG
+    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is PWRCTRL_I2C_DC_DC
     User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.
     A DAC may initialized under this hook if PSF is configured as SINK.                        
 *****************************************************************************/
 #if (TRUE == INCLUDE_PD_SINK)
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  DAC_Initialize();
-#elif (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  MPQDCDC_Initialize(u8PortNum);
 #else
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
@@ -759,7 +759,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.                      
 ****************************************************************************/
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 #define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u8PDOIndex,u16VBUSVolatge,u16Current)  \
         MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current)
 #else

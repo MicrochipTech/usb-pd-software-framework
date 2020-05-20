@@ -382,41 +382,42 @@ Example :
 Summary:
     Macro to indicate GPIO based DC-DC Controller. 
 Description:
-	PWRCTRL_DEFAULT_PSF_GPIO_CONFIG defines the default GPIO based DC-DC Controller used by PSF.  
+	PWRCTRL_GPIO_DC_DC defines the default GPIO based DC-DC Controller used by PSF.  
 Remarks:
 	None.                                 
   **************************************************************************/
-#define PWRCTRL_DEFAULT_PSF_GPIO_CONFIG     1
+#define PWRCTRL_GPIO_DC_DC     1
 
 /**************************************************************************
 Summary:
     Macro to indicate I2C based DC-DC Controller. 
 Description:
-	I2C_DC_DC_CONTROL_CONFIG defines the default GPIO based DC-DC Controller used by PSF.  
+	PWRCTRL_I2C_DC_DC defines the default GPIO based DC-DC Controller used by PSF.  
 Remarks:
 	None.                                 
   **************************************************************************/
-#define I2C_DC_DC_CONTROL_CONFIG            2
+#define PWRCTRL_I2C_DC_DC        2
+
 
 /**************************************************************************
 Summary:
     DC DC Buck Boost Controller default configuration option.
 Description:
 	CONFIG_DCDC_CTRL is to define the default DC-DC control provided by the PSF stack. If 
-	CONFIG_DCDC_CTRL defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG, default GPIO based DC-DC controller
-	is used. If CONFIG_DCDC_CTRL is defined as I2C_DC_DC_CONTROL_CONFIG, default I2C based 
+	CONFIG_DCDC_CTRL defined as PWRCTRL_GPIO_DC_DC, default GPIO based DC-DC controller
+	is used. If CONFIG_DCDC_CTRL is defined as PWRCTRL_I2C_DC_DC, default I2C based 
     DC-DC Controller is used. If left undefined, default stack's DC-DC control option is not used 
     and the user must control power via power control APIs provided by the stack.  
 Remarks:
 	None.
 Example:
 	<code>
-	#define CONFIG_DCDC_CTRL    PWRCTRL_DEFAULT_PSF_GPIO_CONFIG (Uses default GPIO based DC-DC contol)
-	#define CONFIG_DCDC_CTRL    I2C_DC_DC_CONTROL_CONFIG (Uses default I2C based DC-DC contol)
+	#define CONFIG_DCDC_CTRL    PWRCTRL_GPIO_DC_DC (Uses default GPIO based DC-DC contol)
+	#define CONFIG_DCDC_CTRL    PWRCTRL_I2C_DC_DC (Uses default I2C based DC-DC contol)
 	#define CONFIG_DCDC_CTRL    (If undefined, Default DC DC control provided by stack is not used)
 	</code>                                  
   **************************************************************************/
-#define CONFIG_DCDC_CTRL        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+#define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC
 					
 /**************************************************************************
 Summary:
@@ -832,7 +833,7 @@ typedef enum
                                                                       * This variable is common for 
 																	    both Source and Sink. It is
 																		valid only when Bit 0 of 
-																		u8ClientRequest is set to 1.
+																		u32ClientRequest is set to 1.
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
     u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
@@ -977,7 +978,7 @@ typedef enum
 																		applicable only when
                                                                         CONFIG_DCDC_CTRL is defined 
 																		as
-                                                                        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG 
+                                                                        PWRCTRL_GPIO_DC_DC 
 																		and for Source operation
                                                                         only.
                                                                       * By defining     
@@ -1008,13 +1009,13 @@ typedef enum
 																		u8Mode_FAULT_IN. 
 																	  * It can take values only 
 																		from 0 to 15 and to disable 
-																		the pin funtionality from 
+																		the pin functionality from 
 																		stack, user can define it 
 																		as 0xFF. 
 																	  * It is applicable only when 
 																		CONFIG_DCDC_CTRL is 
 																		defined as 
-																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+																		PWRCTRL_GPIO_DC_DC
 																		and 
 																		INCLUDE_POWER_FAULT_HANDLING
 																		defined as '1'. 
@@ -1043,7 +1044,7 @@ typedef enum
 																	  * It is applicable only when 
 																		CONFIG_DCDC_CTRL is 
 																		defined as 
-																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+																		PWRCTRL_GPIO_DC_DC
 	u8mode_VBUS_DIS                 1         R/W          R         * Defines the PIO mode of the 
 																		UPD350 PIO VBUS_DIS defined 
 																		in u8Pio_VBUS_DIS. 
@@ -1055,7 +1056,7 @@ typedef enum
 																	  * It is asserted as per 
 																	    u8Mode_DC_DC_EN during 
 																		initialization and 
-																		deasserted during error
+																		de-asserted during error
 																		condition to reset the 
 																		DC-DC controller. 
 																	  * It can take values from 0
@@ -1067,7 +1068,7 @@ typedef enum
 																	  * It is applicable only when 
 																	    CONFIG_DCDC_CTRL is defined 
 																		as 
-																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+																		PWRCTRL_GPIO_DC_DC
 	u8Mode_DC_DC_EN                 1         R/W          R         * Defines the PIO mode of the 
 																	    UPD350 PIO DC_DC_EN defined 
 																	    in u8Pio_DC_DC_EN. 
@@ -1094,17 +1095,17 @@ typedef enum
 																		0 to 15 which correspond to
 																		UPD350 PIO0 to PIO15. 
 																	  * To disable the pin 
-																		funtionality from the stack,
+																		functionality from the stack,
 																		user can define a value of 
 																		0xFF. Index 0 to 2 of this 
-																		array correponds to VSEL0 to
+																		array corresponds to VSEL0 to
 																		VSEL2.
                                                                       * This variable is applicable 
                                                                         only for source operation.
 																	  * It is applicable only when
 																	    CONFIG_DCDC_CTRL is defined 
 																		as 
-																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
+																		PWRCTRL_GPIO_DC_DC
 																		
 	u8aMode_VSEL[3]                 3         R/W          R         * Defines the PIO mode of the 
 																		UPD350 PIO VSEL pins VSEL0

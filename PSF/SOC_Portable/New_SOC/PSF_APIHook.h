@@ -724,7 +724,7 @@ Summary:
 Description:
     This hook is called when PSF enters into a critical section. It must provide an implementation
     to disable the interrupts globally. This hook implementation must be very short, otherwise 
-    resposne time may be delayed and cause timing issues/conflicts. Define relevant function that 
+    response time may be delayed and cause timing issues/conflicts. Define relevant function that 
 	has no arguments without return type.
 Conditions:
     None.
@@ -1670,13 +1670,14 @@ Description:
     <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
     established with the Port partner.
    
-    <b> eMCHP_PSF_GET_SINK_CAPS_RCVD</b>: This event is used by PSF to notify DPM when 
+    <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
     Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
-    message initiated by PSF on request from DPM. 
+    message initiated by PSF on request from the application. Application can read 
+    the sink capabilities by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[7].
     
-    <b> eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify DPM when
+    <b> eMCHP_PSF_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink capabilities has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Sink_Caps message initiated by PSF on request from DPM.
+    as a response to the Get_Sink_Caps message initiated by PSF on request from application.
     
     <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
     mismatch with Source partner PDOs in a PD negotiation.
@@ -1684,10 +1685,25 @@ Description:
     <b> eMCHP_PSF_NEW_SRC_CAPS_RCVD</b>: It is notified by PSF when new source capability
     message is received from the Source Partner.
   
-   <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
+    <b> eMCHP_PSF_SINK_ALERT_RCVD</b>: This event is used by PSF to notify application when PD
+	Alert message has been received from Sink Partner. Application can read the alert
+    information by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlertInfo.
+ 
+    <b> eMCHP_PSF_SINK_STATUS_RCVD</b>: This event is used by PSF to notify application when 
+    Sink Status has been received from Port Partner in response to the Get_Status
+    message initiated by PSF on request from the application. Application can read the 
+    Sink Status by accessing gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6]
+    
+    <b> eMCHP_PSF_SINK_STATUS_NOT_RCVD</b>: This event is used by PSF to notify application when
+    Sink Status has not been received from Port Partner within tSenderResponseTimer
+    as a response to the Get_Status message initiated by PSF on request from application.
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
+    when this notification is posted. 
+ 
+    <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
     Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
-    application through u8ClientRequest variable in sPerPortDatastructure. On 
+    application through u32ClientRequest variable in sPerPortDatastructure. On 
     receiving this notification, the application can re-initiate the request.
 Remarks:
     None                                                                                               
@@ -1702,10 +1718,13 @@ eMCHP_PSF_UPDS_IN_IDLE,             // All the UPD350s are in Idle
 eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
 eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
-eMCHP_PSF_GET_SINK_CAPS_RCVD,        // Sink Caps received from Port Partner
-eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD,    // Sink Caps not received from Port Partner
+eMCHP_PSF_SINK_CAPS_RCVD,          // Sink Caps received from Port Partner
+eMCHP_PSF_SINK_CAPS_NOT_RCVD,      // Sink Caps not received from Port Partner
 eMCHP_PSF_CAPS_MISMATCH,            // Capability mismatch with Source Port Partner
 eMCHP_PSF_NEW_SRC_CAPS_RCVD,        // New source capability message is received from Source Partner
+eMCHP_PSF_SINK_ALERT_RCVD,          // Alert message received from Sink Partner         
+eMCHP_PSF_SINK_STATUS_RCVD,         // Sink Status received from Sink Partner
+eMCHP_PSF_SINK_STATUS_NOT_RCVD,     // Sink Status not received from Sink Partner
 eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
 } eMCHP_PSF_NOTIFICATION;
 

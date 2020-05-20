@@ -95,7 +95,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 
 #endif //CONFIG_HOOK_DEBUG_MSG
 
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 #define SAMD20I2CDCDC_Initialise(n) SERCOMn_I2CDCDC_Initialize(n)
 #define SERCOMn_I2CDCDC_Initialize(n) SERCOM##n##_I2C_Initialize()
 
@@ -117,7 +117,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #define SAMD20_I2cDCDCIsBusy(n) SERCOMn_I2C_IsBusy(n)
 #define SERCOMn_I2C_IsBusy(n) SERCOM##n##_I2C_IsBusy()
 
-#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#endif //#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -200,7 +200,7 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
         #endif
     }
 }
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 /*****************************************************************************/
 /*****************************************************************************/
 /*********************************I2C Driver APIs*****************************/
