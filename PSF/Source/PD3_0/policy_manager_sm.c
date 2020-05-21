@@ -695,11 +695,21 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             else if (DPM_INT_EVT_INITIATE_GET_STATUS == (gasDPM[u8PortNum].u8DPMInternalEvents\
                                                     & DPM_INT_EVT_INITIATE_GET_STATUS))
             {
-                /*Assign Policy engine state to initiate Get_Status */
-                //TBD
                 /*Clear the Internal event since it is processed*/
                 gasDPM[u8PortNum].u8DPMInternalEvents &= ~DPM_INT_EVT_INITIATE_GET_STATUS;
-            }
+                
+                /* Check for Port Power Role */
+                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+                {
+                    /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;                    
+                }
+                else
+                {
+                    /* TBD for Sink */
+                }                
+            } /* DPM_INT_EVT_INITIATE_GET_STATUS */
             else
             {
                 /* Do Nothing */

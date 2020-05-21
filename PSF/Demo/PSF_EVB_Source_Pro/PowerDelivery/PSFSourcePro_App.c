@@ -176,11 +176,8 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         
         case eMCHP_PSF_SINK_ALERT_RCVD: 
         {
-            /* To-do: Get_Status Transmission should be initiated by Stack. 
-               It should not be done by application */
-            /* Raise a client request to initiate Get Sink Status */
-            /*TODO: Ram remove this client request as internal event is handled by stack it self*/
-            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest = 0x08;                                                           
+            /* Alert information received from Sink is available in 
+             gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlertInfo */
             break; 
         }
         
@@ -191,6 +188,8 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
 
         case eMCHP_PSF_SINK_STATUS_RCVD:
         {
+            /* Status information received from Sink is available in 
+            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6] */
             break; 
         }
         
