@@ -191,7 +191,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
+    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -1107,7 +1107,7 @@ typedef enum
 																		as 
 																		PWRCTRL_GPIO_DC_DC
 	u8aVSELTruthTable[8]            8         R/W          R         * Index 0 defines the assertion 
-																		and de-assertion to be driven
+																		and deassertion to be driven
                                                                         on VSEL[2:0] pins(defined in 
 																		u8aPio_VSEL[3]) by the PSF 
 																		as per u8aMode_VSEL[3] to 
@@ -1918,7 +1918,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
 																		
-	u16SharedPwrCapacityIn250mW     2         R            R        * Defines the currently 
+	u16SharedPwrCapacityIn250mW     2         R            R         * Defines the currently 
 																		available shared power 
 																		capacity from which power 
 																		is allocated to ports that 
