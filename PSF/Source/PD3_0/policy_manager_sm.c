@@ -315,7 +315,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             #if(TRUE == INCLUDE_PD_SINK)
             /*Resetting EN_SINK IO status here as the EN_SINK is reset at 
                on detection of fault at ISR itself*/
-            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &= \
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= \
                     ~(DPM_PORT_IO_EN_SINK_STATUS);
             #endif
             if(FALSE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_VBUS_PWR_FAULT))

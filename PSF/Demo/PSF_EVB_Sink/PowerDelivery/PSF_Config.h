@@ -191,7 +191,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
+    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -405,7 +405,7 @@ Description:
 	CONFIG_DCDC_CTRL is to define the default DC-DC control provided by the PSF stack. If 
 	CONFIG_DCDC_CTRL defined as PWRCTRL_GPIO_DC_DC, default GPIO based DC-DC controller
 	is used. If CONFIG_DCDC_CTRL is defined as PWRCTRL_I2C_DC_DC, default I2C based 
-    DC-DC Controller is used. If left undefined, default stack's DC-DC control option is not used 
+    DC-DC Controller is used. If defined as 0, default stack's DC-DC control option is not used 
     and the user must control power via power control APIs provided by the stack.  
 Remarks:
 	None.
@@ -413,7 +413,7 @@ Example:
 	<code>
 	#define CONFIG_DCDC_CTRL    PWRCTRL_GPIO_DC_DC (Uses default GPIO based DC-DC control)
 	#define CONFIG_DCDC_CTRL    PWRCTRL_I2C_DC_DC (Uses default I2C based DC-DC control)
-	#define CONFIG_DCDC_CTRL    (If undefined, Default DC DC control provided by stack is not used)
+	#define CONFIG_DCDC_CTRL    0 (Default DC DC control provided by stack is not used)
 	</code>                                  
   **************************************************************************/
 #define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC
@@ -706,24 +706,12 @@ typedef enum
 																	    Source and Sink.
     u16AllocatedPowerIn250mW        2         R            R         * Allocated Power for the Port 
 																		PD contract in 0.25W steps
-    u16NegoVoltageIn50mV            2         R            R         * Negotiated Voltage from the 
+    u16NegoVoltageInmV              2         R            R         * Negotiated Voltage from the 
 																		Port Bits 19:10 from the RDO.
-                                                                        Voltage is in 50mV steps. 
-																		Possible values are,
-                                                                        1. 0x00 = No Contract
-                                                                        2. 0x064 = 5V
-                                                                        3. 0x0B4 = 9 V
-                                                                        4. 0x12C = 15V
-                                                                        5. 0x190= 20V
-                                                                        6. 0x3FF = 51.15V
-    u16NegoCurrentIn10mA            2         R            R         * Negotiated Current from the 
+                                                                        Voltage is in mV steps. 
+    u16NegoCurrentInmA              2         R            R         * Negotiated Current from the 
 																		Port Bits 9: 0 from the RDO.
-                                                                        Ampere is in 10mA steps. 
-																		Sample values are,
-                                                                        1. 0x0000 = No Contract
-                                                                        2. 0x012C = 3A
-                                                                        3. 0x01F4 = 5A
-                                                                        4. 0x03FF = 10.24A
+                                                                        Ampere is in mA steps. 
     u16MaxSrcPrtCurrentIn10mA       2         R/W          R         * Maximum allowable current for 
 													                    ports in 10mA steps 
 																	  * Sample values this variable
@@ -1322,8 +1310,8 @@ typedef enum
 	31:17	 			           Reserved 				
 	</table>
 
-	<b>c. u16PortIOStatus</b>: 
-	u16PortIOStatus variable holds the IO status of the port. It's size is 2 bytes. 
+	<b>c. u32PortIOStatus</b>: 
+	u32PortIOStatus variable holds the IO status of the port. It's size is 4 bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
              time         time      
@@ -1361,11 +1349,11 @@ typedef enum
     10      R            R         Capability Mismatch  
                                     * '1' Asserted 
                                     * '0' De-asserted
-    15:11                          Reserved 
+    31:11                          Reserved 
 	</table>
 	
-	<b>d. u16PortStatusChange</b>: 
-	u16PortStatusChange variable defines the port connection status change bits. It's size is 2 
+	<b>d. u32PortStatusChange</b>: 
+	u32PortStatusChange variable defines the port connection status change bits. It's size is 4 
 	bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
@@ -1436,7 +1424,7 @@ typedef enum
       									been detected
                                     * '1' Since the last read of this register, 1 or more VCONN 
 										faults have been detected										  
-	15:12                  		   Reserved 
+	31:12                  		   Reserved 
 	</table> 	
 	
 	<b>e. u16PortIntrMask</b>: 
@@ -1554,13 +1542,13 @@ typedef struct _PortCfgStatus
     UINT32 u32aPartnerPDO[7];       
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
+    UINT32 u32PortStatusChange;
+    UINT32 u32PortIOStatus;
     UINT32 u32ClientRequest; 
     UINT16 u16AllocatedPowerIn250mW;   
-    UINT16 u16NegoVoltageIn50mV;      
-    UINT16 u16NegoCurrentIn10mA;      
-    UINT16 u16MaxSrcPrtCurrentIn10mA; 
-    UINT16 u16PortIOStatus;
-    UINT16 u16PortStatusChange;
+    UINT16 u16NegoVoltageInmV;      
+    UINT16 u16NegoCurrentInmA;      
+    UINT16 u16MaxSrcPrtCurrentIn10mA;     
     UINT16 u16PortIntrMask;
     UINT16 u16PowerGoodTimerInms;
 	#if (TRUE == INCLUDE_PD_SINK)
