@@ -334,7 +334,7 @@ Source/Sink Power delivery objects*/
 #define DPM_CLEAR_PARTNER_STATUS                     0 
 
 /* Macro to get current PT Bank */ 
-#define DPM_GET_CURRENT_PT_BANK             gasCfgStatusData.u8PwrThrottleCfg
+#define DPM_GET_CURRENT_PT_BANK             (gasCfgStatusData.u8PwrThrottleCfg)
 
 #define DPM_FIXED_PDO_CURRENT_MASK              0x000003FF 
 
