@@ -198,7 +198,7 @@ void DPM_SetPortPower(UINT8 u8PortNum)
     }
     else
     {
-        u16VoltageInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV *50; 
+        u16VoltageInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV *50; 
         u16CurrentInmA = gasDPM[u8PortNum].u16SinkOperatingCurrInmA;
         TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
     }
@@ -405,20 +405,38 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         {
             /* Set the current Explicit Contract Type as Fixed Supply */
             gasDPM[u8PortNum].u8DPM_Status &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
-                        
-            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16SrcPDOCurrVal; 
-            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = \
-                    ((DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO)) / DPM_PDO_VOLTAGE_UNIT);
+            
+            /* Update Negotiated current in terms of mA */            
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = \
+                            (u16SrcPDOCurrVal * DPM_PDO_CURRENT_UNIT); 
+            
+            /* Update Negotiated voltage in terms of mV */            
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = \
+                    DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
+            
             /* Update the allocated power in terms of 250mW */
             gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW =    
-                    ((gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV * gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA) / 
-                    (DPM_PDO_VOLTAGE_UNIT * DPM_PDO_CURRENT_UNIT));             
+                    ((gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV * gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA) / 
+                    DPM_250mW);             
         }
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)        
         else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as PPS */
             gasDPM[u8PortNum].u8DPM_Status |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;           
+            
+            /* Update Negotiated current in terms of mA */            
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = \
+                    DPM_GET_PROG_RDO_OPR_CURRENT_IN_mA(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO); 
+            
+            /* Update Negotiated voltage in terms of mV */            
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = \
+                    DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
+            
+            /* Update the allocated power in terms of 250mW */
+            gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW =    
+                    ((gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV * gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA) / 
+                    DPM_250mW);                         
         }
 #endif 
         else
@@ -985,9 +1003,9 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 /*Updating the globals for Sink */
                 gasDPM[u8PortNum].u8NegotiatedPDOIndex = u8SinkPDOIndex+1; 
                 /*Update Negotiated value*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = DPM_GET_PDO_VOLTAGE(u32SinkPDO);
+                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = DPM_GET_PDO_VOLTAGE(u32SinkPDO);
                 /*Update Negotiated value*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = DPM_GET_PDO_CURRENT(u32SinkPDO);
+                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = DPM_GET_PDO_CURRENT(u32SinkPDO);
                 /*VBUS Threshold are configured for the requested PDO*/
                 DPM_SetPortPower (u8PortNum);                
                 return;
@@ -1043,9 +1061,9 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 /*Updating the globals with Sink PDO index selected*/
                 gasDPM[u8PortNum].u8NegotiatedPDOIndex = (u8SinkPDOIndex+1);
                 /*Update Negotiated value*/
-                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = DPM_GET_PDO_VOLTAGE(u32SinkPDO);
+                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = DPM_GET_PDO_VOLTAGE(u32SinkPDO);
                 /*Update Negotiated value*/
-                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16SinkRDOCurIn10mA;              
+                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = u16SinkRDOCurIn10mA;              
                 
                  DPM_SetPortPower (u8PortNum);
                 
@@ -1095,9 +1113,9 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 gasDPM[u8PortNum].u8NegotiatedPDOIndex = (u8SinkPDOIndex+1);
    
                 /*Update Negotiated value*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = DPM_GET_PDO_VOLTAGE(u32RcvdSrcPDO);
+                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = DPM_GET_PDO_VOLTAGE(u32RcvdSrcPDO);
                 /*Update Negotiated value*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = DPM_GET_PDO_CURRENT(u32RcvdSrcPDO);
+                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = DPM_GET_PDO_CURRENT(u32RcvdSrcPDO);
                 
                 /*Set the capability mismatch status*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS;
@@ -1148,7 +1166,7 @@ void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
         fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index]); 
         
         /* Calculate new current value based on new power */
-        u16CurrentIn10mA = ROUND_OFF_FLOAT_TO_INT((float)(((float)u16PowerIn250mW / fVoltageInmV) * (DPM_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT))); 
+        u16CurrentIn10mA = ROUND_OFF_FLOAT_TO_INT((float)(((float)u16PowerIn250mW / fVoltageInmV) * (DPM_250mW / DPM_PDO_CURRENT_UNIT))); 
           
         /* In PB, current value of a port should not exceed PORT_MAX_I */ 
         u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPerPortData[u8PortNum].u16MaxSrcPrtCurrentIn10mA); 

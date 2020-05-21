@@ -83,7 +83,7 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
                                     u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
     
     /* Set EN_VBUS Status in Port IO status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= MPQ_SET_PORT_IO_EN_VBUS_STATUS;
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= MPQ_SET_PORT_IO_EN_VBUS_STATUS;
     
     /* Delay of ~2.5ms for I2C module to stabilize after DC DC Enable*/
     for(i=0;i<20000;i++)

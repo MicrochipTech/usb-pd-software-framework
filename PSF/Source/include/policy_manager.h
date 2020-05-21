@@ -186,6 +186,9 @@ Source/Sink Power delivery objects*/
 #define DPM_20mV    20
 #define DPM_50mV    50
 
+/* define to set allocated power in terms of 250mW */
+#define DPM_250mW   250000
+
 /***************************************u8PowerFaultISR defines*************** */
 #define DPM_POWER_FAULT_OVP				BIT(0)
 #define DPM_POWER_FAULT_UV				BIT(1)
@@ -332,9 +335,6 @@ Source/Sink Power delivery objects*/
 
 /* Macro to get current PT Bank */ 
 #define DPM_GET_CURRENT_PT_BANK             gasCfgStatusData.u8PwrThrottleCfg
-
-/* Power represented in terms of 250mW */
-#define DPM_POWER_UINTS_MILLI_W                 250000
 
 #define DPM_FIXED_PDO_CURRENT_MASK              0x000003FF 
 
