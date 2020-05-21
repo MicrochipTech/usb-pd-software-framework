@@ -84,6 +84,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)    
     /* PS_RDY Timer value to be used in case of PPS contract */
     UINT32 u32PpsSrcTransTmr = SET_TO_ZERO; 
+    
+    /* Alert Data Object */
+    UINT32 u32AlertDO = SET_TO_ZERO; 
 #endif 
     
     /* Get the Type-C state from DPM */
@@ -219,7 +222,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         u8TransmitSOP = PRL_SOP_TYPE;
                         u32pTransmit_DataObj = u32DataObj;
                         Transmit_cb = PE_StateChange_TransmitCB;
-                        /* Commented for compilation */
+                        
                         if(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_PDCONNECTED_STS_MASK)
                         {
                             /*The Protocol Layer indicates that the Message has not been sent , so
@@ -851,7 +854,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         /*Stop the VCONN_OFF timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
-                        /* Start tSRCRecovery timer, if timedout set the PE sub-state to
+                        /* Start tSRCRecovery timer, if timed-out set the PE sub-state to
                         ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS*/
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_SRCRECOVER_TIMEOUT_MS),
@@ -1484,7 +1487,44 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         /************* ePE_SRC_SEND_SOURCE_ALERT **********/
         case ePE_SRC_SEND_SOURCE_ALERT:
         {
-            /* To be implemented */
+            switch(gasPolicy_Engine[u8PortNum].ePESubState)
+            {
+                case ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS: 
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS\r\n"); 
+                    
+                    /* Obtain the Alert Data Object from DPM */
+                    u32AlertDO = DPM_ObtainAlertDO(u8PortNum);
+                    
+                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_ALERT,  \
+                                                 PE_ALERT_DATA_OBJECT_SIZE, PE_NON_EXTENDED_MSG);
+                    u8TransmitSOP = PRL_SOP_TYPE;
+                    u32pTransmit_DataObj = &u32AlertDO;
+                    Transmit_cb = PE_StateChange_TransmitCB;
+                    
+                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
+                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
+                                ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                    
+                    u8IsTransmit = TRUE;
+                    
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_IDLE_SS;
+                    
+                    break; 
+                }
+                
+                case ePE_SRC_SEND_SOURCE_ALERT_IDLE_SS:
+                {
+                    /* Idle state to wait for message transmit completion */
+                    break; 
+                }
+                
+                default:
+                {
+                    break; 
+                }
+            }
+            
             break; 
         }
         

@@ -679,24 +679,37 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             #if (TRUE == INCLUDE_PD_SOURCE_PPS)
             if (DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents\
                                                     & DPM_INT_EVT_INITIATE_ALERT))
-            {
-                /*Assign Policy engine state to initiate Alert*/
-                //TBD
-
+            {     
+                /* To-do: Add an && condition to check if at least one bit is 
+                   set in Type of Alert */
                 /*Clear the Internal event since it is processed*/
-                gasDPM[u8PortNum].u8DPMInternalEvents &= ~DPM_INT_EVT_INITIATE_ALERT;
+                gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_ALERT);
+
+                /* Check for Port Power Role */
+                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+                {
+                    /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;                    
+                }
+                else
+                {
+                    /* TBD for Sink */
+                }                
                 
                 /*start the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS to clear the status flag
                   on timeout if there is no request for status*/
+                /* To-do: Check if this timer can be started for all 
+                   type of alerts or only for OCP, OVP faults */
                 gasDPM[u8PortNum].u8StsClearTmrID = PDTimer_Start (DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS,\
                                                           DPM_StatusFaultPersist_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
                 
-            }
+            } /* DPM_INT_EVT_INITIATE_ALERT */ 
             else if (DPM_INT_EVT_INITIATE_GET_STATUS == (gasDPM[u8PortNum].u8DPMInternalEvents\
                                                     & DPM_INT_EVT_INITIATE_GET_STATUS))
             {
                 /*Clear the Internal event since it is processed*/
-                gasDPM[u8PortNum].u8DPMInternalEvents &= ~DPM_INT_EVT_INITIATE_GET_STATUS;
+                gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_STATUS);
                 
                 /* Check for Port Power Role */
                 if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)

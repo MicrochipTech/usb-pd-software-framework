@@ -206,6 +206,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Capability max current check */
 #define PE_MAX_CURR_MASK        0x1FF
 
+/* Alert and Status message defines */
+#define PE_ALERT_DATA_OBJECT_SIZE           1 
 #define PE_STATUS_DATA_BLOCK_SIZE           6 
 
 typedef enum {
@@ -338,6 +340,9 @@ typedef enum {
     ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS, 
     ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS,
     ePE_SRC_GET_SINK_STATUS_IDLE_SS,
+    /* ePE_SRC_SEND_SOURCE_ALERT */
+    ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS,
+    ePE_SRC_SEND_SOURCE_ALERT_IDLE_SS, 
     //----------------Sink Specific Policy Engine SubStates-------------------------//
     /*ePE_SNK_WAIT_FOR_CAPABILITIES*/
     ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS,
