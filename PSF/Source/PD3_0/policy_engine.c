@@ -937,6 +937,29 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     }
                     break;
                 }
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+                case PE_CTRL_GET_STATUS:
+                {
+                    if (ePE_SRC_READY == gasPolicy_Engine[u8PortNum].ePEState)
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_STATUS: Get Status Received\r\n");
+                        
+                        gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GIVE_SOURCE_STATUS;
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS;
+                      
+                        /* Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
+                           the current explicit contract is for a PPS APDO*/
+                        if((DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))                                
+                        {
+                            PE_KillPolicyEngineTimer (u8PortNum);
+                        }
+                    }
+                    else
+                    {
+                        PE_HandleUnExpectedMsg (u8PortNum);
+                    }                    
+                }
+#endif 
                 default:
                 {
                     break;

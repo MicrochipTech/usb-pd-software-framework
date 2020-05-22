@@ -207,8 +207,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_MAX_CURR_MASK        0x1FF
 
 /* Alert and Status message defines */
-#define PE_ALERT_DATA_OBJECT_SIZE           1 
-#define PE_STATUS_DATA_BLOCK_SIZE           6 
+#define PE_ALERT_DATA_OBJECT_SIZE              1 
+#define PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES     6 
+#define PE_STATUS_DATA_OBJ_CNT        ((PRL_EXTN_MSG_HEADER_SIZE_IN_BYTES + PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES) / 4)                                                
 
 typedef enum {
     /* Source Policy Engine Main State */ 
@@ -342,7 +343,10 @@ typedef enum {
     ePE_SRC_GET_SINK_STATUS_IDLE_SS,
     /* ePE_SRC_SEND_SOURCE_ALERT */
     ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS,
-    ePE_SRC_SEND_SOURCE_ALERT_IDLE_SS, 
+    ePE_SRC_SEND_SOURCE_ALERT_IDLE_SS,
+    /* ePE_SRC_GIVE_SOURCE_STATUS */
+    ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS,
+    ePE_SRC_GIVE_SOURCE_STATUS_IDLE_SS,
     //----------------Sink Specific Policy Engine SubStates-------------------------//
     /*ePE_SNK_WAIT_FOR_CAPABILITIES*/
     ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS,

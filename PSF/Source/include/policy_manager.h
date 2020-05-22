@@ -1482,11 +1482,11 @@ UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pau8StatusDO);
+        DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pau8StatusDO);
     Summary:
-        Updates Status DO in the input array passed
+        Updates Status Data Block in the input array passed
     Description:
-        API to get Status message Data Object
+        API to get Status message Data Block
     Conditions:
         None.
     Input:
@@ -1497,7 +1497,7 @@ UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pu8StatusDO);
+void DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pu8StatusDO);
 
 /**************************************************************************************************
     Function:
