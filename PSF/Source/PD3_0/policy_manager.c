@@ -745,7 +745,7 @@ void DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pau8StatusDO)
    gasDPM[u8PortNum].u8PowerStatus = RESET_TO_ZERO;
 }
 
-UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum) 
+UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum) 
 {
     /*PPS STatus Data Object - Byte[0-1] - Output Voltage
                                 Byte[2] - Output Current

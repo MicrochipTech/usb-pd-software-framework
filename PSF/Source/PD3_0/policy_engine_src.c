@@ -85,8 +85,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     /* PS_RDY Timer value to be used in case of PPS contract */
     UINT32 u32PpsSrcTransTmr = SET_TO_ZERO; 
     
-    /* Alert Data Object */
-    UINT32 u32AlertDO = SET_TO_ZERO; 
+    /* Used to get Alert Data Object and PPS_Status Data Block from DPM */
+    UINT32 u32DataBlock = SET_TO_ZERO; 
     
     /* Status Data Block */
     UINT8 u8StatusDB[PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES] = {SET_TO_ZERO};
@@ -1497,12 +1497,12 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS\r\n"); 
                     
                     /* Obtain the Alert Data Object from DPM */
-                    u32AlertDO = DPM_ObtainAlertDO(u8PortNum);
+                    u32DataBlock = DPM_ObtainAlertDO(u8PortNum);
                     
                     u32Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_ALERT,  \
                                                  PE_ALERT_DATA_OBJECT_SIZE, PE_NON_EXTENDED_MSG);
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = &u32AlertDO;
+                    u32pTransmit_DataObj = &u32DataBlock;
                     Transmit_cb = PE_StateChange_TransmitCB;
                     
                     u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
@@ -1581,7 +1581,47 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         /************* ePE_SRC_GIVE_PPS_STATUS **********/
         case ePE_SRC_GIVE_PPS_STATUS:
         {
-            /* To be implemented */
+            switch(gasPolicy_Engine[u8PortNum].ePESubState)            
+            {
+                case ePE_SRC_GIVE_PPS_STATUS_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GIVE_PPS_STATUS_ENTRY_SS\r\n"); 
+                    
+                    /* Obtain the PPS Status Data Block from DPM */
+                    u32DataBlock = DPM_ObtainPPSStatusDB(u8PortNum);
+                    
+                    /* Form Combined Message Header*/
+                    u32Transmit_Header =  /* Combined Message Header */
+                        PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES)), /**Extended Msg Header*/
+                                PRL_FormSOPTypeMsgHeader(u8PortNum,PE_EXT_PPS_STATUS,PE_PPS_STATUS_DATA_OBJ_CNT, /**Standard Msg Header*/
+                                            PE_EXTENDED_MSG));
+
+                    u8TransmitSOP = PRL_SOP_TYPE;
+                    u32pTransmit_DataObj = &u32DataBlock;
+                    Transmit_cb = PE_StateChange_TransmitCB;
+                    
+                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
+                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
+                                ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                    
+                    u8IsTransmit = TRUE;
+                    
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GIVE_PPS_STATUS_IDLE_SS;
+                                        
+                    break; 
+                }
+                
+                case ePE_SRC_GIVE_PPS_STATUS_IDLE_SS:
+                {
+                    /* Idle state to wait for message transmit completion */
+                    break; 
+                }
+                
+                default:
+                {
+                    break; 
+                }
+            }
             break; 
         }
 #endif                

@@ -206,10 +206,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Capability max current check */
 #define PE_MAX_CURR_MASK        0x1FF
 
-/* Alert and Status message defines */
+/* Alert message defines */
 #define PE_ALERT_DATA_OBJECT_SIZE              1 
+
+/* Status message defines */
 #define PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES     6 
-#define PE_STATUS_DATA_OBJ_CNT        ((PRL_EXTN_MSG_HEADER_SIZE_IN_BYTES + PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES) / 4)                                                
+#define PE_STATUS_DATA_OBJ_CNT                 2
+
+/* PPS Status message defines */
+#define PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES 4
+#define PE_PPS_STATUS_DATA_OBJ_CNT             2 
 
 typedef enum {
     /* Source Policy Engine Main State */ 
@@ -347,6 +353,9 @@ typedef enum {
     /* ePE_SRC_GIVE_SOURCE_STATUS */
     ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS,
     ePE_SRC_GIVE_SOURCE_STATUS_IDLE_SS,
+    /* ePE_SRC_GIVE_PPS_STATUS */
+    ePE_SRC_GIVE_PPS_STATUS_ENTRY_SS, 
+    ePE_SRC_GIVE_PPS_STATUS_IDLE_SS, 
     //----------------Sink Specific Policy Engine SubStates-------------------------//
     /*ePE_SNK_WAIT_FOR_CAPABILITIES*/
     ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS,
@@ -455,6 +464,7 @@ typedef enum {
 #define PE_EXT_STATUS               2 
 #define PE_EXT_FW_UPDATE_REQUEST    10
 #define PE_EXT_FW_UPDATE_RESPONSE   11
+#define PE_EXT_PPS_STATUS           12 
 
 /*Defines to be used in PRL_FormSOPTypeMsgHeader*/
 #define PE_OBJECT_COUNT_1            1
