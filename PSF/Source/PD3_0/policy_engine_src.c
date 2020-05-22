@@ -53,7 +53,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
 
 	/* Transmit Message Header */
-	UINT16 u16Transmit_Header = SET_TO_ZERO;
+	UINT32 u32Transmit_Header = SET_TO_ZERO;
 
 	/* Transmit Data Object */
 	UINT32 *u32pTransmit_DataObj = SET_TO_ZERO; 
@@ -87,6 +87,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     
     /* Alert Data Object */
     UINT32 u32AlertDO = SET_TO_ZERO; 
+    
+    /* Status Data Block */
+    UINT8 u8StatusDB[PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES] = {SET_TO_ZERO};
 #endif 
     
     /* Get the Type-C state from DPM */
@@ -216,7 +219,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-ENTRY_SS: Send Source Capabilities\r\n");
                         DPM_Get_Source_Capabilities(u8PortNum, &u8SrcPDOCnt, u32DataObj);
                         
-                        u16Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,  \
+                        u32Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,  \
                                                                             u8SrcPDOCnt, PE_NON_EXTENDED_MSG);
                         
                         u8TransmitSOP = PRL_SOP_TYPE;
@@ -337,7 +340,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_SUPPLY-ENTRY_SS\r\n");
                     
 					/* Send the Accept message */
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
+                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
@@ -443,7 +446,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                            tPpsSrcTransSmall or tPpsSrcTransLarge Timer in case of PPS. */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_SUPPLY-EXIT_SS\r\n");
-                        u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
+                        u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                         u8TransmitSOP = PRL_SOP_TYPE;
@@ -502,7 +505,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
                     
 					/* Send Reject message for Requested Invalid Capability */
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT, \
+                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT, \
                                         PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
@@ -584,7 +587,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     /* Notify that PD contract is established*/    
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
-                                      
+                           
                     break;
                 }
 
@@ -1023,7 +1026,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_ENTRY_SS\r\n"); 
                     
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_SINK_CAP, \
+                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_SINK_CAP, \
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
@@ -1118,7 +1121,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
 					/* Send SoftReset message */
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
+                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
 																	PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
                     u32pTransmit_DataObj = NULL;
                     Transmit_cb = PE_StateChange_TransmitCB;
@@ -1144,7 +1147,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 
                     /* Send Soft Reset Message */
                     u8TransmitSOP = PRL_SOP_P_TYPE;
-                    u16Transmit_Header = PRL_FormNonSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
+                    u32Transmit_Header = PRL_FormNonSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
 																	PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
                     u32pTransmit_DataObj = NULL;
                     Transmit_cb = PE_StateChange_TransmitCB;
@@ -1208,7 +1211,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     PRL_ProtocolResetAllSOPs(u8PortNum);
                     
                     /* Send Accept message */
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
+                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
@@ -1269,7 +1272,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
                     
 					/* Send VDM Discover Identity message to E-Cable */
-                    u16Transmit_Header = PRL_FormNonSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
+                    u32Transmit_Header = PRL_FormNonSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
                                                                         1, PE_NON_EXTENDED_MSG);
                     u8TransmitSOP = PRL_SOP_P_TYPE;
                     u32pTransmit_DataObj = &u32VDMHeader;
@@ -1401,7 +1404,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_ENTRY_SS\r\n"); 
                     
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_STATUS, \
+                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_STATUS, \
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
@@ -1496,7 +1499,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* Obtain the Alert Data Object from DPM */
                     u32AlertDO = DPM_ObtainAlertDO(u8PortNum);
                     
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_ALERT,  \
+                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_ALERT,  \
                                                  PE_ALERT_DATA_OBJECT_SIZE, PE_NON_EXTENDED_MSG);
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmit_DataObj = &u32AlertDO;
@@ -1531,7 +1534,47 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         /************* ePE_SRC_GIVE_SOURCE_STATUS **********/
         case ePE_SRC_GIVE_SOURCE_STATUS:
         {
-            /* To be implemented */
+            switch(gasPolicy_Engine[u8PortNum].ePESubState)            
+            {
+                case ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS\r\n"); 
+                            
+                    /* Obtain the Status Data Block from DPM */
+                    DPM_ObtainStatusDB(u8PortNum, u8StatusDB);
+                    
+                    /* Form Combined Message Header*/
+                    u32Transmit_Header =  /* Combined Message Header */
+                        PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES)), /**Extended Msg Header*/
+                                PRL_FormSOPTypeMsgHeader(u8PortNum,PE_EXT_STATUS,PE_STATUS_DATA_OBJ_CNT, /**Standard Msg Header*/
+                                            PE_EXTENDED_MSG));
+
+                    u8TransmitSOP = PRL_SOP_TYPE;
+                    u32pTransmit_DataObj = (UINT32 *)u8StatusDB;
+                    Transmit_cb = PE_StateChange_TransmitCB;
+                    
+                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
+                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
+                                ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                    
+                    u8IsTransmit = TRUE;
+                    
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GIVE_SOURCE_STATUS_IDLE_SS;
+                                        
+                    break; 
+                }
+                
+                case ePE_SRC_GIVE_SOURCE_STATUS_IDLE_SS:
+                {
+                    /* Idle state to wait for message transmit completion */
+                    break; 
+                }
+                
+                default:
+                {
+                    break; 
+                }
+            }
             break; 
         }
         
@@ -1551,7 +1594,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 	/* Transmit the message if u8IsTransmit is set */
     if (u8IsTransmit == TRUE)
     {
-		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, (UINT32)u16Transmit_Header, \
+		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, u32Transmit_Header, \
                     (UINT8 *)u32pTransmit_DataObj, Transmit_cb, u32Transmit_TmrID_TxSt); 
     }
 }

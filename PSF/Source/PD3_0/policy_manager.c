@@ -697,7 +697,7 @@ void DPM_StorePartnerAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf)
 void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr)
 {
     /* Store/Clear the Status information received from Port Partner */
-    for (UINT8 u8Index = INDEX_0; u8Index < PE_STATUS_DATA_BLOCK_SIZE; u8Index++)
+    for (UINT8 u8Index = INDEX_0; u8Index < PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES; u8Index++)
     {
         if (DPM_STORE_PARTNER_STATUS == u8StrClr)
         {
@@ -725,9 +725,9 @@ UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum)
     return u32AlertDO;
 }
 
-void DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pau8StatusDO)
+void DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pau8StatusDO)
 {
-    /*Byte 0 - Internal Temperaure
+    /*Byte 0 - Internal Temperature
      Byte 1 - Present Input
      Byte 2 - Present Battery Input
      Byte 3 - Event Flags
@@ -744,6 +744,7 @@ void DPM_ObtainStatusDO(UINT8 u8PortNum, UINT8 *pau8StatusDO)
    gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;
    gasDPM[u8PortNum].u8PowerStatus = RESET_TO_ZERO;
 }
+
 UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum) 
 {
     /*PPS STatus Data Object - Byte[0-1] - Output Voltage
