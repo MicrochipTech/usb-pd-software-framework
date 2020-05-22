@@ -675,11 +675,9 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         if(TRUE == PE_IsPolicyEngineIdle(u8PortNum))
         {
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-            if (DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents\
-                                                    & DPM_INT_EVT_INITIATE_ALERT))
+            if ((DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents & DPM_INT_EVT_INITIATE_ALERT)) 
+                                && (gasDPM[u8PortNum].u8AlertType != 0))
             {     
-                /* To-do: Add an && condition to check if at least one bit is 
-                   set in Type of Alert */
                 /*Clear the Internal event since it is processed*/
                 gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_ALERT);
 
@@ -697,8 +695,6 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 
                 /*start the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS to clear the status flag
                   on timeout if there is no request for status*/
-                /* To-do: Check if this timer can be started for all 
-                   type of alerts or only for OCP, OVP faults */
                 gasDPM[u8PortNum].u8StsClearTmrID = PDTimer_Start (DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS,\
                                                           DPM_StatusFaultPersist_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
                 

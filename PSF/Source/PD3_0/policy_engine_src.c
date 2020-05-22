@@ -583,6 +583,16 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                                   PE_SubStateChange_TimerCB,u8PortNum,  
                                                                   (UINT8) ePE_SRC_READY_PPS_COMM_TIMER_EXPIRED_SS);
                     }
+                    
+                    /* Trigger an Operating Condition Change Alert for Cable Limitation 
+                       on entering an explicit contract */
+                    if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
+                                DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS)
+                    {
+                        gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OPR_COND_CHANGE; 
+                        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
+                    }
+
 #endif 
                     
                     /* Notify that PD contract is established*/    

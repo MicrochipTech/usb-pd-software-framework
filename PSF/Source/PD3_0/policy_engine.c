@@ -956,6 +956,11 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         {
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }
+                        
+                        /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
+                        PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
+                        /* Set the timer Id to Max Concurrent Value*/
+                        gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
                     }
                     else
                     {

@@ -450,7 +450,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 }
 
 /* Reset the current value in PDO */
-UINT32 DPM_CurrentCutDown (UINT32 u32PDO)
+UINT32 DPM_CurrentCutDown (UINT8 u8PortNum, UINT32 u32PDO)
 {
     /* If PDO max current greater than E-Cable supported current, reset the current value */
     if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
@@ -459,6 +459,9 @@ UINT32 DPM_CurrentCutDown (UINT32 u32PDO)
         {
             u32PDO &= ~PE_MAX_CURR_MASK;
             u32PDO |= DPM_CABLE_CURR_3A_UNIT;
+            /* Source PDO Current value reduced due to cable limitation */   
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
+                                        DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS;        
         }  
     }
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)    
@@ -468,6 +471,9 @@ UINT32 DPM_CurrentCutDown (UINT32 u32PDO)
         {
             u32PDO &= ~(DPM_APDO_MAX_CURRENT_MASK);
             u32PDO |= DPM_3A_IN_50mA; 
+            /* Source PDO Current value reduced due to cable limitation */   
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
+                                        DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS;                    
         }
     }
 #endif 
@@ -482,15 +488,10 @@ UINT32 DPM_CurrentCutDown (UINT32 u32PDO)
 /* Copy the Source capabilities */
 void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32SrcCaps, UINT8 u8pSrcPDOCnt)
 {
-    
-    /* The attached USB-C cable does not support the locally defined Source PDOs  */   
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                                        DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS;        
-
     for (UINT8 u8PDOindex = SET_TO_ZERO; u8PDOindex < u8pSrcPDOCnt; u8PDOindex++)
     {   
         /* Reset the current value to E-Cable supported current */
-        pu32DataObj[u8PDOindex] = DPM_CurrentCutDown (pu32SrcCaps[u8PDOindex]);
+        pu32DataObj[u8PDOindex] = DPM_CurrentCutDown (u8PortNum, pu32SrcCaps[u8PDOindex]);
     } 
 }
 
