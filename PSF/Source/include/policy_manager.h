@@ -393,8 +393,8 @@ Source/Sink Power delivery objects*/
 
 /***************************PPS status Data block *********************/
 #define DPM_PPSSDB_OUTPUT_VOLTAGE_FIELD_POS       0
-#define DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS       2
-#define DPM_PPSSDB_REAL_TIME_FLAG_FIELD_POS       3
+#define DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS       16
+#define DPM_PPSSDB_REAL_TIME_FLAG_FIELD_POS       24
 
 #define DPM_PPSSDB_OUTPUT_VOLT_UNSUPPORTED_VAL            0xFFFF
 #define DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL         0xFF
@@ -1501,21 +1501,21 @@ void DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pu8StatusDO);
 
 /**************************************************************************************************
     Function:
-        UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum)
+        UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum)
     Summary:
-        Returns PPS status Data  Object
+        Returns PPS Status Data Block
     Description:
-        API to return PPS Status message Data Object.
+        API to return PPS Status message Data Block.
     Conditions:
         None.
     Input:
         u8PortNum - Port number.
     Return:
-        UINT32 - PPS status Data Type. 
+        UINT32 - PPS status Data Block. 
     Remarks:
         None. 
 **************************************************************************************************/
-UINT32 DPM_ObtainPPSStatusDO (UINT8 u8PortNum);
+UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
