@@ -717,6 +717,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);
                     }
+                    
+                    break; 
                 }
                 #endif
                   
