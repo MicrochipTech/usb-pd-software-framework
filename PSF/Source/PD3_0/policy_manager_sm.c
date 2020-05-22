@@ -657,26 +657,24 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
     {
         if (DPM_INT_EVT_INFORM_DETACH == (gasDPM[u8PortNum].u8DPMInternalEvents\
                                                     & DPM_INT_EVT_INFORM_DETACH))
-        {
-            /*When detach event is notified, reset the Internal events*/
-            gasDPM[u8PortNum].u8DPMInternalEvents = RESET_TO_ZERO;
+        {          
             #if (TRUE == INCLUDE_PD_SOURCE_PPS)
             /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
             PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
-            /*Clear all the status registers*/
-            gasDPM[u8PortNum].u8AlertType = SET_TO_ZERO;
-            gasDPM[u8PortNum].u8StatusEventFlags = SET_TO_ZERO;
-            gasDPM[u8PortNum].u8PowerStatus = SET_TO_ZERO;
-            gasDPM[u8PortNum].u8RealTimeFlags = SET_TO_ZERO;
+
             /* Set the timer Id to Max Concurrent Value*/
             gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+            
+            /* Note: It is recognized that it is possible to send an alert to another 
+               partner if the current partner is disconnected and a new partner is
+               connected. So, no need to clear the other variables */
             
             #endif
         }
         /* Initiate a sequence only when the Policy Engine is in PS_RDY state*/
         if(TRUE == PE_IsPolicyEngineIdle(u8PortNum))
         {
-            #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
             if (DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents\
                                                     & DPM_INT_EVT_INITIATE_ALERT))
             {     
@@ -727,7 +725,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                 /* Do Nothing */
             }
-            #endif /*INCLUDE_PD_SOURCE_PPS*/
+#endif /*INCLUDE_PD_SOURCE_PPS*/
         } 
     }
 }

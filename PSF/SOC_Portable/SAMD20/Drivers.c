@@ -369,7 +369,7 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen)
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 {
 	int i;
-    UINT8 *pu8Obj1 = (UINT8 *)pau8Data2;
+    UINT8 *pu8Obj1 = (UINT8 *)pau8Data1;
     UINT8 *pu8Obj2 = (UINT8 *)pau8Data2;
 	
 	for (i = SET_TO_ZERO; i < ilen; i++)

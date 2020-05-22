@@ -358,35 +358,34 @@ Source/Sink Power delivery objects*/
 
 #define DPM_ALERT_TYPE_FIELD_POS                24
 
-/************************u8StatusEventFlags variable possible values macros*********/
+/********************u8StatusEventFlags variable possible values macros*********/
 #define DPM_EVENT_TYPE_OCP                      BIT(1)
 #define DPM_EVENT_TYPE_OTP                      BIT(2)       
 #define DPM_EVENT_TYPE_OVP                      BIT(3)
 #define DPM_EVENT_TYPE_CL_MODE                  BIT(4)
 #define DPM_EVENT_TYPE_CL_CV_MODE_MASK          BIT(4)
 
-/************************u8PowerStatus variable possible values macros*********/
+/*******************DPM_ReturnPowerStatus possible return values macros*********/
 /*Source Power limited due to cable supported current*/
-#define DPM_PWRSTS_SRCPWR_LMT_CABLE_CURR           BIT(1)
+#define DPM_PWRSTS_SRCPWR_LTD_CABLE_CURR           BIT(1)
 /*Source Power limited due to insufficient power available while sourcing other ports */
-#define DPM_PWRSTS_SRCPWR_LMT_INSUFF_PWR_AVAIL     BIT(2)
+#define DPM_PWRSTS_SRCPWR_LTD_INSUFF_PWR_AVAIL     BIT(2)
 /*Source Power limited due to insufficient external power */
-#define DPM_PWRSTS_SRCPWR_LMT_INSUFF_EXT_PWR       BIT(3)
+#define DPM_PWRSTS_SRCPWR_LTD_INSUFF_EXT_PWR       BIT(3)
 /*Source power limited due to Event Flag in place (Event flag must also be set)*/
-#define DPM_PWRSTS_SRCPWR_LMT_EVNT_FLAG            BIT(4)
+#define DPM_PWRSTS_SRCPWR_LTD_EVNT_FLAG            BIT(4)
 /*Source power limited due to temperature*/
-#define DPM_PWRSTS_SRCPWR_LMT_TEMP                 BIT(5)
+#define DPM_PWRSTS_SRCPWR_LTD_TEMP                 BIT(5)
 
 
-/************************u8RealTimeFlags variable possible values macros*********/
-/*PTF- Present Temperature flag*/
-#define DPM_REAL_TIME_FLAG_PTF_NOT_SUPPORTED       0
-#define DPM_REAL_TIME_FLAG_PTF_NORMAL              BIT(1)
-#define DPM_REAL_TIME_FLAG_PTF_WARNING             BIT(2)
-#define DPM_REAL_TIME_FLAG_PTF_OVER_TEMP           (BIT(1) | BIT(2))
-#define DPM_REAL_TIME_FLAG_PTF_MASK                (BIT(1) | BIT(2))
+/************************Temperature Status possible values macros*********/
+#define DPM_TEMP_STATUS_NOT_SUPPORTED       0
+#define DPM_TEMP_STATUS_NORMAL              BIT(1)
+#define DPM_TEMP_STATUS_WARNING             BIT(2)
+#define DPM_TEMP_STATUS_OVER_TEMP           (BIT(1) | BIT(2))
+#define DPM_TEMP_STATUS_MASK                (BIT(1) | BIT(2))
 
-/*OMF- Operating Mode Flag indicating Source operating mode.
+/*OMF - Operating Mode Flag indicating Source operating mode.
  When set it is Current Limit Mode, When cleared it is Constant Voltage mode*/
 #define DPM_REAL_TIME_FLAG_OMF_IN_CL_MODE          BIT(3)
 #define DPM_REAL_TIME_FLAG_OMF_FIELD_MASK          BIT(3)
@@ -445,7 +444,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
   UINT8 u8AlertType;
   UINT8 u8StatusEventFlags;
-  UINT8 u8PowerStatus;
   UINT8 u8RealTimeFlags;
   UINT8 u8StsClearTmrID;
 #endif
@@ -1535,6 +1533,45 @@ UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum);
         None. 
 **************************************************************************************************/
 void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum); 
+    Summary:
+        Returns Current Power Status of the system 
+    Description:
+        API to return current power status of the system. The value 
+        returned by this API would be 5th field of Status Data Block. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        UINT8 - Power Status 
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_ReturnTemperatureStatus(); 
+    Summary:
+        Returns Current Temperature Status of the system based on currently
+        active throttling bank. 
+    Description:
+        API to return current temperature status of the system. The value 
+        returned by this API would be 4th field of Status Data Block. 
+    Conditions:
+        None.
+    Input:
+        None.
+    Return:
+        UINT8 - Temperature Status 
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT8 DPM_ReturnTemperatureStatus (void); 
 
 /**************************************************************************************************
     Function:
