@@ -719,9 +719,11 @@ UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum)
                           BIT[19:16] - Hot swappable Batteries -  NA - 0x00
                           BIT[15:0] - Reserved  */
     UINT32 u32AlertDO = (((UINT32)gasDPM[u8PortNum].u8AlertType) << DPM_ALERT_TYPE_FIELD_POS);
+    
     /*Clear the gasDPM[u8PortNum].u8AlertType values stored once message is informed
      to PE through this function*/
     gasDPM[u8PortNum].u8AlertType = SET_TO_ZERO;
+    
     return u32AlertDO;
 }
 
@@ -733,23 +735,22 @@ void DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pau8StatusDO)
      Byte 3 - Event Flags
      Byte 4 - Temperature Status
      Byte 5 - Power Status*/
-    pau8StatusDO[INDEX_0] = SET_TO_ZERO; /*Not Supported*/
-    pau8StatusDO[INDEX_1] = BIT(1);        /*External Power is set and DC*/
-    pau8StatusDO[INDEX_2] = SET_TO_ZERO;     /*Present Battery Input not applicable*/
+    pau8StatusDO[INDEX_0] = SET_TO_ZERO;  /*Not Supported*/
+    pau8StatusDO[INDEX_1] = BIT(1);       /*External Power is set and DC*/
+    pau8StatusDO[INDEX_2] = SET_TO_ZERO;  /*Present Battery Input not applicable*/
     pau8StatusDO[INDEX_3] = gasDPM[u8PortNum].u8StatusEventFlags;
-    pau8StatusDO[INDEX_4] = (gasDPM[u8PortNum].u8RealTimeFlags & DPM_REAL_TIME_FLAG_PTF_MASK);
-    pau8StatusDO[INDEX_5] = gasDPM[u8PortNum].u8PowerStatus;
+    pau8StatusDO[INDEX_4] = DPM_ReturnTemperatureStatus();
+    pau8StatusDO[INDEX_5] = DPM_ReturnPowerStatus(u8PortNum); 
     
     /*Clear the status variable once the Status details are provided to the policy Engine*/
    gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;
-   gasDPM[u8PortNum].u8PowerStatus = RESET_TO_ZERO;
 }
 
 UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum) 
 {
-    /*PPS STatus Data Object - Byte[0-1] - Output Voltage
-                                Byte[2] - Output Current
-                                Byte [3] - Real Time Flag*/
+    /* PPS Status Data Block - Byte[0-1] - Output Voltage
+                               Byte[2]   - Output Current
+                               Byte[3]   - Real Time Flags */
     
     UINT32 u32OutputVoltageIn20mV = MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV;
     UINT32 u32OutputCurrentIn50mA = MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA;
@@ -771,10 +772,14 @@ UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum)
     {
         u32OutputCurrentIn50mA = DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL;
     }
-    UINT32 u32PPSStatusDO = (u32OutputVoltageIn20mV | \
+    
+    gasDPM[u8PortNum].u8RealTimeFlags |= DPM_ReturnTemperatureStatus();
+    
+    UINT32 u32PPSStatusDB = (u32OutputVoltageIn20mV | \
                                 (u32OutputCurrentIn50mA << DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS) |\
                                 (((UINT32)gasDPM[u8PortNum].u8RealTimeFlags) << DPM_PPSSDB_REAL_TIME_FLAG_FIELD_POS));
-    return u32PPSStatusDO;
+    
+    return u32PPSStatusDB;
 }
 
 void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
@@ -784,9 +789,77 @@ void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	
 	/* Reset the status variable*/
     gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;
-    gasDPM[u8PortNum].u8PowerStatus = RESET_TO_ZERO;
 	
 }
+
+UINT8 DPM_ReturnTemperatureStatus (void)
+{
+    UINT8 u8TempStatus = SET_TO_ZERO; 
+    
+/* Bit    Description 
+    0     Reserved and Shall be set to zero
+   1..2   00 - Not Supported
+          01 - Normal
+          10 - Warning
+          11 - Over temperature
+   3..7   Reserved and Shall be set to zero */ 
+    
+    if (PD_THROTTLE_BANK_A == DPM_GET_CURRENT_PT_BANK)
+    {
+        u8TempStatus = DPM_TEMP_STATUS_NORMAL; 
+    }
+    else if ((PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK) || 
+                        (PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK))
+    {
+        u8TempStatus = DPM_TEMP_STATUS_WARNING;
+    }
+    else
+    {
+        u8TempStatus = DPM_TEMP_STATUS_OVER_TEMP; 
+    }
+    return u8TempStatus; 
+}
+
+UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
+{
+    UINT8 u8PwrStatus = SET_TO_ZERO; 
+    
+    /* Bit 1: Source power limited due to cable supported current */
+    if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
+                                DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS)
+    {
+        u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_CABLE_CURR; 
+    }
+
+    /* Source power limited due to..  */
+    if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &
+                                DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS)
+    {
+        /* Bit 2: insufficient power available while sourcing other ports */
+        if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
+        {
+            u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_INSUFF_PWR_AVAIL; 
+        }  
+        /* Bit 5: temperature */
+        if ((PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK) || 
+                            (PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK))
+        {
+            u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_TEMP; 
+        }        
+        
+    }
+    /* Bit 3: Not Applicable */
+    /* Bit 4: Source power limited due to Event Flags in place (Event Flags must also be set) */
+    if (gasDPM[u8PortNum].u8StatusEventFlags)
+    {
+        u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_EVNT_FLAG;
+    }
+    
+    /* Bit 7:6 - Reserved */
+    
+    return u8PwrStatus;  
+}
+
 #endif /*INCLUDE_PD_SOURCE_PPS*/ 
 #endif /*INCLUDE_PD_SOURCE*/  
 

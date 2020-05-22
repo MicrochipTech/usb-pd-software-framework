@@ -56,6 +56,13 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
             case PD_THROTTLE_BANK_B:
             case PD_THROTTLE_BANK_C:
             {
+                /* Trigger Alert message on bank change with Type of Alert as 
+                   Operating Condition Change*/
+                #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+                gasDPM[u8PortNum].u8AlertType  |= DPM_ALERT_TYPE_OPR_COND_CHANGE;
+                DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT); 
+                #endif 
+
                 if (PD_THROTTLE_SHUTDOWN_MODE == u8PrevPTBank)
                 {
                     /* Enable the Port which would have been previously disabled */
@@ -112,22 +119,30 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
 {
     /* Get current PT Bank */
     UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK;
+    UINT16 u16PowerIn250mW = SET_TO_ZERO; 
     
-    if (PD_THROTTLE_BANK_B == u8CurrPTBank)
+    if (PD_THROTTLE_BANK_A == u8CurrPTBank)
     {
-        DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
-        DPM_UpdatePDO(u8PortNum, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW);
+        u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW;
+    }
+    else if (PD_THROTTLE_BANK_B == u8CurrPTBank)
+    { 
+        u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW;
     }
     else if (PD_THROTTLE_BANK_C == u8CurrPTBank)
     {
-        DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
-        DPM_UpdatePDO(u8PortNum, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW);        
+        u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW;
     }
     else
     {
-        /* New PDO should not be enabled for Bank A since the source caps
-           would be advertised from u32aSourcePDO[7] array */
+        /* Do Nothing for Shutdown mode */
     }
+    
+    /* Enable New PDO select so that New Source capabilities would be 
+       sent from u32aNewPDO[7] array */
+    DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
+    
+    DPM_UpdatePDO(u8PortNum, u16PowerIn250mW);
 }
 
 void PT_HandleDPMBusy(UINT8 u8PortNum)
