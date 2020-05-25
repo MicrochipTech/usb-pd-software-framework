@@ -33,7 +33,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
 #include <psf_stdinc.h>
-#include <Drivers.h>
 
 /***********************************************************************************/
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)

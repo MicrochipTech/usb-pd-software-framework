@@ -2724,10 +2724,12 @@ UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     UINT32 u32PDODebug = SET_TO_ZERO;
 #endif
+
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+              ~DPM_PORT_RP_VAL_DETECT_MASK_STATUS; 
+
     switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
     {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
-                ~DPM_PORT_RP_VAL_DETECT_MASK_STATUS; 
         case TYPEC_DFP_DEFAULT_CURRENT:
         {
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
