@@ -107,7 +107,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Section: Data Structure                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT];
+extern volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT];
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions

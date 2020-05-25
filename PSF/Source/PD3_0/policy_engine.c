@@ -732,8 +732,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Accept Message Received\r\n");
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
                                     DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS;
-                        
-						PE_KillPolicyEngineTimer (u8PortNum);
+                        PE_KillPolicyEngineTimer (u8PortNum);
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                     }
