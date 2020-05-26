@@ -72,6 +72,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define INDEX_1                                 1
 #define INDEX_2                                 2
 #define INDEX_3                                 3
+#define INDEX_4                                 4
+#define INDEX_5                                 5
 
 /********************************************************************************************/
 /*Low Byte and High byte from a UINT16*/
@@ -112,7 +114,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define CLR_VAL                                         0x00
 #define RESET_TO_ZERO									0
-#define SET_TO_ZERO									    0                                                
+#define SET_TO_ZERO									    0  
+#define SET_TO_ONE                                      1
 /********************************************************************************************/
 /* Defines for Port reference*/
 #define PORT0       0

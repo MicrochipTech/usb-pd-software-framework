@@ -164,18 +164,44 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             break; 
         }
         
-        case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD: 
+        case eMCHP_PSF_SINK_CAPS_NOT_RCVD: 
         {
             break; 
         }  
         
-        case eMCHP_PSF_GET_SINK_CAPS_RCVD:
+        case eMCHP_PSF_SINK_CAPS_RCVD:
         {
             break;            
         }
         
+        case eMCHP_PSF_SINK_ALERT_RCVD: 
+        {
+            /* Alert information received from Sink is available in 
+             gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlertInfo */
+            break; 
+        }
+        
+        case eMCHP_PSF_SINK_STATUS_NOT_RCVD:
+        {
+            break; 
+        }
+
+        case eMCHP_PSF_SINK_STATUS_RCVD:
+        {
+            /* Status information received from Sink is available in 
+            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6] */
+            break; 
+        }
+        
+        case eMCHP_PSF_BUSY:
+        {
+            break; 
+        }
+        
         default:
+        {
             break;
+        }
     }
 
     return u8RetVal;

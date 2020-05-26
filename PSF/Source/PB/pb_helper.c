@@ -38,34 +38,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 void PB_Init(void)
 {
     UINT8 u8PortNum; 
-    UINT16 u16TotSysPwrIn250mW = 0; 
         
     /* Initialize System parameters only if PB is enabled for the system */
     if (gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE)
     {
-        /* Get the Total System Power based on currently selected Throttling bank */
-        if (DPM_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
-        {
-            u16TotSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
-        }
-        else if (DPM_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
-        {
-            u16TotSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankBIn250mW;
-        }
-        else if (DPM_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
-        {
-            u16TotSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankCIn250mW; 
-        }
-        else
-        {
-            /* Power Throttling Shutdown mode */
-        }
-    
-        gsPBIntSysParam.u16TotalSysPwrIn250mW = u16TotSysPwrIn250mW;
+        /* Bank A shall be the default bank selected at power on. */
+        gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
         gsPBIntSysParam.u32AsyncReqWaitTimerInms = PB_ASYN_REQ_WAIT_TIMER_IN_MS; 
         gsPBIntSysParam.u8ReclaimPortNum = SET_TO_ZERO; 
         gsPBIntSysParam.u8RecoverPortNum = SET_TO_ZERO; 
-        gsPBIntSysParam.u8RecoveringMode = FALSE;         
+        gsPBIntSysParam.u8RecoveringMode = FALSE;  
         gasCfgStatusData.u16SharedPwrCapacityIn250mW = gsPBIntSysParam.u16TotalSysPwrIn250mW; 
         
         /* Initialize Port Parameters only if the Port role is Source and 
@@ -87,8 +69,6 @@ void PB_Init(void)
 
 void PB_InitializePortParam(UINT8 u8PortNum)
 {
-    UINT16 u16MinPwrIn250mW = 0, u16MaxPwrIn250mW = 0;
-    
     /* Initialize all the Port specific parameters */ 
     gasPBIntPortParam[u8PortNum].u8AttachSeqNo             = SET_TO_ZERO; 
     gasPBIntPortParam[u8PortNum].eRenegSubState            = ePB_IDLE_SS; 
@@ -97,31 +77,9 @@ void PB_InitializePortParam(UINT8 u8PortNum)
     gasPBIntPortParam[u8PortNum].u8PBPortStatusMask        = FALSE; 
     gasPBIntPortParam[u8PortNum].ePBPortState              = ePB_IDLE_STATE;
     gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW  = SET_TO_ZERO; 
-    
-    /* Get the Guaranteed Minimum Power and Maximum Power based on 
-       currently selected throttling bank */
-    if (DPM_PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg) 
-    {
-        u16MinPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW; 
-        u16MaxPwrIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW; 
-    }
-    else if (DPM_PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
-    {
-        u16MinPwrIn250mW = gasCfgStatusData.u16MinPowerBankBIn250mW;
-        u16MaxPwrIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW; 
-    }
-    else if (DPM_PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
-    {
-        u16MinPwrIn250mW = gasCfgStatusData.u16MinPowerBankCIn250mW;
-        u16MaxPwrIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW; 
-    }
-    else
-    {
-        /* Power Throttling Shutdown mode */
-    }
-    
-    gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = u16MinPwrIn250mW;
-    gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = u16MaxPwrIn250mW; 
+    /* Bank A shall be the default bank selected at power on. */
+    gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW;
+    gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW; 
 }
 
 void PB_ChangePortStates(UINT8 u8PortNum, PB_PORT_STATES ePortState, PB_RENEG_SUBSTATE ePortSubState)
@@ -178,7 +136,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
     }
     
     /* Update the global status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = u16CurrentIn10mA; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = (u16CurrentIn10mA * DPM_PDO_CURRENT_UNIT); 
     
     /* Calculate power in terms of 10mW */
     u16TempPwrIn10mW = (UINT16) (fNegotiatedVoltageInV * u16CurrentIn10mA);
@@ -203,7 +161,7 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
 void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattageIn250mW)
 {
     /* Update the PDOs in New PDO registers */
-    PB_UpdatePDO(u8PortNum, u16NewWattageIn250mW); 
+    DPM_UpdatePDO(u8PortNum, u16NewWattageIn250mW); 
     
     /* Raise Renegotiation request to DPM */
     DPM_SET_RENEGOTIATE_REQ(u8PortNum); 
@@ -728,32 +686,54 @@ void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum)
     PB_InitiateNextPortNegotiation ();    
 }
 
-void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
+void PB_OnPTBankSwitch(UINT8 u8PortNum)
 {
-    float fVoltageInmV = SET_TO_ZERO; 
-    UINT16 u16CurrentIn10mA = SET_TO_ZERO; 
-    
-    /* Load the New PDO Count which is same as Fixed PDO count */
-    gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt; 
-    
-    /* In Power Balancing, voltages remain fixed irrespective of the power 
-       value advertised. Only current varies with power. */
-    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt; u8Index++)
+    /* Update global and per port parameters of PB */
+    if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg)
     {
-        /* Get the voltage value from PDO */
-        fVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index]); 
-        
-        /* Calculate new current value based on new power */
-        u16CurrentIn10mA = ROUND_OFF_FLOAT_TO_INT((float)(((float)u16PowerIn250mW / fVoltageInmV) * (PB_POWER_UINTS_MILLI_W / DPM_PDO_CURRENT_UNIT))); 
-        
-        /* In PB, current value of a port should not exceed PORT_MAX_I */ 
-        u16CurrentIn10mA = MIN(u16CurrentIn10mA, gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtCurrentIn10mA); 
-        
-        /* Load the New PDO registers with the new PDO values */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8Index] = \
-                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index] & ~(PB_FIXED_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
-
+        gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW;         
     }
-
+    else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+    {
+        gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankBIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankBIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW; 
+    }
+    else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+    {
+        gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankCIn250mW;                
+        gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankCIn250mW;
+        gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW;                 
+    }
+    else
+    {
+       // Do Nothing 
+    } 
+    
+    gasCfgStatusData.u16SharedPwrCapacityIn250mW = gsPBIntSysParam.u16TotalSysPwrIn250mW; 
+    
+    for (UINT8 u8Index = INDEX_0; u8Index < CONFIG_PD_PORT_COUNT; u8Index++)
+    {
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        {    
+            gasCfgStatusData.u16SharedPwrCapacityIn250mW -= gasPBIntPortParam[u8Index].u16MinGuaranteedPwrIn250mW; 
+        }
+    }   
+    
+    if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))
+    {
+        /* Clear the initial Negotiation Done status since renegotiation for 
+           port is going to start again with minimum guaranteed power value */
+        gasPBIntPortParam[u8PortNum].u8PBPortStatusMask &= ~(PB_PORT_STATUS_INITIAL_NEG_DONE);
+        
+        PB_InitiateNegotiationWrapper(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW);
+    }
+    else
+    {
+        /* No need to do anything since we expect an attach notification from DPM */
+    }
 }
+
 #endif

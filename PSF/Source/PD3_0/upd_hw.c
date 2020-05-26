@@ -400,7 +400,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
 		UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN),\
 										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
         /*Notify Power fault to DPM only none of the Power fault recovery is not in progress*/
-        if (!gasDPM[u8PortNum].u8HRCompleteWait)
+        if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
         {
             /* Notify DPM about the power fault*/
             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
@@ -663,7 +663,7 @@ void UPD_CheckAndDisablePorts (void)
                     }
                     else
                     {
-                        /* If the VID and PID doesnt match, Disable the ports */
+                        /* If the VID and PID doesn't match, Disable the ports */
                         gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
                                 ~(TYPEC_PORT_ENDIS_MASK);
                         
