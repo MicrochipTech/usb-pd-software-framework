@@ -720,7 +720,7 @@ Remarks:
 #if (TRUE == INCLUDE_PD_SINK)
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  DAC_Initialize();
 #elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  MPQDCDC_Initialize(u8PortNum);
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  (void) MPQDCDC_Initialize(u8PortNum);
 #else
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
 #endif

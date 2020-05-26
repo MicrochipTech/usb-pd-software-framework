@@ -82,7 +82,7 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
     #endif
     
     /*Hook to modify or overwrite the default Port Power control initialization */
-    (void) MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
+    MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
 
 }
 /************************************************************************************/
