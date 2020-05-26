@@ -283,14 +283,15 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS);
                     
                     /* Set the Power related variables to 0 in Status register */
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentIn10mA = RESET_TO_ZERO; 
-                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageIn50mV = RESET_TO_ZERO; 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = RESET_TO_ZERO; 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
                     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
                     
+                    /*Inform Detach event to DPM */
+                    DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INFORM_DETACH);
                     /* Clear all the client requests for the port since the 
                        port is detached. */
                     DPM_ClearAllClientRequests(u8PortNum);
-                    
                     /* Notify external DPM of Type C Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
                      
@@ -340,7 +341,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 }
               
-                /*Source waits in this substate for sink attachment*/
+                /*Source waits in this sub-state for sink attachment*/
                 case TYPEC_UNATTACHED_SRC_IDLE_SS:
                     break; 
                     
@@ -364,7 +365,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                                                               "SRC State\r\n");
                     
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                      (CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
+                                                      (TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_SubStateChange_TimerCB, u8PortNum,\
                                                       TYPEC_ATTACHWAIT_SRC_TCC_TO_SS);
                    
@@ -374,11 +375,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }   
                     
                     
-                /*Source waits in this substate until the tCCDebounce timer timeouts*/
+                /*Source waits in this sub-state until the tCCDebounce timer timeouts*/
                 case TYPEC_ATTACHWAIT_SRC_IDLE_SS:
                     break;
                 
-                /*Source enters this substate after the tCCDebounce timer timeouts*/
+                /*Source enters this sub-state after the tCCDebounce timer timeouts*/
                 case TYPEC_ATTACHWAIT_SRC_TCC_TO_SS:
                 {
                   
@@ -426,7 +427,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
           
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
             {   
-                /*Source Drives VBUS and VCONN required in this substate*/
+                /*Source Drives VBUS and VCONN required in this sub-state*/
                 case TYPEC_ATTACHED_SRC_DRIVE_PWR_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC: Entered ATTACHED"\
@@ -438,7 +439,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach Vsafe5V*/
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
-                                                              (CONFIG_TYPEC_VBUS_ON_TIMER_MS),
+                                                              (TYPEC_VBUS_ON_TIMER_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
 					
@@ -524,7 +525,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             VCONN to reach its Min value*/
                             /*Failure to reach the VCONN Min will result in Error Recovery state*/
                             gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
-                                                         CONFIG_TYPEC_VCONNON_TIMEOUT_MS,
+                                                         TYPEC_VCONNON_TIMEOUT_MS,
                                                           TypeC_VCONNONErrorTimerCB, u8PortNum,  
                                                           (UINT8)SET_TO_ZERO);
                             
@@ -615,7 +616,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 /* Start a Debounce timer of tPDDebounce for detach event*/
                 gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                  (CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
+                                                  (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
                                                   TypeC_SubStateChange_TimerCB, u8PortNum,\
                                                   TYPEC_UNATTACH_WAIT_SRC_TPD_TO_SS);
                 
@@ -633,7 +634,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                /*Start the VBUS OFF timer for monitoring the time taken for 
                 power module to reach Vsafe0V*/
                 gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
-                                                              (CONFIG_TYPEC_VBUS_OFF_TIMER_MS),
+                                                              (TYPEC_VBUS_OFF_TIMER_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
 				
@@ -663,7 +664,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             case TYPEC_UNATTACH_WAIT_SRC_IDLE_SS:
                 break;
              
-            /*Wait in this substate until the VBUS goes to 0V before moving into Unattached state*/
+            /*Wait in this sub-state until the VBUS goes to 0V before moving into Unattached state*/
             case TYPEC_UNATTACH_WAIT_SRC_CHECK_VBUS_0V_SS:
             {
                 if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_0V_PRES))
@@ -739,13 +740,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_UNATTACHED_SNK_INIT_SS:
                 {
                     /*DPM power fault handler resets SM by polling this state TYPEC_UNATTACHED_SNK_INIT_SS
-                    in the hanlder for Sink unattach.
+                    in the handler for Sink unattach.
                     Any module can reset its reset its SM by polling this state*/
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_IDLE_SS;                    
                     break;
                 }
                                    
-                /*Sink Waits in this Substate for Source attachment*/    
+                /*Sink Waits in this Sub-state for Source attachment*/    
                 case TYPEC_UNATTACHED_SNK_IDLE_SS:
                     break;
                     
@@ -765,7 +766,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SNK: Entered"\
                                          "ATTACHWAIT SNK State\r\n");                  
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                      (CONFIG_TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
+                                                      (TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_SubStateChange_TimerCB, u8PortNum,\
                                                       TYPEC_ATTACHWAIT_SNK_TCC_TO_SS);
                     
@@ -775,7 +776,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                    
                     
-                /*Sink Waits in this substate until either the tCCDebounce or tPDDebounce timer 
+                /*Sink Waits in this sub-state until either the tCCDebounce or tPDDebounce timer 
                 expires */
                 case TYPEC_ATTACHWAIT_SNK_IDLE_SS:
                     break;
@@ -784,7 +785,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHWAIT_SNK_TPDDEB_SS:
                 {                  
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                      (CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
+                                                      (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_StateChange_TimerCB, u8PortNum,\
                                                       TYPEC_UNATTACHED_SNK);
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHWAIT_SNK_IDLE_SS;
@@ -793,7 +794,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                     
                 
-                /*Sink enters this substate after the tCCDebounce timer is expired */
+                /*Sink enters this sub-state after the tCCDebounce timer is expired */
                 case TYPEC_ATTACHWAIT_SNK_TCC_TO_SS:
                 {                  
                     /*Check for VBUS Presence before moving to Attached SNK state */
@@ -818,7 +819,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
             {
                  /*Sink enables the CC Communication channel and notifies the external DPM
-                 about the Type C Attached event this substate */
+                 about the Type C Attached event this sub-state */
                 case TYPEC_ATTACHED_SNK_ENTRY_SS:
                 {  
                     /* Assign Operating current based on the Rp value*/
@@ -868,7 +869,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHED_SNK_RUN_SM_SS:	
                     break;
                 
-                /*Sink enters this substate to start a tPDDeounce timer for source detach event*/
+                /*Sink enters this sub-state to start a tPDDeounce timer for source detach event*/
                 case TYPEC_ATTACHED_SNK_TPDDEB_SS:
                 {
                     /*Kill all the timers for a port before starting a Type C Debounce timer*/
@@ -876,7 +877,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     /* Start a Debounce timer of tPDDebounce for detach event*/
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                                       (CONFIG_TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
+                                                       (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
                                                        TypeC_SubStateChange_TimerCB, u8PortNum,\
                                                        TYPEC_ATTACHED_SNK_TPD_TO_SS);
                     
@@ -886,7 +887,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                    
                 
-                /*Sink enters this substate after the tPDDeounce timer is expired or VBUS drops below 
+                /*Sink enters this sub-state after the tPDDeounce timer is expired or VBUS drops below 
                 VSinkDisconnect*/
                 case TYPEC_ATTACHED_SNK_TPD_TO_SS:
                 {    
@@ -929,7 +930,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 } 
                 
-                /*Sink waits in this substate until the tPDDeounce timer expires or until the VCONN 
+                /*Sink waits in this sub-state until the tPDDeounce timer expires or until the VCONN 
                 Discharge is completed*/
                 case TYPEC_ATTACHED_SNK_IDLE_SS:                  
                     break;
@@ -1041,7 +1042,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Setting VBUS Comparator OFF once the VBUS line goes off to 0V*/
                         TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
                         gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
-                                  (CONFIG_TYPEC_ERRORRECOVERY_TIMEOUT_MS),\
+                                  (TYPEC_ERRORRECOVERY_TIMEOUT_MS),\
                                   TypeC_SubStateChange_TimerCB, u8PortNum,\
                                   TYPEC_ERROR_RECOVERY_TO_SS);
                         
@@ -1103,6 +1104,78 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             break; 
         }
 	  
+        case TYPEC_DISABLED: 
+        {
+            switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
+            {
+                /* As per Type C Spec, Disabled State Requirements are, 
+                The port shall not drive VBUS or VCONN, and shall 
+                present a high-impedance to ground (above zOPEN) on
+                its CC1 and CC2 pins. */ 
+                case TYPEC_DISABLED_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_DISABLED_ENTRY_SS\r\n"); 
+                    
+                    /* Disable the receiver*/
+                    PRL_EnableRx (u8PortNum, FALSE);
+                    
+                    /*Setting CC Comparator OFF*/
+                    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+                    
+                    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
+                    {
+                        /*Disable VBUS by driving to vSafe0V*/
+                        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+                        
+                        /* Clear TypeC Current Rp Val bits in u8PortSts so that in unattached
+                           SRC state, the Rp value from user configuration would be set. */
+                        gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+                        
+                        /*Setting the CC1 and CC2 line as Open Disconnect*/
+                        TypeC_SetPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS); 
+                    }
+                    else
+                    {
+                        gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+                        /*Disable the Sink circuitry to stop sinking the power from source*/
+                        PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+                        
+                         /*Setting the CC1 and CC2 line as Open Disconnect*/
+                        TypeC_SetPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS);                        
+                    }
+                    #if (INCLUDE_VCONN_SWAP_SUPPORT | INCLUDE_PD_SOURCE)
+                    /*Disable VCONN if the port sources the VCONN already or failed while trying to
+                    source VCONN*/
+                    if (((u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) \
+                        != TYPEC_VCONN_DISABLED) || (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_ON_REQ_MASK))
+                    {
+                        /*Clearing the VCONN ON Request mask if VCONN has turned ON*/
+                        gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
+
+                        /*Disable VCONN by switching off the VCONN FETS*/
+                        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);
+                    }
+                    #endif 
+                    
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_IDLE_SS;
+                            
+                    break; 
+                }
+                
+                case TYPEC_DISABLED_IDLE_SS:
+                {
+                    break; 
+                }
+                
+                default:
+                {
+                    break; 
+                }
+            }
+            break; 
+        }
+        
         case TYPEC_AUDIO_ACCESSORY:
             break;
               
@@ -1190,7 +1263,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         if (u8Data & TYPEC_CC_MATCH_VLD)
         {
             /*Clearing the CC Match valid interrupt */
-            /*This Interrupt is usually ocurred while switching on the CC Comparator
+            /*This Interrupt is usually occurred while switching on the CC Comparator
             and Comparator has finished one round of sampling*/
             UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
             
@@ -1374,7 +1447,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
                 #endif   
                /* under voltage is considered if VBUS not lowered as part of Over voltage*/
-                if (!gasDPM[u8PortNum].u8HRCompleteWait)
+                if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
                 {
                     gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_UV;
                 }
@@ -1413,7 +1486,10 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 
             for (UINT8 u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
             {
-                /* PDO voltage for which VBUS Threshold was configured is determined */
+                /* Fixed PDO voltage for which VBUS Threshold was configured is determined.
+                   For PPS, Source should not rely on VBUS voltage for sending 
+                   PS_RDY message. Hence, u8IntStsISR shall not be used during PPS 
+                   contract to know the voltage level.  */
                 if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index])) 
                 {
                     /*Setting the VBUS Status flag for corresponding voltage
@@ -1797,7 +1873,7 @@ void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
          /*Clearing the VCONN ON Request mask if VCONN has turned ON*/
          gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK; 
 
-         /*Clearing the CC Interupt flag since CC change is because of the VCONN ON event*/
+         /*Clearing the CC Interrupt flag since CC change is because of the VCONN ON event*/
          gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_CCINT_STATUS_MASK;
     
     }
@@ -1813,8 +1889,8 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
     if (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VSINKDISCONNECT_STATUS_MASK)
     {
         /*Voltage dropped to vSinkDisconnect in Attached Sink State before the Source CC detach 
-        event occured*/
-        /*VSinkDisconnect event occured after the CC detach event is not processed
+        event occurred*/
+        /*VSinkDisconnect event occurred after the CC detach event is not processed
         which is a violation of specification*/
         /*This is done for easy handling*/
         if((TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
@@ -1857,7 +1933,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
                 case TYPEC_UNATTACH_WAIT_SRC:
                 {     
                   
-                    /*Setting the Substate to verify whether VBUS has reached to 0V before moving into 
+                    /*Setting the Sub-state to verify whether VBUS has reached to 0V before moving into 
                     unattached state */
                     /*This condition occurs when VCONN Discharge is completed*/
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  =  TYPEC_UNATTACH_WAIT_SRC_CHECK_VBUS_0V_SS;                  
@@ -1976,7 +2052,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Sink is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1_MatchISR > gasTypeCcontrol[u8PortNum].u8CC2_MatchISR) ? 2 : 1),"\r\n");
             
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Persent in CC");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1_MatchISR > gasTypeCcontrol[u8PortNum].u8CC2_MatchISR) ? 1 : 2),"\r\n");
             
             if(u8TypeCState == TYPEC_UNATTACHED_SRC)
@@ -1997,7 +2073,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             {   
                 /*Consider the CC Sample values as valid Audio accessory attach only at the 
                 unattached state*/
-                /*This avoids unwanted transistion in attached state*/
+                /*This avoids unwanted transition in attached state*/
                 if(u8TypeCState == TYPEC_UNATTACHED_SRC)
                 {                
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: AUDIO ACCESSORY is present\r\n");
@@ -2043,7 +2119,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             {    
                   /*Consider the CC Sample values as valid Debug accessory attach only at the 
                 unattached state*/
-                /*This avoids unwanted transistion in attached state*/              
+                /*This avoids unwanted transition in attached state*/              
                 if(u8TypeCState == TYPEC_UNATTACHED_SRC)
                 {
                   
@@ -2175,7 +2251,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                  
                  }
                  
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Source is Persent in CC");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Source is Present in CC");
                 DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1_MatchISR > gasTypeCcontrol[u8PortNum].u8CC2_MatchISR) ? 1 : 2),"\r\n");
                                                              
             }
@@ -2374,7 +2450,7 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
      /*Return TYPEC_SINK_TXNG if the current Rp Value set by source is TYPEC_SINK_TXNG 1.5A Rp*/
      UINT8 u8RpStatus = TYPEC_SINK_TXNG;
     
-    /*Setting the collsion avoidance active bit in u8PortSts variable*/
+    /*Setting the collision avoidance active bit in u8PortSts variable*/
      gasTypeCcontrol[u8PortNum].u8PortSts  |= (TYPEC_COLLISION_AVOIDANCE_ACT);
     
      /*Return True if the current Rp Value set by source is TYPEC_SINK_TXOK*/
@@ -2405,10 +2481,22 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum)
 /**************************************************************/
 void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
 {
-  	UINT16 u16PrevVolt = DPM_GetVBUSVoltage(u8PortNum);
+  	UINT16 u16PrevVolt = SET_TO_ZERO; 
+    
+    if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+    {
+        u16PrevVolt = gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
+    }
+    else
+    {
+        u16PrevVolt = DPM_GetVBUSVoltage(u8PortNum);
+    }
+           
 	UINT8 u8SampleEn = SET_TO_ZERO;
     float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor;  
-	
+	UINT16 au16VBUSThrVal[2] = {0}; 
+    
 	/*Setting the VBUS Comparator OFF*/
 	TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
 
@@ -2428,11 +2516,19 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
                                                           TypeC_PowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
         }
         
-        /* Over voltage threshold is set in TypeC_ConfigureVBUSThr */	
-        UINT16 au16VBUSThrVal[] = {(UINT16)((float)TYPEC_GET_OVER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor),
-                                   (UINT16)((float)TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor)
-                                    };
-
+        /* Over voltage threshold is set in TypeC_ConfigureVBUSThr */
+        if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+        {
+            au16VBUSThrVal[INDEX_0] = (UINT16)((float)TYPEC_GET_OVER_VOLTAGE_VBUS_THR(DPM_GET_APDO_MAX_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor);
+            au16VBUSThrVal[INDEX_1] = (UINT16)((float)TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(DPM_GET_APDO_MIN_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor);
+        }
+        else
+        {
+            au16VBUSThrVal[INDEX_0] = (UINT16)((float)TYPEC_GET_OVER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor); 
+            au16VBUSThrVal[INDEX_1] = (UINT16)((float)TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(u16Voltage) * fVBUSCorrFactor);
+        }
+        	
         /*Setting the default threshold values in VBUS threshold X(0-4) registers*/ 
         UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_THR2, (UINT8 *)au16VBUSThrVal, sizeof(au16VBUSThrVal));  
 
@@ -2452,7 +2548,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 	{
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-			/* PIO override for undervoltage and overvoltage is cleared*/
+			/* PIO override for under-voltage and overvoltage is cleared*/
             UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN, (UPD_PIO_OVR_0 | UPD_PIO_OVR_1));
         #endif /*endif of INCLUDE_UPD_PIO_OVERRIDE_SUPPORT*/
         #endif /*endif of INCLUDE_POWER_FAULT_HANDLING*/
@@ -2497,11 +2593,23 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 		
 	  	default:
 		{
-            /* Minimum valid PDO voltage configured in u16MinVoltageThr*/
-            u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(u16Voltage) * fVBUSCorrFactor)); 
-            
-            /* Maximum PDO voltage threshold is configured in u16MaxVoltageThr*/
-            u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MAX_VBUS_THR(u16Voltage) * fVBUSCorrFactor));
+            if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+                (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+            {
+                /* Minimum valid PDO voltage is configured in u16MinVoltageThr*/
+                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(DPM_GET_APDO_MIN_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor)); 
+                
+                /* Maximum PDO voltage threshold is configured in u16MaxVoltageThr*/
+                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(DPM_GET_APDO_MAX_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor)); 
+            }   
+            else
+            {
+                /* Minimum valid PDO voltage is configured in u16MinVoltageThr*/
+                u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(u16Voltage) * fVBUSCorrFactor)); 
+
+                /* Maximum PDO voltage threshold is configured in u16MaxVoltageThr*/
+                u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MAX_VBUS_THR(u16Voltage) * fVBUSCorrFactor));
+            }
             break;
 		}/* end of default*/
         
@@ -2551,7 +2659,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 								   
 void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
 {
-	/* Set the timer Id to Max Cont Value*/
+	/* Set the timer Id to Max Concurrent Value*/
  	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	
 	/* Reset the fault Count*/
@@ -2620,10 +2728,12 @@ UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     UINT32 u32PDODebug = SET_TO_ZERO;
 #endif
+
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+              ~DPM_PORT_RP_VAL_DETECT_MASK_STATUS; 
+
     switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
     {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
-                ~DPM_PORT_RP_VAL_DETECT_MASK_STATUS; 
         case TYPEC_DFP_DEFAULT_CURRENT:
         {
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)

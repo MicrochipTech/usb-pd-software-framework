@@ -53,7 +53,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             gasPBIntPortParam[u8PortNum].u8AttachSeqNo = gu8AttachSeq++;
             
             /* Update the PDOs in New PDO registers */
-            PB_UpdatePDO(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
+            DPM_UpdatePDO(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
                     
             /* Enable New PDO for the DPM to advertise New PDOs since the 
                first negotiation cannot be treated as a client request. */
@@ -330,7 +330,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             
             break;  
             
-        case eMCHP_PSF_GET_SINK_CAPS_RCVD: 
+        case eMCHP_PSF_SINK_CAPS_RCVD: 
             
             if (ePB_SINK_CAPS_INITIATED == gasPBIntPortParam[u8PortNum].eGetSinkCapSS)
             {
@@ -340,7 +340,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
             }            
             break; 
 
-        case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD:
+        case eMCHP_PSF_SINK_CAPS_NOT_RCVD:
             
             if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))
             {
