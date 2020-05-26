@@ -680,20 +680,50 @@ typedef enum
 																		specified in mA
                                                                       * This array is common for 
 																	    Source and Sink.
-    u32RDO                          4         R            R         * Complete raw RDO Data as 
-																		Sent/Requested by connected 
-																		port partner, Will be blank 
-																		of no RDO has been received.
+    u32RDO                          4         R            R         * Complete raw RDO Data as
+																		sent to the port partner 
+																		when acting as Sink and 
+																		Complete raw RDO Data as 
+																		requested by connected port 
+																		partner when acting as 
+																		Source. 
+																	  * Will be blank of no RDO has 
+																		been issued/received. 
                                                                       * This variable is common for 
 																	    Source and Sink.
     u16AllocatedPowerIn250mW        2         R            R         * Allocated Power for the Port 
 																		PD contract in 0.25W steps
-    u16NegoVoltageInmV              2         R            R         * Negotiated Voltage from the 
-																		Port Bits 19:10 from the RDO.
-                                                                        Voltage is in mV steps. 
-    u16NegoCurrentInmA              2         R            R         * Negotiated Current from the 
-																		Port Bits 9: 0 from the RDO.
-                                                                        Ampere is in mA steps. 
+    u16NegoVoltageInmV              2         R            R         * Negotiated Voltage in mV 
+																	    steps. 
+																	  * When acting as Source and in
+																		Fixed power supply 
+																	    contract, it holds the value
+																		of bits 19:10 of PDO in mV. 
+																	  * When acting as Source and in
+																		Programmable Power Supply 
+																	    contract, it holds the value
+																		of bits 19:9 of RDO in mV. 
+																	  * When acting as Sink, it 
+																	    holds the value of bits 
+																		19:10 of PDO in mV. 
+																	  * This variable is common for 
+																		both Source and Sink. 
+																		
+    u16NegoCurrentInmA              2         R            R         * Negotiated Current in mA 
+																		steps. 
+																	  * When acting as Source and in
+																		Fixed power supply 
+																	    contract, it holds the value
+																		of bits 9:0 of PDO in mV. 
+																	  * When acting as Source and in
+																		Programmable Power Supply 
+																	    contract, it holds the value
+																		of bits 6:0 of RDO in mV. 
+																	  * When acting as Sink, it 
+																	    holds the value of bits 
+																		9:0 of PDO in mV. 
+																	  * This variable is common for 
+																		both Source and Sink. 	
     u16MaxSrcPrtCurrentIn10mA       2         R/W          R         * Maximum allowable current for 
 													                    ports in 10mA steps 
 																	  * Sample values this variable
@@ -704,9 +734,12 @@ typedef enum
 																	  * Note : Values above 5A 
 																	    (0x01F5 - 0x0FFF) are not 
 																		supported	 
-    u16MaximumOperatingCurInmA      2         R/W          R         * Maximum allowable current or 
+    u16SnkMaxOperatingCurInmA       2         R/W          R         * Maximum allowable current or 
 																		system's maximum operating
-                                                                        current in terms of mA
+                                                                        current in terms of mA. 
+                                                                      * This variable is 
+                                                                         applicable only when 
+                                                                         acting as Sink. 
     u16aMinPDOPreferredCurInmA[7]   14         R/W         R         * Preferred minimum current 
 																		range for the PDO by which 
 																		the Sink may select without 
@@ -715,7 +748,7 @@ typedef enum
 																		preferred.
                                                                        * This array is applicable 
 																	     only for Sink Operation.                                                                     
-    u16MinimumOperatingCurInmA      2          R/W         R          * Minimum current required by 
+    u16SnkMinOperatingCurInmA       2          R/W         R          * Minimum current required by 
 																	     the sink hardware to be 
                                                                          operational.
                                                                         * This variable is applicable 
@@ -1131,14 +1164,14 @@ typedef enum
                                                                            current should be greater than
                                                                            or equal to the current 
                                                                            mentioned under 
-																		   u16MinimumOperatingCurInmA 
+																		   u16SnkMinOperatingCurInmA 
 																		   variable.
                                                                         2. If the source does not support
                                                                            Power delivery and is Type-C only,
                                                                            the Rp value in source partner
                                                                            should be greater than or equal
                                                                            to the current mentioned under 
-																		   u16MinimumOperatingCurInmA 
+																		   u16SnkMinOperatingCurInmA 
 																		   variable.
 																	  * This pin is de-asserted during a
 																	    hard reset, a power fault recovery
@@ -1221,8 +1254,8 @@ typedef enum
                                     * '0' Detached
                                     * '1' Attached
 	1       R            R         Orientation 
-									* '0' Unflipped 
-									* '1' Flipped 
+									* '0' Unflipped - Port Partner attached in CC1 pin 
+									* '1' Flipped - Port Partner attached in CC2 pin 
 	2       R            R         Data Role 
 									* '0' UFP 
 									* '1' DFP 
@@ -1535,8 +1568,8 @@ typedef struct _PortCfgStatus
     UINT16 u16PowerGoodTimerInms;
 	#if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
-    UINT16 u16MaximumOperatingCurInmA; 
-    UINT16 u16MinimumOperatingCurInmA;
+    UINT16 u16SnkMaxOperatingCurInmA; 
+    UINT16 u16SnkMinOperatingCurInmA;
     UINT16 u16DAC_I_MaxOutVoltInmV; 
     UINT16 u16DAC_I_MinOutVoltInmV;
 	UINT16 u16DAC_I_CurrentInd_MaxInA; 

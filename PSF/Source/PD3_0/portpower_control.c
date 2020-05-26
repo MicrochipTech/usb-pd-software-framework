@@ -198,7 +198,7 @@ void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
     UINT8 u8EnSinkPio = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
 
     if(gasDPM[u8PortNum].u16SinkOperatingCurrInmA < 
-                            gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA)
+                            gasCfgStatusData.sPerPortData[u8PortNum].u16SnkMinOperatingCurInmA)
     {    
         /*When EN_SINK is enabled for Type-C alone Source detection, this check 
          make sure the minimum operating current of Sink is satisfied by the 
@@ -232,9 +232,9 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
 {
     #if (TRUE == INCLUDE_PD_SINK)
 
-    if (u16Current > gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA)
+    if (u16Current > gasCfgStatusData.sPerPortData[u8PortNum].u16SnkMaxOperatingCurInmA)
     {
-        u16Current = gasCfgStatusData.sPerPortData[u8PortNum].u16MaximumOperatingCurInmA;
+        u16Current = gasCfgStatusData.sPerPortData[u8PortNum].u16SnkMaxOperatingCurInmA;
     }
     
     if (TYPEC_VBUS_0V == u16VBUSVoltage)

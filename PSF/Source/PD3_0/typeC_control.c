@@ -1145,7 +1145,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                          /*Setting the CC1 and CC2 line as Open Disconnect*/
                         TypeC_SetPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS);                        
                     }
-                    #if (INCLUDE_VCONN_SWAP_SUPPORT | INCLUDE_PD_SOURCE)
+                    #if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
                     /*Disable VCONN if the port sources the VCONN already or failed while trying to
                     source VCONN*/
                     if (((u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) \

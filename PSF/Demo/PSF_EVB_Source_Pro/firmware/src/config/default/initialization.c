@@ -135,7 +135,7 @@ void SYS_Initialize ( void* data )
   //SERCOM3_I2C_Initialize();
     
     EIC_Initialize();
-	// SPI initialization is done as part of MchpPSF_Init() by PSF stack
+	// Timer initialization is done as part of MchpPSF_Init() by PSF stack
     //TC0_TimerInitialize();
 	
 

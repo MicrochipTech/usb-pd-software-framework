@@ -171,7 +171,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* PE_SOURCE_PPS_COMM_TIMEOUT_MS defines the SourcePPSCommTimer specified 
    in the USB PD Specification. Default value of PE_SOURCE_PPS_COMM_TIMEOUT_MS
-   is set as 12 seconds. */
+   is set as 13 seconds. */
 #define PE_SOURCE_PPS_COMM_TIMEOUT_MS           MILLISECONDS_TO_TICKS(13000)
 
 
