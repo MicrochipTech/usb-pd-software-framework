@@ -219,8 +219,10 @@ void TypeC_InitPort (UINT8 u8PortNum)
         /* Enable threshold to detect 5V*/
         TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
+        #if (TRUE == INCLUDE_PD_SINK)
         /*Disable the Sink circuitry to stop sinking the power from source*/
         PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+        #endif
     }
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: TypeC Port initialization completed\r\n");             
 }
@@ -983,9 +985,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     else
                     {
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+                        #if (TRUE == INCLUDE_PD_SINK)
                         /*Disable the Sink circuitry to stop sinking the power from source*/
                         PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+                        #endif
                         
                          /*Setting the CC1 and CC2 line as Open Disconnect*/
                         TypeC_SetPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS);
@@ -1133,10 +1137,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     else
                     {
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+                        #if (TRUE == INCLUDE_PD_SINK)
                         /*Disable the Sink circuitry to stop sinking the power from source*/
                         PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
-                        
+                        #endif
                          /*Setting the CC1 and CC2 line as Open Disconnect*/
                         TypeC_SetPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS);                        
                     }
