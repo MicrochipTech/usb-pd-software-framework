@@ -217,11 +217,11 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
     GET_SINK_CAP_SS eGetSinkCapSS;    /* Get Sink caps sub-states */
     UINT8 u8AttachSeqNo;              /* Sequence in which ports are attached */
     UINT8 u8PBPortStatusMask;     /* Bit - Position 
-        0     Attach 
-        1     InitialNegotiationDone 
-        2     IsPortInMinimalPower 
-        3     CapabilityMismatch 
-        4     RenegAgain */         
+                                      0     Attach 
+                                      1     InitialNegotiationDone 
+                                      2     IsPortInMinimalPower 
+                                      3     CapabilityMismatch 
+                                      4     RenegAgain */         
 } MCHP_PSF_STRUCT_PACKED_END  PB_INT_PORT_PARAM; 
 
 // *****************************************************************************
