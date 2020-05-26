@@ -72,8 +72,8 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
 
     /*Assigning maximum operating current and minimum operating current to 
      * 3000mA and 1000mA respectively*/
-    pasCfgStatusData->sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = CFG_PORT_SINK_MAX_OPERATING_CURRENT_InmA;
-    pasCfgStatusData->sPerPortData[u8PortNum].u16MinimumOperatingCurInmA = CFG_PORT_SINK_MIN_OPERATING_CURRENT_InmA;
+    pasCfgStatusData->sPerPortData[u8PortNum].u16SnkMaxOperatingCurInmA = CFG_PORT_SINK_MAX_OPERATING_CURRENT_InmA;
+    pasCfgStatusData->sPerPortData[u8PortNum].u16SnkMinOperatingCurInmA = CFG_PORT_SINK_MIN_OPERATING_CURRENT_InmA;
         
     pasCfgStatusData->sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
     pasCfgStatusData->sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;

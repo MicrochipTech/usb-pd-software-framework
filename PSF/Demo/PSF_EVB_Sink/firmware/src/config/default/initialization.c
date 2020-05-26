@@ -127,7 +127,7 @@ void SYS_Initialize ( void* data )
     //SERCOM0_SPI_Initialize();
 
     EIC_Initialize();
-	// TCO initialisation is done as part of MchpPSF_Init by PSF stack
+	// TC0 initialisation is done as part of MchpPSF_Init by PSF stack
     //TC0_TimerInitialize();
 	
     // DAC_Initialize is done as part of PSF Hook
