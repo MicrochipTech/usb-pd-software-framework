@@ -792,13 +792,16 @@ UINT8 DPM_ReturnTemperatureStatus (void)
 {
     UINT8 u8TempStatus = SET_TO_ZERO; 
     
-/* Bit    Description 
+/* ----------------------------------------
+   Bit    Description 
+   ----------------------------------------
     0     Reserved and Shall be set to zero
    1..2   00 - Not Supported
           01 - Normal
           10 - Warning
           11 - Over temperature
-   3..7   Reserved and Shall be set to zero */ 
+   3..7   Reserved and Shall be set to zero 
+   ---------------------------------------- */
     
     if (PD_THROTTLE_BANK_A == DPM_GET_CURRENT_PT_BANK)
     {
@@ -819,39 +822,44 @@ UINT8 DPM_ReturnTemperatureStatus (void)
 UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
 {
     UINT8 u8PwrStatus = SET_TO_ZERO; 
-    
-    /* Bit 1: Source power limited due to cable supported current */
+   
+ /* -------------------------------------------------------------
+    Bit   Description
+    -------------------------------------------------------------
+     0    Reserved and Shall be set to zero
+     1    Source power limited due to cable supported current
+     2    Source power limited due to insufficient power available while sourcing other ports
+     3    Source power limited due to insufficient external power
+     4    Source power limited due to Event Flags in place (Event Flags must also be set)
+     5    Source power limited due to temperature
+     6?7 Reserved and Shall be set to zero  
+    ------------------------------------------------------------- */
+        
     if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
                                 DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS)
     {
         u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_CABLE_CURR; 
     }
 
-    /* Source power limited due to..  */
     if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &
                                 DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS)
     {
-        /* Bit 2: insufficient power available while sourcing other ports */
         if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
         {
             u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_INSUFF_PWR_AVAIL; 
         }  
-        /* Bit 5: temperature */
+
         if ((PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK) || 
                             (PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK))
         {
             u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_TEMP; 
         }        
-        
     }
-    /* Bit 3: Not Applicable */
-    /* Bit 4: Source power limited due to Event Flags in place (Event Flags must also be set) */
+    
     if (gasDPM[u8PortNum].u8StatusEventFlags)
     {
         u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_EVNT_FLAG;
     }
-    
-    /* Bit 7:6 - Reserved */
     
     return u8PwrStatus;  
 }

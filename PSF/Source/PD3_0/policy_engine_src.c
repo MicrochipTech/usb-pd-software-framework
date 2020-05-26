@@ -83,7 +83,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)    
     /* PS_RDY Timer value to be used in case of PPS contract */
-    UINT32 u32PpsSrcTransTmr = SET_TO_ZERO; 
+    UINT32 u32PpsSrcTransTmrMs = SET_TO_ZERO; 
     
     /* Used to get Alert Data Object and PPS_Status Data Block from DPM */
     UINT32 u32DataBlock = SET_TO_ZERO; 
@@ -409,11 +409,11 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     else if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         /* Get the PPS timer value that needs to be used for sending PS_RDY */
-                        u32PpsSrcTransTmr = DPM_ReturnPPSSrcTransTmrVal(u8PortNum); 
+                        u32PpsSrcTransTmrMs = DPM_ReturnPPSSrcTransTmrVal(u8PortNum); 
                         
                         /* Start tPpsSrcTransSmall/tPpsSrcTransLarge timer */
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                              u32PpsSrcTransTmr,
+                                                              u32PpsSrcTransTmrMs,
                                                               PE_SubStateChange_TimerCB, u8PortNum,  
                                                               (UINT8)ePE_SRC_TRANSITION_SUPPLY_EXIT_SS);                                                       
                         

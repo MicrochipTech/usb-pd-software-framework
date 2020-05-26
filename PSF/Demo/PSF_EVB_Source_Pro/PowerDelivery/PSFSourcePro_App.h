@@ -33,7 +33,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSFSOURCEPRO_APP_H
 #define _PSFSOURCEPRO_APP_H
 
-/* Defines major and minor version of PDSource Application*/
+/* Defines major and minor version of PSF Source Pro Application*/
 
 #define APP_REV_MAJOR	0x00
 #define APP_REV_MINOR	0x95

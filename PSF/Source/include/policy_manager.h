@@ -410,7 +410,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT32  u32NegotiatedPDO;     //NegotiatedPDO
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
   UINT16 u16SinkOperatingCurrInmA;   //Operating current
-  UINT16 u16PrevVBUSVoltageInmV;
+  UINT16 u16PrevVBUSVoltageInmV;    // Previous VBUS Voltage in terms of mV
   
   UINT8 u8DPMInternalEvents; //BIT(0) - DPM_INT_EVT_INFORM_DETACH
                              // BIT(1) - DPM_INT_EVT_INITIATE_ALERT
@@ -435,8 +435,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
       UINT8 u8VCONNPowerGoodTmrID;    //VConn PowerGood Timer ID
 	  UINT8 u8VBUSPowerFaultCount;      //VBUS Power fault count
-      UINT8 u8VCONNPowerFaultCount;     //VConn Power fault count     
-      UINT8 u8VCONNGoodtoSupply;        //Vconn good to supply
+      UINT8 u8VCONNPowerFaultCount;     //VCONN Power fault count     
+      UINT8 u8VCONNGoodtoSupply;        //VCONN good to supply
 	  UINT8 u8PowerFaultFlags;        //Flags required for power fault handling
                                       //BIT 0 - Hard Reset complete wait flag
                                       //BIT 1 - Type-C Error Recovery Flag
