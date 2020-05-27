@@ -1489,12 +1489,14 @@ Description:
    
     <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
     Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
-    message initiated by PSF on request from the application. Application can read 
-    the sink capabilities by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[7].
+    message initiated by PSF on request from the application through u32ClientRequest variable 
+    in sPerPortDatastructure. Application can read the sink capabilities by accessing 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[7].
     
     <b> eMCHP_PSF_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink capabilities has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Sink_Caps message initiated by PSF on request from application.
+    as a response to the Get_Sink_Caps message initiated by PSF on request from application
+    through u32ClientRequest variable in sPerPortDatastructure.
     
     <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
     mismatch with Source partner PDOs in a PD negotiation.

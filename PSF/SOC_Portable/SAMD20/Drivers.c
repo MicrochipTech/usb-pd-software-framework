@@ -368,14 +368,14 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen)
 
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 {
-	int i;
+	int index;
     UINT8 *pu8Obj1 = (UINT8 *)pau8Data1;
     UINT8 *pu8Obj2 = (UINT8 *)pau8Data2;
 	
-	for (i = SET_TO_ZERO; i < ilen; i++)
+	for (index = SET_TO_ZERO; index < ilen; index++)
     {
-    	if (pu8Obj1[i] != pu8Obj2[i])
-            return (pu8Obj1[i] - pu8Obj2[i]);            	
+    	if (pu8Obj1[index] != pu8Obj2[index])
+            return (pu8Obj1[index] - pu8Obj2[index]);            	
 	}
     
 	return 0;

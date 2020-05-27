@@ -81,7 +81,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 {
 
     /* Receive Data Buffer */
-    UINT8 u8aDataBuf[260] = {SET_TO_ZERO};
+    UINT8 u8aDataBuf[PRL_MAX_EXTN_MSG_LEN_IN_BYTES] = {SET_TO_ZERO};
     /*Received message type*/
     UINT8 u8SOPType = PRL_SOP_TYPE;
     /* Received Message Header */
@@ -240,7 +240,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
         {
             /*Message type greater than Sink_Capabilities except Vendor_Defined 
               and Alert(Source only) are not supported
-              Refer Table 6-6*/
+              Refer Table 6-6 Data Message Types of PD Specification */
             if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED) 
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                     && (u8MsgType != PE_DATA_ALERT)
