@@ -228,6 +228,9 @@ Source/Sink Power delivery objects*/
 #define DPM_PORT_IO_30_IND_STATUS                    BIT(8)
 #define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(9)
 
+/* *************************Feature Select parameters *********************** */
+#define DPM_PORT_PB_ENABLE                           BIT(0)
+
 /*********************u8SinkConfigSel defines******************/
 #define DPM_SINK_CONFIG_SINK_MODE_SEL_MASK  (BIT(0) | BIT(1))
 #define DPM_SINK_MODE_A      0x00
@@ -266,13 +269,9 @@ Source/Sink Power delivery objects*/
 /* PB Enable for System */
 #define DPM_PB_ENABLE                         0x10
 
-/* PB Enable for the port */
-#define DPM_PB_PORT_ENABLE                    0x01
-
 /* Macro to know if PB is enabled for the system and for the port */
-#define DPM_IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE) && \
-                             (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)) \
-                                    ? TRUE : FALSE)   
+#define DPM_IS_PB_ENABLED(u8PortNum)   ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE) \
+                                            ? TRUE : FALSE)   
 
 /* Macro to know if PPS is enabled for the port */
 #define DPM_IS_PPS_ENABLED(u8PortNum)  ((gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSCfgData & \
