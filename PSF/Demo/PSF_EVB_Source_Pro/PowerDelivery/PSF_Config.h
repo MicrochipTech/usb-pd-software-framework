@@ -1206,7 +1206,7 @@ typedef enum
 																	  * This is applicable only 
 																		  for Sink operation. 
 	u16Reserved1    				2								 Reserved					 
-	u8aReserved1[2]					2								 Reserved					 
+	u8aReserved1[3]					3								 Reserved					 
 	u8aReserved2[2]					2								 Reserved
 	u8Reserved3    					1								 Reserved					 		
     </table>
@@ -1441,53 +1441,8 @@ typedef enum
 										faults have been detected										  
 	31:12                  		   Reserved 
 	</table> 	
-	
-	<b>e. u16PortIntrMask</b>: 
-	u16PortIntrMask variable defines the port interrupt mask bits. It's size is 2 bytes. 
-	<table> 
-    Bit     R/W Config   R/W Run   \Description
-             time         time      
-    ------  -----------  --------  --------------------
-    0       RC           RC        Attach Event Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    1       RC           RC        Detach Event Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    2       RC           RC        As Source New Request Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    3       RC           RC        As Sink New PDOs Received Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    4       RC           RC        As Sink New Request Sent Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    5       RC           RC        As Sink Last Request Accept Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    6       RC           RC        As Sink Last Request Reject Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    7       RC           RC        As Sink Last Sink PS RDY Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    8       RC           RC        Hard Reset Event Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    9       RC           RC        Pin Reset Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    10      RC           RC        VBUS Fault Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.	
-    11      RC           RC        VCONN Fault Mask 
-                                    * '0' Do not mask interrupt pin toggle on changes to this event.
-                                    * '1' Mask this event from generating interrupt pin toggle.
-    15:12  						   Reserved 									
-	</table> 								
-	
-	<b>f. u32ClientRequest</b>: 
+		
+	<b>e. u32ClientRequest</b>: 
 	u32ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
 	can make use of this variable to request PSF to handle the mentioned client requests. Except 
 	VBUS Power Fault Request, all the other requests cannot coexist i.e Only one 
@@ -1543,6 +1498,64 @@ typedef enum
 	31:6  						   Reserved 									
 	</table> 								
  
+	<b>f. u16PortIntrMask</b>: 
+	u16PortIntrMask variable defines the port interrupt mask bits. It's size is 2 bytes. 
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       RC           RC        Attach Event Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    1       RC           RC        Detach Event Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    2       RC           RC        As Source New Request Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    3       RC           RC        As Sink New PDOs Received Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    4       RC           RC        As Sink New Request Sent Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    5       RC           RC        As Sink Last Request Accept Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    6       RC           RC        As Sink Last Request Reject Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    7       RC           RC        As Sink Last Sink PS RDY Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    8       RC           RC        Hard Reset Event Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    9       RC           RC        Pin Reset Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    10      RC           RC        VBUS Fault Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.	
+    11      RC           RC        VCONN Fault Mask 
+                                    * '0' Do not mask interrupt pin toggle on changes to this event.
+                                    * '1' Mask this event from generating interrupt pin toggle.
+    15:12  						   Reserved 									
+	</table> 								
+ 
+	<b>g. u16FeatureSelect</b>: 
+	u16FeatureSelect variable defines the enable/disable of various PSF features. It's size is 2 
+	bytes. 
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R/W          R         Power Balancing Enable/Disable 
+                                    * '0' Disable.
+                                    * '1' Enable. 
+								    This bit is applicable only for source operation. 	
+    15:1	                       Reserved 
+ 
   Remarks:
     None                                                                                                                                
   ***************************************************************************************************************************************/
@@ -1566,6 +1579,8 @@ typedef struct _PortCfgStatus
     UINT16 u16MaxSrcPrtCurrentIn10mA;     
     UINT16 u16PortIntrMask;
     UINT16 u16PowerGoodTimerInms;
+    UINT16 u16FeatureSelect; 
+    UINT16 u16Reserved1; 
 	#if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
     UINT16 u16SnkMaxOperatingCurInmA; 
@@ -1573,7 +1588,6 @@ typedef struct _PortCfgStatus
     UINT16 u16DAC_I_MaxOutVoltInmV; 
     UINT16 u16DAC_I_MinOutVoltInmV;
 	UINT16 u16DAC_I_CurrentInd_MaxInA; 
-    UINT16 u16Reserved1;
     #endif
     UINT8 u8SourcePDOCnt;			
     UINT8 u8SinkPDOCnt;             
@@ -1592,7 +1606,7 @@ typedef struct _PortCfgStatus
     UINT8 u8Mode_FAULT_IN;
     UINT8 u8Pio_VBUS_DIS;
     UINT8 u8mode_VBUS_DIS;
-    UINT8 u8aReserved1[2];
+    UINT8 u8aReserved1[3];
 #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
@@ -1659,25 +1673,11 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.	
+    u8PBPortPriority                1         R/W          R         * Selects the port priority 
+                                                                      * 000b is the highest priority
 	u8aReserved4					1						          Reserved 											
 	</table>	
-
-    <b>2. Members that are Bit-Mapped bytes:</b>
-    
-    <b>u8PBEnablePriority</b>:
-    
-    u8PBEnablePriority defines PB Enable/Disable per port and also the priority for the port. 
-	It's size is 1 byte. 
-    <table>
-    Bit     R/W Config   R/W Run   \Description
-             time         time      
-    ------  -----------  --------  --------------------
-    0       R/W          R/W       PB Enable/Disable
-                                    * '0' Disable
-                                    * '1' Enable
-	3:1     R/W          R/W       Selects the port Priority 								
-									* 000b is the highest priority
-    7:4                            Reserved 									
+									
    Remarks:
      None                                                               
    **********************************************************************/
@@ -1689,7 +1689,7 @@ typedef struct _PBPortCfgStatus
     UINT16 u16MaxPrtPwrBankAIn250mW; 
     UINT16 u16MaxPrtPwrBankBIn250mW; 
     UINT16 u16MaxPrtPwrBankCIn250mW; 
-    UINT8 u8PBEnablePriority; 
+    UINT8 u8PBPortPriority; 
     UINT8 u8aReserved4;
 } PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
 

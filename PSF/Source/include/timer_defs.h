@@ -81,6 +81,26 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
 
 // *****************************************************************************
+// Section: Protocol Layer Timeout configuration
+// *****************************************************************************
+
+/*  PRL_CHUNKSENDERREQUEST_TIMEOUT_MS defines the ChunkSenderRequestTimer specified in the USB-PD Specification. 
+    Default value of PRL_CHUNKSENDERREQUEST_TIMEOUT_MS is set as 26 milliseconds.*/
+#define PRL_CHUNKSENDERREQUEST_TIMEOUT_MS       MILLISECONDS_TO_TICKS(26)
+
+/*  PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS defines the ChunkSenderResponseTimer specified in the USB-PD Specification. 
+    Default value of PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS is set as 26 milliseconds.*/
+#define PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS      MILLISECONDS_TO_TICKS(26)
+
+/*  PRL_SINKTX_TIMEOUT_MS defines the SinkTxTimer specified in the USB-PD Specification. 
+    Default value of PRL_SINKTX_TIMEOUT_MS is set as 16 milliseconds.*/
+#define PRL_SINKTX_TIMEOUT_MS			    	MILLISECONDS_TO_TICKS(16)
+
+/*  PRL_BIST_CONTMODE_TIMEOUT_MS defines the BISTContModeTimer specified in the USB-PD Specification.
+    Default value of PRL_BIST_CONTMODE_TIMEOUT_MS is set as 45 milliseconds.*/
+#define PRL_BIST_CONTMODE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(45)                                             
+
+// *****************************************************************************
 // Section: Policy Engine Timeout configuration
 // *****************************************************************************
 
@@ -101,19 +121,19 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     and send hard reset in case of VCONN ON Failure. The value of Self timer is 
     set to a value greater than tVCONNSourceOn. Default value of PE_VCONNON_SELF_TIMEOUT_MS 
     is set as 75 milliseconds.*/
-#define PE_VCONNON_SELF_TIMEOUT_MS			   MILLISECONDS_TO_TICKS(75)
+#define PE_VCONNON_SELF_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(75)
 
 /*  PE_VCONNOFF_TIMEOUT_MS defines the tVCONNSourceOff specified in the USB PD Specification. 
     Default value of PE_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.*/
-#define PE_VCONNOFF_TIMEOUT_MS                 MILLISECONDS_TO_TICKS(25)
+#define PE_VCONNOFF_TIMEOUT_MS                  MILLISECONDS_TO_TICKS(25)
 
 /*  PE_NORESPONSE_TIMEOUT_MS defines the NoResponseTimer specified in the USB-PD Specification. 
     Default value of PE_NORESPONSE_TIMEOUT_MS is set as 5.5 seconds.*/
-#define PE_NORESPONSE_TIMEOUT_MS        MILLISECONDS_TO_TICKS(5500)
+#define PE_NORESPONSE_TIMEOUT_MS                MILLISECONDS_TO_TICKS(5500)
 
 /*  PE_SENDERRESPONSE_TIMEOUT_MS defines the SenderResponseTimer specified in the USB-PD Specification. 
     Default value of PE_SENDERRESPONSE_TIMEOUT_MS is set as 24 milliseconds.*/
-#define PE_SENDERRESPONSE_TIMEOUT_MS    MILLISECONDS_TO_TICKS(24)
+#define PE_SENDERRESPONSE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(24)
 
 /*  PE_SINKWAITCAP_TIMEOUT_MS defines the SinkWaitCapTimer specified in the USB-PD Specification. 
     Default value of PE_SINKWAITCAP_TIMEOUT_MS is set as 465 milliseconds.*/
@@ -141,23 +161,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*  PE_SRCTRANSISTION_TIMEOUT_MS defines the tSrcTransistionTimer specified in the 
     USB-PD Specification. By default, it is set to 28 milliseconds.*/
-#define PE_SRCTRANSISTION_TIMEOUT_MS	           MILLISECONDS_TO_TICKS(28)
-
-/*  PRL_CHUNKSENDERREQUEST_TIMEOUT_MS defines the ChunkSenderRequestTimer specified in the USB-PD Specification. 
-    Default value of PRL_CHUNKSENDERREQUEST_TIMEOUT_MS is set as 26 milliseconds.*/
-#define PRL_CHUNKSENDERREQUEST_TIMEOUT_MS       MILLISECONDS_TO_TICKS(26)
-
-/*  PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS defines the ChunkSenderResponseTimer specified in the USB-PD Specification. 
-    Default value of PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS is set as 26 milliseconds.*/
-#define PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS      MILLISECONDS_TO_TICKS(26)
-
-/*  PRL_SINKTX_TIMEOUT_MS defines the SinkTxTimer specified in the USB-PD Specification. 
-    Default value of PRL_SINKTX_TIMEOUT_MS is set as 16 milliseconds.*/
-#define PRL_SINKTX_TIMEOUT_MS				   MILLISECONDS_TO_TICKS(16)
-
-/*  PRL_BIST_CONTMODE_TIMEOUT_MS defines the BISTContModeTimer specified in the USB-PD Specification.
-    Default value of PRL_BIST_CONTMODE_TIMEOUT_MS is set as 45 milliseconds.*/
-#define PRL_BIST_CONTMODE_TIMEOUT_MS            MILLISECONDS_TO_TICKS(45)                                             
+#define PE_SRCTRANSISTION_TIMEOUT_MS	        MILLISECONDS_TO_TICKS(28)
 
 /* PE_PPS_SRCTRANSLARGE_TIMEOUT_MS defines the tPpsSrcTransLarge specified 
    in the USB PD Specification. Default value of PE_PPS_SRCTRANSLARGE_TIMEOUT_MS
