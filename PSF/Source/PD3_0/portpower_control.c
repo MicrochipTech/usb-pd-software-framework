@@ -82,8 +82,8 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
     #endif
     
     /*Hook to modify or overwrite the default Port Power control initialization */
-    (void) MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
-
+    //(void)MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
+    MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
 }
 /************************************************************************************/
 void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current)

@@ -45,7 +45,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
-#include "psf_stdinc.h"                 // PSF include file
 
 // *****************************************************************************
 // *****************************************************************************
@@ -69,15 +68,17 @@ int main ( void )
 		/*PSF stack Run*/
 		MchpPSF_RUN();
         
-        #if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)   
+        #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)   
 
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING) 
 
-        if(FALSE != gu8MPQAlertPortMsk)
-        {           
-            MPQDCDC_FaultHandler(); 
-            
-            gu8MPQAlertPortMsk = FALSE;
+        for(UINT8 i=0; i<CONFIG_PD_PORT_COUNT;i++)
+        { 
+            if(gu8MPQAlertPortMsk[i])
+            {
+                (void) MPQDCDC_FaultHandler(i); 
+                gu8MPQAlertPortMsk[i] = FALSE;
+            }
         }
         
         #endif
@@ -85,9 +86,6 @@ int main ( void )
         #endif
     }
 
-    /* Execution should not come here during normal operation */
-
-    return ( EXIT_FAILURE );
 }
 
 
