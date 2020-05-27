@@ -231,6 +231,7 @@
           <itemPath>../../../../Source/PD3_0/typeC_control.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_hw.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
@@ -258,8 +259,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
         <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
+        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
       </packs>
       <compileType>
         <linkerTool>

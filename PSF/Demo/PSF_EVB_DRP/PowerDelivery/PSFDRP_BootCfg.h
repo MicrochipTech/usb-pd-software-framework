@@ -154,6 +154,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2
 #define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5
 
+#define CFG_MAX_PORT_CURRENT_IN_10mA       300U 
+
 /* Power Throttling Bank values */
 #define CFG_PD_THROTTLE_BANK_A             0U 
 #define CFG_PD_THROTTLE_BANK_B             1U
@@ -181,8 +183,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PB_MAX_PORT_POWER_BANKC           0x00F0U
 /* Default Max Port current is 3A */
 #define CFG_PB_MAX_PORT_CURRENT               0x012CU
-/* Default PB Enable for System with Algorithm as FCFS */
-#define CFG_PB_ENABLE                         0x10U 
+
+/* Note: By default, PB is disabled for the system since support for 
+   PPS + PB coexistence is planned for future phases. If PB needs to be 
+   enabled, change the value of following macro to 0x10U. This will
+   enable PB for the system with FCFS as Selection Algorithm. */
+#define CFG_PB_ENABLE                         0x00U 
 /* Default Enable PB for port 0 with Priority as 0*/
 #define CFG_PB_PORT_ENABLE                    0x01U
 
@@ -195,20 +201,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PDO_HIGHER_CAPABILITY_POS         28
 
 /* Power Supply type - Bits 31:10 of Power Data Object */
-enum ePwrSupplyType
-{
-    ePWR_SUPPLY_FIXED = 0, 
-    ePWR_SUPPLY_VARIABLE, 
-    ePWR_SUPPLY_BATTERY, 
-    ePWR_SUPPLY_PROGRAMMABLE
-};
-
-#define CFG_POWER_SUPPLY_TYPE_FIXED           ePWR_SUPPLY_FIXED
-#define CFG_POWER_SUPPLY_TYPE_VARIABLE        ePWR_SUPPLY_VARIABLE
-#define CFG_POWER_SUPPLY_TYPE_BATTERY         ePWR_SUPPLY_BATTERY
-#define CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE    ePWR_SUPPLY_PROGRAMMABLE
+#define CFG_POWER_SUPPLY_TYPE_FIXED           0x00U
+#define CFG_POWER_SUPPLY_TYPE_VARIABLE        0x01U
+#define CFG_POWER_SUPPLY_TYPE_BATTERY         0x02U
+#define CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE    0x03U
 
 /************************* PPS APDO Fields *******************/
+#if (TRUE == INCLUDE_PD_SOURCE_PPS) 
+
 /* APDO Minimum Voltage */
 #define CFG_PORT_SOURCE_APDO_1_MIN_VOLTAGE    3300
 #define CFG_PORT_SOURCE_APDO_2_MIN_VOLTAGE    0
@@ -242,7 +242,7 @@ enum ePwrSupplyType
 #define CFG_APDO_MAX_CURRENT_UNIT              50
 
 /* Macros for PPS Config Data Enable/Disable */
-#define CFG_PPS_ENABLE                         0U 
+#define CFG_PPS_ENABLE                         1U 
 #define CFG_PPS_APDO_1_ENABLE                  1U
 #define CFG_PPS_APDO_2_ENABLE                  0U
 #define CFG_PPS_APDO_3_ENABLE                  0U 
@@ -251,6 +251,14 @@ enum ePwrSupplyType
 #define CFG_PPS_APDO_1_ENABLE_POS              1
 #define CFG_PPS_APDO_2_ENABLE_POS              2
 #define CFG_PPS_APDO_3_ENABLE_POS              3 
+
+/* Macro used to form PPS APDO */
+#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) << CFG_APDO_PWR_SUPPLY_TYPE_POS) | \
+                                        ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
+                                        (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
+                                        (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
+                                        (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
+#endif
 
 /* Macro used to form Fixed PDO 1 */
 #define CFG_FORM_FIXED_PDO1(voltage,current,usbCommn,usbSusp,unconstrainedPwr)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
@@ -270,46 +278,6 @@ enum ePwrSupplyType
 /* Macro used to form Fixed PDOs 2 to 7 */
 #define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                                             ((current)/CFG_PDO_CURRENT_UNIT))
-
-/* Macro used to form PPS APDO */
-#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) << CFG_APDO_PWR_SUPPLY_TYPE_POS) | \
-                                        ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
-                                        (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
-                                        (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
-                                        (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
-
-/* Port Connection Status parameters */
-#define PORT_CONNECT_STS_ATTACHED                             BIT(0)
-#define PORT_CONNECT_STS_ORIENTATION_FLIPPED                  BIT(1)
-#define PORT_CONNECT_STS_DATA_ROLE                            (BIT(2)|BIT(3))
-#define PORT_CONNECT_STS_POWER_ROLE                           (BIT(4)|BIT(5))
-#define PORT_CONNECT_STS_VCONN_STATUS                         BIT(6)
-#define PORT_CONNECT_STS_CABLE_REDUCED_SRC_CAPABILITIES       BIT(7)
-#define PORT_CONNECT_STS_PD_BAL_REDUCED_SRC_CAPABILITIES      BIT(8)
-#define PORT_CONNECT_STS_SOURCE_CAPABILITY_MISMATCH           BIT(9)
-#define PORT_CONNECT_STS_AS_SRC_PD_CONTRACT_GOOD              BIT(10)
-#define PORT_CONNECT_STS_AS_SRC_RDO_ACCEPTED                  BIT(11)
-#define PORT_CONNECT_STS_AS_SRC_RDO_REJECTED                  BIT(12)
-#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_ACCEPT               BIT(13)
-#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_REJECT               BIT(14)
-#define PORT_CONNECT_STS_AS_SNK_LAST_REQ_PS_RDY               BIT(15)
-#define PORT_CONNECT_STS_SINK_CAPABILITY_MISMATCH             BIT(16)
-#define PORT_CONNECT_STS_RP_VAL_DETECT_DEFAULT_USB            BIT(17)
-#define PORT_CONNECT_STS_RP_VAL_DETECT_1_5A                   BIT(18)
-#define PORT_CONNECT_STS_RP_VAL_DETECT_3A                    (BIT(17)|BIT(18))
-#define PORT_CONNECT_STS_RP_VAL_DETECT_MASK                  (BIT(17)|BIT(18))
-
-/* Port IO Status parameters */
-#define PORT_IO_EN_DC_DC_STATUS                      BIT(0)
-#define PORT_IO_VSEL0_STATUS                         BIT(1)
-#define PORT_IO_VSEL1_STATUS                         BIT(2)
-#define PORT_IO_VSEL2_STATUS                         BIT(3)
-#define PORT_IO_EN_VBUS_STATUS                       BIT(4)
-#define PORT_IO_VBUS_DIS_STATUS                      BIT(5)
-#define PORT_IO_EN_SINK_STATUS                       BIT(6)
-#define PORT_IO_15_IND_STATUS                        BIT(7)
-#define PORT_IO_30_IND_STATUS                        BIT(8)
-#define PORT_IO_CAP_MISMATCH_STATUS                  BIT(9)
 
 void PSF_LoadConfig(); 
 

@@ -149,7 +149,7 @@ Source/Sink Power delivery objects*/
 /****************Defines to get Status from u16DPM_Status****************************/
 #define DPM_GET_DPM_STATUS(u8PortNum)				gasDPM[u8PortNum].u16DPM_Status
 /*Defines for getting data by passing u16DPM_Status variable*/
-#define DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u16DPM_Status)   ((u16DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS))
+#define DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u16DPM_Status)   ((u16DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
 #define DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u16DPM_Status)    ((u16DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
 #define DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u16DPM_Status)  ((u16DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
 
