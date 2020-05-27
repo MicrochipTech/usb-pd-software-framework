@@ -2484,8 +2484,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 {
   	UINT16 u16PrevVolt = SET_TO_ZERO; 
     
-    if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
-            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+    if(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) 
     {
         u16PrevVolt = gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
     }

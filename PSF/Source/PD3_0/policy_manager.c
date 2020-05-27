@@ -832,7 +832,7 @@ UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
      3    Source power limited due to insufficient external power
      4    Source power limited due to Event Flags in place (Event Flags must also be set)
      5    Source power limited due to temperature
-     6?7 Reserved and Shall be set to zero  
+     6:7  Reserved and Shall be set to zero  
     ------------------------------------------------------------- */
         
     if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
