@@ -292,8 +292,8 @@ Summary:
     Configures GPIO of SOC as Input enables external interrupt for that DC DC Alert
 Description:
     This Hook is used to configure a GPIO in input mode and enables external interrupt for that pin. 
-	For each port, this hook can be used to assign alert pin for DC-DC Buck boost converter to a GPIO. 
-	Whenever, an interrupt is fired from alert pin of DC-DC Buck boost converter, the SOC can call a callback function to execute the necessary fault handling operations.
+	DC_DC alert shall be processed by SOC. Incase of Power fault, PSF shall be informed by SOC through 
+ *  client request.
 Conditions:
 	This hook API may be called if DC-DC Buck boost converter is used to deliver power.
 Return:

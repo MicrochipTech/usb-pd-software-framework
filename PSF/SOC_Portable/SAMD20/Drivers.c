@@ -96,9 +96,6 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #endif /* CONFIG_HOOK_DEBUG_MSG */
 
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-#define SAMD20I2CDCDC_Initialise(n) SERCOMn_I2CDCDC_Initialize(n)
-#define SERCOMn_I2CDCDC_Initialize(n) SERCOM##n##_I2C_Initialize()
-
 #define SAMD20I2CDCDC_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
                     SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen)
 #define SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
@@ -230,13 +227,6 @@ void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum)
     }
 }
 
-UINT8 SAMD20_I2CDCDCInitialisation (void)
-{
-    SAMD20I2CDCDC_Initialise(SAMD20_I2C_INSTANCE);
-    return TRUE;
-
-}
-
 UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
 {
     UINT8 u8Return = FALSE;
@@ -264,7 +254,7 @@ UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u
     return u8Return;
 }
 
-bool SAMD20_I2CDCDCIsBusyDriver(void)
+UINT8 SAMD20_I2CDCDCIsBusyDriver(void)
 {
     return SAMD20_I2cDCDCIsBusy(SAMD20_I2C_INSTANCE);
 }

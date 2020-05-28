@@ -250,12 +250,108 @@ UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Wri
 
 /*****************************************************************************/
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-UINT8 SAMD20_I2CDCDCInitialisation (void);
+/****************************************************************************
+    Function:
+        SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
+    Summary:
+        Function for I2C DC DC Controller read drivers.  
+    Description:
+        This function reads the given length of data from the given address 
+    Conditions:
+        None
+    Input:
+        u16Address - I2C address of the DC DC controller
+        pu8ReadBuf - Pointer to Read buffer
+        u8ReadLen - Length of bytes to read
+    Return:
+        UINT8 - Returns TRUE - If the I2C read is successful.
+                Returns FALSE - If the I2C read is not successful
+    Remarks:
+        None
+**************************************************************************************************/
 UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
+
+/****************************************************************************
+    Function:
+        SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen)
+    Summary:
+        Function for I2C DC DC Controller Write drivers.  
+    Description:
+        This function writes the given length of data to the given address 
+    Conditions:
+        None
+    Input:
+        u16Address - I2C address of the DC DC controller
+        pu8WriteBuf - Pointer to write buffer
+        u8WriteLen - Length of bytes to read
+    Return:
+        UINT8 - Returns TRUE - If the I2C write is successful.
+                Returns FALSE - If the I2C write is not successful
+    Remarks:
+        None
+**************************************************************************************************/
 UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen);
+
+/****************************************************************************
+    Function:
+        SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
+                                              UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
+    Summary:
+        Function for I2C DC DC Controller Write and read drivers.  
+    Description:
+        This function writes the given length of data to the given address and 
+ *      then reads the given length of data
+    Conditions:
+        None
+    Input:
+        u16Address - I2C address of the DC DC controller
+        pu8WriteBuf - Pointer to write buffer
+        u8WriteLen - Length of bytes to read
+        pu8ReadBuf - Pointer to Read buffer
+        u8ReadLen - Length of bytes to read
+    Return:
+        UINT8 - Returns TRUE - If the I2C write-read is successful.
+                Returns FALSE - If the I2C write-read is not successful
+    Remarks:
+        None
+**************************************************************************************************/
 UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
                                               UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
-bool SAMD20_I2CDCDCIsBusyDriver(void);
+/****************************************************************************
+    Function:
+        SAMD20_I2CDCDCIsBusyDriver(void)
+    Summary:
+        Function to check if the I2C drivers is busy  
+    Description:
+        This function checks for the busy state of I2C driver
+    Conditions:
+        None
+    Input:
+        None
+    Return:
+        UINT8 - Returns TRUE - If the I2C driver is busy
+                Returns FALSE - If the I2C driver is not busy
+    Remarks:
+        None
+**************************************************************************************************/
+UINT8 SAMD20_I2CDCDCIsBusyDriver(void);
+/****************************************************************************
+    Function:
+        SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum)
+    Summary:
+        Function to initialize SOC DC DC alert 
+    Description:
+        This API initializes the SOC DC DC alert functionality for the given port.
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
+    Return:
+        None
+    Remarks:
+        None
+**************************************************************************************************/
+
 void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum);
 
 #endif
