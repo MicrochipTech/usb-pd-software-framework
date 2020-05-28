@@ -208,7 +208,7 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
 void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum)
 {
     /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
-    MPQDCDC_HandleAlertISR(u8PortNum);
+    MPQDCDC_HandleAlert(u8PortNum);
 }
 
 void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum)

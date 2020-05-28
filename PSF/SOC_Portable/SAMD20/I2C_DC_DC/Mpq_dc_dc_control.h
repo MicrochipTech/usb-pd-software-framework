@@ -57,6 +57,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define MPQ_CMD_ENABLE_VBUS             0x8001U
 #define MPQ_CMD_WRITE_VOLTAGE           0x21U
 #define MPQ_CMD_WRITE_CURRENT           0xD1U
+#define MPQ_CMD_READ_VOLTAGE            0x8BU
 
 #define I2C_CMD_LENGTH_1                1
 #define I2C_CMD_LENGTH_2                2
@@ -89,6 +90,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Offset Values */
 #define MPQ_CURRENT_OFFSET_VALUE        5
 
+#define MPQ_DIVISOR_FOR_PERCENTAGE      100
+#define MPQ_VOLTAGE_READ_AVG_CNT        5
+
 
 /* Status bit masks */
 /* Fault Status returned by 'Status Word' command */
@@ -100,8 +104,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Macro to raise client request to PSF for handling VBUS Fault */
 #define MPQ_CLIENT_REQ_HANDLE_VBUS_FAULT   0x20
 
-/* Macro for setting the EN_VBUS Status */
-#define MPQ_SET_PORT_IO_EN_VBUS_STATUS     0x0010 
+#define MPQ_SHIFT_BY_8BITS                 0x08
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: Data Structure                                                    */
@@ -180,7 +184,7 @@ void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolta
 
 /****************************************************************************
     Function:
-        void MPQDCDC_HandleAlertISR(UINT8 u8PortNum); 
+        void MPQDCDC_HandleAlert(UINT8 u8PortNum); 
     Summary:
         Interrupt Handler for I2C DC DC Alert  
     Description:
@@ -197,13 +201,13 @@ void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolta
         None
 **************************************************************************************************/
 
-void MPQDCDC_HandleAlertISR(UINT8 u8PortNum);
+void MPQDCDC_HandleAlert(UINT8 u8PortNum);
 
 /****************************************************************************
     Function:
         void MPQDCDC_FaultHandler(UINT8 u8PortNum); 
     Summary:
-        Wrapper function for DPM's HandleClientRequest API.  
+        Fault Handler for I2C DC DC Controller  
     Description:
         This API gets the Fault Status code from DC-DC Controller and based 
         on the fault code, requests DPM to Handle the Fault. 
@@ -218,6 +222,23 @@ void MPQDCDC_HandleAlertISR(UINT8 u8PortNum);
 **************************************************************************************************/
 
 UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum);
+
+/****************************************************************************
+    Function:
+        void MPQDCDC_ReadVoltage(UINT8 u8PortNum); 
+    Summary:
+        Reads the output voltage from I2C DC DC Controller  
+    Description:
+        This API reads the output voltage of the given port of I2C DC DC controller  
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port Number for which output voltage to be read
+    Return:
+      None
+    Remarks:
+        None
+**************************************************************************************************/
 
 UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum);
 
