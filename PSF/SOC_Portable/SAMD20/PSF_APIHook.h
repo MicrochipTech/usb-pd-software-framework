@@ -287,7 +287,7 @@ Remarks:
 // *****************************************************************************
 /* *****************************************************************************
 Function:
-	MCHP_PSF_HOOK_DCDCAlertInit(byPortNum)
+	MCHP_PSF_HOOK_DCDCALERTINIT(u8PortNum)
 Summary:
     Configures GPIO of SOC as Input enables external interrupt for that DC DC Alert
 Description:
@@ -301,7 +301,7 @@ Return:
 Example:
 
     <code>
-        #define MCHP_PSF_HOOK_DCDCAlertInit()      hw_alertinit()
+        #define MCHP_PSF_HOOK_DCDCALERTINIT()      hw_alertinit()
         void hw_alertinit(void);
         void hw_alertinit(void)
         {
@@ -314,9 +314,9 @@ Remarks:
 	User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is PWRCTRL_I2C_DC_DC
 **************************************************************************/
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-#define MCHP_PSF_HOOK_DCDCALERTINIT(byPortNum) SAMD20_I2CDCDCAlertInit(byPortNum)
+#define MCHP_PSF_HOOK_DCDCALERTINIT(u8PortNum) SAMD20_I2CDCDCAlertInit(u8PortNum)
 #else
-#define MCHP_PSF_HOOK_DCDCALERTINIT(byPortNum)
+#define MCHP_PSF_HOOK_DCDCALERTINIT(u8PortNum)
 #endif
 
 // *****************************************************************************
