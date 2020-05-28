@@ -72,12 +72,12 @@ int main ( void )
 
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING) 
 
-        for(UINT8 i=0; i<CONFIG_PD_PORT_COUNT;i++)
+        for(UINT8 u8PortNum=INDEX_0; u8PortNum<CONFIG_PD_PORT_COUNT;u8PortNum++)
         { 
-            if(gu8MPQAlertPortMsk[i])
+            if(gu8MPQAlertPortMsk[u8PortNum])
             {
-                (void) MPQDCDC_FaultHandler(i); 
-                gu8MPQAlertPortMsk[i] = FALSE;
+                (void) MPQDCDC_FaultHandler(u8PortNum); 
+                gu8MPQAlertPortMsk[u8PortNum] = FALSE;
             }
         }
         
