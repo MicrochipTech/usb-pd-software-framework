@@ -93,7 +93,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
     #define SAMD20UART_Write_String(n, pbyMessage) SERCOMn_UART_Write_String(n, pbyMessage)
     #define SERCOMn_UART_Write_String(n, pbyMessage) SERCOM##n##_USART_Write_String(pbyMessage)
 
-#endif //CONFIG_HOOK_DEBUG_MSG
+#endif /* CONFIG_HOOK_DEBUG_MSG */
 
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 #define SAMD20I2CDCDC_Initialise(n) SERCOMn_I2CDCDC_Initialize(n)
@@ -117,7 +117,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #define SAMD20_I2cDCDCIsBusy(n) SERCOMn_I2C_IsBusy(n)
 #define SERCOMn_I2C_IsBusy(n) SERCOM##n##_I2C_IsBusy()
 
-#endif //#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#endif /* CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC */
 
 /* ************************************************************************** */
 /* ************************************************************************** */
