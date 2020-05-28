@@ -207,7 +207,7 @@ void MPQDCDC_HandleAlert(UINT8 u8PortNum);
     Function:
         void MPQDCDC_FaultHandler(UINT8 u8PortNum); 
     Summary:
-        Fault Handler for I2C DC DC Controller  
+        Wrapper function for DPM's HandleClientRequest API  
     Description:
         This API gets the Fault Status code from DC-DC Controller and based 
         on the fault code, requests DPM to Handle the Fault. 
