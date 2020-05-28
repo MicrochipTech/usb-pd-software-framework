@@ -37,11 +37,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /***********************************************************************************/
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 
-volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT] = {0};
+volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
         
-static const UINT8 u8aMPQI2CSlvAddr[4] = {MPQ_I2C_SLV_ADDR_PORT_1,MPQ_I2C_SLV_ADDR_PORT_2, MPQ_I2C_SLV_ADDR_PORT_3, MPQ_I2C_SLV_ADDR_PORT_4};
-UINT8 u16PrevCurrent[CONFIG_PD_PORT_COUNT] = {0};
-UINT8 u16PrevVoltage[CONFIG_PD_PORT_COUNT] = {0};
+static const UINT8 u8aMPQI2CSlvAddr[CONFIG_PD_PORT_COUNT] = {MPQ_I2C_SLV_ADDR_PORT_1,MPQ_I2C_SLV_ADDR_PORT_2};
+UINT8 u16PrevCurrent[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
+UINT8 u16PrevVoltage[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
 
 static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage);
 static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current);
@@ -57,8 +57,6 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
         {
             /* wait for the current transfer to complete */ 
             while(SAMD20_I2CDCDCIsBusyDriver( ));
-            __NOP(); 
-            
             u8RetVal = TRUE;
             break;
         }
@@ -72,8 +70,9 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     UINT8 u8length;
     UINT32 u32I2CCmd;
     UINT8 u8Return = TRUE;
-    UINT16 i;
+    UINT16 u16I2CDlyCnt;
 
+    /* Global interrupt is enabled as the I2C works on interrupt in SAMD20*/
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 
     /*Assert EN_VBUS*/
@@ -82,10 +81,11 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
                                     u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
     
     /* Set EN_VBUS Status in Port IO status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= MPQ_SET_PORT_IO_EN_VBUS_STATUS;
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
     
     /* Delay of ~2.5ms for I2C module to stabilize after DC DC Enable*/
-    for(i=0;i<20000;i++)
+    /* For loop is used with execution of NOP as approx delay of >2ms is required */
+    for(u16I2CDlyCnt=0;u16I2CDlyCnt<20000;u16I2CDlyCnt++)
     {
          __NOP();
     }
@@ -120,11 +120,6 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     u8length = I2C_CMD_LENGTH_2;
     u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CCmd, u8length);
 
-    /* Current Threshold */
-//    u32I2CCmd = MPQ_CMD_CURRENT_THRESHOLD;
-//    u8length = I2C_CMD_LENGTH_2;
-//    u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CCmd, u8length);
-
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
 
     return u8Return;
@@ -136,9 +131,17 @@ void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolta
     UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
     UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS,
                                     u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
+
+    /* Set EN_VBUS Status in Port IO status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
     
+    /* The current limit is set only if the previous current limit value is not 
+     * equal to the curent limit value to be set */        
     if (u16PrevCurrent[u8PortNum] != u16Current)
     {
+        /* If the previous current limit is less that the given current limit 
+         * value set the output current first and the update the output voltage. 
+         This will avoid occurring of OCS faults */
         if (u16Current > u16PrevCurrent[u8PortNum])
         {
             MPQDCDC_SetCurrentOutput (u8PortNum, u16Current);
@@ -159,7 +162,7 @@ void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolta
 
 static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage)
 {
-    UINT32 u32I2CDCDCVoltage = SET_TO_ZERO;
+    UINT32 u32I2CDCDCVoltagCnt = SET_TO_ZERO;
     UINT8 u8Return = TRUE;
     UINT8 u8length = SET_TO_ZERO;
 
@@ -168,29 +171,30 @@ static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage)
         u16PrevVoltage[u8PortNum] = u16VBUSVoltage;
         if (PWRCTRL_VBUS_0V == u16VBUSVoltage)
         {
-            u32I2CDCDCVoltage = MPQ_CMD_DISABLE_VOUT;
+            u32I2CDCDCVoltagCnt = MPQ_CMD_DISABLE_VOUT;
             u8length = I2C_CMD_LENGTH_2;
 
-            u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCVoltage, u8length);
+            u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCVoltagCnt, u8length);
 
         }
         else 
         {
             u8length = I2C_CMD_LENGTH_3;
-            u32I2CDCDCVoltage = (UINT32)u16VBUSVoltage;
-            u32I2CDCDCVoltage = (UINT32) ((u32I2CDCDCVoltage * MPQ_REGISTER_COUNTS_1V)/MPQ_1V_IN_MILLIVOLT);
-            u32I2CDCDCVoltage = u32I2CDCDCVoltage << 8;
-            u32I2CDCDCVoltage = u32I2CDCDCVoltage | MPQ_CMD_WRITE_VOLTAGE;
+            u32I2CDCDCVoltagCnt = (UINT32)u16VBUSVoltage;
+            u32I2CDCDCVoltagCnt = (UINT32) ((u32I2CDCDCVoltagCnt * MPQ_REGISTER_COUNTS_1V)/MPQ_1V_IN_MILLIVOLT);
+            u32I2CDCDCVoltagCnt = u32I2CDCDCVoltagCnt << MPQ_SHIFT_BY_8BITS;
+            u32I2CDCDCVoltagCnt = u32I2CDCDCVoltagCnt | MPQ_CMD_WRITE_VOLTAGE;
 
-            u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCVoltage, u8length);
+            u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCVoltagCnt, u8length);
 
-            u32I2CDCDCVoltage = MPQ_CMD_ENABLE_VBUS; 
+            u32I2CDCDCVoltagCnt = MPQ_CMD_ENABLE_VBUS; 
             u8length = I2C_CMD_LENGTH_2;
 
-            u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCVoltage, u8length);
+            u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCVoltagCnt, u8length);
         }
-
-        if (u8Return)
+        
+        /* The return variable is checked to avoid compiler warning*/
+        if (TRUE == u8Return)
             __NOP();
     }
 }
@@ -198,17 +202,19 @@ static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage)
 
 static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current)
 {
-    UINT32 u32I2CDCDCCurrent = SET_TO_ZERO;
+    UINT32 u32I2CDCDCCurrentCnt = SET_TO_ZERO;
     UINT8 u8Return = TRUE;
     UINT8 u8length = SET_TO_ZERO;
     
-    u16Current = (UINT16) (u16Current + ((float) u16Current * ((float)MPQ_CURRENT_OFFSET_VALUE/ (float) 100)));
+    /* An offset value of 5% is added to current limit value set */
+    u16Current = (UINT16) (u16Current + ((float) u16Current * ((float)MPQ_CURRENT_OFFSET_VALUE/ (float) MPQ_DIVISOR_FOR_PERCENTAGE)));
     u16Current = (UINT16) (u16Current/(UINT16) MPQ_CURRENT_COUNT_FACTOR);
-    u32I2CDCDCCurrent = (u16Current << 8) | MPQ_CMD_WRITE_CURRENT;
+    u32I2CDCDCCurrentCnt = (u16Current << MPQ_SHIFT_BY_8BITS) | MPQ_CMD_WRITE_CURRENT;
     u8length = I2C_CMD_LENGTH_2;
-    u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCCurrent, u8length);
+    u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CDCDCCurrentCnt, u8length);
 
-    if (u8Return)
+    /* The return variable is checked to avoid compiler warning*/
+    if (TRUE == u8Return)
         __NOP();
 }
  
@@ -243,19 +249,16 @@ UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum)
         /* Inform PSF to handle the VBUS Fault */
         if(FALSE != (u16FaultMask & MPQ_IOUT_OC_FAULT))
         { 
-            /*Todo:Jega handle it new client request defines*/
             gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS;
         } 
 
         if(FALSE != (u16FaultMask & MPQ_IOUT_OC_EXIT_FAULT))
         { 
-            /*Todo:Jega handle it new client request defines*/
             gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest |= DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT;
         } 
 
         if(FALSE != (u16FaultMask & MPQ_VOUT_OV_FAULT))
         { 
-            /*Todo:Jega handle it new client request defines*/
             gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV;
         } 
 
@@ -270,31 +273,31 @@ UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum)
     return u8RetVal;
 }         
 		
-void MPQDCDC_HandleAlertISR(UINT8 u8PortNum)
+void MPQDCDC_HandleAlert(UINT8 u8PortNum)
 {
     /* Update the DC-DC Alert Port Mask with the port number */
-    gu8MPQAlertPortMsk[u8PortNum] = 1;
+    gu8MPQAlertPortMsk[u8PortNum] = SET_TO_ONE;
 }
 
 UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum)
 {
-    volatile UINT16 u16VoltageOutput;
-    UINT32 u32VotageAvg = 0;
-    UINT8 u8Cmd,i;
+    volatile UINT16 u16VoltageOutputCnt;
+    UINT32 u32VoltageCntAvg = SET_TO_ZERO;
+    UINT8 u8Cmd,u8ReadCnt;
     
-    u8Cmd = 0x8B;
+    u8Cmd = MPQ_CMD_READ_VOLTAGE;
     
-    for(i=0; i<5;i++)
+    for(u8ReadCnt=0; u8ReadCnt<MPQ_VOLTAGE_READ_AVG_CNT;u8ReadCnt++)
     { 
-        (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,1U,(UINT8*)&u16VoltageOutput,2U);
+        (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16VoltageOutputCnt,2U);
         
         /* wait for the current transfer to complete */ 
         while(SAMD20_I2CDCDCIsBusyDriver( ));
         
-        u32VotageAvg += u16VoltageOutput;
+        u32VoltageCntAvg += u16VoltageOutputCnt;
     }
-    u16VoltageOutput = (UINT16) (u32VotageAvg/((UINT16)5));
-    return u16VoltageOutput;
+    u16VoltageOutputCnt = (UINT16) (u32VoltageCntAvg/((UINT16)MPQ_VOLTAGE_READ_AVG_CNT));
+    return u16VoltageOutputCnt;
 }
 
 
