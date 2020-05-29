@@ -263,25 +263,24 @@ Source/Sink Power delivery objects*/
 
  
 /****************** New PDO Enable/Disable Defines ************/
-#define DPM_ENABLE_NEW_PDO                    1
-#define DPM_DISABLE_NEW_PDO                   0
+#define DPM_ENABLE_NEW_PDO(u8PortNum)     (gasDPM[u8PortNum].u8DPM_ConfigData |= DPM_NEW_PDO_ENABLE_MASK)
+#define DPM_DISABLE_NEW_PDO(u8PortNum)    (gasDPM[u8PortNum].u8DPM_ConfigData &= ~(DPM_NEW_PDO_ENABLE_MASK))
+
 /****************** Power Balancing Defines ***********/
 /* PB Enable for System */
-#define DPM_PB_ENABLE                         0x10
+#define DPM_PB_ENABLE                   0x10
 
 /* Macro to know if PB is enabled for the system and for the port */
 #define DPM_IS_PB_ENABLED(u8PortNum)   ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE) \
                                             ? TRUE : FALSE)   
 
-/* Macro to know if PPS is enabled for the port */
-#define DPM_IS_PPS_ENABLED(u8PortNum)  ((gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSCfgData & \
-                                        DPM_PPS_ENABLE) ? TRUE : FALSE)
+/* PT Enable for the system */
+#define DPM_PT_ENABLE                   0x01 
+
+/* Macro to know if PT is enabled for the system */
+#define DPM_IS_PT_ENABLED             ((gasCfgStatusData.u8PwrThrottleCfg & DPM_PT_ENABLE) ? TRUE : FALSE)  
 
 /*********************PPS APDO Defines ******************/
-#define DPM_PPS_ENABLE                           0x01 
-#define DPM_MAX_APDO_COUNT                       3 
-#define DPM_PPS_APDO_EN_DIS_MASK                 0x02 
-
 #define DPM_APDO_MAX_CURRENT_UNIT                50 
 #define DPM_APDO_MIN_VOLTAGE_UNIT                100
 #define DPM_APDO_MAX_VOLTAGE_UNIT                100
@@ -332,8 +331,10 @@ Source/Sink Power delivery objects*/
 #define DPM_STORE_PARTNER_STATUS                     1
 #define DPM_CLEAR_PARTNER_STATUS                     0 
 
-/* Macro to get current PT Bank */ 
-#define DPM_GET_CURRENT_PT_BANK             (gasCfgStatusData.u8PwrThrottleCfg)
+/* Macro to get current PT Bank */
+#define DPM_PT_BANK_MASK                    0x06 
+#define DPM_PT_BANK_POS                     1
+#define DPM_GET_CURRENT_PT_BANK             ((gasCfgStatusData.u8PwrThrottleCfg & DPM_PT_BANK_MASK) >> DPM_PT_BANK_POS)
 
 #define DPM_FIXED_PDO_CURRENT_MASK              0x000003FF 
 
@@ -1238,27 +1239,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 
 /**************************************************************************************************
     Function:
-        void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
-    Summary:
-        Includes APDOs in Source capabilities buffer.  
-    Description:
-        This API can be called to append the APDOs in the Source capabilities buffer. 
-        This API will ensure that the total Data Object count does not exceed 7.  
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        *u8pSrcPDOCnt - Number of PDOs included in Source caps buffer
-        *u32pSrcCap - Pointer to the array of Source caps buffer 
-    Return:
-        None. 
-    Remarks:
-        None.
-**************************************************************************************************/
-void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
-
-/**************************************************************************************************
-    Function:
         UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
     Summary:
         Determines if PS_RDY needs to be sent within tPpsSrcTransLarge 
@@ -1305,30 +1285,6 @@ UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
 **************************************************************************************************/
 
 void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType); 
-
-/**************************************************************************************************
-    Function:
-        void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable); 
-    Summary:
-        Enables DPM to send Source capabilities from the u32aNewPDO Array.  
-    Description:
-        By default, Source capabilities would be taken from u32aSourcePDO 
-        array. If there is a client request for dynamic renegotiation, then Source
-        capabilities has to be taken from u32aNewPDO Array. Any application can 
-        update the u32aNewPDO Array with the source caps message and call this API
-        for the New PDOs to be advertised in the PD Bus. 
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u8EnableDisable - TRUE - New PDOs are advertised. 
-                          FALSE - Default Source PDOs are advertised. 
-    Return:
-        None. 
-    Remarks:
-        None.
-**************************************************************************************************/
-void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable); 
 
 /**************************************************************************************************
     Function:

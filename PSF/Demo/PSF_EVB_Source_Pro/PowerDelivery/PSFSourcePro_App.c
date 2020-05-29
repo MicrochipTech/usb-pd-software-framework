@@ -177,7 +177,7 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         case eMCHP_PSF_SINK_ALERT_RCVD: 
         {
             /* Alert information received from Sink is available in 
-             gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlertInfo */
+             gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert */
             break; 
         }
         

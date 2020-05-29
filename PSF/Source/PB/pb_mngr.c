@@ -57,7 +57,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     
             /* Enable New PDO for the DPM to advertise New PDOs since the 
                first negotiation cannot be treated as a client request. */
-            DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO);
+            DPM_ENABLE_NEW_PDO(u8PortNum);
                     
             gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = \
                                 gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;   

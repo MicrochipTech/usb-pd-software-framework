@@ -646,10 +646,10 @@ typedef enum
     Name                            Size in   R/W Config   R/W Run   \Description
                                      Bytes     time         time      
     ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
-    u32aSourcePDO[7]                28        R/W          R         * Upto 7 fixed Source PDOs 
-																		where Voltage is specified 
-																		in mV and Current is 
-																		specified in mA.
+    u32aSourcePDO[7]                28        R/W          R         * Source Capabilities array 
+                                                                        holding maximum of 7 Data 
+                                                                        Objects including Fixed 
+                                                                        PDOs and PPS APDOs.																		
                                                                       * This array should be used 
 																	    only for Source Operation. 
     u32aSinkPDO[7]                  28        R/W          R         * Upto 7 fixed Sink PDOs where 
@@ -659,9 +659,10 @@ typedef enum
                                                                       * This array should be used 
 																	    only when the port is 
 																		configured as Sink.
-    u32aNewPDO[7]                   28        R/W          R/W       * Upto 7 fixed New PDOs where 
-																		Voltage is specified in mV 
-																		and Current in mA.
+    u32aNewPDO[7]                   28        R/W          R/W       * New Source Capabilities array 
+                                                                        holding maximum of 7 Data 
+                                                                        Objects including Fixed 
+                                                                        PDOs and PPS APDOs.
                                                                       * This array is common for 
 																	    Source and Sink. It is 
 																		valid only when Bit 0 of  
@@ -1553,7 +1554,7 @@ typedef enum
     0       R/W          R         Power Balancing Enable/Disable 
                                     * '0' Disable.
                                     * '1' Enable. 
-								    This bit is applicable only for source operation. 	
+								    This bit is applicable only for source operation. 			
     15:1	                       Reserved 
  
   Remarks:
@@ -1673,7 +1674,7 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.	
-    u8PBPortPriority                1         R/W          R         * Selects the port priority 
+    u8PortPriority                  1         R/W          R         * Selects the port priority 
                                                                       * 000b is the highest priority
 	u8aReserved4					1						          Reserved 											
 	</table>	
@@ -1689,17 +1690,17 @@ typedef struct _PBPortCfgStatus
     UINT16 u16MaxPrtPwrBankAIn250mW; 
     UINT16 u16MaxPrtPwrBankBIn250mW; 
     UINT16 u16MaxPrtPwrBankCIn250mW; 
-    UINT8 u8PBPortPriority; 
+    UINT8 u8PortPriority; 
     UINT8 u8aReserved4;
 } PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
 
 #endif 
  /**********************************************************************
    Summary:
-     This structure contains port specific PPS configuration parameters.
+     This structure contains port specific status parameters.
 	 sPPSPerPortData is referred from _GlobalCfgStatusData.
    Description:
-     This structure contains the following PPS configuration parameters that 
+     This structure contains the following status parameters that 
      are either Integer Datatypes or Bit-Mapped bytes.  
 	 This structure is used only when INCLUDE_PD_SOURCE_PPS is set to '1'.
 	 
@@ -1708,10 +1709,8 @@ typedef struct _PBPortCfgStatus
 	<table> 	
     Name                            Size in   R/W Config   R/W Run   \Description
                                      Bytes     time         time      
-    ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
-    u32aPPSApdo[3]                  12        R/W          R         Defines the PPS APDOs. 
-	u8aReserved5[1]				    3                                Reserved 
-    u32PartnerAlertInfo             4         R            R         * Complete Alert information 
+    ------------------------------  --------  -----------  --------  -------------------------------------------------------------------	
+    u32PartnerAlert                 4         R            R         * Complete Alert information 
 																		received from Partner, Will 
 																		be blank of no Alert has 
 																		been received.
@@ -1726,33 +1725,9 @@ typedef struct _PBPortCfgStatus
 																		would be 0 when 
 																		eMCHP_PSF_SINK_STATUS_NOT_RCVD
 																		notification is posted. 
-
+    u8aReserved5[2]				    2                                Reserved 
 	</table> 
 
-    <b>2. Members that are Bit-Mapped bytes:</b> 
-	
-	<b>a. u8PPSCfgData:</b> 
-	u8PPSCfgData variable holds the PPS Configuration Data. It's size is 1 byte. 
-	
-    <table>
-    Bit     R/W Config   R/W Run   \Description
-             time         time      
-    ------  -----------  --------  --------------------
-    0       RW           R         PPS Enable/Disable  
-                                    * '0' Disable
-                                    * '1' Enable 
-    1       RW           R         APDO1 Enable/Disable 
-                                    * '0' Disable 
-                                    * '1' Enable
-    2       RW           R         APDO2 Enable/Disable 
-                                    * '0' Disable 
-                                    * '1' Enable
-    3       RW           R         APDO3 Enable/Disable 
-                                    * '0' Disable 
-                                    * '1' Enable
-    7:4                            Reserved
-    </table>
-	
    Remarks:
      None                                                               
    **********************************************************************/
@@ -1760,11 +1735,9 @@ typedef struct _PBPortCfgStatus
 
 typedef struct _PPSPortCfgStatus
 {
-    UINT32 u32aPPSApdo[3]; 
-    UINT32 u32PartnerAlertInfo; 
+    UINT32 u32PartnerAlert; 
     UINT8 u8aPartnerStatus[6];
-    UINT8 u8PPSCfgData;
-    UINT8 u8aReserved5[1];
+    UINT8 u8aReserved5[2];
 } PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
 
 #endif 
@@ -1832,18 +1805,6 @@ typedef struct _PPSPortCfgStatus
 	
 	u16IDHeaderVDO                  2         R/W          R         Defines ID Header VDO 
 	     
-	u8PwrThrottleCfg 	            1         R/W          R/W       * Defines the currently 
-																		selected Power Bank. 
-																	  * Possible values are, 
-																		1. 0x00 = Bank A 
-																		2. 0x01 = Bank B
-																	    3. 0x02 = Bank C 
-																		4. 0x03 = Shutdown mode
-																	  *	This variable is used only 
-																	    when either of
-																        INCLUDE_POWER_BALANCING or
-																	    INCLUDE_POWER_THROTTLING is 
-																		set to '1'. 			
 	u16SystemPowerBankAIn250mW 	    2         R/W          R         * Defines the Total System 
 																		Power of Bank A. Each unit 
 																		is 0.25W 
@@ -1953,7 +1914,8 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_BALANCING or 
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
-    u8aReserved6[2]				     2 								 Reserved 	
+    u8aReserved3				     1 								 Reserved 	
+    u8aReserved6				     1 								 Reserved 	
     u8aReserved7[3]				     3								 Reserved 
     u8aReserved8[3]				     3 								 Reserved 
     u16Reserved2 				     2 								 Reserved 																
@@ -1974,12 +1936,31 @@ typedef struct _PPSPortCfgStatus
                                     * 0000 = First Come First Serve
                                     * 0001 = Last Plugged Gets Priority
 									* 0010-1111 = Reserved
-	4       R/W          R         PD Power balancing Enable/Disable for the system								
+	4       R/W          R         Power balancing Enable/Disable for the system								
 									* 0 = PD Balancing is disabled 
 									* 1 = PD Balancing is enabled
     7:5                            Reserved  									
 	</table>								
 	
+    <b>b. u8PwrThrottleCfg</b>:
+    
+    u8PwrThrottleCfg defines the Power Throttle Enable/Disable configuration and 
+    currently selected Power Bank. It's size is 1 byte. 
+    <table>
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+	0       R/W          R         Power Throttle Enable/Disable for the system								
+									* 0 = Disable Power Throttling
+									* 1 = Enable Power Throttling
+    2:1     R/W          R/W       Selection of Power Throttling Bank
+                                    * 00 = Bank A 
+									* 01 = Bank B
+									* 10 = Bank C 
+									* 11 = Shutdown mode
+    7:3                            Reserved  									
+	</table>								
+ 
 	<b>3. Members that are another structures:</b>
 	<table>
     Structure        \Description     
@@ -2007,7 +1988,8 @@ typedef struct _GlobalCfgStatusData
     UINT8 u8aManfString[8]; 
     UINT8 u8PSFMajorVersion; 
     UINT8 u8PSFMinorVersion; 
-    UINT8 u8aReserved6[2];     
+    UINT8 u8PwrThrottleCfg;
+    UINT8 u8aReserved3;    
     UINT16 u16ProducdID;	
     UINT16 u16VendorID;		
     UINT16 u16ProductTypeVDO; 
@@ -2020,7 +2002,7 @@ typedef struct _GlobalCfgStatusData
 #if (TRUE == INCLUDE_POWER_BALANCING || (TRUE == INCLUDE_POWER_THROTTLING))
     UINT16 u16SharedPwrCapacityIn250mW;
     UINT8 u8PBEnableSelect;	    
-    UINT8 u8PwrThrottleCfg;	
+    UINT8 u8aReserved6;
     UINT16 u16SystemPowerBankAIn250mW; 
     UINT16 u16MinPowerBankAIn250mW;   
     UINT16 u16SystemPowerBankBIn250mW; 
