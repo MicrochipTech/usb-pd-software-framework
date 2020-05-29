@@ -187,7 +187,14 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
         else if (PE_EXT_STATUS == u8MsgType)
         {
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-            u8RetVal = PE_SUPPORTED_EXTDMSG;
+            if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+            {
+                u8RetVal = PE_SUPPORTED_EXTDMSG;
+            }
+            else
+            {
+                u8RetVal = PE_UNSUPPORTED_MSG; 
+            }
 #else 
             u8RetVal = PE_UNSUPPORTED_MSG; 
 #endif 
@@ -226,12 +233,16 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             }
             
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)            
-            /* Get_Status and Get_PPS_Status messages are supported for Source.*/
+            /* Get_Status and Get_PPS_Status messages are supported for Source
+               and if any APDOs are advertised to port partner.*/
             if (DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE)
             {
                 if ((PE_CTRL_GET_STATUS == u8MsgType) || (PE_CTRL_GET_PPS_STATUS == u8MsgType))
                 {
-                    u8RetVal = PE_SUPPORTED_MSG;
+                    if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+                    {
+                        u8RetVal = PE_SUPPORTED_MSG;
+                    }
                 }
             }
 #endif 
@@ -241,11 +252,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             /*Message type greater than Sink_Capabilities except Vendor_Defined 
               and Alert(Source only) are not supported
               Refer Table 6-6 Data Message Types of PD Specification */
-            if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED) 
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
-                    && (u8MsgType != PE_DATA_ALERT)
-#endif 
-                )
+            if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
@@ -267,6 +274,21 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 /* Do Nothing */
             }
+            
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)            
+            /* Get_Status and Get_PPS_Status messages are supported for Source
+               and if any APDOs are advertised to port partner.*/            
+            if (DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE)
+            {
+                if (PE_DATA_ALERT == u8MsgType)
+                {
+                    if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+                    {
+                        u8RetVal = PE_SUPPORTED_MSG;
+                    }
+                }
+            }
+#endif 
         }
     }
 
