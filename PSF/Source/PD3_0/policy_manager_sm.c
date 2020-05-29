@@ -652,7 +652,23 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 /**************************************************************************************/
 void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
 {
-    gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;
+    if ((DPM_INT_EVT_INITIATE_ALERT == u8EventType) || 
+                    (DPM_INT_EVT_INITIATE_GET_STATUS == u8EventType))
+    {
+        /* Current PD Specification should be Rev 3.0 */
+        if (PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
+        {
+            /* Alert and Get_Status Tx shall be supported only if PPS is enabled for the port */
+            if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+            {
+                gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;                
+            }
+        }
+    }
+    else
+    {
+        gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;
+    }
 }
 
 void DPM_InternalEventHandler(UINT8 u8PortNum)
