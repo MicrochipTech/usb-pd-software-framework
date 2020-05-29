@@ -1549,5 +1549,26 @@ UINT8 DPM_ReturnTemperatureStatus (void);
 **************************************************************************************************/
 void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable); 
 
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum);  
+    Summary:
+        API to know if at least one APDO is advertised.
+    Description:
+        This API can be called to know if at least one of the PDOs advertised
+        in source capabilities is an APDO. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8Enable - TRUE - APDO is advertised
+                   FALSE - No APDO is advertised
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum); 
+
 #endif /*_POLICY_MANAGER_H_*/
 

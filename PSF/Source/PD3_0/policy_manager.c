@@ -592,6 +592,21 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
     }    
 }
 
+UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum)
+{
+    UINT8 u8RetVal = FALSE; 
+
+    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
+    {
+        if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index]))
+        {
+            u8RetVal = TRUE; 
+            break;
+        }
+    }
+    return u8RetVal; 
+}
+
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 
 UINT32 DPM_ReturnPPSSrcTransTmrVal (UINT8 u8PortNum)
