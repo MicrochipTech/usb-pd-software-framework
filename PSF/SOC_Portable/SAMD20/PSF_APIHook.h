@@ -921,8 +921,8 @@ Remarks:
 		void PSF_LoadConfig(pasCfgStatusData)
 		{
 		// Configure the global parameters
-		// Select Throttling Bank B
-		pasCfgStatusData->u8PwrThrottleCfg = 0x01;
+		// Enable Power Throttling and Select Bank B
+		pasCfgStatusData->u8PwrThrottleCfg = 0x03;
 		// Set 120W as Total system Power of Bank A
 		pasCfgStatusData->u16SystemPowerBankAIn250mW = 0x01E0U;
 		// Configure per port parameters
@@ -1513,7 +1513,7 @@ Description:
   
     <b> eMCHP_PSF_SINK_ALERT_RCVD</b>: This event is used by PSF to notify application when PD
 	Alert message has been received from Sink Partner. Application can read the alert
-    information by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlertInfo.
+    information by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlert.
  
     <b> eMCHP_PSF_SINK_STATUS_RCVD</b>: This event is used by PSF to notify application when 
     Sink Status has been received from Port Partner in response to the Get_Status

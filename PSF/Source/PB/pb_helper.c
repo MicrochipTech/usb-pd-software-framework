@@ -698,19 +698,19 @@ void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum)
 void PB_OnPTBankSwitch(UINT8 u8PortNum)
 {
     /* Update global and per port parameters of PB */
-    if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg)
+    if (PD_THROTTLE_BANK_A == DPM_GET_CURRENT_PT_BANK)
     {
         gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
         gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW;
         gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW;         
     }
-    else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK)
     {
         gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankBIn250mW;
         gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankBIn250mW;
         gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW; 
     }
-    else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK)
     {
         gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankCIn250mW;                
         gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankCIn250mW;

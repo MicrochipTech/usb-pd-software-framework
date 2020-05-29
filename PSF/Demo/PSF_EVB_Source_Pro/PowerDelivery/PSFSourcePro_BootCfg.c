@@ -34,7 +34,6 @@
 /* ************************************************************************** */
 static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_PPSPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
 static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {    
@@ -49,20 +48,15 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[1] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_2_VOLTAGE, \
                                                     CFG_PORT_SOURCE_PDO_2_CURRENT);        
 
-    pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[2] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_3_VOLTAGE, 
+    pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[2] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_3_VOLTAGE, \
                                                     CFG_PORT_SOURCE_PDO_3_CURRENT);     
 
-    pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[3] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_4_VOLTAGE, 
-                                                    CFG_PORT_SOURCE_PDO_4_CURRENT);         \
+    pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[3] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_4_VOLTAGE, \
+                                                    CFG_PORT_SOURCE_PDO_4_CURRENT);         
 
-    pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[4] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_5_VOLTAGE, 
-                                                    CFG_PORT_SOURCE_PDO_5_CURRENT);            \
-
-    pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[5] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_6_VOLTAGE, 
-                                                    CFG_PORT_SOURCE_PDO_6_CURRENT);            \
-    
-    pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[6] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_7_VOLTAGE, 
-                                                    CFG_PORT_SOURCE_PDO_7_CURRENT); 
+    pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[4] = CFG_FORM_PPS_APDO(CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE, \
+                        CFG_PORT_SOURCE_APDO_5_MIN_VOLTAGE, CFG_PORT_SOURCE_APDO_5_MAX_VOLTAGE, \
+                        CFG_PORT_SOURCE_APDO_5_MAX_CURRENT, CFG_PORT_SOURCE_APDO_5_PPS_PWR_LTD);            
     
     pasCfgStatusData->sPerPortData[u8PortNum].u8SourcePDOCnt = CFG_PORT_SOURCE_NUM_OF_PDOS;
 
@@ -126,36 +120,10 @@ void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusD
     pasCfgStatusData->sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_POWER_BANKA;
     pasCfgStatusData->sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW = CFG_PB_MAX_PORT_POWER_BANKB;
     pasCfgStatusData->sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW = CFG_PB_MAX_PORT_POWER_BANKC;
-    pasCfgStatusData->sPBPerPortData[u8PortNum].u8PBPortPriority = u8PortNum;
+    pasCfgStatusData->sPBPerPortData[u8PortNum].u8PortPriority = u8PortNum;
     #endif
 }
 
-void CFG_PPSPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
-{
-    #if (TRUE == INCLUDE_PD_SOURCE_PPS) 
-    /* Enable PPS Port Configuration parameters */
-    pasCfgStatusData->sPPSPerPortData[u8PortNum].u8PPSCfgData = ((CFG_PPS_APDO_3_ENABLE << CFG_PPS_APDO_3_ENABLE_POS) | \
-                        (CFG_PPS_APDO_2_ENABLE << CFG_PPS_APDO_2_ENABLE_POS) | \
-                        (CFG_PPS_APDO_1_ENABLE << CFG_PPS_APDO_1_ENABLE_POS) |
-                        (CFG_PPS_ENABLE)); 
-    
-    /* Update the value of APDO1 */
-    pasCfgStatusData->sPPSPerPortData[u8PortNum].u32aPPSApdo[0] = CFG_FORM_PPS_APDO(CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE, 
-                        CFG_PORT_SOURCE_APDO_1_MIN_VOLTAGE, CFG_PORT_SOURCE_APDO_1_MAX_VOLTAGE, 
-                        CFG_PORT_SOURCE_APDO_1_MAX_CURRENT, CFG_PORT_SOURCE_APDO_1_PPS_PWR_LIMITED);  
-
-    /* Update the value of APDO2 */
-    pasCfgStatusData->sPPSPerPortData[u8PortNum].u32aPPSApdo[1] = CFG_FORM_PPS_APDO(CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE, 
-                        CFG_PORT_SOURCE_APDO_2_MIN_VOLTAGE, CFG_PORT_SOURCE_APDO_2_MAX_VOLTAGE, 
-                        CFG_PORT_SOURCE_APDO_2_MAX_CURRENT, CFG_PORT_SOURCE_APDO_2_PPS_PWR_LIMITED);  
-
-    /* Update the value of APDO3 */
-    pasCfgStatusData->sPPSPerPortData[u8PortNum].u32aPPSApdo[2] = CFG_FORM_PPS_APDO(CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE, 
-                        CFG_PORT_SOURCE_APDO_3_MIN_VOLTAGE, CFG_PORT_SOURCE_APDO_3_MAX_VOLTAGE, 
-                        CFG_PORT_SOURCE_APDO_3_MAX_CURRENT, CFG_PORT_SOURCE_APDO_3_PPS_PWR_LIMITED);  
-    
-    #endif 
-}
 /* ************************************************************************** */
 /* ************************************************************************** */
 // Section: Interface Functions                                               */
@@ -173,13 +141,13 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->u16IDHeaderVDO = ID_HEADER_VDO;
     pasCfgStatusData->u8HWVersion = HW_VERSION;
     pasCfgStatusData->u8SiVersion = SILICON_VERSION; 
-
+    pasCfgStatusData->u8PwrThrottleCfg = ((CFG_PD_THROTTLE_BANK_A << 1) | CFG_PT_ENABLE);
+    
 #if (TRUE == INCLUDE_POWER_BALANCING)    
     pasCfgStatusData->u8PBEnableSelect = CFG_PB_ENABLE;  
 #endif 
     
 #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
-    pasCfgStatusData->u8PwrThrottleCfg = CFG_PD_THROTTLE_BANK_A;
     pasCfgStatusData->u16SystemPowerBankAIn250mW = CFG_PB_TOT_SYS_POWER_BANKA;
     pasCfgStatusData->u16MinPowerBankAIn250mW = CFG_PB_MIN_POWER_BANKA;
     pasCfgStatusData->u16SystemPowerBankBIn250mW = CFG_PB_TOT_SYS_POWER_BANKB;
@@ -192,7 +160,6 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     {
         CFG_PerPortParams (u8PortNum, pasCfgStatusData);  
         CFG_PBPerPortParams (u8PortNum, pasCfgStatusData);
-        CFG_PPSPerPortParams (u8PortNum, pasCfgStatusData);
     }
 
 }

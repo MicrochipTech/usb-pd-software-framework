@@ -47,26 +47,27 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_POWER_ROLE                1U
 #define CFG_PORT_RP_CURRENT_VALUE          (3U << TYPEC_PORT_RPVAL_POS)
 #define CFG_PORT_ENABLE                    (1U << TYPEC_PORT_ENDIS_POS)
-#define CFG_PORT_SOURCE_NUM_OF_PDOS        4U
+#define CFG_PORT_SOURCE_NUM_OF_PDOS        5U
 #define CFG_PORT_SOURCE_USB_SUSP           0U
 #define CFG_PORT_SOURCE_UNCONSTARINED_PWR  1U
 #define CFG_PORT_SOURCE_USB_COMM           0U
 
-#define CFG_PORT_SOURCE_PDO_1_CURRENT      3000U 
-#define CFG_PORT_SOURCE_PDO_2_CURRENT      3000U
-#define CFG_PORT_SOURCE_PDO_3_CURRENT      3000U
-#define CFG_PORT_SOURCE_PDO_4_CURRENT      3000U
-#define CFG_PORT_SOURCE_PDO_5_CURRENT      0U
-#define CFG_PORT_SOURCE_PDO_6_CURRENT      0U
-#define CFG_PORT_SOURCE_PDO_7_CURRENT      0U
+/* Source PDO defines */
+#define CFG_PORT_SOURCE_PDO_1_CURRENT         3000U 
+#define CFG_PORT_SOURCE_PDO_2_CURRENT         3000U
+#define CFG_PORT_SOURCE_PDO_3_CURRENT         3000U
+#define CFG_PORT_SOURCE_PDO_4_CURRENT         3000U
 
-#define CFG_PORT_SOURCE_PDO_1_VOLTAGE      5000
-#define CFG_PORT_SOURCE_PDO_2_VOLTAGE      9000
-#define CFG_PORT_SOURCE_PDO_3_VOLTAGE      15000
-#define CFG_PORT_SOURCE_PDO_4_VOLTAGE      20000
-#define CFG_PORT_SOURCE_PDO_5_VOLTAGE      0
-#define CFG_PORT_SOURCE_PDO_6_VOLTAGE      0
-#define CFG_PORT_SOURCE_PDO_7_VOLTAGE      0
+#define CFG_PORT_SOURCE_PDO_1_VOLTAGE         5000
+#define CFG_PORT_SOURCE_PDO_2_VOLTAGE         9000
+#define CFG_PORT_SOURCE_PDO_3_VOLTAGE         15000
+#define CFG_PORT_SOURCE_PDO_4_VOLTAGE         20000
+
+/* Source APDO defines */
+#define CFG_PORT_SOURCE_APDO_5_MIN_VOLTAGE    3300
+#define CFG_PORT_SOURCE_APDO_5_MAX_VOLTAGE    21000
+#define CFG_PORT_SOURCE_APDO_5_MAX_CURRENT    3000 
+#define CFG_PORT_SOURCE_APDO_5_PPS_PWR_LTD    0  
 
 #define CFG_MAX_PDO_COUNT                 7
 #define CFG_OVER_VOLTAGE_FACTOR			  115
@@ -141,6 +142,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PB_ENABLE                         0x00U 
 #define CFG_PB_PORT_ENABLE                    0x00U
 
+/* Note: By default, PT is disabled for the system since support for 
+   PPS + PT coexistence is planned for future phases. If PT needs to 
+   be enabled, change the value of CFG_PT_ENABLE macro to 1U. */
+#define CFG_PT_ENABLE                         0U 
+
 #define CFG_PDO_VOLTAGE_POS                   10 
 #define CFG_PDO_VOLTAGE_UNIT                  50
 #define CFG_PDO_CURRENT_UNIT                  10
@@ -154,29 +160,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_POWER_SUPPLY_TYPE_BATTERY         0x02U
 #define CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE    0x03U
 
-/************************* PPS APDO Fields *******************/
-#if (TRUE == INCLUDE_PD_SOURCE_PPS) 
-
-/* APDO Minimum Voltage */
-#define CFG_PORT_SOURCE_APDO_1_MIN_VOLTAGE    3300
-#define CFG_PORT_SOURCE_APDO_2_MIN_VOLTAGE    0
-#define CFG_PORT_SOURCE_APDO_3_MIN_VOLTAGE    0
-
-/* APDO Maximum Voltage */
-#define CFG_PORT_SOURCE_APDO_1_MAX_VOLTAGE    21000
-#define CFG_PORT_SOURCE_APDO_2_MAX_VOLTAGE    0
-#define CFG_PORT_SOURCE_APDO_3_MAX_VOLTAGE    0
-
-/* APDO Minimum Current */
-#define CFG_PORT_SOURCE_APDO_1_MAX_CURRENT    3000 
-#define CFG_PORT_SOURCE_APDO_2_MAX_CURRENT    0 
-#define CFG_PORT_SOURCE_APDO_3_MAX_CURRENT    0 
-
-/* APDO PPS Power Limited */
-#define CFG_PORT_SOURCE_APDO_1_PPS_PWR_LIMITED    0 
-#define CFG_PORT_SOURCE_APDO_2_PPS_PWR_LIMITED    0 
-#define CFG_PORT_SOURCE_APDO_3_PPS_PWR_LIMITED    0 
-
 /* Position of various APDO Fields */
 #define CFG_APDO_MIN_VOLTAGE_POS               8
 #define CFG_APDO_MAX_VOLTAGE_POS               17
@@ -189,24 +172,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_APDO_MAX_VOLTAGE_UNIT              100
 #define CFG_APDO_MAX_CURRENT_UNIT              50
 
-/* Macros for PPS Config Data Enable/Disable */
-#define CFG_PPS_ENABLE                         1U 
-#define CFG_PPS_APDO_1_ENABLE                  1U
-#define CFG_PPS_APDO_2_ENABLE                  0U
-#define CFG_PPS_APDO_3_ENABLE                  0U 
-
-/* Macros for PPS Cfg Data position */
-#define CFG_PPS_APDO_1_ENABLE_POS              1
-#define CFG_PPS_APDO_2_ENABLE_POS              2
-#define CFG_PPS_APDO_3_ENABLE_POS              3 
-
 /* Macro used to form PPS APDO */
 #define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) << CFG_APDO_PWR_SUPPLY_TYPE_POS) | \
                                         ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
                                         (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
                                         (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
                                         (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
-#endif
 
 /* Macro used to form Fixed PDO 1 */
 #define CFG_FORM_FIXED_PDO1(voltage,current,usbCommn,usbSusp,unconstrainedPwr)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
@@ -215,7 +186,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                          (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                          ((current)/CFG_PDO_CURRENT_UNIT))            
 
-/* Macro used to form Fixed PDOs 2 to 7 */
+/* Macro used to form Fixed PDOs */
 #define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                                             ((current)/CFG_PDO_CURRENT_UNIT))
 

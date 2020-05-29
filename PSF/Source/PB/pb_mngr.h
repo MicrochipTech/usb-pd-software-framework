@@ -136,7 +136,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PB_IS_CAPABILITY_MISMATCH(u32RDO) (((UINT32)u32RDO & PB_RDO_CAPABILITIY_MISMATCH_MSK) != 0)  
 
 /* Macro to get priority of the port from Config variable */
-#define PB_GET_PORT_PRIORITY(u8PortNum)  (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBPortPriority) 
+#define PB_GET_PORT_PRIORITY(u8PortNum)  (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PortPriority) 
 
 /* Enumeration to define Power Balancing enabled PD Port States */
 typedef enum PBPortStates

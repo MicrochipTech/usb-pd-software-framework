@@ -467,20 +467,23 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 {
     UINT8 u8Return = TRUE; 
     
-    #if (TRUE == INCLUDE_POWER_BALANCING)
+#if (TRUE == INCLUDE_POWER_BALANCING)
     if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
     {
         u8Return = PB_HandleDPMEvents(u8PortNum, (UINT8)eDPMNotification);
     }
-    #endif
+#endif
 
-    #if (TRUE == INCLUDE_POWER_THROTTLING)
-    /* Busy is the only notification applicable for PT */
-    if (eMCHP_PSF_BUSY == eDPMNotification)
+#if (TRUE == INCLUDE_POWER_THROTTLING)
+    if (TRUE == DPM_IS_PT_ENABLED)
     {
-        PT_HandleDPMBusy(u8PortNum); 
+        /* Busy is the only notification applicable for PT */
+        if (eMCHP_PSF_BUSY == eDPMNotification)
+        {
+            PT_HandleDPMBusy(u8PortNum); 
+        }
     }
-    #endif 
+#endif 
     /* DPM notifications that need to be handled by stack applications must
        be added here before calling the user function. */
     
@@ -524,7 +527,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             }
 #endif 
             /* Enable New PDO Select in DPM Config */
-            DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO);
+            DPM_ENABLE_NEW_PDO(u8PortNum);
+            
             /* Check for Port Power Role */
             if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
             {

@@ -561,7 +561,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                         DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS; 
   
                     /* Reset New PDO Parameters if renegotiation was requested */
-                    if (DPM_ENABLE_NEW_PDO == DPM_GET_NEW_PDO_STATUS(u8PortNum)) 
+                    if (TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum)) 
                     {                                                
                         DPM_ResetNewPDOParameters(u8PortNum);
                     }                    
