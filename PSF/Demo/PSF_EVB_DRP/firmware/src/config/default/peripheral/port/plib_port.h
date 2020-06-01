@@ -93,6 +93,15 @@
 #define SNK_CAP_MISMATCH_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 4)
 #define SNK_CAP_MISMATCH_PIN                  PORT_PIN_PA04
 
+/*** Macros for DC_DC_EN pin ***/
+#define DC_DC_EN_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 5)
+#define DC_DC_EN_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 5)
+#define DC_DC_EN_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 5)
+#define DC_DC_EN_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 5)) & 0x01)
+#define DC_DC_EN_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 5)
+#define DC_DC_EN_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 5)
+#define DC_DC_EN_PIN                  PORT_PIN_PA05
+
 /*** Macros for SPI_SS_0 pin ***/
 #define SPI_SS_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 10)
 #define SPI_SS_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 10)

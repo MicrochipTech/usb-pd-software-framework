@@ -95,7 +95,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 
 #endif //CONFIG_HOOK_DEBUG_MSG
 
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 #define SAMD20I2CDCDC_Initialise(n) SERCOMn_I2CDCDC_Initialize(n)
 #define SERCOMn_I2CDCDC_Initialize(n) SERCOM##n##_I2C_Initialize()
 
@@ -117,7 +117,7 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 #define SAMD20_I2cDCDCIsBusy(n) SERCOMn_I2C_IsBusy(n)
 #define SERCOMn_I2C_IsBusy(n) SERCOM##n##_I2C_IsBusy()
 
-#endif //#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -175,14 +175,16 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
         if (PORT0 == u8PortNum)
         {
             /*PORT_PIN_PA10*/
-            SPI_SS_0_Clear();
+            SAMD20_GPIO_Clear(SPI_SS_0_PIN);
         }
         #if (TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP) 
+/*ToDo
         else if(PORT1 == u8PortNum)
         {
-            /*PORT_PIN_PA01*/
-            SPI_SS_1_Clear();
+            //PORT_PIN_PA01
+            SAMD20_GPIO_Clear(SPI_SS_1_PIN)
         } 
+*/    
         #endif
     }
     else
@@ -190,17 +192,19 @@ void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
         /* Drive high the CS to disable the communication for the port*/
         if (PORT0 == u8PortNum)
         {
-            SPI_SS_0_Set();
+            SAMD20_GPIO_Set(SPI_SS_0_PIN);
         }
         #if (TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP) 
+/*ToDo
         else if(PORT1 == u8PortNum)
         {
-            SPI_SS_1_Set();
+            SAMD20_GPIO_Set(SPI_SS_1_PIN);
         }
+ */
         #endif
     }
 }
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 /*****************************************************************************/
 /*****************************************************************************/
 /*********************************I2C Driver APIs*****************************/
@@ -284,7 +288,7 @@ void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
         EIC_InterruptEnable((EIC_PIN)SAMD20_PORT0_EIC_PIN);
     }
 #if (TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP)
-#if (SAMD20_PORT1_EIC_PIN != SAMD20_PIN_UNUSED)
+/*ToDo    
     else if (PORT1 == u8PortNum)
     {
         PORT_PinInputEnable((PORT_PIN)SAMD20_PORT1_EIC_PIN);
@@ -292,7 +296,7 @@ void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
         EIC_CallbackRegister((EIC_PIN)SAMD20_PORT1_EIC_PIN, SAMD20_UPD350AlertCallback, PORT1);
         EIC_InterruptEnable((EIC_PIN)SAMD20_PORT1_EIC_PIN);
     }
-#endif
+ */
 #endif
 }
 
@@ -308,7 +312,7 @@ void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum)
     
     /*PORT_PIN_PA00*/
     /* UPD350 RESET_N pin active low; set to internal pull up by default*/
-     UPD350_RESET_InputEnable();
+     SAMD20_GPIO_InputEnable(UPD350_RESET_PIN);
      PORT_PinWrite(UPD350_RESET_PIN, TRUE);
 }
 
@@ -373,7 +377,7 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen)
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 {
 	int i;
-    UINT8 *pu8Obj1 = (UINT8 *)pau8Data1;
+    UINT8 *pu8Obj1 = (UINT8 *)pau8Data2;
     UINT8 *pu8Obj2 = (UINT8 *)pau8Data2;
 	
 	for (i = SET_TO_ZERO; i < ilen; i++)
@@ -394,16 +398,16 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current)
 {
     /* Clear the 1.5A_IND and 3A_IND */
-    SNK_1_5A_IND_Clear();
-    SNK_3A_IND_Clear();
+    SAMD20_GPIO_Clear(SNK_1_5A_IND_PIN);
+    SAMD20_GPIO_Clear(SNK_3A_IND_PIN);
     
     if (u16Current >= DPM_3000mA)
     {
-        SNK_3A_IND_Set();
+        SAMD20_GPIO_Set(SNK_3A_IND_PIN);
     }
     else if (u16Current >= DPM_1500mA)
     {
-        SNK_1_5A_IND_Set();
+        SAMD20_GPIO_Set(SNK_1_5A_IND_PIN);
     }
     else
     {

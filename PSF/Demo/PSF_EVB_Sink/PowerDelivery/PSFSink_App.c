@@ -92,7 +92,7 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2, UPD_DISABLE_GPIO);
-             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+             gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
                     ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
             SNK_CAP_MISMATCH_Clear();
             break;
@@ -115,13 +115,13 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         }
         case eMCHP_PSF_CAPS_MISMATCH:
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
             SNK_CAP_MISMATCH_Set();
             break;
         }
         case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
                     ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
             SNK_CAP_MISMATCH_Clear();
             break;
@@ -159,12 +159,12 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             break; 
         }
         
-        case eMCHP_PSF_SINK_CAPS_NOT_RCVD: 
+        case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD: 
         {
             break; 
         }  
         
-        case eMCHP_PSF_SINK_CAPS_RCVD:
+        case eMCHP_PSF_GET_SINK_CAPS_RCVD:
         {
             break;            
         }        

@@ -207,9 +207,9 @@ UINT8 PE_FwUpdtStateMachine(
     @fn:
         void PE_FwUpdtProcessTimerEvent(UINT8 u8PortNum, UINT8 u8PdFwUpdtState)
 	@brief:
-		Callback function from the PD timer module interrupt.
+		Callback funtion from the PD timer module interrupt.
 	@details
-		This function sets the local timer event for the CCFW State machine
+		This funtion sets the local timer event for the CCFW State machine
         to process.
     @param
 		u8NotUsed - Parameter not used.
@@ -371,7 +371,7 @@ void PE_FwUpdtTxDoneCallBack(
         }
     }
   
-    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum))
     {
         if (u8TxDoneSubState == (UINT8)ePE_SRC_READY_END_AMS_SS)
             PE_FwUpdtInitialize();
@@ -558,7 +558,7 @@ UINT8 PE_FwUpdtProcessReconfigureState(
 
     @param
     u8PortNum - Port in which the PDFU is happening
-    u8PDFUMsgType - Message Type of the newly received PDFU Message
+    u8PDFUMsgType - Msg Type of the newly received PDFU Message
     pu8DataBuffer - Pointer to the buffer where received message data is stored.
     u16ExtendedMsgHeader - Extended message header information.
 
@@ -613,7 +613,7 @@ UINT8 PE_FwUpdtProcessTransferState(
 
             if ((UINT8)ePE_FWUP_OK == u8Status)
             {
-              /** For the PDFU_DATANR request the maximum wait-time for the next PDFU_DATANR is defined in the below statement;
+              /** For the PDFU_DATANR request the maximum waittime for the next PDFU_DATANR is defined in the below statement;
                 On expiry the this timer, the PDFU Responder will exit the PDFU flow.*/
                 gsPdfuInfo.u16PDFUWaitTime = (PE_FWUP_tPDFUNextRequestRcvd * PE_FWUP_DATARESEND);
                 PE_FWUP_SET_TIMER_INDEX(u8PortNum,
@@ -753,7 +753,7 @@ void PE_FwUpdtResetToEnumState(
 
     gsPdfuInfo.u8ResendResponseTimes = SET_TO_ZERO;
     
-    u8CurrentPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    u8CurrentPowerRole = DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum);
 
     if (PD_ROLE_SOURCE == u8CurrentPowerRole)
     {
@@ -1000,7 +1000,7 @@ UINT8 PE_FwUpdtPDFUInitateRequest(UINT8   u8PortNum, UINT8   u8WaitTime)
             */
             gu8PE_FWUP_INITIATE_RESRESEND_CTR = PE_FWUP_RECONFIGURERESEND;
 
-            /** Timeout for next PDFU_Initiate request is "wait-time + next_request_timeout"*/
+            /** Timeout for next PDFU_Initiate request is "waittime + next_request_timeout"*/
             gsPdfuInfo.u16PDFUWaitTime = (PE_FWUP_tPDFUNextRequestRcvd + u8WaitTime);
         }
         else    /*if (PE_FWUP_NO_WAIT_TIME == u8WaitTime)*/
@@ -1226,7 +1226,7 @@ UINT8 PE_FwUpdtPDFUDataRequest(
         else
         {
             /*
-                If the received PDFU DATA doesn't cause any error conditions and
+                If the received PDFU DATA doesnt cause any error conditions and
                 processing is successful,then the next state is Transfer state,
                 where the further PDFU_DATA and PDFU_DATA_NR requests are
                 processed.
@@ -1237,7 +1237,7 @@ UINT8 PE_FwUpdtPDFUDataRequest(
                                                                        ePE_PDFU_MODE,
                                                                        ePE_FWUP_TRANSFER_SS);
 
-            /** Assuming the use-case: Entire FW Update is only one PDFU_DATA
+            /** Assuming the usecase: Entire FW Update is only one PDFU_DATA
             Packet(size less than 255 bytes),it is necessary to verify that
             PDFU Transfer phase is completed or not before going into further
             processing  */

@@ -9,7 +9,7 @@
 
   Description:
     This header file contains the data structures, constant definitions and 
-	function prototypes for Power Balancing. 
+	function prototypes for Policy Balancing. 
 *******************************************************************************/
 /*******************************************************************************
 Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
@@ -88,6 +88,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PB_PORT_STATUS_PORT_IN_MIN_PWR      0x04U
 #define PB_PORT_STATUS_CAPABILITY_MISMATCH  0x08U
 #define PB_PORT_STATUS_RENEG_AGAIN          0x10U
+
+/* Power is represented in terms of 250mW */
+#define PB_POWER_UINTS_MILLI_W                  250000
 
 /* Macros to define Excess Power */
 #define PB_ZERO_EXCESS_POWER                    0x0000
@@ -188,12 +191,11 @@ typedef enum GetSinkCapsState
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntSysParam 
 {
     UINT32 u32AsyncReqWaitTimerInms; /* Asynchronous Request Wait timer value*/
-    UINT16 u16TotalSysPwrIn250mW;  /* Max Shared capacity of the system */
-    UINT16 u16Reserved1;           /* Reserved for future use */ 
+    UINT16 u16TotalSysPwrIn250mW; /* Max Shared capacity of the system */
+    UINT16 u16PoolPowerIn250mW;    /* Currently available pool power */
     UINT8 u8ReclaimPortNum;        /* Port from which power is reclaimed */
     UINT8 u8RecoverPortNum;        /* Port which is in recovering mode */  
     UINT8 u8RecoveringMode;        /* Recover status of a port */
-    UINT8 u8Reserved2;             /* Reserved for future use */ 
 } MCHP_PSF_STRUCT_PACKED_END  PB_INT_SYS_PARAM;
 
 /*****************************************************************************
@@ -804,6 +806,35 @@ UINT8 PB_PortInWaitForAsyncTimerState(void);
 
 **************************************************************************************************/
 void PB_AsyncTimerCB(UINT8, UINT8);
+/**************************************************************************************************
+    Function:
+        void PB_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
+
+    Summary:
+        This API is used to form the PDOs as per power wattage value given.   
+
+    Description:
+        In PB, voltages will remain fixed. But, current varies as per the 
+        power value that is to be advertised. This API calculates the current 
+        value using power value that is given as input to this API and voltage
+        value that is arrived from the PDO initialized during configuration time
+        and updates the current value in the PDO. 
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number.
+        u16PowerIn250mW - Power value in terms of 250mW
+
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
 
 /**************************************************************************************************
     Function:
@@ -860,30 +891,6 @@ void PB_HandleReclaimPortDetachOrRenegCmplt(void);
 
 **************************************************************************************************/
 void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum); 
-
-/**************************************************************************************************
-    Function:
-        void PB_OnPTBankSwitch(UINT8 u8PortNum); 
-
-    Summary:
-        This API is used to handle the Throttling Bank Switch Event.
-
-    Description:
-        This API can be called to update the global and per port PB parameters 
-        and initiate renegotiation for minimum guaranteed power based 
-        on the new PT bank.  
-    Conditions:
-        None.
-    Input:
-        u8PortNum - Port Number 
-    Return:
-        None. 
-
-    Remarks:
-        None. 
-
-**************************************************************************************************/
-void PB_OnPTBankSwitch(UINT8 u8PortNum); 
 
 #endif /* _PB_MNGR_H */
 

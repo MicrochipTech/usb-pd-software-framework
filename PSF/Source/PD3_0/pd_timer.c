@@ -129,6 +129,7 @@ void PDTimer_Kill (UINT8 u8TimerID)
    PDTimer ISR Handler*/       
    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
    
+    
     if(u8TimerID < MAX_CONCURRENT_TIMERS)
     {       
         /*Setting the PD Software timer to "Non Active"  state will disable the PDTimer 
@@ -186,9 +187,9 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
 
 void PDTimer_InterruptHandler (void)
 {
-
 	MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
 	
+        
 	for (UINT8 u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
 	{
          
@@ -211,7 +212,6 @@ void PDTimer_InterruptHandler (void)
 				
 				if (gasPDTimers[u8TimerID].pfnTimerCallback != NULL)
 				{
-                  
                     /*Calling the callback function with a set of arguments 
                     namely port number and PD state*/
 					gasPDTimers[u8TimerID].pfnTimerCallback((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_PORT_NUM), gasPDTimers[u8TimerID].u8PDState);

@@ -64,7 +64,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
         Initializes Port power control
     Description:
         This API is called for enabled port during PSF_Init to initialize Port power control. 
-        Defining CONFIG_DCDC_CTRL as PWRCTRL_GPIO_DC_DC uses PSF's default
+        Defining CONFIG_DCDC_CTRL as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG uses PSF's default
         GPIO based control for DC-DC controller. API also provides MCHP_PSF_HOOK_HW_PORTPWR_INIT to 
         modify or overwrite the default setting.
     Conditions:
@@ -85,7 +85,7 @@ void PWRCTRL_initialization(UINT8 u8PortNum);
         API to drive Power on VBUS
     Description:
         This API drives Power based on the input parameter on VBUS line. Defining 
-        CONFIG_DCDC_CTRL as PWRCTRL_GPIO_DC_DC uses PSF's default
+        CONFIG_DCDC_CTRL as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG uses PSF's default
         GPIO based control for DC-DC controller. This API also provides hook MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS 
         to modify or overwrite the default setting.
     Conditions:
@@ -111,7 +111,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum,UINT8 u8PDOIndex, UINT16 u16VBUSVolta
         API to configure VBUS Discharge feature as required
     Description:
         This API enables or disables VBUS discharge feature based on u8EnaDisVBUSDIS parameter for the
-        port. Defining CONFIG_DCDC_CTRL as PWRCTRL_GPIO_DC_DC uses PSF's default
+        port. Defining CONFIG_DCDC_CTRL as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG uses PSF's default
         GPIO based control for DC-DC controller. API as provides MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH to 
         modify or overwrite the default setting.
     Conditions:

@@ -137,14 +137,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_SUPPORTED_MSG            0
 #define PE_SUPPORTED_EXTDMSG         0x02u
 
-#define PE_REQUEST_OBJ_MASK            0x70
-#define PE_REQUEST_OBJ_POS             4
-#define PE_REQUEST_OPR_CUR_MASK        0xFFC00
-#define PE_REQUEST_OPR_CUR_START_POS   10
-#define PE_REQUEST_MAX_CUR_MASK        0x3FF
-#define PE_REQUEST_MAX_CUR_POS         9
-#define PE_REQUEST_CAP_MISMATCH_POS    26 
-#define PE_REQUEST_CAP_MISMATCH_MASK   (1 << PE_REQUEST_CAP_MISMATCH_POS)
+#define PE_REQUEST_OBJ_MASK         0x70
+#define PE_REQUEST_OBJ_POS          4
+#define PE_REQUEST_OPR_CUR_MASK     0xFFC00
+#define PE_REQUEST_OPR_CUR_START_POS      10
+#define PE_REQUEST_MAX_CUR_MASK     0x3FF
+#define PE_REQUEST_MAX_CUR_POS      9
 
 
 /*-------------- Port Status -----------------*/
@@ -199,16 +197,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Capability max current check */
 #define PE_MAX_CURR_MASK        0x1FF
 
-/* Alert message defines */
-#define PE_ALERT_DATA_OBJECT_SIZE              1 
-
-/* Status message defines */
-#define PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES     6 
-#define PE_STATUS_DATA_OBJ_CNT                 2
-
-/* PPS Status message defines */
-#define PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES 4
-#define PE_PPS_STATUS_DATA_OBJ_CNT             2 
 
 typedef enum {
     /* Source Policy Engine Main State */ 
@@ -230,11 +218,6 @@ typedef enum {
     ePE_SRC_VDM_IDENTITY_REQUEST,
     ePE_SRC_VDM_IDENTITY_ACKED,
     ePE_SRC_VDM_IDENTITY_NAKED,
-    ePE_SRC_SINK_ALERT_RECEIVED, 
-    ePE_SRC_GET_SINK_STATUS,
-    ePE_SRC_SEND_SOURCE_ALERT,
-    ePE_SRC_GIVE_SOURCE_STATUS,
-    ePE_SRC_GIVE_PPS_STATUS,
 	//----------------Sink Specific Policy Engine States-------------------------//
 	ePE_SNK_STARTUP,
 	ePE_SNK_DISCOVERY,
@@ -286,11 +269,10 @@ typedef enum {
     ePE_SRC_TRANSITION_SUPPLY_ENTRY_SS,
     ePE_SRC_TRANSITION_SUPPLY_EXIT_SS,
     ePE_SRC_TRANSITION_SUPPLY_IDLE_SS,
-    ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED_SS,
-    ePE_SRC_TRANSITION_SUPPLY_POWER_ON_SS,
+    ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED,
+    ePE_SRC_TRANSITION_SUPPLY_POWER_ON,
 	/* ePE_SRC_READY */
     ePE_SRC_READY_ENTRY_SS,
-    ePE_SRC_READY_PPS_COMM_TIMER_EXPIRED_SS, 
     ePE_SRC_READY_END_AMS_SS,
 	/* ePE_SRC_DISABLED */
     ePE_SRC_DISABLED_ENTRY_SS,
@@ -334,21 +316,6 @@ typedef enum {
     ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS,
     ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_SS,
     ePE_SRC_VDM_IDENTITY_REQUEST_SENDER_RESPONSE_TIMEOUT,
-    /* ePE_SRC_GET_SINK_STATUS */
-    ePE_SRC_GET_SINK_STATUS_ENTRY_SS, 
-    ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS,
-    ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS, 
-    ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS,
-    ePE_SRC_GET_SINK_STATUS_IDLE_SS,
-    /* ePE_SRC_SEND_SOURCE_ALERT */
-    ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS,
-    ePE_SRC_SEND_SOURCE_ALERT_IDLE_SS,
-    /* ePE_SRC_GIVE_SOURCE_STATUS */
-    ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS,
-    ePE_SRC_GIVE_SOURCE_STATUS_IDLE_SS,
-    /* ePE_SRC_GIVE_PPS_STATUS */
-    ePE_SRC_GIVE_PPS_STATUS_ENTRY_SS, 
-    ePE_SRC_GIVE_PPS_STATUS_IDLE_SS, 
     //----------------Sink Specific Policy Engine SubStates-------------------------//
     /*ePE_SNK_WAIT_FOR_CAPABILITIES*/
     ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS,
@@ -454,10 +421,8 @@ typedef enum {
 #define PE_DATA_VENDOR_DEFINED      15
 
 /*Macros for Extended message type */
-#define PE_EXT_STATUS               2 
 #define PE_EXT_FW_UPDATE_REQUEST    10
 #define PE_EXT_FW_UPDATE_RESPONSE   11
-#define PE_EXT_PPS_STATUS           12 
 
 /*Defines to be used in PRL_FormSOPTypeMsgHeader*/
 #define PE_OBJECT_COUNT_1            1
@@ -651,14 +616,14 @@ UINT8 PE_ValidateMessage(UINT8 u8PortNum, UINT32 u32Header);
         PE_HandleRcvdMsgAndTimeoutEvents (UINT8 u8PortNum, ePolicyState eNextState , ePolicySubState eNextSubState);
 
     Summary:
-        This API is called to see whether timeout set for the received message has occurred before 
+        This API is called to see whether timeout set for the received message has occured before 
         or after the reception of message in protocol layer.
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-        This API is called to see whether timeout set for the received message has occurred before 
+        This API is called to see whether timeout set for the received message has occured before 
         or after the reception of message in protocol layer
 
     Conditions:
