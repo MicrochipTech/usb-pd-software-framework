@@ -97,15 +97,8 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 #endif 
 /**************************************************************************************************/ 
     
-/********************Power Throttling globals************************************/
-#if (TRUE == INCLUDE_POWER_THROTTLING)
-    /* Power Throttling Port Parameters */
-    PT_PORT_PARAM gasPTPortParam[CONFIG_PD_PORT_COUNT];  
-#endif 
-/**************************************************************************************************/  
-    
 /********************Configuration and Status register ************************************/    
-GLOBAL_CFG_STATUS_DATA gasCfgStatusData = {0};
+GLOBAL_CFG_STATUS_DATA gasCfgStatusData;
 /**************************************************************************************************/ 
 
 /*******************************************************************/
@@ -126,10 +119,6 @@ void IntGlobals_PDInitialization(void)
 #if (FALSE != INCLUDE_PDFU)
         PE_FwUpdtInitialize();
 #endif
-        
-#if (TRUE == INCLUDE_POWER_THROTTLING)
-        PT_Init(u8PortNum); 
-#endif 
     }
     
 #if (TRUE == INCLUDE_POWER_BALANCING)
@@ -138,11 +127,4 @@ void IntGlobals_PDInitialization(void)
 #endif 
 }
 
-void IntGlobals_StackStructVersion(void)
-{
-    gasCfgStatusData.u8MinorVersion = STRUCT_MINOR_VERSION;
-    gasCfgStatusData.u8MajorVersion = STRUCT_MAJOR_VERSION;
-    gasCfgStatusData.u8PSFMajorVersion = HIBYTE(SYSTEM_FW_REV); 
-    gasCfgStatusData.u8PSFMinorVersion = LOBYTE(SYSTEM_FW_REV);
-}
 /**************************************************************************************************/

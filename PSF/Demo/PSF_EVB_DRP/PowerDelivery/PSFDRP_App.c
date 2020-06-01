@@ -117,7 +117,7 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
-             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+             gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
                     ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
             SNK_CAP_MISMATCH_Clear();
             break;
@@ -136,15 +136,15 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
         }
         case eMCHP_PSF_CAPS_MISMATCH:
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            SNK_CAP_MISMATCH_Set();
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
+            SAMD20_GPIO_Set(SNK_CAP_MISMATCH_PIN);
             break;
         }
         case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
                     ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            SNK_CAP_MISMATCH_Clear();
+            SAMD20_GPIO_Clear(SNK_CAP_MISMATCH_PIN);
             break;
         }
         
@@ -180,44 +180,18 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             break; 
         }
         
-        case eMCHP_PSF_SINK_CAPS_NOT_RCVD: 
+        case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD: 
         {
             break; 
         }  
         
-        case eMCHP_PSF_SINK_CAPS_RCVD:
+        case eMCHP_PSF_GET_SINK_CAPS_RCVD:
         {
             break;            
         }
         
-        case eMCHP_PSF_SINK_ALERT_RCVD: 
-        {
-            /* Alert information received from Sink is available in 
-             gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlertInfo */
-            break; 
-        }
-        
-        case eMCHP_PSF_SINK_STATUS_NOT_RCVD:
-        {
-            break; 
-        }
-
-        case eMCHP_PSF_SINK_STATUS_RCVD:
-        {
-            /* Status information received from Sink is available in 
-            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6] */
-            break; 
-        }
-        
-        case eMCHP_PSF_BUSY:
-        {
-            break; 
-        }
-        
         default:
-        {
             break;
-        }
     }
 
     return u8RetVal;

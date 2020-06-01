@@ -231,7 +231,6 @@
           <itemPath>../../../../Source/PD3_0/typeC_control.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_hw.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
-          <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
@@ -259,8 +258,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
+        <pack name="SAMD20_DFP" vendor="Microchip" version="3.1.32"/>
         <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
-        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -322,7 +321,7 @@
         <property key="voltagevalue" value=""/>
       </AtmelIceTool>
       <C32>
-        <property key="additional-warnings" value="true"/>
+        <property key="additional-warnings" value="false"/>
         <property key="addresss-attribute-use" value="false"/>
         <property key="enable-app-io" value="false"/>
         <property key="enable-omit-frame-pointer" value="false"/>
@@ -334,8 +333,8 @@
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
-        <property key="make-warnings-into-errors" value="true"/>
-        <property key="optimization-level" value="-Os"/>
+        <property key="make-warnings-into-errors" value="false"/>
+        <property key="optimization-level" value="-O1"/>
         <property key="place-data-into-section" value="true"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>

@@ -49,7 +49,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <PSF_Config.h>
-#if(CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#if(CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 #include "peripheral/sercom/i2cm/plib_sercom3_i2c.h"
 #endif
 #include "peripheral/nvmctrl/plib_nvmctrl.h"

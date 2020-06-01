@@ -106,7 +106,7 @@ Example:
     #define INCLUDE_PD_SINK	0(Exclude USB PD Sink functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_SINK    		1
+#define INCLUDE_PD_SINK    		0
 
 /**************************************************************************************************
 Summary:
@@ -210,7 +210,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
+    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -239,7 +239,7 @@ Example:
     #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_BALANCING  		1
+#define INCLUDE_POWER_BALANCING  		0
 
 /**************************************************************************************************
 Summary:
@@ -401,42 +401,61 @@ Example :
 Summary:
     Macro to indicate GPIO based DC-DC Controller. 
 Description:
-	PWRCTRL_GPIO_DC_DC defines the default GPIO based DC-DC Controller used by PSF.  
+	PWRCTRL_DEFAULT_PSF_GPIO_CONFIG defines the default GPIO based DC-DC Controller used by PSF.  
 Remarks:
 	None.                                 
   **************************************************************************/
-#define PWRCTRL_GPIO_DC_DC     1
+#define PWRCTRL_DEFAULT_PSF_GPIO_CONFIG     1
 
 /**************************************************************************
 Summary:
     Macro to indicate I2C based DC-DC Controller. 
 Description:
-	PWRCTRL_I2C_DC_DC defines the default GPIO based DC-DC Controller used by PSF.  
+	I2C_DC_DC_CONTROL_CONFIG defines the default GPIO based DC-DC Controller used by PSF.  
 Remarks:
 	None.                                 
   **************************************************************************/
-#define PWRCTRL_I2C_DC_DC     2
+#define I2C_DC_DC_CONTROL_CONFIG            2
 
 /**************************************************************************
 Summary:
     DC DC Buck Boost Controller default configuration option.
 Description:
 	CONFIG_DCDC_CTRL is to define the default DC-DC control provided by the PSF stack. If 
-	CONFIG_DCDC_CTRL defined as PWRCTRL_GPIO_DC_DC, default GPIO based DC-DC controller
-	is used. If CONFIG_DCDC_CTRL is defined as PWRCTRL_I2C_DC_DC, default I2C based 
-    DC-DC Controller is used. If defined as 0, default stack's DC-DC control option is not used 
+	CONFIG_DCDC_CTRL defined as PWRCTRL_DEFAULT_PSF_GPIO_CONFIG, default GPIO based DC-DC controller
+	is used. If CONFIG_DCDC_CTRL is defined as I2C_DC_DC_CONTROL_CONFIG, default I2C based 
+    DC-DC Controller is used. If left undefined, default stack's DC-DC control option is not used 
     and the user must control power via power control APIs provided by the stack.  
 Remarks:
 	None.
 Example:
 	<code>
-	#define CONFIG_DCDC_CTRL    PWRCTRL_GPIO_DC_DC (Uses default GPIO based DC-DC control)
-	#define CONFIG_DCDC_CTRL    PWRCTRL_I2C_DC_DC (Uses default I2C based DC-DC control)
-	#define CONFIG_DCDC_CTRL    0 (Default DC DC control provided by stack is not used)
+	#define CONFIG_DCDC_CTRL    PWRCTRL_DEFAULT_PSF_GPIO_CONFIG (Uses default GPIO based DC-DC contol)
+	#define CONFIG_DCDC_CTRL    I2C_DC_DC_CONTROL_CONFIG (Uses default I2C based DC-DC contol)
+	#define CONFIG_DCDC_CTRL    (If undefined, Default DC DC control provided by stack is not used)
 	</code>                                  
   **************************************************************************/
-#define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC
+#define CONFIG_DCDC_CTRL        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 					
+/**************************************************************************
+Summary:
+    Default I2C DC DC Controller Type.
+Description:
+	CONFIG_I2C_DCDC_TYPE is to define the default I2C DC-DC control provided by the PSF stack.
+    This macro is valid only when CONFIG_DCDC_CTRL is set to I2C_DC_DC_CONTROL_CONFIG. If 
+	CONFIG_I2C_DCDC_TYPE defined as MPQ, Monolithic MPQ4230 I2C DC-DC Controller 
+    is used. If CONFIG_I2C_DCDC_TYPE defined as ONSEMI, On Semi I2C DC-DC 
+    Controller is used. 
+Remarks:
+	None.
+Example:
+	<code>
+	#define CONFIG_I2C_DCDC_TYPE    MPQ (Uses Monolithic I2C DC-DC contol)
+    #define CONFIG_I2C_DCDC_TYPE    ONSEMI (Uses OnSemi I2C DC-DC contol)	
+	</code>                                  
+  **************************************************************************/
+#define CONFIG_I2C_DCDC_TYPE        MPQ
+
 /**************************************************************************
 Summary:
     Print status messages from PSF stack through UART interface
@@ -461,7 +480,7 @@ Example:
 Note:
     None.
 **************************************************************************/
-#define CONFIG_HOOK_DEBUG_MSG                       0
+#define CONFIG_HOOK_DEBUG_MSG                       1
 
 // *****************************************************************************
 // *****************************************************************************
@@ -682,16 +701,16 @@ typedef enum
                                                                       * This array is common for 
 																	    Source and Sink. It is 
 																		valid only when Bit 0 of  
-																		u32ClientRequest is set to 1.
+																		u8ClientRequest is set to 1.
     u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
 																		advertised to Port Partner. 
                                                                       * During run time, this array 
 																	    holds the value of current
                                                                         u32aNewPDO[7] if Bit 0 of 
-																		u32ClientRequest is enabled 
+																		u8ClientRequest is enabled 
 																		else holds the value of 
 																		current u32aSourcePDO[7]
-    u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Partner PDOs 
+    u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Source PDOs 
 																		where Voltage is specified 
 																		in mV and Current is 
 																		specified in mA
@@ -705,23 +724,25 @@ typedef enum
 																	    Source and Sink.
     u16AllocatedPowerIn250mW        2         R            R         * Allocated Power for the Port 
 																		PD contract in 0.25W steps
-    u16NegoVoltageInmV              2         R            R         * Negotiated Voltage from the 
+    u16NegoVoltageIn50mV            2         R            R         * Negotiated Voltage from the 
 																		Port Bits 19:10 from the RDO.
-                                                                        Voltage is in mV steps. 
-    u16NegoCurrentInmA              2         R            R         * Negotiated Current from the 
+                                                                        Voltage is in 50mV steps. 
+																		Possible values are,
+                                                                        1. 0x00 = No Contract
+                                                                        2. 0x064 = 5V
+                                                                        3. 0x0B4 = 9 V
+                                                                        4. 0x12C = 15V
+                                                                        5. 0x190= 20V
+                                                                        6. 0x3FF = 51.15V
+    u16NegoCurrentIn10mA            2         R            R         * Negotiated Current from the 
 																		Port Bits 9: 0 from the RDO.
-                                                                        Ampere is in mA steps. 
-    u16MaxSrcPrtCurrentIn10mA       2         R/W          R         * Maximum allowable current for 
-													                    ports in 10mA steps 
-																	  * Sample values this variable
-																	    can take are, 
-																		1. 0x0032 = 0.5A
-																		2. 0x012C = 3A 
-																		3. 0x01F4 = 5A
-																	  * Note : Values above 5A 
-																	    (0x01F5 - 0x0FFF) are not 
-																		supported	 
-    u16MaximumOperatingCurInmA      2         R/W          R         * Maximum allowable current or 
+                                                                        Ampere is in 10mA steps. 
+																		Sample values are,
+                                                                        1. 0x0000 = No Contract
+                                                                        2. 0x012C = 3A
+                                                                        3. 0x01F4 = 5A
+                                                                        4. 0x03FF = 10.24A
+    u16MaximumOperatingCurInmA      2          R/W         R         * Maximum allowable current or 
 																		system's maximum operating
                                                                         current in terms of mA
     u16aMinPDOPreferredCurInmA[7]   14         R/W         R         * Preferred minimum current 
@@ -819,7 +840,7 @@ typedef enum
                                                                       * This variable is common for 
 																	    both Source and Sink. It is
 																		valid only when Bit 0 of 
-																		u32ClientRequest is set to 1.
+																		u8ClientRequest is set to 1.
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
     u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
@@ -964,7 +985,7 @@ typedef enum
 																		applicable only when
                                                                         CONFIG_DCDC_CTRL is defined 
 																		as
-                                                                        PWRCTRL_GPIO_DC_DC 
+                                                                        PWRCTRL_DEFAULT_PSF_GPIO_CONFIG 
 																		and for Source operation
                                                                         only.
                                                                       * By defining     
@@ -995,13 +1016,13 @@ typedef enum
 																		u8Mode_FAULT_IN. 
 																	  * It can take values only 
 																		from 0 to 15 and to disable 
-																		the pin functionality from 
+																		the pin funtionality from 
 																		stack, user can define it 
 																		as 0xFF. 
 																	  * It is applicable only when 
 																		CONFIG_DCDC_CTRL is 
 																		defined as 
-																		PWRCTRL_GPIO_DC_DC
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 																		and 
 																		INCLUDE_POWER_FAULT_HANDLING
 																		defined as '1'. 
@@ -1030,7 +1051,7 @@ typedef enum
 																	  * It is applicable only when 
 																		CONFIG_DCDC_CTRL is 
 																		defined as 
-																		PWRCTRL_GPIO_DC_DC
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 	u8mode_VBUS_DIS                 1         R/W          R         * Defines the PIO mode of the 
 																		UPD350 PIO VBUS_DIS defined 
 																		in u8Pio_VBUS_DIS. 
@@ -1047,14 +1068,14 @@ typedef enum
 																		DC-DC controller. 
 																	  * It can take values from 0
 																	    to 15 and to disable the 
-																		functionality from stack, 
+																		funtionality from stack, 
 																		user can define it as 0xFF.
                                                                       * This variable is applicable 
                                                                         only for source operation.
 																	  * It is applicable only when 
 																	    CONFIG_DCDC_CTRL is defined 
 																		as 
-																		PWRCTRL_GPIO_DC_DC
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 	u8Mode_DC_DC_EN                 1         R/W          R         * Defines the PIO mode of the 
 																	    UPD350 PIO DC_DC_EN defined 
 																	    in u8Pio_DC_DC_EN. 
@@ -1081,17 +1102,17 @@ typedef enum
 																		0 to 15 which correspond to
 																		UPD350 PIO0 to PIO15. 
 																	  * To disable the pin 
-																		functionality from the stack,
+																		funtionality from the stack,
 																		user can define a value of 
 																		0xFF. Index 0 to 2 of this 
-																		array corresponds to VSEL0 to
+																		array correponds to VSEL0 to
 																		VSEL2.
                                                                       * This variable is applicable 
                                                                         only for source operation.
 																	  * It is applicable only when
 																	    CONFIG_DCDC_CTRL is defined 
 																		as 
-																		PWRCTRL_GPIO_DC_DC
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 																		
 	u8aMode_VSEL[3]                 3         R/W          R         * Defines the PIO mode of the 
 																		UPD350 PIO VSEL pins VSEL0
@@ -1104,7 +1125,7 @@ typedef enum
  																	  * It is applicable only when
 																	    CONFIG_DCDC_CTRL is defined 
 																		as 
-																		PWRCTRL_GPIO_DC_DC
+																		PWRCTRL_DEFAULT_PSF_GPIO_CONFIG
 	u8aVSELTruthTable[8]            8         R/W          R         * Index 0 defines the assertion 
 																		and deassertion to be driven
                                                                         on VSEL[2:0] pins(defined in 
@@ -1206,18 +1227,17 @@ typedef enum
     Bit     R/W Config   R/W Run   \Description
              time         time      
     ------  -----------  --------  --------------------
-    2:0     RW           R         Port Power Role
+    0       RW           R         Port Enable/Disable
+                                    * '0' Disabled
+                                    * '1' Enabled
+    3:1     RW           R         Port Power Role
                                     * '000' Sink
-                                    * '001' Source 
-                                    * '010' DRP
-    4:3     RW           R         Rp Selection
+                                    * '001' Source
+    5:4     RW           R         Rp Selection
                                     * '00' Disabled
                                     * '01' USB Power
                                     * '10' 1.5A
-                                    * '11' 3.0A 
-    5       RW           R         Port Enable/Disable
-                                    * '0' Disabled
-                                    * '1' Enabled
+                                    * '11' 3.0A
     8:6     RW           R         USB Data
                                     * '000' No Data
                                     * '001' USB2
@@ -1241,79 +1261,77 @@ typedef enum
 	1       R            R         Orientation 
 									* '0' Unflipped 
 									* '1' Flipped 
-	3:2     R            R         Data Role 
+	2       R            R         Data Role 
 									* '0' UFP 
-									* '1' DFP
-                                    * '2' Toggling
-	5:4     R            R         Power Role 
+									* '1' DFP 
+	3       R            R         Power Role 
 									* '0' Sink 
-									* '1' Source
-                                    * '2' DRP
-	6       R            R         VCONN Status  
+									* '1' Source 
+	4       R            R         VCONN Status  
 									* '0' Disabled 
 									* '1' Enabled 
-	7       R            R         Cable Reduced Source Capabilities 
+	5       R            R         Cable Reduced Source Capabilities 
 									* '0' Attached USB-C cable supports the locally-defined Source 
 									    PDOs
 									* '1' Attached USB-C cable does not support the locally defined 
 									    Source PDOs	
-	8       R            R         Reduced Source Capabilities
+	6       R            R         PD Bal Reduced Source Capabilities
 									* '0' The advertised PDOs are equivalent to the default 
 									     configured values 
 									* '1' The advertised PDOs have been reduced from default 
 									     configured values
-	9       R            R         Source Capability Mismatch 
+	7       R            R         Source Capability Mismatch 
 									* '0' De-asserted by  Source port when there is capability 
 									     mismatch with sink partner 
 									* '1' Asserted by Source port when sink port indicates 
 									     capability mismatch in RDO
-	10      R            R         As Source PD Contract Good 
+	8       R            R         As Source PD Contract Good 
 									* '0' As Source: USB-C Connection Only (No Request Made Yet)
 									* '1' As Source; USB PD connection established, Power request 
 									      has been made, accepted and PS_RDY message sent. 
 								    * This bit will always remain 0 when acting as sink.	
-	11      R            R         As Source RDO Accepted
+	9       R            R         As Source RDO Accepted
 									* '0' As Source: No RDO Accept message has been sent to last 
 									      Request made by attached Sink or no Request has yet been 
 										  made during connection. 
 									* '1' As Source: RDO Accept message has been sent to last 
 									      Request made by attached Sink
 								    * This bit will always remain 0 when acting as sink		  
-	12      R            R         As Source RDO Rejected  
+	10      R            R         As Source RDO Rejected  
 									* '0' As source; No RDO reject message has been sent to last 
 											request made by attached Sink or no Request has yet been 
 											made during connection 
 									* '1' As Source: RDO Reject message has been sent to last 
 									        Request made by attached Sink
 									* This bit will always remain 0 when acting as Sink 		
-	13      R            R         As Sink Last Request Accept 
+	11      R            R         As Sink Last Request Accept 
 									* '0' As Sink: Last RDO Request was not Accepted or no request 
 									      has yet been made. 
 									* '1' As Sink: Last RDO Request was Accepted
 									* This bit will always remain 0 when acting as a source.
-	14      R            R         As Sink Last Request Reject 
+	12      R            R         As Sink Last Request Reject 
 									* '0' As Sink: Last RDO Request was not Rejected or no request 
 									   has yet been made. 
 									* '1' As Sink: Last RDO Request was Rejected
 									* This bit will always remain 0 when acting as a source.
-	15      R            R         As Sink Last Request PS_RDY 
+	13      R            R         As Sink Last Request PS_RDY 
 									* '0' As Sink: PS_RDY not yet received for last RDO request  
 									* '1' As Sink: PS_RDY received for last RDO request
 									* This bit will always remain 0 when acting as a source.
-	16      R            R         Sink Capability Mismatch  
+	14      R            R         Sink Capability Mismatch  
 									* '0' De-asserted by the Sink Port when there is no capability 
 										mismatch 
 									* '1' Asserted by Sink Port when no Source capability was found
-	18:17   R            R         Rp Value detected by Sink 
+	16:15   R            R         Rp Value detected by Sink 
 									* '00' Disabled 
 									* '01' USB Power 
 								    * '10' 1.5A 
 									* '11' 3.0A 
-	31:19	 			           Reserved 				
+	31:17	 			           Reserved 				
 	</table>
 
-	<b>c. u32PortIOStatus</b>: 
-	u32PortIOStatus variable holds the IO status of the port. It's size is 4 bytes. 
+	<b>c. u16PortIOStatus</b>: 
+	u16PortIOStatus variable holds the IO status of the port. It's size is 2 bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
              time         time      
@@ -1351,11 +1369,11 @@ typedef enum
     10      R            R         Capability Mismatch  
                                     * '1' Asserted 
                                     * '0' De-asserted
-    31:11                          Reserved 
+    15:11                          Reserved 
 	</table>
 	
-	<b>d. u32PortStatusChange</b>: 
-	u32PortStatusChange variable defines the port connection status change bits. It's size is 4 
+	<b>d. u16PortStatusChange</b>: 
+	u16PortStatusChange variable defines the port connection status change bits. It's size is 2 
 	bytes. 
 	<table> 
     Bit     R/W Config   R/W Run   \Description
@@ -1426,7 +1444,7 @@ typedef enum
       									been detected
                                     * '1' Since the last read of this register, 1 or more VCONN 
 										faults have been detected										  
-	31:12                  		   Reserved 
+	15:12                  		   Reserved 
 	</table> 	
 	
 	<b>e. u16PortIntrMask</b>: 
@@ -1474,15 +1492,15 @@ typedef enum
     15:12  						   Reserved 									
 	</table> 								
 	
-	<b>f. u32ClientRequest</b>: 
-	u32ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
+	<b>f. u8ClientRequest</b>: 
+	u8ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
 	can make use of this variable to request PSF to handle the mentioned client requests. Except 
 	VBUS Power Fault Request, all the other requests cannot coexist i.e Only one 
 	client request could be handled by PSF at a given time. So, it is recommended that the 
 	application could raise a single request at a time i.e set only one of the bits in this variable.
 	
 	In case PSF is busy, it cannot handle any of the client requests. In this case, the 
-	u32ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
+	u8ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
 	PSF, so that the application initiate the request again by setting the respective bit in this 
 	variable. If the request is accepted and processed, a response notification would be posted by 
 	PSF as mentioned in the below table.
@@ -1505,29 +1523,31 @@ typedef enum
                                     * '1' PSF has received a request for getting the sink 
 									      capabilities. 
 									Once the request is processed by PSF, 
-									eMCHP_PSF_SINK_CAPS_RCVD or eMCHP_PSF_SINK_CAPS_NOT_RCVD
+									eMCHP_PSF_GET_SINK_CAPS_RCVD or eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD
 									notification would be posted depending on the Sink partner's 
 									response to Get_Sink_Caps message. User can read the received 
 									sink capabilities from u32aPartnerPDO array. 
-    2       R/W          R/W       Get Sink capabilities Extended Request 
+    2       R/W          R/W       Send Alert Request 
+                                    * '0' PSF has not received any request for sending the alert
+									      message to the port partner.
+                                    * '1' PSF has received a request to send the alert
+									      message to the port partner.										  
+    3       R/W          R/W       Get Status Request 
+                                    * '0' PSF has not received any request for getting the partner 
+									      status.
+                                    * '1' PSF has received a request for getting the sink 
+									      capabilities.
+    4       R/W          R/W       Get Sink capabilities Extended Request 
                                     * '0' PSF has not received any request for getting the extended 
 										  sink capabilities.
                                     * '1' PSF has received a request for getting the extended sink 
 									      capabilities.
-    3       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
-                                    * Set this bit to request PSF to process externally detected
-                                        over voltage VBUS fault.
-    4       R/W          R/W       Handle VBUS Power Fault Over current Request 
-                                    * Set this bit to request PSF to process externally detected
-                                        over current VBUS power fault or to inform PSF that Current
-                                        Limit mode is entered by external DC-DC controller.  
-    5       R/W          R/W       Handle VBUS Power Fault Over current exit Request 
-                                    * Set this bit to inform PSF that externally detected 
-                                        over current VBUS power fault condition is exited or 
-                                        Constant Voltage mode is entered by external DC-DC controller.
-
-				  
-	31:6  						   Reserved 									
+    5       R/W          R/W       Handle VBUS Power Fault Request 
+                                    * '0' PSF has not received any request for handling the VBUS  
+										  Power Fault. 
+                                    * '1' PSF has received a request for handling the VBUS  
+										  Power Fault. 					  
+	7:6  						   Reserved 									
 	</table> 								
  
   Remarks:
@@ -1544,18 +1564,16 @@ typedef struct _PortCfgStatus
     UINT32 u32aPartnerPDO[7];       
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
-    UINT32 u32PortStatusChange;
-    UINT32 u32PortIOStatus;
-    UINT32 u32ClientRequest; 
     UINT16 u16AllocatedPowerIn250mW;   
-    UINT16 u16NegoVoltageInmV;      
-    UINT16 u16NegoCurrentInmA;      
-    UINT16 u16MaxSrcPrtCurrentIn10mA;     
+    UINT16 u16NegoVoltageIn50mV;      
+    UINT16 u16NegoCurrentIn10mA;      
+    UINT16 u16MaximumOperatingCurInmA; 
+    UINT16 u16PortIOStatus;
+    UINT16 u16PortStatusChange;
     UINT16 u16PortIntrMask;
     UINT16 u16PowerGoodTimerInms;
 	#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
-    UINT16 u16MaximumOperatingCurInmA; 
     UINT16 u16MinimumOperatingCurInmA;
     UINT16 u16DAC_I_MaxOutVoltInmV; 
     UINT16 u16DAC_I_MinOutVoltInmV;
@@ -1566,7 +1584,8 @@ typedef struct _PortCfgStatus
     UINT8 u8SinkPDOCnt;             
     UINT8 u8NewPDOCnt;              
     UINT8 u8AdvertisedPDOCnt; 		
-    UINT8 u8PartnerPDOCnt;                    
+    UINT8 u8PartnerPDOCnt;          
+    UINT8 u8ClientRequest;           
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
@@ -1579,13 +1598,13 @@ typedef struct _PortCfgStatus
     UINT8 u8Mode_FAULT_IN;
     UINT8 u8Pio_VBUS_DIS;
     UINT8 u8mode_VBUS_DIS;
-    UINT8 u8aReserved1[2];
 #if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
     UINT8 u8Pio_DC_DC_EN;
     UINT8 u8Mode_DC_DC_EN;
-    #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC) 
+    UINT8 u8aReserved1[2];
+    #if (CONFIG_DCDC_CTRL == PWRCTRL_DEFAULT_PSF_GPIO_CONFIG) 
     UINT8 u8aPio_VSEL[3];
     UINT8 u8aMode_VSEL[3];
 	UINT8 u8aVSELTruthTable[8];
@@ -1595,6 +1614,12 @@ typedef struct _PortCfgStatus
     #if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
+    UINT8 u8SnkPio_1_5A_IND; 
+    UINT8 u8Mode_1_5A_IND;  
+    UINT8 u8SnkPio_3A_IND;  
+    UINT8 u8Mode_3A_IND;    
+    UINT8 u8PIO_SNK_CAP_MISMATCH; 
+    UINT8 u8Mode_SNK_CAP_MISMATCH; 
     UINT8 u8DAC_I_Direction; 
     UINT8 u8Reserved3;    
     #endif
@@ -1646,7 +1671,17 @@ typedef struct _PortCfgStatus
 																		3. 0x0190 = 100W 
 																	  * Note : A setting of 0x0000 
 																		and 0x191-0xFFF is invalid.	
-	u8aReserved4					1						          Reserved 											
+    u16MaxPrtCurrentIn10mA          2         R/W          R         * Maximum allowable current for 
+													                    ports in 10mA steps 
+																	  * Sample values this variable
+																	    can take are, 
+																		1. 0x0032 = 0.5A
+																		2. 0x012C = 3A 
+																		3. 0x01F4 = 5A
+																	  * Note : Values above 5A 
+																	    (0x01F5 - 0x0FFF) are not 
+																		supported	 
+	u8aReserved4[3]					3						          Reserved 											
 	</table>	
 
     <b>2. Members that are Bit-Mapped bytes:</b>
@@ -1669,15 +1704,16 @@ typedef struct _PortCfgStatus
      None                                                               
    **********************************************************************/
 
-#if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING)) 
+#if (TRUE == INCLUDE_POWER_BALANCING) 
 
 typedef struct _PBPortCfgStatus
 {
     UINT16 u16MaxPrtPwrBankAIn250mW; 
     UINT16 u16MaxPrtPwrBankBIn250mW; 
     UINT16 u16MaxPrtPwrBankCIn250mW; 
+    UINT16 u16MaxPrtCurrentIn10mA; 
     UINT8 u8PBEnablePriority; 
-    UINT8 u8aReserved4;
+    UINT8 u8aReserved4[3];
 } PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
 
 #endif 
@@ -1686,60 +1722,19 @@ typedef struct _PBPortCfgStatus
      This structure contains port specific PPS configuration parameters.
 	 sPPSPerPortData is referred from _GlobalCfgStatusData.
    Description:
-     This structure contains the following PPS configuration parameters that 
-     are either Integer Datatypes or Bit-Mapped bytes.  
+     This structure contains the following PPS configuration parameters. 
 	 This structure is used only when INCLUDE_PD_SOURCE_PPS is set to '1'.
 	 
-	<b>1. Members that are Integer Datatypes:</b> 
-	
 	<table> 	
     Name                            Size in   R/W Config   R/W Run   \Description
                                      Bytes     time         time      
     ------------------------------  --------  -----------  --------  -------------------------------------------------------------------
+    u8PPSEnable                     1         R/W          R         PPS Enable/Disable.
+																	  * '0' = Disable 
+																	  * '1' = Enable 
     u32aPPSApdo[3]                  12        R/W          R         Defines the PPS APDOs. 
-	u8aReserved5[1]				    3                                Reserved 
-    u32PartnerAlertInfo             4         R            R         * Complete Alert information 
-																		received from Partner, Will 
-																		be blank of no Alert has 
-																		been received.
-                                                                      * This variable is common for 
-																	    Source and Sink.	
-	u8aPartnerStatus[6]             6         R            R         * Store the Status information 
-																		received from Port Partner. 
-																	  * This array would hold a valid 
-																		value if 
-																		eMCHP_PSF_SINK_STATUS_RCVD
-																		notification is posted. It 
-																		would be 0 when 
-																		eMCHP_PSF_SINK_STATUS_NOT_RCVD
-																		notification is posted. 
-
-	</table> 
-
-    <b>2. Members that are Bit-Mapped bytes:</b> 
-	
-	<b>a. u8PPSCfgData:</b> 
-	u8PPSCfgData variable holds the PPS Configuration Data. It's size is 1 byte. 
-	
-    <table>
-    Bit     R/W Config   R/W Run   \Description
-             time         time      
-    ------  -----------  --------  --------------------
-    0       RW           R         PPS Enable/Disable  
-                                    * '0' Disable
-                                    * '1' Enable 
-    1       RW           R         APDO1 Enable/Disable 
-                                    * '0' Disable 
-                                    * '1' Enable
-    2       RW           R         APDO2 Enable/Disable 
-                                    * '0' Disable 
-                                    * '1' Enable
-    3       RW           R         APDO3 Enable/Disable 
-                                    * '0' Disable 
-                                    * '1' Enable
-    7:4                            Reserved
-    </table>
-	
+	u8aReserved5[3]				    3                                Reserved 
+	</table> 																 												  																 																  
    Remarks:
      None                                                               
    **********************************************************************/
@@ -1747,11 +1742,9 @@ typedef struct _PBPortCfgStatus
 
 typedef struct _PPSPortCfgStatus
 {
-    UINT32 u32aPPSApdo[3]; 
-    UINT32 u32PartnerAlertInfo; 
-    UINT8 u8aPartnerStatus[6];
-    UINT8 u8PPSCfgData;
-    UINT8 u8aReserved5[1];
+    UINT8 u8PPSEnable;
+    UINT8 u8aReserved5[3];
+    UINT32 u32aPPSApdo[3];  
 } PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
 
 #endif 
@@ -1920,7 +1913,7 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
 																		
-	u16SharedPwrCapacityIn250mW     2         R            R         * Defines the currently 
+	u16SharedPwrCapacityIn250mW     2         R/W          R        * Defines the currently 
 																		available shared power 
 																		capacity from which power 
 																		is allocated to ports that 
@@ -2003,19 +1996,23 @@ typedef struct _GlobalCfgStatusData
     UINT16 u16IDHeaderVDO; 
     
     PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; 
-    
-#if (TRUE == INCLUDE_POWER_BALANCING || (TRUE == INCLUDE_POWER_THROTTLING))
-    UINT16 u16SharedPwrCapacityIn250mW;
-    UINT8 u8PBEnableSelect;	    
+#if (TRUE == INCLUDE_POWER_BALANCING)
+    UINT8 u8PBEnableSelect;	
+    UINT16 u16SharedPwrCapacityIn250mW; 
+    UINT8 u8Reserved7;	
+    PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];
+#endif 
+#if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))    
     UINT8 u8PwrThrottleCfg;	
+    UINT8 u8aReserved8[3];
     UINT16 u16SystemPowerBankAIn250mW; 
     UINT16 u16MinPowerBankAIn250mW;   
     UINT16 u16SystemPowerBankBIn250mW; 
     UINT16 u16MinPowerBankBIn250mW;   
     UINT16 u16SystemPowerBankCIn250mW; 
-    UINT16 u16MinPowerBankCIn250mW;       
-    PB_PORT_CFG_STATUS sPBPerPortData[CONFIG_PD_PORT_COUNT];	
-#endif 
+    UINT16 u16MinPowerBankCIn250mW;    
+#endif
+
     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
     PPS_PORT_CFG_STATUS sPPSPerPortData[CONFIG_PD_PORT_COUNT]; 

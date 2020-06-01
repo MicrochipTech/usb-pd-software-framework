@@ -51,15 +51,17 @@
         
 #include "PSF_Config.h"
 
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC) 
-#include "Mpq_dc_dc_control.h"
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG) 
+//#if (CONFIG_I2C_DCDC_TYPE == 1)
+    #include "Mpq_dc_dc_control.h"
+//#endif
 #endif
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
 #include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 #include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
 #endif 
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 #include "../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h"
 #endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
@@ -120,23 +122,28 @@
 
 #define SAMD20_TIMER_INSTANCE   0
 #define SAMD20_SPI_INSTANCE     0
-
-#define SAMD20_PIN_UNUSED       0xFF
-
 #define SAMD20_PORT0_EIC_PIN    EIC_PIN_14
 #if(TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP)
+/*ToDo
 #define SAMD20_PORT1_EIC_PIN    EIC_PIN_15
-#elif (TRUE == INCLUDE_PD_DRP)
-#define SAMD20_PORT1_EIC_PIN    SAMD20_PIN_UNUSED 
+ */
 #endif
 
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 #define SAMD20_DCDC_ALERT0      PORT_PIN_PA02
 #define SAMD20_DCDC_ALERT1      PORT_PIN_PA03
 #define SAMD20_I2C_INSTANCE     3
-#endif //#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 
 #define SAMD20_UART_INSTANCE  1
+
+/*Drivers to drive GPIOs in SAMD20*/
+#define SAMD20_GPIO_Set(u8PioNumber)         (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << u8PioNumber)
+#define SAMD20_GPIO_Clear(u8PioNumber)       (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << u8PioNumber)
+#define SAMD20_GPIO_Toggle(u8PioNumber)      (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << u8PioNumber)
+#define SAMD20_GPIO_Get(u8PioNumber)         (((PORT_REGS->GROUP[0].PORT_IN >> u8PioNumber)) & 0x01)
+#define SAMD20_GPIO_OutputEnable(u8PioNumber)(PORT_REGS->GROUP[0].PORT_DIRSET = 1 << u8PioNumber)
+#define SAMD20_GPIO_InputEnable(u8PioNumber) (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << u8PioNumber)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -256,7 +263,7 @@ UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writ
 UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength);
 
 /*****************************************************************************/
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
 UINT8 SAMD20_I2CDCDCInitialisation (void);
 UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
 UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen);

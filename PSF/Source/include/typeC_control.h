@@ -74,6 +74,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CC2_SAMP_EN     	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1E
 #define TYPEC_VBUS_SAMP_EN    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1F
 #define TYPEC_CC_CTL1   			TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x20
+#define TYPEC_DRP_CC_SNK_MATCH_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x98
+#define TYPEC_DRP_CC_SNK_DBCLR_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9A
+#define TYPEC_DRP_CC_SRC_MATCH_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x99
+#define TYPEC_DRP_CC_SRC_DBCLR_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9B
+#define TYPEC_DRP_SNK_SAMP_EN       TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9D
+#define TYPEC_DRP_SRC_SAMP_EN       TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9E
 
 /*TYPEC_CC_CTL1_LOW is the lower byte of 2 byte register TYPEC_CC_CTL1*/
 #define TYPEC_CC_CTL1_LOW			TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x20
@@ -91,6 +97,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CC_THR7				TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x30
 #define TYPEC_VBUS_CTL2			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x3F
 #define TYPEC_VBUS_CTL1			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x40
+#define TYPEC_DRP_CTL_LOW           TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x90
+#define TYPEC_DRP_CTL_HIGH          TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x91
 
 /*TYPEC_VBUS_CTL1_LOW is the lower byte of 2 byte register TYPEC_VBUS_CTL1*/
 #define TYPEC_VBUS_CTL1_LOW		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x40
@@ -123,6 +131,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_VBUS_THR2             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB4
 #define TYPEC_VBUS_THR3             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB6
 #define TYPEC_VBUS_THR4             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB8
+#define TYPEC_VSAFE0V_THR           TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x4E
+#define TYPEC_VBUS_DBCLR_EN         TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1C
 
 /*Bit defintions of TYPEC_CC_CTL1_LOW register*/
 #define TYPEC_CC1_PULL_DOWN		    (BIT(2) | BIT(1) | BIT(0))
@@ -170,9 +180,31 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CC2_MATCH_CHG		    BIT(1)
 #define TYPEC_CC_MATCH_VLD		    BIT(7)
 
+/*Bit definitions for DRP_CTL_HIGH register*/
+#define TYPEC_DRP_ADVERTISING_STATE BIT(0)
+
+/*Bit definitions for gasTypeCcontrol[u8PortNum].u8DRPStsISR variable*/
+#define TYPEC_DRP_DONE_INTERRUPT                    BIT(0)
+#define TYPEC_DRP_STS_ADVERTISED_STATE              (BIT(2)|BIT(1))
+#define TYPEC_DRP_STS_ADVERTISED_STATE_POS          1
+#define TYPEC_DRP_STS_ADVERTISED_STATE_UFP          (0<<TYPEC_DRP_STS_ADVERTISED_STATE_POS)
+#define TYPEC_DRP_STS_ADVERTISED_STATE_DFP          (1<<TYPEC_DRP_STS_ADVERTISED_STATE_POS)
+#define TYPEC_DRP_STS_ADVERTISED_STATE_TOGGLING     (2<<TYPEC_DRP_STS_ADVERTISED_STATE_POS)
+
+
 /*Bit definitions of PWR_INT_STS register*/
 #define TYPEC_VBUS_MATCH_VLD		BIT(7)
 #define TYPEC_VCONN_OVER_CURR_ERR   BIT(0)
+
+#define TYPEC_VSAFE0V_DBCLR_DEB     BIT(0)
+#define TYPEC_VBUS_DEB_TO_EN         BIT(1)
+#define TYPEC_DRP_VSAFE0V_EN        BIT(3)
+#define TYPEC_DRP_PD_VAL_TRIMMED_RD            BIT(4)
+#define TYPEC_DRP_PD_VAL_OPEN_DIS           (BIT(5) | BIT(4))
+#define TYPEC_DRP_CUR_ADV_POS       2
+#define TYPEC_LFSR_EN               BIT(1)
+#define TYPEC_DRP_EN                BIT(0)
+#define TYPEC_DRP_DONE              BIT(2)
 
 /*Bit definitions of TYPEC_VBUS_CTL1_LOW register*/
 #define TYPEC_VBUS_CMP_CTL		   (BIT(1) | BIT(0))
@@ -216,8 +248,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CC_THRES7_MATCH      BIT(7)
 
 /*Defines holding CC THRES match for different types of UFP attach and powered cable attach event for DFP */
-/*TYPEC_DFP_ACT_DEF defines the Active cable attach event for DFP having default current as Type C current*/
-/*TYPEC_DFP_UFP_1A5 defines the UFP attach event for DFP having 1.5A current as Type C current*/
+/*TYPEC_DFP_ACT_DEF defines the Active cable attach event for DFP having default current as Type C curent*/
+/*TYPEC_DFP_UFP_1A5 defines the UFP attach event for DFP having 1.5A current as Type C curent*/
 #define TYPEC_DFP_ACT_DEF	        TYPEC_CC_THRES0_MATCH 
 #define TYPEC_DFP_ACT_1A5		    TYPEC_CC_THRES1_MATCH  
 #define TYPEC_DFP_ACT_3A0		    TYPEC_CC_THRES3_MATCH  
@@ -226,14 +258,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_DFP_UFP_3A0		    TYPEC_CC_THRES6_MATCH 
 
 /*Defines holding CC THRES match values for different types of DFP attach event for UFP */
-/*TYPEC_UFP_DFP_DEF defines the DFP with default current as Type C current attach event for UFP*/
-/*TYPEC_UFP_DFP_3A0 defines the DFP with 3.0A as Type C current attach event for UFP*/
+/*TYPEC_UFP_DFP_DEF defines the DFP with default current as Type C curent attach event for UFP*/
+/*TYPEC_UFP_DFP_3A0 defines the DFP with 3.0A as Type C curent attach event for UFP*/
 #define TYPEC_UFP_DFP_DEF		    TYPEC_CC_THRES0_MATCH  
 #define TYPEC_UFP_DFP_1A5			TYPEC_CC_THRES2_MATCH    
 #define TYPEC_UFP_DFP_3A0			TYPEC_CC_THRES4_MATCH  
 
 /*Defines holding CC THRES match reflected in CC match register for different types of UFP attach 
-and powered cable attach event for DFP when the CC threshold match register is set to detect both 
+and powered cable attach event for DFP when the CC thrshold match register is set to detect both 
 powered cable and UFP*/
 #define TYPEC_PWD_CABLE_ATT_DEF    (TYPEC_DFP_UFP_DEF | TYPEC_DFP_ACT_DEF )		
 #define TYPEC_PWD_CABLE_ATT_1A5	   (TYPEC_DFP_UFP_1A5 | TYPEC_DFP_ACT_1A5 )       
@@ -358,6 +390,7 @@ event for UFP*/
 /*Defines for Number of active CC THRES to be sampled for Source and Sink*/
 #define TYPEC_SRC_CCTHRES_CNT      2
 #define TYPEC_SNK_CCTHRES_CNT      3
+#define TYPEC_DRP_CCTHRES_CNT      6
 
 /*Defines for Number of active VBUS THRES to be sampled for Source and Sink*/
 #define TYPEC_SRC_VBUSTHRES_CNT    5
@@ -398,6 +431,20 @@ TypeC_SetPowerRole API for Sink*/
 #define TYPEC_ROLE_SINK                0
 #define TYPEC_ROLE_SOURCE              1
 
+/*Defines for TypeC_DRP_Set_RP_RD API*/
+#define TYPEC_DRP_RP_RD_MASK           (BIT(6)|BIT(5)|BIT(4)|BIT(3)|BIT(2))
+
+/*Defines for "u8RpRdConfigVal" variable in TypeC_DRP_Set_RP_RD API*/
+#define TYPEC_DRP_RD_POS                4
+#define TYPEC_DRP_SINK_RD              (1 << TYPEC_DRP_RD_POS)
+#define TYPEC_DRP_SINK_OPEN_DIS        (3 << TYPEC_DRP_RD_POS)
+#define TYPEC_DRP_RP_POS                2
+#define TYPEC_DRP_SOURCE_OPEN_DIS     (0 << TYPEC_DRP_RP_POS)
+#define TYPEC_DRP_SOURCE_DC           (1 << TYPEC_DRP_RP_POS)
+#define TYPEC_DRP_SOURCE_15           (2 << TYPEC_DRP_RP_POS)
+#define TYPEC_DRP_SOURCE_30           (3 << TYPEC_DRP_RP_POS)
+
+
 /*Defines that can be passed as an argument for variable "u8RpValue" for 
 TypeC_SetRpCollAvoidance API*/
 #define TYPEC_SINK_TXOK   0
@@ -415,8 +462,7 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_DEBUG_ACCESSORY_SNK               8
 #define TYPEC_ERROR_RECOVERY                    9
 #define TYPEC_AUDIO_ACCESSORY                  10
-#define TYPEC_DISABLED                         11 
-#define TYPEC_INVALID_STATE                    12
+#define TYPEC_INVALID_STATE                    11
 
 /*Setting invalid Substate as maximum value of UINT8*/
 #define TYPEC_INVALID_SUBSTATE                 255
@@ -426,6 +472,8 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_UNATTACHED_SRC_INIT_SS				  1
 #define TYPEC_UNATTACHED_SRC_IDLE_SS                  2
 #define TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS          3
+#define TYPEC_UNATTACHED_SRC_TRNS_SNK_SS              4
+#define TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS          5
 
 /*Defines for TYPEC_ATTACHWAIT_SRC's substates in TYPE C SM*/
 #define TYPEC_ATTACHWAIT_SRC_DEB_SS                   0
@@ -473,16 +521,13 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ERROR_RECOVERY_IDLE_SS                    3
 #define TYPEC_ERROR_RECOVERY_TO_SS                      4
     
-/*Defines for TYPEC_DISABLED state's sub-states in TYPE C SM*/
-#define TYPEC_DISABLED_ENTRY_SS                         0
-#define TYPEC_DISABLED_IDLE_SS                          1 
 /*************************************************************/
 
 /*Defines for VCONN OCS Enable*/
 #define TYPEC_VCONN_OCS_EN                BIT(9)
 #define TYPEC_VCONN_OCS_EN_POS            9
 
-/*Masks used For getting Port Rp Current from gasCfgStatusData structure*/ 
+/*Masks used For getting Port Rp Currrent from gasCfgStatusData structure*/ 
 #define TYPEC_PORT_RPVAL_MASK	        (BIT(4) | BIT(3))
 #define TYPEC_PORT_RPVAL_POS            3
 
@@ -613,7 +658,7 @@ Summary:
 
   Description:
     This Structure holds the CC1,CC2,VBUS match register value.It also Stores the CC Debounce match 
-    value programmed ,CC interrupt occurrence,VBUS interrupt occurrence, Powered cable presence status
+    value programmed ,CC interrupt occurence,VBUS interrupt occurence, Powered cable presence status
 
   Remarks:
     Need to be packed always based on type of microcontroller.
@@ -640,6 +685,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
                                 BIT3 -> VCONN_SOURCE_CC2
                                 BIT[4:6] -> VBUS_PRESENCE
                                 BIT 7 -> VCONNONERROR */
+  UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status
+                                 BIT[2:1] -> Current DRP advertising port role*/
   float fVBUSCorrectionFactor;
   
 }MCHP_PSF_STRUCT_PACKED_END TYPEC_CONTROL;
@@ -684,6 +731,10 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
 
 **************************************************************************************************/
 void TypeC_InitPort (UINT8 u8PortNum);
+
+void TypeC_InitDRPPort(UINT8 u8PortNum);
+
+void TypeC_Config_DRP_To_DFP_UFP(UINT8 u8PortNum);
 /**************************************************************************************************
 
  Function:
@@ -782,6 +833,8 @@ void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum , UINT8 u8ConfigVal);
 
 **************************************************************************************************/
 void TypeC_SetCCSampleEnable(UINT8 u8PortNum,UINT8 u8CCEnablePins);
+
+void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT16 u16RpCurrent);
 /**************************************************************************************************
 
  Function:
@@ -1024,6 +1077,8 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
         None.
 **************************************************************************************************/
 void TypeC_SrcIntrHandler(UINT8 u8PortNum);
+
+void TypeC_DrpIntrHandler(UINT8 u8PortNum);
 /**************************************************************************************************
  Function:
         void TypeC_SnkIntrHandler(UINT8 u8PortNum);
@@ -1079,7 +1134,7 @@ void TypeC_SnkIntrHandler(UINT8 u8PortNum);
 void TypeC_Reset_VCONNDIS_Settings(UINT8 u8PortNum); 
 /**************************************************************************************************
  Function:
-        void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
+        void z(UINT8 u8PortNum, UINT8 u8Pwrrole);
 
     Summary:
 
@@ -1136,6 +1191,8 @@ void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
         None.
 **************************************************************************************************/
 void TypeC_SetDefaultRpValue (UINT8 u8PortNum); 
+
+void TypeC_DRP_SetDefaultRpValue (UINT8 u8PortNum);
 /**************************************************************************************************
  Function:
         void TypeC_DecodeSourceRpValue(UINT8 u8PortNum); 

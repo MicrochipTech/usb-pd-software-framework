@@ -52,7 +52,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define MPQ_CMD_WRITE_VOUT_SCALE_LOOP   0xB04229U
 #define MPQ_CMD_WRITE_0V                0x000021U
 #define MPQ_CMD_UNMASK_VOUT_AND_OC      0x3FD8U
-#define MPQ_CMD_UNMASK_OC               0xBFD8U
 #define MPQ_CMD_CURRENT_THRESHOLD       0x3FD1U //0x1ED1U
 #define MPQ_CMD_ENABLE_VBUS             0x8001U
 #define MPQ_CMD_WRITE_VOLTAGE           0x21U
@@ -82,10 +81,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define MPQ_STATUS_TEMPERATURE_CMD      0x7DU
 #define MPQ_STATUS_CML_CMD              0x7EU
 
-#define MPQ_REGISTER_COUNTS_1V          1024U
-#define MPQ_1V_IN_MILLIVOLT             1000U
-#define MPQ_CURRENT_COUNT_FACTOR        50U
-
 /* Offset Values */
 #define MPQ_CURRENT_OFFSET_VALUE        5
 
@@ -93,8 +88,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Status bit masks */
 /* Fault Status returned by 'Status Word' command */
 #define MPQ_IOUT_OC_FAULT               0x0010U
-#define MPQ_VOUT_OV_FAULT               0x0020U 
-#define MPQ_IOUT_OC_EXIT_FAULT          0x1000U
+#define MPQ_VOUT_FAULT                  0x8000U 
 #define MPQ_1MV_COUNT                   ((float)1.024)
 
 /* Macro to raise client request to PSF for handling VBUS Fault */
@@ -107,7 +101,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Section: Data Structure                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-extern volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT];
+extern UINT8 gu8MPQAlertPortMsk;
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions
@@ -201,7 +195,7 @@ void MPQDCDC_HandleAlertISR(UINT8 u8PortNum);
 
 /****************************************************************************
     Function:
-        void MPQDCDC_FaultHandler(UINT8 u8PortNum); 
+        void MPQDCDC_FaultHandler(void); 
     Summary:
         Wrapper function for DPM's HandleClientRequest API.  
     Description:
@@ -210,15 +204,13 @@ void MPQDCDC_HandleAlertISR(UINT8 u8PortNum);
     Conditions:
         None.
     Input:
-        u8PortNum - Port Number for which fault to be handled
+        None.
     Return:
       None
     Remarks:
         None
 **************************************************************************************************/
 
-UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum);
-
-UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum);
+UINT8 MPQDCDC_FaultHandler(void);
 
 #endif /*_MPQ_DCDC_CONTROL_H_*/
