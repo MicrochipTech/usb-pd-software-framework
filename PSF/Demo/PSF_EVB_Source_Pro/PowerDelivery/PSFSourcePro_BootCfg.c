@@ -41,19 +41,24 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
                     ((CFG_VCONN_OCS_ENABLE) | (CFG_PORT_ENABLE) | (CFG_PORT_RP_CURRENT_VALUE)| \
                     (CFG_PORT_POWER_ROLE));
     
+    /* PDO 1: Fixed PDO with 5V,3A capability */
     pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[0] = CFG_FORM_FIXED_PDO1(CFG_PORT_SOURCE_PDO_1_VOLTAGE, \
             CFG_PORT_SOURCE_PDO_1_CURRENT, CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
             CFG_PORT_SOURCE_UNCONSTARINED_PWR);    
 
+    /* PDO 2: Fixed PDO with 9V,3A capability */
     pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[1] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_2_VOLTAGE, \
                                                     CFG_PORT_SOURCE_PDO_2_CURRENT);        
 
+    /* PDO 3: Fixed PDO with 15V,3A capability */
     pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[2] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_3_VOLTAGE, \
                                                     CFG_PORT_SOURCE_PDO_3_CURRENT);     
 
+    /* PDO 4: Fixed PDO with 20V,3A capability */
     pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[3] = CFG_FORM_FIXED_PDOx(CFG_PORT_SOURCE_PDO_4_VOLTAGE, \
                                                     CFG_PORT_SOURCE_PDO_4_CURRENT);         
 
+    /* PDO 5: PPS APDO with 3.3V-21V, 3A capability */
     pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[4] = CFG_FORM_PPS_APDO(CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE, \
                         CFG_PORT_SOURCE_APDO_5_MIN_VOLTAGE, CFG_PORT_SOURCE_APDO_5_MAX_VOLTAGE, \
                         CFG_PORT_SOURCE_APDO_5_MAX_CURRENT, CFG_PORT_SOURCE_APDO_5_PPS_PWR_LTD);            
