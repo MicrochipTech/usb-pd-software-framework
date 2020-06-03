@@ -233,6 +233,10 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA15);
             }
+            else
+            {
+                /* Do Nothing */
+            }
             break;
         }
         case eI2C_DC_DC_ALERT_FUNC:
@@ -251,13 +255,30 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA03, SAMD20_I2CDCDCAlertCallback, PORT1);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA03);
             }
+            else
+            {
+                /* Do Nothing */
+            }
             break;
         }
         case eSPI_CHIP_SELECT_FUNC:
+        {
+            /* To be implemented */
+            break; 
+        }
         case eVBUS_DIS_FUNC:
+        {
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_GPIO_SETBUF_PUSHPULL);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+            break; 
+        }
         case eDC_DC_EN_FUNC:
         {
-            /*To be implemented*/
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO6);
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO6, UPD_GPIO_SETBUF_PUSHPULL);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO6);
+            break; 
         }
         case eORIENTATION_FUNC:
         {

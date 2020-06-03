@@ -807,8 +807,6 @@ Remarks:
 		// Configure per port parameters
 		// Set Port 1's VBUS Maximum Fault Count as 3
 		pasCfgStatusData->sPerPortData[0].u8VBUSMaxFaultCnt = 0x03; // 0 is the port number
-		// Configure PIO6 as the DC_DC_EN pin for Port 1
-		pasCfgStatusData->sPerPortData[0].u8Pio_DC_DC_EN = 0x06; // 0 is the port number
 		// Configure per port PB parameters
 		// Set Port 2's maximum port power for Bank C as 60W
 		pasCfgStatusData.sPBPerPortData[1]->u16MaxPrtPwrBankCIn250mW = 0x00F0U; // 1 is the port number
@@ -1518,8 +1516,8 @@ typedef enum eMCHP_PSF_GPIO_Functionality
 
 typedef enum eMCHP_PSF_GPIO_DriveValue 
 {
-    eGPIO_Deassert,
-    eGPIO_assert
+    eGPIO_DEASSERT,
+    eGPIO_ASSERT
 } eMCHP_PSF_GPIO_DRIVE_VAL;
 
 

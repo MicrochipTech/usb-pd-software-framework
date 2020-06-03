@@ -1027,59 +1027,6 @@ typedef enum
 																	    in u8Pio_FAULT_IN. 
 																	  * It takes only values from 
 																		enum eFAULT_IN_MODE_TYPE.
-	u8Pio_VBUS_DIS                  1         R/W          R         * Defines the UPD350 PIO for 
-																		VBUS Discharge functionality. 
-																	  * It is a control for 
-																	    discharging VBUS (connecting
-																		VBUS to GND). It asserts as 
-																		per u8mode_VBUS_DIS whenever
-																		VBUS voltage must transition
-																		from a high voltage to a 
-																		lower voltage state and 
-																		when VBUS is disabled. 
-																	  * The range of valid values 
-																	    are 0 to 15 which correspond
-																		to UPD350 PIO0 to PIO15. 
-																	  * To disable the pin 
-																		functionality from the stack,
-																		user can define a value of 
-																		0cFF. 
-																	  * It is applicable only when 
-																		CONFIG_DCDC_CTRL is 
-																		defined as 
-																		PWRCTRL_GPIO_DC_DC
-	u8mode_VBUS_DIS                 1         R/W          R         * Defines the PIO mode of the 
-																		UPD350 PIO VBUS_DIS defined 
-																		in u8Pio_VBUS_DIS. 
-																	  * It takes values only from
-																		enum 
-																		eUPD_OUTPUT_PIN_MODES_TYPE
-	u8Pio_DC_DC_EN                  1         R/W          R         * Defines the UPD350 PIO to 
-															            enable DC-DC controller. 
-																	  * It is asserted as per 
-																	    u8Mode_DC_DC_EN during 
-																		initialization and 
-																		deasserted during error
-																		condition to reset the 
-																		DC-DC controller. 
-																	  * It can take values from 0
-																	    to 15 and to disable the 
-																		functionality from stack, 
-																		user can define it as 0xFF.
-                                                                      * This variable is applicable 
-                                                                        only for source operation.
-																	  * It is applicable only when 
-																	    CONFIG_DCDC_CTRL is defined 
-																		as 
-																		PWRCTRL_GPIO_DC_DC
-	u8Mode_DC_DC_EN                 1         R/W          R         * Defines the PIO mode of the 
-																	    UPD350 PIO DC_DC_EN defined 
-																	    in u8Pio_DC_DC_EN. 
-																	  * It takes values only 
-																	    from enum 
-																		eUPD_OUTPUT_PIN_MODES_TYPE
-                                                                      * This variable is applicable 
-                                                                        only for source operation.
 	u8aPio_VSEL[3]                  3         R/W          R         * Defines the UPD350 PIO as 
 																	    voltage selector pins
 																	    (VSEL[2:0]). 
@@ -1207,7 +1154,7 @@ typedef enum
 																	  * This is applicable only 
 																		  for Sink operation. 
 	u16Reserved1    				2								 Reserved					 
-	u8aReserved1[3]					3								 Reserved					 
+	u8aReserved1					1								 Reserved					 
 	u8aReserved2[2]					2								 Reserved
 	u8Reserved3    					1								 Reserved					 		
     </table>
@@ -1605,14 +1552,11 @@ typedef struct _PortCfgStatus
     UINT8 u8VCONNMaxFaultCnt;
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;
-    UINT8 u8Pio_VBUS_DIS;
-    UINT8 u8mode_VBUS_DIS;
-    UINT8 u8aReserved1[3];
+    UINT8 u8aReserved1;
 #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
-    UINT8 u8Pio_DC_DC_EN;
-    UINT8 u8Mode_DC_DC_EN;
+    UINT8 u8aReserved123[2];
     #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC) 
     UINT8 u8aPio_VSEL[3];
     UINT8 u8aMode_VSEL[3];
