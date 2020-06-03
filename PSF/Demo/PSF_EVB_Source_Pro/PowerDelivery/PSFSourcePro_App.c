@@ -212,7 +212,9 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
     {
         case eUPD350_RESET_FUNC:
         {
-            /*To be implemented*/
+            /* UPD350 RESET_N pin active low; set to internal pull up by default*/
+            UPD350_RESET_InputEnable();
+            PORT_PinWrite(PORT_PIN_PA00, TRUE);
             break;
         }
         case eUPD350_ALERT_FUNC:
@@ -254,12 +256,18 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         case eSPI_CHIP_SELECT_FUNC:
         case eVBUS_DIS_FUNC:
         case eDC_DC_EN_FUNC:
+        {
+            /*To be implemented*/
+        }
         case eORIENTATION_FUNC:
+        {
+            /*Initialization for Orientation pin is not applicable*/
+        }
         case eSNK_CAPS_MISMATCH_FUNC:
         case eSNK_1_5A_IND_FUNC:
         case eSNK_3A_IND_FUNC:
         {
-            /* To be implemented*/
+            /* Not applicable for Source operation*/
             break;
         }    
     }

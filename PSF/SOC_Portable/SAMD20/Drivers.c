@@ -244,16 +244,6 @@ UINT8 SAMD20_I2CDCDCIsBusyDriver(void)
 /*****************************************************************************/
 /*********************************UPD350 Reset APIs*****************************/
 /*****************************************************************************/
-void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum)
-{
-    /*Current implementation supports common reset pin for all ports
-      Hence, parameter u8PortNum is not considered*/
-    
-    /*PORT_PIN_PA00*/
-    /* UPD350 RESET_N pin active low; set to internal pull up by default*/
-     UPD350_RESET_InputEnable();
-     PORT_PinWrite(UPD350_RESET_PIN, TRUE);
-}
 
 void SAMD20_ResetUPD350(UINT8 u8PortNum)
 {
