@@ -48,6 +48,7 @@ const UINT16 au16CCThrVal[] = { TYPEC_CC_THR0_VAL,
 void TypeC_InitDRPPort(UINT8 u8PortNum)
 {
     UINT16 u16Data;
+    UINT8 u8MatchDebVal;
     
     /*Setting CC Comparator OFF*/
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
@@ -87,6 +88,12 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     /*Setting VBUS_DEB_TO_EN bit in VBUS Control 2 Register*/
     UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL2, (TYPEC_VBUS_DEB_TO_EN | TYPEC_VBUS_DEB_BLK_EN));
     
+    /*Setting Match debounce register value as 4 times the number of thresholds enabled 
+    for debouncing*/
+    u8MatchDebVal = 4*TYPEC_DRP_CCTHRES_CNT;
+    /*Setting Match debounce register */
+    UPD_RegisterWrite (u8PortNum, TYPEC_MATCH_DEB, &u8MatchDebVal, BYTE_LEN_1);	
+    
     u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK)\
                 >> TYPEC_PORT_RPVAL_POS);
     u16Data = u16Data << TYPEC_DRP_CUR_ADV_POS;
@@ -114,6 +121,11 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
               >> TYPEC_PORT_RPVAL_POS);        
     UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, (u16Data << TYPEC_DRP_RP_POS));
     
+    /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
+    gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+    gasTypeCcontrol[u8PortNum].u8PortSts  |= (u16Data << TYPEC_CURR_RPVAL_POS);
+            
+    
     /*FW sets the LFSR Enable (LFSR_EN) in DRP Control Register to enable the LFSR generation.
     When this bit is set the internal LFSR is enabled and updates at 10 KHz.*/
     UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_LFSR_EN);
@@ -134,7 +146,10 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
 
     /*Setting VBUS Comparator ON*/
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
-    
+	
+    /*Setting CC Comparator ON*/
+    //TypeC_ConfigCCComp (u8PortNum,TYPEC_CC_COMP_CTL_CC1_CC2);
+	
     /*Setting the VBUS to vSafe0V before entering the Source State machine*/
     DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
         
@@ -544,10 +559,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach Vsafe5V*/
-//                    gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
-//                                                              (CONFIG_TYPEC_VBUS_ON_TIMER_MS),
-//                                                              DPM_VBUSOnOffTimerCB, u8PortNum,  
-//                                                              (UINT8)SET_TO_ZERO);
+                    gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
+                                                              (CONFIG_TYPEC_VBUS_ON_TIMER_MS),
+                                                              DPM_VBUSOnOffTimerCB, u8PortNum,  
+                                                              (UINT8)SET_TO_ZERO);
 					
 					/*Sink Attached in CC1 pin*/
                     if(u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
@@ -1671,7 +1686,7 @@ void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT16 u16RpCurrent)
     UPD_RegisterWrite (u8PortNum, TYPEC_CC2_SAMP_EN, &u8MatchSel,\
                            BYTE_LEN_1);
   #endif      
-    UINT8 u8MatchSel = 0x95;
+    UINT8 u8MatchSel = 0x01;
     UPD_RegisterWrite (u8PortNum, TYPEC_DRP_SNK_SAMP_EN, &u8MatchSel,\
                        BYTE_LEN_1); 
     UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SNK_MATCH_EN, &u8MatchSel,\

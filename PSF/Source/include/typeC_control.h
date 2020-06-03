@@ -390,7 +390,7 @@ event for UFP*/
 /*Defines for Number of active CC THRES to be sampled for Source and Sink*/
 #define TYPEC_SRC_CCTHRES_CNT      2
 #define TYPEC_SNK_CCTHRES_CNT      3
-#define TYPEC_DRP_CCTHRES_CNT      6
+#define TYPEC_DRP_CCTHRES_CNT      TYPEC_SNK_CCTHRES_CNT
 
 /*Defines for Number of active VBUS THRES to be sampled for Source and Sink*/
 #define TYPEC_SRC_VBUSTHRES_CNT    5

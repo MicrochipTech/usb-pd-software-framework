@@ -250,7 +250,7 @@ void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
 					  	PRL_TX_PARAM_C_UPD_SPEC_REV_2_0 							|	 			/*	Spec Rev */
 						PRL_UPDATE_TX_PARAM_C_N_RETRY_CNT(u8HwnRetryCount)			| 				/* nRetryCount corresponding to spec */
 						PRL_UPDATE_TX_PARAM_C_PORT_DATA_ROLE(DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u8DPMStatus)) |	/* Data Role*/
-						PRL_UPDATE_TX_PARAM_C_PORT_POWER_ROLE(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8DPMStatus))); 	/* Power Role*/	
+						PRL_UPDATE_TX_PARAM_C_PORT_POWER_ROLE(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum))); 	/* Power Role*/	
 }
 
 /***************************************************************************************************/
@@ -261,7 +261,7 @@ UINT16 PRL_FormSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 u8O
 	return((u8MessageType)
 		   |((UINT16)(DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u8DPMStatus)) << PRL_PORT_DATA_ROLE_BIT_POS)
 		   |((UINT16)(DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8PortNum)) << PRL_SPEC_REV_FIELD_START_BIT_POS) 		
-		   |((UINT16)(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8DPMStatus)) << PRL_PORT_POWER_ROLE_OR_CABLE_PLUG_BIT_POS)
+		   |((UINT16)(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum)) << PRL_PORT_POWER_ROLE_OR_CABLE_PLUG_BIT_POS)
 		   |((UINT16)u8ObjectCount << PRL_DATA_OBJECTS_FIELD_START_BIT_POS) 						
 		   |((UINT16)u8Extended << PRL_EXTENDED_BIT_POS));
 }
@@ -645,6 +645,8 @@ void PRL_EnableRx (UINT8 u8PortNum, UINT8 u8Enable)
 		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_A, PRL_RX_CTL_A_EN_SMBUS_MODE);
 		/* Disable reception of Hardreset*/
 		UPD_RegByteClearBit (u8PortNum, PRL_RX_IRQ_EN, PRL_RX_IRQ_RX_HARD_RST);
+        
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Receiver disabled\r\n");
 	}
 }
 
