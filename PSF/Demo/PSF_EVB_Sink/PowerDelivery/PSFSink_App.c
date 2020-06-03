@@ -91,26 +91,24 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
     {
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
-            UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2, UPD_DISABLE_GPIO);
-             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+            UPDPIO_Disable(u8PortNum, eUPD_PIO2);
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
                     ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
             SNK_CAP_MISMATCH_Clear();
             break;
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
-            UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
-            UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-            UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-            UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_CLEAR);
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+            UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);      
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
-            UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
-            UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-            UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-            UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SET);
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);           
             break;
         }
         case eMCHP_PSF_CAPS_MISMATCH:

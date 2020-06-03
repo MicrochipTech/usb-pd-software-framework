@@ -39,56 +39,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Constants
 // *****************************************************************************
 // *****************************************************************************
-
-/***********************************************************************************************/
-typedef enum
-{
-    eUPD_PIO0 = 0x00U,
-    eUPD_PIO1,
-    eUPD_PIO2,
-    eUPD_PIO3,
-    eUPD_PIO4,
-    eUPD_PIO5,
-    eUPD_PIO6,
-    eUPD_PIO7,
-    eUPD_PIO8,
-    eUPD_PIO9,
-    eUPD_PIO10,
-    eUPD_PIO11,
-    eUPD_PIO12,
-    eUPD_PIO13,
-    eUPD_PIO14,
-    eUPD_PIO15,
-    eUPD_PIO_UN_DEF = 0xFFU
-}eUPD_PIO_NUM_TYPE;
-
-/*Defines used for 'u8PIONum' argument in UPD_GPIOEnableDisable, UPD_GPIOSetDirection, 
-    UPD_GPIOSetBufferType functions*/
-
-/* Defines used for 'u8EnableDisable' argument in UPD_GPIOEnableDisable function */
-#define UPD_ENABLE_GPIO    0
-#define UPD_DISABLE_GPIO   1
-
-/* Defines used for 'u8Direction' argument in UPD_GPIOSetDirection function */
-#define UPD_GPIO_SETDIR_OUTPUT  0
-#define UPD_GPIO_SETDIR_INPUT   1
-
-/* Defines used for 'u8BufferType' argument in UPD_GPIOSetBufferType function */ 
-#define UPD_GPIO_SETBUF_PUSHPULL    0
-#define UPD_GPIO_SETBUF_OPENDRAIN   1
-
-/* Defines used for 'u8SetClear' argument in UPD_GPIOSetClearOutput function */
-#define UPD_GPIO_SET    0
-#define UPD_GPIO_CLEAR   1
-
 /* Defines used for 'u8IntrType' */
 #define UPD_GPIO_CLEAR_INTR			0
 /* use UPD_CFG_PIO_RISING_ALERT, UPD_CFG_PIO_FALLING_ALERT defines for rising & falling pio intr*/
 
-/*****************************************************************************************************/
-
 /* UPD SPI Opcodes definition */
-
 
 #define CONFIG_UPD350_SPI   1
 #define CONFIG_UPD350_I2C   0
@@ -184,29 +139,12 @@ typedef enum
 #define UPD_PIO_OVR4_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD8													  
 #define UPD_PIO_OVR5_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xDA		
 /**************************************************************************************************/
-												  
-/*Defines used for Configuring PIO register values */
-#define UPD_CFG_PIO_GPIO_ENABLE  		0x1
-#define UPD_CFG_PIO_DIRECTION    	    0x2
-#define UPD_CFG_PIO_BUFFER_TYPE         0x4
-#define UPD_CFG_PIO_DATAOUTPUT		    0x8
-#define UPD_CFG_PIO_RISING_ALERT		0x10
-#define UPD_CFG_PIO_FALLING_ALERT		0x20
-#define UPD_CFG_PIO_PULL_DOWN_ENABLE	BIT(6)
-#define UPD_CFG_PIO_PULL_UP_ENABLE		BIT(7)
 
-typedef enum
-{
-    UPD_GPIO_ASSERT = 0x00U,
-    UPD_GPIO_DE_ASSERT = UPD_CFG_PIO_DATAOUTPUT
-}eUPD_GPIO_DRIVE_TYPE;
-
-/*******************************************************************************/
 /* Defines for PIO Overridex Source Select Register (PIO_OVRx_SRC_SEL)*/
 /* defines for Override Select[4:0]*/
 #define UPD_PIO_OVR_SRC_SEL_VBUS_THR	0x11
 /* define for VBUS Threshold Select [7:5] field*/											  
-#define UPD_PIO_OVR_VBUS_THR_SEL_POS		5
+#define UPD_PIO_OVR_VBUS_THR_SEL_POS	5
 
 #define UPD_PIO_OVR_VSAFE0V_THR_MATCH		(0 << UPD_PIO_OVR_VBUS_THR_SEL_POS)
 #define UPD_PIO_OVR_VBUS0_THR_MATCH			(1 << UPD_PIO_OVR_VBUS_THR_SEL_POS)
@@ -590,102 +528,6 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadDat
 
 /*****************************************************************************************************
 	Function:
-		void UPD_GPIOEnableDisable(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8EnableDisable)
-
-	Summary:
-		To enable/disable the UPD's PIO's GPIO functionality.
-	
-	Devices Supported:
-		UPD350 REV A
-
-	Description:
-		This API enables/disables the GPIO functionality of UPD350's PIO whose 
-        PIO number is passed.
-		
-	Precondition:
-		None.
-
-	Parameters:
-		u8PortNum		-  Corresponding port number
-        u8PIONum        -  PIO number for which GPIO functionality has to be enabled or disabled.
-		u8EnableDisable	-  This parameter can take following values:
-                            UPD_ENABLE_GPIO - enables the GPIO functionality for the u8PIONum
-                            UPD_DISABLE_GPIO - disables the GPIO functionality for the u8PIONum
-
-	Return:
-		None.
-
-	Remarks:
-		None.
-**************************************************************************************************/
-void UPD_GPIOEnableDisable(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8EnableDisable);
-
-/*****************************************************************************************************
-	Function:
-		void UPD_GPIOSetDirection(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8Direction)
-
-	Summary:
-		API sets the PIO's direction.
-	
-	Devices Supported:
-		UPD350 REV A
-
-	Description:
-		This API is to set the UPD350's PIO to either input or output direction.
-		
-	Precondition:
-		None.
-
-	Parameters:
-		u8PortNum		-  Corresponding port number
-        u8PIONum        -  PIO number for which GPIO direction is to be set.
-		u8Direction	    -  This parameter can take following values:
-                            UPD_GPIO_SETDIR_OUTPUT - sets the output direction for u8PIONum.
-                            UPD_GPIO_SETDIR_INPUT - sets the input direction for the u8PIONum.
-
-	Return:
-		None.
-
-	Remarks:
-		None.
-**************************************************************************************************/
-void UPD_GPIOSetDirection(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8Direction);
-
-/*****************************************************************************************************
-	Function:
-		void UPD_GPIOSetBufferType(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8BufferType)
-
-	Summary:
-		API sets the output buffer type.
-	
-	Devices Supported:
-		UPD350 REV A
-
-	Description:
-		This API is to set the UPD350's PIO to Push/pull driver or open drain driver buffer type.
-		
-	Precondition:
-		None.
-
-	Parameters:
-		u8PortNum		-  Corresponding port number
-        u8PIONum        -  PIO number for which GPIO output buffer type has to be set.
-		u8BufferType	-  This buffer type parameter can take following values:
-                            UPD_GPIO_SETBUF_PUSHPULL - the output buffer for the corresponding GPIO 
-                                                       signal is configured as a push/pull driver.
-                            UPD_GPIO_SETBUF_OPENDRAIN - the output buffer for the corresponding GPIO 
-                                                       signal is configured as an open drain driver.
-
-	Return:
-		None.
-
-	Remarks:
-		None.
-**************************************************************************************************/
-void UPD_GPIOSetBufferType(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8BufferType);
-
-/*****************************************************************************************************
-	Function:
 		void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
 
 	Summary:
@@ -715,36 +557,6 @@ void UPD_GPIOSetBufferType(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8BufferType);
 **************************************************************************************************/
 
 void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType);
-
-/*****************************************************************************************************
-	Function:
-		void UPD_GPIOSetClearOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8SetClear)
-
-	Summary:
-		API sets or clears the output data of the GPIO.
-	
-	Devices Supported:
-		UPD350 REV A
-
-	Description:
-		This API is to sets or clears the UPD350's PIO data output to active or inactive.
-		
-	Precondition:
-		None.
-
-	Parameters:
-		u8PortNum		-  Corresponding port number
-        u8PIONum        -  PIO number for which GPIO data output is set or cleared.
-		u8SetClear	    -  This parameter can take following values:
-                            UPD_GPIO_SET - sets the Data output to Active (high for push-pull, high-z for open-drain).
-                            UPD_GPIO_CLEAR - sets the Data output to Inactive (low for push-pull or open-drain).
-	Return:
-		None.
-
-	Remarks:
-		None.
-**************************************************************************************************/
-void UPD_GPIOSetClearOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8SetClear);
 
 /*****************************************************************************************************
 	Function:

@@ -131,8 +131,8 @@
           <itemPath>../../../../Source/include/upd_interrupts.h</itemPath>
           <itemPath>../../../../Source/include/timer_defs.h</itemPath>
         </logicalFolder>
-        <logicalFolder name="f1" displayName="PB" projectFiles="true">
-          <itemPath>../../../../Source/PB/pb_mngr.h</itemPath>
+        <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
+          <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.h</itemPath>
         </logicalFolder>
       </logicalFolder>
     </logicalFolder>
@@ -200,10 +200,6 @@
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="Source" displayName="Source" projectFiles="true">
-        <logicalFolder name="PB" displayName="PB" projectFiles="true">
-          <itemPath>../../../../Source/PB/pb_helper.c</itemPath>
-          <itemPath>../../../../Source/PB/pb_mngr.c</itemPath>
-        </logicalFolder>
         <logicalFolder name="PD3_0" displayName="PD3_0" projectFiles="true">
           <itemPath>../../../../Source/PD3_0/int_globals.c</itemPath>
           <itemPath>../../../../Source/PD3_0/pd_main.c</itemPath>
@@ -219,6 +215,9 @@
           <itemPath>../../../../Source/PD3_0/upd_hw.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
+          <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
@@ -428,7 +427,7 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\PowerDelivery;..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC"/>
+                  value="..\..\PowerDelivery;..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC;..\..\..\..\Source\UPD_PIO"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>

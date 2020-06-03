@@ -8,7 +8,7 @@
    pt_mngr.c
 
  Description:
-   This file contains the function for Power Throttling State machine. 
+   This file contains the functions for Power Throttling functionality. 
 *******************************************************************************/
 /*******************************************************************************
 Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.

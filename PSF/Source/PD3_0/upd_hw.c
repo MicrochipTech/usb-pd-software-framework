@@ -166,51 +166,6 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
 
 }
 /******************************************************************************************************/
-void UPD_GPIOEnableDisable(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8EnableDisable)
-{
-    if(u8EnableDisable == UPD_ENABLE_GPIO)
-    {
-         UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_GPIO_ENABLE);
-    }
-    else /*UPD_DISABLE_GPIO*/
-    {
-        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_GPIO_ENABLE);
-    }   
-
-}
-/******************************************************************************************************/
-
-void UPD_GPIOSetDirection(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8Direction)
-{
-  
-    if(UPD_GPIO_SETDIR_OUTPUT == u8Direction)
-    {
-         UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_DIRECTION);
-    }
-   
-    else
-    {
-        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_DIRECTION);
-    }   
-
-}
-/******************************************************************************************************/
-
-void UPD_GPIOSetBufferType(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8BufferType)
-{
-  
-    if(UPD_GPIO_SETBUF_PUSHPULL == u8BufferType)
-    {
-         UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_BUFFER_TYPE);
-    }
-   
-    else
-    {
-        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_BUFFER_TYPE);
-    }   
-}
-
-/******************************************************************************************************/
 
 void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
 {
@@ -228,21 +183,6 @@ void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT
         /*write the value to the GPIO register*/
         UPD_RegWriteByte(u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum), u8PioData);
     }
-}
-
-/******************************************************************************************************/
-
-void UPD_GPIOSetClearOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8SetClear)
-{
-    if(UPD_GPIO_SET == u8SetClear)
-    {
-         UPD_RegByteSetBit (u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum), UPD_CFG_PIO_DATAOUTPUT);
-    }
-   
-    else
-    {
-        UPD_RegByteClearBit (u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum), UPD_CFG_PIO_DATAOUTPUT);
-    }   
 }
 
 /******************************************************************************************************/
