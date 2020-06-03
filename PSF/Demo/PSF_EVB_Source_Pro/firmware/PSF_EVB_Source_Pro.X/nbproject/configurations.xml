@@ -141,6 +141,9 @@
         <logicalFolder name="f2" displayName="PT" projectFiles="true">
           <itemPath>../../../../Source/PT/pt_mngr.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
+          <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -232,6 +235,9 @@
         </logicalFolder>
         <logicalFolder name="PT" displayName="PT" projectFiles="true">
           <itemPath>../../../../Source/PT/pt_mngr.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
+          <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
@@ -441,7 +447,7 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC;..\..\PowerDelivery;..\..\..\..\Source\PT"/>
+                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC;..\..\PowerDelivery;..\..\..\..\Source\PT;..\..\..\..\Source\UPD_PIO"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>

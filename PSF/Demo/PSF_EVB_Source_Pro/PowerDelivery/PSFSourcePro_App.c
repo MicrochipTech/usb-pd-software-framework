@@ -81,21 +81,19 @@ void SAMD20_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent)
 {
     if ((UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH == u8PDEvent)
     {
-        UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
-        UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-        UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-        UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_CLEAR);      
+        UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+        UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+        UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);      
     }
     else if ((UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH == u8PDEvent)
     {
-        UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
-        UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-        UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-        UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SET);           
+        UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+        UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+        UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);           
     }
     else if ((UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT == u8PDEvent)
     {
-        UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2, UPD_DISABLE_GPIO);
+        UPDPIO_Disable(u8PortNum, eUPD_PIO2);
     }
     else
     {
