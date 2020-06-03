@@ -54,15 +54,16 @@ static void UPD_GPIOGenericOutputInit(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8Pi
 
 void PWRCTRL_initialization(UINT8 u8PortNum)
 {
-    UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
-                                        gasCfgStatusData.sPerPortData[u8PortNum].u8mode_VBUS_DIS);
+    /* VBUS_DISCHARGE Init */
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eVBUS_DIS_FUNC);
+    
     #if (TRUE == INCLUDE_PD_SOURCE)
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, \
                                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS);
 
-    UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
-                                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN);
-       
+    /* DC_DC_EN Init */
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eDC_DC_EN_FUNC);
+    
     #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
     for(UINT8 u8VSELIndex = SET_TO_ZERO; u8VSELIndex < PWRCTRL_VSEL_PIO_MAX_COUNT; u8VSELIndex++)
     {
@@ -144,50 +145,39 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
 /************************************************************************************/
 void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
 { 
-    UINT8 u8VbusDisMode = gasCfgStatusData.sPerPortData[u8PortNum].u8mode_VBUS_DIS;
     if (u8EnaDisVBUSDIS == TRUE)
     {
-        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
-                u8VbusDisMode, (UINT8)UPD_GPIO_ASSERT);
+        UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VBUS_DIS_STATUS; 
     }
     else
     {
-        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_VBUS_DIS, \
-                u8VbusDisMode, (UINT8)UPD_GPIO_DE_ASSERT);
+        UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_VBUS_DIS_STATUS); 
     }
-
-    /*Hook to modify or overwrite the default Port Power control VBUS discharge*/
-    MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH(u8PortNum, u8EnaDisVBUSDIS);
 
 }
 
 void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
 {
-    #if (TRUE == INCLUDE_PD_SOURCE)
-    UINT8 u8DCDCEnMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN; 
-    UINT8 u8DCDCEnPio = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN;
+#if (TRUE == INCLUDE_PD_SOURCE)
     
     if (TRUE == u8EnaDisDCDCEn)
     {
-        UPD_GPIOUpdateOutput(u8PortNum, u8DCDCEnPio, u8DCDCEnMode, (UINT8)UPD_GPIO_ASSERT);
+        UPDPIO_DriveHigh(u8PortNum, eUPD_PIO6);
         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_DC_DC_STATUS;
     }
     else
     {
-        UPD_GPIOUpdateOutput(u8PortNum, u8DCDCEnPio, u8DCDCEnMode, (UINT8)UPD_GPIO_DE_ASSERT);
+        UPDPIO_DriveLow(u8PortNum, eUPD_PIO6);
         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_DC_DC_STATUS);
     }
     
-    #endif
-    
-    /* Hook to modify or overwrite the Port Control DC_DC_EN enable/disable */
-    MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn); 
+#endif
 }
 /***********************************************************************************************/
 void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)

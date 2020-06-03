@@ -94,7 +94,8 @@ void SAMD20_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent)
     else if ((UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT == u8PDEvent)
     {
         UPDPIO_Disable(u8PortNum, eUPD_PIO2);
-    }    else
+    }    
+    else
     {
         /* Do Nothing for other PD Events */
     } 
@@ -206,18 +207,34 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister(PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
                 EIC_InterruptEnable(PORT_PIN_PA15);
             }
+            else
+            {
+                /* Do Nothing */
+            }
             break;
         }
         case eI2C_DC_DC_ALERT_FUNC:
         {
-            /*Not applicable for Source lite configuration*/
+            /*Not applicable for Source Lite */
             break;
         }
         case eSPI_CHIP_SELECT_FUNC:
+        {
+            /* To be implemented */
+        }
         case eVBUS_DIS_FUNC:
+        {
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_GPIO_SETBUF_PUSHPULL);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+            break;             
+        }
         case eDC_DC_EN_FUNC:
         {
-            /*To be implemented*/
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO6);
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO6, UPD_GPIO_SETBUF_PUSHPULL);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO6);
+            break; 
         }
         case eORIENTATION_FUNC:
         {
