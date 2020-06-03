@@ -53,9 +53,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Interface Functions
 // *****************************************************************************
 // *****************************************************************************
-void SAMD20_SetMCUIdle(); 
+void App_SetMCUIdle(); 
 
-UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent);
+UINT8 App_HandlePSFEvents(UINT8 u8PortNum, UINT8 u8PDEvent);
 
 void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc);
 

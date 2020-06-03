@@ -55,7 +55,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Local Functions                                                   */
 /* ************************************************************************** */
 /* ************************************************************************** */
-void SAMD20_SetMCUIdle()
+void App_SetMCUIdle()
 {
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     
@@ -77,7 +77,7 @@ void SAMD20_SetMCUIdle()
     TC0_TimerStart();
 }
 
-void SAMD20_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent)
+void App_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent)
 {
     if ((UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH == u8PDEvent)
     {
@@ -106,7 +106,7 @@ void SAMD20_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent)
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
+UINT8 App_HandlePSFEvents(UINT8 u8PortNum, UINT8 u8PDEvent)
 {
     UINT8 u8RetVal = FALSE;
     
@@ -114,19 +114,19 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
     {
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
-            SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
+            App_DriveOrientationLED(u8PortNum, u8PDEvent);
             break;
         }
         
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
-            SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
+            App_DriveOrientationLED(u8PortNum, u8PDEvent);
             break;
         }
         
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
-            SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
+            App_DriveOrientationLED(u8PortNum, u8PDEvent);
             break;
         }
 		

@@ -55,7 +55,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Local Functions                                                   */
 /* ************************************************************************** */
 /* ************************************************************************** */
-void SAMD20_SetMCUIdle()
+void App_SetMCUIdle()
 {
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     
@@ -83,7 +83,7 @@ void SAMD20_SetMCUIdle()
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
+UINT8 App_HandlePSFEvents(UINT8 u8PortNum, UINT8 u8PDEvent)
 {
     UINT8 u8RetVal = FALSE;
     
