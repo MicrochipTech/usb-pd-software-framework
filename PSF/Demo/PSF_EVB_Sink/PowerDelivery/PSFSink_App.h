@@ -45,6 +45,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+#include <PSF_APIHook.h>
 #include "psf_stdinc.h"
 
 // *****************************************************************************
@@ -55,6 +56,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 void SAMD20_SetMCUIdle(); 
 
 UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent);
+
+void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc);
+
 
 #endif /* _PSFSINK_APP_H */
 

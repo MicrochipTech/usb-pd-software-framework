@@ -175,6 +175,48 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
 /**************************************************************************************/
 
 
+void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc)
+{
+    switch(eGPIOFunc)
+    {
+        case eUPD350_RESET_FUNC:
+        {
+            /*To be implemented*/
+            break;
+        }
+        case eUPD350_ALERT_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                PORT_PinInputEnable(PORT_PIN_PA14);
+                PORT_PinWrite(PORT_PIN_PA14, TRUE);
+                EIC_CallbackRegister(PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
+                EIC_InterruptEnable(PORT_PIN_PA14);
+            }
+            else if (PORT1 == u8PortNum)
+            {
+                PORT_PinInputEnable(PORT_PIN_PA15);
+                PORT_PinWrite(PORT_PIN_PA15, TRUE);
+                EIC_CallbackRegister(PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
+                EIC_InterruptEnable(PORT_PIN_PA15);
+            }
+            break;
+        }
+        case eI2C_DC_DC_ALERT_FUNC:
+        case eSPI_CHIP_SELECT_FUNC:
+        case eVBUS_DIS_FUNC:
+        case eDC_DC_EN_FUNC:
+        case eORIENTATION_FUNC:
+        case eSNK_CAPS_MISMATCH_FUNC:
+        case eSNK_1_5A_IND_FUNC:
+        case eSNK_3A_IND_FUNC:
+        {
+            /* To be implemented*/
+            break;
+        }    
+    }
+}
+
 /* *****************************************************************************
  End of File
  */
