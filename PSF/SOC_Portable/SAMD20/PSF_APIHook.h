@@ -1468,7 +1468,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                                                
 ****************************************************************************************************/
-#define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   PDStack_Events(u8PortNum, ePSFNotification)
+#define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   App_HandlePSFEvents(u8PortNum, ePSFNotification)
  
 /*******************************************************************************
 Function:
@@ -1485,12 +1485,12 @@ Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_SET_MCU_IDLE()   SAMD20_SetMCUIdle()
+        #define MCHP_PSF_HOOK_SET_MCU_IDLE()   App_SetMCUIdle()
     </code>
 Remarks:
 User definition of this Hook function is optional.                          
 *******************************************************************************/  
-#define MCHP_PSF_HOOK_SET_MCU_IDLE          SAMD20_SetMCUIdle()
+#define MCHP_PSF_HOOK_SET_MCU_IDLE          App_SetMCUIdle()
 
 // *****************************************************************************
 // *****************************************************************************
