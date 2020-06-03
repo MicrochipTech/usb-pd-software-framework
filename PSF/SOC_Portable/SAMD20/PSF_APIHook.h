@@ -393,6 +393,143 @@ Example :
 **************************************************************************************************/
 #define MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER     1
 
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: GPIO Control
+// *****************************************************************************
+// *****************************************************************************
+
+//Todo: J: Add comment explanation from design document
+
+typedef enum {
+    eUPD350_RESET_FUNC,
+    eUPD350_ALERT_FUNC,
+    eI2C_DC_DC_ALERT_FUNC,
+    eSPI_CHIP_SELECT_FUNC,
+    eVBUS_DIS_FUNC,
+    eDC_DC_EN_FUNC,
+    eORIENTATION_FUNC,
+    eSNK_CAPS_MISMATCH_FUNC,
+    eSNK_1_5A_IND_FUNC,
+    eSNK_3A_IND_FUNC
+} ePSF_GPIO_Functionality;
+
+typedef enum {
+    eGPIO_Deassert,
+    eGPIO_assert
+} ePSF_GPIO_DriveVal;
+
+
+/**************************************************************************
+Function:
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc)
+Summary:
+    Hook to initialize all the GPIO functionality pins in application layer.
+Description:
+    PSF calls this API to initialize the ePSF_GPIO_Functionality pins in 
+    application layer.User has to define an appropriate function with UINT8 and 
+    ePSF_GPIO_Functionality as argument.User can assign any PIO either from 
+    UDP350 or MCU for any GPIO functionality defined.
+    Drive of this API will be controlled by API MCHP_PSF_HOOK_GPIO_FUNC_DRIVE.
+Conditions:
+    None.
+Input:
+    u8PortNum - Port number of the device. It takes value between 0 to 
+                (CONFIG_PD_PORT_COUNT-1).
+    ePSF_GPIO_Functionality-  Passes the GPIO functionality type that has to be initialised by the application. 
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIO_Func) 
+        App_GPIOContol_Initialisation(u8PortNum, eGPIO_Func)
+        void App_GPIOControl_Initialisation(UINT8 u8PortNum, ePSF_GPIO_Functionality eGPIOFunc)
+        {
+            switch(eGPIOFunc)
+            {
+                case eDC_DC_EN_FUNC:
+                {
+                    //Initialise the GPIO assigned for DC_DC
+                    // Drive the GPIO in default state
+                    break;
+                }
+                case eVBUS_DIS_FUNC:
+                {
+                    //Initialise the GPIO assigned for VBUS_Discharge functionality
+                    //Drive the GPIO in default state
+                }
+            }
+
+        }
+
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory as well as it is mandatory to define functionality for ePSF_GPIO_Functionality.
+ **************************************************************************/
+#define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc)
+
+/**************************************************************************
+Function:
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eGPIOFunc, eDriveVal)
+Summary:
+    Hook to drive GPIOs assigned to GPIO functionality pins in application layer.
+Description:
+    PSF calls this API to drive the ePSF_GPIO_Functionality pins in application 
+    layer as per  drive value ePSF_GPIO_DriveVal. User has to define an 
+    appropriate function with UINT8, ePSF_GPIO_Functionality, ePSF_GPIO_DriveVal 
+    as argument. User can assign any PIO either from UDP350 or MCU for any GPIO 
+    functionality defined.
+Conditions:
+    None.
+Input:
+    u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+    eGPIOFunc-  Passes the GPIO functionality type that has to be initialized by 
+                the application. 
+    eDriveVal ? Drive value for the pin
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE (u8PortNum, eGPIO_Func, eDriveVal) 
+        App_GPIOContol_Drive(u8PortNum, eGPIO_Func, eDriveVal)
+        void App_GPIOContol_Drive(UINT8 u8PortNum, ePSF_GPIO_Functionality, eGPIOFunc, ePSF_GPIO_DriveVal eDriveVal )
+        {
+            switch(eGPIOFunc)
+            {
+                case eDC_DC_EN_FUNC:
+                {
+                    if (eGPIO_Assert == eDriveVal)
+                    {
+                        // Assert the DC_DC pin	
+                    }
+                    else
+                    {
+                        // De-assert the DC_DC pin
+                    }
+                    break;
+                }
+                case eVBUS_DIS_FUNC:
+                {
+                    if (eGPIO_Assert == eDriveVal)
+                    {
+                        // Assert the VBUS Discharge pin	
+                    }
+                    else
+                    {
+                        // De-assert the VBUS Discharge pin
+                    }
+                    break;
+                }
+            }
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory as well as it is mandatory 
+    to define functionality for ePSF_GPIO_Functionality.
+ *************************************************************************/
+#define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eGPIOFunc, eDriveVal)
+        
 // *****************************************************************************
 // *****************************************************************************
 // Section: UPD350 IRQ Control
