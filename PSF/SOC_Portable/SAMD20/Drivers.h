@@ -120,14 +120,10 @@
 
 #define SAMD20_TIMER_INSTANCE   0
 #define SAMD20_SPI_INSTANCE     0
-#define SAMD20_PORT0_EIC_PIN    EIC_PIN_14
-#define SAMD20_PORT1_EIC_PIN    EIC_PIN_15
 
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-#define SAMD20_DCDC_ALERT0      PORT_PIN_PA02
-#define SAMD20_DCDC_ALERT1      PORT_PIN_PA03
 #define SAMD20_I2C_INSTANCE     3
-#endif //#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#endif
 
 #define SAMD20_UART_INSTANCE  1
 
@@ -248,6 +244,25 @@ UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writ
 **************************************************************************************************/
 UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength);
 
+/****************************************************************************
+    Function:
+        SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
+    Summary:
+        UPD350 Alert Callback wrapper function.  
+    Description:
+        This API serves as a wrapper for PSF's function MchpPSF_UPDIrqHandler to 
+        register as callback for SAMD20's function EIC_CallbackRegister.
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
+    Return:
+        None.
+    Remarks:
+        None
+**************************************************************************************************/
+void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum);
+
 /*****************************************************************************/
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 /****************************************************************************
@@ -337,43 +352,24 @@ UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u
 UINT8 SAMD20_I2CDCDCIsBusyDriver(void);
 /****************************************************************************
     Function:
-        SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum)
+        void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum)
     Summary:
-        Function to initialize SOC DC DC alert 
+        I2C DC DC Alert callback wrapper function.  
     Description:
-        This API initializes the SOC DC DC alert functionality for the given port.
+        This API serves as a wrapper for DC DC alert interrupt handler to 
+        register as callback for SAMD20's function EIC_CallbackRegister.
     Conditions:
         None
     Input:
         u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
     Return:
-        None
+        None.
     Remarks:
         None
 **************************************************************************************************/
-
-void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum);
+void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum);
 
 #endif
-/****************************************************************************
-    Function:
-        void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
-    Summary:
-        Wrapper function to initialize UPD350 Alert configured GPIOs  
-    Description:
-        This API serves as a wrapper between PSF stack defined Alert initialization function 
-        MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT and Harmony generated generated code to initialize the GPIO for
-        UPD350 Alert functionality port specifically.
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void SAMD20_UPD350AlertInit(UINT8 u8PortNum);
 
 /****************************************************************************
     Function:

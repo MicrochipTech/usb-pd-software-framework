@@ -128,7 +128,7 @@ static void SAMD20_HWTimerCallback(TC_TIMER_STATUS status, uintptr_t context)
         MchpPSF_PDTimerHandler();
     }
 }
-static void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
+void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
 {
     /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
     MchpPSF_UPDIrqHandler(u8PortNum);
@@ -208,25 +208,6 @@ void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum)
     MPQDCDC_HandleAlert(u8PortNum);
 }
 
-void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum)
-{
-    /* MCU PIO routed to I2C_DCDC_alert line configured for low level and internal pullup*/
-    if (PORT0 == u8PortNum)
-    {
-        PORT_PinInputEnable(SAMD20_DCDC_ALERT0);
-        PORT_PinWrite(SAMD20_DCDC_ALERT0, TRUE);
-        EIC_CallbackRegister((EIC_PIN)SAMD20_DCDC_ALERT0, SAMD20_I2CDCDCAlertCallback, PORT0);
-        EIC_InterruptEnable((EIC_PIN)SAMD20_DCDC_ALERT0);
-    }
-    else if (PORT1 == u8PortNum)
-    {
-        PORT_PinInputEnable(SAMD20_DCDC_ALERT1);
-        PORT_PinWrite(SAMD20_DCDC_ALERT1, TRUE);
-        EIC_CallbackRegister((EIC_PIN)SAMD20_DCDC_ALERT1, SAMD20_I2CDCDCAlertCallback, PORT1);
-        EIC_InterruptEnable((EIC_PIN)SAMD20_DCDC_ALERT1);
-    }
-}
-
 UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
 {
     UINT8 u8Return = FALSE;
@@ -259,30 +240,6 @@ UINT8 SAMD20_I2CDCDCIsBusyDriver(void)
     return SAMD20_I2cDCDCIsBusy(SAMD20_I2C_INSTANCE);
 }
 #endif
-/*****************************************************************************/
-/*****************************************************************************/
-/*******************************UPD350 Alert APIs******************************************/
-/*****************************************************************************/
-void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
-{
-    /* MCU PIO routed to UPD350 line configured for low level and internal pullup*/
-    if (PORT0 == u8PortNum)
-    {
-        PORT_PinInputEnable((PORT_PIN)SAMD20_PORT0_EIC_PIN);
-        PORT_PinWrite((PORT_PIN)SAMD20_PORT0_EIC_PIN, TRUE);
-        EIC_CallbackRegister((EIC_PIN)SAMD20_PORT0_EIC_PIN, SAMD20_UPD350AlertCallback, PORT0);
-        EIC_InterruptEnable((EIC_PIN)SAMD20_PORT0_EIC_PIN);
-    }
-    else if (PORT1 == u8PortNum)
-    {
-        PORT_PinInputEnable((PORT_PIN)SAMD20_PORT1_EIC_PIN);
-        PORT_PinWrite((PORT_PIN)SAMD20_PORT1_EIC_PIN, TRUE);
-        EIC_CallbackRegister((EIC_PIN)SAMD20_PORT1_EIC_PIN, SAMD20_UPD350AlertCallback, PORT1);
-        EIC_InterruptEnable((EIC_PIN)SAMD20_PORT1_EIC_PIN);
-    }
-}
-
-/*****************************************************************************/
 
 /*****************************************************************************/
 /*********************************UPD350 Reset APIs*****************************/
