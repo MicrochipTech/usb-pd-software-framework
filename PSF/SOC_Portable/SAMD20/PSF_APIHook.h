@@ -364,44 +364,6 @@ Example :
 // Section: UPD350 Reset Control
 // *****************************************************************************
 // *****************************************************************************
-/**************************************************************************
-Function:
-    MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum)
-Summary:
-    Initializes the SOC GPIOs connected to the RESET_N lines of UPD350s
-Description:
-    This hook initializes the SOC GPIOs connected to the RESET_N lines of Port's UPD350. It is 
-    recommended to connect a single GPIO to the reset line of all UPD350s. User can also define a  
-    separate GPIO for each port. As the UPD350 RESET_N is active low signal, SOC should initialize 
-    the GPIO to be high by default. Define relevant function that has port number as argument 
-    without return type.
-Conditions:
-    None.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum)      updreset_init(u8PortNum)
-        void updreset_init(UINT8 u8PortNum);
-        void updreset_init(UINT8 u8PortNum)
-        {
-            // If single SOC GPIO is connected to all the UPD350's, do initialisation only once 
-            // when PortNum is '0'. If separate GPIOs are used for each port UPD350, do 
-			//initialisation port specifically
-            if (0 == u8PortNum)
-            {
-                //Initialization of SOC GPIO connected to UPD350 reset lines
-                //Make the gpio line high by default
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory                      
-*************************************************************************/
-#define MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum) SAMD20_UPD350ResetGPIOInit(u8PortNum)              
-
 /**********************************************************************
 Function:
     MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(u8PortNum)

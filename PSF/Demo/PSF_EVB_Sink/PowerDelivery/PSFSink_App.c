@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PDSourcePro_App.c
+    PSFSink_App.c
 
   Summary:
     User Application Source file
@@ -173,15 +173,15 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
     return u8RetVal;
 }
 /**************************************************************************************/
-
-
 void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc)
 {
     switch(eGPIOFunc)
     {
         case eUPD350_RESET_FUNC:
         {
-            /*To be implemented*/
+            /* UPD350 RESET_N pin active low; set to internal pull up by default*/
+            UPD350_RESET_InputEnable();
+            PORT_PinWrite(PORT_PIN_PA00, TRUE);
             break;
         }
         case eUPD350_ALERT_FUNC:
@@ -203,10 +203,25 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             break;
         }
         case eI2C_DC_DC_ALERT_FUNC:
+        {
+            /*Not applicable for Sink*/
+            break;
+        }
         case eSPI_CHIP_SELECT_FUNC:
         case eVBUS_DIS_FUNC:
+        {
+            /*To be implemented*/
+        }
         case eDC_DC_EN_FUNC:
+        {
+            /*Not Applicable for Sink*/
+            break;
+        }
         case eORIENTATION_FUNC:
+        {
+            /*Initialization for Orientation pin not applicable*/
+            break;
+        }
         case eSNK_CAPS_MISMATCH_FUNC:
         case eSNK_1_5A_IND_FUNC:
         case eSNK_3A_IND_FUNC:
