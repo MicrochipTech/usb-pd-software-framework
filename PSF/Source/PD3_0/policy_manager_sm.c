@@ -474,19 +474,64 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     }
 #endif
 
-#if (TRUE == INCLUDE_POWER_THROTTLING)
-    if (TRUE == DPM_IS_PT_ENABLED)
-    {
-        /* Busy is the only notification applicable for PT */
-        if (eMCHP_PSF_BUSY == eDPMNotification)
-        {
-            PT_HandleDPMBusy(u8PortNum); 
-        }
-    }
-#endif 
     /* DPM notifications that need to be handled by stack applications must
        be added here before calling the user function. */
     
+    switch(eDPMNotification)
+    {
+        case eMCHP_PSF_TYPEC_DETACH_EVENT:
+        {
+            MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
+            #if (TRUE == INCLUDE_PD_SINK) 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
+            #endif
+            break;
+        }
+        case eMCHP_PSF_TYPEC_CC1_ATTACH:
+        {
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
+            break;
+        }
+        case eMCHP_PSF_TYPEC_CC2_ATTACH:
+        {
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
+            break;
+        }
+        case eMCHP_PSF_CAPS_MISMATCH:
+        {
+            #if (TRUE == INCLUDE_PD_SINK)
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_ASSERT);
+            #endif
+            break;
+        }
+        case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
+        {
+            #if (TRUE == INCLUDE_PD_SINK)
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
+            #endif
+            break;
+        }
+        case eMCHP_PSF_BUSY:
+        {
+            #if (TRUE == INCLUDE_POWER_THROTTLING)
+            if (TRUE == DPM_IS_PT_ENABLED)
+            {
+                /* Busy is the only notification applicable for PT */
+                PT_HandleDPMBusy(u8PortNum); 
+            }
+            #endif
+            break;
+        }
+        default:
+            break;
+    }
+    
+    /*Notify the application layer*/
     u8Return &= MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eDPMNotification); 
     return u8Return;
 }

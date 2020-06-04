@@ -55,8 +55,6 @@ void App_SetMCUIdle();
 
 UINT8 App_HandlePSFEvents(UINT8 u8PortNum, UINT8 u8PDEvent);
 
-void App_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent);
-
 void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc);
 
 void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc,

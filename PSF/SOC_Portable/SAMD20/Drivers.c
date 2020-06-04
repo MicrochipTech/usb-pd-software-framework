@@ -215,6 +215,16 @@ UINT8 SAMD20_I2CDCDCIsBusyDriver(void)
 /*****************************************************************************/
 /*********************************UPD350 Reset APIs*****************************/
 /*****************************************************************************/
+void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum)
+{
+    /*Current implementation supports common reset pin for all ports
+      Hence, parameter u8PortNum is not considered*/
+    
+    /*PORT_PIN_PA00*/
+    /* UPD350 RESET_N pin active low; set to internal pull up by default*/
+     UPD350_RESET_InputEnable();
+     PORT_PinWrite(UPD350_RESET_PIN, TRUE);
+}
 
 void SAMD20_ResetUPD350(UINT8 u8PortNum)
 {
@@ -295,27 +305,6 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 /*****************************************************************************/
 #if (TRUE == INCLUDE_PD_SINK)
 
-void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current)
-{
-    /* Clear the 1.5A_IND and 3A_IND */
-    SNK_1_5A_IND_Clear();
-    SNK_3A_IND_Clear();
-    
-    if (u16Current >= DPM_3000mA)
-    {
-        SNK_3A_IND_Set();
-    }
-    else if (u16Current >= DPM_1500mA)
-    {
-        SNK_1_5A_IND_Set();
-    }
-    else
-    {
-        //Do nothing
-    }
-}
-
-
 void SAMD20_Drive_DAC_I(UINT16 u16DACData)
 {
     /*SAMD20 intenally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
@@ -358,17 +347,6 @@ void SAMD20_UART_Write_String(char* pbyMessage)
 
 
 #endif //CONFIG_HOOK_DEBUG_MSG
-
-void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum)
-{
-    /*Current implementation supports common reset pin for all ports
-      Hence, parameter u8PortNum is not considered*/
-    
-    /*PORT_PIN_PA00*/
-    /* UPD350 RESET_N pin active low; set to internal pull up by default*/
-     UPD350_RESET_InputEnable();
-     PORT_PinWrite(UPD350_RESET_PIN, TRUE);
-}
 
 /* *****************************************************************************
  End of File
