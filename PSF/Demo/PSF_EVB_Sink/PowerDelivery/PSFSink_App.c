@@ -269,9 +269,16 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case eVBUS_DIS_FUNC:
         {
-            /*To be implemented*/
-            break; 
-        }
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
+            }
+            else
+            {
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+            }
+            break;
+        }            
         case eDC_DC_EN_FUNC:
         {
             /*Not Applicable for Sink*/

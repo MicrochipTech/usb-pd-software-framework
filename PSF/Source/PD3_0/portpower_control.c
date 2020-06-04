@@ -147,13 +147,13 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
 { 
     if (u8EnaDisVBUSDIS == TRUE)
     {
-        UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eVBUS_DIS_FUNC, eGPIO_ASSERT);
         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VBUS_DIS_STATUS; 
     }
     else
     {
-        UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eVBUS_DIS_FUNC, eGPIO_DEASSERT);
         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_VBUS_DIS_STATUS); 
     }
