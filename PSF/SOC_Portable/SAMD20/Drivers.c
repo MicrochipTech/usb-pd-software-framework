@@ -128,11 +128,6 @@ static void SAMD20_HWTimerCallback(TC_TIMER_STATUS status, uintptr_t context)
         MchpPSF_PDTimerHandler();
     }
 }
-void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
-{
-    /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
-    MchpPSF_UPDIrqHandler(u8PortNum);
-}
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -144,6 +139,14 @@ UINT8 SAMD20_HWTimerInit(void)
     /*Timer is initialized and started to run for 1ms continously*/
     SAMD20Timer_Initialise(SAMD20_TIMER_INSTANCE);
     return TRUE;
+}
+/*****************************************************************************/
+/*********************************Alert APIs*****************************/
+/*****************************************************************************/
+void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
+{
+    /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
+    MchpPSF_UPDIrqHandler(u8PortNum);
 }
 /*****************************************************************************/
 /*****************************************************************************/
@@ -164,39 +167,7 @@ UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Wri
 {
     return SAMD20SPI_WriteRead(SAMD20_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
 }
-void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
-{
-    if (TRUE == u8EnableComm)
-    {
-        /* Drive low the CS to enable the communication*/
-        if (PORT0 == u8PortNum)
-        {
-            /*PORT_PIN_PA10*/
-            SPI_SS_0_Clear();
-        }
-        #if (TRUE == INCLUDE_PD_SOURCE) 
-        else if(PORT1 == u8PortNum)
-        {
-            /*PORT_PIN_PA01*/
-            SPI_SS_1_Clear();
-        } 
-        #endif
-    }
-    else
-    {
-        /* Drive high the CS to disable the communication for the port*/
-        if (PORT0 == u8PortNum)
-        {
-            SPI_SS_0_Set();
-        }
-        #if (TRUE == INCLUDE_PD_SOURCE) 
-        else if(PORT1 == u8PortNum)
-        {
-            SPI_SS_1_Set();
-        }
-        #endif
-    }
-}
+
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 /*****************************************************************************/
 /*****************************************************************************/

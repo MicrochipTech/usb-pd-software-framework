@@ -294,6 +294,76 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
     }
 }
 
+void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc,
+                                    eMCHP_PSF_GPIO_DRIVE_VAL eGPIODrive)
+{
+    switch(eGPIOFunc)
+    {
+        case eUPD350_ALERT_FUNC:
+        {
+            /*Alert is an input pin. Drive not applicable*/
+            break;
+        }
+        case eI2C_DC_DC_ALERT_FUNC:
+        {
+            /*DC-DC Alert is an input pin. Drive not applicable*/
+            break;
+        }
+        case eUPD350_RESET_FUNC:
+        {
+            /* To be implemented*/
+            break;
+        }
+        case eSPI_CHIP_SELECT_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                /* Drive low the CS to enable the communication*/
+                if (PORT0 == u8PortNum)
+                {
+                    /*PORT_PIN_PA10*/
+                    SPI_SS_0_Clear();
+                }
+                else if(PORT1 == u8PortNum)
+                {
+                    /*PORT_PIN_PA01*/
+                    SPI_SS_1_Clear();
+                } 
+            }
+            else
+            {
+                /* Drive high the CS to disable the communication for the port*/
+                if (PORT0 == u8PortNum)
+                {
+                    SPI_SS_0_Set();
+                }
+                else if(PORT1 == u8PortNum)
+                {
+                    SPI_SS_1_Set();
+                }
+            }
+            break; 
+        }
+        case eVBUS_DIS_FUNC:
+        case eDC_DC_EN_FUNC:
+        case eORIENTATION_FUNC:  
+        {
+            /*To be implemented*/
+            break; 
+        }
+        
+        case eSNK_CAPS_MISMATCH_FUNC:
+        case eSNK_1_5A_IND_FUNC:
+        case eSNK_3A_IND_FUNC:
+        {
+            /* Not applicable for Source operation*/
+            break;
+        }    
+    }
+    
+    
+    
+}
 
 /* *****************************************************************************
  End of File
