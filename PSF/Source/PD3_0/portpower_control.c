@@ -180,10 +180,9 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
 #endif
 }
 /***********************************************************************************************/
+#if (TRUE == INCLUDE_PD_SINK)
 void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
 {
-   #if (TRUE == INCLUDE_PD_SINK)
-
     UINT8 u8EnSinkMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK; 
     UINT8 u8EnSinkPio = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
 
@@ -214,14 +213,10 @@ void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_SINK_STATUS);
     }
     
-    #endif
-    
 }
 /************************************************************************************/
 void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
-    #if (TRUE == INCLUDE_PD_SINK)
-
     if (u16Current > gasCfgStatusData.sPerPortData[u8PortNum].u16SnkMaxOperatingCurInmA)
     {
         u16Current = gasCfgStatusData.sPerPortData[u8PortNum].u16SnkMaxOperatingCurInmA;
@@ -239,32 +234,32 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
     }
     
     /* clear the 3A and 1.5A IND status*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_1_5A_IND_FUNC, eGPIO_DEASSERT);
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_3A_IND_FUNC, eGPIO_DEASSERT); 
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= \
             ~(DPM_PORT_IO_30_IND_STATUS | DPM_PORT_IO_15_IND_STATUS);
     
     if (u16Current >= DPM_3000mA)
     {
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_3A_IND_FUNC, eGPIO_ASSERT); 
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_30_IND_STATUS;
     }
     else if (u16Current >= DPM_1500mA)
     {
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_1_5A_IND_FUNC, eGPIO_ASSERT);
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_15_IND_STATUS;
     }
     else
     {
         //Do nothing
     }
-   
     PWRCTRL_Drive_DAC_I(u8PortNum, u16Current);
     
     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16VBUSVoltage,u16Current);
-    
-    #endif
 }
 
 void PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
 {
-#if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16MaxNegoCurInmA =0, u16DacData =0;
     UINT16 u16MaxOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MaxOutVoltInmV;
     UINT16 u16MinOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MinOutVoltInmV;
@@ -323,6 +318,6 @@ void PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
     
     //value calculated in u16DacData should reflect in DAC_I pin
     MCHP_PSF_HOOK_DRIVE_DAC_I(u16DacData);
-    
-#endif //#if (TRUE == INCLUDE_PD_SINK)
 }
+#endif //#if (TRUE == INCLUDE_PD_SINK)
+

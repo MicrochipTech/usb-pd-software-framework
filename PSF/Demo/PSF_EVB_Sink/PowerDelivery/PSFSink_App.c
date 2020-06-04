@@ -89,48 +89,7 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, UINT8 u8PDEvent)
     
     switch(u8PDEvent)
     {
-        case eMCHP_PSF_TYPEC_DETACH_EVENT:
-        {
-            UPDPIO_Disable(u8PortNum, eUPD_PIO2);
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
-                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            SNK_CAP_MISMATCH_Clear();
-            break;
-        }
-        case eMCHP_PSF_TYPEC_CC1_ATTACH:
-        {
-            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
-            UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);      
-            break;
-        }
-        case eMCHP_PSF_TYPEC_CC2_ATTACH:
-        {
-            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
-            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);           
-            break;
-        }
-        case eMCHP_PSF_CAPS_MISMATCH:
-        {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            SNK_CAP_MISMATCH_Set();
-            break;
-        }
-        case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
-        {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
-                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            SNK_CAP_MISMATCH_Clear();
-            break;
-        }
-        
-        case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
-        {
-            break; 
-        }
-        
-		case eMCHP_PSF_UPDS_IN_IDLE:
+        case eMCHP_PSF_UPDS_IN_IDLE:
 		{
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
 			MCHP_PSF_HOOK_SET_MCU_IDLE;
@@ -152,6 +111,32 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, UINT8 u8PDEvent)
             break;
         }
         
+        case eMCHP_PSF_TYPEC_DETACH_EVENT:
+        {
+            break;
+        }
+        case eMCHP_PSF_TYPEC_CC1_ATTACH:
+        {
+            break;
+        }
+        case eMCHP_PSF_TYPEC_CC2_ATTACH:
+        {
+            break;
+        }
+        case eMCHP_PSF_CAPS_MISMATCH:
+        {
+            break;
+        }
+        case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
+        {
+            break; 
+        }
+       
         case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
         {
             break; 
@@ -206,9 +191,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eUPD350_RESET_FUNC:
         {
-            /* UPD350 RESET_N pin active low; set to internal pull up by default*/
-            UPD350_RESET_InputEnable();
-            PORT_PinWrite(PORT_PIN_PA00, TRUE);
+            /*To be implemented*/
             break;
         }
         case eSPI_CHIP_SELECT_FUNC:
@@ -230,7 +213,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eORIENTATION_FUNC:
         {
-            /*Initialization for Orientation pin not applicable*/
+            /*Init is called when detach happens*/
+            UPDPIO_Disable(u8PortNum, eUPD_PIO2);
             break;
         }
         case eSNK_CAPS_MISMATCH_FUNC:
@@ -269,19 +253,13 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             if (eGPIO_ASSERT == eGPIODrive)
             {
                 /* Drive low the CS to enable the communication*/
-                if (PORT0 == u8PortNum)
-                {
-                    /*PORT_PIN_PA10*/
-                    SPI_SS_0_Clear();
-                }
+                /*PORT_PIN_PA10*/
+                SPI_SS_0_Clear();
             }
             else
             {
                 /* Drive high the CS to disable the communication for the port*/
-                if (PORT0 == u8PortNum)
-                {
-                    SPI_SS_0_Set();
-                }
+                SPI_SS_0_Set();
             }
             break; 
         }
@@ -296,17 +274,59 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             break;
         }
         case eORIENTATION_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                /*Asserts when attach happens at CC1*/
+                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+                UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);        
+            }
+            else
+            {
+                /*De-assert when attach happens at CC2*/
+                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+                UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
+            }
+        }
         case eSNK_CAPS_MISMATCH_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                SNK_CAP_MISMATCH_Set();
+            }
+            else
+            {
+                SNK_CAP_MISMATCH_Clear();
+            }
+            break;
+        }
         case eSNK_1_5A_IND_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                SNK_1_5A_IND_Set();
+            }
+            else
+            {
+                SNK_1_5A_IND_Clear();
+            }
+            break;
+        }
         case eSNK_3A_IND_FUNC:
         {
-            /* To be implemented*/
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                SNK_3A_IND_Set();
+            }
+            else
+            {
+                SNK_3A_IND_Clear();
+            }
             break;
         }    
-    }
-    
-    
-    
+    }    
 }
 
 /* *****************************************************************************

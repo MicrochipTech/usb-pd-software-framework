@@ -53,8 +53,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 void App_SetMCUIdle(); 
 
-void App_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent);
-
 UINT8 App_HandlePSFEvents(UINT8 u8PortNum, UINT8 u8PDEvent);
 
 void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc);
