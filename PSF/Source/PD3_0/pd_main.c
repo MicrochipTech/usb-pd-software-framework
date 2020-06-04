@@ -62,7 +62,7 @@ UINT8 MchpPSF_Init(void)
                                                        ~(TYPEC_PORT_ENDIS_MASK);
         }
         /*UPD350 Reset GPIO Init*/
-        MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eUPD350_RESET_FUNC);
+        MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum);
     }  
         
 	/*Initialize Internal global variables*/

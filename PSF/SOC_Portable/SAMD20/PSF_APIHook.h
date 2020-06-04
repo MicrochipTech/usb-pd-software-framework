@@ -1605,6 +1605,7 @@ Remarks:
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
 
+#define MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum) SAMD20_UPD350ResetGPIOInit(u8PortNum) 
 
 #endif /*_PSF_API_HOOK_H_*/
 

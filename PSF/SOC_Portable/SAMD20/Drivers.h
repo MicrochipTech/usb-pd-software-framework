@@ -507,6 +507,7 @@ void SAMD20_UART_Write_String(char*);
 
 #endif //CONFIG_HOOK_DEBUG_MSG
 
+void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum);
 
 #endif /*_DRIVERS_H */
 
