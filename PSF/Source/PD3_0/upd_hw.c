@@ -101,20 +101,22 @@ void UPD_RegisterRead(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, 
 void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset, 
         UINT8 *pu8WriteData, UINT8 u8WriteDataLen)
 {
-    /*Enable Hardware Interface for Communication for the specific port*/
-	MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, TRUE);
-    
     #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
     
 	UINT8 u8Command [UPD_SPI_WRITE_CMD_LEN] = {UPD_SPI_WRITE_OPCODE,
                                                 HIBYTE(u16RegOffset),   /*HiByte of Register to written*/
                                                 LOBYTE(u16RegOffset)};  /*LoByte of Register to written*/
 	  
+    /*Enable SPI Select for communication*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_ASSERT);
     
 	(void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, u8Command, \
             (UINT16)UPD_SPI_WRITE_CMD_LEN);
     
 	(void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, pu8WriteData, u8WriteDataLen);
+    
+    /*Disable SPI Select communication */
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_DEASSERT);
     
     #else
     UINT8 u8Writebuffer [UPD_I2C_MAX_BYTE_WRITE];
@@ -131,17 +133,12 @@ void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset,
     (void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, u8Writebuffer, u8WriteBufLen);
     
     #endif
-    
-	MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, FALSE);
 }
 
 /******************************************************************************************************/
-
 void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
         UINT8 *pu8ReadData, UINT8 u8Readlen)
 {
-    MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, TRUE);
-  
    #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
   
     UINT8 u8Command [UPD_SPI_READ_CMD_LEN];
@@ -151,6 +148,14 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
 	u8Command[2] = LOBYTE (u16RegOffset);
 	u8Command[3] = UPD_SPI_DUMMY_BYTE;
     
+    /*Enable SPI Select for communication*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_ASSERT);
+    
+    (void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
+    
+     /*Disable SPI Select for communication*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_DEASSERT);
+    
     #else
 
     UINT8 u8Command [UPD_I2C_REG_CMD_LEN];
@@ -158,11 +163,9 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
     u8Command[0] = HIBYTE (u16RegOffset);
     u8Command[1] = LOBYTE (u16RegOffset);
     
-    #endif
+    (void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
     
-	(void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
-
-	MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, FALSE);
+    #endif
 
 }
 /******************************************************************************************************/

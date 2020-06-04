@@ -176,28 +176,6 @@ UINT8 SAMD20_SPIInitialisation(void);
 
 /****************************************************************************
     Function:
-        void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
-    Summary:
-        Wrapper function to enable or disable the SAMD20 HW interface communication with Port's UPD350.  
-    Description:
-        This API serves as a wrapper between PSF stack defined UPD350 communication enable disable 
-        function MCHP_PSF_HOOK_UPD_COMM_ENABLE and Harmony generated code to drive Chip select to 
-        enable or disable SPI communication to specific port's UPD350.
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
-        u8EnableComm- Enables or disables the SPI communication for the port based on this value 
-                        TRUE and FALSE respectively.
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm);
-
-/****************************************************************************
-    Function:
         UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength,\
                 UINT8 *pu8ReadBuffer, UINT8 u8Readlength)
     Summary:

@@ -96,67 +96,6 @@ Remarks:
 **************************************************************************/
 #define MCHP_PSF_HOOK_UPDHW_INTF_INIT()               0     
 
-/*************************************************************************************************
-Function:
-    MCHP_PSF_HOOK_UPD_COMM_ENABLE(u8PortNum,u8Enable)
-Summary:
-    Enable or disables hardware interface(SPI/I2C) communication to the port's UPD350
-Description:
-    This hook is called before and after the read/write operations of UPD350 registers with port
-    specifically enable/disable hardware interface(I2C/SPI) communication to the port's UPD350.
-    For SPI interface, SPI chip select level shall be driven low/high with respect to the port number 
-    passed in the hook to enable/disable SPI communication respectively to the port's UPD350.
-    For I2C interface, I2C mux shall be configured to route/disable the SOC's I2C master to the port
-    number passed in the hook to enable/disable I2C communication respectively to the port's UPD350.
-    Define relevant function that has two UINT8 argument with out return type.    
-Conditions:
-    None.
-Input:
-    u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u8Enable - Parameter indicating whether to enable or disable the communication for the port. 
-               When u8Enable is 1 - Enable interface, 0 - Disable interface.
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum,u8Enable)\
-						hw_spi_drive_cs (u8PortNum, u8Enable)
-        void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8Enable);
-        void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8Enable)
-        {
-            if (u8Enable == TRUE)
-            {
-                //Set pin level low for SOC's GPIO that is connected to the u8PortNum port's 
-                //UPD350 SPI CS pin
-            }
-            else if(u8Enable == FALSE)
-            {
-                //Set pin level high for SOC GPIO that is connected to the u8PortNum port's
-                //UPD350 SPI CS pin
-            }
-        }
-    </code>
-    <code>
-        #define MCHP_PSF_HOOK_UPD_COMM_ENABLE(u8PortNum,u8Enable)\
-							hw_port_i2cmux_routing(u8PortNum,u8Enable)	
-        void hw_port_i2cmux_routing(u8PortNum,u8Enable);
-        void hw_port_i2cmux_routing(u8PortNum,u8Enable)
-        {
-            if (u8Enable == TRUE)
-            {
-                //Route the I2C mux to the u8PortNum UPD350 Port 
-            }
-            else if(u8Enable == FALSE)
-            { 
-                //disable the I2C mux routing to the u8PortNum UPD350 Port
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory for SPI Hardware interface                                           
-*************************************************************************************************/
-#define MCHP_PSF_HOOK_UPD_COMM_ENABLE(u8PortNum,u8Enable)
-
 /*********************************************************************************************
 Function:
     MCHP_PSF_HOOK_UPD_WRITE(u8PortNum,pu8WriteBuf,u8WriteLen)
@@ -280,36 +219,6 @@ Remarks:
 ***************************************************************************************/
 #define MCHP_PSF_HOOK_UPD_READ(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)	0
 
-// *****************************************************************************
-/* *****************************************************************************
-Function:
-	MCHP_PSF_HOOK_DCDCALERTINIT(u8PortNum)
-Summary:
-    Configures GPIO of SOC as Input enables external interrupt for that DC DC Alert
-Description:
-    This Hook is used to configure a GPIO in input mode and enables external interrupt for that pin. 
-	For each port, this hook can be used to assign alert pin for DC-DC Buck boost converter to a GPIO. 
-	Whenever, an interrupt is fired from alert pin of DC-DC Buck boost converter, the SOC can call a callback function to execute the necessary fault handling operations.
-Conditions:
-	This hook API may be called if DC-DC Buck boost converter is used to deliver power.
-Return:
-	None.
-Example:
-
-    <code>
-        #define MCHP_PSF_HOOK_DCDCALERTINIT()      hw_alertinit()
-        void hw_alertinit(void);
-        void hw_alertinit(void)
-        {
-			//Enable PIOx of SOC as input
-			//Assign a callback api for interrupt that handles the fault condition
-			//Enable external interrupt for PIOx        
-        }
-    </code>
-Remarks:
-	User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is PWRCTRL_I2C_DC_DC
-**************************************************************************/
-#define MCHP_PSF_HOOK_DCDCALERTINIT(u8PortNum) 
 
 // *****************************************************************************
 // Section: PDTimer configuration
@@ -387,96 +296,9 @@ Example :
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: UPD350 IRQ Control
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************
-Function:
-    MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum)
-Summary:
-    Initializes the SOC GPIOs connected to the IRQ_N lines of ports' UPD350.
-Description:
-    PSF requires a GPIO specific to each port for UPD350 interrupt detection via UPD350's IRQ_N lines.
-    IRQ_N is an active low signal. This Hook shall initialize the SOC GPIOs connected to the IRQ_N
-    lines of UPD350s in the system for interrupt notification. It is recommended to configure SOC
-    GPIOs interrupt in edge level detection with internal pull up since the UPD350 keeps the IRQ_N
-    line in low state until the interrupt is cleared. To inform PSF the occurrence of UPD350 
-    interrupt, API MchpPSF_UPDIrqHandler shall be called by SOC on interrupt detection port
-    specifically. Define relevant function that has port number as argument without return type.
-Conditions:
-    SOC GPIO connected to IRQ_N should be wakeup capable if INCLUDE_POWER_MANAGEMENT_CTRL defined as 1.
-Input:
-    u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Return:
-    None.
-Example:
-    <code>
-		#define MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum)      INT_ExtIrqInit(u8PortNum)
-        void INT_ExtIrqInit(UINT8 u8PortNum);
-        void INT_ExtIrqInit(UINT8 u8PortNum)
-        {
-            if(0 == u8PortNum)
-            {
-                //Initializes the SOC GPIO that is connected to Port 0's UPD350
-                //Configure GPIO for internal pull up and low level edge detection 
-                //Register MchpPSF_UPDIrqHandler(0) as callback for interrupt occurence
-            }
-            if(1 == u8PortNum)
-            {
-                //Initializes the SOC GPIO that is connected to Port 1's UPD350
-                //Configure GPIO for internal pull and low level edge detection
-                //Register MchpPSF_UPDIrqHandler(1) as callback for interrupt occurrence
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory                     
-**************************************************************************/
-#define MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum)
-
-// *****************************************************************************
-// *****************************************************************************
 // Section: UPD350 Reset Control
 // *****************************************************************************
 // *****************************************************************************
-/**************************************************************************
-Function:
-    MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum)
-Summary:
-    Initializes the SOC GPIOs connected to the RESET_N lines of UPD350s
-Description:
-    This hook initializes the SOC GPIOs connected to the RESET_N lines of Port's UPD350. It is 
-    recommended to connect a single GPIO to the reset line of all UPD350s. User can also define a  
-    separate GPIO for each port. As the UPD350 RESET_N is active low signal, SOC should initialize 
-    the GPIO to be high by default. Define relevant function that has port number as argument 
-    without return type.
-Conditions:
-    None.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum)      updreset_init(u8PortNum)
-        void updreset_init(UINT8 u8PortNum);
-        void updreset_init(UINT8 u8PortNum)
-        {
-            // If single SOC GPIO is connected to all the UPD350's, do initialisation only once 
-            // when PortNum is '0'. If separate GPIOs are used for each port UPD350, do 
-			//initialisation port specifically
-            if (0 == u8PortNum)
-            {
-                //Initialization of SOC GPIO connected to UPD350 reset lines
-                //Make the gpio line high by default
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory                      
-*************************************************************************/
-#define MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum)             
-
 /**********************************************************************
 Function:
     MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(u8PortNum)
@@ -1584,12 +1406,150 @@ Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_SET_MCU_IDLE()   SAMD20_SetMCUIdle()
+        #define MCHP_PSF_HOOK_SET_MCU_IDLE()   App_SetMCUIdle()
     </code>
 Remarks:
 User definition of this Hook function is optional.                          
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_SET_MCU_IDLE          
+// *****************************************************************************
+// *****************************************************************************
+// Section: GPIO Control
+// *****************************************************************************
+// *****************************************************************************
+
+//Todo: J: Add comment explanation from design document
+
+typedef enum eMCHP_PSF_GPIO_Functionality
+{
+    eUPD350_RESET_FUNC,
+    eUPD350_ALERT_FUNC,
+    eI2C_DC_DC_ALERT_FUNC,
+    eSPI_CHIP_SELECT_FUNC,
+    eVBUS_DIS_FUNC,
+    eDC_DC_EN_FUNC,
+    eORIENTATION_FUNC,
+    eSNK_CAPS_MISMATCH_FUNC,
+    eSNK_1_5A_IND_FUNC,
+    eSNK_3A_IND_FUNC
+} eMCHP_PSF_GPIO_FUNCTIONALITY;
+
+typedef enum eMCHP_PSF_GPIO_DriveValue 
+{
+    eGPIO_DEASSERT,
+    eGPIO_ASSERT
+} eMCHP_PSF_GPIO_DRIVE_VAL;
+
+
+/**************************************************************************
+Function:
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc)
+Summary:
+    Hook to initialize all the GPIO functionality pins in application layer.
+Description:
+    PSF calls this API to initialize the ePSF_GPIO_Functionality pins in 
+    application layer.User has to define an appropriate function with UINT8 and 
+    eMCHP_PSF_GPIO_FUNCTIONALITY as argument.User can assign any PIO either from 
+    UDP350 or MCU for any GPIO functionality defined.
+    Drive of this API will be controlled by API MCHP_PSF_HOOK_GPIO_FUNC_DRIVE.
+Conditions:
+    None.
+Input:
+    u8PortNum - Port number of the device. It takes value between 0 to 
+                (CONFIG_PD_PORT_COUNT-1).
+    eGPIOFunc-  Passes the GPIO functionality type that has to be initialized by the application. 
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIO_Func) 
+        App_GPIOContol_Initialisation(u8PortNum, eGPIO_Func)
+        void App_GPIOControl_Initialisation(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc)
+        {
+            switch(eGPIOFunc)
+            {
+                case eDC_DC_EN_FUNC:
+                {
+                    //Initialise the GPIO assigned for DC_DC
+                    // Drive the GPIO in default state
+                    break;
+                }
+                case eVBUS_DIS_FUNC:
+                {
+                    //Initialise the GPIO assigned for VBUS_Discharge functionality
+                    //Drive the GPIO in default state
+                }
+            }
+
+        }
+
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory as well as it is mandatory to define functionality for ePSF_GPIO_Functionality.
+ **************************************************************************/
+#define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc) App_GPIOControl_Init(u8PortNum, eGPIOFunc)
+
+/**************************************************************************
+Function:
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eGPIOFunc, eDriveVal)
+Summary:
+    Hook to drive GPIOs assigned to GPIO functionality pins in application layer.
+Description:
+    PSF calls this API to drive the ePSF_GPIO_Functionality pins in application 
+    layer as per  drive value ePSF_GPIO_DriveVal. User has to define an 
+    appropriate function with UINT8, eMCHP_PSF_GPIO_FUNCTIONALITY, eMCHP_PSF_GPIO_DRIVE_VAL 
+    as argument. User can assign any PIO either from UDP350 or MCU for any GPIO 
+    functionality defined.
+Conditions:
+    None.
+Input:
+    u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+    eGPIOFunc-  Passes the GPIO functionality type that has to be initialized by 
+                the application. 
+    eDriveVal - Drive value for the pin
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE (u8PortNum, eGPIO_Func, eDriveVal) 
+        App_GPIOContol_Drive(u8PortNum, eGPIO_Func, eDriveVal)
+        void App_GPIOContol_Drive(UINT8 u8PortNum, 
+                       eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc, eMCHP_PSF_GPIO_DRIVE_VAL eDriveVal )
+        {
+            switch(eGPIOFunc)
+            {
+                case eDC_DC_EN_FUNC:
+                {
+                    if (eGPIO_Assert == eDriveVal)
+                    {
+                        // Assert the DC_DC pin	
+                    }
+                    else
+                    {
+                        // De-assert the DC_DC pin
+                    }
+                    break;
+                }
+                case eVBUS_DIS_FUNC:
+                {
+                    if (eGPIO_Assert == eDriveVal)
+                    {
+                        // Assert the VBUS Discharge pin	
+                    }
+                    else
+                    {
+                        // De-assert the VBUS Discharge pin
+                    }
+                    break;
+                }
+            }
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory as well as it is mandatory 
+    to define functionality for ePSF_GPIO_Functionality.
+ *************************************************************************/
+#define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eGPIOFunc, eDriveVal)
 
 // *****************************************************************************
 // *****************************************************************************

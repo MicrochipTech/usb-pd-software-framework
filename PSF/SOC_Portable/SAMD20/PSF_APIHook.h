@@ -98,67 +98,6 @@ Remarks:
 **************************************************************************/
 #define MCHP_PSF_HOOK_UPDHW_INTF_INIT()      SAMD20_SPIInitialisation();              
 
-/*************************************************************************************************
-Function:
-    MCHP_PSF_HOOK_UPD_COMM_ENABLE(u8PortNum,u8Enable)
-Summary:
-    Enable or disables hardware interface(SPI/I2C) communication to the port's UPD350
-Description:
-    This hook is called before and after the read/write operations of UPD350 registers with port
-    specifically enable/disable hardware interface(I2C/SPI) communication to the port's UPD350.
-    For SPI interface, SPI chip select level shall be driven low/high with respect to the port number 
-    passed in the hook to enable/disable SPI communication respectively to the port's UPD350.
-    For I2C interface, I2C mux shall be configured to route/disable the SOC's I2C master to the port
-    number passed in the hook to enable/disable I2C communication respectively to the port's UPD350.
-    Define relevant function that has two UINT8 argument with out return type.    
-Conditions:
-    None.
-Input:
-    u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u8Enable - Parameter indicating whether to enable or disable the communication for the port. 
-               When u8Enable is 1 - Enable interface, 0 - Disable interface.
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum,u8Enable)\
-						hw_spi_drive_cs (u8PortNum, u8Enable)
-        void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8Enable);
-        void hw_spi_drive_cs (UINT8 u8PortNum,UINT8 u8Enable)
-        {
-            if (u8Enable == TRUE)
-            {
-                //Set pin level low for SOC's GPIO that is connected to the u8PortNum port's 
-                //UPD350 SPI CS pin
-            }
-            else if(u8Enable == FALSE)
-            {
-                //Set pin level high for SOC GPIO that is connected to the u8PortNum port's
-                //UPD350 SPI CS pin
-            }
-        }
-    </code>
-    <code>
-        #define MCHP_PSF_HOOK_UPD_COMM_ENABLE(u8PortNum,u8Enable)\
-							hw_port_i2cmux_routing(u8PortNum,u8Enable)	
-        void hw_port_i2cmux_routing(u8PortNum,u8Enable);
-        void hw_port_i2cmux_routing(u8PortNum,u8Enable)
-        {
-            if (u8Enable == TRUE)
-            {
-                //Route the I2C mux to the u8PortNum UPD350 Port 
-            }
-            else if(u8Enable == FALSE)
-            { 
-                //disable the I2C mux routing to the u8PortNum UPD350 Port
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory for SPI Hardware interface                                           
-*************************************************************************************************/
-#define MCHP_PSF_HOOK_UPD_COMM_ENABLE(u8PortNum,u8Enable) SAMD20_DriveChipSelect(u8PortNum,u8Enable)
-
 /*********************************************************************************************
 Function:
     MCHP_PSF_HOOK_UPD_WRITE(u8PortNum,pu8WriteBuf,u8WriteLen)
@@ -647,51 +586,6 @@ Remarks:
 
 /*******************************************************************************************
 Function:
-    MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH(u8PortNum,u8EnableDisable)   
-Summary:
-    Enables or disables VBUS Discharge functionality for a given port.
-Description:
-    VBUS Discharge mechanism is required to enable quick discharge of VBUS when VBUS transitions from 
-    higher to lower voltage. PSF provides default DC-DC Buck booster control configuration via 
-    CONFIG_DCDC_CTRL define. If user chose to implement their own DC-DC buck booster control, this 
-    hook must be implemented to enable or disable the VBUS Discharge functionality for a given Port. 
-    Implementation of this function depends on the type of DC-DC buck boost controller and load 
-    switch used. Define relevant function that has UINT8,UINT8 arguments without return type.
-Conditions:
-    MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH is called in ISR handler. Its implementation shall be very 
-    short, otherwise response time to the interrupt may be delayed and cause timing issues/conflicts.
-	Passing of the Compliance test "TD.4.2.1" (Source Connect Sink) in "USB_Type_C_Functional_Test_Specification" 
-	depends on the VBUS Discharge circuitry used. Typical VBUS Discharge time from any higher voltage 
-	to 0V should be around 10ms.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u8EnableDisable -  Flag indicating whether to enable/disable VBUS Discharge mechanism.
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH(u8PortNum, u8EnableDisable) \
-                      hw_portpower_enab_dis_VBUSDischarge(u8PortNum, u8EnableDisable)
-        void hw_portpower_enab_dis_VBUSDischarge(UINT8 u8PortNum,UINT8 u8EnableDisable);
-        void hw_portpower_enab_dis_VBUSDischarge(UINT8 u8PortNum,UINT8 u8EnableDisable)
-        {
-            if (TRUE == u8EnableDisable)
-            {
-                //Enable the VBUS Discharge for "u8PortNum" Port
-            }
-            else
-            {
-                //Disable the VBUS Discharge for "u8PortNum" Port
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.                                    
-*******************************************************************************************/
-#define MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH(u8PortNum, u8EnableDisable)	
-
-/*******************************************************************************************
-Function:
     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
 Summary:
     Enables or disables sink hardware circuitry and configures it to sinks the VBUS voltage for 
@@ -735,48 +629,6 @@ Remarks:
 *******************************************************************************************/
 #define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current) \
 SAMD20_ConfigureSinkHardware(u8PortNum,u16VBUSVoltage,u16Current)
-/*******************************************************************************************
-Function:
-    MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn)
-Summary:
-    Enables or disables DC_DC_EN functionality for a given port.
-Description:
-    DC_DC_EN functionality is required to enable DC-DC Controller. It asserts high once 
-    PSF is initialized, ready to operate and CC pins are functional. It will be 
-    toggled low during error condition say, on occurrence of fault to reset the DC-DC.  
-    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define. 
-    If user chose to implement their own DC-DC buck booster control, this hook must be 
-    implemented to enable or disable the DC_DC_EN functionality for a given Port. 
-    Implementation of this function depends on the type of DC-DC buck boost controller and load 
-    switch used. Define relevant function that has UINT8,UINT8 arguments without return type.
-Conditions:
-    None.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u8EnaDisDCDCEn -  Flag indicating whether to enable/disable DC_DC_EN.
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn) \
-                      hw_portpower_enab_dis_DCDCEn(u8PortNum, u8EnableDisable)
-        void hw_portpower_enab_dis_DCDCEn(UINT8 u8PortNum,UINT8 u8EnableDisable);
-        void hw_portpower_enab_dis_DCDCEn(UINT8 u8PortNum,UINT8 u8EnableDisable)
-        {
-            if (TRUE == u8EnableDisable)
-            {
-                //Enable the DC_DC_EN for "u8PortNum" Port
-            }
-            else
-            {
-                //Disable the DC_DC_EN for "u8PortNum" Port
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.                                    
-*******************************************************************************************/
-#define MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn)
 
 /*********************************************************************************************
   Function:
@@ -1502,9 +1354,9 @@ User definition of this Hook function is optional.
 
 typedef enum eMCHP_PSF_GPIO_Functionality
 {
-    eUPD350_RESET_FUNC,
     eUPD350_ALERT_FUNC,
     eI2C_DC_DC_ALERT_FUNC,
+    eUPD350_RESET_FUNC,
     eSPI_CHIP_SELECT_FUNC,
     eVBUS_DIS_FUNC,
     eDC_DC_EN_FUNC,
@@ -1629,7 +1481,8 @@ Remarks:
     User definition of this Hook function is mandatory as well as it is mandatory 
     to define functionality for ePSF_GPIO_Functionality.
  *************************************************************************/
-#define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eGPIOFunc, eDriveVal)
+#define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eGPIOFunc, eDriveVal) \
+App_GPIOControl_Drive(u8PortNum, eGPIOFunc, eDriveVal)
 
 // *****************************************************************************
 // *****************************************************************************

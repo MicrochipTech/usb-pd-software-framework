@@ -59,6 +59,10 @@ void App_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent);
 
 void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc);
 
+void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc,
+                                    eMCHP_PSF_GPIO_DRIVE_VAL eGPIODrive);
+
+
 #endif /* _PSFSOURCEPRO_APP_H */
 
 /* *****************************************************************************
