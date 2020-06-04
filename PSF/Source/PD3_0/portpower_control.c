@@ -166,14 +166,14 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
     
     if (TRUE == u8EnaDisDCDCEn)
     {
-        UPDPIO_DriveHigh(u8PortNum, eUPD_PIO6);
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDC_DC_EN_FUNC, eGPIO_ASSERT);
         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_DC_DC_STATUS;
     }
     else
     {
-        UPDPIO_DriveLow(u8PortNum, eUPD_PIO6);
-        
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDC_DC_EN_FUNC, eGPIO_DEASSERT);
+         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_DC_DC_STATUS);
     }
     

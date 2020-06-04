@@ -217,6 +217,10 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             /* Not applicable for source configuration*/
             break;
         }    
+        default:
+        {
+            break; 
+        }
     }
 }
 
@@ -273,7 +277,14 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         case eVBUS_DIS_FUNC:
         case eDC_DC_EN_FUNC:
         {
-            /*To be implemented*/
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO6);
+            }
+            else
+            {
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO6);
+            }
             break;
         }
         case eORIENTATION_FUNC:
@@ -298,7 +309,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             /* Not applicable for Source*/
             break;
-        }    
+        }
+        default:
+        {
+            break; 
+        }
     }
 }
 

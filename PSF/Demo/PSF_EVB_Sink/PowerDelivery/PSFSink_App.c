@@ -224,6 +224,10 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             /* To be implemented*/
             break;
         }    
+        default:
+        {
+            break; 
+        }
     }
 }
 
@@ -325,7 +329,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 SNK_3A_IND_Clear();
             }
             break;
-        }    
+        }
+        default:
+        {
+            break; 
+        }
     }    
 }
 
