@@ -313,6 +313,17 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             break; 
         }
         case eVBUS_DIS_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
+            }
+            else
+            {
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+            }
+            break; 
+        }
         case eDC_DC_EN_FUNC:
         {
             if (eGPIO_ASSERT == eGPIODrive)
