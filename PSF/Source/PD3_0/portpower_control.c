@@ -80,6 +80,10 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
     
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK, \
                                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK);
+    /*Initialize all the Sink indicator*/
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSNK_CAPS_MISMATCH_FUNC);
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSNK_1_5A_IND_FUNC);
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSNK_3A_IND_FUNC);
     #endif
     
     /*Hook to modify or overwrite the default Port Power control initialization */

@@ -164,25 +164,10 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
     {
         case eUPD350_ALERT_FUNC:
         {
-            if (PORT0 == u8PortNum)
-            {
-                PORT_PinInputEnable(PORT_PIN_PA14);
-                PORT_PinWrite(PORT_PIN_PA14, TRUE);
-                EIC_CallbackRegister(PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
-                EIC_InterruptEnable(PORT_PIN_PA14);
-            }
-            else if (PORT1 == u8PortNum)
-            {
-                PORT_PinInputEnable(PORT_PIN_PA15);
-                PORT_PinWrite(PORT_PIN_PA15, TRUE);
-                EIC_CallbackRegister(PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
-                EIC_InterruptEnable(PORT_PIN_PA15);
-            }
-            else
-            {
-                /* Do Nothing */
-            }
-            break;
+            PORT_PinInputEnable(PORT_PIN_PA14);
+            PORT_PinWrite(PORT_PIN_PA14, TRUE);
+            EIC_CallbackRegister(PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
+            EIC_InterruptEnable(PORT_PIN_PA14);
         }
         case eI2C_DC_DC_ALERT_FUNC:
         {
@@ -196,7 +181,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eSPI_CHIP_SELECT_FUNC:
         {
-            /* To be implemented */
+            SPI_SS_0_OutputEnable();
+            SPI_SS_0_Set();
             break; 
         }
         case eVBUS_DIS_FUNC:
@@ -218,10 +204,21 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             break;
         }
         case eSNK_CAPS_MISMATCH_FUNC:
+        {
+            SNK_CAP_MISMATCH_OutputEnable();
+            SNK_CAP_MISMATCH_Clear();
+            break;
+        }
         case eSNK_1_5A_IND_FUNC:
+        {
+            SNK_1_5A_IND_OutputEnable();
+            SNK_1_5A_IND_Clear();
+            break;
+        }
         case eSNK_3A_IND_FUNC:
         {
-            /* To be implemented*/
+            SNK_3A_IND_OutputEnable();
+            SNK_3A_IND_Clear();
             break;
         }    
         default:
@@ -342,6 +339,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             break; 
         }
     }    
+}
+
+void App_PortPwrControl(UINT8 u8PortNum)
+{
+    DAC_Initialize();
 }
 
 /* *****************************************************************************
