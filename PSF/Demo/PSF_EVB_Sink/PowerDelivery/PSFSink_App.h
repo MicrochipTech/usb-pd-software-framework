@@ -61,7 +61,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
 
 void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc,
                                     eMCHP_PSF_GPIO_DRIVE_VAL eGPIODrive);
-void App_PortPwrControl(UINT8 u8PortNum);
+void App_PortPowerInit(UINT8 u8PortNum);
 
 
 #endif /* _PSFSINK_APP_H */

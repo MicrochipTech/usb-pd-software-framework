@@ -352,7 +352,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
     }    
 }
 
-void App_PortPwrControl(UINT8 u8PortNum)
+void App_PortPowerInit(UINT8 u8PortNum)
 {
     DAC_Initialize();
 }

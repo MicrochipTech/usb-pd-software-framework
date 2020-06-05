@@ -574,7 +574,7 @@ Remarks:
     A DAC may initialized under this hook if PSF is configured as SINK.                        
 *****************************************************************************/
 #if (TRUE == INCLUDE_PD_SINK)
-#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  App_PortPwrControl(u8PortNum);
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  App_PortPowerInit(u8PortNum);
 #elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  (void) MPQDCDC_Initialize(u8PortNum);
 #else
