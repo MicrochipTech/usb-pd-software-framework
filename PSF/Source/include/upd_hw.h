@@ -1025,4 +1025,32 @@ void UPD_EnableFaultIn(UINT8 u8PortNum);
 **************************************************************************************************/
 void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum);
 
+
+/**************************************************************************************************
+    Function:
+        void UPD_ResetThroughGPIO(void)
+
+    Summary:
+        UPD350 Reset API.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is to reset the UPD350s connected through the MCU GPIO.
+
+    Conditions:
+        None.
+
+    Input:
+        None.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_ResetThroughGPIO(void);
+
 #endif /*_UPD_HW_H_*/

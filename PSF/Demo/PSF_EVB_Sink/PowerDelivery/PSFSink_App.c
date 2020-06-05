@@ -176,7 +176,9 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eUPD350_RESET_FUNC:
         {
-            /*To be implemented*/
+            /* UPD350 RESET_N pin active low; set to internal pull up by default*/
+            UPD350_RESET_InputEnable();
+            PORT_PinWrite(UPD350_RESET_PIN, TRUE);
             break;
         }
         case eSPI_CHIP_SELECT_FUNC:
@@ -246,7 +248,16 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case eUPD350_RESET_FUNC:
         {
-            /* To be implemented*/
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                /*UPD350 Reset is active low signal*/
+                /* Pull down is driven to reset the UPD350*/
+                PORT_PinWrite(UPD350_RESET_PIN, FALSE);
+            }
+            else
+            {
+                PORT_PinWrite(UPD350_RESET_PIN, TRUE);
+            }
             break;
         }
         case eSPI_CHIP_SELECT_FUNC:

@@ -559,6 +559,24 @@ void UPD_PwrManagementInit(UINT8 u8PortNum)
 /********************************************************************************************/
 #endif /* INCLUDE_POWER_MANAGEMENT_CTRL*/
 /********************************************************************************************/
+void UPD_ResetThroughGPIO()
+{
+    /*Since, all UPD350 PIOs are tied to single PIO, Reset is done for PORT0
+     alone to avoid multiple reset, PORT0 is passed as dummy variable */
+    /* Pull down is driven to reset the UPD350*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(PORT0, eUPD350_RESET_FUNC,eGPIO_ASSERT);
+
+    /*Delay */
+    for(UINT16 u16delayloop = 0u; u16delayloop <(6000);u16delayloop++)
+    {
+        __asm volatile("nop");
+        __asm volatile("nop");
+
+    }
+    /* Set to default state*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(PORT0, eUPD350_RESET_FUNC,eGPIO_DEASSERT);
+}
+
 void UPD_CheckAndDisablePorts (void)
 {
     UINT8 u8ReadData[4];
@@ -566,12 +584,17 @@ void UPD_CheckAndDisablePorts (void)
     /*variable to hold the timer id*/
     UINT8 u8TimerID;
     
+    #if (TRUE == INCLUDE_PD_SOURCE)
+        /*Todo: to be removed after testing in source configuration*/
+        /* Reset the UPD350s */
+        MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(PORT0);
+    #else
+        UPD_ResetThroughGPIO();
+    #endif
+
     /*run a loop for all the number of CONFIG_PD_PORT_COUNT to check all ports*/
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        /* Reset the Port's UPD350 present*/
-        MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(u8PortNum);
-        
         /*Check if timer is Active, if Timer expired, come out of this loop */
         
         if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
