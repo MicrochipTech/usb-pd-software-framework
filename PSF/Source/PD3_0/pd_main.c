@@ -63,6 +63,10 @@ UINT8 MchpPSF_Init(void)
         }
         /*UPD350 Reset GPIO Init*/
         MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum);
+        #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
+        /*Initialize chip select in case of SPI configuration*/
+        MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSPI_CHIP_SELECT_FUNC);
+        #endif
     }  
         
 	/*Initialize Internal global variables*/
