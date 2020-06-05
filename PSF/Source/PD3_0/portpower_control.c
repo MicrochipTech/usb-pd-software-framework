@@ -72,8 +72,6 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
     }
     #endif /*CONFIG_DCDC_CTRL*/
 
-    PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
-
     #endif
 
     #if (TRUE == INCLUDE_PD_SINK)
