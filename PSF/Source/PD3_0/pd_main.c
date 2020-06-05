@@ -61,13 +61,20 @@ UINT8 MchpPSF_Init(void)
             gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
                                                        ~(TYPEC_PORT_ENDIS_MASK);
         }
-        /*UPD350 Reset GPIO Init*/
-        MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum);
         #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
         /*Initialize chip select in case of SPI configuration*/
         MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSPI_CHIP_SELECT_FUNC);
         #endif
-    }  
+    }
+    
+    /*Since, Reset is common for all the ports. It is called only once with PORT0 as dummy value*/
+    #if (TRUE == INCLUDE_PD_SINK) 
+            MCHP_PSF_HOOK_GPIO_FUNC_INIT(PORT0, eUPD350_RESET_FUNC);
+    #else
+            //Todo: To be tested in Source configuration and removed
+            /*UPD350 Reset GPIO Init*/
+            MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(PORT0);
+    #endif
         
 	/*Initialize Internal global variables*/
     IntGlobals_PDInitialization();
