@@ -328,6 +328,78 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
     }
 }
 
+void App_PortPowerInit(UINT8 u8PortNum)
+{
+    /*VSEL0*/
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_GPIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO7);
+    
+    /*VSEL 1*/
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_GPIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);
+    
+    /*VSEL 2*/
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO9, UPD_GPIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
+}
+
+void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current)
+{
+    /*
+     Voltage    VSEL0   VSEL1   VSEL2
+     *0V        0       0       0
+     *5V        0       0       0
+     *9V        1       0       0
+     *15V       0       1       0
+     *20V       0       0       1
+     */
+    
+    
+    switch(u16Voltage)
+    {
+        case APP_VOLTAGE_5000mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            break;
+        }
+        case APP_VOLTAGE_9000mV:
+        {
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            break;
+        }
+        case APP_VOLTAGE_15000mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            break;
+        }
+        case APP_VOLTAGE_20000mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO9);
+            break;
+        }
+        default:
+        /*Intentionally break is left*/
+        case APP_VOLTAGE_0mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            break;
+        }
+    }
+}
+
 /* *****************************************************************************
  End of File
  */
