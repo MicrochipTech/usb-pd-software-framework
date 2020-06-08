@@ -203,6 +203,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eI2C_DC_DC_ALERT_FUNC:
         {
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
             if (PORT0 == u8PortNum)
             {
                 PORT_PinInputEnable(PORT_PIN_PA02);
@@ -221,6 +222,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 /* Do Nothing */
             }
+#endif 
             break;
         }
         case eUPD350_RESET_FUNC:
@@ -394,6 +396,121 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
     
 }
 
+void App_PortPowerInit(UINT8 u8PortNum)
+{
+#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+    UINT16 u16Delay; 
+    
+    /*VSEL0 Init */
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_PIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO7);
+    
+    /*VSEL 1 Init */
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);
+    
+    /*VSEL 2 Init */
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO9, UPD_PIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
+    
+    /* Delay for the DC/DC module to stabilize after Initialization */
+    for(u16Delay = 0; u16Delay < 10000; u16Delay++)
+    {
+        __NOP();
+    }   
+    
+#else 
+    (void) MPQDCDC_Initialize(u8PortNum); /* MPQ4230 - I2C based DC/DC */ 
+#endif 
+}
+
+void App_PortPowerSetPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16Voltage, UINT16 u16Current)
+{
+#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+    /*
+     Voltage    VSEL0   VSEL1   VSEL2
+     *0V        0       0       0
+     *5V        0       0       0
+     *9V        1       0       0
+     *15V       0       1       0
+     *20V       0       0       1
+     */
+    
+    UINT16 u16Delay; 
+    for(u16Delay = 0; u16Delay < 10000; u16Delay++)
+    {
+        __NOP();
+    }   
+    
+    switch(u16Voltage)
+    {
+        case APP_VOLTAGE_5000mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                  ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
+            break;
+        }
+        case APP_VOLTAGE_9000mV:
+        {
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
+                                                DPM_PORT_IO_VSEL0_STATUS;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                    ~(DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
+            break;
+        }
+        case APP_VOLTAGE_15000mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
+                                                DPM_PORT_IO_VSEL1_STATUS;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                    ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
+            break;
+        }
+        case APP_VOLTAGE_20000mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
+                                                DPM_PORT_IO_VSEL2_STATUS;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                    ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS); 
+            break;
+        }
+        default:
+        /*Intentionally break is left*/
+        case APP_VOLTAGE_0mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                  ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
+            break;
+        }
+    }
+    
+#else /* MPQ4230 - I2C based DC/DC */ 
+    MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16Voltage, u16Current);
+#endif     
+}
 /* *****************************************************************************
  End of File
  */

@@ -136,7 +136,7 @@ void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolta
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
     
     /* The current limit is set only if the previous current limit value is not 
-     * equal to the curent limit value to be set */        
+     * equal to the current limit value to be set */        
     if (u16PrevCurrent[u8PortNum] != u16Current)
     {
         /* If the previous current limit is less that the given current limit 
