@@ -374,7 +374,7 @@ void App_PortPowerInit(UINT8 u8PortNum)
     }   
 }
 
-void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current)
+void App_PortPowerSetPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16Voltage, UINT16 u16Current)
 {
     /*
      Voltage    VSEL0   VSEL1   VSEL2
