@@ -531,214 +531,6 @@ Example:
 **************************************************************************************************/
 #define MCHP_PSF_STRUCT_PACKED_END
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Port power control
-// *****************************************************************************
-// *****************************************************************************   
-/*****************************************************************************
-Function:
-    MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
-Summary:
-    Initializes all the hardware modules related to port power functionality especially DC-DC buck 
-    boost controller and load switch. Additionaly, in case of sink functionality, this hook may be 
-    defined with APIs to initialize a DAC.
-Description:
-    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define.
-    User can chose to implement their own DC-DC buck booster control or modify the default using 
-    this hook. This hook is to initialize the hardware modules related to port power functionality. 
-    Implementation of this function depends on the type of DC-DC buck boost controller, load
-    switch or DAC used. Define relevant function that has no argument without return type.
-Conditions:
-    API implementation must make sure the Port Power(VBUS) of all ports must be set to 0V.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)       hw_portpower_init(u8PortNum)
-        void hw_portpower_init(void);
-        void hw_portpower_init(void)
-        {
-            //Initializes the hardware modules related to port power functionality
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is PWRCTRL_I2C_DC_DC
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.
-    A DAC may initialized under this hook if PSF is configured as SINK.                        
-*****************************************************************************/
-#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)                                                     
-
-/****************************************************************************
-Function:
-    MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum, u16VBUSVolatge, u16Current)
-Summary:
-    Drives the VBUS for given voltage, current
-Description:
-    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define. If 
-    user chose to implement their own DC-DC buck booster control, this hook must be implemented to
-    drive VBUS as per the parameter passed based on voltage and current. It can also be used to 
-    modify the default option. Implementation of this function depends on the type of DC-DC buck 
-    boost controller and load switch used. Define relevant function that has UINT8,UINT16, UINT16
-    arguments without return type.
-Conditions:
-    It is applicable only for Source operation.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).         
-    u16VBUSVolatge - VBUS Voltage level to be driven in VBUS expressed in terms of milliVolts.
-    u16Current     - VBUS current level in terms of mA.
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum, u16VBUSVolatge, u16Current)\
-                hw_portpower_driveVBUS(u8PortNum, u16VBUSVolatge, u16Current)
-      void hw_portpower_driveVBUS(UINT8 u8PortNum, UINT16 u16VBUSVolatge, UINT16 u16Current);
-      void hw_portpower_driveVBUS(UINT8 u8PortNum, UINT16 u16VBUSVolatge, UINT16 u16Current)
-      {
-            // Configure DC-DC buck boost control to drive u16VBUSVolatge & u16Current in VBUS
-      }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.                      
-****************************************************************************/
-#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u8PDOIndex,u16VBUSVolatge,u16Current)  
-
-/*******************************************************************************************
-Function:
-    MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH(u8PortNum,u8EnableDisable)   
-Summary:
-    Enables or disables VBUS Discharge functionality for a given port.
-Description:
-    VBUS Discharge mechanism is required to enable quick discharge of VBUS when VBUS transitions from 
-    higher to lower voltage. PSF provides default DC-DC Buck booster control configuration via 
-    CONFIG_DCDC_CTRL define. If user chose to implement their own DC-DC buck booster control, this 
-    hook must be implemented to enable or disable the VBUS Discharge functionality for a given Port. 
-    Implementation of this function depends on the type of DC-DC buck boost controller and load 
-    switch used. Define relevant function that has UINT8,UINT8 arguments without return type.
-Conditions:
-    MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH is called in ISR handler. Its implementation shall be very 
-    short, otherwise response time to the interrupt may be delayed and cause timing issues/conflicts.
-	Passing of the Compliance test "TD.4.2.1" (Source Connect Sink) in "USB_Type_C_Functional_Test_Specification" 
-	depends on the VBUS Discharge circuitry used. Typical VBUS Discharge time from any higher voltage 
-	to 0V should be around 10ms.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u8EnableDisable -  Flag indicating whether to enable/disable VBUS Discharge mechanism.
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH(u8PortNum, u8EnableDisable) \
-                      hw_portpower_enab_dis_VBUSDischarge(u8PortNum, u8EnableDisable)
-        void hw_portpower_enab_dis_VBUSDischarge(UINT8 u8PortNum,UINT8 u8EnableDisable);
-        void hw_portpower_enab_dis_VBUSDischarge(UINT8 u8PortNum,UINT8 u8EnableDisable)
-        {
-            if (TRUE == u8EnableDisable)
-            {
-                //Enable the VBUS Discharge for "u8PortNum" Port
-            }
-            else
-            {
-                //Disable the VBUS Discharge for "u8PortNum" Port
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.                                    
-*******************************************************************************************/
-#define MCHP_PSF_HOOK_PORTPWR_ENDIS_VBUSDISCH(u8PortNum, u8EnableDisable)	
-
-/*******************************************************************************************
-Function:
-    MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
-Summary:
-    Enables or disables sink hardware circuitry and configures it to sinks the VBUS voltage for 
-    a given port based on the sink requested voltage and current.
-Description:
-    This hook is to enable or disable sink hardware circuitry and configure it for Sink  
-    requested current and voltage.Implementation of this function depends on the type of Sink 
-    circuitry used. Define relevant function that has UINT8,UINT16,UINT16 arguments without return type.
-Conditions:
-    It is applicable only for Sink operation.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u16voltage -  Enable Sink HW Circuitry if the u16voltage is not Vsafe0V to drain power.
-                    Disable sink HW circuitry if the u16voltage is VSafe0V.
-                    Configure the HW to requested u16voltage in mV.
-    u16Current -  Configure the HW for the requested current passed in terms of mA.
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16Voltage, u16Current)\
-            hw_Configure_SinkCircuitary(u8PortNum, u16Voltage, u16Current)
-        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current);
-        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current)
-        {
-            if(u16Voltage == Vsafe0V)
-            {
-                //Disable the Sink circuitary for "u8PortNum" Port
-            }
-            else
-            {
-                //Enable the Sink circuitary for "u8PortNum" Port and 
-                    configure it to drain u16Voltage 
-            }
-            //Conifgure Sink circuitary for u16Current current rating
-        }
-    </code>
-
-Remarks:
-    User definition of this Hook function is mandatory if PSF is configured for Sink functionality.
-*******************************************************************************************/
-#define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
-
-/*******************************************************************************************
-Function:
-    MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn)
-Summary:
-    Enables or disables DC_DC_EN functionality for a given port.
-Description:
-    DC_DC_EN functionality is required to enable DC-DC Controller. It asserts high once 
-    PSF is initialized, ready to operate and CC pins are functional. It will be 
-    toggled low during error condition say, on occurrence of fault to reset the DC-DC.  
-    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define. 
-    If user chose to implement their own DC-DC buck booster control, this hook must be 
-    implemented to enable or disable the DC_DC_EN functionality for a given Port. 
-    Implementation of this function depends on the type of DC-DC buck boost controller and load 
-    switch used. Define relevant function that has UINT8,UINT8 arguments without return type.
-Conditions:
-    None.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u8EnaDisDCDCEn -  Flag indicating whether to enable/disable DC_DC_EN.
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn) \
-                      hw_portpower_enab_dis_DCDCEn(u8PortNum, u8EnableDisable)
-        void hw_portpower_enab_dis_DCDCEn(UINT8 u8PortNum,UINT8 u8EnableDisable);
-        void hw_portpower_enab_dis_DCDCEn(UINT8 u8PortNum,UINT8 u8EnableDisable)
-        {
-            if (TRUE == u8EnableDisable)
-            {
-                //Enable the DC_DC_EN for "u8PortNum" Port
-            }
-            else
-            {
-                //Disable the DC_DC_EN for "u8PortNum" Port
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory if CONFIG_DCDC_CTRL is undefined.                                    
-*******************************************************************************************/
-#define MCHP_PSF_HOOK_PORTPWR_ENDIS_DCDCEN(u8PortNum, u8EnaDisDCDCEn)
-
 /*********************************************************************************************
   Function:
         MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData)
@@ -1525,7 +1317,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory as well as it is mandatory to define functionality for ePSF_GPIO_Functionality.
  **************************************************************************/
-#define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc) App_GPIOControl_Init(u8PortNum, eGPIOFunc)
+#define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc)
 
 /**************************************************************************
 Function:
@@ -1588,6 +1380,125 @@ Remarks:
     to define functionality for ePSF_GPIO_Functionality.
  *************************************************************************/
 #define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eGPIOFunc, eDriveVal)
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Port power control
+// *****************************************************************************
+// *****************************************************************************   
+/*****************************************************************************
+Function:
+    MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
+Summary:
+    Initializes all the hardware modules related to port power functionality especially DC-DC buck 
+    boost controller and load switch. Additionaly, in case of sink functionality, this hook may be 
+    defined with APIs to initialize a DAC.
+Description:
+    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define.
+    User can chose to implement their own DC-DC buck booster control or modify the default using 
+    this hook. This hook is to initialize the hardware modules related to port power functionality. 
+    Implementation of this function depends on the type of DC-DC buck boost controller, load
+    switch or DAC used. Define relevant function that has no argument without return type.
+Conditions:
+    API implementation must make sure the Port Power(VBUS) of all ports must be set to 0V.
+Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)       hw_portpower_init(u8PortNum)
+        void hw_portpower_init(void);
+        void hw_portpower_init(void)
+        {
+            //Initializes the hardware modules related to port power functionality
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory.
+    A DAC may initialized under this hook if PSF is configured as SINK.                        
+*****************************************************************************/
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)                                                     
+
+/****************************************************************************
+Function:
+    MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum, u16VBUSVolatge, u16Current)
+Summary:
+    Drives the VBUS for given voltage, current
+Description:
+    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define. If 
+    user chose to implement their own DC-DC buck booster control, this hook must be implemented to
+    drive VBUS as per the parameter passed based on voltage and current. It can also be used to 
+    modify the default option. Implementation of this function depends on the type of DC-DC buck 
+    boost controller and load switch used. Define relevant function that has UINT8,UINT16, UINT16
+    arguments without return type.
+Conditions:
+    It is applicable only for Source operation.
+Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).         
+    u16VBUSVolatge - VBUS Voltage level to be driven in VBUS expressed in terms of milliVolts.
+    u16Current     - VBUS current level in terms of mA.
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum, u16VBUSVolatge, u16Current)\
+                hw_portpower_driveVBUS(u8PortNum, u16VBUSVolatge, u16Current)
+      void hw_portpower_driveVBUS(UINT8 u8PortNum, UINT16 u16VBUSVolatge, UINT16 u16Current);
+      void hw_portpower_driveVBUS(UINT8 u8PortNum, UINT16 u16VBUSVolatge, UINT16 u16Current)
+      {
+            // Configure DC-DC buck boost control to drive u16VBUSVolatge & u16Current in VBUS
+      }
+    </code>
+Remarks:
+    User definition of this Hook function is mandatory.                      
+****************************************************************************/
+#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u8PDOIndex,u16VBUSVolatge,u16Current)  
+
+/*******************************************************************************************
+Function:
+    MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
+Summary:
+    Enables or disables sink hardware circuitry and configures it to sinks the VBUS voltage for 
+    a given port based on the sink requested voltage and current.
+Description:
+    This hook is to enable or disable sink hardware circuitry and configure it for Sink  
+    requested current and voltage.Implementation of this function depends on the type of Sink 
+    circuitry used. Define relevant function that has UINT8,UINT16,UINT16 arguments without return type.
+Conditions:
+    It is applicable only for Sink operation.
+Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+    u16voltage -  Enable Sink HW Circuitry if the u16voltage is not Vsafe0V to drain power.
+                    Disable sink HW circuitry if the u16voltage is VSafe0V.
+                    Configure the HW to requested u16voltage in mV.
+    u16Current -  Configure the HW for the requested current passed in terms of mA.
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16Voltage, u16Current)\
+            hw_Configure_SinkCircuitary(u8PortNum, u16Voltage, u16Current)
+        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current);
+        void hw_Configure_SinkCircuitary(UINT8 u8PortNum,UINT16 u16Votlage,UINT16 u16Current)
+        {
+            if(u16Voltage == Vsafe0V)
+            {
+                //Disable the Sink circuitary for "u8PortNum" Port
+            }
+            else
+            {
+                //Enable the Sink circuitary for "u8PortNum" Port and 
+                    configure it to drain u16Voltage 
+            }
+            //Conifgure Sink circuitary for u16Current current rating
+        }
+    </code>
+
+Remarks:
+    User definition of this Hook function is mandatory if PSF is configured for Sink functionality.
+*******************************************************************************************/
+#define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
 
 // *****************************************************************************
 // *****************************************************************************
