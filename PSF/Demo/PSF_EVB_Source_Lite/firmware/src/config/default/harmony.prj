@@ -20,7 +20,7 @@
           <LogicalPath dnOrder="2">config/default/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">AA2B168298942D29DA3D7C538480A3C5</GeneratedChecksum>
-          <UserChecksum dnOrder="5">B24BC5F038016E4C327FB7538E63FB19</UserChecksum>
+          <UserChecksum dnOrder="5">FD1F18BF819B438AB711FBF610B3518D</UserChecksum>
         </File>
         <File dnOrder="2">
           <Type dnOrder="0">SOURCE</Type>
@@ -83,8 +83,8 @@
           <Name dnOrder="1">plib_port.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">280A88383A58D0B0DBD52861D95B1021</GeneratedChecksum>
-          <UserChecksum dnOrder="5">280A88383A58D0B0DBD52861D95B1021</UserChecksum>
+          <GeneratedChecksum dnOrder="4">66F67ED19725CCF9E94FCD26A5AF6D78</GeneratedChecksum>
+          <UserChecksum dnOrder="5">66F67ED19725CCF9E94FCD26A5AF6D78</UserChecksum>
         </File>
         <File dnOrder="10">
           <Type dnOrder="0">SOURCE</Type>
@@ -100,7 +100,7 @@
           <LogicalPath dnOrder="2">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/sercom/usart/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">8BE7A49E5AC127022D1AE64431A628E3</GeneratedChecksum>
-          <UserChecksum dnOrder="5">8BE7A49E5AC127022D1AE64431A628E3</UserChecksum>
+          <UserChecksum dnOrder="5">098DAABBF8E2E2A8AF2EA69AA0D50A05</UserChecksum>
         </File>
         <File dnOrder="12">
           <Type dnOrder="0">SOURCE</Type>
@@ -252,7 +252,7 @@
           <LogicalPath dnOrder="2">config/default/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">071E1CE2101AC8CF8857430E4D11E834</GeneratedChecksum>
-          <UserChecksum dnOrder="5">69DD2F548AFB6F7082246978178CF9D2</UserChecksum>
+          <UserChecksum dnOrder="5">12A6A0BBC56755E1FA0A9512E6CBA677</UserChecksum>
         </File>
         <File dnOrder="31">
           <Type dnOrder="0">HEADER</Type>
@@ -380,7 +380,7 @@
           <LogicalPath dnOrder="2">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/sercom/usart/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">F23A473404313EF6761E27058E55292A</GeneratedChecksum>
-          <UserChecksum dnOrder="5">F23A473404313EF6761E27058E55292A</UserChecksum>
+          <UserChecksum dnOrder="5">EE99DDB68C29816DAC3AC72D59C8B7C1</UserChecksum>
         </File>
         <File dnOrder="47">
           <Type dnOrder="0">HEADER</Type>
