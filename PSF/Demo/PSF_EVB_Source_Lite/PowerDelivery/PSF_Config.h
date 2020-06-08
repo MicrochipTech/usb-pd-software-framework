@@ -970,80 +970,6 @@ typedef enum
 																	    in u8Pio_FAULT_IN. 
 																	  * It takes only values from 
 																		enum eFAULT_IN_MODE_TYPE.
-	u8aPio_VSEL[3]                  3         R/W          R         * Defines the UPD350 PIO as 
-																	    voltage selector pins
-																	    (VSEL[2:0]). 
-																	  * PSF Stack provides provision
-																	    for three Voltage selector 
-																		pins VSEL[2:0]. 
-																	  * It is used to control the 
-																	    output voltage of the DC/DC
-																		controller. In a typical 
-																		application, these pins are
-																		used to switch in different 
-																		resistors into the 
-																		feedback loop to vary the 
-																		output voltage. 
-																	  * The range of valid values is
-																		0 to 15 which correspond to
-																		UPD350 PIO0 to PIO15. 
-																	  * To disable the pin 
-																		functionality from the stack,
-																		user can define a value of 
-																		0xFF. Index 0 to 2 of this 
-																		array corresponds to VSEL0 to
-																		VSEL2.
-                                                                      * This variable is applicable 
-                                                                        only for source operation.
-																	  * It is applicable only when
-																	    CONFIG_DCDC_CTRL is defined 
-																		as 
-																		PWRCTRL_GPIO_DC_DC
-																		
-	u8aMode_VSEL[3]                 3         R/W          R         * Defines the PIO mode of the 
-																		UPD350 PIO VSEL pins VSEL0
-																		to VSEL2. 
-																	  * It takes values only from 
-																		enum 
-																		eUPD_OUTPUT_PIN_MODES_TYPE.
-                                                                      * This variable is applicable 
-                                                                        only for source operation.
- 																	  * It is applicable only when
-																	    CONFIG_DCDC_CTRL is defined 
-																		as 
-																		PWRCTRL_GPIO_DC_DC
-	u8aVSELTruthTable[8]            8         R/W          R         * Index 0 defines the assertion 
-																		and deassertion to be driven
-                                                                        on VSEL[2:0] pins(defined in 
-																		u8aPio_VSEL[3]) by the PSF 
-																		as per u8aMode_VSEL[3] to 
-																		have an output voltage of 
-																		VSafe0V out of DC/DC 
-																		controller.
-                                                                      * Index 1 to 7 defines the 
-																	    assertion and deassertion to
-																		be driven on VSEL[2:0] pins
-																		(defined in u8aPio_VSEL[3]) 
-																		by the PSF stack as per 
-																		u8aMode_VSEL[3] to have an 
-																		output voltage of PDO 
-																		voltage defined in 
-																		u32aSourcePDO[7] out of 
-																		DC/DC controller.
-                                                                      * It is applicable only for 
-																	    Source.
-                                                                      * For a 1 pin per voltage 
-																	    implementation,
-																		correponding VSEL
-                                                                        mapping would be,
-                                                                        1. '000' 5V (No pins 
-																			 asserted)
-                                                                        2. '001' 9V (VSEL0 
-																		     asserted)
-                                                                        3. '010' 15V (VSEL1 
-																		     asserted)
-                                                                        4. '100' 20V (VSEL2 
-																		     asserted)
 	u8Pio_EN_SINK                   1         R/W          R         * Defines the UPD350 PIO 
 																		number used for EN_SINK pin.
 																	  * This is applicable only for
@@ -1499,13 +1425,7 @@ typedef struct _PortCfgStatus
 #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
-    UINT8 u8aReserved123[2];
-    #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC) 
-    UINT8 u8aPio_VSEL[3];
-    UINT8 u8aMode_VSEL[3];
-	UINT8 u8aVSELTruthTable[8];
     UINT8 u8aReserved2[2];
-	#endif
 #endif
     #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 

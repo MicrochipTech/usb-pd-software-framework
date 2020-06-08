@@ -578,7 +578,7 @@ Remarks:
 #elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
 #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  (void) MPQDCDC_Initialize(u8PortNum);
 #else
-#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  App_PortPowerInit(u8PortNum);
 #endif
                                                    
 
@@ -619,7 +619,8 @@ Remarks:
 #define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u8PDOIndex,u16VBUSVolatge,u16Current)  \
         MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current)
 #else
-#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u8PDOIndex,u16VBUSVolatge,u16Current)
+#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u8PDOIndex,u16VBUSVolatge,u16Current)   \
+        App_PortPowerSetPower(u8PortNum, u16VBUSVolatge, u16Current)
 #endif
 
 /*******************************************************************************************

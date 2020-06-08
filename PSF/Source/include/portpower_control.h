@@ -44,9 +44,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Initialization function of Hardware Module used for Port Power Control*/
 #define PWRCTRL_VBUS_0V		0
 
-/*VSEL PIO count VSEL[2:0]*/
-#define PWRCTRL_VSEL_PIO_MAX_COUNT      3
-
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: Data Structure                                                    */

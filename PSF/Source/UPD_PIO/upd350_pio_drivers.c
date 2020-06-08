@@ -54,7 +54,7 @@ void UPDPIO_Disable(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum)
 
 void UPDPIO_SetBufferType(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum, UINT8 u8BufType)
 {
-    if(UPD_GPIO_SETBUF_PUSHPULL == u8BufType)
+    if(UPD_PIO_SETBUF_PUSHPULL == u8BufType)
     {
         UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_BUFFER_TYPE);
     } 
