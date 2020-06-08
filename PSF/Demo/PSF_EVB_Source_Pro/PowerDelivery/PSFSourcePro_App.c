@@ -247,14 +247,14 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         case eVBUS_DIS_FUNC:
         {
             UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
-            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_GPIO_SETBUF_PUSHPULL);
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
             break; 
         }
         case eDC_DC_EN_FUNC:
         {
             UPDPIO_DriveHigh(u8PortNum, eUPD_PIO6);
-            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO6, UPD_GPIO_SETBUF_PUSHPULL);            
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO6, UPD_PIO_SETBUF_PUSHPULL);            
             UPDPIO_EnableOutput(u8PortNum, eUPD_PIO6);
             break; 
         }
@@ -366,13 +366,13 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             if (eGPIO_ASSERT == eGPIODrive)
             {
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
-                UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+                UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
                 UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
             }
             else
             {
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
-                UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
+                UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
                 UPDPIO_DriveLow(u8PortNum, eUPD_PIO2); 
             }
             break;  

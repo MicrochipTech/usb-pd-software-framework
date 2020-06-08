@@ -80,39 +80,6 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS_PIO_MODE;
     pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_PIO_NO;
     pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_MODE;
-
-#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)  
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aPio_VSEL[0] =         \
-                                                (UINT8)CFG_PORT_UPD_VSEL0_PIO_NO;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aPio_VSEL[1] =         \
-                                                (UINT8)CFG_PORT_UPD_VSEL1_PIO_NO;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aPio_VSEL[2] =         \
-                                                (UINT8)CFG_PORT_UPD_VSEL2_PIO_NO;
-
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aMode_VSEL[0] =       \
-                                               (UINT8)CFG_PORT_UPD_VSEL0_PIO_MODE;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aMode_VSEL[1] =       \
-                                               (UINT8)CFG_PORT_UPD_VSEL1_PIO_MODE;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aMode_VSEL[2] =       \
-                                               (UINT8)CFG_PORT_UPD_VSEL2_PIO_MODE;
-
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aVSELTruthTable[0] =  \
-                                             CFG_PORT_VSAFE0V_VSEL_MAPPING;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aVSELTruthTable[1] =  \
-                                             CFG_PORT_PDO_1_VSEL_MAPPING;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aVSELTruthTable[2] =  \
-                                             CFG_PORT_PDO_2_VSEL_MAPPING;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aVSELTruthTable[3] =  \
-                                             CFG_PORT_PDO_3_VSEL_MAPPING;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aVSELTruthTable[4] =  \
-                                             CFG_PORT_PDO_4_VSEL_MAPPING;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aVSELTruthTable[5] =  \
-                                             CFG_PORT_PDO_5_VSEL_MAPPING;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aVSELTruthTable[6] =  \
-                                             CFG_PORT_PDO_6_VSEL_MAPPING;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8aVSELTruthTable[7] =  \
-                                             CFG_PORT_PDO_7_VSEL_MAPPING;    
-#endif       
 }
 
 void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)

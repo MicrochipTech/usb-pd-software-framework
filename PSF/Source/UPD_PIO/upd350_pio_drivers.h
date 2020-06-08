@@ -64,8 +64,8 @@ typedef enum
 
 /***********************************************************************************************/
 /* Defines used for 'u8BufType' argument in UPDPIO_SetBufferType function */ 
-#define UPD_GPIO_SETBUF_PUSHPULL    0
-#define UPD_GPIO_SETBUF_OPENDRAIN   1
+#define UPD_PIO_SETBUF_PUSHPULL    0
+#define UPD_PIO_SETBUF_OPENDRAIN   1
 
 /* Defines used for 'u8PUEnable' argument in UPDPIO_EnablePullUp function */
 #define UPD_PIO_ENABLE_PULLUP       0
