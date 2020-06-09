@@ -1165,7 +1165,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_VDM_IDENTITY_REQUEST-ENTRY_SS\r\n");
                     
                     /* Choosing VDM version as per Current spec revision */
-                    if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8PortNum))
+                    if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
                     {
                         u32VDMHeader = PE_SRC_VDM_HEADER_LOW_VER;
                     }
