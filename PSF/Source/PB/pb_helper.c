@@ -72,7 +72,7 @@ void PB_Init(void)
            PB is enabled for the port */
         for (u8PortNum = INDEX_0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
         {
-            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum))
+            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {    
                 if (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)
                 {

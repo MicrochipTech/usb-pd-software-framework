@@ -146,9 +146,14 @@ Source/Sink Power delivery objects*/
 /****************Defines to get Status from u8DPM_Status****************************/
 #define DPM_GET_DPM_STATUS(u8PortNum)				gasDPM[u8PortNum].u8DPM_Status
 /*Defines for getting data by passing u8DPM_Status variable*/
-#define DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum)   ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
+#define DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8DPM_Status)   ((u8DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
 #define DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u8DPM_Status)    ((u8DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
-#define DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8PortNum)  ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
+#define DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8DPM_Status)  ((u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
+
+/****************Defines to get Status from u8PortNum****************************/
+#define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)   ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
+#define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)    ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
+#define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)  ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
 
 /********************** Return Values from PE_ValidateMessage API**************/
 #define DPM_VALID_REQUEST            1

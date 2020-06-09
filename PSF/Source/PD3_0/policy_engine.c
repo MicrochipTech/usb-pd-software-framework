@@ -88,7 +88,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
     UINT32 u32Header;
     UINT8 u8RetVal;
     
-    if(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS (u8PortNum) != PD_ROLE_DRP)
+    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) != PD_ROLE_DRP)
     {
         /* Protocol layer Chunk State machine must be ran by PE to receive Chunk message if any*/
     #if (TRUE == INCLUDE_PD_3_0)
@@ -103,7 +103,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
         if (gasPolicy_Engine[u8PortNum].u8HardResetRecvdISR)
         {
-            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum))
+            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_HARD_RESET_RECEIVED;
                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_RECEIVED_ENTRY_SS;
@@ -151,13 +151,13 @@ void PE_RunStateMachine (UINT8 u8PortNum)
         /*Setting Timeout sub-state to invalid state*/
         gasPolicy_Engine[u8PortNum].ePETimeoutSubState = ePE_INVALIDSUBSTATE;
 
-        if(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS (u8PortNum) == PD_ROLE_SOURCE)
+        if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
         {
             #if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
             PE_SrcRunStateMachine (u8PortNum, u8DataBuf, u8SOPType,u32Header);
             #endif
         }
-        else if(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS (u8PortNum) == PD_ROLE_SINK)
+        else if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SINK)
         {
             #if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
             PE_SnkRunStateMachine (u8PortNum, u8DataBuf, u8SOPType,u32Header);
@@ -253,7 +253,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
 void PE_SendNotSupportedOrRejectMsg (UINT8 u8PortNum)
 {
     /*Send Not Supported message if Current PD Specification is 3.0*/
-    if ((DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS (u8PortNum) == PD_SPEC_REVISION_3_0))
+    if ((DPM_GET_CURRENT_PD_SPEC_REV (u8PortNum) == PD_SPEC_REVISION_3_0))
     {
         gasPolicy_Engine[u8PortNum].ePEState = ePE_SEND_NOT_SUPPORTED;
         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SEND_NOT_SUPPORTED_ENTRY_SS;
@@ -268,7 +268,7 @@ void PE_SendNotSupportedOrRejectMsg (UINT8 u8PortNum)
 
 void PE_SendHardResetMsg (UINT8 u8PortNum)
 {
-    if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
     {
         gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
@@ -282,7 +282,7 @@ void PE_SendHardResetMsg (UINT8 u8PortNum)
 
 void PE_SendSoftResetMsg (UINT8 u8PortNum)
 {
-    if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
     {
         gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_SOFT_RESET;
         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_SOFT_RESET_SOP_SS;
@@ -492,8 +492,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     #if (FALSE != INCLUDE_PDFU)
 
                     /***if current state is Source Ready / Sink ready or PDFU Mode**/
-                    if((((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS (u8PortNum)) && (ePE_SRC_READY == PE_FWUP_GET_CURRENT_STATE(u8PortNum)))||
-                      ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS (u8PortNum))&& (ePE_SNK_READY == PE_FWUP_GET_CURRENT_STATE(u8PortNum)))) ||
+                    if((((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && (ePE_SRC_READY == PE_FWUP_GET_CURRENT_STATE(u8PortNum)))||
+                      ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum))&& (ePE_SNK_READY == PE_FWUP_GET_CURRENT_STATE(u8PortNum)))) ||
                       (ePE_PDFU_MODE == PE_FWUP_GET_CURRENT_STATE(u8PortNum)))
                     {
                         if(TRUE == MCHP_PSF_HOOK_IS_PDFU_ALLOWED_NOW())
@@ -806,7 +806,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 
                 case PE_CTRL_SOFT_RESET:
                 {
-                    if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+                    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                     {
                         gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SOFT_RESET;
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SOFT_RESET_ENTRY_SS;
@@ -869,7 +869,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     Transmit_cb = PE_StateChange_TransmitCB;
                     
-                    if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+                    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if
                         message transmission fails*/
@@ -918,7 +918,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     Transmit_cb = PE_StateChange_TransmitCB;
 
-                    if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+                    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if
                         message transmission fails*/
@@ -997,7 +997,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     u32pTransmit_DataObj = NULL;
                     Transmit_cb = PE_StateChange_TransmitCB;
 
-                    if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+                    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if
                         message transmission fails*/
@@ -1125,7 +1125,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                         /*Stop the VCONN_OFF timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
-                        if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+                        if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                         {
                             gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY;
                             gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
@@ -1214,7 +1214,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     u32pTransmit_DataObj = NULL;
                     Transmit_cb = PE_StateChange_TransmitCB;
 
-                    if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS (u8PortNum) == PD_ROLE_SOURCE)
+                    if (DPM_GET_CURRENT_POWER_ROLE (u8PortNum) == PD_ROLE_SOURCE)
                     {
                         /*Set the transmitter callback to transition to source soft reset state if
                         message transmission fails*/
@@ -1263,9 +1263,9 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             if (PE_GET_VDM_CMD_TYPE (*u32RecvdVDMHeader) == PE_GET_VDM_CMD_TYPE_REQ)
             {
                 /*Send NACK message for any received VDM message if PD Spec revision is 2.0*/
-                if (DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS (u8PortNum) == PD_SPEC_REVISION_2_0)
+                if (DPM_GET_CURRENT_PD_SPEC_REV (u8PortNum) == PD_SPEC_REVISION_2_0)
                 {                  
-                    if(PD_ROLE_SOURCE == (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum)))
+                    if(PD_ROLE_SOURCE == (DPM_GET_CURRENT_POWER_ROLE(u8PortNum)))
                     {
                         gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY;
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
@@ -1325,7 +1325,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     PRL_ConfigureBISTCarrierMode (u8PortNum, FALSE);
                     
                     /*Transition to ePE_SRC_TRANSITION_TO_DEFAULT state if current role is source*/
-                    if (PD_ROLE_SOURCE == (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum)))
+                    if (PD_ROLE_SOURCE == (DPM_GET_CURRENT_POWER_ROLE(u8PortNum)))
                     {
                         gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_TRANSITION_TO_DEFAULT;
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_ENTRY_SS;
@@ -1375,7 +1375,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 
                 u8IsTransmit = TRUE;
                 
-                u8CurrentPowerRole = DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum);
+                u8CurrentPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
 
                 if (PD_ROLE_SOURCE == u8CurrentPowerRole)
                 {
@@ -1555,7 +1555,7 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum)
 UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
 {
     UINT8 u8Return = FALSE;    
-    if ((DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE) &&
+    if ((DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) &&
             (gasPolicy_Engine[u8PortNum].ePEState == ePE_SRC_READY) &&
           (gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_READY_END_AMS_SS))  
     {

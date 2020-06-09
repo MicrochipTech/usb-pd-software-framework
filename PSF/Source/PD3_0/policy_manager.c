@@ -237,7 +237,7 @@ void DPM_SetPortPower(UINT8 u8PortNum)
 {
     UINT16 u16PDOVoltage,u16PDOCurrent;
     
-    if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
     {
         u16PDOVoltage = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
         u16PDOCurrent = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
@@ -256,7 +256,7 @@ void DPM_SetPortPower(UINT8 u8PortNum)
 void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 {
 	UINT16 u16Current;
-	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum))
+	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
 	{
 		u16Current = gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA;
         if (DPM_VBUS_ON == u8VbusOnorOff)
@@ -1007,7 +1007,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: u8HRCompleteWait Reseted ");
 				
-                if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                 {			
 					/* Assign an idle state wait for detach*/
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
@@ -1112,7 +1112,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: u8HRCompleteWait Resetted ");
 				
-                if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                 {			
 					/* Assign an idle state wait for detach*/
                     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
@@ -1233,7 +1233,7 @@ void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
         /*Disable VCONN by switching off the VCONN FETS which was enabled previously*/
         TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);
         
-        if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+        if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
         {		          
             /*Disable VBUS by driving to vSafe0V if port role is a source*/
             DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
@@ -1342,7 +1342,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
                 DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO);
                 
                 /* Check for Port Power Role */
-                if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                 {
                     /* Move the Policy Engine to PE_SRC_SEND_CAPABILITIES state */
                     gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
@@ -1361,7 +1361,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
                                           ~(DPM_CLIENT_REQ_GET_SINK_CAPS);                
                 
                 /* Check for Port Power Role */
-                if (DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum) == PD_ROLE_SOURCE)
+                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                 {
                     /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
                     gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 

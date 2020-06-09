@@ -237,7 +237,7 @@ void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
   	UINT8 u8HwnRetryCount, u8DPMStatus = DPM_GET_DPM_STATUS(u8PortNum);
 	
 	/* HW Retry Counter is updated depending on Spec Rev */
-	if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8PortNum))
+	if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8DPMStatus))
 	{
 		u8HwnRetryCount = 3;
 	}
@@ -250,7 +250,7 @@ void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
 					  	PRL_TX_PARAM_C_UPD_SPEC_REV_2_0 							|	 			/*	Spec Rev */
 						PRL_UPDATE_TX_PARAM_C_N_RETRY_CNT(u8HwnRetryCount)			| 				/* nRetryCount corresponding to spec */
 						PRL_UPDATE_TX_PARAM_C_PORT_DATA_ROLE(DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u8DPMStatus)) |	/* Data Role*/
-						PRL_UPDATE_TX_PARAM_C_PORT_POWER_ROLE(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum))); 	/* Power Role*/	
+						PRL_UPDATE_TX_PARAM_C_PORT_POWER_ROLE(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8DPMStatus))); 	/* Power Role*/	
 }
 
 /***************************************************************************************************/
@@ -260,8 +260,8 @@ UINT16 PRL_FormSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 u8O
   UINT8 u8DPMStatus = DPM_GET_DPM_STATUS(u8PortNum);
 	return((u8MessageType)
 		   |((UINT16)(DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u8DPMStatus)) << PRL_PORT_DATA_ROLE_BIT_POS)
-		   |((UINT16)(DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8PortNum)) << PRL_SPEC_REV_FIELD_START_BIT_POS) 		
-		   |((UINT16)(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum)) << PRL_PORT_POWER_ROLE_OR_CABLE_PLUG_BIT_POS)
+		   |((UINT16)(DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8DPMStatus)) << PRL_SPEC_REV_FIELD_START_BIT_POS) 		
+		   |((UINT16)(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8DPMStatus)) << PRL_PORT_POWER_ROLE_OR_CABLE_PLUG_BIT_POS)
 		   |((UINT16)u8ObjectCount << PRL_DATA_OBJECTS_FIELD_START_BIT_POS) 						
 		   |((UINT16)u8Extended << PRL_EXTENDED_BIT_POS));
 }
@@ -269,7 +269,7 @@ UINT16 PRL_FormSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 u8O
 UINT16 PRL_FormNonSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 u8ObjectCount, UINT8 u8Extended)
 {
 	return((u8MessageType) 																		|
-  			((UINT16) ((DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8PortNum)) << PRL_SPEC_REV_FIELD_START_BIT_POS)) 	|
+  			((UINT16) ((DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) << PRL_SPEC_REV_FIELD_START_BIT_POS)) 	|
 	  		((UINT16)u8ObjectCount << PRL_DATA_OBJECTS_FIELD_START_BIT_POS) 					|
 			((UINT16)u8Extended << PRL_EXTENDED_BIT_POS));
 }

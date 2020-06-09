@@ -371,7 +371,7 @@ void PE_FwUpdtTxDoneCallBack(
         }
     }
   
-    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum))
+    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         if (u8TxDoneSubState == (UINT8)ePE_SRC_READY_END_AMS_SS)
             PE_FwUpdtInitialize();
@@ -753,7 +753,7 @@ void PE_FwUpdtResetToEnumState(
 
     gsPdfuInfo.u8ResendResponseTimes = SET_TO_ZERO;
     
-    u8CurrentPowerRole = DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8PortNum);
+    u8CurrentPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
 
     if (PD_ROLE_SOURCE == u8CurrentPowerRole)
     {
