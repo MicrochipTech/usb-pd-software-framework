@@ -50,12 +50,18 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     UINT16 u16Data;
     UINT8 u8MatchDebVal;
     
+    /*Clearing UPD350 role to be advertised. Done in cronous*/
+    UPD_RegByteClearBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, TYPEC_DEV_ROLE);
+    
     /*Setting CC Comparator OFF*/
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
     
     /*Setting VBUS Comparator OFF*/
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
  
+    /*Clearing BLK_PD_MSG initially. Done in cronous*/
+    UPD_RegByteClearBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
+        
     /*Setting PM V2I Enable bit to enable the current source*/
     UPD_RegByteSetBit (u8PortNum, UPD_TRIM_ZTC_BYTE_3, UPD_PM_V2I_ENABLE);
     
@@ -162,6 +168,9 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     
     /*FW sets the DRP Enable (DRP_EN) in DRP Control Register to enable DRP offload.*/
     UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+    
+    /*Clearing BLK_PD_MSG again. Done in cronous*/
+    UPD_RegByteClearBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
 }
 
 void TypeC_InitPort (UINT8 u8PortNum)
@@ -532,6 +541,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Rd is present on either CC1 or CC2 line and Ra may be present on either CC1 or CC2 line*/
                         else
                         {
+                            /*Set BLK_PD_MSG. Done in cronous*/
+                            UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
+    
                              gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
                              gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
                         }
@@ -925,6 +937,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Check for VBUS Presence before moving to Attached SNK state */
                     if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_5V_PRES))
                     {
+                        /*Set BLK_PD_MSG. Done in cronous*/
+                        UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
+                        
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_ENTRY_SS;
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SNK;                    
                     }
