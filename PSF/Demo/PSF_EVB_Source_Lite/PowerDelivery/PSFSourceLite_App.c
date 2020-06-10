@@ -365,21 +365,21 @@ void App_PortPowerInit(UINT8 u8PortNum)
     UINT16 u16Delay; 
     
     /*VSEL0 Init */
-    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_PIO_SETBUF_PUSHPULL);
     UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_PIO_SETBUF_PUSHPULL);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO7);
     
     /*VSEL 1 Init */
-    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);
     UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);
     
     /*VSEL 2 Init */
-    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO9, UPD_PIO_SETBUF_PUSHPULL);
     UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO9, UPD_PIO_SETBUF_PUSHPULL);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
     
-    /* Delay for the DC/DC module to stabilize after Initialization */
+    /* Delay of 1.25ms for the DC/DC module to stabilize after Initialization */
     for(u16Delay = 0; u16Delay < 10000; u16Delay++)
     {
         __NOP();
