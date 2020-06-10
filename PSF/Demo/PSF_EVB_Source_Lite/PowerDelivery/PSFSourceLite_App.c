@@ -191,13 +191,17 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {
             if (PORT0 == u8PortNum)
             {
-                SPI_SS_0_OutputEnable();
                 SPI_SS_0_Set();
+                SPI_SS_0_OutputEnable();                
             }
             else if(PORT1 == u8PortNum)
             {
-                SPI_SS_1_OutputEnable();
                 SPI_SS_1_Set();
+                SPI_SS_1_OutputEnable();                
+            }
+            else
+            {
+                /* Do Nothing */
             }
             break; 
         }
