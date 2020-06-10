@@ -645,7 +645,7 @@ void UPD_CheckAndDisablePorts (void)
             } /* end of while*/
             /*kill the timer if the UPD is identified.*/
             PDTimer_Kill (u8TimerID);
-        } /*endof if for port check*/
+        } /*end of if for port check*/
     } /*end of for*/
     
     /* Work around - If port-0 as source and port-1 as sink interrupt issued continuously */
