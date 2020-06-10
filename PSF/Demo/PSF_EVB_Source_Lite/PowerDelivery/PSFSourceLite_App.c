@@ -283,6 +283,10 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     /*PORT_PIN_PA01*/
                     SPI_SS_1_Clear();
                 } 
+                else
+                {
+                    /* Do Nothing */
+                }
             }
             else
             {
@@ -294,6 +298,10 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 else if(PORT1 == u8PortNum)
                 {
                     SPI_SS_1_Set();
+                }
+                else
+                {
+                    /* Do Nothing */
                 }
             }
             break; 
@@ -326,15 +334,15 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
-                UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
                 UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
+                UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);                
+                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);                
             }
             else
             {
-                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
-                UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
                 UPDPIO_DriveLow(u8PortNum, eUPD_PIO2); 
+                UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);                
+                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);                
             }
             break; 
         }
