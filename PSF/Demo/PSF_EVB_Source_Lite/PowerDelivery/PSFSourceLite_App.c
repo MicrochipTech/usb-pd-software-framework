@@ -207,9 +207,9 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eVBUS_DIS_FUNC:
         {
-            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
-            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);            
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
             break;             
         }
         case eDC_DC_EN_FUNC:
