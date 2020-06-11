@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    Mpq_dc_dc_control.c
+    i2c_dc_dc_ung8198.c
 
   Description:
     This file contains the function definitions of I2C DC DC control interface for
@@ -70,7 +70,6 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     UINT8 u8length;
     UINT32 u32I2CCmd;
     UINT8 u8Return = TRUE;
-    UINT16 u16I2CDlyCnt;
 
     /* Global interrupt is enabled as the I2C works on interrupt in SAMD20*/
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
@@ -83,12 +82,6 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     /* Set EN_VBUS Status in Port IO status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
     
-    /* Delay of ~2.5ms for I2C module to stabilize after DC DC Enable*/
-    /* For loop is used with execution of NOP as approx delay of >2ms is required */
-    for(u16I2CDlyCnt=0;u16I2CDlyCnt<20000;u16I2CDlyCnt++)
-    {
-         __NOP();
-    }
     /* Clear the faults */
     u32I2CCmd = MPQ_CMD_CLEAR_FAULT;
     u8length = I2C_CMD_LENGTH_1;

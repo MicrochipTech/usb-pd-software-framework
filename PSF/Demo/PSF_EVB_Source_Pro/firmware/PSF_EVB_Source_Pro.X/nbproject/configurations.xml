@@ -105,6 +105,7 @@
         <itemPath>../../PowerDelivery/PSFSourcePro_App.h</itemPath>
         <itemPath>../../PowerDelivery/PSFSourcePro_BootCfg.h</itemPath>
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -201,14 +202,12 @@
                      projectFiles="true">
         <itemPath>../../PowerDelivery/PSFSourcePro_App.c</itemPath>
         <itemPath>../../PowerDelivery/PSFSourcePro_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
-          <logicalFolder name="f1" displayName="I2C_DC_DC" projectFiles="true">
-            <itemPath>../../../../SOC_Portable/SAMD20/I2C_DC_DC/Mpq_dc_dc_control.c</itemPath>
-          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.c</itemPath>
         </logicalFolder>
       </logicalFolder>

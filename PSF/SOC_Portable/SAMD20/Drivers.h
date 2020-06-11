@@ -52,7 +52,7 @@
 #include "PSF_Config.h"
 
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC) 
-#include "Mpq_dc_dc_control.h"
+#include "i2c_dc_dc_ung8198.h"
 #endif
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
 #include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"

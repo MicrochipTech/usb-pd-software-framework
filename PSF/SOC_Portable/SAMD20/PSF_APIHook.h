@@ -1531,7 +1531,7 @@ Summary:
 Description:
     This hook is called when PSF needs to know about the present current
     by external DC_DC controller. The function should be defined with return type
-    UINT32 and UINT8 type as input parameter. If the DC_DC controller doesnot 
+    UINT32 and UINT8 type as input parameter. If the DC_DC controller does not 
     have feature to get output current, return 0xFFFFFFFF to denote the feature
     is not supported. 
 Conditions:
