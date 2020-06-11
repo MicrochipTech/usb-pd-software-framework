@@ -245,6 +245,10 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 SPI_SS_1_Set();
                 SPI_SS_1_OutputEnable();
             }
+            else
+            {
+                /* Do Nothing */
+            }
             break; 
         }
         case eVBUS_DIS_FUNC:
@@ -331,6 +335,10 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     /*PORT_PIN_PA01*/
                     SPI_SS_1_Clear();
                 } 
+                else
+                {
+                    /* Do Nothing */
+                }
             }
             else
             {
@@ -342,6 +350,10 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 else if(PORT1 == u8PortNum)
                 {
                     SPI_SS_1_Set();
+                }
+                else
+                {
+                    /* Do Nothing */
                 }
             }
             break; 
