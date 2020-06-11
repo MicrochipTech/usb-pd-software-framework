@@ -68,13 +68,7 @@ UINT8 MchpPSF_Init(void)
     }
     
     /*Since, Reset is common for all the ports. It is called only once with PORT0 as dummy value*/
-    #if (TRUE == INCLUDE_PD_SINK) 
-            MCHP_PSF_HOOK_GPIO_FUNC_INIT(PORT0, eUPD350_RESET_FUNC);
-    #else
-            //Todo: To be tested in Source configuration and removed
-            /*UPD350 Reset GPIO Init*/
-            MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(PORT0);
-    #endif
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(PORT0, eUPD350_RESET_FUNC);
         
 	/*Initialize Internal global variables*/
     IntGlobals_PDInitialization();

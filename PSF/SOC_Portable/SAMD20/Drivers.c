@@ -213,43 +213,6 @@ UINT8 SAMD20_I2CDCDCIsBusyDriver(void)
 #endif
 
 /*****************************************************************************/
-/*********************************UPD350 Reset APIs*****************************/
-/*****************************************************************************/
-void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum)
-{
-    /*Current implementation supports common reset pin for all ports
-      Hence, parameter u8PortNum is not considered*/
-    
-    /*PORT_PIN_PA00*/
-    /* UPD350 RESET_N pin active low; set to internal pull up by default*/
-     UPD350_RESET_InputEnable();
-     PORT_PinWrite(UPD350_RESET_PIN, TRUE);
-}
-
-void SAMD20_ResetUPD350(UINT8 u8PortNum)
-{
-    /*UPD350 Reset function is called for each port respectively
-     Since, all UPD350 PIOs are tied to single PIO, Reset is done for PORT0
-     alone to avoid multiple reset */
-    if (PORT0 == u8PortNum)
-    {
-        UPD350_RESET_InputEnable();
-
-        /* Pull down is driven to reset the UPD350*/
-        PORT_PinWrite(UPD350_RESET_PIN, FALSE);
-
-        /*Delay */
-        for(UINT16 u16delayloop = 0u; u16delayloop <(6000);u16delayloop++)
-        {
-            __asm volatile("nop");
-            __asm volatile("nop");
-
-        }
-        /* Set to default state*/
-        PORT_PinWrite(UPD350_RESET_PIN, TRUE);
-    }
-}
-/*****************************************************************************/
 /*****************************************************************************/
 /*********************************MCU APIs*****************************/
 /*****************************************************************************/

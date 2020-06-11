@@ -351,46 +351,6 @@ void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum);
 
 /****************************************************************************
     Function:
-        void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum)
-    Summary:
-        Wrapper function Initialize the GPIO mapped as UPD350 
-    Description:
-        This API serves as a wrapper between PSF stack defined UPD350 Reset initialization function
-        MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT and Harmony generated code to initialize the GPIO for
-        UPD350 Reset functionality
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum);
-
-/****************************************************************************
-    Function:
-        void SAMD20_ResetUPD350(UINT8 u8PortNum)
-    Summary:
-        Wrapper function reset the UPD350 through GPIO configured 
-    Description:
-        This API serves as a wrapper between PSF stack defined UPD350 Reset function
-        MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO and Harmony generated code to drive the UPD350 Reset 
-        configured GPIO port specifically.
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void SAMD20_ResetUPD350(UINT8 u8PortNum);
-
-/****************************************************************************
-    Function:
         void SAMD20_EnterCriticalSection(void)
     Summary:
         Wrapper function to SAMD20 disable interrupts globally to provide critical section

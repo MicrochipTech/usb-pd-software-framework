@@ -157,15 +157,15 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {
             if (PORT0 == u8PortNum)
             {
-                PORT_PinInputEnable(PORT_PIN_PA14);
                 PORT_PinWrite(PORT_PIN_PA14, TRUE);
+                PORT_PinInputEnable(PORT_PIN_PA14);
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             }
             else if (PORT1 == u8PortNum)
             {
-                PORT_PinInputEnable(PORT_PIN_PA15);
                 PORT_PinWrite(PORT_PIN_PA15, TRUE);
+                PORT_PinInputEnable(PORT_PIN_PA15);
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA15);
             }
@@ -183,8 +183,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         case eUPD350_RESET_FUNC:
         {
             /* UPD350 RESET_N pin active low; set to internal pull up by default*/
-            UPD350_RESET_InputEnable();
             PORT_PinWrite(UPD350_RESET_PIN, TRUE);
+            UPD350_RESET_InputEnable();
             break;
         }
         case eSPI_CHIP_SELECT_FUNC:
@@ -207,16 +207,23 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eVBUS_DIS_FUNC:
         {
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
             UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);            
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
             UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
             break;             
         }
         case eDC_DC_EN_FUNC:
         {
-            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO6);
             UPDPIO_SetBufferType(u8PortNum, eUPD_PIO6, UPD_PIO_SETBUF_PUSHPULL);            
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO6);
             UPDPIO_EnableOutput(u8PortNum, eUPD_PIO6);
+            
+            UINT16 u16Delay;
+            /* Delay of 1.25ms for the DC/DC module to stabilize after Initialization */
+                for(u16Delay = 0; u16Delay < 10000; u16Delay++)
+            {
+                __NOP();
+            }   
             break; 
         }
         case eORIENTATION_FUNC:
@@ -334,14 +341,14 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
                 UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);                
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);                
             }
             else
             {
-                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2); 
                 UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);                
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2); 
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);                
             }
             break; 
@@ -362,28 +369,23 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 
 void App_PortPowerInit(UINT8 u8PortNum)
 {
-    UINT16 u16Delay; 
+//    UINT16 u16Delay; 
     
     /*VSEL0 Init */
-    UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
     UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_PIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO7);
     
     /*VSEL 1 Init */
-    UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
     UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);
     
     /*VSEL 2 Init */
-    UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
     UPDPIO_SetBufferType(u8PortNum, eUPD_PIO9, UPD_PIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
     
-    /* Delay of 1.25ms for the DC/DC module to stabilize after Initialization */
-    for(u16Delay = 0; u16Delay < 10000; u16Delay++)
-    {
-        __NOP();
-    }   
 }
 
 void App_PortPowerSetPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16Voltage, UINT16 u16Current)
@@ -396,12 +398,6 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16Voltage,
      *15V       0       1       0
      *20V       0       0       1
      */
-    
-    UINT16 u16Delay; 
-    for(u16Delay = 0; u16Delay < 10000; u16Delay++)
-    {
-        __NOP();
-    }   
     
     switch(u16Voltage)
     {
