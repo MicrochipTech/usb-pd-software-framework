@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    Mpq_dc_dc_control.h
+    i2c_dc_dc_ung8198.h
 
   Description:
     This header file contains the function prototypes for port power control to
