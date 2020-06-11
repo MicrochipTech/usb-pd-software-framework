@@ -481,8 +481,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     {
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
-            /* To-do: Commented out temporarily. To be revisited */
-        //    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
+            MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
             #if (TRUE == INCLUDE_PD_SINK) 
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
                     ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
@@ -492,14 +491,12 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
-            /* To-do: Commented out temporarily. To be revisited */
-        //    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
-            /* To-do: Commented out temporarily. To be revisited */
-        //    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
             break;
         }
         case eMCHP_PSF_CAPS_MISMATCH:

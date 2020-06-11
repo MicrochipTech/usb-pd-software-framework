@@ -566,7 +566,7 @@ void UPD_ResetThroughGPIO()
     /* Pull down is driven to reset the UPD350*/
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(PORT0, eUPD350_RESET_FUNC,eGPIO_ASSERT);
 
-    /*Delay */
+    /* Delay of RESET_N minimum input assertion time */
     for(UINT16 u16delayloop = 0u; u16delayloop <(6000);u16delayloop++)
     {
         __asm volatile("nop");
@@ -584,13 +584,7 @@ void UPD_CheckAndDisablePorts (void)
     /*variable to hold the timer id*/
     UINT8 u8TimerID;
     
-    #if (TRUE == INCLUDE_PD_SOURCE)
-        /*Todo: to be removed after testing in source configuration*/
-        /* Reset the UPD350s */
-        MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(PORT0);
-    #else
-        UPD_ResetThroughGPIO();
-    #endif
+    UPD_ResetThroughGPIO();
 
     /*run a loop for all the number of CONFIG_PD_PORT_COUNT to check all ports*/
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)

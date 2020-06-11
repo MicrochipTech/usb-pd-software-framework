@@ -294,84 +294,6 @@ Example :
 **************************************************************************************************/
 #define MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER	0
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: UPD350 Reset Control
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************
-Function:
-    MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum)
-Summary:
-    Initializes the SOC GPIOs connected to the RESET_N lines of UPD350s
-Description:
-    This hook initializes the SOC GPIOs connected to the RESET_N lines of Port's UPD350. It is 
-    recommended to connect a single GPIO to the reset line of all UPD350s. User can also define a  
-    separate GPIO for each port. As the UPD350 RESET_N is active low signal, SOC should initialize 
-    the GPIO to be high by default. Define relevant function that has port number as argument 
-    without return type.
-Conditions:
-    None.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum)      updreset_init(u8PortNum)
-        void updreset_init(UINT8 u8PortNum);
-        void updreset_init(UINT8 u8PortNum)
-        {
-            // If single SOC GPIO is connected to all the UPD350's, do initialisation only once 
-            // when PortNum is '0'. If separate GPIOs are used for each port UPD350, do 
-			//initialisation port specifically
-            if (0 == u8PortNum)
-            {
-                //Initialization of SOC GPIO connected to UPD350 reset lines
-                //Make the gpio line high by default
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory                      
-*************************************************************************/
-#define MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum)             
-
-/**********************************************************************
-Function:
-    MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(u8PortNum)
-Summary:
-    Resets the UPD350 connected specific to the port. 
-Description:
-    This hook is to reset the UPD350 connected to the port by driving the SOC GPIO connected to the
-    RESET_N pin of that UPD350. Since, RESET_N is active low signal, SOC GPIO should be driven low 
-    for a while and then back to default high state. It is recommended to have common reset pin for 
-    all ports. In such case user must drive the GPIO for UPD350 reset only when u8PortNum passed is 
-    '0' via this hook. Define relevant function that has port number as argument without return type.
-Conditions:
-    None.
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(u8PortNum)      updreset_thru_gpio(u8PortNum)
-        void updreset_thru_gpio(UINT8 u8PortNum);
-        void updreset_thru_gpio(UINT8 u8PortNum)
-        {
-            if (0 == u8PortNum)
-            {
-               //Enable pull down
-               // Wait for xxx uS
-               // Enable pull up
-            }
-        }
-    </code>
-Remarks:
-    User definition of this Hook function is mandatory                  
-**********************************************************************/
-#define MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(u8PortNum)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1252,9 +1174,9 @@ User definition of this Hook function is optional.
 
 typedef enum eMCHP_PSF_GPIO_Functionality
 {
-    eUPD350_RESET_FUNC,
     eUPD350_ALERT_FUNC,
     eI2C_DC_DC_ALERT_FUNC,
+    eUPD350_RESET_FUNC,
     eSPI_CHIP_SELECT_FUNC,
     eVBUS_DIS_FUNC,
     eDC_DC_EN_FUNC,
@@ -1391,7 +1313,7 @@ Function:
     MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)
 Summary:
     Initializes all the hardware modules related to port power functionality especially DC-DC buck 
-    boost controller and load switch. Additionaly, in case of sink functionality, this hook may be 
+    boost controller and load switch. Additionally, in case of sink functionality, this hook may be 
     defined with APIs to initialize a DAC.
 Description:
     PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define.
@@ -1569,7 +1491,7 @@ Summary:
 Description:
     This hook is called when PSF needs to know about the present voltage driven
     by external DC_DC controller. The function should be defined with return type
-    UINT32 and UINT8 type as input parameter. If the DC_DC controller doesnot 
+    UINT32 and UINT8 type as input parameter. If the DC_DC controller does not 
     have feature to get output voltage, return 0xFFFFFFFF to denote the feature
     is not supported. 
 Conditions:
