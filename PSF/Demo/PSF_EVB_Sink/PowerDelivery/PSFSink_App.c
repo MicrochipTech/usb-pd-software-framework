@@ -163,9 +163,9 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
     switch(eGPIOFunc)
     {
         case eUPD350_ALERT_FUNC:
-        {
-            PORT_PinInputEnable(PORT_PIN_PA14);
+        {           
             PORT_PinWrite(PORT_PIN_PA14, TRUE);
+            PORT_PinInputEnable(PORT_PIN_PA14);
             EIC_CallbackRegister(PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
             EIC_InterruptEnable(PORT_PIN_PA14);
         }
@@ -177,21 +177,21 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         case eUPD350_RESET_FUNC:
         {
             /* UPD350 RESET_N pin active low; set to internal pull up by default*/
-            UPD350_RESET_InputEnable();
             PORT_PinWrite(UPD350_RESET_PIN, TRUE);
+            UPD350_RESET_InputEnable();            
             break;
         }
         case eSPI_CHIP_SELECT_FUNC:
         {
-            SPI_SS_0_OutputEnable();
             SPI_SS_0_Set();
+            SPI_SS_0_OutputEnable();            
             break; 
         }
         case eVBUS_DIS_FUNC:
-        {
-            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
+        {            
             UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
             break; 
         }
         case eDC_DC_EN_FUNC:
@@ -207,20 +207,20 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eSNK_CAPS_MISMATCH_FUNC:
         {
-            SNK_CAP_MISMATCH_OutputEnable();
             SNK_CAP_MISMATCH_Clear();
+            SNK_CAP_MISMATCH_OutputEnable();            
             break;
         }
         case eSNK_1_5A_IND_FUNC:
         {
-            SNK_1_5A_IND_OutputEnable();
             SNK_1_5A_IND_Clear();
+            SNK_1_5A_IND_OutputEnable();            
             break;
         }
         case eSNK_3A_IND_FUNC:
         {
-            SNK_3A_IND_OutputEnable();
             SNK_3A_IND_Clear();
+            SNK_3A_IND_OutputEnable();            
             break;
         }    
         default:
@@ -296,17 +296,17 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                /*Asserts when attach happens at CC1*/
-                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+                /*Asserts when attach happens at CC1*/                
                 UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
-                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);        
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);  
+                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
             }
             else
             {
-                /*De-assert when attach happens at CC2*/
-                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+                /*De-assert when attach happens at CC2*/                
                 UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
                 UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
+                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
             }
         }
         case eSNK_CAPS_MISMATCH_FUNC:
