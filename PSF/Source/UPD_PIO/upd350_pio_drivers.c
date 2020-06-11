@@ -34,55 +34,55 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 void UPDPIO_EnableOutput(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum)
 {
-    UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), 
+    UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), 
                     (UPD_CFG_PIO_GPIO_ENABLE | UPD_CFG_PIO_DIRECTION));
 }
 
 void UPDPIO_EnableInput(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum)
 {
     /* Enable the GPIO functionality */
-    UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_GPIO_ENABLE);
+    UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_GPIO_ENABLE);
     
     /* Set direction as input */
-    UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_DIRECTION);
+    UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_DIRECTION);
 }
 
 void UPDPIO_Disable(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum)
 {
-    UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_GPIO_ENABLE);
+    UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_GPIO_ENABLE);
 }
 
 void UPDPIO_SetBufferType(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum, UINT8 u8BufType)
 {
     if(UPD_PIO_SETBUF_PUSHPULL == u8BufType)
     {
-        UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_BUFFER_TYPE);
+        UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_BUFFER_TYPE);
     } 
     else
     {
-        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_BUFFER_TYPE);
+        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_BUFFER_TYPE);
     } 
 }
 
 void UPDPIO_DriveHigh(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum)
 {
-    UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_DATAOUTPUT);
+    UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_DATAOUTPUT);
 }
 
 void UPDPIO_DriveLow(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum)
 {
-    UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_DATAOUTPUT);
+    UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_DATAOUTPUT);
 }
 
 void UPDPIO_EnablePullUp(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum, UINT8 u8PUEnable)
 {
     if (UPD_PIO_ENABLE_PULLUP == u8PUEnable)
     {
-        UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_PULL_UP_ENABLE);
+        UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_PULL_UP_ENABLE);
     }
     else
     {
-        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_PULL_UP_ENABLE);
+        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_PULL_UP_ENABLE);
     }    
 }
 
@@ -90,10 +90,10 @@ void UPDPIO_EnablePullDown(UINT8 u8PortNum, eUPD_PIO_NUM_TYPE ePIONum, UINT8 u8P
 {
     if (UPD_PIO_ENABLE_PULLDOWN == u8PDEnable)
     {
-        UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_PULL_DOWN_ENABLE);
+        UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_PULL_DOWN_ENABLE);
     }
     else
     {
-        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(ePIONum), UPD_CFG_PIO_PULL_DOWN_ENABLE);
+        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR((UINT8)ePIONum), UPD_CFG_PIO_PULL_DOWN_ENABLE);
     }     
 }
