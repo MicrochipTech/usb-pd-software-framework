@@ -584,6 +584,7 @@ void UPD_CheckAndDisablePorts (void)
     /*variable to hold the timer id*/
     UINT8 u8TimerID;
     
+     /* Reset the Port's UPD350 present*/
     UPD_ResetThroughGPIO();
 
     /*run a loop for all the number of CONFIG_PD_PORT_COUNT to check all ports*/

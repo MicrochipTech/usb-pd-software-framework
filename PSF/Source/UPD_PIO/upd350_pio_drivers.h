@@ -9,7 +9,7 @@
 
   Description:
     This header file contains the data structures, constant definitions and 
-	function prototypes for Power Throttling. 
+	function prototypes for UPD350 PIO Drivers. 
 *******************************************************************************/
 /*******************************************************************************
 Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
