@@ -566,13 +566,6 @@ void UPD_ResetThroughGPIO()
     /* Pull down is driven to reset the UPD350*/
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(PORT0, eUPD350_RESET_FUNC,eGPIO_ASSERT);
 
-    /* Delay of RESET_N minimum input assertion time */
-    for(UINT16 u16delayloop = 0u; u16delayloop <(6000);u16delayloop++)
-    {
-        __asm volatile("nop");
-        __asm volatile("nop");
-
-    }
     /* Set to default state*/
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(PORT0, eUPD350_RESET_FUNC,eGPIO_DEASSERT);
 }

@@ -268,6 +268,15 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 /*UPD350 Reset is active low signal*/
                 /* Pull down is driven to reset the UPD350*/
                 PORT_PinWrite(UPD350_RESET_PIN, FALSE);
+                
+                /* Reset pin shall be held low for a minimum reset assertion
+                   time of UPD350. We wait for ~800us */
+                for(UINT16 u16delayloop = 0u; u16delayloop <(6000);u16delayloop++)
+                {
+                    __asm volatile("nop");
+                    __asm volatile("nop");
+
+                }                                
             }
             else
             {
