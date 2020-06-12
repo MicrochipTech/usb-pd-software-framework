@@ -440,7 +440,7 @@ void App_PortPowerInit(UINT8 u8PortNum)
 #endif 
 }
 
-void App_PortPowerSetPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16Voltage, UINT16 u16Current)
+void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current)
 {
 #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
     /*
@@ -515,7 +515,7 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16Voltage,
     }
     
 #else /* MPQ4230 - I2C based DC/DC */ 
-    MPQDCDC_SetPortPower(u8PortNum, u8PDOIndex, u16Voltage, u16Current);
+    MPQDCDC_SetPortPower(u8PortNum, u16Voltage, u16Current);
 #endif     
 }
 /* *****************************************************************************

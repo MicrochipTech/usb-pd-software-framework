@@ -368,9 +368,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 }
 
 void App_PortPowerInit(UINT8 u8PortNum)
-{
-//    UINT16 u16Delay; 
-    
+{   
     /*VSEL0 Init */
     UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_PIO_SETBUF_PUSHPULL);
     UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
@@ -388,7 +386,7 @@ void App_PortPowerInit(UINT8 u8PortNum)
     
 }
 
-void App_PortPowerSetPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16Voltage, UINT16 u16Current)
+void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current)
 {
     /*
      Voltage    VSEL0   VSEL1   VSEL2
