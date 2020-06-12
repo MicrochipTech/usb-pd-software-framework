@@ -160,7 +160,7 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length);
 
 /****************************************************************************
     Function:
-        void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current)
+        void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
     Summary:
         API to drive Power on VBUS
     Description:
@@ -169,9 +169,6 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length);
         None.
     Input:
         u8PortNum - Corresponding Port Number. Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u8PDOIndex - Provides current PDO index negotiated to drive power.
-                        For TypeC attach, PDO index is passed as '1'. As it is mandatory to have
-                        PDO 1 as 5V PDO. For Vsafe0V, PDOIndex is passed as 'Zero'.
         u16VBUSVoltage - Provides negotiated voltage to drive power
         u16Current - Provides negotiated current to drive power
     Return:
@@ -180,7 +177,7 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length);
         None
 
 **************************************************************************************************/
-void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current);
+void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current);
 
 /****************************************************************************
     Function:

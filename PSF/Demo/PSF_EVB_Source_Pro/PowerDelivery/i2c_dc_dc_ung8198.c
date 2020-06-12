@@ -118,7 +118,7 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     return u8Return;
 }
 
-void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current)
+void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
     /*Assert EN_VBUS */
     UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;

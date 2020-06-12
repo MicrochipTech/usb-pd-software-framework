@@ -163,8 +163,7 @@ void DPM_SetPortPower(UINT8 u8PortNum)
                 
         TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);            
         
-        PWRCTRL_SetPortPower (u8PortNum, gasDPM[u8PortNum].u8NegotiatedPDOIndex, 
-                u16VoltageInmV, u16CurrentInmA);
+        PWRCTRL_SetPortPower (u8PortNum, u16VoltageInmV, u16CurrentInmA);
     }
     else
     {
@@ -182,13 +181,13 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
         if (DPM_VBUS_ON == u8VbusOnorOff)
         {
             TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, u16Current, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-            PWRCTRL_SetPortPower (u8PortNum, DPM_VSAFE5V_PDO_INDEX_1, TYPEC_VBUS_5V, u16Current);
+            PWRCTRL_SetPortPower (u8PortNum, TYPEC_VBUS_5V, u16Current);
     
         }
         else
         {
             TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_0V, u16Current, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-		    PWRCTRL_SetPortPower (u8PortNum, DPM_VSAFE0V_PDO_INDEX, TYPEC_VBUS_0V, u16Current);
+		    PWRCTRL_SetPortPower (u8PortNum, TYPEC_VBUS_0V, u16Current);
             PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);
         }
     }

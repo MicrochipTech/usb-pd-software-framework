@@ -81,7 +81,7 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
 
 }
 /************************************************************************************/
-void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current)
+void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
     #if (TRUE == INCLUDE_PD_SOURCE)
     #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
@@ -110,7 +110,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolt
     #endif /*CONFIG_DCDC_CTRL*/
 
     /*Hook for Port Power control VBUS drive */
-    MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS (u8PortNum, u8PDOIndex, u16VBUSVoltage, u16Current);
+    MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS (u8PortNum, u16VBUSVoltage, u16Current);
 
     #endif
     

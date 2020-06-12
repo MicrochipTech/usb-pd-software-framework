@@ -1384,8 +1384,8 @@ Remarks:
     User definition of this Hook function is mandatory.                      
 ****************************************************************************/
 
-#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u8PDOIndex,u16VBUSVolatge,u16Current)   \
-        App_PortPowerSetPower(u8PortNum, u8PDOIndex, u16VBUSVolatge, u16Current)
+#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u16VBUSVolatge,u16Current)   \
+        App_PortPowerSetPower(u8PortNum, u16VBUSVolatge, u16Current)
 
 /*******************************************************************************************
 Function:
