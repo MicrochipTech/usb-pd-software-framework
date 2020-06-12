@@ -92,7 +92,8 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, UINT8 u8PDEvent)
         case eMCHP_PSF_UPDS_IN_IDLE:
 		{
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
-			MCHP_PSF_HOOK_SET_MCU_IDLE;
+            /* Configure the SoC to enter Low power mode. */
+			App_SetMCUIdle();
 #endif
 			break;
 		}
