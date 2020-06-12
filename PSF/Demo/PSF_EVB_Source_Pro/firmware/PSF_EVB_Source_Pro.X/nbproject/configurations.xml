@@ -111,9 +111,6 @@
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
-          <logicalFolder name="f1" displayName="I2C_DC_DC" projectFiles="true">
-            <itemPath>../../../../SOC_Portable/SAMD20/I2C_DC_DC/Mpq_dc_dc_control.h</itemPath>
-          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.h</itemPath>
           <itemPath>../../../../SOC_Portable/SAMD20/PSF_APIHook.h</itemPath>
         </logicalFolder>
@@ -264,8 +261,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
         <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
+        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -293,9 +290,13 @@
       </makeCustomizationType>
       <AtmelIceTool>
         <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="communication.activationmode" value="nohv"/>
         <property key="communication.interface" value="swd"/>
         <property key="communication.speed" value="4.000"/>
         <property key="debugoptions.useswbreakpoints" value="true"/>
+        <property key="firmware.path"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="firmware.update.action" value="firmware.update.use.latest"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
@@ -446,7 +447,7 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC;..\..\PowerDelivery;..\..\..\..\Source\PT;..\..\..\..\Source\UPD_PIO"/>
+                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\PowerDelivery;..\..\..\..\Source\PT;..\..\..\..\Source\UPD_PIO"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>
