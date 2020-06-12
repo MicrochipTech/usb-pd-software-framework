@@ -51,15 +51,13 @@
         
 #include "PSF_Config.h"
 
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC) 
-#include "i2c_dc_dc_ung8198.h"
-#endif
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
 #include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 #include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
 #endif 
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#include "i2c_dc_dc_ung8198.h"
 #include "../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h"
 #endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
