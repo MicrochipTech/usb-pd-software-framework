@@ -1148,28 +1148,6 @@ Remarks:
 ****************************************************************************************************/
 #define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   App_HandlePSFEvents(u8PortNum, ePSFNotification)
  
-/*******************************************************************************
-Function:
-    MCHP_PSF_HOOK_SET_MCU_IDLE()
-Summary:
-    Configures the SoC to enter Low power mode.
-Description:
-    This hook is called when eMCHP_PSF_UPDS_IN_IDLE event notification is posted 
-    by PSF. A suitable function that puts SoC to low power mode need to be 
-    implemented in this hook.
-Conditions:
-    None.
-Return:
-    None.
-Example:
-    <code>
-        #define MCHP_PSF_HOOK_SET_MCU_IDLE()   App_SetMCUIdle()
-    </code>
-Remarks:
-User definition of this Hook function is optional.                          
-*******************************************************************************/  
-#define MCHP_PSF_HOOK_SET_MCU_IDLE          App_SetMCUIdle()
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: GPIO Control
