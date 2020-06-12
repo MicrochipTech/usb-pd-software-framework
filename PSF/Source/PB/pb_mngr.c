@@ -375,6 +375,10 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, \
                             gasPBIntPortParam[u8PortNum].eRenegSubState);                    
                 }
+                else
+                {
+                    /* Do Nothing */
+                }
             }
             break; 
         

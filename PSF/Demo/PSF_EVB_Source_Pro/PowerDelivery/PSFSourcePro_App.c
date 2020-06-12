@@ -450,13 +450,7 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16Voltage,
      *9V        1       0       0
      *15V       0       1       0
      *20V       0       0       1
-     */
-    
-    UINT16 u16Delay; 
-    for(u16Delay = 0; u16Delay < 10000; u16Delay++)
-    {
-        __NOP();
-    }   
+     */  
     
     switch(u16Voltage)
     {

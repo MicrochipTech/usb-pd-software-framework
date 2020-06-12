@@ -1842,6 +1842,10 @@ void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
             
             DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: VCONN Enabled in CC2\r\n");  
         }
+        else
+        {
+            /* Do Nothing */
+        }
             
     }
     else
@@ -1866,6 +1870,10 @@ void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
             gasTypeCcontrol[u8PortNum].u8IntStsISR |= TYPEC_VCONN_SOURCE_CC2;          
             
             DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: VCONN Enabled in CC2\r\n");  
+        }
+        else
+        {
+            /* Do Nothing */
         }
     
     }    
@@ -1918,6 +1926,10 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
         else if(gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_ON_REQ_MASK)
         {
             TypeC_VCONN_ON_IntrHandler(u8PortNum);
+        }
+        else
+        {
+            /* Do Nothing */
         }
 #endif
         if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_CCINT_STATUS_MASK)
@@ -2017,6 +2029,10 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 u8TypeCState = TYPEC_UNATTACHED_SRC;
                 u8TypeCSubState  = TYPEC_UNATTACHED_SRC_ENTRY_SS;                             
             }
+            else
+            {
+                /* Do Nothing */
+            }
             break;
 		}
 		
@@ -2114,7 +2130,11 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                     TYPEC_ATTACHED_SRC*/
                     u8TypeCState = TYPEC_UNATTACH_WAIT_SRC;
                     u8TypeCSubState = TYPEC_UNATTACH_WAIT_SRC_ENTRY_SS; 
-                }               
+                }
+                else
+                {
+                    /* Do Nothing */
+                }
                 
             }			
             /*Debug Accessory is Present*/

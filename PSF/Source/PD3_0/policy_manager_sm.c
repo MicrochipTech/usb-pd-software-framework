@@ -411,6 +411,10 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                     gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OVP;
                     gasDPM[u8PortNum].u8StatusEventFlags |= DPM_EVENT_TYPE_OVP;
                 }
+                else
+                {
+                    /* Do Nothing */
+                }
                #endif /*INCLUDE_PD_SOURCE_PPS*/
                 /*Increment the fault count*/
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount++;            
