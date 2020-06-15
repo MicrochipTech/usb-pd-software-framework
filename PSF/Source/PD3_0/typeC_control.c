@@ -118,7 +118,9 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     
     /*FW programs DRP Pull-Down Value (DRP_PD_VAL) in DRP Control Register. 
       This value will be advertised when DRP advertises Sink capabilities.*/
+    UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_PD_VAL_MASK);
     UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_PD_VAL_TRIMMED_RD);   
+    //UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_PD_VAL_OPEN_DIS);
     
     /*FW programs DRP Current Advertisement (DRP_CUR_ADV) in DRP Control Register. This value
     will be advertised when DRP advertises Source capabilities.*/
@@ -1347,16 +1349,26 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             
             gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_DONE_INTERRUPT;
                         
-            UPD_RegisterReadISR( u8PortNum, TYPEC_DRP_CTL_HIGH, (UINT8 *)&u16Data, BYTE_LEN_1); 
+            UPD_RegisterReadISR( u8PortNum, TYPEC_DRP_CTL_HIGH, &u8Data, BYTE_LEN_1); 
             gasTypeCcontrol[u8PortNum].u8DRPStsISR &= ~(TYPEC_DRP_STS_ADVERTISED_STATE);
-            if(FALSE == (u16Data & TYPEC_DRP_ADVERTISING_STATE))
+//            if(FALSE == (u16Data & TYPEC_DRP_ADVERTISING_STATE))
+//            {
+//                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_DFP;
+//                //DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SOURCE);
+//            }
+//            else
+//            {
+//                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_UFP;
+//                //DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SINK);
+//            }    
+            if(TRUE == (u8Data & TYPEC_DRP_ADVERTISING_STATE))
             {
-                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_DFP;
+                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_UFP;
                 //DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SOURCE);
             }
             else
             {
-                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_UFP;
+                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_DFP;
                 //DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SINK);
             }    
         }
