@@ -211,6 +211,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_LFSR_EN               BIT(1)
 #define TYPEC_DRP_EN                BIT(0)
 #define TYPEC_DRP_DONE              BIT(2)
+#define TYPEC_DRP_INIT_STATE_UFP    BIT(7)
 
 /*Bit definitions of TYPEC_VBUS_CTL1_LOW register*/
 #define TYPEC_VBUS_CMP_CTL		   (BIT(1) | BIT(0))
