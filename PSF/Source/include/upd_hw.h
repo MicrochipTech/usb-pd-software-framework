@@ -253,6 +253,10 @@ typedef enum
 #define UPD_CC_SAMP_CLK             	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x06
 #define UPD_VBUS_SAMP_CLK		    	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x07
 
+/*Defines for UPD_CLK_CTL register*/
+#define UPD_CLK_CTL_ZTC_CUR_REF_EN      BIT(3)
+#define UPD_CLK_CTL_20_KHZ_OSC_EN       BIT(0)
+
 /*Defines for UPD_CC_SAMP_CLK register*/
 #define UPD_CC_CLK_20_KHZ               0
 #define UPD_CC_CLK_48_KHZ               BIT(3)
