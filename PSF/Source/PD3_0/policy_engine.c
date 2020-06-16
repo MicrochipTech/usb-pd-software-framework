@@ -161,6 +161,10 @@ void PE_RunStateMachine (UINT8 u8PortNum)
         PE_SnkRunStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
         #endif
     }
+    else
+    {
+        /* Do Nothing */
+    }
 
     PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
 }
@@ -230,6 +234,10 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                      ((PE_CTRL_GET_SOURCE_CAP == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
+            }
+            else
+            {
+                /* Do Nothing */
             }
             
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)            
@@ -379,7 +387,7 @@ UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header)
     }
     else
     {
-
+        /* Do Nothing */
     }
 
     return u8RetVal;
@@ -580,6 +588,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     {
                         PE_KillPolicyEngineTimer (u8PortNum);
                         PE_HandleRcvdMsgAndTimeoutEvents( u8PortNum, ePE_SRC_VDM_IDENTITY_ACKED,(ePolicySubState)0);
+                    }
+                    else
+                    {
+                        /* Do Nothing */
                     }
 
                     break;
@@ -818,6 +830,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                                             DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS;
                                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_READY;
                                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
+                            }
+                            else
+                            {
+                                /* Do Nothing */
                             }
                         }
                         /*Go to "ePE_SNK_WAIT_FOR_CAPABILITIES" if Wait/Reject message is
@@ -1703,9 +1719,13 @@ void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState)
     {
          gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_HARD_RESET;
     }
+    else
+    {
+        /* Do Nothing */
+    }
    
     /*Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
-    Timeout has occured*/
+    Timeout has occurred*/
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 
 }
@@ -1749,7 +1769,8 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum)
 /******************************************************************************/
 UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
 {
-    UINT8 u8Return = FALSE;    
+    UINT8 u8Return = FALSE;  
+    
     if ((DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) &&
             (gasPolicy_Engine[u8PortNum].ePEState == ePE_SRC_READY) &&
           (gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_READY_END_AMS_SS))  
@@ -1761,6 +1782,11 @@ UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
     {
         u8Return = TRUE;
     }
+    else
+    {
+        /* Do Nothing */
+    }
+    
     return u8Return;
 }
 /*******************************************************************************/
