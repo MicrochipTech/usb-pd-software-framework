@@ -263,6 +263,9 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case eUPD350_RESET_FUNC:
         {
+            /* UPD350 Reset pin is configured in input mode, since configuring
+               it in output mode and driving it high always would increase 
+               current consumption */
             if (eGPIO_ASSERT == eGPIODrive)
             {
                 /*UPD350 Reset is active low signal*/
