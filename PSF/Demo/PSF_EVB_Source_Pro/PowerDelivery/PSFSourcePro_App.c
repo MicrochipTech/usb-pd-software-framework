@@ -427,8 +427,10 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
     
 }
 
-void App_PortPowerInit(UINT8 u8PortNum)
+UINT8 App_PortPowerInit(UINT8 u8PortNum)
 {
+    UINT8 u8Return; 
+    
 #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
     
     /*VSEL0 Init */
@@ -446,10 +448,12 @@ void App_PortPowerInit(UINT8 u8PortNum)
     UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
     
-    
+    u8Return = TRUE; 
 #else 
-    (void) MPQDCDC_Initialize(u8PortNum); /* MPQ4230 - I2C based DC/DC */ 
+    u8Return = MPQDCDC_Initialize(u8PortNum); /* MPQ4230 - I2C based DC/DC */ 
 #endif 
+    
+    return u8Return; 
 }
 
 void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current)

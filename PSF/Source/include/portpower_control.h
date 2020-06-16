@@ -56,7 +56,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 /****************************************************************************
     Function:
-        void PWRCTRL_initialization(UINT8 u8PortNum)
+        UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
     Summary:
         Initializes Port power control
     Description:
@@ -73,7 +73,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     Remarks:
         None
 **************************************************************************************************/
-void PWRCTRL_initialization(UINT8 u8PortNum);
+UINT8 PWRCTRL_Initialization(UINT8 u8PortNum);
 
 /****************************************************************************
     Function:

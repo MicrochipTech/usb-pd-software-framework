@@ -52,8 +52,8 @@ static void UPD_GPIOGenericOutputInit(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8Pi
 }
 /***********************************************************************************/
 
-void PWRCTRL_initialization(UINT8 u8PortNum)
-{   
+UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
+{  
     /* VBUS_DISCHARGE Init */
     MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eVBUS_DIS_FUNC);
     
@@ -77,7 +77,7 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
     #endif
     
     /*Hook for Port Power control initialization */
-    MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
+    return MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum);
 
 }
 /************************************************************************************/
