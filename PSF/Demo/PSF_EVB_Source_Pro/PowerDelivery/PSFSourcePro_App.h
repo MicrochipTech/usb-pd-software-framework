@@ -52,6 +52,17 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define APP_VOLTAGE_15000mV     15000
 #define APP_VOLTAGE_20000mV     20000
 
+
+/* Macro to indicate GPIO based DC-DC Controller */
+#define PWRCTRL_GPIO_DC_DC     1
+
+/* Macro to indicate I2C based DC-DC Controller */
+#define PWRCTRL_I2C_DC_DC     2
+
+/* Defines the type of DC DC Controller used */
+#define CONFIG_DCDC_CTRL        PWRCTRL_I2C_DC_DC
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions

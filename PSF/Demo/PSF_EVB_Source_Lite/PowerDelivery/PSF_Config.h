@@ -316,52 +316,6 @@ Example :
 **************************************************************************************************/
 #define CONFIG_PORT_UPD_IDLE_TIMEOUT_MS 	MILLISECONDS_TO_TICKS(15000)
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: DC-DC Buck boost controller configurations
-// *****************************************************************************
-// *****************************************************************************
-
-/**************************************************************************
-Summary:
-    Macro to indicate GPIO based DC-DC Controller. 
-Description:
-	PWRCTRL_GPIO_DC_DC defines the default GPIO based DC-DC Controller used by PSF.  
-Remarks:
-	None.                                 
-  **************************************************************************/
-#define PWRCTRL_GPIO_DC_DC     1
-
-/**************************************************************************
-Summary:
-    Macro to indicate I2C based DC-DC Controller. 
-Description:
-	PWRCTRL_I2C_DC_DC defines the default GPIO based DC-DC Controller used by PSF.  
-Remarks:
-	None.                                 
-  **************************************************************************/
-#define PWRCTRL_I2C_DC_DC        2
-
-/**************************************************************************
-Summary:
-    DC DC Buck Boost Controller default configuration option.
-Description:
-	CONFIG_DCDC_CTRL is to define the default DC-DC control provided by the PSF stack. If 
-	CONFIG_DCDC_CTRL defined as PWRCTRL_GPIO_DC_DC, default GPIO based DC-DC controller
-	is used. If CONFIG_DCDC_CTRL is defined as PWRCTRL_I2C_DC_DC, default I2C based 
-    DC-DC Controller is used. If defined as 0, default stack's DC-DC control option is not used 
-    and the user must control power via power control APIs provided by the stack.  
-Remarks:
-	None.
-Example:
-	<code>
-	#define CONFIG_DCDC_CTRL    PWRCTRL_GPIO_DC_DC (Uses default GPIO based DC-DC control)
-	#define CONFIG_DCDC_CTRL    PWRCTRL_I2C_DC_DC (Uses default I2C based DC-DC control)
-	#define CONFIG_DCDC_CTRL    0 (Default DC DC control provided by stack is not used)
-	</code>                                  
-  **************************************************************************/
-#define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC
-					
 /**************************************************************************
 Summary:
     Print status messages from PSF stack through UART interface
@@ -921,12 +875,8 @@ typedef enum
 																	    functionality from the 
 																		stack, the user can define a
 																		value of 0xFF. It is 
-																		applicable only when
-                                                                        CONFIG_DCDC_CTRL is defined 
-																		as
-                                                                        PWRCTRL_GPIO_DC_DC 
-																		and for Source operation
-                                                                        only.
+																		applicable only for Source 
+                                                                        operation only.
                                                                       * By defining     
 																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
 																		as '1', The PIO Override 
@@ -959,10 +909,6 @@ typedef enum
 																		stack, user can define it 
 																		as 0xFF. 
 																	  * It is applicable only when 
-																		CONFIG_DCDC_CTRL is 
-																		defined as 
-																		PWRCTRL_GPIO_DC_DC
-																		and 
 																		INCLUDE_POWER_FAULT_HANDLING
 																		defined as '1'. 
 	u8Mode_FAULT_IN                 1         R/W          R         * Defines the PIO mode of the 

@@ -106,6 +106,7 @@
         <itemPath>../../PowerDelivery/PSFSourcePro_BootCfg.h</itemPath>
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_driver.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -200,6 +201,7 @@
         <itemPath>../../PowerDelivery/PSFSourcePro_App.c</itemPath>
         <itemPath>../../PowerDelivery/PSFSourcePro_BootCfg.c</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.c</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_driver.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"

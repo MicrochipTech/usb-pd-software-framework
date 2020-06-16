@@ -33,6 +33,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
 #include <psf_stdinc.h>
+#include <i2c_dc_dc_driver.h>
 
 /***********************************************************************************/
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
@@ -74,14 +75,6 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     /* Global interrupt is enabled as the I2C works on interrupt in SAMD20*/
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 
-    /*Assert EN_VBUS*/
-    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
-    UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
-                                    u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
-    
-    /* Set EN_VBUS Status in Port IO status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
-    
     /* Clear the faults */
     u32I2CCmd = MPQ_CMD_CLEAR_FAULT;
     u8length = I2C_CMD_LENGTH_1;
@@ -120,14 +113,7 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
 
 void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
-    /*Assert EN_VBUS */
-    UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
-    UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS,
-                                    u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
-
-    /* Set EN_VBUS Status in Port IO status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
-    
+   
     /* The current limit is set only if the previous current limit value is not 
      * equal to the current limit value to be set */        
     if (u16PrevCurrent[u8PortNum] != u16Current)

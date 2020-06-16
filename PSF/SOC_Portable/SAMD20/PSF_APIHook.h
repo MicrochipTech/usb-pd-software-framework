@@ -1301,11 +1301,9 @@ Summary:
     boost controller and load switch. Additionally, in case of sink functionality, this hook may be 
     defined with APIs to initialize a DAC.
 Description:
-    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define.
-    User can chose to implement their own DC-DC buck booster control or modify the default using 
-    this hook. This hook is to initialize the hardware modules related to port power functionality. 
+    This hook is to initialize the hardware modules related to port power functionality. 
     Implementation of this function depends on the type of DC-DC buck boost controller, load
-    switch or DAC used. Define relevant function with return type as UINT8. 
+    switch or DAC used. Define relevant function that has no argument without return type.
 Conditions:
     API implementation must make sure the Port Power(VBUS) of all ports must be set to 0V.
 Input:
@@ -1334,9 +1332,8 @@ Function:
 Summary:
     Drives the VBUS for given voltage, current
 Description:
-    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define. If 
-    user chose to implement their own DC-DC buck booster control, this hook must be implemented to
-    drive VBUS as per the parameter passed based on voltage and current. It can also be used to 
+    If the user chose to implement their own DC-DC buck booster control, this hook must be implemented 
+    to drive VBUS as per the parameter passed based on voltage and current. It can also be used to 
     modify the default option. Implementation of this function depends on the type of DC-DC buck 
     boost controller and load switch used. Define relevant function that has UINT8,UINT16, UINT16
     arguments without return type.

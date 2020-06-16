@@ -84,7 +84,6 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
 void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
     #if (TRUE == INCLUDE_PD_SOURCE)
-    #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
 
     UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
     
@@ -106,8 +105,6 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Cur
         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
     }
-    
-    #endif /*CONFIG_DCDC_CTRL*/
 
     /*Hook for Port Power control VBUS drive */
     MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS (u8PortNum, u16VBUSVoltage, u16Current);
