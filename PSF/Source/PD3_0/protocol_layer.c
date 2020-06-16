@@ -156,6 +156,10 @@ void  PRL_Init (UINT8 u8PortNum)
 	{
 		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SNK_VALUE;
 	}
+    else
+    {
+        /* Do Nothing */
+    }
 	
 	UPD_RegWriteWord (u8PortNum, PRL_BB_CC_RX_DAC_CTL, 
 					  (PRL_CC_RX_DAC_CTL_RX_DAC_ENABLE | u16RxDACValue));
