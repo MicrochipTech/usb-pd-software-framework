@@ -474,7 +474,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 #if (TRUE == INCLUDE_POWER_BALANCING)
     if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
     {
-        u8Return = PB_HandleDPMEvents(u8PortNum, (UINT8)eDPMNotification);
+        u8Return = PB_HandleDPMEvents(u8PortNum, eDPMNotification);
     }
 #endif
 
@@ -536,7 +536,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     }
     
     /*Notify the application layer*/
-    u8Return &= MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eDPMNotification); 
+    u8Return &= MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eDPMNotification); 
     return u8Return;
 }
 

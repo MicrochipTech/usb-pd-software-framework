@@ -83,11 +83,11 @@ void App_SetMCUIdle()
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-UINT8 App_HandlePSFEvents(UINT8 u8PortNum, UINT8 u8PDEvent)
+UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
 {
     UINT8 u8RetVal = FALSE;
     
-    switch(u8PDEvent)
+    switch(ePDEvent)
     {
         case eMCHP_PSF_UPDS_IN_IDLE:
 		{
