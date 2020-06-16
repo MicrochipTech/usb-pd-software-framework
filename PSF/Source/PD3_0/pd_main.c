@@ -92,7 +92,7 @@ UINT8 MchpPSF_Init(void)
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
             /*Port Power Initialization*/
-            PWRCTRL_initialization(u8PortNum);
+            u8InitStatus &= PWRCTRL_Initialization(u8PortNum);
         }
     }
     

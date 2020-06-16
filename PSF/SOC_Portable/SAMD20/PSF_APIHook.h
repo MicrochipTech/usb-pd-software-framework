@@ -1305,7 +1305,7 @@ Description:
     User can chose to implement their own DC-DC buck booster control or modify the default using 
     this hook. This hook is to initialize the hardware modules related to port power functionality. 
     Implementation of this function depends on the type of DC-DC buck boost controller, load
-    switch or DAC used. Define relevant function that has no argument without return type.
+    switch or DAC used. Define relevant function with return type as UINT8. 
 Conditions:
     API implementation must make sure the Port Power(VBUS) of all ports must be set to 0V.
 Input:
