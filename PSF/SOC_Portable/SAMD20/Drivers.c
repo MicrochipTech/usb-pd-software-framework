@@ -95,27 +95,6 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 
 #endif /* CONFIG_HOOK_DEBUG_MSG */
 
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-#define SAMD20I2CDCDC_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
-                    SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen)
-#define SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
-        SERCOM##n##_I2C_Read(u16Address,pu8ReadBuf,u8ReadLen)
-
-#define SAMD20I2CDCDC_Write(n,u16Address,pu8WritedBuf,u8WriteLen) \
-                    SERCOMn_I2C_Write(n,u16Address,pu8WritedBuf,u8WriteLen)
-#define SERCOMn_I2C_Write(n,u16Address,pu8WritedBuf,u8WriteLen) \
-        SERCOM##n##_I2C_Write(u16Address,pu8WritedBuf,u8WriteLen)
-
-#define SAMD20I2CDCDC_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
-        SERCOMn_I2C_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
-#define SERCOMn_I2C_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
-        SERCOM##n##_I2C_WriteRead(u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
-
-#define SAMD20_I2cDCDCIsBusy(n) SERCOMn_I2C_IsBusy(n)
-#define SERCOMn_I2C_IsBusy(n) SERCOM##n##_I2C_IsBusy()
-
-#endif /* CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC */
-
 /* ************************************************************************** */
 /* ************************************************************************** */
 // Section: Internal Functions                                               */
@@ -167,50 +146,6 @@ UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Wri
 {
     return SAMD20SPI_WriteRead(SAMD20_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
 }
-
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-/*****************************************************************************/
-/*****************************************************************************/
-/*********************************I2C Driver APIs*****************************/
-/*****************************************************************************/
-void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum)
-{
-    /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
-    MPQDCDC_HandleAlert(u8PortNum);
-}
-
-UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
-{
-    UINT8 u8Return = FALSE;
-    
-    u8Return = SAMD20I2CDCDC_Read (SAMD20_I2C_INSTANCE,u16Address,pu8ReadBuf,u8ReadLen);
-    return u8Return;
-}
-
-UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen)
-{
-    UINT8 u8Return = FALSE;
-    
-    u8Return = SAMD20I2CDCDC_Write (SAMD20_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen);
-    return u8Return;
-   
-}
-
-UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
-                                              UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
-{
-    UINT8 u8Return = FALSE;
-    
-    u8Return = SAMD20I2CDCDC_WriteRead (SAMD20_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen,\
-                                                            pu8ReadBuf,u8ReadLen);
-    return u8Return;
-}
-
-UINT8 SAMD20_I2CDCDCIsBusyDriver(void)
-{
-    return SAMD20_I2cDCDCIsBusy(SAMD20_I2C_INSTANCE);
-}
-#endif
 
 /*****************************************************************************/
 /*****************************************************************************/
