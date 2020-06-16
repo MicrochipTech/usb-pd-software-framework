@@ -1635,6 +1635,10 @@ void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal)
         /*Setting the pull down resistor as open disconnect*/
         u16CCControlReg1Val |= (TYPEC_CC1_PULL_DOWN_OPEN|TYPEC_CC2_PULL_DOWN_OPEN);
      }
+     else
+     {
+         /* Do Nothing */
+     }
      
     /*Writing the CC control register directly because it wont affect the CC comparator Sample 
     operation as it would have been turned down at this time*/
@@ -1654,6 +1658,10 @@ void TypeC_SetDataRole (UINT8 u8PortNum,UINT8 u8DataRole)
     {
         UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, TYPEC_DEV_ROLE);
     }  
+    else
+    {
+        /* Do Nothing */
+    }
 }
                                
 void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
@@ -2264,7 +2272,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             }
             else
             {
-                 /*Attach event has occured within the TPD Debounce timeout of previous Detach event
+                 /*Attach event has occurred within the TPD Debounce timeout of previous Detach event
                  So in this case moving to the Attach wait state and also killing the 
                  TPD Debounce timer which is active currently*/
                  if((u8TypeCState == TYPEC_ATTACHED_SNK) && (u8TypeCSubState != ((UINT8)TYPEC_ATTACHED_SNK_RUN_SM_SS)))
@@ -2308,7 +2316,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 else if ((u8TypeCState == TYPEC_ATTACHED_SNK) && \
                          (u8TypeCSubState == TYPEC_ATTACHED_SNK_RUN_SM_SS))
                 {
-                     /*Go to TYPEC_ATTACHED_SNK_TPDDEB_SS substate for starting tPDDebounce*/
+                     /*Go to TYPEC_ATTACHED_SNK_TPDDEB_SS sub-state for starting tPDDebounce*/
                      u8TypeCSubState  = TYPEC_ATTACHED_SNK_TPDDEB_SS;
                 }
                 /*This condition occurs if VCONN Discharge is enabled in Attached Sink State
@@ -2316,6 +2324,10 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 else if (u8TypeCState == TYPEC_ATTACHED_SNK)
                 {
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS;
+                }
+                else
+                {
+                    /* Do Nothing */
                 }
             }
              

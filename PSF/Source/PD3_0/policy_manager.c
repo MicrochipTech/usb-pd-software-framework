@@ -934,7 +934,15 @@ void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 
                         u8Power[DPM_NEXT_PWR_INDEX(u8PowerIndex)][DPM_PDO_INDEX] = u8PowerSwapIndex;
                     }
                 }
-            }            
+                else
+                {
+                    /* Do Nothing */
+                }
+            }  
+            else
+            {
+                /* Do Nothing */
+            }
         }
     }
 }
