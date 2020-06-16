@@ -83,6 +83,9 @@ UINT8 MchpPSF_Init(void)
         MCHP_PSF_HOOK_DEBUG_INIT();
     #endif
     
+    /* Disable the global interrupt */
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
@@ -108,6 +111,7 @@ UINT8 MchpPSF_Init(void)
     
     DPM_StateMachineInit();  
 
+    /* Enable the global interrupt */
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     
     return u8InitStatus;
