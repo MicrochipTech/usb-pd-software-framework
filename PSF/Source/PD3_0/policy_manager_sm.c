@@ -485,7 +485,12 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     {
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
+            /* Process Type C Detach Event */
+            DPM_OnTypeCDetach(u8PortNum); 
+            
+            /* Disable Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
+            
             #if (TRUE == INCLUDE_PD_SINK) 
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
                     ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
@@ -495,11 +500,13 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
+            /* Assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
+            /* De-assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
             break;
         }
@@ -724,22 +731,6 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
     if (gasDPM[u8PortNum].u8DPMInternalEvents)
     {
-        if (DPM_INT_EVT_INFORM_DETACH == (gasDPM[u8PortNum].u8DPMInternalEvents\
-                                                    & DPM_INT_EVT_INFORM_DETACH))
-        {          
-            #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-            /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
-            PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
-
-            /* Set the timer Id to Max Concurrent Value*/
-            gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
-            
-            /* Note: It is recognized that it is possible to send an alert to another 
-               partner if the current partner is disconnected and a new partner is
-               connected. So, no need to clear the other variables */
-            
-            #endif
-        }
         /* Initiate a sequence only when the Policy Engine is in PS_RDY state*/
         if(TRUE == PE_IsPolicyEngineIdle(u8PortNum))
         {
