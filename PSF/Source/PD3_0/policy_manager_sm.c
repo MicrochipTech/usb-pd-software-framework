@@ -486,7 +486,9 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             /* Process Type C Detach Event */
+            #if (TRUE == INCLUDE_PD_SOURCE)
             DPM_OnTypeCDetach(u8PortNum); 
+            #endif 
             
             /* Disable Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
