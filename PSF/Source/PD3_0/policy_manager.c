@@ -608,6 +608,14 @@ UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum)
 
 void DPM_OnTypeCDetach(UINT8 u8PortNum)
 {
+    /* Clear the DPM variables whose data is no more valid after a Type C detach */
+    gasDPM[u8PortNum].u8NegotiatedPDOIndex = RESET_TO_ZERO;
+    gasDPM[u8PortNum].u32NegotiatedPDO = RESET_TO_ZERO;
+    gasDPM[u8PortNum].u16PrevVBUSVoltageInmV = RESET_TO_ZERO;
+            
+    /* Clear the RDO register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = RESET_TO_ZERO; 
+    
     /* Clear the ATTACHED and AS_SOURCE_PD_CONTRACT_GOOD bits in 
        Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
@@ -618,6 +626,13 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
 
+    /*Clear Partner PDO registers */
+    for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
+    }
+    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
+    
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
     /* Clear Partner Alert register */
     gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert = RESET_TO_ZERO; 
@@ -639,8 +654,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
 
     /* Clear all the client requests for the port. */
     DPM_ClearAllClientRequests(u8PortNum);
-    
-    
+
 }
 
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
