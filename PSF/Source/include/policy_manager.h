@@ -1568,6 +1568,23 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable);
 **************************************************************************************************/
 UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum); 
 
+/**************************************************************************************************
+    Function:
+        void DPM_OnTypeCDetach(UINT8 u8PortNum); 
+    Summary:
+        API to clear the variables that are applicable during a type c detach event. 
+    Description:
+        This API clears all the applicable variables whose data is no more valid
+        once a Type C Detach event has occurred. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
 void DPM_OnTypeCDetach(UINT8 u8PortNum);
 
 #endif /*_POLICY_MANAGER_H_*/

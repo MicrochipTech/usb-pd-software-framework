@@ -613,12 +613,21 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
         ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS);
                     
-    /* Set the Power related variables to 0 in Status register */
+    /* Clear the Power related registers */
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
 
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+    /* Clear Partner Alert register */
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert = RESET_TO_ZERO; 
+    
+    /*Clear Partner Status register */
+    for(UINT8 u8Index = SET_TO_ZERO; u8Index < PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES; u8Index++)
+    {
+        gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = RESET_TO_ZERO;
+    }
+    
     /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
     PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
     /* Set the timer Id to Max Concurrent Value*/
