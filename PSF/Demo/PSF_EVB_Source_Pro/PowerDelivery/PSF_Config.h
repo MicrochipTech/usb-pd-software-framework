@@ -247,7 +247,7 @@ Example:
 Summary:
     PPS support code inclusion.
 Description:
-    Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Programmable 
+    Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Source Programmable 
     Power Supply(PPS) feature at compile time. User can set this define to 0
     to reduce code size if none of the Source ports in the system 
     require PPS functionality.
@@ -256,8 +256,8 @@ Remarks:
     INCLUDE_PD_SOURCE and INCLUDE_PD_3_0 shall be set to 1. 
 Example:
     <code>
-    #define INCLUDE_PD_SOURCE_PPS	1(Include PPS functionality in PSF)
-    #define INCLUDE_PD_SOURCE_PPS	0(Exclude PPS functionality from PSF)
+    #define INCLUDE_PD_SOURCE_PPS	1(Include Source PPS functionality in PSF)
+    #define INCLUDE_PD_SOURCE_PPS	0(Exclude Source PPS functionality from PSF)
     </code>
 **************************************************************************************************/
 #define INCLUDE_PD_SOURCE_PPS           1

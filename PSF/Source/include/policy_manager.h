@@ -412,9 +412,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT16 u16SinkOperatingCurrInmA;   //Operating current
   UINT16 u16PrevVBUSVoltageInmV;    // Previous VBUS Voltage in terms of mV
   
-  UINT8 u8DPMInternalEvents; //BIT(0) - DPM_INT_EVT_INFORM_DETACH
-                             // BIT(1) - DPM_INT_EVT_INITIATE_ALERT
-                             // BIT(2) -  DPM_INT_EVT_INITIATE_GET_STATUS
+  UINT8 u8DPMInternalEvents; // BIT(0) - DPM_INT_EVT_INITIATE_ALERT
+                             // BIT(1) - DPM_INT_EVT_INITIATE_GET_STATUS
   UINT8 u8DPM_ConfigData;   //Bit 0 - Default Port Role <p />
                             //Bit 1 - Default Data Role <p />
                             //Bit 3:2 - Default PD Spec Revision <p />
@@ -477,9 +476,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                                             |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
 
 /***************************Internal Events Defines**********************************/
-#define DPM_INT_EVT_INFORM_DETACH           BIT(0)
-#define DPM_INT_EVT_INITIATE_ALERT          BIT(1)
-#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(2)
+#define DPM_INT_EVT_INITIATE_ALERT          BIT(0)
+#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(1)
 
 /**********************************************************************************/
 
@@ -1569,6 +1567,8 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable);
         None. 
 **************************************************************************************************/
 UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum); 
+
+void DPM_OnTypeCDetach(UINT8 u8PortNum);
 
 #endif /*_POLICY_MANAGER_H_*/
 

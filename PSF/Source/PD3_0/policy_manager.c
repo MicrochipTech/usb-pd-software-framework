@@ -606,6 +606,34 @@ UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum)
     return u8RetVal; 
 }
 
+void DPM_OnTypeCDetach(UINT8 u8PortNum)
+{
+    /* Clear the ATTACHED and AS_SOURCE_PD_CONTRACT_GOOD bits in 
+       Port Connection Status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
+        ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS);
+                    
+    /* Set the Power related variables to 0 in Status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
+
+    #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+    /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
+    PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
+    /* Set the timer Id to Max Concurrent Value*/
+    gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+    /* Note: It is recognized that it is possible to send an alert to another 
+       partner if the current partner is disconnected and a new partner is
+       connected. So, no need to clear the other variables */     
+    #endif
+
+    /* Clear all the client requests for the port. */
+    DPM_ClearAllClientRequests(u8PortNum);
+    
+    
+}
+
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 
 UINT32 DPM_ReturnPPSSrcTransTmrVal (UINT8 u8PortNum)
