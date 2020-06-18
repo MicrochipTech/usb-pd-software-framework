@@ -160,6 +160,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 from source partner*/    
                 case ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break; 
                 }
                 default:
@@ -238,7 +239,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 }
                  /*Wait here until the Sink data request message is sent*/
                 case ePE_SNK_SELECT_CAPABILITY_SEND_REQ_IDLE_SS:
-                {                  
+                {    
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;
                 }
                     
@@ -259,6 +261,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here for the accept message from Source for the sink data request*/
                 case ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;
                 }
                 default:
@@ -296,6 +299,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here for the PS Ready message from Source for the sink data request*/
                 case ePE_SNK_TRANSITION_SINK_WAIT_FOR_PSRDY_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;
                 }
                 default:
@@ -343,6 +347,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 
                 case ePE_SNK_READY_IDLE_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;
                 }
                 default:
@@ -419,7 +424,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                                                                   PE_VCONNOFF_TIMEOUT_MS,\
                                                                   DPM_VCONNOFFErrorTimerCB,\
                                                                   u8PortNum,\
-                                                                  (UINT8)SET_TO_ZERO);                 
+                                                                  (UINT8)SET_TO_ZERO); 
+                        MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_VCONNOFF_CHECK_SS;
                     
@@ -522,7 +528,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 }
                 /*Wait here until the Sink capability message is sent*/
                 case ePE_SNK_GIVE_SINK_CAP_IDLE_SS:
-                {                 
+                { 
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;  
                 }
                 default:
@@ -571,7 +578,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here until the accept message for the received soft reset is sent*/
                 case ePE_SNK_SOFT_RESET_WAIT_SS:
                 {
-                                   
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);               
                     break;
                 }
                 default:
@@ -615,7 +622,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 }
                 /*Wait here until the Soft reset message is sent*/               
                 case ePE_SNK_SEND_SOFT_RESET_SEND_IDLE_SS:
-                {                  
+                {  
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;
                 }
                 /*This Substate is entered once GoodCrc for the Soft reset message is received*/      
@@ -638,7 +646,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here for the accept message from source for the soft reset sent*/   
                 case ePE_SNK_SEND_SOFT_RESET_WAIT_FOR_ACCEPT_SS:
                 {
-                     break;
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
+                    break;
                 }
                 default:
                 {
