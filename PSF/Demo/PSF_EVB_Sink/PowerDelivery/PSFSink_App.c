@@ -177,9 +177,11 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eUPD350_RESET_FUNC:
         {
-            /* UPD350 RESET_N pin active low; set to internal pull up by default*/
-            PORT_PinWrite(UPD350_RESET_PIN, TRUE);
-            UPD350_RESET_InputEnable();            
+            /* UPD350 Reset pin initialization is done as part of  
+               PORT_Initialize() by harmony. User can also choose to do the 
+               initialization here. 
+               It is configured in input mode, since configuring it in output 
+               mode and driving it high always would increase current consumption. */      
             break;
         }
         case eSPI_CHIP_SELECT_FUNC:
