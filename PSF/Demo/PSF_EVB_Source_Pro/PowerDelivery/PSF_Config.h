@@ -531,6 +531,23 @@ Example:
 **************************************************************************************************/                                                                                            
 #define CONFIG_VALIDATION_PHASE_WAITTIME    0x03u 
 
+/**********************************************************************
+Summary:
+    INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION.
+Description:
+    INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION will define the reserved bytes in the config and status
+    register structure, so that expansion of structure members in future can be handled without change
+    in the address of the existing member elements. 
+Remarks:
+    The default value is 0 and it can be defined to 1 based on the user application needs. 
+Example:
+    <code>
+    #define INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION        0 
+    </code>
+**********************************************************************/
+#define INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION            0
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: PIO configurations
@@ -1430,13 +1447,15 @@ typedef struct _PortCfgStatus
     UINT8 u8Mode_EN_VBUS;
     UINT8 u8aReserved2[2];
 #endif
-    #if (TRUE == INCLUDE_PD_SINK)
+#if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction; 
     UINT8 u8Reserved3;    
-    #endif
-	 
+#endif
+#if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
+    UINT8 u8ReservedPortPadBytes[32];
+#endif
    } PORT_CFG_STATUS, *PPORT_CFG_STATUS;
 
  /**********************************************************************
@@ -1824,6 +1843,10 @@ typedef struct _GlobalCfgStatusData
     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
     PPS_PORT_CFG_STATUS sPPSPerPortData[CONFIG_PD_PORT_COUNT]; 
+#endif
+
+#if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
+    UINT8 u8ReservedPadBytes[32];
 #endif
 } GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
 
