@@ -72,7 +72,7 @@ Example:
     #define INCLUDE_PD_3_0	0(Exclude USB PD 3.0 specific features from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_3_0                    1
+#define INCLUDE_PD_3_0                     1
 
 /**************************************************************************************************
 Summary:
@@ -89,7 +89,7 @@ Example:
     #define INCLUDE_PD_SOURCE	0(Exclude USB PD Source functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_SOURCE  		1
+#define INCLUDE_PD_SOURCE           1
 
 /**************************************************************************************************
 Summary:
@@ -142,7 +142,7 @@ Example:
     #define INCLUDE_POWER_FAULT_HANDLING	0(Exclude Power Fault handling from PSF )
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_FAULT_HANDLING          1
+#define INCLUDE_POWER_FAULT_HANDLING     1     
 
 /**************************************************************************************************
 Summary:
@@ -166,7 +166,7 @@ Example:
                                                         fault from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_UPD_PIO_OVERRIDE_SUPPORT      1
+#define INCLUDE_UPD_PIO_OVERRIDE_SUPPORT     1 
 
 /**************************************************************************************************
 Summary:
@@ -193,7 +193,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
+    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -355,7 +355,7 @@ Note:
 
 
   **************************************************************************/
- #define CONFIG_DEFINE_UPD350_HW_INTF_SEL         CONFIG_UPD350_SPI
+ #define CONFIG_DEFINE_UPD350_HW_INTF_SEL    CONFIG_UPD350_SPI     
 
 /**************************************************************************************************
 Summary:
@@ -398,7 +398,8 @@ Example:
 Note:
     None.
 **************************************************************************/
-#define CONFIG_HOOK_DEBUG_MSG                       0
+#define CONFIG_HOOK_DEBUG_MSG      0                 
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1045,7 +1046,10 @@ typedef enum
 	u16Reserved1    				2								 Reserved					 
 	u8aReserved1					1								 Reserved					 
 	u8aReserved2[2]					2								 Reserved
-	u8Reserved3    					1								 Reserved					 		
+	u8Reserved3    					1								 Reserved
+ 	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
+                                                                         based on configuration macro 
+                                                                         INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
     </table>
     
     
@@ -1748,6 +1752,9 @@ typedef struct _PPSPortCfgStatus
     u8aReserved7[3]				     3								 Reserved 
     u8aReserved8[3]				     3 								 Reserved 
     u16Reserved2 				     2 								 Reserved 																
+ 	u8ReservedPadBytes[16]	         16	                              * Reserved bytes included
+                                                                         based on configuration macro 
+                                                                         INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
 																		
 	</table> 															  										
 
@@ -1846,7 +1853,7 @@ typedef struct _GlobalCfgStatusData
 #endif
 
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
-    UINT8 u8ReservedPadBytes[32];
+    UINT8 u8ReservedPadBytes[16];
 #endif
 } GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
 

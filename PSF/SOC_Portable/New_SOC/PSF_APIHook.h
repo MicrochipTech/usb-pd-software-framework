@@ -1143,32 +1143,201 @@ Remarks:
 ****************************************************************************************************/
 #define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)
  
-// *****************************************************************************
-// *****************************************************************************
-// Section: GPIO Control
-// *****************************************************************************
-// *****************************************************************************
-
-//Todo: J: Add comment explanation from design document
-
+/******************************************************************************************************
+  Section:
+       GPIO Control
+    
+    
+    * *************************************************************************** *
+    * *************************************************************************** *
+    * *********************************************************************************************** *
+  Summary:
+    GPIO Functionality enum.
+  Description:
+    eMCHP_PSF_GPIO_FUNCTIONALITY enum defines the various GPIO
+    functionality Pins that are used in PSF.
+    
+    
+    
+    <b>eUPD350_ALERT_FUNC:</b> PSF requires a GPIO specific to each port of
+    UPD350 for interrupt detection via UPD350's IRQ_N lines.
+    
+    IRQ_N is an active low signal. This GPIO functionality shall initialize
+    the SOC GPIOs connected to the IRQ_N lines of UPD350s in the system for
+    interrupt notification. It is recommended to configure SOC GPIOs
+    interrupt in edge level detection with internal pull up since the
+    UPD350 keeps the IRQ_N line in low state until the interrupt is
+    cleared.
+    
+    To notify PSF the occurrence of UPD350 interrupt, the API
+    MchpPSF_UPDIrqHandler shall be called by SOC on interrupt detection of
+    the specific port.
+    
+    GPIO connected to IRQ_N should be wakeup capable if
+    INCLUDE_POWER_MANAGEMENT_CTRL defined as 1.This is a mandatory
+    functionality and configured only during initialization.
+    
+    
+    
+    <b>eI2C_DC_DC_ALERT_FUNC:</b> Configures the GPIO of SOC for DC DC
+    Alert functionality. This is a mandatory functionality and configured
+    only during initialization.
+    
+    
+    
+    <b>eUPD350_RESET_FUNC:</b> This GPIO functionality is to control SOC
+    GPIOs connected to the RESET_N lines of Port's UPD350. It is
+    recommended to connect a single GPIO to the reset line of all UPD350s.
+    User can also define a separate GPIO for each port.
+    
+    As the UPD350 RESET_N is active low signal, SOC should initialize the
+    GPIO to be high by default. PSF resets the UPD350 connected to the port
+    by driving the SOC GPIO connected to the RESET_N pin of that UPD350.
+    Since, RESET_N is active low signal, SOC GPIO should be driven low for
+    a while and then back to default high state. In such case user must
+    drive the GPIO for UPD350 reset only when u8PortNum passed is ‘0' via
+    the hook MCHP_PSF_HOOK_GPIO_FUNC_DRIVE.
+    
+    This is a mandatory functionality to reset UPD350 and done only during
+    initialization.
+    
+    
+    
+    <b>eSPI_CHIP_SELECT_FUNC:</b> This functionality is used by PSF to
+    enable or disable the communication to port’s UPD350.It is applicable
+    only when CONFIG_DEFINE_UPD350_HW_INTF_SEL is defined as
+    CONFIG_UPD350_SPI.
+    
+    PSF asserts and de-asserts this functionality during following
+    condition:
+    
+    • Assertion – To enable SPI communication to the port’s UPD350
+    
+    • De-assertion- To disable SPI communication to the port’s UPD350
+    
+    It is mandatory to assign a MCU pin to this functionality port
+    specifically and it is should be an active low signal.
+    
+    
+    
+    <b>eVBUS_DIS_FUNC:</b> VBUS Discharge mechanism is required to enable
+    quick discharge of VBUS when VBUS transitions from higher to lower
+    voltage.PSF requires the application layer to assert this pin whenever
+    it requires a quick discharge of VBUS. PSF request for de-assertion
+    once the quick discharge is complete.
+    
+    It mandatory to assign a pin to this functionality to do a quick
+    discharge whenever it is asserted.
+    
+    
+    
+    <b>eDC_DC_EN_FUNC:</b> DC_DC_EN functionality is required to enable
+    DC-DC Controller.
+    
+    PSF request application layer to assert and de-assert during following
+    condition
+    
+    • It is asserted when PSF is initialized, ready to operate and CC pins
+    are functional.
+    
+    • It will be toggled during error condition say, on occurrence of fault
+    to reset the DC-DC.
+    
+    This is applicable only for Source functionality.
+    
+    
+    
+    <b>eORIENTATION_FUNC:</b> Orientation functionality is used to indicate
+    the detected orientation. It can be used to control an external USB
+    data multiplexer.
+    
+    PSF request application layer for following during following cases:
+    
+    • Tri-state: no device attached
+    
+    • Assertion: Device is attached to CC1
+    
+    • De-assertion – Device is attached to CC2
+    
+    This is not mandatory, depends on user application.
+    
+    
+    
+    <b>eSNK_CAPS_MISMATCH_FUNC:</b> Sink Caps mismatch functionality is to
+    indicate any mismatch of capability during a PD negotiation.It is
+    applicable only for Sink functionality.
+    
+    PSF request application to assert /de-assert the pin under following
+    condition:
+    
+    • Assertion- PD Sink negotiation is complete and there was a capability
+    mismatch with the selection
+    
+    • De-assertion – During port partner detach or during a new
+    negotiation.
+    
+    This is not mandatory, depends on user application.
+    
+    
+    
+    <b>eSNK_1_5A_IND_FUNC:</b> This functionality is indicate the current
+    capability is more than 1.5A.
+    
+    PSF request the application do to following:
+    
+    • Assertion – Current capability or negotiated current is 1.5A or more
+    and less than 3A.
+    
+    • De-assertion- On detach event or during renegotiation.
+    
+    This is applicable only for sink functionality and it is not mandatory,
+    depends on user application.
+    
+    
+    
+    <b>eSNK_3A_IND_FUNC: </b>3A indicator functionality is to indicate the
+    current capability is more than 3A
+    
+    PSF request the application do to following:
+    
+    • Assertion – Current capability or negotiated current is 3A or more.
+    
+    • De-assertion- On detach event or during renegotiation.
+    
+    This is applicable only for sink functionality and it is not mandatory,
+    depends on user application.
+    
+    
+  Remarks:
+    None                                                                                               
+  ******************************************************************************************************/
 typedef enum eMCHP_PSF_GPIO_Functionality
 {
-    eUPD350_ALERT_FUNC,
-    eI2C_DC_DC_ALERT_FUNC,
-    eUPD350_RESET_FUNC,
-    eSPI_CHIP_SELECT_FUNC,
-    eVBUS_DIS_FUNC,
-    eDC_DC_EN_FUNC,
-    eORIENTATION_FUNC,
-    eSNK_CAPS_MISMATCH_FUNC,
-    eSNK_1_5A_IND_FUNC,
-    eSNK_3A_IND_FUNC
+    eUPD350_ALERT_FUNC,            //UPD350 Alert Functionality
+    eI2C_DC_DC_ALERT_FUNC,         //DC DC Alert Functionality
+    eUPD350_RESET_FUNC,            //UPD350 Reset Functionality 
+    eSPI_CHIP_SELECT_FUNC,         //SPI Chip select Functionality
+    eVBUS_DIS_FUNC,                //VBUS Discharge Functionality
+    eDC_DC_EN_FUNC,                //DC DC Enable Functionality
+    eORIENTATION_FUNC,             //Orientation Functionality
+    eSNK_CAPS_MISMATCH_FUNC,       //Sink Capability Mismatch Functionality
+    eSNK_1_5A_IND_FUNC,            //1.5A Indication Functionality
+    eSNK_3A_IND_FUNC               //3A Indication Functionality
 } eMCHP_PSF_GPIO_FUNCTIONALITY;
 
+/**************************************************************************************************
+Summary:
+    GPIO  Drive enum.
+Description:
+	eMCHP_PSF_GPIO_DRIVE_VAL enum defines Assert and Deassert drives of the  
+    various GPIO functionality Pins that are used in PSF.
+Remarks:
+        None
+**************************************************************************************************/
 typedef enum eMCHP_PSF_GPIO_DriveValue 
 {
-    eGPIO_DEASSERT,
-    eGPIO_ASSERT
+    eGPIO_DEASSERT,               //Drive to De-Assert the GPIO
+    eGPIO_ASSERT                  //Drive to Assert the GPIO
 } eMCHP_PSF_GPIO_DRIVE_VAL;
 
 
@@ -1295,9 +1464,7 @@ Summary:
     boost controller and load switch. Additionally, in case of sink functionality, this hook may be 
     defined with APIs to initialize a DAC.
 Description:
-    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define.
-    User can chose to implement their own DC-DC buck booster control or modify the default using 
-    this hook. This hook is to initialize the hardware modules related to port power functionality. 
+    This hook is to initialize the hardware modules related to port power functionality. 
     Implementation of this function depends on the type of DC-DC buck boost controller, load
     switch or DAC used. Define relevant function with return type as UINT8. 
 Conditions:
@@ -1327,9 +1494,8 @@ Function:
 Summary:
     Drives the VBUS for given voltage, current
 Description:
-    PSF provides default DC-DC Buck booster control configuration via CONFIG_DCDC_CTRL define. If 
-    user chose to implement their own DC-DC buck booster control, this hook must be implemented to
-    drive VBUS as per the parameter passed based on voltage and current. It can also be used to 
+    If the user chose to implement their own DC-DC buck booster control, this hook must be implemented 
+    to drive VBUS as per the parameter passed based on voltage and current. It can also be used to 
     modify the default option. Implementation of this function depends on the type of DC-DC buck 
     boost controller and load switch used. Define relevant function that has UINT8,UINT16, UINT16
     arguments without return type.
@@ -1522,6 +1688,57 @@ Remarks:
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
 
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
+Summary:
+    Hook for Source policy engine state machine entry into idle sub state
+Description:
+    This hook is called when policy engine source state machine enters idle sub state.  
+    The entry into the idle sub state could be either due to a wait time or for an 
+    event from UPS350.
+Conditions:
+    None
+Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+Remarks:
+    This hook is not mandatory and would be useful in RTOS environment                          
+*******************************************************************************/  
+#define MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
+
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
+Summary:
+    Hook for Type C state machine entry into idle sub state
+Description:
+    This hook is called when Type C state machine enters idle sub state. The 
+    entry into the idle sub state could be either due to a wait time or for an 
+    event from UPS350.
+Conditions:
+    None
+Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+Remarks:
+    This hook is not mandatory and would be useful in RTOS environment                          
+*******************************************************************************/  
+#define MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
+
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_PDTIMER_EVENT
+Summary:
+    Hook for PD timer timeout event
+Description:
+    This hook is called when PD timer gets expires for the given event to call 
+    the callback function. 
+Conditions:
+    None
+Remarks:
+    This hook is not mandatory and would be useful in RTOS environment                          
+*******************************************************************************/  
+
+#define MCHP_PSF_HOOK_PDTIMER_EVENT
 
 #endif /*_PSF_API_HOOK_H_*/
 
