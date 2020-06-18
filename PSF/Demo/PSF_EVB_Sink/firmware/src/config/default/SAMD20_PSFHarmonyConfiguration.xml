@@ -699,7 +699,7 @@
         </String>
         <String dnOrder="136" id="PIN_1_INEN">
           <Values dnOrder="0">
-            <User dnOrder="0" value=""/>
+            <User dnOrder="0" value="True"/>
           </Values>
         </String>
         <String dnOrder="137" id="PIN_1_LAT">
@@ -719,7 +719,7 @@
         </String>
         <String dnOrder="140" id="PIN_1_PULLEN">
           <Values dnOrder="0">
-            <User dnOrder="0" value=""/>
+            <User dnOrder="0" value="True"/>
           </Values>
         </String>
         <String dnOrder="141" id="PIN_27_PERIPHERAL_FUNCTION">
@@ -914,7 +914,7 @@
         </String>
         <String dnOrder="179" id="PORT_GROUP_0_PINCFG0">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="core" value="0x0"/>
+            <Dynamic dnOrder="0" id="core" value="0x6"/>
           </Values>
         </String>
         <String dnOrder="180" id="PORT_GROUP_0_PINCFG1">
@@ -1632,8 +1632,7 @@
     </UniqueComponent>
   </Components>
   <UserData>
-    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
-    <ComponentGraph dnOrder="1" id="__ROOTVIEW">
+    <ComponentGraph dnOrder="0" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="cmsis" x="430" y="60"/>
         <ElementPosition dnOrder="1" id="core" x="330" y="60"/>
@@ -1646,5 +1645,6 @@
         <ElementPosition dnOrder="8" id="tc0" x="370" y="102"/>
       </ElementPositions>
     </ComponentGraph>
+    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="1"/>
   </UserData>
 </Configuration>
