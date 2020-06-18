@@ -1528,6 +1528,57 @@ Remarks:
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
 
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
+Summary:
+    Hook for Source policy engine state machine entry into idle sub state
+Description:
+    This hook is called when policy engine source state machine enters idle sub state.  
+    The entry into the idle sub state could be either due to a wait time or for an 
+    event from UPS350.
+Conditions:
+    None
+Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+Remarks:
+    This hook is not mandatory and would be useful in RTOS environment                          
+*******************************************************************************/  
+#define MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
+
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
+Summary:
+    Hook for Type C state machine entry into idle sub state
+Description:
+    This hook is called when Type C state machine enters idle sub state. The 
+    entry into the idle sub state could be either due to a wait time or for an 
+    event from UPS350.
+Conditions:
+    None
+Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+Remarks:
+    This hook is not mandatory and would be useful in RTOS environment                          
+*******************************************************************************/  
+#define MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
+
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_PDTIMER_EVENT
+Summary:
+    Hook for PD timer timeout event
+Description:
+    This hook is called when PD timer gets expires for the given event to call 
+    the callback function. 
+Conditions:
+    None
+Remarks:
+    This hook is not mandatory and would be useful in RTOS environment                          
+*******************************************************************************/  
+
+#define MCHP_PSF_HOOK_PDTIMER_EVENT
 
 #endif /*_PSF_API_HOOK_H_*/
 

@@ -256,6 +256,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_SEND_CAP_IDLE_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;  
                 }
                 
@@ -280,6 +281,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChangeAndTimeoutValidateCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     
                     break;
                 }
@@ -402,7 +404,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                               (PE_SRC_READY_TIMEOUT_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
-                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;                        
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;  
+                        MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     }
 
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
@@ -465,7 +468,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                 case ePE_SRC_TRANSITION_SUPPLY_IDLE_SS:
                 {
-                    
+                   MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum); 
                     break;  
                 }
                 
@@ -525,6 +528,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_CAPABILITY_RESPONSE_IDLE_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;  
                 }
                 
@@ -582,6 +586,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                                   (PE_SOURCE_PPS_COMM_TIMEOUT_MS),
                                                                   PE_SubStateChange_TimerCB,u8PortNum,  
                                                                   (UINT8) ePE_SRC_READY_PPS_COMM_TIMER_EXPIRED_SS);
+                        MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     }
                     
                     /* Trigger an Operating Condition Change Alert for Cable Limitation 
@@ -620,6 +625,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
            
                 case ePE_SRC_READY_END_AMS_SS:
                 { 
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;
                 }
                 
@@ -635,6 +641,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         case ePE_SRC_WAIT_NEW_CAPABILITIES:
         {
 			/* Since our source capabilities are fixed this state will be in idle*/
+            MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
             break;  
         }
         
@@ -661,6 +668,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_DISCOVERY_IDLE_SS:
                 { 
                     /* Wait for Timeout */
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;  
                 }
                 
@@ -735,6 +743,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_HARD_RESET_IDLE_SS:
                 {
                     /* Wait for PSHardResetTimer to times out */
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;  
                 }
                 
@@ -782,6 +791,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_HARD_RESET_RECEIVED_IDLE_SS:
                 {
                     /* Wait for PSHardResetTimer */
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;
                 }
                 
@@ -827,6 +837,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                               (UINT8)SET_TO_ZERO);
                    
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_VSAFE0V_SS;
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                 
                     break;  
                 }
@@ -847,6 +858,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                                   DPM_VCONNOFFErrorTimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO);
+                        MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                         
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
                         u32PDODebug = SET_TO_ZERO;
@@ -883,6 +895,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_TRANSITION_TO_DEFAULT_IDLE_SS:
                 {
                     /* Wait for SrcRecoverTimer to times out */
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;  
                 }
                 
@@ -919,6 +932,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                               (TYPEC_VBUS_ON_TIMER_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_VBUS_CHECK_SS;
                     
@@ -984,6 +998,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                               (UINT8)SET_TO_ZERO);
                         
                             gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_VCONNON_CHECK_SS;
+                            MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                         }
                         else
                         {
@@ -1064,6 +1079,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChange_TimerCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT_SS); 
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     
                     break; 
                 }
@@ -1097,7 +1113,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 }
                 
                 case ePE_SRC_GET_SINK_CAP_IDLE_SS: 
-                {                        
+                { 
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break; 
                 }   
                 
@@ -1173,6 +1190,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_SEND_SOFT_RESET_IDLE_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;  
                 }
                 
@@ -1241,6 +1259,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_SOFT_RESET_IDLE_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;
                 }
                 
@@ -1301,6 +1320,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             
                 case ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break;
                 }
                 
@@ -1443,6 +1463,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                             PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChange_TimerCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS); 
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     
                     break;
                 }
@@ -1486,6 +1507,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_GET_SINK_STATUS_IDLE_SS:
                 {
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break; 
                 }    
                 
@@ -1529,6 +1551,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_SEND_SOURCE_ALERT_IDLE_SS:
                 {
                     /* Idle state to wait for message transmit completion */
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break; 
                 }
                 
@@ -1577,6 +1600,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_GIVE_SOURCE_STATUS_IDLE_SS:
                 {
                     /* Idle state to wait for message transmit completion */
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break; 
                 }
                 
@@ -1624,6 +1648,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_GIVE_PPS_STATUS_IDLE_SS:
                 {
                     /* Idle state to wait for message transmit completion */
+                    MCHP_PSF_HOOK_PE_SRC_IDLE_SS (u8PortNum);
                     break; 
                 }
                 
