@@ -55,6 +55,7 @@
 #include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 #include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
+#include <string.h>
 #endif 
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
