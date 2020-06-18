@@ -1153,27 +1153,42 @@ Remarks:
 // Section: GPIO Control
 // *****************************************************************************
 // *****************************************************************************
-
-//Todo: J: Add comment explanation from design document
-
+/**************************************************************************************************
+Summary:
+    GPIO Functionality enum.
+Description:
+	eMCHP_PSF_GPIO_FUNCTIONALITY enum defines the various GPIO functionality Pins 
+    that are used in PSF.
+Remarks:
+        None
+**************************************************************************************************/
 typedef enum eMCHP_PSF_GPIO_Functionality
 {
-    eUPD350_ALERT_FUNC,
-    eI2C_DC_DC_ALERT_FUNC,
-    eUPD350_RESET_FUNC,
-    eSPI_CHIP_SELECT_FUNC,
-    eVBUS_DIS_FUNC,
-    eDC_DC_EN_FUNC,
-    eORIENTATION_FUNC,
-    eSNK_CAPS_MISMATCH_FUNC,
-    eSNK_1_5A_IND_FUNC,
-    eSNK_3A_IND_FUNC
+    eUPD350_ALERT_FUNC,            //UPD350 Alert Functionality
+    eI2C_DC_DC_ALERT_FUNC,         //DC DC Alert Functionality
+    eUPD350_RESET_FUNC,            //UPD350 Reset Functionality 
+    eSPI_CHIP_SELECT_FUNC,         //SPI Chip select Functionality
+    eVBUS_DIS_FUNC,                //VBUS Discharge Functionality
+    eDC_DC_EN_FUNC,                //DC DC Enable Functionality
+    eORIENTATION_FUNC,             //Orientation Functionality
+    eSNK_CAPS_MISMATCH_FUNC,       //Sink Capability Mismatch Functionality
+    eSNK_1_5A_IND_FUNC,            //1.5A Indication Functionality
+    eSNK_3A_IND_FUNC               //3A Indication Functionality
 } eMCHP_PSF_GPIO_FUNCTIONALITY;
 
+/**************************************************************************************************
+Summary:
+    GPIO  Drive enum.
+Description:
+	eMCHP_PSF_GPIO_DRIVE_VAL enum defines Assert and Deassert drives of the  
+    various GPIO functionality Pins that are used in PSF.
+Remarks:
+        None
+**************************************************************************************************/
 typedef enum eMCHP_PSF_GPIO_DriveValue 
 {
-    eGPIO_DEASSERT,
-    eGPIO_ASSERT
+    eGPIO_DEASSERT,               //Drive to De-Assert the GPIO
+    eGPIO_ASSERT                  //Drive to Assert the GPIO
 } eMCHP_PSF_GPIO_DRIVE_VAL;
 
 
@@ -1303,7 +1318,7 @@ Summary:
 Description:
     This hook is to initialize the hardware modules related to port power functionality. 
     Implementation of this function depends on the type of DC-DC buck boost controller, load
-    switch or DAC used. Define relevant function that has no argument without return type.
+    switch or DAC used. Define relevant function with return type as UINT8. 
 Conditions:
     API implementation must make sure the Port Power(VBUS) of all ports must be set to 0V.
 Input:
@@ -1506,7 +1521,7 @@ Summary:
 Description:
     This hook is called when PSF needs to know about the present current
     by external DC_DC controller. The function should be defined with return type
-    UINT32 and UINT8 type as input parameter. If the DC_DC controller does not 
+    UINT32 and UINT8 type as input parameter. If the DC_DC controller doesnot 
     have feature to get output current, return 0xFFFFFFFF to denote the feature
     is not supported. 
 Conditions:

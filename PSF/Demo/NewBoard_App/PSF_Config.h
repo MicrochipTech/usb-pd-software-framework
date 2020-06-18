@@ -372,52 +372,6 @@ Example :
 **************************************************************************************************/
 #define CONFIG_PORT_UPD_IDLE_TIMEOUT_MS 	MILLISECONDS_TO_TICKS(15000)
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: DC-DC Buck boost controller configurations
-// *****************************************************************************
-// *****************************************************************************
-
-/**************************************************************************
-Summary:
-    Macro to indicate GPIO based DC-DC Controller. 
-Description:
-	PWRCTRL_GPIO_DC_DC defines the default GPIO based DC-DC Controller used by PSF.  
-Remarks:
-	None.                                 
-  **************************************************************************/
-#define PWRCTRL_GPIO_DC_DC     1
-
-/**************************************************************************
-Summary:
-    Macro to indicate I2C based DC-DC Controller. 
-Description:
-	PWRCTRL_I2C_DC_DC defines the default GPIO based DC-DC Controller used by PSF.  
-Remarks:
-	None.                                 
-  **************************************************************************/
-#define PWRCTRL_I2C_DC_DC     2
-
-/**************************************************************************
-Summary:
-    DC DC Buck Boost Controller default configuration option.
-Description:
-	CONFIG_DCDC_CTRL is to define the default DC-DC control provided by the PSF stack. If 
-	CONFIG_DCDC_CTRL defined as PWRCTRL_GPIO_DC_DC, default GPIO based DC-DC controller
-	is used. If CONFIG_DCDC_CTRL is defined as PWRCTRL_I2C_DC_DC, default I2C based 
-    DC-DC Controller is used. If defined as 0, default stack's DC-DC control option is not used 
-    and the user must control power via power control APIs provided by the stack.  
-Remarks:
-	None.
-Example:
-	<code>
-	#define CONFIG_DCDC_CTRL    PWRCTRL_GPIO_DC_DC (Uses default GPIO based DC-DC control)
-	#define CONFIG_DCDC_CTRL    PWRCTRL_I2C_DC_DC (Uses default I2C based DC-DC control)
-	#define CONFIG_DCDC_CTRL    0 (Default DC DC control provided by stack is not used)
-	</code>                                  
-  **************************************************************************/
-#define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC
-					
 /**************************************************************************
 Summary:
     Print status messages from PSF stack through UART interface
@@ -575,6 +529,23 @@ Example:
     </code>                                                            
 **************************************************************************************************/                                                                                            
 #define CONFIG_VALIDATION_PHASE_WAITTIME    0x03u 
+
+/**********************************************************************
+Summary:
+    INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION.
+Description:
+    INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION will define the reserved bytes in the config and status
+    register structure, so that expansion of structure members in future can be handled without change
+    in the address of the existing member elements. 
+Remarks:
+    The default value is 0 and it can be defined to 1 based on the user application needs. 
+Example:
+    <code>
+    #define INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION        0 
+    </code>
+**********************************************************************/
+#define INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION            0
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -977,12 +948,8 @@ typedef enum
 																	    functionality from the 
 																		stack, the user can define a
 																		value of 0xFF. It is 
-																		applicable only when
-                                                                        CONFIG_DCDC_CTRL is defined 
-																		as
-                                                                        PWRCTRL_GPIO_DC_DC 
-																		and for Source operation
-                                                                        only.
+																		applicable only for Source 
+                                                                        operation only.
                                                                       * By defining     
 																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
 																		as '1', The PIO Override 
@@ -1015,10 +982,6 @@ typedef enum
 																		stack, user can define it 
 																		as 0xFF. 
 																	  * It is applicable only when 
-																		CONFIG_DCDC_CTRL is 
-																		defined as 
-																		PWRCTRL_GPIO_DC_DC
-																		and 
 																		INCLUDE_POWER_FAULT_HANDLING
 																		defined as '1'. 
 	u8Mode_FAULT_IN                 1         R/W          R         * Defines the PIO mode of the 
@@ -1081,7 +1044,10 @@ typedef enum
 	u16Reserved1    				2								 Reserved					 
 	u8aReserved1					1								 Reserved					 
 	u8aReserved2[2]					2								 Reserved
-	u8Reserved3    					1								 Reserved					 		
+	u8Reserved3    					1								 Reserved
+ 	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
+                                                                         based on configuration macro 
+                                                                         INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
     </table>
     
     
@@ -1483,13 +1449,15 @@ typedef struct _PortCfgStatus
     UINT8 u8Mode_EN_VBUS;
     UINT8 u8aReserved2[2];
 #endif
-    #if (TRUE == INCLUDE_PD_SINK)
+#if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction; 
     UINT8 u8Reserved3;    
-    #endif
-	 
+#endif
+#if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
+    UINT8 u8ReservedPortPadBytes[32];
+#endif
    } PORT_CFG_STATUS, *PPORT_CFG_STATUS;
 
  /**********************************************************************
@@ -1782,6 +1750,9 @@ typedef struct _PPSPortCfgStatus
     u8aReserved7[3]				     3								 Reserved 
     u8aReserved8[3]				     3 								 Reserved 
     u16Reserved2 				     2 								 Reserved 																
+ 	u8ReservedPadBytes[16]	         16	                              * Reserved bytes included
+                                                                         based on configuration macro 
+                                                                         INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
 																		
 	</table> 															  										
 
@@ -1877,6 +1848,10 @@ typedef struct _GlobalCfgStatusData
     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
     PPS_PORT_CFG_STATUS sPPSPerPortData[CONFIG_PD_PORT_COUNT]; 
+#endif
+
+#if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
+    UINT8 u8ReservedPadBytes[16];
 #endif
 } GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
 
