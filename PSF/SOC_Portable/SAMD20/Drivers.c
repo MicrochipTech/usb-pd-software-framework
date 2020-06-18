@@ -223,6 +223,30 @@ void SAMD20_Drive_DAC_I(UINT16 u16DACData)
 /*****************************************************************************/
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 
+void SERCOM1_USART_Write_Int(uint32_t dwWriteInt, uint8_t byWidth)
+{
+    SERCOM1_USART_Write((void*)&dwWriteInt, byWidth); 
+    while(!SERCOM1_USART_TransmitComplete()) 
+    { 
+    } 
+}
+
+void SERCOM1_USART_Write_String(char * pbyMessage)
+{
+    SERCOM1_USART_Write((void*)pbyMessage,strlen(pbyMessage)); 
+    while(!SERCOM1_USART_TransmitComplete()) 
+    { 
+    }
+}
+
+void SERCOM1_USART_Write_Char(char byWriteChar)
+{
+    SERCOM1_USART_Write((void*)&byWriteChar,1); 
+    while(!SERCOM1_USART_TransmitComplete()) 
+    { 
+    }
+}
+
 void SAMD20_UART_Initialisation(void)
 {
     SAMD20UART_Init(SAMD20_UART_INSTANCE);
