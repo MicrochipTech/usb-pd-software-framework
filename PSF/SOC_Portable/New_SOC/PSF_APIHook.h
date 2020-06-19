@@ -1177,79 +1177,81 @@ Remarks:
                                                  mandatory functionality and configured only during
                                                  initialization.
     eI2C_DC_DC_ALERT_FUNC     \Input          * Configures the GPIO of SOC for DC DC Alert
-                                                 functionality. This is a mandatory functionality and
-                                                 configured only during initialization.
+                                                 functionality. This is not a mandatory functionality and
+                                                 can be configured based on the DC DC controller used.
     eUPD350_RESET_FUNC        \Input          * This GPIO functionality is to control SOC GPIOs
                                                  connected to the RESET_N lines of Port's UPD350. It is
-                                                 recommended to connect a single GPIO to the reset line of
-                                                 all UPD350s. User can also define a separate GPIO for each
-                                                 port.
-                                               * As the UPD350 RESET_N is active low signal, SOC should
-                                                 initialize the GPIO to be high by default. PSF resets the
-                                                 UPD350 connected to the port by driving the SOC GPIO
-                                                 connected to the RESET_N pin of that UPD350. Since,
-                                                 RESET_N is active low signal, SOC GPIO should be driven
-                                                 low for a while and then back to default high state. In
-                                                 such case user must drive the GPIO for UPD350 reset only
-                                                 when u8PortNum passed is '0' via the hook
-                                                 MCHP_PSF_HOOK_GPIO_FUNC_DRIVE.
+                                                 must to connect a single GPIO to the reset line of
+                                                 all UPD350s. The UPD350 RESET_N is active low signal.
+                                               * The GPIO control for reset shall be handled as below
+											      * Initialization - Drive the GPIO high
+												  * eGPIO_ASSERT - Drive the GPIO low and provide a sufficient 
+                                                     delay for the UPD350 to reset
+                                                  * eGPIO_DEASSERT - Drive the GPIO high												  
+                                                * As single line is connected to all the UPD350 reset pin, the
+                                                   port number passed as argument to the hooks 
+												   MCHP_PSF_HOOK_GPIO_FUNC_INIT	and MCHP_PSF_HOOK_GPIO_FUNC_DRIVE
+                                                   shall be 0.
                                                * This is a mandatory functionality to reset UPD350 and
                                                  done only during initialization.
     eSPI_CHIP_SELECT_FUNC     \Output         * This functionality is used by PSF to enable or disable
                                                  the communication to port's UPD350.It is applicable only
                                                  when CONFIG_DEFINE_UPD350_HW_INTF_SEL is defined as
-                                                 CONFIG_UPD350_SPI.
-                                               * PSF asserts and de&#45;asserts this functionality during
-                                                 following condition: Assertion &#45; To enable SPI
-                                                 communication to the port's UPD350 De&#45;assertion &#45;
-                                                 To disable SPI communication to the port's UPD350
-                                               * It is mandatory to assign a MCU pin to this
-                                                 functionality port specifically and it is should be an
-                                                 active low signal.
+                                                 CONFIG_UPD350_SPI. The eSPI_CHIP_SELECT_FUNC is active low signal.
+                                               * The GPIO control for CS shall be handled as below
+											      * Initialization - Drive the GPIO high
+												  * eGPIO_ASSERT - Drive the GPIO low for the specific port to enable 
+												     communication
+                                                  * eGPIO_DEASSERT - Drive the GPIO high for the specific port to disable 
+												     communication											  
+                                               * It is mandatory to assign a MCU pin to this functionality port specifically                                            active low signal.
     eVBUS_DIS_FUNC            \Output         * VBUS Discharge mechanism is required to enable quick
                                                  discharge of VBUS when VBUS transitions from higher to
-                                                 lower voltage.PSF requires the application layer to assert
+                                                 lower voltage.PSF requests the application layer to assert
                                                  this pin whenever it requires a quick discharge of VBUS.
-                                                 PSF request for de&#45;assertion once the quick discharge
-                                                 is complete.
+                                                 PSF request for deassertion once the quick discharge
+                                                 is complete. The state of GPIO during init,Assert and Deassert  
+												 of this functionality is specific discharge circuitry used.
                                                * It mandatory to assign a pin to this functionality to do
                                                  a quick discharge whenever it is asserted.
-    eDC_DC_EN_FUNC            \Output         * DC_DC_EN functionality is required to enable DC&#45;DC
+    eDC_DC_EN_FUNC            \Output         * DC_DC_EN functionality is required to enable DC DC
                                                  Controller. PSF request the application layer to assert
-                                                 and de&#45;assert during followincondition It is asserted
                                                  when PSF is initialized, ready to operate and CC pins are
                                                  functional. It will be toggled during error condition say,
-                                                 on occurrence of fault to reset the DC&#45;DC.
+                                                 on occurrence of fault to reset the DC DC controller.The state 
+												 of GPIO during init,Assert and Deassert of this functionality 
+												 is specific DC DC Controller used.
                                                * This is applicable only for Source functionality
     eORIENTATION_FUNC         \Output         * Orientation functionality is used to indicate the
                                                  detected orientation. It can be used to control an
-                                                 external USB data multiplexer. PSF request application
-                                                 layer during following cases: Tri&#45;state: no device
-                                                 attached Assertion: Device is attached to CC1 De&#45;assertion
-                                                 ? Device is attached to CC2
+                                                 external USB data multiplexer. The PSF will request to init
+												 this functionality during device detach, assert during CC1 attach 
+												 and deassert during CC2 attach. The state of GPIO during init,Assert 
+												 and Deassert of this functionality is user specific 
                                                * This is not mandatory, depends on user application.
     eSNK_CAPS_MISMATCH_FUNC   \Output         * Sink Caps mismatch functionality is to indicate any
                                                  mismatch of capability during a PD negotiation.It is
                                                  applicable only for Sink functionality. PSF request
-                                                 application to assert /de&#45;assert the pin under
-                                                 following condition: Assertion&#45; PD Sink negotiation is
+                                                 application to assert when PD Sink negotiation is
                                                  complete and there was a capability mismatch with the
-                                                 selection De&#45;assertion ? During port partner detach or
-                                                 during a new negotiation.
+                                                 selection. PSF request application to deassert during port partner 
+												 detach or during a new negotiation.The state of GPIO during init,
+												 Assert and Deassert of this functionality is user specific
                                                * This is not mandatory, depends on user application.
     eSNK_1_5A_IND_FUNC        \Output         * This functionality is indicate the current capability is
-                                                 more than 1.5A. PSF request the application do to
-                                                 following: Assertion &#45; Current capability or
-                                                 negotiated current is 1.5A or more and less than 3A.
-                                                 De&#45;assertion&#45; On detach event or during
-                                                 renegotiation.
-                                               * This is applicable only for sink functionality and it is
+                                                 more than 1.5A. PSF request the application to assert when the
+                                                 Current capability or negotiated current is 1.5A or more and 
+												 less than 3A. PSF request the application to deassert on detach 
+												 event or during renegotiation. The state of GPIO during init,
+												 Assert and Deassert of this functionality is user specific
+												* This is applicable only for sink functionality and it is
                                                  not mandatory,depends on user application.
     eSNK_3A_IND_FUNC          \Output         * 3A indicator functionality is to indicate the current
-                                                 capability is more than 3A. PSF request the application do
-                                                 to following: Assertion &#45; Current capability or
-                                                 negotiated current is 3A or more. De&#45;assertion&#45; On
-                                                 detach event or during renegotiation.
+                                                 capability is more than 3A. PSF request the application to assert
+												 when current capability or negotiated current is 3A or more. PSF request 
+												 the application to deassert on detach event or during renegotiation.The 
+												 state of GPIO during init, Assert and Deassert of this functionality 
+												 is user specific.
                                                * This is applicable only for sink functionality and it is
                                                  not mandatory,depends on user application.
     </table>
