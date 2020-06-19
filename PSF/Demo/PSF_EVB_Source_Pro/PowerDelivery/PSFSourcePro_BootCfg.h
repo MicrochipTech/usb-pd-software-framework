@@ -47,7 +47,17 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_POWER_ROLE                1U
 #define CFG_PORT_RP_CURRENT_VALUE          (3U << TYPEC_PORT_RPVAL_POS)
 #define CFG_PORT_ENABLE                    (1U << TYPEC_PORT_ENDIS_POS)
+
+/* Source Pro Default PDO Configuration for 60W PDP: 
+   - PPS: 4 Fixed PDOs + 1 APDO
+   - Fixed Supply: 4 Fixed PDOs only.
+   Number of Source caps can be changed as per the needs of the user. */
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
 #define CFG_PORT_SOURCE_NUM_OF_PDOS        5U
+#else 
+#define CFG_PORT_SOURCE_NUM_OF_PDOS        4U
+#endif 
+
 #define CFG_PORT_SOURCE_USB_SUSP           0U
 #define CFG_PORT_SOURCE_UNCONSTARINED_PWR  1U
 #define CFG_PORT_SOURCE_USB_COMM           0U

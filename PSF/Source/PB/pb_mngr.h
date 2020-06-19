@@ -232,14 +232,14 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
 
 /**************************************************************************************************
     Function:
-        UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT);
+        UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT);
 
     Summary:
         This API handles all the events detected by Device Policy Manager. 
 
     Description:
         This API is the heart of PB manager. Whenever there is an event 
-        detected by PPM layer, this function would be triggered to process 
+        detected by DPM layer, this function would be triggered to process 
         and act upon the event.
 
     Conditions:
@@ -247,7 +247,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
 
     Input:
         u8PortNum - Port Number.
-        ePPM_EVENT - Event detected by PPM 
+        eDPM_EVENT - Event detected by DPM 
 
     Return:
         TRUE.
@@ -256,7 +256,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
         None.
 
 **************************************************************************************************/
-UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT);
+UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT);
 /**************************************************************************************************
     Function:
         void PB_Init (void);
@@ -266,7 +266,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT);
 
     Description:
         This API initializes the System level and port level parameters of Power
-        Balancing based on the Power Throttling bank that is currently selected.  
+        Balancing.
 
     Conditions:
         None.
@@ -291,8 +291,7 @@ void PB_Init(void);
         This API initializes all the PB port specific parameters.  
 
     Description:
-        This API initializes the port level parameters of Power Balancing based 
-        on the Power Throttling bank that is currently selected. 
+        This API initializes the port level parameters of Power Balancing. 
 
     Conditions:
         None.
@@ -754,30 +753,7 @@ UINT8 PB_IdentifyHighestPriorityPortInPendingState(void);
 
 **************************************************************************************************/
 void PB_InitiateNextPortNegotiation(void);
-/**************************************************************************************************
-    Function:
-        UINT8 PB_PortInWaitForAsyncTimerState (void);
 
-    Summary:
-        This API returns the port that is in eWAIT_FOR_ASYNC_REQ state.   
-
-    Description:
-        This API returns the port that is in eWAIT_FOR_ASYNC_REQ state currently. 
-        
-    Conditions:
-        None.
-
-    Input:
-        None.
-
-    Return:
-        Port in eWAIT_FOR_ASYNC_REQ state.
-
-    Remarks:
-        None. 
-
-**************************************************************************************************/
-UINT8 PB_PortInWaitForAsyncTimerState(void);
 /**************************************************************************************************
     Function:
         void PB_AsyncTimerCB (UINT8 u8PortNum, UINT8 u8Dummy);
@@ -786,9 +762,8 @@ UINT8 PB_PortInWaitForAsyncTimerState(void);
         This is the API registered as callback for Timer expiry.   
 
     Description:
-        This API will be called when the Timer expires and it will in turn call 
-        the API PB_HandleDPMEvents() to handle the timer expired event. 
-        
+        This API will be called when the Asynchronous Request Timer expires.
+         
     Conditions:
         None.
 

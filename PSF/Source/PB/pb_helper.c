@@ -630,21 +630,6 @@ void PB_InitiateNextPortNegotiation(void)
     }
 }
 
-UINT8 PB_PortInWaitForAsyncTimerState(void)
-{
-    UINT8 u8PortNum = PB_INVALID_PORT;
-    UINT8 u8Loop;
-    for (u8Loop = INDEX_0; u8Loop < CONFIG_PD_PORT_COUNT ; u8Loop++)
-    {
-        if (ePB_WAIT_FOR_ASYNC_REQ_SS == gasPBIntPortParam[u8Loop].eRenegSubState)
-        {
-            u8PortNum = u8Loop;
-        }
-    }
-    
-    return u8PortNum;
-}
-
 void PB_AsyncTimerCB(UINT8 u8PortNum, UINT8 u8Dummy)
 {
     /* We did not receive any asynchronous request within the time period. So,
