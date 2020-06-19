@@ -31,8 +31,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _MPQ_DCDC_CONTROL_H_
-#define _MPQ_DCDC_CONTROL_H_
+#ifndef _I2C_DC_DC_UNG8198_H_
+#define _I2C_DC_DC_UNG8198_H_
 
 #include "generic_defs.h"
 #include <PSF_Config.h>
@@ -239,4 +239,4 @@ UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum);
 
 UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum);
 
-#endif /*_MPQ_DCDC_CONTROL_H_*/
+#endif /*_I2C_DC_DC_UNG8198_H_*/
