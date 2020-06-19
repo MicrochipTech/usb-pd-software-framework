@@ -1148,32 +1148,131 @@ Remarks:
 ****************************************************************************************************/
 #define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   App_HandlePSFEvents(u8PortNum, ePSFNotification)
  
-// *****************************************************************************
-// *****************************************************************************
-// Section: GPIO Control
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
+/**************************************************************************************************************
+  Section:
+         GPIO Control
+    
+    
+    
+    * *************************************************************************** *
+    * *************************************************************************** *
+    * *********************************************************************************************** *
+  Summary:
     GPIO Functionality enum.
-Description:
-	eMCHP_PSF_GPIO_FUNCTIONALITY enum defines the various GPIO functionality Pins 
-    that are used in PSF.
-Remarks:
-        None
-**************************************************************************************************/
+  Description:
+    eMCHP_PSF_GPIO_FUNCTIONALITY enum defines the various GPIO
+    functionality Pins that are used in PSF.
+    <table>
+    Funtionality              \Input/Output   \Description
+    ------------------------  --------------  -----------------------------------------------------------------
+    eUPD350_ALERT_FUNC        \Input          * PSF requires a GPIO specific to each port of UPD350 for
+                                                 interrupt detection via UPD350's IRQ_N lines.
+                                               * IRQ_N is an active low signal. This GPIO functionality
+                                                 shall initialize the SOC GPIOs connected to the IRQ_N
+                                                 lines of UPD350s in the system for interrupt notification.
+                                                 It is recommended to configure SOC GPIOs interrupt in edge
+                                                 level detection with internal pull up since the UPD350
+                                                 keeps the IRQ_N line in low state until the interrupt is
+                                                 cleared.
+                                               * To notify PSF the occurrence of UPD350 interrupt, the
+                                                 API MchpPSF_UPDIrqHandler shall be called by SOC on
+                                                 interrupt detection of the specific port.
+                                               * GPIO connected to IRQ_N should be wakeup capable if
+                                                 INCLUDE_POWER_MANAGEMENT_CTRL defined as 1.This is a
+                                                 mandatory functionality and configured only during
+                                                 initialization.
+    eI2C_DC_DC_ALERT_FUNC     \Input          * Configures the GPIO of SOC for DC DC Alert
+                                                 functionality. This is a mandatory functionality and
+                                                 configured only during initialization.
+    eUPD350_RESET_FUNC        \Input          * This GPIO functionality is to control SOC GPIOs
+                                                 connected to the RESET_N lines of Port's UPD350. It is
+                                                 recommended to connect a single GPIO to the reset line of
+                                                 all UPD350s. User can also define a separate GPIO for each
+                                                 port.
+                                               * As the UPD350 RESET_N is active low signal, SOC should
+                                                 initialize the GPIO to be high by default. PSF resets the
+                                                 UPD350 connected to the port by driving the SOC GPIO
+                                                 connected to the RESET_N pin of that UPD350. Since,
+                                                 RESET_N is active low signal, SOC GPIO should be driven
+                                                 low for a while and then back to default high state. In
+                                                 such case user must drive the GPIO for UPD350 reset only
+                                                 when u8PortNum passed is '0' via the hook
+                                                 MCHP_PSF_HOOK_GPIO_FUNC_DRIVE.
+                                               * This is a mandatory functionality to reset UPD350 and
+                                                 done only during initialization.
+    eSPI_CHIP_SELECT_FUNC     \Output         * This functionality is used by PSF to enable or disable
+                                                 the communication to port's UPD350.It is applicable only
+                                                 when CONFIG_DEFINE_UPD350_HW_INTF_SEL is defined as
+                                                 CONFIG_UPD350_SPI.
+                                               * PSF asserts and de&#45;asserts this functionality during
+                                                 following condition: Assertion &#45; To enable SPI
+                                                 communication to the port's UPD350 De&#45;assertion &#45;
+                                                 To disable SPI communication to the port's UPD350
+                                               * It is mandatory to assign a MCU pin to this
+                                                 functionality port specifically and it is should be an
+                                                 active low signal.
+    eVBUS_DIS_FUNC            \Output         * VBUS Discharge mechanism is required to enable quick
+                                                 discharge of VBUS when VBUS transitions from higher to
+                                                 lower voltage.PSF requires the application layer to assert
+                                                 this pin whenever it requires a quick discharge of VBUS.
+                                                 PSF request for de&#45;assertion once the quick discharge
+                                                 is complete.
+                                               * It mandatory to assign a pin to this functionality to do
+                                                 a quick discharge whenever it is asserted.
+    eDC_DC_EN_FUNC            \Output         * DC_DC_EN functionality is required to enable DC&#45;DC
+                                                 Controller. PSF request the application layer to assert
+                                                 and de&#45;assert during followincondition It is asserted
+                                                 when PSF is initialized, ready to operate and CC pins are
+                                                 functional. It will be toggled during error condition say,
+                                                 on occurrence of fault to reset the DC&#45;DC.
+                                               * This is applicable only for Source functionality
+    eORIENTATION_FUNC         \Output         * Orientation functionality is used to indicate the
+                                                 detected orientation. It can be used to control an
+                                                 external USB data multiplexer. PSF request application
+                                                 layer during following cases: Tri&#45;state: no device
+                                                 attached Assertion: Device is attached to CC1 De&#45;assertion
+                                                 ? Device is attached to CC2
+                                               * This is not mandatory, depends on user application.
+    eSNK_CAPS_MISMATCH_FUNC   \Output         * Sink Caps mismatch functionality is to indicate any
+                                                 mismatch of capability during a PD negotiation.It is
+                                                 applicable only for Sink functionality. PSF request
+                                                 application to assert /de&#45;assert the pin under
+                                                 following condition: Assertion&#45; PD Sink negotiation is
+                                                 complete and there was a capability mismatch with the
+                                                 selection De&#45;assertion ? During port partner detach or
+                                                 during a new negotiation.
+                                               * This is not mandatory, depends on user application.
+    eSNK_1_5A_IND_FUNC        \Output         * This functionality is indicate the current capability is
+                                                 more than 1.5A. PSF request the application do to
+                                                 following: Assertion &#45; Current capability or
+                                                 negotiated current is 1.5A or more and less than 3A.
+                                                 De&#45;assertion&#45; On detach event or during
+                                                 renegotiation.
+                                               * This is applicable only for sink functionality and it is
+                                                 not mandatory,depends on user application.
+    eSNK_3A_IND_FUNC          \Output         * 3A indicator functionality is to indicate the current
+                                                 capability is more than 3A. PSF request the application do
+                                                 to following: Assertion &#45; Current capability or
+                                                 negotiated current is 3A or more. De&#45;assertion&#45; On
+                                                 detach event or during renegotiation.
+                                               * This is applicable only for sink functionality and it is
+                                                 not mandatory,depends on user application.
+    </table>
+  Remarks:
+    None                                                                                                       
+  **************************************************************************************************************/
 typedef enum eMCHP_PSF_GPIO_Functionality
 {
-    eUPD350_ALERT_FUNC,            //UPD350 Alert Functionality
-    eI2C_DC_DC_ALERT_FUNC,         //DC DC Alert Functionality
-    eUPD350_RESET_FUNC,            //UPD350 Reset Functionality 
-    eSPI_CHIP_SELECT_FUNC,         //SPI Chip select Functionality
-    eVBUS_DIS_FUNC,                //VBUS Discharge Functionality
-    eDC_DC_EN_FUNC,                //DC DC Enable Functionality
-    eORIENTATION_FUNC,             //Orientation Functionality
-    eSNK_CAPS_MISMATCH_FUNC,       //Sink Capability Mismatch Functionality
-    eSNK_1_5A_IND_FUNC,            //1.5A Indication Functionality
-    eSNK_3A_IND_FUNC               //3A Indication Functionality
+    eUPD350_ALERT_FUNC,            
+    eI2C_DC_DC_ALERT_FUNC,         
+    eUPD350_RESET_FUNC,             
+    eSPI_CHIP_SELECT_FUNC,         
+    eVBUS_DIS_FUNC,                
+    eDC_DC_EN_FUNC,                
+    eORIENTATION_FUNC,             
+    eSNK_CAPS_MISMATCH_FUNC,       
+    eSNK_1_5A_IND_FUNC,            
+    eSNK_3A_IND_FUNC               
 } eMCHP_PSF_GPIO_FUNCTIONALITY;
 
 /**************************************************************************************************
@@ -1513,70 +1612,72 @@ Remarks:
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV        0xFFFFFFFF
 
-/*******************************************************************************
-Function:
-    MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA(u8PortNum)
-Summary:
+/*************************************************************************************************
+  Function:
+          MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA(u8PortNum)
+  Summary:
     Gets the output current.
-Description:
-    This hook is called when PSF needs to know about the present current
-    by external DC_DC controller. The function should be defined with return type
-    UINT32 and UINT8 type as input parameter. If the DC_DC controller doesnot 
-    have feature to get output current, return 0xFFFFFFFF to denote the feature
-    is not supported. 
-Conditions:
-    Output voltage shall be returned in terms of mA.
-Return:
+  Description:
+    This hook is called when PSF needs to know about the current drawn from
+    external DC_DC controller. The function should be defined with return
+    type UINT32 and UINT8 type as input parameter. If the DC_DC controller
+    doesnot have feature to get output current, return 0xFFFFFFFF to denote
+    the feature is not supported.
+  Conditions:
+    \Output Current shall be returned in terms of mA.
+  Return:
     None.
-Example:
+  Example:
     <code>
-        #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mV(u8PortNum)   DCDC_GetOutCurrent(u8PortNum)
+        \#define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mV(u8PortNum)   DCDC_GetOutCurrent(u8PortNum)
         UINT32 DCDC_GetOutCurrent(UINT8 u8PortNum)
         {
             // return Output current driven by the external DC_DC controller
             // in terms of mA.
         }
     </code>
-Remarks:
-    User definition of this Hook function is mandatory when INCLUDE_PD_SOURCE_PPS is
-    defined as '1'.                          
-*******************************************************************************/  
+  Remarks:
+    User definition of this Hook function is mandatory when
+    INCLUDE_PD_SOURCE_PPS is defined as '1'.                                                      
+  *************************************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
 
-/*******************************************************************************
-Function:
-    MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
-Summary:
+/**************************************************************************
+  Function:
+        MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
+  Summary:
     Hook for Source policy engine state machine entry into idle sub state
-Description:
-    This hook is called when policy engine source state machine enters idle sub state.  
-    The entry into the idle sub state could be either due to a wait time or for an 
-    event from UPS350.
-Conditions:
+  Description:
+    This hook is called when policy engine source state machine enters idle
+    sub state. The entry into the idle sub state could be either due to a
+    wait time or for an event from UPD350.
+  Conditions:
     None
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Remarks:
-    This hook is not mandatory and would be useful in RTOS environment                          
-*******************************************************************************/  
+  Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to
+                 (CONFIG_PD_PORT_COUNT\-1).
+  Remarks:
+    This hook is not mandatory and would be useful in RTOS environment     
+  **************************************************************************/  
 #define MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
 
-/*******************************************************************************
-Function:
-    MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
-Summary:
+/**************************************************************************
+  Function:
+        MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
+  Summary:
     Hook for Type C state machine entry into idle sub state
-Description:
-    This hook is called when Type C state machine enters idle sub state. The 
-    entry into the idle sub state could be either due to a wait time or for an 
-    event from UPS350.
-Conditions:
+  Description:
+    This hook is called when Type C state machine enters idle sub state.
+    The entry into the idle sub state could be either due to a wait time or
+    for an event from UPD350.
+  Conditions:
     None
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Remarks:
-    This hook is not mandatory and would be useful in RTOS environment                          
-*******************************************************************************/  
+  Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to
+                 (CONFIG_PD_PORT_COUNT\-1).
+  Remarks:
+    This hook is not mandatory and would be useful in RTOS environment     
+  **************************************************************************/  
 #define MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
 
 /*******************************************************************************
