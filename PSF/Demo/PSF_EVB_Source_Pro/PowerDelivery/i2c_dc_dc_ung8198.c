@@ -1,5 +1,5 @@
 /*******************************************************************************
-  MPQ I2C DC DC Control File
+  I2C DC DC Control File
 
   Company:
     Microchip Technology Inc.

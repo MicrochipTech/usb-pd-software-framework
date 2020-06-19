@@ -2520,7 +2520,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 	
 	/* **************************Power Fault threshold configuration**************************/
 	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-    UINT16 au16VBUSThrVal[2] = {0}; 
+    UINT16 au16VBUSThrVal[BYTE_LEN_2] = {0}; 
     
 	if ((u8PowerFaultThrConfig) && (TYPEC_VBUS_0V != u16Voltage))
 	{
