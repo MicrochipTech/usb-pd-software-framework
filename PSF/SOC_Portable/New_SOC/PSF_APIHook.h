@@ -1504,70 +1504,72 @@ Remarks:
 *******************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV        0xFFFFFFFF
 
-/*******************************************************************************
-Function:
-    MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA(u8PortNum)
-Summary:
+/*************************************************************************************************
+  Function:
+          MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA(u8PortNum)
+  Summary:
     Gets the output current.
-Description:
-    This hook is called when PSF needs to know about the present current
-    by external DC_DC controller. The function should be defined with return type
-    UINT32 and UINT8 type as input parameter. If the DC_DC controller doesnot 
-    have feature to get output current, return 0xFFFFFFFF to denote the feature
-    is not supported. 
-Conditions:
-    Output voltage shall be returned in terms of mA.
-Return:
+  Description:
+    This hook is called when PSF needs to know about the current drawn from
+    external DC_DC controller. The function should be defined with return
+    type UINT32 and UINT8 type as input parameter. If the DC_DC controller
+    doesnot have feature to get output current, return 0xFFFFFFFF to denote
+    the feature is not supported.
+  Conditions:
+    \Output Current shall be returned in terms of mA.
+  Return:
     None.
-Example:
+  Example:
     <code>
-        #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mV(u8PortNum)   DCDC_GetOutCurrent(u8PortNum)
+        \#define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mV(u8PortNum)   DCDC_GetOutCurrent(u8PortNum)
         UINT32 DCDC_GetOutCurrent(UINT8 u8PortNum)
         {
             // return Output current driven by the external DC_DC controller
             // in terms of mA.
         }
     </code>
-Remarks:
-    User definition of this Hook function is mandatory when INCLUDE_PD_SOURCE_PPS is
-    defined as '1'.                          
-*******************************************************************************/  
+  Remarks:
+    User definition of this Hook function is mandatory when
+    INCLUDE_PD_SOURCE_PPS is defined as '1'.                                                      
+  *************************************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
 
-/*******************************************************************************
-Function:
-    MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
-Summary:
+/**************************************************************************
+  Function:
+        MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
+  Summary:
     Hook for Source policy engine state machine entry into idle sub state
-Description:
-    This hook is called when policy engine source state machine enters idle sub state.  
-    The entry into the idle sub state could be either due to a wait time or for an 
-    event from UPS350.
-Conditions:
+  Description:
+    This hook is called when policy engine source state machine enters idle
+    sub state. The entry into the idle sub state could be either due to a
+    wait time or for an event from UPD350.
+  Conditions:
     None
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Remarks:
-    This hook is not mandatory and would be useful in RTOS environment                          
-*******************************************************************************/  
+  Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to
+                 (CONFIG_PD_PORT_COUNT\-1).
+  Remarks:
+    This hook is not mandatory and would be useful in RTOS environment     
+  **************************************************************************/  
 #define MCHP_PSF_HOOK_PE_SRC_IDLE_SS(u8PortNum)
 
-/*******************************************************************************
-Function:
-    MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
-Summary:
+/**************************************************************************
+  Function:
+        MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
+  Summary:
     Hook for Type C state machine entry into idle sub state
-Description:
-    This hook is called when Type C state machine enters idle sub state. The 
-    entry into the idle sub state could be either due to a wait time or for an 
-    event from UPS350.
-Conditions:
+  Description:
+    This hook is called when Type C state machine enters idle sub state.
+    The entry into the idle sub state could be either due to a wait time or
+    for an event from UPD350.
+  Conditions:
     None
-Input:
-    u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Remarks:
-    This hook is not mandatory and would be useful in RTOS environment                          
-*******************************************************************************/  
+  Input:
+    u8PortNum -  Port number of the device. It takes value between 0 to
+                 (CONFIG_PD_PORT_COUNT\-1).
+  Remarks:
+    This hook is not mandatory and would be useful in RTOS environment     
+  **************************************************************************/  
 #define MCHP_PSF_HOOK_TYPEC_IDLE_SS(u8PortNum)
 
 /*******************************************************************************
