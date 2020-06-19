@@ -205,7 +205,7 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 
 void SAMD20_Drive_DAC_I(UINT16 u16DACData)
 {
-    /*SAMD20 intenally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
+    /*SAMD20 internally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
     /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
     /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
 
