@@ -1339,7 +1339,7 @@ Remarks:
     A DAC may initialized under this hook if PSF is configured as SINK.                        
 *****************************************************************************/
 
-#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  App_PortPowerInit(u8PortNum);
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  App_PortPowerInit(u8PortNum)
                                                    
 /****************************************************************************
 Function:

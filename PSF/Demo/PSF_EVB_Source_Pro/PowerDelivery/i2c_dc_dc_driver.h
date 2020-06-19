@@ -50,7 +50,7 @@
 #include <generic_defs.h>
 #include "i2c_dc_dc_ung8198.h"
 
-/* SERCOM instace for I2C driver */
+/* SERCOM instance for I2C driver */
 #define SAMD20_I2C_INSTANCE     3
 
 /****************************************************************************
@@ -103,7 +103,7 @@ UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8Wri
         Function for I2C DC DC Controller Write and read drivers.  
     Description:
         This function writes the given length of data to the given address and 
- *      then reads the given length of data
+        then reads the given length of data
     Conditions:
         None
     Input:

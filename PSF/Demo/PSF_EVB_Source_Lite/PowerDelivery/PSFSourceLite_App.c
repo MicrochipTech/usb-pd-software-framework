@@ -222,10 +222,12 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             
             UINT16 u16Delay;
             /* Delay of 1.25ms for the DC/DC module to stabilize after Initialization */
-                for(u16Delay = 0; u16Delay < 10000; u16Delay++)
+            for(u16Delay = 0; u16Delay < 10000; u16Delay++)
             {
                 __NOP();
-            }   
+            }  
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_DC_DC_STATUS;            
             break; 
         }
         case eORIENTATION_FUNC:

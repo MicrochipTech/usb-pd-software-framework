@@ -272,6 +272,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 __NOP();
             }   
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_DC_DC_STATUS;
             break; 
         }
         case eORIENTATION_FUNC:
