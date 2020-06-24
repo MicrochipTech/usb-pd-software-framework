@@ -81,7 +81,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 {
 
     /* Receive Data Buffer */
-    UINT8 u8aDataBuf[260] = {SET_TO_ZERO};
+    UINT8 u8aDataBuf[PRL_MAX_EXTN_MSG_LEN_IN_BYTES] = {SET_TO_ZERO};
     /*Received message type*/
     UINT8 u8SOPType = PRL_SOP_TYPE;
     /* Received Message Header */
@@ -151,15 +151,19 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
     if(DPM_GET_CURRENT_POWER_ROLE (u8PortNum) == PD_ROLE_SOURCE)
     {
-        #if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
+        #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
         PE_SrcRunStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
         #endif
     }
     else if(DPM_GET_CURRENT_POWER_ROLE (u8PortNum) == PD_ROLE_SINK)
     {
-        #if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
+        #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
         PE_SnkRunStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
         #endif
+    }
+    else
+    {
+        /* Do Nothing */
     }
 
     PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
@@ -187,7 +191,14 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
         else if (PE_EXT_STATUS == u8MsgType)
         {
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-            u8RetVal = PE_SUPPORTED_EXTDMSG;
+            if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+            {
+                u8RetVal = PE_SUPPORTED_EXTDMSG;
+            }
+            else
+            {
+                u8RetVal = PE_UNSUPPORTED_MSG; 
+            }
 #else 
             u8RetVal = PE_UNSUPPORTED_MSG; 
 #endif 
@@ -224,14 +235,22 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
+            else
+            {
+                /* Do Nothing */
+            }
             
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)            
-            /* Get_Status and Get_PPS_Status messages are supported for Source.*/
+            /* Get_Status and Get_PPS_Status messages are supported for Source
+               and if any APDOs are advertised to port partner.*/
             if (DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE)
             {
                 if ((PE_CTRL_GET_STATUS == u8MsgType) || (PE_CTRL_GET_PPS_STATUS == u8MsgType))
                 {
-                    u8RetVal = PE_SUPPORTED_MSG;
+                    if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+                    {
+                        u8RetVal = PE_SUPPORTED_MSG;
+                    }
                 }
             }
 #endif 
@@ -240,12 +259,8 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
         {
             /*Message type greater than Sink_Capabilities except Vendor_Defined 
               and Alert(Source only) are not supported
-              Refer Table 6-6*/
-            if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED) 
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
-                    && (u8MsgType != PE_DATA_ALERT)
-#endif 
-                )
+              Refer Table 6-6 Data Message Types of PD Specification */
+            if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
@@ -267,6 +282,21 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 /* Do Nothing */
             }
+            
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)            
+            /* Get_Status and Get_PPS_Status messages are supported for Source
+               and if any APDOs are advertised to port partner.*/            
+            if (DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE)
+            {
+                if (PE_DATA_ALERT == u8MsgType)
+                {
+                    if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+                    {
+                        u8RetVal = PE_SUPPORTED_MSG;
+                    }
+                }
+            }
+#endif 
         }
     }
 
@@ -357,7 +387,7 @@ UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header)
     }
     else
     {
-
+        /* Do Nothing */
     }
 
     return u8RetVal;
@@ -559,6 +589,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_KillPolicyEngineTimer (u8PortNum);
                         PE_HandleRcvdMsgAndTimeoutEvents( u8PortNum, ePE_SRC_VDM_IDENTITY_ACKED,(ePolicySubState)0);
                     }
+                    else
+                    {
+                        /* Do Nothing */
+                    }
 
                     break;
                 }
@@ -689,7 +723,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
         {
             switch (PRL_GET_MESSAGE_TYPE (u32Header))
             {
-                #if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
+                #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
                 case PE_CTRL_GOTO_MIN:
                 {
                     /*GotoMin message is received for Sink Data request*/
@@ -703,14 +737,14 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA  = \
-                                gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA;
+                                gasCfgStatusData.sPerPortData[u8PortNum].u16SnkMinOperatingCurInmA;
                     }
                     else if (ePE_SNK_READY_IDLE_SS == gasPolicy_Engine[u8PortNum].ePESubState)
                     {
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA  = \
-                                gasCfgStatusData.sPerPortData[u8PortNum].u16MinimumOperatingCurInmA;
+                                gasCfgStatusData.sPerPortData[u8PortNum].u16SnkMinOperatingCurInmA;
                     
                     }
                     else
@@ -796,6 +830,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                                             DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS;
                                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_READY;
                                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
+                            }
+                            else
+                            {
+                                /* Do Nothing */
                             }
                         }
                         /*Go to "ePE_SNK_WAIT_FOR_CAPABILITIES" if Wait/Reject message is
@@ -1415,7 +1453,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 /*Wait here until the PS_RDY message is sent*/
                 case ePE_VCS_SEND_PS_RDY_IDLE_SS:
                 {
-                     break;
+                    break;
                 }
                 default:
                 {
@@ -1681,9 +1719,13 @@ void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState)
     {
          gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_HARD_RESET;
     }
+    else
+    {
+        /* Do Nothing */
+    }
    
     /*Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
-    Timeout has occured*/
+    Timeout has occurred*/
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 
 }
@@ -1727,7 +1769,8 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum)
 /******************************************************************************/
 UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
 {
-    UINT8 u8Return = FALSE;    
+    UINT8 u8Return = FALSE;  
+    
     if ((DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) &&
             (gasPolicy_Engine[u8PortNum].ePEState == ePE_SRC_READY) &&
           (gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_READY_END_AMS_SS))  
@@ -1739,6 +1782,11 @@ UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
     {
         u8Return = TRUE;
     }
+    else
+    {
+        /* Do Nothing */
+    }
+    
     return u8Return;
 }
 /*******************************************************************************/

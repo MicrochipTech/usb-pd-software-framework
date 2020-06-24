@@ -72,8 +72,8 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
 
     /*Assigning maximum operating current and minimum operating current to 
      * 3000mA and 1000mA respectively*/
-    pasCfgStatusData->sPerPortData[u8PortNum].u16MaximumOperatingCurInmA = CFG_PORT_SINK_MAX_OPERATING_CURRENT_InmA;
-    pasCfgStatusData->sPerPortData[u8PortNum].u16MinimumOperatingCurInmA = CFG_PORT_SINK_MIN_OPERATING_CURRENT_InmA;
+    pasCfgStatusData->sPerPortData[u8PortNum].u16SnkMaxOperatingCurInmA = CFG_PORT_SINK_MAX_OPERATING_CURRENT_InmA;
+    pasCfgStatusData->sPerPortData[u8PortNum].u16SnkMinOperatingCurInmA = CFG_PORT_SINK_MIN_OPERATING_CURRENT_InmA;
         
     pasCfgStatusData->sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
     pasCfgStatusData->sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;
@@ -86,8 +86,6 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
 
     pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_PIO_NO;
     pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_MODE;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_VBUS_DIS = (UINT8)CFG_PORT_UPD_VBUS_DIS_PIO_NO;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8mode_VBUS_DIS = (UINT8)CFG_PORT_UPD_VBUS_DIS_PIO_MODE;
     pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_EN_SINK  = (UINT8)CFG_PORT_UPD_EN_SNK;
     pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_EN_SINK  = (UINT8)CFG_PORT_UPD_EN_SNK_PIO_MODE;
     

@@ -156,6 +156,10 @@ void  PRL_Init (UINT8 u8PortNum)
 	{
 		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SNK_VALUE;
 	}
+    else
+    {
+        /* Do Nothing */
+    }
 	
 	UPD_RegWriteWord (u8PortNum, PRL_BB_CC_RX_DAC_CTL, 
 					  (PRL_CC_RX_DAC_CTL_RX_DAC_ENABLE | u16RxDACValue));
@@ -1411,6 +1415,10 @@ void PRL_TCHChunkSMStateChange_TCHCB (UINT8 u8PortNum, UINT8 u8TimerID, UINT8 Tx
 											(Transmission Error) */
 		PRL_TxOriginalCBfromCH (u8PortNum, gasPRL[u8PortNum].u8TxStateISR);
 	}
+    else
+    {
+        /* Do Nothing */
+    }
 }
 
 
@@ -1444,6 +1452,10 @@ void PRL_RCHChunkSMStateChange_RCHCB (UINT8 u8PortNum, UINT8 u8TimerID, UINT8 Tx
 		gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
 		
 	}
+    else
+    {
+        /* Do Nothing */
+    }
 }
 
 

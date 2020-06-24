@@ -47,7 +47,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*TYPEC_CC_HW_CTL_LOW is the lower byte of 2 byte register TYPEC_CC_HW_CTL*/
 #define TYPEC_CC_HW_CTL_LOW   	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x00
-/*TYPEC_CC_HW_CTL_LOW is the higher byte of 2 byte register TYPEC_CC_HW_CTL */
+/*TYPEC_CC_HW_CTL_HIGH is the higher byte of 2 byte register TYPEC_CC_HW_CTL */
 #define TYPEC_CC_HW_CTL_HIGH  	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x01
 
 #define TYPEC_CC_INT_STS      	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x03

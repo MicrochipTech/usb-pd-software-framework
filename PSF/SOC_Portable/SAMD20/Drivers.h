@@ -51,20 +51,15 @@
         
 #include "PSF_Config.h"
 
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC) 
-#include "Mpq_dc_dc_control.h"
-#endif
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
 #include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 #include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
+#include <string.h>
 #endif 
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-#include "../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h"
-#endif
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
-#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
+#if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
 #include "../../firmware/src/config/default/peripheral/dac/plib_dac.h"
 #endif
 // *****************************************************************************
@@ -121,21 +116,6 @@
 #define SAMD20_TIMER_INSTANCE   0
 #define SAMD20_SPI_INSTANCE     0
 
-#define SAMD20_PIN_UNUSED       0xFF
-
-#define SAMD20_PORT0_EIC_PIN    EIC_PIN_14
-#if(TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP)
-#define SAMD20_PORT1_EIC_PIN    EIC_PIN_15
-#elif (TRUE == INCLUDE_PD_DRP)
-#define SAMD20_PORT1_EIC_PIN    SAMD20_PIN_UNUSED 
-#endif
-
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-#define SAMD20_DCDC_ALERT0      PORT_PIN_PA02
-#define SAMD20_DCDC_ALERT1      PORT_PIN_PA03
-#define SAMD20_I2C_INSTANCE     3
-#endif //#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-
 #define SAMD20_UART_INSTANCE  1
 
 // *****************************************************************************
@@ -187,28 +167,6 @@ UINT8 SAMD20_SPIInitialisation(void);
 
 /****************************************************************************
     Function:
-        void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
-    Summary:
-        Wrapper function to enable or disable the SAMD20 HW interface communication with Port's UPD350.  
-    Description:
-        This API serves as a wrapper between PSF stack defined UPD350 communication enable disable 
-        function MCHP_PSF_HOOK_UPD_COMM_ENABLE and Harmony generated code to drive Chip select to 
-        enable or disable SPI communication to specific port's UPD350.
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
-        u8EnableComm- Enables or disables the SPI communication for the port based on this value 
-                        TRUE and FALSE respectively.
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm);
-
-/****************************************************************************
-    Function:
         UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength,\
                 UINT8 *pu8ReadBuffer, UINT8 u8Readlength)
     Summary:
@@ -255,76 +213,24 @@ UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writ
 **************************************************************************************************/
 UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength);
 
-/*****************************************************************************/
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-UINT8 SAMD20_I2CDCDCInitialisation (void);
-UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
-UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen);
-UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
-                                              UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
-bool SAMD20_I2CDCDCIsBusyDriver(void);
-void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum);
-
-#endif
 /****************************************************************************
     Function:
-        void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
+        SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
     Summary:
-        Wrapper function to initialize UPD350 Alert configured GPIOs  
+        UPD350 Alert Callback wrapper function.  
     Description:
-        This API serves as a wrapper between PSF stack defined Alert initialization function 
-        MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT and Harmony generated generated code to initialize the GPIO for
-        UPD350 Alert functionality port specifically.
+        This API serves as a wrapper for PSF's function MchpPSF_UPDIrqHandler to 
+        register as callback for SAMD20's function EIC_CallbackRegister.
     Conditions:
         None
     Input:
         u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
     Return:
-        None
+        None.
     Remarks:
         None
 **************************************************************************************************/
-void SAMD20_UPD350AlertInit(UINT8 u8PortNum);
-
-/****************************************************************************
-    Function:
-        void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum)
-    Summary:
-        Wrapper function Initialize the GPIO mapped as UPD350 
-    Description:
-        This API serves as a wrapper between PSF stack defined UPD350 Reset initialization function
-        MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT and Harmony generated code to initialize the GPIO for
-        UPD350 Reset functionality
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum);
-
-/****************************************************************************
-    Function:
-        void SAMD20_ResetUPD350(UINT8 u8PortNum)
-    Summary:
-        Wrapper function reset the UPD350 through GPIO configured 
-    Description:
-        This API serves as a wrapper between PSF stack defined UPD350 Reset function
-        MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO and Harmony generated code to drive the UPD350 Reset 
-        configured GPIO port specifically.
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number. Value passed will be less than CONFIG_PD_PORT_COUNT
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void SAMD20_ResetUPD350(UINT8 u8PortNum);
+void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum);
 
 /****************************************************************************
     Function:
@@ -404,28 +310,7 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
 **************************************************************************/
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
 
-#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
-/**************************************************************************
-    Function:
-        void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current)
-    Summary:
-        Function to configure sink Hardware
-    Description:
-        It is a wrapper for PSF stack's MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW function
-    Conditions:
-        None.
-    Input:
-        u8PortNum -  PortNumber; Value passed will be less than CONFIG_PD_PORT_COUNT
-        u16VBUSVoltage -  Voltage value in mV to which sink circuitry has to be configured
-                           if required
-        u16Current -   Current value in mA for which sink hardware circuitry has to be
-                        configured.
-    Return:
-        None.
-    Remarks:
-        None                    
-**************************************************************************/
-void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current);
+#if(TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
 
 /**************************************************************************
     Function:
@@ -448,9 +333,7 @@ void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u
 **************************************************************************/
 void SAMD20_Drive_DAC_I(UINT16 u16DACData);
 
-#endif /*INCLUDE_PD_SINK || INCLUDE_PD_DRP*/
-
-
+#endif /*INCLUDE_PD_SINK*/
 
 /*Debug UART APIs*/
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)

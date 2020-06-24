@@ -31,7 +31,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 #include <psf_stdinc.h>
 
-#if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
+#if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
 /********************************************************************/
 /****************Source Policy Engine State Machine******************/
 /********************************************************************/
@@ -83,7 +83,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)    
     /* PS_RDY Timer value to be used in case of PPS contract */
-    UINT32 u32PpsSrcTransTmr = SET_TO_ZERO; 
+    UINT32 u32PpsSrcTransTmrMs = SET_TO_ZERO; 
     
     /* Used to get Alert Data Object and PPS_Status Data Block from DPM */
     UINT32 u32DataBlock = SET_TO_ZERO; 
@@ -402,18 +402,18 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                               (PE_SRC_READY_TIMEOUT_MS),
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
-                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;                        
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;  
                     }
 
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
                     else if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         /* Get the PPS timer value that needs to be used for sending PS_RDY */
-                        u32PpsSrcTransTmr = DPM_ReturnPPSSrcTransTmrVal(u8PortNum); 
+                        u32PpsSrcTransTmrMs = DPM_ReturnPPSSrcTransTmrVal(u8PortNum); 
                         
                         /* Start tPpsSrcTransSmall/tPpsSrcTransLarge timer */
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                              u32PpsSrcTransTmr,
+                                                              u32PpsSrcTransTmrMs,
                                                               PE_SubStateChange_TimerCB, u8PortNum,  
                                                               (UINT8)ePE_SRC_TRANSITION_SUPPLY_EXIT_SS);                                                       
                         
@@ -465,7 +465,6 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                 case ePE_SRC_TRANSITION_SUPPLY_IDLE_SS:
                 {
-                    
                     break;  
                 }
                 
@@ -561,7 +560,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                         DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS; 
   
                     /* Reset New PDO Parameters if renegotiation was requested */
-                    if (DPM_ENABLE_NEW_PDO == DPM_GET_NEW_PDO_STATUS(u8PortNum)) 
+                    if (TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum)) 
                     {                                                
                         DPM_ResetNewPDOParameters(u8PortNum);
                     }                    
@@ -1097,7 +1096,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 }
                 
                 case ePE_SRC_GET_SINK_CAP_IDLE_SS: 
-                {                        
+                { 
                     break; 
                 }   
                 

@@ -8,10 +8,10 @@
    pt_mngr.c
 
  Description:
-   This file contains the function for Power Throttling State machine. 
+   This file contains the functions for Power Throttling functionality. 
 *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -36,15 +36,23 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 void PT_Init(UINT8 u8PortNum)
 {
-    gasPTPortParam[u8PortNum].u8PrevPTBank = PD_THROTTLE_BANK_A; 
+    if (TRUE == DPM_IS_PT_ENABLED)
+    {
+        gasPTPortParam[u8PortNum].u8PrevPTBank = PD_THROTTLE_BANK_A; 
     
-    gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_NOT_INITIATED; 
+        gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_NOT_INITIATED; 
+    }
 }
 
 void PT_HandleBankSwitch(UINT8 u8PortNum)
 {
-    UINT8 u8CurrPTBank = gasCfgStatusData.u8PwrThrottleCfg; 
+    UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK; 
     UINT8 u8PrevPTBank = gasPTPortParam[u8PortNum].u8PrevPTBank; 
+    
+    if (FALSE == DPM_IS_PT_ENABLED)
+    {
+        return; 
+    }
     
     if (u8CurrPTBank != u8PrevPTBank)
     {
@@ -102,6 +110,7 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
             
             case PD_THROTTLE_SHUTDOWN_MODE:
             {
+                /* Disable the port so that no further Type-C attach can occur */
                 DPM_EnablePort(u8PortNum, FALSE); 
                 break; 
             }
@@ -140,7 +149,7 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
     
     /* Enable New PDO select so that New Source capabilities would be 
        sent from u32aNewPDO[7] array */
-    DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO); 
+    DPM_ENABLE_NEW_PDO(u8PortNum);
     
     DPM_UpdatePDO(u8PortNum, u16PowerIn250mW);
 }

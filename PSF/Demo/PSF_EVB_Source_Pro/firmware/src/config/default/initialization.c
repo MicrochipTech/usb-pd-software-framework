@@ -122,7 +122,7 @@ void SYS_Initialize ( void* data )
     CLOCK_Initialize();
     
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
-    SAMD20_I2CDCDCInitialisation();
+    SERCOM3_I2C_Initialize();
 #endif 
 
 	//SPI initialization is done as part of MchpPSF_Init() by PSF stack
@@ -131,11 +131,9 @@ void SYS_Initialize ( void* data )
     //UART initialization is done as part of MchpPSF_Init() by PSF stack
     //SERCOM1_USART_Initialize();
 
-  // I2C Initialization will be done as part of MchpPSF_Init() by PSF stack 
-  //SERCOM3_I2C_Initialize();
     
     EIC_Initialize();
-	// SPI initialization is done as part of MchpPSF_Init() by PSF stack
+	// Timer initialization is done as part of MchpPSF_Init() by PSF stack
     //TC0_TimerInitialize();
 	
 

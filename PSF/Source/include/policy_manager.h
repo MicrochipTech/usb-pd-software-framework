@@ -234,6 +234,9 @@ Source/Sink Power delivery objects*/
 #define DPM_PORT_IO_30_IND_STATUS                    BIT(8)
 #define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(9)
 
+/* *************************Feature Select parameters *********************** */
+#define DPM_PORT_PB_ENABLE                           BIT(0)
+
 /*********************u8SinkConfigSel defines******************/
 #define DPM_SINK_CONFIG_SINK_MODE_SEL_MASK  (BIT(0) | BIT(1))
 #define DPM_SINK_MODE_A      0x00
@@ -266,29 +269,24 @@ Source/Sink Power delivery objects*/
 
  
 /****************** New PDO Enable/Disable Defines ************/
-#define DPM_ENABLE_NEW_PDO                    1
-#define DPM_DISABLE_NEW_PDO                   0
+#define DPM_ENABLE_NEW_PDO(u8PortNum)     (gasDPM[u8PortNum].u8DPM_ConfigData |= DPM_NEW_PDO_ENABLE_MASK)
+#define DPM_DISABLE_NEW_PDO(u8PortNum)    (gasDPM[u8PortNum].u8DPM_ConfigData &= ~(DPM_NEW_PDO_ENABLE_MASK))
+
 /****************** Power Balancing Defines ***********/
 /* PB Enable for System */
-#define DPM_PB_ENABLE                         0x10
-
-/* PB Enable for the port */
-#define DPM_PB_PORT_ENABLE                    0x01
+#define DPM_PB_ENABLE                   0x10
 
 /* Macro to know if PB is enabled for the system and for the port */
-#define DPM_IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE) && \
-                             (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)) \
-                                    ? TRUE : FALSE)   
+#define DPM_IS_PB_ENABLED(u8PortNum)   ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE) \
+                                            ? TRUE : FALSE)   
 
-/* Macro to know if PPS is enabled for the port */
-#define DPM_IS_PPS_ENABLED(u8PortNum)  ((gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSCfgData & \
-                                        DPM_PPS_ENABLE) ? TRUE : FALSE)
+/* PT Enable for the system */
+#define DPM_PT_ENABLE                   0x01 
+
+/* Macro to know if PT is enabled for the system */
+#define DPM_IS_PT_ENABLED             ((gasCfgStatusData.u8PwrThrottleCfg & DPM_PT_ENABLE) ? TRUE : FALSE)  
 
 /*********************PPS APDO Defines ******************/
-#define DPM_PPS_ENABLE                           0x01 
-#define DPM_MAX_APDO_COUNT                       3 
-#define DPM_PPS_APDO_EN_DIS_MASK                 0x02 
-
 #define DPM_APDO_MAX_CURRENT_UNIT                50 
 #define DPM_APDO_MIN_VOLTAGE_UNIT                100
 #define DPM_APDO_MAX_VOLTAGE_UNIT                100
@@ -339,8 +337,10 @@ Source/Sink Power delivery objects*/
 #define DPM_STORE_PARTNER_STATUS                     1
 #define DPM_CLEAR_PARTNER_STATUS                     0 
 
-/* Macro to get current PT Bank */ 
-#define DPM_GET_CURRENT_PT_BANK             (gasCfgStatusData.u8PwrThrottleCfg)
+/* Macro to get current PT Bank */
+#define DPM_PT_BANK_MASK                    0x06 
+#define DPM_PT_BANK_POS                     1
+#define DPM_GET_CURRENT_PT_BANK             ((gasCfgStatusData.u8PwrThrottleCfg & DPM_PT_BANK_MASK) >> DPM_PT_BANK_POS)
 
 #define DPM_FIXED_PDO_CURRENT_MASK              0x000003FF 
 
@@ -413,10 +413,10 @@ Source/Sink Power delivery objects*/
 /*Structure of Device Policy Manager*/
 typedef struct MCHP_PSF_STRUCT_PACKED_START
 {
-  UINT32  u32NegotiatedPDO;             //NegotiatedPDO
-  UINT16 u16MaxCurrSupportedin10mA;     //Maximum current supported by E-Cable in 10mA
-  UINT16 u16SinkOperatingCurrInmA;      //Operating current
-  UINT16 u16PrevVBUSVoltageInmV;
+  UINT32  u32NegotiatedPDO;     //NegotiatedPDO
+  UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
+  UINT16 u16SinkOperatingCurrInmA;   //Operating current
+  UINT16 u16PrevVBUSVoltageInmV;    // Previous VBUS Voltage in terms of mV
   UINT16 u16DPM_Status;                 //Bit 1:0 - Status of Port Role <p />
                                         //Bit 3:2 - Status of Data Role <p />
                                         //Bit 5:4 - Status of PD Spec Revision <p />
@@ -426,13 +426,12 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         //      01 - Variable
                                         //      10 - Battery
                                         //      11 - Programmable
-  UINT8 u8DPMInternalEvents;            //BIT(0) - DPM_INT_EVT_INFORM_DETACH
-                                        // BIT(1) - DPM_INT_EVT_INITIATE_ALERT
-                                        // BIT(2) -  DPM_INT_EVT_INITIATE_GET_STATUS
-  UINT8 u8DPM_ConfigData;               //Bit 1:0 - Default Port Role <p />
-                                        //Bit 3:2 - Default Data Role <p />
-                                        //Bit 5:4 - Default PD Spec Revision <p />
-                                        //Bit 6 - New PDO Enable <p /> 
+  UINT8 u8DPMInternalEvents; // BIT(0) - DPM_INT_EVT_INITIATE_ALERT
+                             // BIT(1) - DPM_INT_EVT_INITIATE_GET_STATUS
+  UINT8 u8DPM_ConfigData;   //Bit 0 - Default Port Role <p />
+                            //Bit 1 - Default Data Role <p />
+                            //Bit 3:2 - Default PD Spec Revision <p />
+                            //Bit 4 - New PDO Enable <p /> 
 
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
@@ -441,8 +440,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
       UINT8 u8VCONNPowerGoodTmrID;    //VConn PowerGood Timer ID
 	  UINT8 u8VBUSPowerFaultCount;      //VBUS Power fault count
-      UINT8 u8VCONNPowerFaultCount;     //VConn Power fault count     
-      UINT8 u8VCONNGoodtoSupply;        //Vconn good to supply
+      UINT8 u8VCONNPowerFaultCount;     //VCONN Power fault count     
+      UINT8 u8VCONNGoodtoSupply;        //VCONN good to supply
 	  UINT8 u8PowerFaultFlags;        //Flags required for power fault handling
                                       //BIT 0 - Hard Reset complete wait flag
                                       //BIT 1 - Type-C Error Recovery Flag
@@ -483,9 +482,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                                             |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
 
 /***************************Internal Events Defines**********************************/
-#define DPM_INT_EVT_INFORM_DETACH           BIT(0)
-#define DPM_INT_EVT_INITIATE_ALERT          BIT(1)
-#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(2)
+#define DPM_INT_EVT_INITIATE_ALERT          BIT(0)
+#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(1)
 
 /**********************************************************************************/
 
@@ -1245,27 +1243,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 
 /**************************************************************************************************
     Function:
-        void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
-    Summary:
-        Includes APDOs in Source capabilities buffer.  
-    Description:
-        This API can be called to append the APDOs in the Source capabilities buffer. 
-        This API will ensure that the total Data Object count does not exceed 7.  
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        *u8pSrcPDOCnt - Number of PDOs included in Source caps buffer
-        *u32pSrcCap - Pointer to the array of Source caps buffer 
-    Return:
-        None. 
-    Remarks:
-        None.
-**************************************************************************************************/
-void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
-
-/**************************************************************************************************
-    Function:
         UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
     Summary:
         Determines if PS_RDY needs to be sent within tPpsSrcTransLarge 
@@ -1312,30 +1289,6 @@ UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
 **************************************************************************************************/
 
 void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType); 
-
-/**************************************************************************************************
-    Function:
-        void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable); 
-    Summary:
-        Enables DPM to send Source capabilities from the u32aNewPDO Array.  
-    Description:
-        By default, Source capabilities would be taken from u32aSourcePDO 
-        array. If there is a client request for dynamic renegotiation, then Source
-        capabilities has to be taken from u32aNewPDO Array. Any application can 
-        update the u32aNewPDO Array with the source caps message and call this API
-        for the New PDOs to be advertised in the PD Bus. 
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u8EnableDisable - TRUE - New PDOs are advertised. 
-                          FALSE - Default Source PDOs are advertised. 
-    Return:
-        None. 
-    Remarks:
-        None.
-**************************************************************************************************/
-void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable); 
 
 /**************************************************************************************************
     Function:
@@ -1599,6 +1552,46 @@ UINT8 DPM_ReturnTemperatureStatus (void);
         None. 
 **************************************************************************************************/
 void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable); 
+
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum);  
+    Summary:
+        API to know if at least one APDO is advertised.
+    Description:
+        This API can be called to know if at least one of the PDOs advertised
+        in source capabilities is an APDO. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8Enable - TRUE - APDO is advertised
+                   FALSE - No APDO is advertised
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_OnTypeCDetach(UINT8 u8PortNum); 
+    Summary:
+        API to clear the variables that are applicable during a type c detach event. 
+    Description:
+        This API clears all the applicable variables whose data is no more valid
+        once a Type C Detach event has occurred. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_OnTypeCDetach(UINT8 u8PortNum);
 
 #endif /*_POLICY_MANAGER_H_*/
 
