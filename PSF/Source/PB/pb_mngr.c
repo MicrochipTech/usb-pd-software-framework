@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #if (TRUE == INCLUDE_POWER_BALANCING)
 
 
-UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
+UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
 {
     UINT32 u32SourcePDO            = SET_TO_ZERO; 
     UINT32 u32SinkRDO              = SET_TO_ZERO;
@@ -57,7 +57,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     
             /* Enable New PDO for the DPM to advertise New PDOs since the 
                first negotiation cannot be treated as a client request. */
-            DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO);
+            DPM_ENABLE_NEW_PDO(u8PortNum);
                     
             gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = \
                                 gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;   
@@ -374,6 +374,10 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT)
                     
                     PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, \
                             gasPBIntPortParam[u8PortNum].eRenegSubState);                    
+                }
+                else
+                {
+                    /* Do Nothing */
                 }
             }
             break; 

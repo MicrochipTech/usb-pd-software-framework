@@ -105,14 +105,13 @@
         <itemPath>../../PowerDelivery/PSFSourcePro_App.h</itemPath>
         <itemPath>../../PowerDelivery/PSFSourcePro_BootCfg.h</itemPath>
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_driver.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
-          <logicalFolder name="f1" displayName="I2C_DC_DC" projectFiles="true">
-            <itemPath>../../../../SOC_Portable/SAMD20/I2C_DC_DC/Mpq_dc_dc_control.h</itemPath>
-          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.h</itemPath>
           <itemPath>../../../../SOC_Portable/SAMD20/PSF_APIHook.h</itemPath>
         </logicalFolder>
@@ -140,6 +139,9 @@
         </logicalFolder>
         <logicalFolder name="f2" displayName="PT" projectFiles="true">
           <itemPath>../../../../Source/PT/pt_mngr.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
+          <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.h</itemPath>
         </logicalFolder>
       </logicalFolder>
     </logicalFolder>
@@ -198,14 +200,13 @@
                      projectFiles="true">
         <itemPath>../../PowerDelivery/PSFSourcePro_App.c</itemPath>
         <itemPath>../../PowerDelivery/PSFSourcePro_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.c</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_driver.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
-          <logicalFolder name="f1" displayName="I2C_DC_DC" projectFiles="true">
-            <itemPath>../../../../SOC_Portable/SAMD20/I2C_DC_DC/Mpq_dc_dc_control.c</itemPath>
-          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.c</itemPath>
         </logicalFolder>
       </logicalFolder>
@@ -233,6 +234,9 @@
         <logicalFolder name="PT" displayName="PT" projectFiles="true">
           <itemPath>../../../../Source/PT/pt_mngr.c</itemPath>
         </logicalFolder>
+        <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
+          <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.c</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
     </logicalFolder>
@@ -253,14 +257,14 @@
         <targetDevice>ATSAMD20E16</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>AtmelIceTool</platformTool>
+        <platformTool>nEdbgTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.30</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
         <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
+        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -445,7 +449,7 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC;..\..\PowerDelivery;..\..\..\..\Source\PT"/>
+                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\PowerDelivery;..\..\..\..\Source\PT;..\..\..\..\Source\UPD_PIO"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>
@@ -942,6 +946,43 @@
                   value=""/>
         <property key="warningmessagebreakoptions.warningmessages" value="holdstate"/>
       </Simulator>
+      <nEdbgTool>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="communication.activationmode" value="nohv"/>
+        <property key="communication.interface" value="swd"/>
+        <property key="communication.speed" value="2.000"/>
+        <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="firmware.path"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="firmware.update.action" value="firmware.update.use.latest"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.configurationmemory2" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.exclude.configurationmemory" value="true"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.instruction.ram.ranges"
+                  value="${memories.instruction.ram.ranges}"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.ranges" value="0-ffff"/>
+        <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/I19150/Documents/Phase2and4/PSF/Demo/PSF_EVB_Source_Pro/firmware/PSF_EVB_Source_Pro.X/debug/default/PSF_EVB_Source_Pro_ptg"/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preservedataflash.ranges"
+                  value="${memories.dataflash.default}"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveeeprom.ranges" value=""/>
+        <property key="programoptions.preserveprogram.ranges" value="0-20001fff"/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
+        <property key="voltagevalue" value=""/>
+      </nEdbgTool>
     </conf>
   </confs>
 </configurationDescriptor>

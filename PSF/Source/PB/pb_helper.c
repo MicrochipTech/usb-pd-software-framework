@@ -56,13 +56,22 @@ void PB_Init(void)
         {
             if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {    
-                if (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)
+                if (gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE)
                 {
                     PB_InitializePortParam(u8PortNum); 
                     /* Deduct the Minimum Guaranteed Power from available Shared Capacity */
                     gasCfgStatusData.u16SharedPwrCapacityIn250mW -= gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW; 
                 }
             }            
+        }
+    }
+    else
+    {
+        /* There could be a scenario where PB is not enabled for the 
+           system, but enabled for any of the ports. */
+        for (u8PortNum = INDEX_0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+        {
+            gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect &= ~(DPM_PORT_PB_ENABLE);            
         }
     }
 }
@@ -621,21 +630,6 @@ void PB_InitiateNextPortNegotiation(void)
     }
 }
 
-UINT8 PB_PortInWaitForAsyncTimerState(void)
-{
-    UINT8 u8PortNum = PB_INVALID_PORT;
-    UINT8 u8Loop;
-    for (u8Loop = INDEX_0; u8Loop < CONFIG_PD_PORT_COUNT ; u8Loop++)
-    {
-        if (ePB_WAIT_FOR_ASYNC_REQ_SS == gasPBIntPortParam[u8Loop].eRenegSubState)
-        {
-            u8PortNum = u8Loop;
-        }
-    }
-    
-    return u8PortNum;
-}
-
 void PB_AsyncTimerCB(UINT8 u8PortNum, UINT8 u8Dummy)
 {
     /* We did not receive any asynchronous request within the time period. So,
@@ -689,19 +683,19 @@ void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum)
 void PB_OnPTBankSwitch(UINT8 u8PortNum)
 {
     /* Update global and per port parameters of PB */
-    if (PD_THROTTLE_BANK_A == gasCfgStatusData.u8PwrThrottleCfg)
+    if (PD_THROTTLE_BANK_A == DPM_GET_CURRENT_PT_BANK)
     {
         gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
         gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW;
         gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW;         
     }
-    else if (PD_THROTTLE_BANK_B == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK)
     {
         gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankBIn250mW;
         gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankBIn250mW;
         gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW; 
     }
-    else if (PD_THROTTLE_BANK_C == gasCfgStatusData.u8PwrThrottleCfg)
+    else if (PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK)
     {
         gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankCIn250mW;                
         gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankCIn250mW;

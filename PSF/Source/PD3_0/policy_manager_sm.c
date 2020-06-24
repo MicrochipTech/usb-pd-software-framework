@@ -338,7 +338,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         } /*end of if condition of VCONN OCS check*/
         if(gasDPM[u8PortNum].u8PowerFaultISR & ~DPM_POWER_FAULT_VCONN_OCS)
         { 
-            #if(TRUE == INCLUDE_PD_SINK)
+            #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
             /*Resetting EN_SINK IO status here as the EN_SINK is reset at 
                on detection of fault at ISR itself*/
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= \
@@ -437,6 +437,10 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                     gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OVP;
                     gasDPM[u8PortNum].u8StatusEventFlags |= DPM_EVENT_TYPE_OVP;
                 }
+                else
+                {
+                    /* Do Nothing */
+                }
                #endif /*INCLUDE_PD_SOURCE_PPS*/
                 /*Increment the fault count*/
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount++;            
@@ -474,7 +478,7 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType)
      detected by internal mechanism */
     if (!gasDPM[u8PortNum].u8PowerFaultISR)
     {
-        #if (TRUE ==  INCLUDE_PD_SOURCE)
+        #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
         /*Disable VBUS_EN on detection of external fault*/
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                 gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_DE_ASSERT);
@@ -493,24 +497,81 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 {
     UINT8 u8Return = TRUE; 
     
-    #if (TRUE == INCLUDE_POWER_BALANCING)
+#if (TRUE == INCLUDE_POWER_BALANCING)
     if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
     {
-        u8Return = PB_HandleDPMEvents(u8PortNum, (UINT8)eDPMNotification);
+        u8Return = PB_HandleDPMEvents(u8PortNum, eDPMNotification);
     }
-    #endif
+#endif
 
-    #if (TRUE == INCLUDE_POWER_THROTTLING)
-    /* Busy is the only notification applicable for PT */
-    if (eMCHP_PSF_BUSY == eDPMNotification)
-    {
-        PT_HandleDPMBusy(u8PortNum); 
-    }
-    #endif 
     /* DPM notifications that need to be handled by stack applications must
        be added here before calling the user function. */
     
-    u8Return &= MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, (UINT8)eDPMNotification); 
+    switch(eDPMNotification)
+    {
+        case eMCHP_PSF_TYPEC_DETACH_EVENT:
+        {
+            /* Process Type C Detach Event */
+            #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+            DPM_OnTypeCDetach(u8PortNum); 
+            #endif 
+            
+            /* Disable Orientation LED */
+            MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
+            
+            #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
+            #endif
+            break;
+        }
+        case eMCHP_PSF_TYPEC_CC1_ATTACH:
+        {
+            /* Assert Orientation LED */
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
+            break;
+        }
+        case eMCHP_PSF_TYPEC_CC2_ATTACH:
+        {
+            /* De-assert Orientation LED */
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
+            break;
+        }
+        case eMCHP_PSF_CAPS_MISMATCH:
+        {
+            #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_ASSERT);
+            #endif
+            break;
+        }
+        case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
+        {
+            #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
+            #endif
+            break;
+        }
+        case eMCHP_PSF_BUSY:
+        {
+            #if (TRUE == INCLUDE_POWER_THROTTLING)
+            if (TRUE == DPM_IS_PT_ENABLED)
+            {
+                /* Busy is the only notification applicable for PT */
+                PT_HandleDPMBusy(u8PortNum); 
+            }
+            #endif
+            break;
+        }
+        default:
+            break;
+    }
+    
+    /*Notify the application layer*/
+    u8Return &= MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eDPMNotification); 
     return u8Return;
 }
 
@@ -550,7 +611,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             }
 #endif 
             /* Enable New PDO Select in DPM Config */
-            DPM_EnableNewPDO(u8PortNum, DPM_ENABLE_NEW_PDO);
+            DPM_ENABLE_NEW_PDO(u8PortNum);
+            
             /* Check for Port Power Role */
             if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
             {
@@ -674,29 +736,29 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 /**************************************************************************************/
 void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
 {
-    gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;
+    if ((DPM_INT_EVT_INITIATE_ALERT == u8EventType) || 
+                    (DPM_INT_EVT_INITIATE_GET_STATUS == u8EventType))
+    {
+        /* Current PD Specification should be Rev 3.0 */
+        if (PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
+        {
+            /* Alert and Get_Status Tx shall be supported only if PPS is enabled for the port */
+            if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+            {
+                gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;                
+            }
+        }
+    }
+    else
+    {
+        gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;
+    }
 }
 
 void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
     if (gasDPM[u8PortNum].u8DPMInternalEvents)
     {
-        if (DPM_INT_EVT_INFORM_DETACH == (gasDPM[u8PortNum].u8DPMInternalEvents\
-                                                    & DPM_INT_EVT_INFORM_DETACH))
-        {          
-            #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-            /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
-            PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
-
-            /* Set the timer Id to Max Concurrent Value*/
-            gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
-            
-            /* Note: It is recognized that it is possible to send an alert to another 
-               partner if the current partner is disconnected and a new partner is
-               connected. So, no need to clear the other variables */
-            
-            #endif
-        }
         /* Initiate a sequence only when the Policy Engine is in PS_RDY state*/
         if(TRUE == PE_IsPolicyEngineIdle(u8PortNum))
         {

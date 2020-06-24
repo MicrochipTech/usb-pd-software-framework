@@ -157,9 +157,6 @@ void IntGlobals_PDInitialization(void);
     Summary:
         Internal PSF version and configuration structure version initialization API
 
-    Devices Supported:
-        None
-
     Description:
         Initializes the PSF version and configuration Structure version 
 

@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define _PROJECT_VERSION_
 
 
-#define SYSTEM_FW_REV     0x0103U //v1.03 release
+#define SYSTEM_FW_REV     0x0104U //v1.04 release
 
 #endif /*_PROJECT_VERSION_*/
 

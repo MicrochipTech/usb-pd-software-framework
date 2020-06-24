@@ -61,9 +61,14 @@ UINT8 MchpPSF_Init(void)
             gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
                                                        ~(TYPEC_PORT_ENDIS_MASK);
         }
-        /*UPD350 Reset GPIO Init*/
-        MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum);
-    }  
+        #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
+        /*Initialize chip select in case of SPI configuration*/
+        MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSPI_CHIP_SELECT_FUNC);
+        #endif
+    }
+    
+    /*Since, Reset is common for all the ports. It is called only once with PORT0 as dummy value*/
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(PORT0, eUPD350_RESET_FUNC);
         
 	/*Initialize Internal global variables*/
     IntGlobals_PDInitialization();
@@ -74,17 +79,20 @@ UINT8 MchpPSF_Init(void)
     UPD_FindVBusCorrectionFactor();
     
     #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-    /*Initialize debug hardware*/
-    MCHP_PSF_HOOK_DEBUG_INIT();
+        /*Initialize debug hardware*/
+        MCHP_PSF_HOOK_DEBUG_INIT();
     #endif
     
+    /* Disable the global interrupt */
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
             /*Port Power Initialization*/
-            PWRCTRL_initialization(u8PortNum);
+            u8InitStatus &= PWRCTRL_Initialization(u8PortNum);
         }
     }
     
@@ -93,14 +101,17 @@ UINT8 MchpPSF_Init(void)
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
-            MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum);
+            /* Initialize the Port's IRQ*/
+            MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eUPD350_ALERT_FUNC);
             
-            MCHP_PSF_HOOK_DCDCALERTINIT(u8PortNum);
+            /*Initialize the Port's DC_DC Alert */
+            MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eI2C_DC_DC_ALERT_FUNC);        
         }
-    }
+    }    
     
     DPM_StateMachineInit();  
 
+    /* Enable the global interrupt */
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     
     return u8InitStatus;

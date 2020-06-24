@@ -129,7 +129,7 @@ void SYS_Initialize ( void* data )
 
     
     EIC_Initialize();
-	// SPI initialisation is done as part of MchpPSF_Init by PSF stack
+	// Timer initialisation is done as part of MchpPSF_Init by PSF stack
     //TC0_TimerInitialize();
 	
 

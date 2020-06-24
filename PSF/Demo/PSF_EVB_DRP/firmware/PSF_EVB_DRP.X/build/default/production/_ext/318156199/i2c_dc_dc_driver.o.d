@@ -1,10 +1,10 @@
-build/default/production/_ext/939006058/Mpq_dc_dc_control.o:  \
- ../../../../SOC_Portable/SAMD20/I2C_DC_DC/Mpq_dc_dc_control.c  \
- ../../../../Source/include/psf_stdinc.h  \
+build/default/production/_ext/318156199/i2c_dc_dc_driver.o:  \
+ ../../PowerDelivery/i2c_dc_dc_driver.c  \
+ ../../PowerDelivery/i2c_dc_dc_driver.h  \
  ../../../../Source/include/generic_defs.h  \
- ../../PowerDelivery/PSF_Config.h  \
-../../PowerDelivery/PSFDRP_App.h  \
- ../../PowerDelivery/PSFDRP_BootCfg.h  \
+ ../../PowerDelivery/i2c_dc_dc_ung8198.h  \
+../../PowerDelivery/PSF_Config.h  \
+ ../../PowerDelivery/PSFDRP_App.h  \
  ../../../../SOC_Portable/SAMD20/PSF_APIHook.h  \
  ../../../../SOC_Portable/SAMD20/Drivers.h  \
  ../src/../../firmware/src/config/default/peripheral/tc/plib_tc0.h  \
@@ -37,8 +37,12 @@ build/default/production/_ext/939006058/Mpq_dc_dc_control.o:  \
  ../src/../../firmware/src/config/default/peripheral/tc/plib_tc_common.h  \
  ../src/../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h  \
  ../src/../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom_spi_common.h  \
+ ../src/../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h  \
+ ../src/../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom_usart_common.h  \
  ../src/../../firmware/src/config/default/peripheral/port/plib_port.h  \
  ../src/../../firmware/src/config/default/peripheral/eic/plib_eic.h  \
+ ../src/../../firmware/src/config/default/peripheral/dac/plib_dac.h  \
+ ../../../../Source/include/psf_stdinc.h  \
  ../../../../Source/include/portpower_control.h  \
  ../../../../Source/include/debug.h  \
 ../../../../Source/include/pd_timer.h  \
@@ -53,4 +57,7 @@ build/default/production/_ext/939006058/Mpq_dc_dc_control.o:  \
  ../../../../Source/include/policy_engine_fwup.h  \
  ../../../../Source/include/ProjectVersion.h  \
  ../../../../Source/include/timer_defs.h  \
- ../../../../SOC_Portable/SAMD20/Drivers.h 
+ ../../../../Source/UPD_PIO/upd350_pio_drivers.h  \
+ ../../PowerDelivery/PSFDRP_BootCfg.h  \
+ ../src/../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h  \
+ ../src/../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom_i2c_master.h 
