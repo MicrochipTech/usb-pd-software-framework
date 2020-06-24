@@ -84,14 +84,11 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
     #define SAMD20UART_Init(n) SERCOMn_UART_Initialise(n)
     #define SERCOMn_UART_Initialise(n) SERCOM##n##_USART_Initialize()
 
-    #define SAMD20UART_Write_Char(n, byData) SERCOMn_UART_Write_Char(n, byData)
-    #define SERCOMn_UART_Write_Char(n, byData) SERCOM##n##_USART_Write_Char(byData)
+    #define SAMD20UART_Write(n, buffer, u32size) SERCOMn_UART_WRITE(n, buffer, u32size)
+    #define SERCOMn_UART_WRITE(n, buffer, u32size) SERCOM##n##_USART_Write(buffer, u32size)
 
-    #define SAMD20UART_Write_Int(n, dwWriteInt, byWidth) SERCOMn_UART_Write_Int(n, dwWriteInt, byWidth)
-    #define SERCOMn_UART_Write_Int(n, dwWriteInt, byWidth) SERCOM##n##_USART_Write_Int(dwWriteInt, byWidth)
-
-    #define SAMD20UART_Write_String(n, pbyMessage) SERCOMn_UART_Write_String(n, pbyMessage)
-    #define SERCOMn_UART_Write_String(n, pbyMessage) SERCOM##n##_USART_Write_String(pbyMessage)
+    #define SAMD20UART_IsTransmitComplete(n) SERCOMn_UART_IsTransmitComplete(n)
+    #define SERCOMn_UART_IsTransmitComplete(n) SERCOM##n##_USART_TransmitComplete()
 
 #endif /* CONFIG_HOOK_DEBUG_MSG */
 
@@ -223,30 +220,6 @@ void SAMD20_Drive_DAC_I(UINT16 u16DACData)
 /*****************************************************************************/
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 
-void SERCOM1_USART_Write_Int(uint32_t dwWriteInt, uint8_t byWidth)
-{
-    SERCOM1_USART_Write((void*)&dwWriteInt, byWidth); 
-    while(!SERCOM1_USART_TransmitComplete()) 
-    { 
-    } 
-}
-
-void SERCOM1_USART_Write_String(char * pbyMessage)
-{
-    SERCOM1_USART_Write((void*)pbyMessage,strlen(pbyMessage)); 
-    while(!SERCOM1_USART_TransmitComplete()) 
-    { 
-    }
-}
-
-void SERCOM1_USART_Write_Char(char byWriteChar)
-{
-    SERCOM1_USART_Write((void*)&byWriteChar,1); 
-    while(!SERCOM1_USART_TransmitComplete()) 
-    { 
-    }
-}
-
 void SAMD20_UART_Initialisation(void)
 {
     SAMD20UART_Init(SAMD20_UART_INSTANCE);
@@ -254,17 +227,26 @@ void SAMD20_UART_Initialisation(void)
 
 void SAMD20_UART_Write_Char(char byData)
 {
-    SAMD20UART_Write_Char(SAMD20_UART_INSTANCE, byData);
+    SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)&byData,1); 
+    while(!SAMD20UART_IsTransmitComplete(SAMD20_UART_INSTANCE)) 
+    { 
+    }
 }
 
 void SAMD20_UART_Write_Int(UINT32 dwWriteInt, UINT8 byWidth)
 {
-    SAMD20UART_Write_Int(SAMD20_UART_INSTANCE, dwWriteInt, byWidth);
+    SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)&dwWriteInt, byWidth); 
+    while(!SAMD20UART_IsTransmitComplete(SAMD20_UART_INSTANCE)) 
+    { 
+    } 
 }
 
 void SAMD20_UART_Write_String(char* pbyMessage)
 {
-    SAMD20UART_Write_String(SAMD20_UART_INSTANCE, pbyMessage);
+    SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)pbyMessage,strlen(pbyMessage)); 
+    while(!SAMD20UART_IsTransmitComplete(SAMD20_UART_INSTANCE)) 
+    { 
+    }
 }
 
 
