@@ -165,7 +165,7 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS;
     
     DEBUG_PRINT_PORT_STR (u8PortNum,"\n\nRegDump before TYPEC_DRP_EN\r\n");  
-    UPD_RegDump(u8PortNum);
+    //UPD_RegDump(u8PortNum);
     
     /*FW sets the DRP Enable (DRP_EN) in DRP Control Register to enable DRP offload.*/
     UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
@@ -335,7 +335,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
 	    
     DEBUG_PRINT_PORT_STR (u8PortNum,"\n\nRegDump before CC comparator ON\r\n");  
-    UPD_RegDump(u8PortNum);
+    //UPD_RegDump(u8PortNum);
     
     /*FW sets the DRP Enable (DRP_EN) in DRP Control Register to enable DRP offload.*/
     UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
@@ -2136,9 +2136,7 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
  	 
     /*Assigning the structure variables to local variables to reduce the code size as
     accessing the structure members takes lot of code*/  
-  
-    UINT8 u8TypeCState = gasTypeCcontrol[u8PortNum].u8TypeCState;
-    UINT8 u8TypeCSubState = gasTypeCcontrol[u8PortNum].u8TypeCSubState;
+
     
     if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_DRP_DONE_INTERRUPT)
     {

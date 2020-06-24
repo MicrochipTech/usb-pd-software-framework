@@ -206,14 +206,14 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
-            else if ((DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE) && \
+            else if ((DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE) && \
                      ((PE_CTRL_GET_SINK_CAP == u8MsgType) || (PE_CTRL_PING == u8MsgType)\
                         || (PE_CTRL_GOTO_MIN == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
 
-            else if ((DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SINK) && \
+            else if ((DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SINK) && \
                      ((PE_CTRL_GET_SOURCE_CAP == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
@@ -228,13 +228,13 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
 
-            else if ((DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE) && \
+            else if ((DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE) && \
                      (PE_DATA_SOURCE_CAP == u8MsgType))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
 
-            else if ((DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SINK) && \
+            else if ((DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SINK) && \
                      ((PE_DATA_SINK_CAP == u8MsgType) || (PE_DATA_REQUEST == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;

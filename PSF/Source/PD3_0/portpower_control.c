@@ -61,7 +61,15 @@ void PWRCTRL_initialization(UINT8 u8PortNum)
                                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS);
 
 #if(TRUE == INCLUDE_PD_DRP)
+    DC_DC_EN_Set();
+
     DC_DC_EN_OutputEnable();
+    
+   for(UINT16 u16Delay = 0; u16Delay < 20000; u16Delay++)
+    {
+                __NOP();
+    }   
+    
 #else
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_DC_DC_EN, \
                                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_DC_DC_EN);
