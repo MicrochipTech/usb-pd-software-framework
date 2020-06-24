@@ -968,6 +968,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     }
                     else
                     {
+                        /*Kill active timers if any*/
+                        PDTimer_KillPortTimers(u8PortNum);
+                        
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                         #if (TRUE == INCLUDE_PD_SINK)
                         /*Disable the Sink circuitry to stop sinking the power from source*/
