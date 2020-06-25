@@ -84,40 +84,13 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
     #define SAMD20UART_Init(n) SERCOMn_UART_Initialise(n)
     #define SERCOMn_UART_Initialise(n) SERCOM##n##_USART_Initialize()
 
-    #define SAMD20UART_Write_Char(n, byData) SERCOMn_UART_Write_Char(n, byData)
-    #define SERCOMn_UART_Write_Char(n, byData) SERCOM##n##_USART_Write_Char(byData)
+    #define SAMD20UART_Write(n, buffer, u32size) SERCOMn_UART_WRITE(n, buffer, u32size)
+    #define SERCOMn_UART_WRITE(n, buffer, u32size) SERCOM##n##_USART_Write(buffer, u32size)
 
-    #define SAMD20UART_Write_Int(n, dwWriteInt, byWidth) SERCOMn_UART_Write_Int(n, dwWriteInt, byWidth)
-    #define SERCOMn_UART_Write_Int(n, dwWriteInt, byWidth) SERCOM##n##_USART_Write_Int(dwWriteInt, byWidth)
+    #define SAMD20UART_IsTransmitComplete(n) SERCOMn_UART_IsTransmitComplete(n)
+    #define SERCOMn_UART_IsTransmitComplete(n) SERCOM##n##_USART_TransmitComplete()
 
-    #define SAMD20UART_Write_String(n, pbyMessage) SERCOMn_UART_Write_String(n, pbyMessage)
-    #define SERCOMn_UART_Write_String(n, pbyMessage) SERCOM##n##_USART_Write_String(pbyMessage)
-
-#endif //CONFIG_HOOK_DEBUG_MSG
-
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-#define SAMD20I2CDCDC_Initialise(n) SERCOMn_I2CDCDC_Initialize(n)
-#define SERCOMn_I2CDCDC_Initialize(n) SERCOM##n##_I2C_Initialize()
-
-#define SAMD20I2CDCDC_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
-                    SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen)
-#define SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
-        SERCOM##n##_I2C_Read(u16Address,pu8ReadBuf,u8ReadLen)
-
-#define SAMD20I2CDCDC_Write(n,u16Address,pu8WritedBuf,u8WriteLen) \
-                    SERCOMn_I2C_Write(n,u16Address,pu8WritedBuf,u8WriteLen)
-#define SERCOMn_I2C_Write(n,u16Address,pu8WritedBuf,u8WriteLen) \
-        SERCOM##n##_I2C_Write(u16Address,pu8WritedBuf,u8WriteLen)
-
-#define SAMD20I2CDCDC_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
-        SERCOMn_I2C_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
-#define SERCOMn_I2C_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
-        SERCOM##n##_I2C_WriteRead(u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
-
-#define SAMD20_I2cDCDCIsBusy(n) SERCOMn_I2C_IsBusy(n)
-#define SERCOMn_I2C_IsBusy(n) SERCOM##n##_I2C_IsBusy()
-
-#endif //#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
+#endif /* CONFIG_HOOK_DEBUG_MSG */
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -131,11 +104,6 @@ static void SAMD20_HWTimerCallback(TC_TIMER_STATUS status, uintptr_t context)
         MchpPSF_PDTimerHandler();
     }
 }
-static void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
-{
-    /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
-    MchpPSF_UPDIrqHandler(u8PortNum);
-}
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -147,6 +115,14 @@ UINT8 SAMD20_HWTimerInit(void)
     /*Timer is initialized and started to run for 1ms continously*/
     SAMD20Timer_Initialise(SAMD20_TIMER_INSTANCE);
     return TRUE;
+}
+/*****************************************************************************/
+/*********************************Alert APIs*****************************/
+/*****************************************************************************/
+void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
+{
+    /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
+    MchpPSF_UPDIrqHandler(u8PortNum);
 }
 /*****************************************************************************/
 /*****************************************************************************/
@@ -167,178 +143,7 @@ UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Wri
 {
     return SAMD20SPI_WriteRead(SAMD20_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
 }
-void SAMD20_DriveChipSelect(UINT8 u8PortNum, UINT8 u8EnableComm)
-{
-    if (TRUE == u8EnableComm)
-    {
-        /* Drive low the CS to enable the communication*/
-        if (PORT0 == u8PortNum)
-        {
-            /*PORT_PIN_PA10*/
-            SAMD20_GPIO_Clear(SPI_SS_0_PIN);
-        }
-        #if (TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP) 
-/*ToDo
-        else if(PORT1 == u8PortNum)
-        {
-            //PORT_PIN_PA01
-            SAMD20_GPIO_Clear(SPI_SS_1_PIN)
-        } 
-*/    
-        #endif
-    }
-    else
-    {
-        /* Drive high the CS to disable the communication for the port*/
-        if (PORT0 == u8PortNum)
-        {
-            SAMD20_GPIO_Set(SPI_SS_0_PIN);
-        }
-        #if (TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP) 
-/*ToDo
-        else if(PORT1 == u8PortNum)
-        {
-            SAMD20_GPIO_Set(SPI_SS_1_PIN);
-        }
- */
-        #endif
-    }
-}
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-/*****************************************************************************/
-/*****************************************************************************/
-/*********************************I2C Driver APIs*****************************/
-/*****************************************************************************/
-void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum)
-{
-    /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
-    MPQDCDC_HandleAlertISR(u8PortNum);
-}
 
-void SAMD20_I2CDCDCAlertInit(UINT8 u8PortNum)
-{
-    /* MCU PIO routed to I2C_DCDC_alert line configured for low level and internal pullup*/
-    if (PORT0 == u8PortNum)
-    {
-        PORT_PinInputEnable(SAMD20_DCDC_ALERT0);
-        PORT_PinWrite(SAMD20_DCDC_ALERT0, TRUE);
-        EIC_CallbackRegister((EIC_PIN)SAMD20_DCDC_ALERT0, SAMD20_I2CDCDCAlertCallback, PORT0);
-        EIC_InterruptEnable((EIC_PIN)SAMD20_DCDC_ALERT0);
-    }
-    else if (PORT1 == u8PortNum)
-    {
-        PORT_PinInputEnable(SAMD20_DCDC_ALERT1);
-        PORT_PinWrite(SAMD20_DCDC_ALERT1, TRUE);
-        EIC_CallbackRegister((EIC_PIN)SAMD20_DCDC_ALERT1, SAMD20_I2CDCDCAlertCallback, PORT1);
-        EIC_InterruptEnable((EIC_PIN)SAMD20_DCDC_ALERT1);
-    }
-}
-
-UINT8 SAMD20_I2CDCDCInitialisation (void)
-{
-    SAMD20I2CDCDC_Initialise(SAMD20_I2C_INSTANCE);
-    return TRUE;
-
-}
-
-UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
-{
-    UINT8 u8Return = FALSE;
-    
-    u8Return = SAMD20I2CDCDC_Read (SAMD20_I2C_INSTANCE,u16Address,pu8ReadBuf,u8ReadLen);
-    return u8Return;
-}
-
-UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen)
-{
-    UINT8 u8Return = FALSE;
-    
-    u8Return = SAMD20I2CDCDC_Write (SAMD20_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen);
-    return u8Return;
-   
-}
-
-UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
-                                              UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
-{
-    UINT8 u8Return = FALSE;
-    
-    u8Return = SAMD20I2CDCDC_WriteRead (SAMD20_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen,\
-                                                            pu8ReadBuf,u8ReadLen);
-    return u8Return;
-}
-
-bool SAMD20_I2CDCDCIsBusyDriver(void)
-{
-    return SAMD20_I2cDCDCIsBusy(SAMD20_I2C_INSTANCE);
-}
-#endif
-/*****************************************************************************/
-/*****************************************************************************/
-/*******************************UPD350 Alert APIs******************************************/
-/*****************************************************************************/
-void SAMD20_UPD350AlertInit(UINT8 u8PortNum)
-{
-    /* MCU PIO routed to UPD350 line configured for low level and internal pullup*/
-    if (PORT0 == u8PortNum)
-    {
-        PORT_PinInputEnable((PORT_PIN)SAMD20_PORT0_EIC_PIN);
-        PORT_PinWrite((PORT_PIN)SAMD20_PORT0_EIC_PIN, TRUE);
-        EIC_CallbackRegister((EIC_PIN)SAMD20_PORT0_EIC_PIN, SAMD20_UPD350AlertCallback, PORT0);
-        EIC_InterruptEnable((EIC_PIN)SAMD20_PORT0_EIC_PIN);
-    }
-#if (TRUE == INCLUDE_PD_SOURCE && FALSE == INCLUDE_PD_DRP)
-/*ToDo    
-    else if (PORT1 == u8PortNum)
-    {
-        PORT_PinInputEnable((PORT_PIN)SAMD20_PORT1_EIC_PIN);
-        PORT_PinWrite((PORT_PIN)SAMD20_PORT1_EIC_PIN, TRUE);
-        EIC_CallbackRegister((EIC_PIN)SAMD20_PORT1_EIC_PIN, SAMD20_UPD350AlertCallback, PORT1);
-        EIC_InterruptEnable((EIC_PIN)SAMD20_PORT1_EIC_PIN);
-    }
- */
-#endif
-}
-
-/*****************************************************************************/
-
-/*****************************************************************************/
-/*********************************UPD350 Reset APIs*****************************/
-/*****************************************************************************/
-void SAMD20_UPD350ResetGPIOInit(UINT8 u8PortNum)
-{
-    /*Current implementation supports common reset pin for all ports
-      Hence, parameter u8PortNum is not considered*/
-    
-    /*PORT_PIN_PA00*/
-    /* UPD350 RESET_N pin active low; set to internal pull up by default*/
-     SAMD20_GPIO_InputEnable(UPD350_RESET_PIN);
-     PORT_PinWrite(UPD350_RESET_PIN, TRUE);
-}
-
-void SAMD20_ResetUPD350(UINT8 u8PortNum)
-{
-    /*UPD350 Reset function is called for each port respectively
-     Since, all UPD350 PIOs are tied to single PIO, Reset is done for PORT0
-     alone to avoid multiple reset */
-    if (PORT0 == u8PortNum)
-    {
-        UPD350_RESET_InputEnable();
-
-        /* Pull down is driven to reset the UPD350*/
-        PORT_PinWrite(UPD350_RESET_PIN, FALSE);
-
-        /*Delay */
-        for(UINT16 u16delayloop = 0u; u16delayloop <(6000);u16delayloop++)
-        {
-            __asm volatile("nop");
-            __asm volatile("nop");
-
-        }
-        /* Set to default state*/
-        PORT_PinWrite(UPD350_RESET_PIN, TRUE);
-    }
-}
 /*****************************************************************************/
 /*****************************************************************************/
 /*********************************MCU APIs*****************************/
@@ -376,14 +181,14 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen)
 
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 {
-	int i;
-    UINT8 *pu8Obj1 = (UINT8 *)pau8Data2;
+	int index;
+    UINT8 *pu8Obj1 = (UINT8 *)pau8Data1;
     UINT8 *pu8Obj2 = (UINT8 *)pau8Data2;
 	
-	for (i = SET_TO_ZERO; i < ilen; i++)
+	for (index = SET_TO_ZERO; index < ilen; index++)
     {
-    	if (pu8Obj1[i] != pu8Obj2[i])
-            return (pu8Obj1[i] - pu8Obj2[i]);            	
+    	if (pu8Obj1[index] != pu8Obj2[index])
+            return (pu8Obj1[index] - pu8Obj2[index]);            	
 	}
     
 	return 0;
@@ -393,32 +198,11 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 /*****************************************************************************/
 /*********************************Sink APIs*****************************/
 /*****************************************************************************/
-#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
-
-void SAMD20_ConfigureSinkHardware(UINT8 u8PortNum,UINT16 u16VBUSVoltage,UINT16 u16Current)
-{
-    /* Clear the 1.5A_IND and 3A_IND */
-    SAMD20_GPIO_Clear(SNK_1_5A_IND_PIN);
-    SAMD20_GPIO_Clear(SNK_3A_IND_PIN);
-    
-    if (u16Current >= DPM_3000mA)
-    {
-        SAMD20_GPIO_Set(SNK_3A_IND_PIN);
-    }
-    else if (u16Current >= DPM_1500mA)
-    {
-        SAMD20_GPIO_Set(SNK_1_5A_IND_PIN);
-    }
-    else
-    {
-        //Do nothing
-    }
-}
-
+#if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
 
 void SAMD20_Drive_DAC_I(UINT16 u16DACData)
 {
-    /*SAMD20 intenally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
+    /*SAMD20 internally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
     /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
     /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
 
@@ -443,17 +227,26 @@ void SAMD20_UART_Initialisation(void)
 
 void SAMD20_UART_Write_Char(char byData)
 {
-    SAMD20UART_Write_Char(SAMD20_UART_INSTANCE, byData);
+    SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)&byData,1); 
+    while(!SAMD20UART_IsTransmitComplete(SAMD20_UART_INSTANCE)) 
+    { 
+    }
 }
 
 void SAMD20_UART_Write_Int(UINT32 dwWriteInt, UINT8 byWidth)
 {
-    SAMD20UART_Write_Int(SAMD20_UART_INSTANCE, dwWriteInt, byWidth);
+    SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)&dwWriteInt, byWidth); 
+    while(!SAMD20UART_IsTransmitComplete(SAMD20_UART_INSTANCE)) 
+    { 
+    } 
 }
 
 void SAMD20_UART_Write_String(char* pbyMessage)
 {
-    SAMD20UART_Write_String(SAMD20_UART_INSTANCE, pbyMessage);
+    SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)pbyMessage,strlen(pbyMessage)); 
+    while(!SAMD20UART_IsTransmitComplete(SAMD20_UART_INSTANCE)) 
+    { 
+    }
 }
 
 

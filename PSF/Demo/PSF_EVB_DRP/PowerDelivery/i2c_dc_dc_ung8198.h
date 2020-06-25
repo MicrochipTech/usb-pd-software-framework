@@ -1,11 +1,11 @@
 /*******************************************************************************
-  MPQ I2C DC DC Control File
+  I2C DC DC Control File
  
   Company:
     Microchip Technology Inc.
 
   File Name:
-    Mpq_dc_dc_control.h
+    i2c_dc_dc_ung8198.h
 
   Description:
     This header file contains the function prototypes for port power control to
@@ -31,8 +31,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _MPQ_DCDC_CONTROL_H_
-#define _MPQ_DCDC_CONTROL_H_
+#ifndef _I2C_DC_DC_UNG8198_H_
+#define _I2C_DC_DC_UNG8198_H_
 
 #include "generic_defs.h"
 #include <PSF_Config.h>
@@ -52,10 +52,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define MPQ_CMD_WRITE_VOUT_SCALE_LOOP   0xB04229U
 #define MPQ_CMD_WRITE_0V                0x000021U
 #define MPQ_CMD_UNMASK_VOUT_AND_OC      0x3FD8U
+#define MPQ_CMD_UNMASK_OC               0xBFD8U
 #define MPQ_CMD_CURRENT_THRESHOLD       0x3FD1U //0x1ED1U
 #define MPQ_CMD_ENABLE_VBUS             0x8001U
 #define MPQ_CMD_WRITE_VOLTAGE           0x21U
 #define MPQ_CMD_WRITE_CURRENT           0xD1U
+#define MPQ_CMD_READ_VOLTAGE            0x8BU
 
 #define I2C_CMD_LENGTH_1                1
 #define I2C_CMD_LENGTH_2                2
@@ -81,27 +83,35 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define MPQ_STATUS_TEMPERATURE_CMD      0x7DU
 #define MPQ_STATUS_CML_CMD              0x7EU
 
+#define MPQ_REGISTER_COUNTS_1V          1024U
+#define MPQ_1V_IN_MILLIVOLT             1000U
+#define MPQ_CURRENT_COUNT_FACTOR        50U
+
 /* Offset Values */
 #define MPQ_CURRENT_OFFSET_VALUE        5
+
+#define MPQ_DIVISOR_FOR_PERCENTAGE      100
+#define MPQ_VOLTAGE_READ_AVG_CNT        5
 
 
 /* Status bit masks */
 /* Fault Status returned by 'Status Word' command */
 #define MPQ_IOUT_OC_FAULT               0x0010U
-#define MPQ_VOUT_FAULT                  0x8000U 
+#define MPQ_VOUT_OV_FAULT               0x0020U 
+#define MPQ_IOUT_OC_EXIT_FAULT          0x1000U
 #define MPQ_1MV_COUNT                   ((float)1.024)
 
 /* Macro to raise client request to PSF for handling VBUS Fault */
 #define MPQ_CLIENT_REQ_HANDLE_VBUS_FAULT   0x20
 
-/* Macro for setting the EN_VBUS Status */
-#define MPQ_SET_PORT_IO_EN_VBUS_STATUS     0x0010 
+#define MPQ_SHIFT_BY_8BITS                 0x08
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: Data Structure                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-extern UINT8 gu8MPQAlertPortMsk;
+extern volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT];
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions
@@ -150,7 +160,7 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length);
 
 /****************************************************************************
     Function:
-        void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current)
+        void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
     Summary:
         API to drive Power on VBUS
     Description:
@@ -159,9 +169,6 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length);
         None.
     Input:
         u8PortNum - Corresponding Port Number. Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u8PDOIndex - Provides current PDO index negotiated to drive power.
-                        For TypeC attach, PDO index is passed as '1'. As it is mandatory to have
-                        PDO 1 as 5V PDO. For Vsafe0V, PDOIndex is passed as 'Zero'.
         u16VBUSVoltage - Provides negotiated voltage to drive power
         u16Current - Provides negotiated current to drive power
     Return:
@@ -170,11 +177,11 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length);
         None
 
 **************************************************************************************************/
-void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVoltage, UINT16 u16Current);
+void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current);
 
 /****************************************************************************
     Function:
-        void MPQDCDC_HandleAlertISR(UINT8 u8PortNum); 
+        void MPQDCDC_HandleAlert(UINT8 u8PortNum); 
     Summary:
         Interrupt Handler for I2C DC DC Alert  
     Description:
@@ -191,26 +198,45 @@ void MPQDCDC_SetPortPower(UINT8 u8PortNum, UINT8 u8PDOIndex, UINT16 u16VBUSVolta
         None
 **************************************************************************************************/
 
-void MPQDCDC_HandleAlertISR(UINT8 u8PortNum);
+void MPQDCDC_HandleAlert(UINT8 u8PortNum);
 
 /****************************************************************************
     Function:
-        void MPQDCDC_FaultHandler(void); 
+        void MPQDCDC_FaultHandler(UINT8 u8PortNum); 
     Summary:
-        Wrapper function for DPM's HandleClientRequest API.  
+        Wrapper function for DPM's HandleClientRequest API  
     Description:
         This API gets the Fault Status code from DC-DC Controller and based 
         on the fault code, requests DPM to Handle the Fault. 
     Conditions:
         None.
     Input:
-        None.
+        u8PortNum - Port Number for which fault to be handled
     Return:
       None
     Remarks:
         None
 **************************************************************************************************/
 
-UINT8 MPQDCDC_FaultHandler(void);
+UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum);
 
-#endif /*_MPQ_DCDC_CONTROL_H_*/
+/****************************************************************************
+    Function:
+        void MPQDCDC_ReadVoltage(UINT8 u8PortNum); 
+    Summary:
+        Reads the output voltage from I2C DC DC Controller  
+    Description:
+        This API reads the output voltage of the given port of I2C DC DC controller  
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port Number for which output voltage to be read
+    Return:
+      None
+    Remarks:
+        None
+**************************************************************************************************/
+
+UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum);
+
+#endif /*_I2C_DC_DC_UNG8198_H_*/

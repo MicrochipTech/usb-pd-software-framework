@@ -9,7 +9,7 @@
 
   Description:
     This header file contains the data structures, constant definitions and 
-	function prototypes for Policy Balancing. 
+	function prototypes for Power Balancing. 
 *******************************************************************************/
 /*******************************************************************************
 Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
@@ -89,9 +89,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PB_PORT_STATUS_CAPABILITY_MISMATCH  0x08U
 #define PB_PORT_STATUS_RENEG_AGAIN          0x10U
 
-/* Power is represented in terms of 250mW */
-#define PB_POWER_UINTS_MILLI_W                  250000
-
 /* Macros to define Excess Power */
 #define PB_ZERO_EXCESS_POWER                    0x0000
 
@@ -139,7 +136,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PB_IS_CAPABILITY_MISMATCH(u32RDO) (((UINT32)u32RDO & PB_RDO_CAPABILITIY_MISMATCH_MSK) != 0)  
 
 /* Macro to get priority of the port from Config variable */
-#define PB_GET_PORT_PRIORITY(u8PortNum) ((gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & 0x06) >> 1) 
+#define PB_GET_PORT_PRIORITY(u8PortNum)  (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PortPriority) 
 
 /* Enumeration to define Power Balancing enabled PD Port States */
 typedef enum PBPortStates
@@ -191,11 +188,12 @@ typedef enum GetSinkCapsState
 typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntSysParam 
 {
     UINT32 u32AsyncReqWaitTimerInms; /* Asynchronous Request Wait timer value*/
-    UINT16 u16TotalSysPwrIn250mW; /* Max Shared capacity of the system */
-    UINT16 u16PoolPowerIn250mW;    /* Currently available pool power */
+    UINT16 u16TotalSysPwrIn250mW;  /* Max Shared capacity of the system */
+    UINT16 u16Reserved1;           /* Reserved for future use */ 
     UINT8 u8ReclaimPortNum;        /* Port from which power is reclaimed */
     UINT8 u8RecoverPortNum;        /* Port which is in recovering mode */  
     UINT8 u8RecoveringMode;        /* Recover status of a port */
+    UINT8 u8Reserved2;             /* Reserved for future use */ 
 } MCHP_PSF_STRUCT_PACKED_END  PB_INT_SYS_PARAM;
 
 /*****************************************************************************
@@ -219,11 +217,11 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
     GET_SINK_CAP_SS eGetSinkCapSS;    /* Get Sink caps sub-states */
     UINT8 u8AttachSeqNo;              /* Sequence in which ports are attached */
     UINT8 u8PBPortStatusMask;     /* Bit - Position 
-        0     Attach 
-        1     InitialNegotiationDone 
-        2     IsPortInMinimalPower 
-        3     CapabilityMismatch 
-        4     RenegAgain */         
+                                      0     Attach 
+                                      1     InitialNegotiationDone 
+                                      2     IsPortInMinimalPower 
+                                      3     CapabilityMismatch 
+                                      4     RenegAgain */         
 } MCHP_PSF_STRUCT_PACKED_END  PB_INT_PORT_PARAM; 
 
 // *****************************************************************************
@@ -234,14 +232,14 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
 
 /**************************************************************************************************
     Function:
-        UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT);
+        UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT);
 
     Summary:
         This API handles all the events detected by Device Policy Manager. 
 
     Description:
         This API is the heart of PB manager. Whenever there is an event 
-        detected by PPM layer, this function would be triggered to process 
+        detected by DPM layer, this function would be triggered to process 
         and act upon the event.
 
     Conditions:
@@ -249,7 +247,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
 
     Input:
         u8PortNum - Port Number.
-        ePPM_EVENT - Event detected by PPM 
+        eDPM_EVENT - Event detected by DPM 
 
     Return:
         TRUE.
@@ -258,7 +256,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PBIntPortParam
         None.
 
 **************************************************************************************************/
-UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT);
+UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT);
 /**************************************************************************************************
     Function:
         void PB_Init (void);
@@ -268,7 +266,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, UINT8 eDPM_EVENT);
 
     Description:
         This API initializes the System level and port level parameters of Power
-        Balancing based on the Power Throttling bank that is currently selected.  
+        Balancing.
 
     Conditions:
         None.
@@ -293,8 +291,7 @@ void PB_Init(void);
         This API initializes all the PB port specific parameters.  
 
     Description:
-        This API initializes the port level parameters of Power Balancing based 
-        on the Power Throttling bank that is currently selected. 
+        This API initializes the port level parameters of Power Balancing. 
 
     Conditions:
         None.
@@ -756,30 +753,7 @@ UINT8 PB_IdentifyHighestPriorityPortInPendingState(void);
 
 **************************************************************************************************/
 void PB_InitiateNextPortNegotiation(void);
-/**************************************************************************************************
-    Function:
-        UINT8 PB_PortInWaitForAsyncTimerState (void);
 
-    Summary:
-        This API returns the port that is in eWAIT_FOR_ASYNC_REQ state.   
-
-    Description:
-        This API returns the port that is in eWAIT_FOR_ASYNC_REQ state currently. 
-        
-    Conditions:
-        None.
-
-    Input:
-        None.
-
-    Return:
-        Port in eWAIT_FOR_ASYNC_REQ state.
-
-    Remarks:
-        None. 
-
-**************************************************************************************************/
-UINT8 PB_PortInWaitForAsyncTimerState(void);
 /**************************************************************************************************
     Function:
         void PB_AsyncTimerCB (UINT8 u8PortNum, UINT8 u8Dummy);
@@ -788,9 +762,8 @@ UINT8 PB_PortInWaitForAsyncTimerState(void);
         This is the API registered as callback for Timer expiry.   
 
     Description:
-        This API will be called when the Timer expires and it will in turn call 
-        the API PB_HandleDPMEvents() to handle the timer expired event. 
-        
+        This API will be called when the Asynchronous Request Timer expires.
+         
     Conditions:
         None.
 
@@ -806,35 +779,6 @@ UINT8 PB_PortInWaitForAsyncTimerState(void);
 
 **************************************************************************************************/
 void PB_AsyncTimerCB(UINT8, UINT8);
-/**************************************************************************************************
-    Function:
-        void PB_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
-
-    Summary:
-        This API is used to form the PDOs as per power wattage value given.   
-
-    Description:
-        In PB, voltages will remain fixed. But, current varies as per the 
-        power value that is to be advertised. This API calculates the current 
-        value using power value that is given as input to this API and voltage
-        value that is arrived from the PDO initialized during configuration time
-        and updates the current value in the PDO. 
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port number.
-        u16PowerIn250mW - Power value in terms of 250mW
-
-    Return:
-        None. 
-
-    Remarks:
-        None. 
-
-**************************************************************************************************/
-void PB_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
 
 /**************************************************************************************************
     Function:
@@ -891,6 +835,30 @@ void PB_HandleReclaimPortDetachOrRenegCmplt(void);
 
 **************************************************************************************************/
 void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void PB_OnPTBankSwitch(UINT8 u8PortNum); 
+
+    Summary:
+        This API is used to handle the Throttling Bank Switch Event.
+
+    Description:
+        This API can be called to update the global and per port PB parameters 
+        and initiate renegotiation for minimum guaranteed power based 
+        on the new PT bank.  
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port Number 
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void PB_OnPTBankSwitch(UINT8 u8PortNum); 
 
 #endif /* _PB_MNGR_H */
 

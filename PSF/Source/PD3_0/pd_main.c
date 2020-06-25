@@ -40,6 +40,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 UINT8 MchpPSF_Init(void)
 {
     UINT8 u8InitStatus = TRUE;
+
+	/*Initialize PSF Stack and Structure version*/
+    IntGlobals_StackStructVersion();
     
     /* Load configurations */
     MCHP_PSF_HOOK_BOOT_TIME_CONFIG(&gasCfgStatusData);
@@ -50,11 +53,6 @@ UINT8 MchpPSF_Init(void)
     /*Initialize HW SPI module defined by the user*/
     u8InitStatus &= MCHP_PSF_HOOK_UPDHW_INTF_INIT();
 	
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-    /*Initialize HW I2C module interface defined by the user*/
-    (void)MCHP_PSF_HOOK_I2C_DCDC_INTF_INIT();
-#endif    
-    
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         /*If Timer and HW module of SOC are not initialized properly disable all the ports*/
@@ -63,9 +61,14 @@ UINT8 MchpPSF_Init(void)
             gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
                                                        ~(TYPEC_PORT_ENDIS_MASK);
         }
-        /*UPD350 Reset GPIO Init*/
-        MCHP_PSF_HOOK_UPD_RESET_GPIO_INIT(u8PortNum);
-    }  
+        #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
+        /*Initialize chip select in case of SPI configuration*/
+        MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSPI_CHIP_SELECT_FUNC);
+        #endif
+    }
+    
+    /*Since, Reset is common for all the ports. It is called only once with PORT0 as dummy value*/
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(PORT0, eUPD350_RESET_FUNC);
         
 	/*Initialize Internal global variables*/
     IntGlobals_PDInitialization();
@@ -76,49 +79,39 @@ UINT8 MchpPSF_Init(void)
     UPD_FindVBusCorrectionFactor();
     
     #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-    /*Initialize debug hardware*/
-    MCHP_PSF_HOOK_DEBUG_INIT();
+        /*Initialize debug hardware*/
+        MCHP_PSF_HOOK_DEBUG_INIT();
     #endif
     
-    /* To-do: Needs to be checked */
-//    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
-    
-    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
-    {
-        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-                                    & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
-        {
-//            /*User defined UPD Interrupt Initialization for MCU*/
-//            MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum);
-            
-            /*Port Power Initialization*/
-            PWRCTRL_initialization(u8PortNum);
-
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-            (void)MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_INIT(u8PortNum);
-#endif
-        }
-    }
+    /* Disable the global interrupt */
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    {
+        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
+                                    & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
+        {
+            /*Port Power Initialization*/
+            u8InitStatus &= PWRCTRL_Initialization(u8PortNum);
+        }
+    }
     
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
                                     & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
         {
-            MCHP_PSF_HOOK_UPD_IRQ_GPIO_INIT(u8PortNum);
+            /* Initialize the Port's IRQ*/
+            MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eUPD350_ALERT_FUNC);
             
-#if (CONFIG_DCDC_CTRL == I2C_DC_DC_CONTROL_CONFIG)
-//            (void)MCHP_PSF_HOOK_I2CDCDCALERTINIT(u8PortNum);
-//            (void)MCHP_PSF_HOOK_I2CDCDC_CONTROLLER_INIT(u8PortNum);
-#endif
+            /*Initialize the Port's DC_DC Alert */
+            MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eI2C_DC_DC_ALERT_FUNC);        
         }
-    }
+    }    
     
     DPM_StateMachineInit();  
 
+    /* Enable the global interrupt */
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     
     return u8InitStatus;

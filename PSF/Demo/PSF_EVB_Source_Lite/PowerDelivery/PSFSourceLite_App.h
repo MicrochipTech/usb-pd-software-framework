@@ -33,27 +33,49 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSFSOURCELITE_APP_H
 #define _PSFSOURCELITE_APP_H
 
-/* Defines major and minor version of PDSource Application*/
-
-#define APP_REV_MAJOR	0x00
-#define APP_REV_MINOR	0x95
-
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: Included Files                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-
+#include <PSF_APIHook.h>
 #include "psf_stdinc.h"
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: Defines and constants                                                   */
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Defines major and minor version of PSF Source Lite Application*/
+
+#define APP_REV_MAJOR	0x01
+#define APP_REV_MINOR	0x04
+
+#define APP_VOLTAGE_0mV         0
+#define APP_VOLTAGE_5000mV      5000
+#define APP_VOLTAGE_9000mV      9000
+#define APP_VOLTAGE_15000mV     15000
+#define APP_VOLTAGE_20000mV     20000
+
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions
 // *****************************************************************************
 // *****************************************************************************
-void SAMD20_SetMCUIdle(); 
+void App_SetMCUIdle(); 
 
-UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent);
+UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION u8PDEvent);
+
+void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc);
+
+void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc,
+                                    eMCHP_PSF_GPIO_DRIVE_VAL eGPIODrive);
+
+UINT8 App_PortPowerInit(UINT8 u8PortNum);
+
+void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current);
+
 
 #endif /* _PSFSOURCELITE_APP_H */
 

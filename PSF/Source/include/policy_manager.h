@@ -44,14 +44,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_DEFAULT_POWER_ROLE_MASK          (BIT(0)|BIT(1))
 #define DPM_DEFAULT_DATA_ROLE_MASK           (BIT(2)|BIT(3))
 #define DPM_DEFAULT_PD_SPEC_REV_MASK         (BIT(4)|BIT(5))
-#define DPM_VCONN_SWAP_SUPPORT_MASK           BIT(6) 
-#define DPM_NEW_PDO_ENABLE_MASK               BIT(7)
+#define DPM_NEW_PDO_ENABLE_MASK               BIT(6)
 
 /*Bit position for u8DPM_ConfigData variable*/
 #define DPM_DEFAULT_POWER_ROLE_POS           0
 #define DPM_DEFAULT_DATA_ROLE_POS            2
 #define DPM_DEFAULT_PD_SPEC_REV_POS          4
-#define DPM_NEW_PDO_ENABLE_POS               7 
+#define DPM_NEW_PDO_ENABLE_POS               6 
 
 /*Defines for getting data from u8DPM_ConfigData variable*/
 #define DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_DEFAULT_POWER_ROLE_MASK) >> DPM_DEFAULT_POWER_ROLE_POS)
@@ -59,22 +58,33 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_DEFAULT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_DEFAULT_PD_SPEC_REV_MASK) >> DPM_DEFAULT_PD_SPEC_REV_POS)
 #define DPM_GET_NEW_PDO_STATUS(u8PortNum)             ((gasDPM[u8PortNum].u8DPM_ConfigData & DPM_NEW_PDO_ENABLE_MASK) >> DPM_NEW_PDO_ENABLE_POS)
 
-/*Bit definition for u8DPM_Status variable*/
+/*Bit definition for u16DPM_Status variable*/
 #define DPM_CURR_POWER_ROLE_MASK            (BIT(0)|BIT(1))
 #define DPM_CURR_DATA_ROLE_MASK             (BIT(2)|BIT(3))
 #define DPM_CURR_PD_SPEC_REV_MASK           (BIT(4)|BIT(5))
 #define DPM_VDM_STATE_ACTIVE_MASK           BIT(6)
+#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK (BIT(8) | BIT(7))
+
+/*Bit position for u16DPM_Statuss variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
 #define DPM_CURR_DATA_ROLE_POS             2
 #define DPM_CURR_PD_SPEC_REV_POS           4
 #define DPM_VDM_STATE_ACTIVE_POS           6
+#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7 
 
 /*Defines for setting data in u8DPM_Status variable*/
-#define DPM_SET_POWER_ROLE_STS(u8PortNum, u8PowerRole)       gasDPM[u8PortNum].u8DPM_Status &= (~DPM_CURR_POWER_ROLE_MASK); \
-                                                             gasDPM[u8PortNum].u8DPM_Status |= (u8PowerRole << DPM_CURR_POWER_ROLE_POS);
+#define DPM_SET_POWER_ROLE_STS(u8PortNum, u8PowerRole)       gasDPM[u8PortNum].u16DPM_Status &= (~DPM_CURR_POWER_ROLE_MASK); \
+                                                             gasDPM[u8PortNum].u16DPM_Status |= (u8PowerRole << DPM_CURR_POWER_ROLE_POS);
 
-#define DPM_SET_DATA_ROLE_STS(u8PortNum, u8DataRole)       gasDPM[u8PortNum].u8DPM_Status &= (~DPM_CURR_DATA_ROLE_MASK); \
-                                                           gasDPM[u8PortNum].u8DPM_Status |= (u8DataRole << DPM_CURR_DATA_ROLE_POS);
+#define DPM_SET_DATA_ROLE_STS(u8PortNum, u8DataRole)       gasDPM[u8PortNum].u16DPM_Status &= (~DPM_CURR_DATA_ROLE_MASK); \
+                                                           gasDPM[u8PortNum].u16DPM_Status |= (u8DataRole << DPM_CURR_DATA_ROLE_POS);
+
+/*Defines for getting data from u8PortNum variable*/
+#define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u16DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
+#define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)          ((gasDPM[u8PortNum].u16DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
+#define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u16DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
+#define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)  ((gasDPM[u8PortNum].u16DPM_Status & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Defines to get data from given PDO
@@ -143,17 +153,12 @@ Source/Sink Power delivery objects*/
 #define DPM_DEBUG_PDO_5V_1P5A     DPM_DEBUG_PDO_GENERATION(1, 1, 0, 1500, 5000)
 #define DPM_DEBUG_PDO_5V_3A       DPM_DEBUG_PDO_GENERATION(1, 1, 0, 3000, 5000)
 
-/****************Defines to get Status from u8DPM_Status****************************/
-#define DPM_GET_DPM_STATUS(u8PortNum)				gasDPM[u8PortNum].u8DPM_Status
-/*Defines for getting data by passing u8DPM_Status variable*/
-#define DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8DPM_Status)   ((u8DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
-#define DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u8DPM_Status)    ((u8DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
-#define DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8DPM_Status)  ((u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
-
-/****************Defines to get Status from u8PortNum****************************/
-#define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)   ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
-#define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)    ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
-#define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)  ((gasDPM[u8PortNum].u8DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
+/****************Defines to get Status from u16DPM_Status****************************/
+#define DPM_GET_DPM_STATUS(u8PortNum)				gasDPM[u8PortNum].u16DPM_Status
+/*Defines for getting data by passing u16DPM_Status variable*/
+#define DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u16DPM_Status)   ((u16DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
+#define DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u16DPM_Status)    ((u16DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
+#define DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u16DPM_Status)  ((u16DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
 
 /********************** Return Values from PE_ValidateMessage API**************/
 #define DPM_VALID_REQUEST            1
@@ -173,6 +178,7 @@ Source/Sink Power delivery objects*/
 
 /*defines to set u16SinkOperatingCurrInmA */
 #define DPM_0mA     0
+#define DPM_50mA    50
 #define DPM_500mA   500
 #define DPM_900mA   900
 #define DPM_1000mA  1000
@@ -184,7 +190,11 @@ Source/Sink Power delivery objects*/
 
 /*defines to convert voltage and current in terms of 50mV and 10mA to mV and mA respectively*/
 #define DPM_10mA    10
+#define DPM_20mV    20
 #define DPM_50mV    50
+
+/* define to set allocated power in terms of 250mW */
+#define DPM_250mW   250000
 
 /***************************************u8PowerFaultISR defines*************** */
 #define DPM_POWER_FAULT_OVP				BIT(0)
@@ -205,7 +215,7 @@ Source/Sink Power delivery objects*/
 #define DPM_PORT_POWER_ROLE_STATUS_DRP                        (2 << 4)
 #define DPM_PORT_VCONN_STATUS                                 BIT(6)
 #define DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS        BIT(7)
-#define DPM_PORT_PD_BAL_REDUCED_SRC_CAPABILITIES_STATUS       BIT(8)
+#define DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS              BIT(8)
 #define DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS               BIT(9)
 #define DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS               BIT(10)
 #define DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS                   BIT(11)
@@ -231,9 +241,12 @@ Source/Sink Power delivery objects*/
 #define DPM_PORT_IO_30_IND_STATUS                    BIT(8)
 #define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(9)
 
+/* *************************Feature Select parameters *********************** */
+#define DPM_PORT_PB_ENABLE                           BIT(0)
+
 /*********************u8SinkConfigSel defines******************/
 #define DPM_SINK_CONFIG_SINK_MODE_SEL_MASK  (BIT(0) | BIT(1))
-#define DPM_SINK_MODE_A     0x00
+#define DPM_SINK_MODE_A      0x00
 #define DPM_SINK_MODE_B      BIT(0)
 
 /*********************u8DAC_I_Direction defines****************/
@@ -254,37 +267,33 @@ Source/Sink Power delivery objects*/
 #define DPM_NEXT_PWR_INDEX(x) (x+1)
 
 #define DPM_4BYTES_FOR_EACH_PDO_OF(PDO_Count) (PDO_Count*4)
+
+/**************************Defines for u8PowerFaultFlags***********************/
+#define DPM_HR_COMPLETE_WAIT_POS              0
+#define DPM_TYPEC_ERR_RECOVERY_FLAG_POS       1
+#define DPM_HR_COMPLETE_WAIT_MASK             (1 << DPM_HR_COMPLETE_WAIT_POS)
+#define DPM_TYPEC_ERR_RECOVERY_FLAG_MASK      (1 << DPM_TYPEC_ERR_RECOVERY_FLAG_POS)
+
  
 /****************** New PDO Enable/Disable Defines ************/
-#define DPM_ENABLE_NEW_PDO                    1
-#define DPM_DISABLE_NEW_PDO                   0
+#define DPM_ENABLE_NEW_PDO(u8PortNum)     (gasDPM[u8PortNum].u8DPM_ConfigData |= DPM_NEW_PDO_ENABLE_MASK)
+#define DPM_DISABLE_NEW_PDO(u8PortNum)    (gasDPM[u8PortNum].u8DPM_ConfigData &= ~(DPM_NEW_PDO_ENABLE_MASK))
+
 /****************** Power Balancing Defines ***********/
 /* PB Enable for System */
-#define DPM_PB_ENABLE                         0x10
-
-/* PB Enable for the port */
-#define DPM_PB_PORT_ENABLE                    0x01
-
-/* Power Throttling Bank values */
-#define DPM_PD_THROTTLE_BANK_A                0U 
-#define DPM_PD_THROTTLE_BANK_B                1U
-#define DPM_PD_THROTTLE_BANK_C                2U
-#define DPM_PD_THROTTLE_SHUTDOWN_MODE         3U
+#define DPM_PB_ENABLE                   0x10
 
 /* Macro to know if PB is enabled for the system and for the port */
-#define DPM_IS_PB_ENABLED(u8PortNum)   (((gasCfgStatusData.u8PBEnableSelect & DPM_PB_ENABLE) && \
-                             (gasCfgStatusData.sPBPerPortData[u8PortNum].u8PBEnablePriority & DPM_PB_PORT_ENABLE)) \
-                                    ? TRUE : FALSE)   
+#define DPM_IS_PB_ENABLED(u8PortNum)   ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE) \
+                                            ? TRUE : FALSE)   
 
-/* Macro to know if PPS is enabled for the port */
-#define DPM_IS_PPS_ENABLED(u8PortNum)  ((gasCfgStatusData.sPPSPerPortData[u8PortNum].u8PPSEnable & \
-                                        DPM_PPS_ENABLE) ? TRUE : FALSE)
+/* PT Enable for the system */
+#define DPM_PT_ENABLE                   0x01 
+
+/* Macro to know if PT is enabled for the system */
+#define DPM_IS_PT_ENABLED             ((gasCfgStatusData.u8PwrThrottleCfg & DPM_PT_ENABLE) ? TRUE : FALSE)  
 
 /*********************PPS APDO Defines ******************/
-#define DPM_PPS_ENABLE                           0x01 
-#define DPM_MAX_APDO_COUNT                       3 
-#define DPM_PPS_APDO_EN_DIS_MASK                 0x02 
-
 #define DPM_APDO_MAX_CURRENT_UNIT                50 
 #define DPM_APDO_MIN_VOLTAGE_UNIT                100
 #define DPM_APDO_MAX_VOLTAGE_UNIT                100
@@ -298,14 +307,110 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_APDO_MAX_CURRENT_IN_mA(u32Apdo)  ((DPM_GET_APDO_MAX_CURRENT(u32Apdo)) * DPM_APDO_MAX_CURRENT_UNIT)
 
 #define DPM_APDO_MIN_VOLTAGE_MASK                0x0000FF00 
-#define DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)        ((u32Apdo) & DPM_APDO_MIN_VOLTAGE_MASK)
+#define DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)        (((u32Apdo) & DPM_APDO_MIN_VOLTAGE_MASK) >> DPM_APDO_MIN_VOLTAGE_POS)
 #define DPM_GET_APDO_MIN_VOLTAGE_IN_mV(u32Apdo)  ((DPM_GET_APDO_MIN_VOLTAGE(u32Apdo)) * DPM_APDO_MIN_VOLTAGE_UNIT) 
 
 #define DPM_APDO_MAX_VOLTAGE_MASK                0x01FE0000 
-#define DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)        ((u32Apdo) & DPM_APDO_MAX_VOLTAGE_MASK)
+#define DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)        (((u32Apdo) & DPM_APDO_MAX_VOLTAGE_MASK) >> DPM_APDO_MAX_VOLTAGE_POS)
 #define DPM_GET_APDO_MAX_VOLTAGE_IN_mV(u32Apdo)  ((DPM_GET_APDO_MAX_VOLTAGE(u32Apdo)) * DPM_APDO_MAX_VOLTAGE_UNIT) 
 
 #define DPM_3A_IN_50mA                           (DPM_3000mA / 50) 
+
+/*********************PPS RDO Defines ******************/ 
+/* Defines for return values of DPM_GET_CURRENT_EXPLICIT_CONTRACT macro */
+#define DPM_PD_FIXED_SUPPLY_CONTRACT             0U
+#define DPM_PD_BATTERY_SUPPLY_CONTRACT           1U
+#define DPM_PD_VARIABLE_SUPPLY_CONTRACT          2U
+#define DPM_PD_PPS_CONTRACT                      3U
+
+#define DPM_PROG_RDO_OP_VOLTAGE_MASK             0x000FFE00
+#define DPM_PROG_RDO_OPR_CURRENT_MASK            0x0000007F
+
+#define DPM_PROG_RDO_OP_VOLTAGE_POS              9 
+
+#define DPM_PROG_RDO_OP_VOLTAGE_UNIT             20
+#define DPM_PROG_RDO_OPR_CURRENT_UNIT            50
+
+#define DPM_GET_OP_VOLTAGE_FROM_PROG_RDO(u32Rdo)       (((u32Rdo) & DPM_PROG_RDO_OP_VOLTAGE_MASK) >> DPM_PROG_RDO_OP_VOLTAGE_POS)  
+#define DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(u32Rdo) ((DPM_GET_OP_VOLTAGE_FROM_PROG_RDO(u32Rdo)) * DPM_PROG_RDO_OP_VOLTAGE_UNIT)   
+
+#define DPM_GET_PROG_RDO_OPR_CURRENT(u32Rdo)         ((u32Rdo) & DPM_PROG_RDO_OPR_CURRENT_MASK)  
+#define DPM_GET_PROG_RDO_OPR_CURRENT_IN_mA(u32Rdo)   ((DPM_GET_PROG_RDO_OPR_CURRENT(u32Rdo)) * DPM_PROG_RDO_OPR_CURRENT_UNIT)   
+
+/* vPpsSmallStep of USB PD Spec 3.0 */
+#define DPM_PPS_VOLTAGE_SMALL_STEP               500
+
+/******************Partner Status Store/Clear Defines **********/
+#define DPM_STORE_PARTNER_STATUS                     1
+#define DPM_CLEAR_PARTNER_STATUS                     0 
+
+/* Macro to get current PT Bank */
+#define DPM_PT_BANK_MASK                    0x06 
+#define DPM_PT_BANK_POS                     1
+#define DPM_GET_CURRENT_PT_BANK             ((gasCfgStatusData.u8PwrThrottleCfg & DPM_PT_BANK_MASK) >> DPM_PT_BANK_POS)
+
+#define DPM_FIXED_PDO_CURRENT_MASK              0x000003FF 
+
+/* Power Throttling Bank values */
+#define PD_THROTTLE_BANK_A                      0U 
+#define PD_THROTTLE_BANK_B                      1U
+#define PD_THROTTLE_BANK_C                      2U
+#define PD_THROTTLE_SHUTDOWN_MODE               3U
+
+/************************u8AlertType variable possible values macros*********/
+/*Battery Status Change Event (Attach/Detach/Charging/discharging/idle)*/
+#define DPM_ALERT_TYPE_BATTERY_STATUS_CHANGE    BIT(1)
+/*OCP Applicable only for Source*/
+#define DPM_ALERT_TYPE_OCP                      BIT(2)
+#define DPM_ALERT_TYPE_OTP                      BIT(3)
+/*Operating Condition Change*/
+#define DPM_ALERT_TYPE_OPR_COND_CHANGE          BIT(4)
+/*Source Input Change Event */
+#define DPM_ALERT_TYPE_SRC_INPUT_CHANGE         BIT(5)       
+#define DPM_ALERT_TYPE_OVP                      BIT(6)
+
+#define DPM_ALERT_TYPE_FIELD_POS                24
+
+/********************u8StatusEventFlags variable possible values macros*********/
+#define DPM_EVENT_TYPE_OCP                      BIT(1)
+#define DPM_EVENT_TYPE_OTP                      BIT(2)       
+#define DPM_EVENT_TYPE_OVP                      BIT(3)
+#define DPM_EVENT_TYPE_CL_MODE                  BIT(4)
+#define DPM_EVENT_TYPE_CL_CV_MODE_MASK          BIT(4)
+
+/*******************DPM_ReturnPowerStatus possible return values macros*********/
+/*Source Power limited due to cable supported current*/
+#define DPM_PWRSTS_SRCPWR_LTD_CABLE_CURR           BIT(1)
+/*Source Power limited due to insufficient power available while sourcing other ports */
+#define DPM_PWRSTS_SRCPWR_LTD_INSUFF_PWR_AVAIL     BIT(2)
+/*Source Power limited due to insufficient external power */
+#define DPM_PWRSTS_SRCPWR_LTD_INSUFF_EXT_PWR       BIT(3)
+/*Source power limited due to Event Flag in place (Event flag must also be set)*/
+#define DPM_PWRSTS_SRCPWR_LTD_EVNT_FLAG            BIT(4)
+/*Source power limited due to temperature*/
+#define DPM_PWRSTS_SRCPWR_LTD_TEMP                 BIT(5)
+
+
+/************************Temperature Status possible values macros*********/
+#define DPM_TEMP_STATUS_NOT_SUPPORTED       0
+#define DPM_TEMP_STATUS_NORMAL              BIT(1)
+#define DPM_TEMP_STATUS_WARNING             BIT(2)
+#define DPM_TEMP_STATUS_OVER_TEMP           (BIT(1) | BIT(2))
+#define DPM_TEMP_STATUS_MASK                (BIT(1) | BIT(2))
+
+/*OMF - Operating Mode Flag indicating Source operating mode.
+ When set it is Current Limit Mode, When cleared it is Constant Voltage mode*/
+#define DPM_REAL_TIME_FLAG_OMF_IN_CL_MODE          BIT(3)
+#define DPM_REAL_TIME_FLAG_OMF_FIELD_MASK          BIT(3)
+
+/***************************PPS status Data block *********************/
+#define DPM_PPSSDB_OUTPUT_VOLTAGE_FIELD_POS       0
+#define DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS       16
+#define DPM_PPSSDB_REAL_TIME_FLAG_FIELD_POS       24
+
+#define DPM_PPSSDB_OUTPUT_VOLT_UNSUPPORTED_VAL            0xFFFF
+#define DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL         0xFF
+#define DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL 0xFFFFFFFF
 
 // *****************************************************************************
 // *****************************************************************************
@@ -315,32 +420,45 @@ Source/Sink Power delivery objects*/
 /*Structure of Device Policy Manager*/
 typedef struct MCHP_PSF_STRUCT_PACKED_START
 {
-  UINT8 u8DPM_ConfigData;   //Bit 1:0 - Default Port Role <p />
-                            //Bit 3:2 - Default Data Role <p />
-                            //Bit 5:4 - Default PD Spec Revision <p />
-                            //Bit 6 - Default Vconn Swap support
-                            //Bit 7 - New PDO Enable <p /> 
-  UINT8 u8DPM_Status;       //Bit 1:0 - Status of Port Role <p />
-                            //Bit 3:2 - Status of Data Role <p />
-                            //Bit 5:4 - Status of PD Spec Revision <p />
-                            //Bit 6 - Status of Vconn Swap support
-  UINT8 u8VCONNErrCounter;
-  UINT8 u8NegotiatedPDOIndex;
+  UINT32  u32NegotiatedPDO;     //NegotiatedPDO
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
   UINT16 u16SinkOperatingCurrInmA;   //Operating current
-  UINT32  u32NegotiatedPDO;     //NegotiatedPDO
- 
-  #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+  UINT16 u16PrevVBUSVoltageInmV;    // Previous VBUS Voltage in terms of mV
+  UINT16 u16DPM_Status;                 //Bit 1:0 - Status of Port Role <p />
+                                        //Bit 3:2 - Status of Data Role <p />
+                                        //Bit 5:4 - Status of PD Spec Revision <p />
+                                        //Bit 6 - Status of Vconn Swap support
+                                        //Bits 8:7 - Type of current Explicit Contract 
+                                        //      00 - Fixed  
+                                        //      01 - Variable
+                                        //      10 - Battery
+                                        //      11 - Programmable
+  UINT8 u8DPMInternalEvents; // BIT(0) - DPM_INT_EVT_INITIATE_ALERT
+                             // BIT(1) - DPM_INT_EVT_INITIATE_GET_STATUS
+  UINT8 u8DPM_ConfigData;   //Bit 0 - Default Port Role <p />
+                            //Bit 1 - Default Data Role <p />
+                            //Bit 3:2 - Default PD Spec Revision <p />
+                            //Bit 4 - New PDO Enable <p /> 
+
+  UINT8 u8VCONNErrCounter;
+  UINT8 u8NegotiatedPDOIndex;
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+      UINT8 u8PowerFaultISR;          //Power fault ISR flag
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
       UINT8 u8VCONNPowerGoodTmrID;    //VConn PowerGood Timer ID
 	  UINT8 u8VBUSPowerFaultCount;      //VBUS Power fault count
-      UINT8 u8VCONNPowerFaultCount;     //VConn Power fault count     
-      UINT8 u8VCONNGoodtoSupply;        //Vconn good to supply
-	  UINT8 u8PowerFaultISR;          //Power fault ISR flag
-	  UINT8 u8HRCompleteWait;         //Hard Reset complete wait flag
-      UINT8 u8TypeCErrRecFlag;        //Type-C Error Recovery Flag
-  #endif
-  
+      UINT8 u8VCONNPowerFaultCount;     //VCONN Power fault count     
+      UINT8 u8VCONNGoodtoSupply;        //VCONN good to supply
+	  UINT8 u8PowerFaultFlags;        //Flags required for power fault handling
+                                      //BIT 0 - Hard Reset complete wait flag
+                                      //BIT 1 - Type-C Error Recovery Flag
+#endif
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+  UINT8 u8AlertType;
+  UINT8 u8StatusEventFlags;
+  UINT8 u8RealTimeFlags;
+  UINT8 u8StsClearTmrID;
+#endif
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
 /************************ Client Request Defines ******************************/
@@ -349,29 +467,32 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 
 #define DPM_CLIENT_REQ_RENEGOTIATE               BIT(0)
 #define DPM_CLIENT_REQ_GET_SINK_CAPS             BIT(1)
-#define DPM_CLIENT_REQ_SEND_ALERT                BIT(2)
-#define DPM_CLIENT_REQ_GET_STATUS                BIT(3)
-#define DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD        BIT(4)
-#define DPM_CLIENT_REQ_HANDLE_VBUS_FAULT         BIT(5)
+#define DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD        BIT(2)
+#define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(3)
+#define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(4)
+#define DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT      BIT(5)
 
 /* Macros to raise a client request to DPM */
-#define DPM_SET_RENEGOTIATE_REQ(u8PortNum)     (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+#define DPM_SET_RENEGOTIATE_REQ(u8PortNum)     (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_RENEGOTIATE)
 
-#define DPM_SET_GET_SINK_CAPS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+#define DPM_SET_GET_SINK_CAPS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_GET_SINK_CAPS)
 
-#define DPM_SET_SEND_ALERT_REQ(u8PortNum)      (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
-                                                            |= DPM_CLIENT_REQ_SEND_ALERT)
-
-#define DPM_SET_GET_STATUS_REQ(u8PortNum)      (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
-                                                            |= DPM_CLIENT_REQ_GET_STATUS)
-
-#define DPM_SET_GET_STATUS_EXTD_REQ(u8PortNum)  (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
+#define DPM_SET_GET_STATUS_EXTD_REQ(u8PortNum)  (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD)
 
-#define DPM_SET_VBUS_FAULT_HANDLING_REQ(u8PortNum) (gasCfgStatusData.sPerPortData[u8PortNum].u8ClientRequest \
-                                                            |= DPM_CLIENT_REQ_HANDLE_VBUS_FAULT)
+#define DPM_SET_VBUS_FAULT_OV_REQ(u8PortNum)    (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
+                                                            |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV)
+
+#define DPM_SET_VBUS_FAULT_OCS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
+                                                            |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
+
+/***************************Internal Events Defines**********************************/
+#define DPM_INT_EVT_INITIATE_ALERT          BIT(0)
+#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(1)
+
+/**********************************************************************************/
 
 /* Enumeration to define the types of PDO */ 
 typedef enum PDOtype
@@ -552,7 +673,7 @@ void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Conditions:
         None.
     Input:
-        u8PortNum     - Port Number for which the sink capability to be returned
+        u8PortNum     - Port Number
         u8VConnEnable - Variable denoting either to turn on or off the VCONN
                       - DPM_VCONN_ON (Turn on VCONN)
                       - DPM_VCONN_OFF (Turn off VCONN)
@@ -575,7 +696,7 @@ void DPM_VConnOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
+        u8PortNum - Port Number 
     Return:
         UINT16
     Remarks:
@@ -594,7 +715,7 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum);
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
+        u8PortNum       - Port Number 
         *pu8TypeCState   -  Pointer holding the Type C State
         *pu8TypeCSubState - Pointer holding the Type C Sub State
     Return:
@@ -616,7 +737,7 @@ void DPM_GetTypeCStates(UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSu
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
+        u8PortNum       - Port Number 
         u8TypeCState   -  Type C State to be set
         u8TypeCSubState - Type C SubState to be set
     Return:
@@ -638,8 +759,8 @@ void DPM_SetTypeCState(UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubStat
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
-        *pu8RaPresence   - Pointer returning the Powered cable presence
+        u8PortNum       - Port Number 
+        *pu8RaPresence  - Pointer returning the Powered cable presence
     Return:
         None
     Remarks:
@@ -660,7 +781,7 @@ void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence);
     Conditions:
         None.
     Input:
-        u8PortNum       - Port Number for which the sink capability to be returned
+        u8PortNum       - Port Number
         u8VbusOnorOff   - Variable denoting either to turn on or off the VBUS
                         - DPM_VBUS_ON (Turn on VBUS)
                         - DPM_VBUS_OFF (Turn off VBUS)
@@ -684,7 +805,7 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Conditions:
         None.
     Input:
-        u8PortNum  - Port Number for which the sink capability to be returned
+        u8PortNum  - Port Number 
     Return:
         UINT8
 
@@ -698,7 +819,7 @@ UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum);
         void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
 
     Summary:
-        Device Policy Manager evaluates the received source capability aganist the sink capability and 
+        Device Policy Manager evaluates the received source capability against the sink capability and 
     chooses the nearest match PDO for the data request message
 
     Devices Supported:
@@ -1068,7 +1189,7 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum);
         Updates the Advertised PDO registers and status bits once PDOs are advertised. 
     Description:
         This API sets the advertised PDO count, updates the registers and sets/clears  
-        the PD_BAL_REDUCED_SOURCE_CAPABILITIES bit in Port Connection Status 
+        the REDUCED_SOURCE_CAPABILITIES bit in Port Connection Status 
         after comparing the advertised PDOs with Fixed PDOs.       . 
     Conditions:
         None
@@ -1129,28 +1250,32 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 
 /**************************************************************************************************
     Function:
-        void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap)
+        UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
     Summary:
-        Includes APDOs in Source capabilities buffer.  
+        Determines if PS_RDY needs to be sent within tPpsSrcTransLarge 
+        or tPpsSrcTransSmall in case of PPS contract.  
     Description:
-        This API can be called to append the APDOs in the Source capabilities buffer. 
-        This API will ensure that the total Data Object count does not exceed 7.  
+        This API is used to determine if PS_RDY needs to be sent within 
+        tPpsSrcTransLarge or tPpsSrcTransSmall in case the current explicit
+        contract is for a Programmable APDO.
     Conditions:
         None
     Input:
         u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        *u8pSrcPDOCnt - Number of PDOs included in Source caps buffer
-        *u32pSrcCap - Pointer to the array of Source caps buffer 
     Return:
-        None. 
+        PE_PPS_SRCTRANSLARGE_TIMEOUT_MS - If difference between previous and current 
+        RDO output voltages is greater than vPpsSmallStep
+        PE_PPS_SRCTRANSSMALL_TIMEOUT_MS - If difference between previous and current 
+        RDO output voltages is less than or equal to vPpsSmallStep
     Remarks:
         None.
 **************************************************************************************************/
-void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
+
+UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_HandleVBUSFault(UINT8 u8PortNum); 
+        void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType); 
     Summary:
         Enables DPM to handle the VBUS Fault.   
     Description:
@@ -1163,37 +1288,14 @@ void DPM_IncludeAPDOs(UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *u32pSrcCap);
         None
     Input:
         u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8FaultType - Type of Fault
     Return:
         None. 
     Remarks:
         None.
 **************************************************************************************************/
 
-void DPM_HandleVBUSFault(UINT8 u8PortNum); 
-
-/**************************************************************************************************
-    Function:
-        void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable); 
-    Summary:
-        Enables DPM to send Source capabilities from the u32aNewPDO Array.  
-    Description:
-        By default, Source capabilities would be taken from u32aSourcePDO 
-        array. If there is a client request for dynamic renegotiation, then Source
-        capabilities has to be taken from u32aNewPDO Array. Any application can 
-        update the u32aNewPDO Array with the source caps message and call this API
-        for the New PDOs to be advertised in the PD Bus. 
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u8EnableDisable - TRUE - New PDOs are advertised. 
-                          FALSE - Default Source PDOs are advertised. 
-    Return:
-        None. 
-    Remarks:
-        None.
-**************************************************************************************************/
-void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable); 
+void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType); 
 
 /**************************************************************************************************
     Function:
@@ -1215,6 +1317,288 @@ void DPM_EnableNewPDO(UINT8 u8PortNum, UINT8 u8EnableDisable);
         None.
 **************************************************************************************************/
 void DPM_ClearAllClientRequests(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_StoreSinkAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf);  
+    Summary:
+        Stores the details of Alert message received from Port Partner.  
+    Description:
+        This API is used by DPM to store the details of Alert message 
+        received from Port Partner, which can later be used by the application.
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8DataBuf - Pointer which holds the data objects of received alert message.
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_StorePartnerAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr);
+    Summary:
+        Stores or Clears the details of Status message received from Port Partner.  
+    Description:
+        This API is used by DPM to store or clear the details of Status message 
+        received from Port Partner, which can later be used by the application.
+    Conditions:
+        None
+    Input:
+        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8DataBuf - Pointer which holds the data objects of received alert message.
+        u8StrClr - TRUE - Store the Data in Status array, 
+                   FALSE - Clear the Status array 
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr);
+
+/**************************************************************************************************
+    Function:
+        void DPM_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
+
+    Summary:
+        This API is used to form the PDOs as per power wattage value given.   
+
+    Description:
+        This API updates the u32aNewPDO[7] array by calculating the current 
+        value using power value that is given as input to this API and voltage
+        value derived from u32aSourcePDO[7] array
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number.
+        u16PowerIn250mW - Power value in terms of 250mW
+
+    Return:
+        None. 
+
+    Remarks:
+        None. 
+
+**************************************************************************************************/
+void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_InternalEventHandler(UINT8 u8PortNum); 
+    Summary:
+        This API handles the internal events posted to DPM
+    Description:
+        This API to handle the internal events posted to DPM by various layer.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        None. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_InternalEventHandler(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
+    Summary:
+        This API to register an internal events to DPM layer
+    Description:
+        Internal Events to be handled by DPM_InternalEventHandler shall be registered by
+        this API. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8EventType - Internal Event Type to be registered.
+    Return:
+        None. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType);
+
+/**************************************************************************************************
+    Function:
+        UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum)
+    Summary:
+        Returns Alert Data Object
+    Description:
+        API to return Alert Data Object for Alert message
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        UINT32 - Alert Data Type. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pau8StatusDO);
+    Summary:
+        Updates Status Data Block in the input array passed
+    Description:
+        API to get Status message Data Block
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        pau8StatusDO - Pointer to array of length 6 to be passed.
+    Return:
+        None. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pu8StatusDO);
+
+/**************************************************************************************************
+    Function:
+        UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum)
+    Summary:
+        Returns PPS Status Data Block
+    Description:
+        API to return PPS Status message Data Block.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        UINT32 - PPS status Data Block. 
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+    Summary:
+        Timer callback for DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timeout
+    Description:
+        API to clear the status flags stored on DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timeout
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8DummyVariable - Dummy variable
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum); 
+    Summary:
+        Returns Current Power Status of the system 
+    Description:
+        API to return current power status of the system. The value 
+        returned by this API would be 5th field of Status Data Block. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        UINT8 - Power Status 
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_ReturnTemperatureStatus(); 
+    Summary:
+        Returns Current Temperature Status of the system based on currently
+        active throttling bank. 
+    Description:
+        API to return current temperature status of the system. The value 
+        returned by this API would be 4th field of Status Data Block. 
+    Conditions:
+        None.
+    Input:
+        None.
+    Return:
+        UINT8 - Temperature Status 
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT8 DPM_ReturnTemperatureStatus (void); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable); 
+    Summary:
+        API to enable/disable a port 
+    Description:
+        This API can be called if a particular ports needs to be 
+        disabled or enabled.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8Enable - TRUE - Enable the port 
+                   FALSE - Disable the port 
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable); 
+
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum);  
+    Summary:
+        API to know if at least one APDO is advertised.
+    Description:
+        This API can be called to know if at least one of the PDOs advertised
+        in source capabilities is an APDO. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8Enable - TRUE - APDO is advertised
+                   FALSE - No APDO is advertised
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_OnTypeCDetach(UINT8 u8PortNum); 
+    Summary:
+        API to clear the variables that are applicable during a type c detach event. 
+    Description:
+        This API clears all the applicable variables whose data is no more valid
+        once a Type C Detach event has occurred. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_OnTypeCDetach(UINT8 u8PortNum);
 
 #endif /*_POLICY_MANAGER_H_*/
 

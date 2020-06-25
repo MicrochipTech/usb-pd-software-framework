@@ -32,7 +32,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
 #include <psf_stdinc.h>
-#include<string.h>
 /******************************************************************************************************/
 void UPD_RegWriteByte (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8WriteValue)
 {
@@ -102,20 +101,22 @@ void UPD_RegisterRead(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, 
 void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset, 
         UINT8 *pu8WriteData, UINT8 u8WriteDataLen)
 {
-    /*Enable Hardware Interface for Communication for the specific port*/
-	MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, TRUE);
-    
     #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
     
 	UINT8 u8Command [UPD_SPI_WRITE_CMD_LEN] = {UPD_SPI_WRITE_OPCODE,
                                                 HIBYTE(u16RegOffset),   /*HiByte of Register to written*/
                                                 LOBYTE(u16RegOffset)};  /*LoByte of Register to written*/
 	  
+    /*Enable SPI Select for communication*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_ASSERT);
     
 	(void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, u8Command, \
             (UINT16)UPD_SPI_WRITE_CMD_LEN);
     
 	(void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, pu8WriteData, u8WriteDataLen);
+    
+    /*Disable SPI Select communication */
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_DEASSERT);
     
     #else
     UINT8 u8Writebuffer [UPD_I2C_MAX_BYTE_WRITE];
@@ -132,17 +133,12 @@ void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset,
     (void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, u8Writebuffer, u8WriteBufLen);
     
     #endif
-    
-	MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, FALSE);
 }
 
 /******************************************************************************************************/
-
 void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
         UINT8 *pu8ReadData, UINT8 u8Readlen)
 {
-    MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, TRUE);
-  
    #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
   
     UINT8 u8Command [UPD_SPI_READ_CMD_LEN];
@@ -152,6 +148,14 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
 	u8Command[2] = LOBYTE (u16RegOffset);
 	u8Command[3] = UPD_SPI_DUMMY_BYTE;
     
+    /*Enable SPI Select for communication*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_ASSERT);
+    
+    (void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
+    
+     /*Disable SPI Select for communication*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_DEASSERT);
+    
     #else
 
     UINT8 u8Command [UPD_I2C_REG_CMD_LEN];
@@ -159,58 +163,11 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
     u8Command[0] = HIBYTE (u16RegOffset);
     u8Command[1] = LOBYTE (u16RegOffset);
     
-    #endif
+    (void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
     
-	(void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
-
-	MCHP_PSF_HOOK_UPD_COMM_ENABLE (u8PortNum, FALSE);
+    #endif
 
 }
-/******************************************************************************************************/
-void UPD_GPIOEnableDisable(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8EnableDisable)
-{
-    if(u8EnableDisable == UPD_ENABLE_GPIO)
-    {
-         UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_GPIO_ENABLE);
-    }
-    else /*UPD_DISABLE_GPIO*/
-    {
-        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_GPIO_ENABLE);
-    }   
-
-}
-/******************************************************************************************************/
-
-void UPD_GPIOSetDirection(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8Direction)
-{
-  
-    if(UPD_GPIO_SETDIR_OUTPUT == u8Direction)
-    {
-         UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_DIRECTION);
-    }
-   
-    else
-    {
-        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_DIRECTION);
-    }   
-
-}
-/******************************************************************************************************/
-
-void UPD_GPIOSetBufferType(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8BufferType)
-{
-  
-    if(UPD_GPIO_SETBUF_PUSHPULL == u8BufferType)
-    {
-         UPD_RegByteSetBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_BUFFER_TYPE);
-    }
-   
-    else
-    {
-        UPD_RegByteClearBit (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), UPD_CFG_PIO_BUFFER_TYPE);
-    }   
-}
-
 /******************************************************************************************************/
 
 void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
@@ -229,21 +186,6 @@ void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT
         /*write the value to the GPIO register*/
         UPD_RegWriteByte(u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum), u8PioData);
     }
-}
-
-/******************************************************************************************************/
-
-void UPD_GPIOSetClearOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8SetClear)
-{
-    if(UPD_GPIO_SET == u8SetClear)
-    {
-         UPD_RegByteSetBit (u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum), UPD_CFG_PIO_DATAOUTPUT);
-    }
-   
-    else
-    {
-        UPD_RegByteClearBit (u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum), UPD_CFG_PIO_DATAOUTPUT);
-    }   
 }
 
 /******************************************************************************************************/
@@ -401,7 +343,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
 		UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN),\
 										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
         /*Notify Power fault to DPM only none of the Power fault recovery is not in progress*/
-        if (!gasDPM[u8PortNum].u8HRCompleteWait)
+        if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
         {
             /* Notify DPM about the power fault*/
             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
@@ -411,7 +353,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
             UINT8 u8VBUSEn;
             /*When PIO override is disabled; disable EN_VBUS/EN_SINK based on the
              role on a power fault*/
-            #if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
+            #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
             u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
             #else
             u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
@@ -439,7 +381,7 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
   	/* Override 2 - Fault Low*/
 	UINT8 u8PIONum;
     
-    #if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
+    #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
 	/* Get the PIO number for EN_VBUS */
 	u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
     #else
@@ -617,6 +559,17 @@ void UPD_PwrManagementInit(UINT8 u8PortNum)
 /********************************************************************************************/
 #endif /* INCLUDE_POWER_MANAGEMENT_CTRL*/
 /********************************************************************************************/
+void UPD_ResetThroughGPIO()
+{
+    /*Since, all UPD350 PIOs are tied to single PIO, Reset is done for PORT0
+     alone to avoid multiple reset, PORT0 is passed as dummy variable */
+    /* Pull down is driven to reset the UPD350*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(PORT0, eUPD350_RESET_FUNC,eGPIO_ASSERT);
+
+    /* Set to default state*/
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(PORT0, eUPD350_RESET_FUNC,eGPIO_DEASSERT);
+}
+
 void UPD_CheckAndDisablePorts (void)
 {
     UINT8 u8ReadData[4];
@@ -624,12 +577,12 @@ void UPD_CheckAndDisablePorts (void)
     /*variable to hold the timer id*/
     UINT8 u8TimerID;
     
+     /* Reset the Port's UPD350 present*/
+    UPD_ResetThroughGPIO();
+
     /*run a loop for all the number of CONFIG_PD_PORT_COUNT to check all ports*/
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        /* Reset the Port's UPD350 present*/
-        MCHP_PSF_HOOK_UPD_RESET_THRU_GPIO(u8PortNum);
-        
         /*Check if timer is Active, if Timer expired, come out of this loop */
         
         if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
@@ -664,7 +617,7 @@ void UPD_CheckAndDisablePorts (void)
                     }
                     else
                     {
-                        /* If the VID and PID doesnt match, Disable the ports */
+                        /* If the VID and PID doesn't match, Disable the ports */
                         gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
                                 ~(TYPEC_PORT_ENDIS_MASK);
                         
@@ -680,7 +633,7 @@ void UPD_CheckAndDisablePorts (void)
             } /* end of while*/
             /*kill the timer if the UPD is identified.*/
             PDTimer_Kill (u8TimerID);
-        } /*endof if for port check*/
+        } /*end of if for port check*/
     } /*end of for*/
     
     /* Work around - If port-0 as source and port-1 as sink interrupt issued continuously */

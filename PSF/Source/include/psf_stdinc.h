@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -38,9 +38,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #if (TRUE == INCLUDE_POWER_BALANCING)
 #include <pb_mngr.h>
 #endif
+#if (TRUE == INCLUDE_POWER_THROTTLING)
+#include <pt_mngr.h>
+#endif 
 #include <int_globals.h>
 #include <policy_engine_fwup.h>
 #include <ProjectVersion.h>
 #include <timer_defs.h>
+#include <upd350_pio_drivers.h>
 
 #endif

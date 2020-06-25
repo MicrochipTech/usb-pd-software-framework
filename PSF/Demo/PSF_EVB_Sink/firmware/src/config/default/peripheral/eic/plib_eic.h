@@ -1,4 +1,5 @@
-/******************************************************************************* External Interrupt Controller (EIC) PLIB
+/*******************************************************************************
+  External Interrupt Controller (EIC) PLIB
 
   Company
     Microchip Technology Inc.
@@ -320,5 +321,12 @@ void EIC_InterruptDisable (EIC_PIN pin);
 
 void EIC_CallbackRegister(EIC_PIN pin, EIC_CALLBACK callback, uintptr_t context);
 
+
+
+#ifdef __cplusplus // Provide C++ Compatibility
+
+    }
+
+#endif
 
 #endif /* PLIB_EIC_H */

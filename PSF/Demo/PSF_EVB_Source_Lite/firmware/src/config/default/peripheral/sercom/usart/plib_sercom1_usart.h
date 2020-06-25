@@ -84,12 +84,6 @@ USART_ERROR SERCOM1_USART_ErrorGet( void );
 
 uint32_t SERCOM1_USART_FrequencyGet( void );
 
-void SERCOM1_USART_Write_Int(uint32_t dwWriteInt, uint8_t byWidth); 
-
-void SERCOM1_USART_Write_String(char * pbyMessage); 
-
-void SERCOM1_USART_Write_Char(char byWriteChar); 
-
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
 

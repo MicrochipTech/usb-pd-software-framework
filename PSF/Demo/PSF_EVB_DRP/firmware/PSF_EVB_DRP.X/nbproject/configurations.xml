@@ -108,14 +108,13 @@
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
         <itemPath>../../PowerDelivery/PSFDRP_App.h</itemPath>
         <itemPath>../../PowerDelivery/PSFDRP_BootCfg.h</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_driver.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
-          <logicalFolder name="f1" displayName="I2C_DC_DC" projectFiles="true">
-            <itemPath>../../../../SOC_Portable/SAMD20/I2C_DC_DC/Mpq_dc_dc_control.h</itemPath>
-          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.h</itemPath>
           <itemPath>../../../../SOC_Portable/SAMD20/PSF_APIHook.h</itemPath>
         </logicalFolder>
@@ -140,6 +139,12 @@
         </logicalFolder>
         <logicalFolder name="f1" displayName="PB" projectFiles="true">
           <itemPath>../../../../Source/PB/pb_mngr.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f2" displayName="PT" projectFiles="true">
+          <itemPath>../../../../Source/PT/pt_mngr.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
+          <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.h</itemPath>
         </logicalFolder>
       </logicalFolder>
     </logicalFolder>
@@ -201,14 +206,13 @@
                      projectFiles="true">
         <itemPath>../../PowerDelivery/PSFDRP_App.c</itemPath>
         <itemPath>../../PowerDelivery/PSFDRP_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.c</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_driver.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
                      projectFiles="true">
         <logicalFolder name="SAMD20" displayName="SAMD20" projectFiles="true">
-          <logicalFolder name="f1" displayName="I2C_DC_DC" projectFiles="true">
-            <itemPath>../../../../SOC_Portable/SAMD20/I2C_DC_DC/Mpq_dc_dc_control.c</itemPath>
-          </logicalFolder>
           <itemPath>../../../../SOC_Portable/SAMD20/Drivers.c</itemPath>
         </logicalFolder>
       </logicalFolder>
@@ -231,6 +235,13 @@
           <itemPath>../../../../Source/PD3_0/typeC_control.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_hw.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="PT" displayName="PT" projectFiles="true">
+          <itemPath>../../../../Source/PT/pt_mngr.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
+          <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <itemPath>../src/main.c</itemPath>
@@ -258,8 +269,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAMD20_DFP" vendor="Microchip" version="3.1.32"/>
         <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
+        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -321,7 +332,7 @@
         <property key="voltagevalue" value=""/>
       </AtmelIceTool>
       <C32>
-        <property key="additional-warnings" value="false"/>
+        <property key="additional-warnings" value="true"/>
         <property key="addresss-attribute-use" value="false"/>
         <property key="enable-app-io" value="false"/>
         <property key="enable-omit-frame-pointer" value="false"/>
@@ -333,8 +344,8 @@
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
-        <property key="make-warnings-into-errors" value="false"/>
-        <property key="optimization-level" value="-O1"/>
+        <property key="make-warnings-into-errors" value="true"/>
+        <property key="optimization-level" value="-Os"/>
         <property key="place-data-into-section" value="true"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
@@ -444,7 +455,7 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\SOC_Portable\SAMD20\I2C_DC_DC;..\..\PowerDelivery"/>
+                  value="..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\PowerDelivery;..\..\..\..\Source\PT;..\..\..\..\Source\UPD_PIO"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>
