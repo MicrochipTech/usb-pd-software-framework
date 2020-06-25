@@ -40,6 +40,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 
 #include "psf_stdinc.h"
+#include "i2c_dc_dc_driver.h"
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -55,7 +56,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Local Functions                                                   */
 /* ************************************************************************** */
 /* ************************************************************************** */
-void SAMD20_SetMCUIdle()
+void App_SetMCUIdle()
 {
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     
@@ -76,87 +77,22 @@ void SAMD20_SetMCUIdle()
     /* Enable the disabled interrupt*/
     TC0_TimerStart();
 }
-
-void SAMD20_DriveOrientationLED(UINT8 u8PortNum, UINT8 u8PDEvent)
-{
-    if ((UINT8)eMCHP_PSF_TYPEC_CC1_ATTACH == u8PDEvent)
-    {
-        UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
-        UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-        UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-        UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_CLEAR);      
-    }
-    else if ((UINT8)eMCHP_PSF_TYPEC_CC2_ATTACH == u8PDEvent)
-    {
-        UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2,UPD_ENABLE_GPIO);
-        UPD_GPIOSetDirection(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETDIR_OUTPUT);
-        UPD_GPIOSetBufferType(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SETBUF_PUSHPULL);
-        UPD_GPIOSetClearOutput(u8PortNum,(UINT8)eUPD_PIO2,UPD_GPIO_SET);           
-    }
-    else if ((UINT8)eMCHP_PSF_TYPEC_DETACH_EVENT == u8PDEvent)
-    {
-        UPD_GPIOEnableDisable(u8PortNum,(UINT8)eUPD_PIO2, UPD_DISABLE_GPIO);
-    }
-    else
-    {
-        /* Do Nothing for other PD Events */
-    } 
-}
 /* ************************************************************************** */
 /* ************************************************************************** */
 // Section: Interface Functions                                               */
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
+UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
 {
     UINT8 u8RetVal = FALSE;
     
-    switch(u8PDEvent)
+    switch(ePDEvent)
     {
-        case eMCHP_PSF_TYPEC_DETACH_EVENT:
-        {
-            SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
-             gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
-                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            SNK_CAP_MISMATCH_Clear();
-            break;
-        }
-        
-        case eMCHP_PSF_TYPEC_CC1_ATTACH:
-        {
-            SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
-            break;
-        }
-        
-        case eMCHP_PSF_TYPEC_CC2_ATTACH:
-        {
-            SAMD20_DriveOrientationLED(u8PortNum, u8PDEvent);
-            break;
-        }
-        case eMCHP_PSF_CAPS_MISMATCH:
-        {
-            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            SAMD20_GPIO_Set(SNK_CAP_MISMATCH_PIN);
-            break;
-        }
-        case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
-        {
-            gasCfgStatusData.sPerPortData[u8PortNum].u16PortIOStatus &=\
-                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            SAMD20_GPIO_Clear(SNK_CAP_MISMATCH_PIN);
-            break;
-        }
-        
-        case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
-        {
-            break; 
-        }
-        
-		case eMCHP_PSF_UPDS_IN_IDLE:
+        case eMCHP_PSF_UPDS_IN_IDLE:
 		{
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
-			MCHP_PSF_HOOK_SET_MCU_IDLE;
+			App_SetMCUIdle();
 #endif
 			break;
 		}
@@ -174,31 +110,522 @@ UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent)
             u8RetVal = TRUE;
             break;
         }
-        
         case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
         {
             break; 
         }
+        case eMCHP_PSF_TYPEC_DETACH_EVENT:
+        {
+            break;
+        }
+        case eMCHP_PSF_TYPEC_CC1_ATTACH:
+        {
+            break;
+        }
+        case eMCHP_PSF_TYPEC_CC2_ATTACH:
+        {
+            break;
+        }
+        case eMCHP_PSF_CAPS_MISMATCH:
+        {
+            break;
+        }
+        case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
+        {
+            break;
+        }
         
-        case eMCHP_PSF_GET_SINK_CAPS_NOT_RCVD: 
+        case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_SINK_CAPS_NOT_RCVD: 
         {
             break; 
         }  
         
-        case eMCHP_PSF_GET_SINK_CAPS_RCVD:
+        case eMCHP_PSF_SINK_CAPS_RCVD:
         {
             break;            
         }
         
+        case eMCHP_PSF_SINK_ALERT_RCVD: 
+        {
+            /* Alert information received from Sink is available in 
+             gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert */
+            break; 
+        }
+        
+        case eMCHP_PSF_SINK_STATUS_NOT_RCVD:
+        {
+            break; 
+        }
+
+        case eMCHP_PSF_SINK_STATUS_RCVD:
+        {
+            /* Status information received from Sink is available in 
+            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6] */
+            break; 
+        }
+        
+        case eMCHP_PSF_BUSY:
+        {
+            break; 
+        }
+        
         default:
+        {
             break;
+        }
     }
 
     return u8RetVal;
 }
 /**************************************************************************************/
 
+void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc)
+{
+    UINT16 u16Delay;
+    switch(eGPIOFunc)
+    {
+        case eUPD350_ALERT_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                PORT_PinWrite(PORT_PIN_PA14, TRUE);
+                PORT_PinInputEnable(PORT_PIN_PA14);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
+                EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
+            }
+            else if (PORT1 == u8PortNum)
+            {
+                PORT_PinWrite(PORT_PIN_PA15, TRUE);
+                PORT_PinInputEnable(PORT_PIN_PA15);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
+                EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA15);
+            }
+            else
+            {
+                /* Do Nothing */
+            }
+            break;
+        }
+        case eI2C_DC_DC_ALERT_FUNC:
+        {
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+            if (PORT0 == u8PortNum)
+            {
+                PORT_PinWrite(PORT_PIN_PA02, TRUE);
+                PORT_PinInputEnable(PORT_PIN_PA02);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA02, SAMD20_I2CDCDCAlertCallback, PORT0);
+                EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA02);
+            }
+            else if (PORT1 == u8PortNum)
+            {
+                PORT_PinWrite(PORT_PIN_PA03, TRUE);
+                PORT_PinInputEnable(PORT_PIN_PA03);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA03, SAMD20_I2CDCDCAlertCallback, PORT1);
+                EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA03);
+            }
+            else
+            {
+                /* Do Nothing */
+            }
+#endif 
+            break;
+        }
+        case eUPD350_RESET_FUNC:
+        {
+            /* UPD350 Reset pin initialization is done as part of  
+               PORT_Initialize() by harmony. User can also choose to do the 
+               initialization here. 
+               It is configured in input mode, since configuring it in output 
+               mode and driving it high always would increase current consumption. */
+            break;
+        }
+        case eSPI_CHIP_SELECT_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                SPI_SS_0_Set();
+                SPI_SS_0_OutputEnable();
+            }
+            else if(PORT1 == u8PortNum)
+            {
+                SPI_SS_1_Set();
+                SPI_SS_1_OutputEnable();
+            }
+            else
+            {
+                /* Do Nothing */
+            }
+            break; 
+        }
+        case eVBUS_DIS_FUNC:
+        {
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
+            break; 
+        }
+        case eDC_DC_EN_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                DC_DC_EN_0_Set();
+                DC_DC_EN_0_OutputEnable();
+            }
+            else if(PORT1 == u8PortNum)
+            {
+                DC_DC_EN_1_Set();
+                DC_DC_EN_1_OutputEnable();
+            }
+            else
+            {
+                /* Do Nothing */
+            }
+             
+             /* Delay for the DC/DC module to stabilize after Initialization */
+            for(u16Delay = 0; u16Delay < 20000; u16Delay++)
+            {
+                __NOP();
+            }   
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_DC_DC_STATUS;
+            break; 
+        }
+        case eORIENTATION_FUNC:
+        {
+            /*Init is called when detach happens*/
+            UPDPIO_Disable(u8PortNum, eUPD_PIO2);
+            break;
+        }
+        case eSNK_CAPS_MISMATCH_FUNC:
+        {
+            SNK_CAP_MISMATCH_Clear();
+            SNK_CAP_MISMATCH_OutputEnable();            
+            break;
+        }
+        case eSNK_1_5A_IND_FUNC:
+        {
+            SNK_1_5A_IND_Clear();
+            SNK_1_5A_IND_OutputEnable();            
+            break;
+        }
+        case eSNK_3A_IND_FUNC:
+        {
+            SNK_3A_IND_Clear();
+            SNK_3A_IND_OutputEnable();            
+            break;
+        }    
+        default:
+        {
+            break; 
+        }
+    }
+}
 
+void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc,
+                                    eMCHP_PSF_GPIO_DRIVE_VAL eGPIODrive)
+{
+    switch(eGPIOFunc)
+    {
+        case eUPD350_ALERT_FUNC:
+        {
+            /*Alert is an input pin. Drive not applicable*/
+            break;
+        }
+        case eI2C_DC_DC_ALERT_FUNC:
+        {
+            /*DC-DC Alert is an input pin. Drive not applicable*/
+            break;
+        }
+        case eUPD350_RESET_FUNC:
+        {
+            /* UPD350 Reset pin is configured in input mode, since configuring
+               it in output mode and driving it high always would increase 
+               current consumption */
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                /*UPD350 Reset is active low signal*/
+                /* Pull down is driven to reset the UPD350*/
+                PORT_PinWrite(UPD350_RESET_PIN, FALSE);
+                
+                /* Reset pin shall be held low for a minimum reset assertion
+                   time of UPD350. We wait for ~800us */
+                for(UINT16 u16delayloop = 0u; u16delayloop <(6000);u16delayloop++)
+                {
+                    __asm volatile("nop");
+                    __asm volatile("nop");
+
+                }                
+            }
+            else
+            {
+                PORT_PinWrite(UPD350_RESET_PIN, TRUE);
+            }
+            break;
+        }
+        case eSPI_CHIP_SELECT_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                /* Drive low the CS to enable the communication*/
+                if (PORT0 == u8PortNum)
+                {
+                    /*PORT_PIN_PA10*/
+                    SPI_SS_0_Clear();
+                }
+                else if(PORT1 == u8PortNum)
+                {
+                    /*PORT_PIN_PA01*/
+                    SPI_SS_1_Clear();
+                } 
+                else
+                {
+                    /* Do Nothing */
+                }
+            }
+            else
+            {
+                /* Drive high the CS to disable the communication for the port*/
+                if (PORT0 == u8PortNum)
+                {
+                    SPI_SS_0_Set();
+                }
+                else if(PORT1 == u8PortNum)
+                {
+                    SPI_SS_1_Set();
+                }
+                else
+                {
+                    /* Do Nothing */
+                }
+            }
+            break; 
+        }
+        case eVBUS_DIS_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
+            }
+            else
+            {
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+            }
+            break; 
+        }
+        case eDC_DC_EN_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                if (PORT0 == u8PortNum)
+                {
+                    DC_DC_EN_0_Set();
+                }
+                else if(PORT1 == u8PortNum)
+                {
+                    DC_DC_EN_1_Set();
+                }
+                else
+                {
+                    /* Do Nothing */
+                }
+            }
+            else
+            {
+                if (PORT0 == u8PortNum)
+                {
+                    DC_DC_EN_0_Clear();
+                }
+                else if(PORT1 == u8PortNum)
+                {
+                    DC_DC_EN_1_Clear();
+                }
+                else
+                {
+                    /* Do Nothing */
+                }
+            }
+            break;
+        }
+        case eORIENTATION_FUNC:  
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
+                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+            }
+            else
+            {
+                UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2); 
+                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+            }
+            break;  
+        }
+        case eSNK_CAPS_MISMATCH_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                SNK_CAP_MISMATCH_Set();
+            }
+            else
+            {
+                SNK_CAP_MISMATCH_Clear();
+            }
+            break;
+        }
+        case eSNK_1_5A_IND_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                SNK_1_5A_IND_Set();
+            }
+            else
+            {
+                SNK_1_5A_IND_Clear();
+            }
+            break;
+        }
+        case eSNK_3A_IND_FUNC:
+        {
+            if (eGPIO_ASSERT == eGPIODrive)
+            {
+                SNK_3A_IND_Set();
+            }
+            else
+            {
+                SNK_3A_IND_Clear();
+            }
+            break;
+        }
+  
+        default:
+        {
+            break; 
+        }
+    }
+    
+    
+    
+}
+
+UINT8 App_PortPowerInit(UINT8 u8PortNum)
+{
+    UINT8 u8Return; 
+   
+#if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+    DAC_Initialize();
+    u8Return = TRUE;
+#endif
+	
+#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+    
+    /*VSEL0 Init */
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_PIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO7);
+    
+    /*VSEL 1 Init */
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);
+    
+    /*VSEL 2 Init */
+    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO9, UPD_PIO_SETBUF_PUSHPULL);
+    UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
+    
+    u8Return = TRUE; 
+#elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+    u8Return = MPQDCDC_Initialize(u8PortNum); /* MPQ4230 - I2C based DC/DC */ 
+#endif 
+    
+    return u8Return; 
+}
+
+void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current)
+{
+#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+    /*
+     Voltage    VSEL0   VSEL1   VSEL2
+     *0V        0       0       0
+     *5V        0       0       0
+     *9V        1       0       0
+     *15V       0       1       0
+     *20V       0       0       1
+     */  
+    
+    switch(u16Voltage)
+    {
+        case APP_VOLTAGE_5000mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                  ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
+            break;
+        }
+        case APP_VOLTAGE_9000mV:
+        {
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
+                                                DPM_PORT_IO_VSEL0_STATUS;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                    ~(DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
+            break;
+        }
+        case APP_VOLTAGE_15000mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
+                                                DPM_PORT_IO_VSEL1_STATUS;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                    ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
+            break;
+        }
+        case APP_VOLTAGE_20000mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
+                                                DPM_PORT_IO_VSEL2_STATUS;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                    ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS); 
+            break;
+        }
+        default:
+        /*Intentionally break is left*/
+        case APP_VOLTAGE_0mV:
+        {
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            /* Update Port IO Status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                  ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
+            break;
+        }
+    }
+    
+#elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)/* MPQ4230 - I2C based DC/DC */ 
+    MPQDCDC_SetPortPower(u8PortNum, u16Voltage, u16Current);
+#endif     
+}
 /* *****************************************************************************
  End of File
  */

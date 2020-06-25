@@ -49,7 +49,6 @@
 // *****************************************************************************
 
 #include "plib_sercom1_usart.h"
-#include <string.h>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -252,27 +251,5 @@ void SERCOM1_USART_WriteByte( int data )
     SERCOM1_REGS->USART_INT.SERCOM_DATA = data;
 }
 
-void SERCOM1_USART_Write_Int(uint32_t dwWriteInt, uint8_t byWidth)
-{
-    SERCOM1_USART_Write((void*)&dwWriteInt, byWidth); 
-    while(!SERCOM1_USART_TransmitComplete()) 
-    { 
-    } 
-}
 
-void SERCOM1_USART_Write_String(char * pbyMessage)
-{
-    SERCOM1_USART_Write((void*)pbyMessage,strlen(pbyMessage)); 
-    while(!SERCOM1_USART_TransmitComplete()) 
-    { 
-    }
-}
-
-void SERCOM1_USART_Write_Char(char byWriteChar)
-{
-    SERCOM1_USART_Write((void*)&byWriteChar,1); 
-    while(!SERCOM1_USART_TransmitComplete()) 
-    { 
-    }
-}
 

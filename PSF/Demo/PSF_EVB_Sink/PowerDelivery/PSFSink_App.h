@@ -33,11 +33,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSFSINK_APP_H
 #define _PSFSINK_APP_H
 
-/* Defines major and minor version of PDSink Application*/
+/* Defines major and minor version of PSF Sink Application*/
 
 /*v1.03 release*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x03
+#define APP_REV_MINOR	0x04
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -45,6 +45,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+#include <PSF_APIHook.h>
 #include "psf_stdinc.h"
 
 // *****************************************************************************
@@ -52,9 +53,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Interface Functions
 // *****************************************************************************
 // *****************************************************************************
-void SAMD20_SetMCUIdle(); 
+void App_SetMCUIdle(); 
 
-UINT8 PDStack_Events(UINT8 u8PortNum, UINT8 u8PDEvent);
+UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION u8PDEvent);
+
+void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc);
+
+void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc,
+                                    eMCHP_PSF_GPIO_DRIVE_VAL eGPIODrive);
+UINT8 App_PortPowerInit(UINT8 u8PortNum);
+
 
 #endif /* _PSFSINK_APP_H */
 
