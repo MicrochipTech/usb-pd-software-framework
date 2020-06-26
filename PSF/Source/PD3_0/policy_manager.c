@@ -439,7 +439,7 @@ UINT32 DPM_CurrentCutDown (UINT8 u8PortNum, UINT32 u32PDO)
         {
             u32PDO &= ~(DPM_APDO_MAX_CURRENT_MASK);
             u32PDO |= DPM_3A_IN_50mA; 
-            /* Source PDO Current value reduced due to cable limitation */   
+            /* Source APDO Current value reduced due to cable limitation */   
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                                         DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS;                    
         }
@@ -460,7 +460,18 @@ void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32S
     {   
         /* Reset the current value to E-Cable supported current */
         pu32DataObj[u8PDOindex] = DPM_CurrentCutDown (u8PortNum, pu32SrcCaps[u8PDOindex]);
-    } 
+    }
+    
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+    /* Register an internal event for sending Alert for Cable Limitation 
+       This request would be processed once an explicit contract is established */
+    if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
+                DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS)
+    {
+        gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OPR_COND_CHANGE; 
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
+    }
+#endif 
 }
 
 /* Get the source capabilities from the port configuration structure */
