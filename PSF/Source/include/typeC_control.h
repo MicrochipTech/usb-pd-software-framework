@@ -698,6 +698,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
                                 BIT 7 -> VCONNONERROR */
   UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status
                                  BIT[2:1] -> Current DRP advertising port role*/
+  UINT8 u8DrpLastAttachedState; 
   float fVBUSCorrectionFactor;
   
 }MCHP_PSF_STRUCT_PACKED_END TYPEC_CONTROL;

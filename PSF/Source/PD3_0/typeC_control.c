@@ -160,12 +160,12 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
 	
     /*Setting the VBUS to vSafe0V before entering the Source State machine*/
     DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
-        
+    
+    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
     gasTypeCcontrol[u8PortNum].u8TypeCState = (UINT8)TYPEC_UNATTACHED_SRC;
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS;
     
-    DEBUG_PRINT_PORT_STR (u8PortNum,"\n\nRegDump before TYPEC_DRP_EN\r\n");  
-    //UPD_RegDump(u8PortNum);
+    DEBUG_PRINT_PORT_STR (u8PortNum,"\n~~~~~~ DRP_EN in TypeC_DrpInit\r\n");  
     
     /*FW sets the DRP Enable (DRP_EN) in DRP Control Register to enable DRP offload.*/
     UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
@@ -335,7 +335,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
 	    
     DEBUG_PRINT_PORT_STR (u8PortNum,"\n\nRegDump before CC comparator ON\r\n");  
-    //UPD_RegDump(u8PortNum);
+    UPD_RegDump(u8PortNum);
     
     /*FW sets the DRP Enable (DRP_EN) in DRP Control Register to enable DRP offload.*/
     UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
@@ -402,6 +402,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) != PD_ROLE_DRP)
                     {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"\n~~~~~~ WAIT_DRPDONE_SS to SRC_INIT_VSAFE0V_SS\r\n");  
+
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS;   
                     }
                     break;
@@ -426,8 +428,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
                      
-
-					 
 					/*Reset the VBUS threshold for 5V detection*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
 
@@ -457,7 +457,28 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_SRC: Entered UNATTACHED"\
                                          "SRC State\r\n");
 		
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;                    
+                    if(gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SOURCE)
+                    {
+                        /*Disable VBUS by driving to vSafe0V*/
+                        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+        
+                        /*Setting CC Comparator OFF*/
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+    
+                        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
+                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+                        
+                        /*FW sets the DRP Enable (DRP_EN) in DRP Control Register to enable DRP offload.*/
+                        UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"\n~~~~~~ u8DrpLastAttachedState was src, DRP_EN\r\n");  
+
+                    }
+                    else
+                    {
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;                    
+                    }
                    
                     break;
                 }
@@ -707,8 +728,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
                     
+                    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SOURCE;
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
-                    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"\n~~~~~~ u8DrpLastAttachedState set to src\r\n");  
+
                     /* Enabling PRL Rx */
                     PRL_EnableRx(u8PortNum, TRUE);                  
 
@@ -847,6 +870,19 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
                                  
+                    if(gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SINK)
+                    {
+                        /*Setting CC Comparator OFF*/
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+    
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"\n~~~~~~ u8DrpLastAttachedState was snk, DRP_EN\r\n");  
+
+                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+                        
+                        /*FW sets the DRP Enable (DRP_EN) in DRP Control Register to enable DRP offload.*/
+                        UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+                    }
+                    
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK: Entered"\
                                         "UNATTACHED SNK State\r\n");
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_VSAFE0V_WAIT_SS;
@@ -917,10 +953,21 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*This SubState is used to start a tPDDebounce Software timer for Source detachment*/ 
                 case TYPEC_ATTACHWAIT_SNK_TPDDEB_SS:
                 {                  
-                    gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
+                    
+                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_DRP)
+                    {
+                        gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
+                                                      (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
+                                                      TypeC_StateChange_TimerCB, u8PortNum,\
+                                                      TYPEC_UNATTACHED_SRC);
+                    }
+                    else
+                    {
+                        gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
                                                       (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_StateChange_TimerCB, u8PortNum,\
                                                       TYPEC_UNATTACHED_SNK);
+                    }
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHWAIT_SNK_IDLE_SS;
                     
                     break;
@@ -983,9 +1030,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
-
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
                     
+                    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"\n~~~~~~ u8DrpLastAttachedState set to snk\r\n");  
+
                     PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_5V,\
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                                        
@@ -1403,7 +1452,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         
         if (u8Data & TYPEC_DRP_DONE)
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"\n\nRegDump at TYPEC_DRP_DONE interrupt\r\n");  
+            DEBUG_PRINT_PORT_STR (u8PortNum,"\n~~~~~~ TYPEC_DRP_DONE interrupt occured\r\n");  
     
             /*Clearing the DRP_DONE interrupt */
             UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
