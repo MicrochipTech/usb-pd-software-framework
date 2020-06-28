@@ -1057,5 +1057,5 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum);
 **************************************************************************************************/
 void UPD_ResetThroughGPIO(void);
 
-//void UPD_RegDump(UINT8 u8PortNum);
+void UPD_RegDump(UINT8 u8PortNum);
 #endif /*_UPD_HW_H_*/
