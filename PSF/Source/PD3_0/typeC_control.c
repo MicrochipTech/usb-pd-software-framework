@@ -415,7 +415,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC: Entered ATTACHED"\
                                          "SRC State\r\n");
-                   
+                    /* Update the Advertised PDO array with PDO1 alone since u32aAdvertisedPDO 
+                       is used in TypeC_HandleISR() to check for VBUS voltage threshold.
+                       Rest of the PDOs would be updated after the Source caps are advertised. */
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0] = 
+                            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[INDEX_0];
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = BYTE_LEN_1; 
+                    
                     /*Drive VBus for vSafe5V*/
                     DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
                     

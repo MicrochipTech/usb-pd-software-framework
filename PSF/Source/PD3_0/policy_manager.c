@@ -223,30 +223,11 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
 void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 {	
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-    
-    UINT16 u16PDOVoltageInmV = SET_TO_ZERO; 
-    UINT16 u16PDOCurrentInmA = SET_TO_ZERO; 
-    
-    if (DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
-    {        
-        /* Obtain voltage from negotiated PDO*/
-        u16PDOVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
-        u16PDOCurrentInmA = DPM_GET_CURRENT_FROM_PDO_MILLI_A(gasDPM[u8PortNum].u32NegotiatedPDO);
-    }
-#if (TRUE == INCLUDE_PD_SOURCE_PPS) 
-    else if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
-    {
-        u16PDOVoltageInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
-        u16PDOCurrentInmA = DPM_GET_PROG_RDO_OPR_CURRENT_IN_mA(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO); 
-    }
-#endif 
-    else
-    {
-        /* No support for Battery and Variable power supplies */
-    }
-    
+
+    UINT16 u16VoltageInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV;
+    UINT16 u16CurrentInmA = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA; 
     /* set the threshold to detect fault*/
-    TypeC_ConfigureVBUSThr(u8PortNum, u16PDOVoltageInmV, u16PDOCurrentInmA, TYPEC_CONFIG_PWR_FAULT_THR);
+    TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_PWR_FAULT_THR);
     
 #endif
 }
@@ -461,17 +442,6 @@ void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32S
         /* Reset the current value to E-Cable supported current */
         pu32DataObj[u8PDOindex] = DPM_CurrentCutDown (u8PortNum, pu32SrcCaps[u8PDOindex]);
     }
-    
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
-    /* Register an internal event for sending Alert for Cable Limitation 
-       This request would be processed once an explicit contract is established */
-    if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
-                DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS)
-    {
-        gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OPR_COND_CHANGE; 
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
-    }
-#endif 
 }
 
 /* Get the source capabilities from the port configuration structure */
@@ -637,12 +607,14 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
 
-    /*Clear Partner PDO registers */
+    /*Clear Partner PDO and Advertised PDO registers */
     for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;
     }
     gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = RESET_TO_ZERO; 
     
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
     /* Clear Partner Alert register */

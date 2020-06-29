@@ -280,7 +280,16 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChangeAndTimeoutValidateCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
-                    
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+                    /* Register an internal event for sending Alert for Cable Limitation 
+                    This request would be processed once an explicit contract is established */
+                    if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
+                                    DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS)
+                    {
+                        gasDPM[u8PortNum].u8AlertType |= DPM_ALERT_TYPE_OPR_COND_CHANGE; 
+                        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
+                    }
+#endif                    
                     break;
                 }
                 default:
