@@ -59,16 +59,6 @@ void DPM_Init(UINT8 u8PortNum)
         
         /* Set Port Data Role as DFP in Port Connection Status register */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS; 
-        
-        /* During initialization, Advertised PDOs and Advertised PDO Count are 
-           updated with Default Source PDOs and Source PDO Count */
-        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, 
-                (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
-        
-        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;  
-
     }       
     else
     {
