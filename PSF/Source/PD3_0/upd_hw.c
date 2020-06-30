@@ -32,7 +32,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
 #include <psf_stdinc.h>
-#include <string.h>
 #include<stdio.h>
 /******************************************************************************************************/
 void UPD_RegWriteByte (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8WriteValue)
