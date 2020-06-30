@@ -72,7 +72,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VDM_STATE_ACTIVE_POS           6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7 
 
-/*Defines for setting data in u8DPM_Status variable*/
+/*Defines for setting data in u16DPM_Status variable*/
 #define DPM_SET_POWER_ROLE_STS(u8PortNum, u8PowerRole)       gasDPM[u8PortNum].u16DPM_Status &= (~DPM_CURR_POWER_ROLE_MASK); \
                                                              gasDPM[u8PortNum].u16DPM_Status |= (u8PowerRole << DPM_CURR_POWER_ROLE_POS);
 

@@ -168,6 +168,8 @@ void DPM_StateMachineInit(void)
             else
             {
                 TypeC_InitDRPPort(u8PortNum);
+				
+				/*For DRP, PRL_Init will be done once a valid DRP partner is matched*/
             }
 
         }

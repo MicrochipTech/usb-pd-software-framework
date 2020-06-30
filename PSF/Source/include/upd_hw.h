@@ -191,10 +191,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_CC_SAMP_CLK             	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x06
 #define UPD_VBUS_SAMP_CLK		    	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x07
 
-/*Defines for UPD_CLK_CTL register*/
-#define UPD_CLK_CTL_ZTC_CUR_REF_EN      BIT(3)
-#define UPD_CLK_CTL_20_KHZ_OSC_EN       BIT(0)
-
 /*Defines for UPD_CC_SAMP_CLK register*/
 #define UPD_CC_CLK_20_KHZ               0
 #define UPD_CC_CLK_48_KHZ               BIT(3)
@@ -1057,5 +1053,33 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum);
 **************************************************************************************************/
 void UPD_ResetThroughGPIO(void);
 
+/**************************************************************************************************
+    Function:
+        void UPD_RegDump(UINT8 u8PortNum)
+
+    Summary:
+        Provides a dump of UPD350 registers.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is to output various register values of UPD350 through 
+        debug interface.
+
+    Conditions:
+        CONFIG_HOOK_DEBUG_MSG should be set for the register dump to be output 
+        via debug interface.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
 void UPD_RegDump(UINT8 u8PortNum);
 #endif /*_UPD_HW_H_*/
