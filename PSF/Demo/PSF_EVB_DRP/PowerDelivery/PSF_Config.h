@@ -202,7 +202,7 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL         0
+#define INCLUDE_POWER_MANAGEMENT_CTRL         1
 
 /**************************************************************************
 Summary:
@@ -278,6 +278,25 @@ Example:
     </code>
 **************************************************************************************************/
 #define INCLUDE_PD_SOURCE_PPS           0
+
+/**************************************************************************************************
+Summary:
+    DR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_DR_SWAP as 1 enables PSF to include the Data Role 
+    swap (DR_SWAP) feature at compile time. User can set this define to 0
+    to reduce code size if none of the ports in the system require DR_SWAP
+    functionality.
+Remarks: 
+    Recommended default value is 1. User can configure it based on the
+    application.
+Example:
+    <code>
+    #define INCLUDE_PD_DR_SWAP	1(Include Source PPS functionality in PSF)
+    #define INCLUDE_PD_DR_SWAP	0(Exclude Source PPS functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_DR_SWAP           1
 
 // *****************************************************************************
 // *****************************************************************************
