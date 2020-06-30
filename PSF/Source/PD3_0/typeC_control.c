@@ -459,7 +459,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
                         
-                        /*Enable DRP offload.*/
+                        /*Except DRP_DONE, clear other CC interrupts */  
+                        UPD_RegByteClearBit (u8PortNum,  TYPEC_CC_INT_EN,\
+                        (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
+    
+                        /*Enable DRP offload*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
 
                     }
@@ -863,6 +867,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
     
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+                        
+                        /*Except DRP_DONE, clear other CC interrupts */  
+                        UPD_RegByteClearBit (u8PortNum,  TYPEC_CC_INT_EN,\
+                        (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
                         
                         /*Enable DRP offload.*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
