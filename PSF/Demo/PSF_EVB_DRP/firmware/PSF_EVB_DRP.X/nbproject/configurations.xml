@@ -108,7 +108,7 @@
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
         <itemPath>../../PowerDelivery/PSFDRP_App.h</itemPath>
         <itemPath>../../PowerDelivery/PSFDRP_BootCfg.h</itemPath>
-       <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
+        <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_driver.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
@@ -236,6 +236,7 @@
           <itemPath>../../../../Source/PD3_0/upd_hw.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_engine_swap.c</itemPath>
         </logicalFolder>
         <logicalFolder name="PT" displayName="PT" projectFiles="true">
           <itemPath>../../../../Source/PT/pt_mngr.c</itemPath>

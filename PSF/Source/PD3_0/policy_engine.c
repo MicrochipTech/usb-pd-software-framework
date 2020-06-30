@@ -212,14 +212,24 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
     {
         if(PE_OBJECT_COUNT_0 == PRL_GET_OBJECT_COUNT (u16Header))
         {
-            /*GotoMin, PR SWAP, DR SWAP are not Supported*/
             /*Control messages in Table 6-5 of PD 3.0 Spec after "Not Supported" message are
             are not supported*/
             /*Any control message with message type between soft reset and Not supported are
             not supported as they are reserved fields*/
-            if ((PE_CTRL_DR_SWAP == u8MsgType) || (PE_CTRL_PR_SWAP == u8MsgType) || \
-                (u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
-                    && (u8MsgType < PE_CTRL_NOT_SUPPORTED)) )
+            if(PE_CTRL_DR_SWAP == u8MsgType)
+            {
+                /*If INCLUDE_PD_DR_SWAP is true, default value PE_SUPPORTED_MSG is 
+                 left as it is */
+                #if (TRUE != INCLUDE_PD_DR_SWAP)
+                    u8RetVal = PE_UNSUPPORTED_MSG;;
+                #endif
+            }
+            else if (PE_CTRL_PR_SWAP == u8MsgType)
+            {
+                u8RetVal = PE_UNSUPPORTED_MSG; 
+            }
+            else if((u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
+                    && (u8MsgType < PE_CTRL_NOT_SUPPORTED)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }

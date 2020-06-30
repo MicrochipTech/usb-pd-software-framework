@@ -258,6 +258,12 @@ typedef enum {
     ePE_VCS_SEND_PS_RDY,
     //---------------------------VDM states---------------------------------------//
     ePE_VDM_GET_IDENTITY,
+    //--------------------------DR_SWAP States-----------------------------------//
+    ePE_DRS_EVALUATE_SWAP,
+    ePE_DRS_ACCEPT_SWAP,
+    ePE_DRS_REJECT_SWAP,
+    ePE_DRS_DFP_UFP_ROLE_CHANGE,
+    ePE_DRS_SEND_SWAP,
     //-------------------------Common States------------------------------//
     ePE_SEND_NOT_SUPPORTED,
     ePE_SEND_REJECT,
@@ -399,6 +405,18 @@ typedef enum {
     /*ePE_VCS_SEND_PS_RDY*/
     ePE_VCS_SEND_PS_RDY_ENTRY_SS,
     ePE_VCS_SEND_PS_RDY_IDLE_SS,
+    
+    //---------------------DR_SWAP sub states---------------------------------//
+    /*ePE_DRS_ACCEPT_SWAP*/        
+    ePE_DRS_ACCEPT_SWAP_SEND_ACCEPT_SS,
+    ePE_DRS_ACCEPT_SWAP_IDLE_SS,
+    /*ePE_DRS_REJECT_SWAP*/
+    ePE_DRS_REJECT_SWAP_SEND_REJECT_SS,
+    ePE_DRS_REJECT_SWAP_IDLE_SS,
+    /*ePE_DRS_SEND_SWAP*/
+    ePE_DRS_SEND_SWAP_ENTRY_SS,
+    ePE_DRS_SEND_SWAP_IDLE_SS,
+    ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS,
     //--------------------Common States-------------------------------------------------//
     /*ePE_SEND_NOT_SUPPORTED*/
     ePE_SEND_NOT_SUPPORTED_ENTRY_SS,
