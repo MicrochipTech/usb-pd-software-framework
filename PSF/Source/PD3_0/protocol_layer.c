@@ -148,11 +148,11 @@ void  PRL_Init (UINT8 u8PortNum)
 	UPD_RegWriteByte (u8PortNum, PRL_BB_CC_RX_DAC_FILT, PRL_CC_RX_DAC_FILT_CC_RX_DAC_FILTER_ENABLE);
     
     /* Rx DAC value is selected depending upon the Power Role */
-	if ((DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) == PD_ROLE_SOURCE)
+	if ((DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) == PD_ROLE_SOURCE)
 	{
 		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SRC_VALUE;
 	}
-	else if (DPM_GET_DEFAULT_POWER_ROLE(u8PortNum) == PD_ROLE_SINK)
+	else if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SINK)
 	{
 		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SNK_VALUE;
 	}
@@ -170,7 +170,7 @@ void  PRL_Init (UINT8 u8PortNum)
 
 	/* PD3_AUTO_DECODE is enabled so that HW decodes spec revision from received messages.*/
 	/* At init, Rx SOP type is set to all SOP* type*/
-	if(DPM_GET_DEFAULT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+	if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
     {
 	  
 		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
@@ -354,7 +354,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	gasPRL[u8PortNum].u32PkdPEstOnTxStatus = u32PkdPEstOnTxStatus;
 	gasPRL[u8PortNum].pFnTxCallback = pfnTxCallback;
     
-	if(DPM_GET_DEFAULT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+	if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
     {
 	  
 		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
@@ -650,6 +650,8 @@ void PRL_EnableRx (UINT8 u8PortNum, UINT8 u8Enable)
 		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_A, PRL_RX_CTL_A_EN_SMBUS_MODE);
 		/* Disable reception of Hardreset*/
 		UPD_RegByteClearBit (u8PortNum, PRL_RX_IRQ_EN, PRL_RX_IRQ_RX_HARD_RST);
+        
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Receiver disabled\r\n");
 	}
 }
 

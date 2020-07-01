@@ -72,7 +72,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VDM_STATE_ACTIVE_POS           6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7 
 
-/*Defines for getting data from u16DPM_Statuss variable*/
+/*Defines for setting data in u16DPM_Status variable*/
+#define DPM_SET_POWER_ROLE_STS(u8PortNum, u8PowerRole)       gasDPM[u8PortNum].u16DPM_Status &= (~DPM_CURR_POWER_ROLE_MASK); \
+                                                             gasDPM[u8PortNum].u16DPM_Status |= (u8PowerRole << DPM_CURR_POWER_ROLE_POS);
+
+#define DPM_SET_DATA_ROLE_STS(u8PortNum, u8DataRole)       gasDPM[u8PortNum].u16DPM_Status &= (~DPM_CURR_DATA_ROLE_MASK); \
+                                                           gasDPM[u8PortNum].u16DPM_Status |= (u8DataRole << DPM_CURR_DATA_ROLE_POS);
+
+/*Defines for getting data from u8PortNum variable*/
 #define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u16DPM_Status & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
 #define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)          ((gasDPM[u8PortNum].u16DPM_Status & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
 #define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u16DPM_Status & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)

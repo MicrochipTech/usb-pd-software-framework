@@ -359,7 +359,7 @@ Example:
     #define CONFIG_PD_PORT_COUNT        2 (Number of PD ports enabled in PSF Stack is 2)
     </code>
 **********************************************************************/
-#define CONFIG_PD_PORT_COUNT            2
+#define CONFIG_PD_PORT_COUNT            1
 
 /**************************************************************************
 Summary:
@@ -434,7 +434,7 @@ Example:
 Note:
     None.
 **************************************************************************/
-#define CONFIG_HOOK_DEBUG_MSG      0                 
+#define CONFIG_HOOK_DEBUG_MSG      1                 
 
 
 // *****************************************************************************

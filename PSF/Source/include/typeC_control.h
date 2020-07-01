@@ -92,6 +92,20 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_VBUS_CTL2			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x3F
 #define TYPEC_VBUS_CTL1			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x40
 
+#define TYPEC_DRP_CTL_LOW           TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x90
+#define TYPEC_DRP_CTL_HIGH          TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x91
+#define TYPEC_DRP_LFSR_SEED         TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x92
+#define TYPEC_DRP_LFSR_SEED_LOW     TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x92
+#define TYPEC_DRP_LFSR_SEED_HIGH    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x93
+#define TYPEC_DRP_TIME              TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x94
+#define TYPEC_DRP_CC_SNK_MATCH_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x98
+#define TYPEC_DRP_CC_SRC_MATCH_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x99
+#define TYPEC_DRP_CC_SNK_DBCLR_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9A
+#define TYPEC_DRP_DUTY_CYC          TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9C
+#define TYPEC_DRP_CC_SRC_DBCLR_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9B
+#define TYPEC_DRP_SNK_SAMP_EN       TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9D
+#define TYPEC_DRP_SRC_SAMP_EN       TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9E
+
 /*TYPEC_VBUS_CTL1_LOW is the lower byte of 2 byte register TYPEC_VBUS_CTL1*/
 #define TYPEC_VBUS_CTL1_LOW		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x40
 /*TYPEC_VBUS_CTL1_HIGH is the higher byte of 2 byte register TYPEC_VBUS_CTL1*/
@@ -170,6 +184,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CC2_MATCH_CHG		    BIT(1)
 #define TYPEC_CC_MATCH_VLD		    BIT(7)
 
+/*Bit definitions for DRP_CTL_HIGH register*/
+#define TYPEC_DRP_ADVERTISING_STATE BIT(0)
+#define TYPEC_DRP_VSAFE0V_EN        BIT(2)
+
+/*Definitions for DRP_CTL_LOW register*/
+#define TYPEC_DRP_RP_POS                2
+#define TYPEC_DRP_EN                    BIT(0)
+#define TYPEC_LFSR_EN                   BIT(1)
+#define TYPEC_DRP_DONE                  BIT(2)
+#define TYPEC_DRP_PD_VAL_TRIMMED_RD     BIT(4)
+#define TYPEC_DRP_PD_VAL_MASK           (BIT(6)|BIT(5)|BIT(4))
+
 /*Bit definitions of PWR_INT_STS register*/
 #define TYPEC_VBUS_MATCH_VLD		BIT(7)
 #define TYPEC_VCONN_OVER_CURR_ERR   BIT(0)
@@ -185,6 +211,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Bit definitions of TYPEC_VBUS_CTL2 register*/
 #define TYPEC_VBUS_DEB_BLK_EN		BIT(0)
+#define TYPEC_VBUS_DEB_TO_EN        BIT(1)
 
 /*Defines for each of the CC_THRX values as given in UPD350 DOS*/
 #define TYPEC_CC_THR_VAL_VCONN_DIS		    41
@@ -349,6 +376,15 @@ event for UFP*/
 
 #endif /* end of INCLUDE_POWER_FAULT_HANDLING*/
 /**************************************************************************************/                
+
+/*Bit definitions for gasTypeCcontrol[u8PortNum].u8DRPStsISR variable*/
+#define TYPEC_DRP_DONE_INTERRUPT                    BIT(0)
+#define TYPEC_DRP_STS_ADVERTISED_STATE              (BIT(2)|BIT(1))
+#define TYPEC_DRP_STS_ADVERTISED_STATE_POS          1
+#define TYPEC_DRP_STS_ADVERTISED_STATE_UFP          (0<<TYPEC_DRP_STS_ADVERTISED_STATE_POS)
+#define TYPEC_DRP_STS_ADVERTISED_STATE_DFP          (1<<TYPEC_DRP_STS_ADVERTISED_STATE_POS)
+#define TYPEC_DRP_STS_ADVERTISED_STATE_TOGGLING     (2<<TYPEC_DRP_STS_ADVERTISED_STATE_POS)
+
 /*Defines for different Type C current values of DFP*/
 #define TYPEC_UFP                               PD_ROLE_UFP
 #define TYPEC_DFP_DEFAULT_CURRENT				(0x01)
@@ -358,6 +394,7 @@ event for UFP*/
 /*Defines for Number of active CC THRES to be sampled for Source and Sink*/
 #define TYPEC_SRC_CCTHRES_CNT      2
 #define TYPEC_SNK_CCTHRES_CNT      3
+#define TYPEC_DRP_CCTHRES_CNT      TYPEC_SNK_CCTHRES_CNT
 
 /*Defines for Number of active VBUS THRES to be sampled for Source and Sink*/
 #define TYPEC_SRC_VBUSTHRES_CNT    5
@@ -426,6 +463,7 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_UNATTACHED_SRC_INIT_SS				  1
 #define TYPEC_UNATTACHED_SRC_IDLE_SS                  2
 #define TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS          3
+#define TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS          4
 
 /*Defines for TYPEC_ATTACHWAIT_SRC's substates in TYPE C SM*/
 #define TYPEC_ATTACHWAIT_SRC_DEB_SS                   0
@@ -640,6 +678,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
                                 BIT3 -> VCONN_SOURCE_CC2
                                 BIT[4:6] -> VBUS_PRESENCE
                                 BIT 7 -> VCONNONERROR */
+  UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status
+                                 BIT[2:1] -> Current DRP advertising port role*/
+  UINT8 u8DrpLastAttachedState; 
   float fVBUSCorrectionFactor;
   
 }MCHP_PSF_STRUCT_PACKED_END TYPEC_CONTROL;
@@ -684,6 +725,36 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
 
 **************************************************************************************************/
 void TypeC_InitPort (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void TypeC_InitDRPPort (UINT8 u8PortNum);
+
+    Summary:
+        This API initializes a given Port to support Dual role power.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        Port initialization of Power and data role is done based on the variable 
+        "gasCfgStatusData[u8PortNum].u32CfgData"
+
+    Conditions:
+        This API is called inside the PD Stack initialization API call .
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void TypeC_InitDRPPort(UINT8 u8PortNum);
+
 /**************************************************************************************************
 
  Function:
@@ -782,6 +853,40 @@ void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum , UINT8 u8ConfigVal);
 
 **************************************************************************************************/
 void TypeC_SetCCSampleEnable(UINT8 u8PortNum,UINT8 u8CCEnablePins);
+
+/**************************************************************************************************
+
+ Function:
+	void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
+
+    Summary:
+        This API is used to enable DRP offload to sample for a particular given CC Thresholds
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is used to configure the DRP offload to sample for a given CC threshold matches.
+		The sampling CC thresholds set are taken from gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData 
+		variable
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number.
+        u8RpCurrent - TYPEC_DFP_DEFAULT_CURRENT
+					- TYPEC_DFP_1A5_CURRENT
+					- TYPEC_DFP_3A0_CURRENT
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
+
 /**************************************************************************************************
 
  Function:
@@ -1024,6 +1129,33 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
         None.
 **************************************************************************************************/
 void TypeC_SrcIntrHandler(UINT8 u8PortNum);
+
+/**************************************************************************************************
+ Function:
+        void TypeC_DrpIntrHandler(UINT8 u8PortNum);
+
+    Summary:
+        This API handles the DRP_DONE interrupt.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void TypeC_DrpIntrHandler(UINT8 u8PortNum);
+
 /**************************************************************************************************
  Function:
         void TypeC_SnkIntrHandler(UINT8 u8PortNum);
