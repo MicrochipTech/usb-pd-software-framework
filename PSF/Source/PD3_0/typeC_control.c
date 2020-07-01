@@ -45,6 +45,130 @@ const UINT16 au16CCThrVal[] = { TYPEC_CC_THR0_VAL,
                                   
                             };
 /****************************************************************************************/
+void TypeC_InitDRPPort(UINT8 u8PortNum)
+{
+    UINT16 u16Data;
+    UINT8 u8MatchDebVal;
+    
+    /*Clearing UPD350 role to be advertised. Done in cronous*/
+    UPD_RegByteClearBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, TYPEC_DEV_ROLE);
+    
+    /*Setting CC Comparator OFF*/
+    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+    
+    /*Setting VBUS Comparator OFF*/
+    TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
+ 
+    /*Clearing BLK_PD_MSG initially. Done in cronous*/
+    UPD_RegByteClearBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
+        
+    /*Setting PM V2I Enable bit to enable the current source*/
+    UPD_RegByteSetBit (u8PortNum, UPD_TRIM_ZTC_BYTE_3, UPD_PM_V2I_ENABLE);
+    
+    /*Setting the MATCH_DB_UNITS bit in CC_HW_CTL register*/
+    UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_MATCH_DB_UNITS);
+    
+    /*Setting the CC_SAMP_CLK bit as 0. Sampling period will be 100us*/
+	UPD_RegWriteByte (u8PortNum, UPD_CC_SAMP_CLK, \
+      (UINT8) (UPD_CC_SAMP_GEN_10_KS | UPD_CC_CLK_20_KHZ));
+    
+    /*Setting the VBUS_DB_UNITS bit in VBUS_CTL1 register*/
+    UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_HIGH, TYPEC_VBUS_DB_UNITS);
+
+    /*Setting the VBUS_SAMP_CLK as 0. Sampling period will be 100us*/
+	UPD_RegWriteByte (u8PortNum, UPD_VBUS_SAMP_CLK,\
+                     (UINT8)(UPD_VBUS_SAMP_GEN_10_KS | UPD_VBUS_CLK_20_KHZ));
+    
+    /*Setting the CC threshold registers for default values given in DOS*/
+    UPD_RegisterWrite (u8PortNum, TYPEC_CC_THR_BASE, (UINT8 *)au16CCThrVal, BYTE_LEN_16);
+    
+    /*Setting the default threshold values in VBUS VSAFE0V Threshold register*/
+	UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR_VSAFE0V, \
+      (UINT16)((float)TYPEC_VSAFE0V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor));
+    
+
+    
+    /*To check VBUS below vSafe0V*/
+    UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_HIGH, TYPEC_DRP_VSAFE0V_EN);
+    
+    /*Setting VBUS_DEB_TO_EN bit in VBUS Control 2 Register*/
+    UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL2, (TYPEC_VBUS_DEB_TO_EN | TYPEC_VBUS_DEB_BLK_EN));
+    
+    /*Setting Match debounce register value as 4 times the number of thresholds enabled 
+    for debouncing*/
+    u8MatchDebVal = 4*TYPEC_DRP_CCTHRES_CNT;
+    /*Setting Match debounce register */
+    UPD_RegisterWrite (u8PortNum, TYPEC_MATCH_DEB, &u8MatchDebVal, BYTE_LEN_1);	
+    
+    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK)\
+                >> TYPEC_PORT_RPVAL_POS);
+    TypeC_DRP_SetCCSampleEnable(u8PortNum, u16Data);
+    
+    /*FW shall mask the CC1_MATCH_CHG, CC2_MATCH_CHG and CC_MATCH_VLD interrupts to
+    prevent an interrupt due to Ra/Open or Open/Ra detection.*/  
+    UPD_RegByteClearBit (u8PortNum,  TYPEC_CC_INT_EN,\
+                      (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
+    
+    /*Setting VBUS Debounce enable clear register and VBUS Match Enable Register */
+    u16Data = TYPEC_VBUS_VSAFE0V_MATCH;
+	UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_MATCH_EN, (UINT8*)&u16Data, BYTE_LEN_1);
+    UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_DBCLR_EN,	(UINT8*)&u16Data, BYTE_LEN_1);
+	UPD_RegWriteByte (u8PortNum, TYPEC_VBUS_SAMP_EN, u16Data);
+    
+    /*FW programs DRP Pull-Down Value (DRP_PD_VAL) in DRP Control Register. 
+      This value will be advertised when DRP advertises Sink capabilities.*/
+    UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_PD_VAL_MASK);
+    UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_PD_VAL_TRIMMED_RD);   
+    
+    /*FW programs DRP Current Advertisement (DRP_CUR_ADV) in DRP Control Register. This value
+    will be advertised when DRP advertises Source capabilities.*/
+    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK) \
+              >> TYPEC_PORT_RPVAL_POS);        
+    UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, (u16Data << TYPEC_DRP_RP_POS));
+    
+    /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
+    gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+    gasTypeCcontrol[u8PortNum].u8PortSts  |= (u16Data << TYPEC_CURR_RPVAL_POS);
+            
+    /*FW sets the LFSR Enable (LFSR_EN) in DRP Control Register to enable the LFSR generation.
+    When this bit is set the internal LFSR is enabled and updates at 10 KHz.*/
+    UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_LFSR_EN);
+
+    /*Enabling TYPEC_DRP_DONE interrupt in CC_INT_EN register */   
+    UPD_RegByteSetBit (u8PortNum,  TYPEC_CC_INT_EN, (UINT8)TYPEC_DRP_DONE);	
+    
+    /*Enable the VBUS interrupt (VBUS_MATCH_VLD interrupt) and VCONN OCS interrupt*/
+    UPD_RegByteSetBit (u8PortNum, TYPEC_PWR_INT_EN,\
+                       (TYPEC_VBUS_MATCH_VLD | TYPEC_VCONN_OVER_CURR_ERR));
+    
+            
+    /*Setting the UPD350 high level interrupt register for CC interrupt, VBUS interrupt and Power 
+    interrupt*/
+	u16Data = ((UPD_RegReadWord(u8PortNum, UPDINTR_INT_EN)) | \
+	  			(UPDINTR_CC_INT | UPDINTR_VBUS_INT | UPDINTR_PWR_INT | UPDINTR_PIO_INT)) ; 
+	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, u16Data);
+
+    /*Clearing the TYPEC_MODE bit will set UPD350's Operating Mode as Companion mode */
+    UPD_RegByteClearBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, TYPEC_MODE);
+
+    /*Setting VBUS Comparator ON*/
+    TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
+	
+    /*Setting the VBUS to vSafe0V before entering the Source State machine*/
+    DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+    
+    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+    gasTypeCcontrol[u8PortNum].u8TypeCState = (UINT8)TYPEC_UNATTACHED_SRC;
+    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS;
+    
+    /*FW sets the DRP Enable (DRP_EN) in DRP Control Register to enable DRP offload.*/
+    UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+    
+    /*Clearing BLK_PD_MSG again. Done in cronous*/
+    UPD_RegByteClearBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
+    
+}
+
 void TypeC_InitPort (UINT8 u8PortNum)
 {
 	UINT16 u16Data;
@@ -106,10 +230,10 @@ void TypeC_InitPort (UINT8 u8PortNum)
 	/*Setting VBUS_BLK_EN bit in VBUS Control 2 Register*/
     UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL2, TYPEC_VBUS_DEB_BLK_EN);
  
-	switch (gasCfgStatusData.sPerPortData [u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)
+	switch (DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
       
-#if ((TRUE == INCLUDE_PD_SOURCE) || (FALSE == INCLUDE_PD_DRP))
+#if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
         case PD_ROLE_SOURCE:
 		{     
           
@@ -150,7 +274,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             
 #endif /*INCLUDE_PD_SOURCE*/
         
-#if (TRUE == INCLUDE_PD_SINK || FALSE == INCLUDE_PD_DRP)
+#if (TRUE == INCLUDE_PD_SINK || TRUE == INCLUDE_PD_DRP)
 		case PD_ROLE_SINK:
 		{          
             /*Setting Match debounce register value as 4 times the number of thresholds enabled 
@@ -178,10 +302,6 @@ void TypeC_InitPort (UINT8 u8PortNum)
            
 #endif/*INCLUDE_PD_SINK*/
 			
-#if (TRUE == INCLUDE_PD_DRP)        
-        case PD_ROLE_DRP:
-            break;
-#endif            
 		default:
 		break;  
 	}
@@ -207,12 +327,15 @@ void TypeC_InitPort (UINT8 u8PortNum)
     
 	/*Setting VBUS Comparator ON*/
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
-	
+    
+    /*Disable DRP offload.*/
+    UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+            
     /*Setting CC Comparator ON*/
     TypeC_ConfigCCComp (u8PortNum,TYPEC_CC_COMP_CTL_CC1_CC2);
     
     /*Setting the Power Module as per the port role*/
-    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
+    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum)== PD_ROLE_SOURCE)
     {
         /*Setting the VBUS to vSafe0V before entering the State machine*/
         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
@@ -266,6 +389,16 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
         {          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
             {
+                case TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS:
+                {
+                    /*Wait here initially until a partner is found*/
+                    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) != PD_ROLE_DRP)
+                    {
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS;   
+                    }
+                    break;
+                }
+                    
                 case TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS:
                 {
                     /* Check for VBUS VSafe0V for Voltage driven in TypeC Initialization */
@@ -285,15 +418,16 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
                      
-                    UINT8 u8RpValue = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
-                                      TYPEC_PORT_RPVAL_MASK) >> TYPEC_PORT_RPVAL_POS);
-					 
 					/*Reset the VBUS threshold for 5V detection*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-					
+
+#if (FALSE == INCLUDE_PD_DRP)				
+                    UINT8 u8RpValue = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
+                    TYPEC_PORT_RPVAL_MASK) >> TYPEC_PORT_RPVAL_POS);
+                                        
 					/*Power down the CC comparator*/
                     TypeC_ConfigCCComp(u8PortNum, TYPEC_CC_COMP_CTL_DIS);
-                     
+                    
                     /*Check whether the current Rp value is same as the default Rp value*/
                     if(((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
                         >> TYPEC_CURR_RPVAL_POS)!= u8RpValue)
@@ -302,18 +436,37 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Setting the user given Rp value since it is changed by collision 
                         avoidance*/
                         TypeC_SetDefaultRpValue (u8PortNum);
-                                                 
+
                         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: RP Value of Source set to"\
                                              "User given Value\r\n");                       
                     }
-					
+
 					/*Set the CC Comparator to sample both CC1 and CC2*/
               		TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2); 
-					
+#endif
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_SRC: Entered UNATTACHED"\
                                          "SRC State\r\n");
 		
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;                    
+                    if(gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SOURCE)
+                    {
+                        /*Disable VBUS by driving to vSafe0V*/
+                        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+        
+                        /*Setting CC Comparator OFF*/
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+    
+                        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
+                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+                        
+                        /*Enable DRP offload.*/
+                        UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+
+                    }
+                    else
+                    {
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;                    
+                    }
                    
                     break;
                 }
@@ -394,6 +547,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Rd is present on either CC1 or CC2 line and Ra may be present on either CC1 or CC2 line*/
                         else
                         {
+                            /*Set BLK_PD_MSG. Done in cronous*/
+                            UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
+    
                              gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
                              gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
                         }
@@ -560,8 +716,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
                     
+                    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SOURCE;
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
-                    
+
                     /* Enabling PRL Rx */
                     PRL_EnableRx(u8PortNum, TRUE);                  
 
@@ -700,6 +857,17 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
                                  
+                    if(gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SINK)
+                    {
+                        /*Setting CC Comparator OFF*/
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+    
+                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+                        
+                        /*Enable DRP offload.*/
+                        UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+                    }
+                    
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK: Entered"\
                                         "UNATTACHED SNK State\r\n");
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_VSAFE0V_WAIT_SS;
@@ -770,10 +938,23 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*This SubState is used to start a tPDDebounce Software timer for Source detachment*/ 
                 case TYPEC_ATTACHWAIT_SNK_TPDDEB_SS:
                 {                  
-                    gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
+                    
+                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_DRP)
+                    {
+						/*If source is detached during TYPEC_ATTACHWAIT_SNK state, according to
+						DRP state machine, the next state should be TYPEC_UNATTACHED_SRC*/
+                        gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
+                                                      (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
+                                                      TypeC_StateChange_TimerCB, u8PortNum,\
+                                                      TYPEC_UNATTACHED_SRC);
+                    }
+                    else
+                    {
+                        gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start ( \
                                                       (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_StateChange_TimerCB, u8PortNum,\
                                                       TYPEC_UNATTACHED_SNK);
+                    }
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHWAIT_SNK_IDLE_SS;
                     
                     break;
@@ -786,6 +967,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Check for VBUS Presence before moving to Attached SNK state */
                     if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_5V_PRES))
                     {
+                        /*Set BLK_PD_MSG. Done in cronous*/
+                        UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
+                        
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_ENTRY_SS;
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SNK;                    
                     }
@@ -833,9 +1017,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
-
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
                     
+                    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
+
                     PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_5V,\
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                                        
@@ -930,7 +1115,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             break;     
 
 #endif
-/*INCLUDE_PD_SINK*/
+/*INCLUDE_PD_SINK || INCLUDE_PD_DRP*/
           
         case TYPEC_ERROR_RECOVERY:
         {
@@ -953,7 +1138,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Setting CC Comparator OFF*/
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
-                    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
+                    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                     {                    
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
@@ -1052,8 +1237,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {    
                     
                     /*Resetting the Port Power Role*/
-                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) \
-                        == PD_ROLE_SOURCE)
+                    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                     {                      
                         UINT8 u8Data;
                         
@@ -1246,52 +1430,75 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
     UINT8 u8VbusMatchValid = FALSE;
     
     UINT8 u8IntStsISR = gasTypeCcontrol[u8PortNum].u8IntStsISR;
-     
+    
     /*Check for CC Change interrupt*/
     if (u16InterruptStatus & UPDINTR_CC_INT)
     {			       
         UPD_RegisterReadISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
-         
-        if (u8Data & TYPEC_CC_MATCH_VLD)
+        
+        if (u8Data & TYPEC_DRP_DONE)
         {
-            /*Clearing the CC Match valid interrupt */
-            /*This Interrupt is usually occurred while switching on the CC Comparator
-            and Comparator has finished one round of sampling*/
+            /*Clearing the DRP_DONE interrupt */
             UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
             
-            /*Setting the CC Match Valid interrupt as CC interrupt for the firmware to handle.
-            This is done to detect the detach event while Comparator goes from OFF state to ON state
-            when the firmware is in attached state such as Collision avoidance and VCONN discharge*/
-                       
+            UPD_RegisterReadISR( u8PortNum, TYPEC_DRP_CTL_HIGH, &u8Data, BYTE_LEN_1); 
+            gasTypeCcontrol[u8PortNum].u8DRPStsISR &= ~(TYPEC_DRP_STS_ADVERTISED_STATE);
+            
+            if(TRUE == (u8Data & TYPEC_DRP_ADVERTISING_STATE))
+            {
+                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_UFP;
+            }
+            else
+            {
+                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_DFP;
+            }   
+                        
+            gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_DONE_INTERRUPT;
         }
-        
-        if(u8Data & (TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG))
-        {   			
-            /*Clearing the CC Change status interrupt */
-            UPD_RegisterReadISR (u8PortNum, TYPEC_CC_CHG_STS, (UINT8 *)&u16Data, BYTE_LEN_2);           
-            UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_CHG_STS, (UINT8 *)&u16Data, BYTE_LEN_2);
-              			
-        }
-        
-        /*Setting the CC interrupt flag in "u8IntStsISR" variable*/
-        u8IntStsISR |= TYPEC_CCINT_STATUS_MASK;
-        UPD_RegisterReadISR( u8PortNum, TYPEC_CC_MATCH, (UINT8 *)&u16Data, BYTE_LEN_2); 
-        
-        /*For Source Port*/
-        if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
-        {             
-            /*For a source port, a bit in CC Match register will be "cleared" , if a 
-            match of the particular bit occurs. Hence the CC match register is negated while
-            storing*/
-            gasTypeCcontrol[u8PortNum].u8CC1_MatchISR = (UINT8)~LOBYTE(u16Data);			
-            gasTypeCcontrol[u8PortNum].u8CC2_MatchISR = (UINT8)~HIBYTE(u16Data);           
-        }
-        /*For Sink Port*/
         else
-        {   
-            gasTypeCcontrol[u8PortNum].u8CC1_MatchISR = (UINT8)LOBYTE(u16Data);;			
-            gasTypeCcontrol[u8PortNum].u8CC2_MatchISR = (UINT8)HIBYTE(u16Data);            
+        {
+            if (u8Data & TYPEC_CC_MATCH_VLD)
+            {
+                /*Clearing the CC Match valid interrupt */
+                /*This Interrupt is usually ocurred while switching on the CC Comparator
+                and Comparator has finished one round of sampling*/
+                UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
+
+                /*Setting the CC Match Valid interrupt as CC interrupt for the firmware to handle.
+                This is done to detect the detach event while Comparator goes from OFF state to ON state
+                when the firmware is in attached state such as Collision avoidance and VCONN discharge*/
+
+            }
+
+            if(u8Data & (TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG))
+            {   			
+                /*Clearing the CC Change status interrupt */
+                UPD_RegisterReadISR (u8PortNum, TYPEC_CC_CHG_STS, (UINT8 *)&u16Data, BYTE_LEN_2);           
+                UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_CHG_STS, (UINT8 *)&u16Data, BYTE_LEN_2);
+
+            }
+
+            /*Setting the CC interrupt flag in "u8IntStsISR" variable*/
+            u8IntStsISR |= TYPEC_CCINT_STATUS_MASK;
+            UPD_RegisterReadISR( u8PortNum, TYPEC_CC_MATCH, (UINT8 *)&u16Data, BYTE_LEN_2); 
+
+            /*For Source Port*/
+            if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+            {             
+                /*For a source port, a bit in CC Match register will be "cleared" , if a 
+                match of the particular bit occurs. Hence the CC match register is negated while
+                storing*/
+                gasTypeCcontrol[u8PortNum].u8CC1_MatchISR = (UINT8)~LOBYTE(u16Data);			
+                gasTypeCcontrol[u8PortNum].u8CC2_MatchISR = (UINT8)~HIBYTE(u16Data);           
+            }
+            /*For Sink Port*/
+            else
+            {   
+                gasTypeCcontrol[u8PortNum].u8CC1_MatchISR = (UINT8)LOBYTE(u16Data);;			
+                gasTypeCcontrol[u8PortNum].u8CC2_MatchISR = (UINT8)HIBYTE(u16Data);            
+            }
         }
+
     }
     
     /*Check for power interrupt*/
@@ -1596,9 +1803,51 @@ void TypeC_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8CCEnablePins)
     }    
 }
 
+void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent)
+{
+  
+    UINT8 u8MatchSel = 0x01;
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_SNK_SAMP_EN, &u8MatchSel,\
+                       BYTE_LEN_1); 
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SNK_MATCH_EN, &u8MatchSel,\
+                       BYTE_LEN_1);   
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SNK_DBCLR_EN, &u8MatchSel,\
+                       BYTE_LEN_1);
+    
+    switch(u8RpCurrent)
+    {
+        case TYPEC_DFP_DEFAULT_CURRENT:
+        {
+            /*DFP_ACT_DEF(CC_THR0),DFP_UFP_DEF(CC_THR5)*/
+            u8MatchSel = (TYPEC_CC_THRES0_MATCH | TYPEC_CC_THRES5_MATCH);
+            break;
+        }
+        case TYPEC_DFP_1A5_CURRENT:
+        {
+            /*DFP_ACT_1A5(CC_THR1),DFP_UFP_1A5(CC_THR5)*/
+            u8MatchSel = (TYPEC_CC_THRES1_MATCH | TYPEC_CC_THRES5_MATCH);
+            break;
+        }
+        case TYPEC_DFP_3A0_CURRENT:
+        {
+            /*DFP_ACT_3A0 (CC_THR3),DFP_UFP_3A0 (CC_THR6)*/
+            u8MatchSel = (TYPEC_CC_THRES3_MATCH | TYPEC_CC_THRES6_MATCH);
+            break;
+        }
+        default:
+            break;
+            
+    }
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_SRC_SAMP_EN, &u8MatchSel,\
+                       BYTE_LEN_1); 
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SRC_MATCH_EN, &u8MatchSel,\
+                       BYTE_LEN_1);   
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SRC_DBCLR_EN, &u8MatchSel,\
+                       BYTE_LEN_1);
+}
 
 void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal)
-{  
+{   
      UINT16 u16CCControlReg1Val;
      
      /* Register Read added to avoid over writing the register CC_CTL1 register */
@@ -1738,7 +1987,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         
         UINT8 u8CCRead = UPD_RegReadByte (u8PortNum, TYPEC_CC_CTL1_HIGH);
                
-        if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
+        if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
         {       
             /*Powered cable attached in CC1 when CC1 is greater than CC2*/
             /*Powered cable attached in CC1 when PD Communication is enabled in CC2*/
@@ -1816,7 +2065,7 @@ void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
 
 void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
 {
-    if(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)
+    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
     {
         /*VCONN Enabled in CC1 and Sink Attached in CC2*/
         if((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN1_ON_REQ) && \
@@ -1895,6 +2144,11 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
     
     /*Handling the state changes for CC and VBUS interrupts in foreground and not in ISR to 
     avoid variable corruption*/
+
+#if(TRUE == INCLUDE_PD_DRP)
+    TypeC_DrpIntrHandler(u8PortNum);
+#endif
+
     
     if (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VSINKDISCONNECT_STATUS_MASK)
     {
@@ -1989,7 +2243,56 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 }
 
-#if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+void TypeC_DrpIntrHandler (UINT8 u8PortNum)
+{
+ 	
+    if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_DRP_DONE_INTERRUPT)
+    {
+        if((gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_DRP_STS_ADVERTISED_STATE) \
+                 == TYPEC_DRP_STS_ADVERTISED_STATE_UFP)
+        {
+            /* Set the Current Port Power Role as Sink in DPM Status variable */
+            DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SINK);
+        
+            /* Set the Current  Port Data Role as UFP in DPM Status variable */
+            DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_UFP);
+            
+            (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
+            DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
+                    
+            gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;  
+            
+        }
+        else
+        {
+            /* Set the Current Port Power Role as Source in DPM Status variable */
+            DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SOURCE);
+        
+            /* Set the Current  Port Data Role as DFP in DPM Status variable */
+            DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_DFP); 
+            
+            (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, 
+            (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
+                        
+            gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;  
+            
+       }
+        TypeC_InitPort(u8PortNum);
+        
+        /* Protocol Layer initialization based on power being advertised*/
+        PRL_Init (u8PortNum);
+                
+        gasTypeCcontrol[u8PortNum].u8DRPStsISR &= (~TYPEC_DRP_DONE_INTERRUPT);
+        
+    }
+}
+
+
+#if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))
 void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 {
  	 
@@ -2188,7 +2491,7 @@ void TypeC_SetDefaultRpValue (UINT8 u8PortNum)
 }
 
 #endif
-/*INCLUDE_PD_SOURCE*/
+/*#if ((TRUE == INCLUDE_PD_SOURCE) || (TRUE == INCLUDE_PD_DRP))*/
 
 #if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
 
@@ -2204,7 +2507,7 @@ void TypeC_Reset_VCONNDIS_Settings (UINT8 u8PortNum)
     UPD_RegWriteWord (u8PortNum, TYPEC_CC_THR0, TYPEC_CC_THR0_VAL);    
     
     #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
-    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SOURCE)
+    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
     {
         /*Setting the user given Rp value for source since it is changed to open disconnect
         while VCONN Discharge*/
@@ -2213,7 +2516,7 @@ void TypeC_Reset_VCONNDIS_Settings (UINT8 u8PortNum)
     #endif
 
     #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
-    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_SINK)
+    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SINK)
     {
         TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP);
           
@@ -2401,7 +2704,7 @@ void TypeC_DecodeSourceRpValue(UINT8 u8PortNum)
     
 }
 #endif
-/*INCLUDE_PD_SINK*/
+/*INCLUDE_PD_SINK || INCLUDE_PD_DRP*/
 
 
 /*Change the Rp Value only for the CC pin in which source is connected*/

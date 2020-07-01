@@ -157,10 +157,21 @@ void DPM_StateMachineInit(void)
 		  	UPD_GPIOInit(u8PortNum);
 			
             /*Type-C UPD350 register configuration for a port*/
-            TypeC_InitPort(u8PortNum);
+            if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)!= (PD_ROLE_DRP))
+            {
+                TypeC_InitPort(u8PortNum);
+                
+                /* Protocol Layer initialization for all the port present */
+                PRL_Init (u8PortNum);
             
-            /* Protocol Layer initialization for all the port present */
-            PRL_Init (u8PortNum);
+            }
+            else
+            {
+                TypeC_InitDRPPort(u8PortNum);
+				
+				/*For DRP, PRL_Init will be done once a valid DRP partner is matched*/
+            }
+
         }
     }
 }
