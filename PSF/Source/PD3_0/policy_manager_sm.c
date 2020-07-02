@@ -106,6 +106,7 @@ void DPM_Init(UINT8 u8PortNum)
     }
     else
     {
+#if(TRUE == INCLUDE_PD_DRP)
         /* Set Port Power Role as Source in DPM Configure variable*/
         u8DPM_ConfigData |= (PD_ROLE_DRP << DPM_DEFAULT_POWER_ROLE_POS); 
         
@@ -124,6 +125,7 @@ void DPM_Init(UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS_TOGGLING;
         
         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+#endif
     }
     
     gasDPM[u8PortNum].u16DPM_Status =  u16DPM_Status;
@@ -156,20 +158,21 @@ void DPM_StateMachineInit(void)
 		  	/* Init UPD350 GPIO */
 		  	UPD_GPIOInit(u8PortNum);
 			
+#if(TRUE == INCLUDE_PD_DRP)
             /*Type-C UPD350 register configuration for a port*/
-            if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)!= (PD_ROLE_DRP))
+            if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_DRP)
+            {
+                TypeC_InitDRPPort(u8PortNum);
+				
+				/*For DRP, PRL_Init will be done once a valid DRP partner is matched*/
+            }
+            else
+#endif
             {
                 TypeC_InitPort(u8PortNum);
                 
                 /* Protocol Layer initialization for all the port present */
                 PRL_Init (u8PortNum);
-            
-            }
-            else
-            {
-                TypeC_InitDRPPort(u8PortNum);
-				
-				/*For DRP, PRL_Init will be done once a valid DRP partner is matched*/
             }
 
         }
