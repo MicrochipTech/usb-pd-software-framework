@@ -169,6 +169,10 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 	    }
 
     	PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
+        
+        #if (TRUE == INCLUDE_PD_PR_SWAP)
+        /* To-do: PR_Swap module - Call PE_RunPRSwapStateMachine() here */
+        #endif 
 	}
 }
 
@@ -809,6 +813,25 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 
                         /*TODO:Add PE_CheckRcvdMsg_n_TimeoutSynchronication API call*/
                     }
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+                    /* Accept message received for PR_Swap request */
+                    else if ((ePE_PRS_SEND_SWAP_IDLE_SS == gasPolicy_Engine[u8PortNum].ePESubState) || 
+                            (ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS == gasPolicy_Engine[u8PortNum].ePESubState)) 
+                    {
+                        /* Kill the Sender Response Timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                        {
+                            PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_PRS_SRC_SNK_TRANSITION_TO_OFF, 
+                                    ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS);
+                        }
+                        else
+                        {
+                            PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_PRS_SNK_SRC_TRANSITION_TO_OFF, 
+                                    ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS);
+                        }                        
+                    }
+#endif 
                     else
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);
@@ -860,6 +883,38 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                             gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS;
                         }
                     }
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+                    /* Reject or Wait message received for PR_Swap request */
+                    else if ((ePE_PRS_SEND_SWAP_IDLE_SS == gasPolicy_Engine[u8PortNum].ePESubState) || 
+                            (ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS == gasPolicy_Engine[u8PortNum].ePESubState)) 
+                    {
+                        /* Kill the Sender Response Timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        
+                        if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
+                        {
+                            /* Move to ePE_SRC_READY/ePE_SNK_READY state */
+                            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                            {
+                                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_READY;
+                                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;                            
+                            }
+                            else
+                            {
+                                gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_READY;
+                                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;                            
+                            }                                                                              
+                        }
+                        else if (PE_CTRL_WAIT == (PRL_GET_MESSAGE_TYPE (u32Header)))
+                        {
+                            gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_WAIT_RCVD_SS;                            
+                        }
+                        else
+                        {
+                            /* Do Nothing */
+                        }
+                    }
+#endif 
                     else
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);
@@ -1043,6 +1098,40 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_HandleUnExpectedMsg (u8PortNum);
                     }  
                     break; 
+                }
+#endif 
+                
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+                case PE_CTRL_PR_SWAP: 
+                {
+                    /*Accept the Power Role swap if current state is READY State or
+                    any VDM AMS is active*/
+                    if ((ePE_SNK_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
+                        (ePE_SRC_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
+                         (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                    {
+                        /*Kill the tPRSwapWait timer*/
+                        PDTimer_Kill(gasDPM[u8PortNum].u8PRSwapWaitTmrID);
+                        /* Set the timer Id to Max Concurrent Value*/
+                        gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+
+                        gasPolicy_Engine[u8PortNum].ePEState = ePE_PRS_EVALUATE_SWAP;
+
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)                        
+                        /* Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
+                           the current explicit contract is for a PPS APDO*/
+                        if((DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)) && 
+                                (ePE_SRC_READY == gasPolicy_Engine[u8PortNum].ePEState))
+                        {
+                            PE_KillPolicyEngineTimer (u8PortNum);
+                        } 
+#endif 
+                    }
+                    else
+                    {
+                        PE_HandleUnExpectedMsg (u8PortNum);
+                    }
+                    break;                    
                 }
 #endif 
                 default:

@@ -178,6 +178,25 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    is set as 13 seconds. */
 #define PE_SOURCE_PPS_COMM_TIMEOUT_MS           MILLISECONDS_TO_TICKS(13000)
 
+/* PE_PR_SWAP_WAIT_TIMEOUT_MS defines the tPRSwapWait specified in the 
+   UPD PD Specification. Default value of PE_PR_SWAP_WAIT_TIMEOUT_MS is 
+   set as 100 milliseconds. */
+#define PE_PR_SWAP_WAIT_TIMEOUT_MS              MILLISECONDS_TO_TICKS(100)
+
+/* PE_PS_SOURCE_ON_TIMEOUT_MS defines the tPSSourceOn specified in the 
+   UPD PD Specification. Default value of PE_PS_SOURCE_ON_TIMEOUT_MS is 
+   set as 420 milliseconds. */
+#define PE_PS_SOURCE_ON_TIMEOUT_MS              MILLISECONDS_TO_TICKS(420)
+
+/* PE_PS_SOURCE_OFF_TIMEOUT_MS defines the tPSSourceOff specified in the 
+   UPD PD Specification. Default value of PE_PS_SOURCE_OFF_TIMEOUT_MS is 
+   set as 800 milliseconds. */
+#define PE_PS_SOURCE_OFF_TIMEOUT_MS             MILLISECONDS_TO_TICKS(800)
+
+/* PE_SWAP_SOURCE_START_TIMEOUT_MS defines the tSwapSourceStart specified in the 
+   UPD PD Specification. Default value of PE_SWAP_SOURCE_START_TIMEOUT_MS is 
+   set as 20 milliseconds. */
+#define PE_SWAP_SOURCE_START_TIMEOUT_MS         MILLISECONDS_TO_TICKS(20)
 
 // *****************************************************************************
 // Section: DPM Timeout configuration

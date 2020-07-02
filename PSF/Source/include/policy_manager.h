@@ -65,7 +65,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VDM_STATE_ACTIVE_MASK           BIT(6)
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK (BIT(8) | BIT(7))
 
-/*Bit position for u16DPM_Statuss variable*/
+/*Bit position for u16DPM_Status variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
 #define DPM_CURR_DATA_ROLE_POS             2
 #define DPM_CURR_PD_SPEC_REV_POS           4
@@ -412,6 +412,10 @@ Source/Sink Power delivery objects*/
 #define DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL         0xFF
 #define DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL 0xFFFFFFFF
 
+/********************** Return Values from DPM_EvaluateRoleSwap API**************/
+#define DPM_ACCEPT_SWAP                     1
+#define DPM_REJECT_SWAP                     0 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -459,6 +463,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8RealTimeFlags;
   UINT8 u8StsClearTmrID;
 #endif
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+  UINT8 u8PRSwapWaitTmrID;         // PR_Swap Wait Timer ID
+#endif 
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
 /************************ Client Request Defines ******************************/
@@ -503,6 +510,13 @@ typedef enum PDOtype
     ePDO_PROGRAMMABLE = 0x03,
     ePDO_INVALID = 0xFF
 } ePDOtypes;
+
+/* Enum for Swap messages */
+typedef enum {
+    eVCONN_SWAP,
+    eDR_SWAP,
+    ePR_SWAP
+}eRoleSwap;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1572,10 +1586,9 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable);
         None.
     Input:
         u8PortNum - Port number.
-        u8Enable - TRUE - APDO is advertised
-                   FALSE - No APDO is advertised
     Return:
-        None.
+        UINT8  - TRUE - APDO is advertised
+                 FALSE - No APDO is advertised
     Remarks:
         None. 
 **************************************************************************************************/
@@ -1599,6 +1612,49 @@ UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum);
         None. 
 **************************************************************************************************/
 void DPM_OnTypeCDetach(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_PRSwapWaitTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
+    Summary:
+        Timer callback for PE_PR_SWAP_WAIT_TIMEOUT_MS timeout
+    Description:
+        API to re-initiate PR_Swap on PE_PR_SWAP_WAIT_TIMEOUT_MS timeout
+        in case the port partner has not sent a request within PE_PR_SWAP_WAIT_TIMEOUT_MS
+        of reception of Wait message from the port partner.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8DummyVariable - Dummy variable
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_PRSwapWaitTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
+
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwap eRoleSwapMsg); 
+    Summary:
+        API to evaluate VCONN_Swap, DR_Swap and PR_Swap received from partner. 
+    Description:
+        This API evaluates the Role swap message received from port partner 
+        based on the policy bits defined by user configuration and returns 
+        accept/reject status.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        eRoleSwap - Role Swap message
+    Return:
+        UINT8 - DPM_ACCEPT_SWAP in case of accept
+                DPM_REJECT_SWAP in case of reject.
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwap eRoleSwapMsg); 
 
 #endif /*_POLICY_MANAGER_H_*/
 
