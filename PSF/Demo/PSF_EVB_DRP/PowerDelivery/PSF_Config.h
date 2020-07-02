@@ -307,8 +307,8 @@ Description:
     to reduce the code size if none of the ports in the system require Power Role
     Swap functionality.
 Remarks: 
-    Recommended default value is 1. User can configure it based on the
-    application.
+    Recommended default value is 1. For INCLUDE_PD_PR_SWAP to be 1, 
+    INCLUDE_PD_DRP shall be set to 1. 
 Example:
     <code>
     #define INCLUDE_PD_PR_SWAP	1(Include PR_SWAP functionality in PSF)

@@ -1292,4 +1292,55 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
         }
     }
 }
+
+/********************* Policy Manager APIs for Swap ********************/
+UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwap eRoleSwapMsg)
+{
+    UINT8 u8RetVal = DPM_REJECT_SWAP;
+            
+    switch (eRoleSwapMsg)
+    {
+        case eVCONN_SWAP: 
+        {
+            /* To-do: VCONN_Swap module - Do evaluation of VCONN_Swap message based 
+               on policy bits */
+            break; 
+        }
+        case eDR_SWAP:
+        {
+            /* To-do: DR_Swap module - Do evaluation of DR_Swap message based 
+               on policy bits */
+            break; 
+        }
+        case ePR_SWAP:
+        {
+            /* To-do: PR_Swap module - Do evaluation of PR_Swap message based 
+               on policy bits 
+               if ((role == Source && Auto-Accept Power Role Swap when Source) ||
+                   (role == Sink && Auto-Accept Power Role Swap when Sink))
+               {
+                    u8RetVal = DPM_ACCEPT_SWAP; 
+               }  */
+            break; 
+        }
+        default:
+        {
+            break; 
+        }       
+    }
+    return u8RetVal; 
+}
+
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+void DPM_PRSwapWaitTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+{
+    /* Set the timer Id to Max Concurrent Value*/
+ 	gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+    
+    /* To-do: PR_Swap module - Do PR_Swap Policy Evaluation and 
+       register internal event for PR_Swap initiation. 
+       Kill this timer while receiving PR_Swap message from port partner */
+    
+}
+#endif 
 /************************************************************************************************************************/
