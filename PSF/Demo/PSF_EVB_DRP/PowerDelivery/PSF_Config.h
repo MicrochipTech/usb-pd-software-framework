@@ -210,7 +210,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
+    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -292,11 +292,30 @@ Remarks:
     application.
 Example:
     <code>
-    #define INCLUDE_PD_DR_SWAP	1(Include Source PPS functionality in PSF)
-    #define INCLUDE_PD_DR_SWAP	0(Exclude Source PPS functionality from PSF)
+    #define INCLUDE_PD_DR_SWAP	1(Include DR_SWAP functionality in PSF)
+    #define INCLUDE_PD_DR_SWAP	0(Exclude DR_SWAP functionality from PSF)
     </code>
 **************************************************************************************************/
 #define INCLUDE_PD_DR_SWAP           1
+
+/**************************************************************************************************
+Summary:
+    PR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_PR_SWAP as 1 enables PSF to include the Power Role 
+    swap (PR_SWAP) feature at compile time. User can set this define to 0
+    to reduce the code size if none of the ports in the system require Power Role
+    Swap functionality.
+Remarks: 
+    Recommended default value is 1. User can configure it based on the
+    application.
+Example:
+    <code>
+    #define INCLUDE_PD_PR_SWAP	1(Include PR_SWAP functionality in PSF)
+    #define INCLUDE_PD_PR_SWAP	0(Exclude PR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_PR_SWAP      0
 
 // *****************************************************************************
 // *****************************************************************************
