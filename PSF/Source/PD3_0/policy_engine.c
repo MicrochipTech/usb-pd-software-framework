@@ -229,7 +229,10 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             }
             else if (PE_CTRL_PR_SWAP == u8MsgType)
             {
-                u8RetVal = PE_UNSUPPORTED_MSG; 
+                #if (FALSE == INCLUDE_PD_PR_SWAP)
+                /* PR_Swap will be supported only when INCLUDE_PD_PR_SWAP is set to 1*/
+                    u8RetVal = PE_UNSUPPORTED_MSG; 
+                #endif 
             }
             else if((u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
                     && (u8MsgType < PE_CTRL_NOT_SUPPORTED)))

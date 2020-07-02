@@ -315,6 +315,7 @@ Example:
     #define INCLUDE_PD_PR_SWAP	0(Exclude PR_SWAP functionality from PSF)
     </code>
 **************************************************************************************************/
+/* To-do: PR_Swap module - Set this bit to 1 */
 #define INCLUDE_PD_PR_SWAP      0
 
 // *****************************************************************************
