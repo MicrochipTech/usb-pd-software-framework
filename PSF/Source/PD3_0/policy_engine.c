@@ -88,7 +88,9 @@ void PE_RunStateMachine (UINT8 u8PortNum)
     UINT32 u32Header;
     UINT8 u8RetVal;
     
+#if(TRUE == INCLUDE_PD_DRP)
     if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) != PD_ROLE_DRP)
+#endif
     {
         /* Protocol layer Chunk State machine must be ran by PE to receive Chunk message if any*/
     #if (TRUE == INCLUDE_PD_3_0)
