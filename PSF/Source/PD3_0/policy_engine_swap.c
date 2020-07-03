@@ -419,6 +419,224 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOP
             }
             break; 
         }
+        /********************* Source-to-Sink PR_Swap States **************/
+        case ePE_PRS_SRC_SNK_TRANSITION_TO_OFF:
+        {
+            switch(gasPolicy_Engine[u8PortNum].ePESubState)
+            {
+                case ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS:
+                {
+                    /* Start Source transition timer */
+                    gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_SRCTRANSISTION_TIMEOUT_MS),
+                                                            PE_SubStateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_PWROFF_SS);
+                    
+                    /* Assign an idle state to wait for timer expiry */
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_IDLE_SS;                                                                
+                    break; 
+                }
+                case ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_PWROFF_SS:
+                {
+					/* Turn Off Power Supply by driving vSafe0V in VBUS */
+                    DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+                    
+                     /*Start the VBUS OFF timer for monitoring the time taken for 
+                       power module to reach vSafe0V*/
+                    gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                              (TYPEC_VBUS_OFF_TIMER_MS),
+                                                              DPM_VBUSOnOffTimerCB, u8PortNum,  
+                                                              (UINT8)SET_TO_ZERO);
+                   
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS;                    
+                    break; 
+                }
+                case ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS:
+                {
+                    if(TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
+                    {
+                        /*Kill the VBUS Off timer since vSafe0V is reached*/
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        
+                        /* Drive the DC_DC_EN pin to low since it is not needed for Sink functionality */
+                        PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
+                        
+                        /* Move the Policy Engine to ePE_PRS_SRC_SNK_ASSERT_RD state */
+                        gasPolicy_Engine[u8PortNum].ePEState = ePE_PRS_SRC_SNK_ASSERT_RD;                     
+                    }                    
+                    break; 
+                }
+                case ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_IDLE_SS:
+                {
+                    /* Idle state to wait for Source transition timer expiry */
+                    break; 
+                }
+                default:
+                {
+                    break; 
+                }                
+            }
+        }
+        
+        case ePE_PRS_SRC_SNK_ASSERT_RD:
+        {
+            /* Policy Engine enters this state when the source power supply has been turned off.
+               There are no sub-states involved in this state*/
+            /* Request DPM to assert Rd pull down on CC wire */
+            DPM_UpdatePwrRoleAfterPRSwap (u8PortNum, PD_ROLE_SINK);
+            
+            gasPolicy_Engine[u8PortNum].ePEState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON; 
+            gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS;
+            
+            break; 
+        }
+        
+        case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON:
+        {
+            switch(gasPolicy_Engine[u8PortNum].ePESubState)
+            {
+                case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS:
+                {
+                    if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
+                            (TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                    {
+                        /* Port has transitioned into Sink. Update the Power role 
+                           and send PS_RDY message */
+                        /* Set the Current Port Power Role as Sink in DPM Status variable */
+                        DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SINK);
+                        
+                        /* Set Port Power Role as Sink in Port Connection Status register */
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SINK; 
+                        
+                        u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
+                                                PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+
+                        u8TransmitSOP = PRL_SOP_TYPE;
+                        u32pTransmit_DataObj = NULL;
+                        Transmit_cb = PE_StateChange_TransmitCB;
+
+                        u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SRC_SNK_WAIT_SOURCE_ON, ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS, \
+                                                        ePE_PRS_SRC_SNK_WAIT_SOURCE_ON, ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS);                     
+
+                        u8IsTransmit = TRUE;
+                        /* Move the Policy Engine to Idle sub-state */
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS;
+                    }
+                    break; 
+                }
+                case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS:
+                {
+                    /* Start PSSourceOn timer */
+                    gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_PS_SOURCE_ON_TIMEOUT_MS),
+                                                            PE_SubStateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS);
+                    
+                    /* Assign an idle state to wait for timer expiry */
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS;                                                                                    
+                    break; 
+                }
+                case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS:
+                {
+                    /* PS_RDY message transmission failed or PSSourceOn Timer expired. 
+                       So, revert the port's power role and invoke Type C Error Recovery */
+                    DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SOURCE);                       
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SOURCE; 
+
+                    gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
+
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+
+                    break; 
+                }
+                case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS:
+                {
+                    /* Idle state to wait for PS_RDY message transmit completion */
+                    break; 
+                }
+                case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS:
+                {
+                    /* Idle state to wait for PS_RDY message from port partner */
+                    break; 
+                }
+                case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS:
+                {
+                    /* Send PR_Swap complete notification */
+                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE); 
+                    
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_STARTUP;
+                    break; 
+                }
+                default:
+                {
+                    break; 
+                }
+            }    
+        }
+        
+        /********************* Sink-to-Source PR_Swap States **************/
+        case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF:
+        {
+            switch(gasPolicy_Engine[u8PortNum].ePESubState)
+            {
+                case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS:
+                {
+                    break; 
+                }
+                case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_IDLE_SS:
+                {
+                    break; 
+                }
+                case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_PSRDY_RCVD_SS:
+                {
+                    break; 
+                }
+                default:
+                {
+                    break; 
+                }
+            }
+        }
+        
+        case ePE_PRS_SNK_SRC_ASSERT_RP:
+        {
+            break; 
+        }
+        
+        case ePE_PRS_SNK_SRC_SOURCE_ON:
+        {
+            switch(gasPolicy_Engine[u8PortNum].ePESubState)
+            {
+                case ePE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS:
+                {
+                    break; 
+                }
+                case ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS:
+                {
+                    break; 
+                }
+                case ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS:
+                {
+                    break;
+                }
+                case ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS:
+                {
+                    break; 
+                }
+                case ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS:
+                {
+                    break; 
+                }
+                default:
+                {
+                    break; 
+                }
+            }
+        }
         
         default:
         {

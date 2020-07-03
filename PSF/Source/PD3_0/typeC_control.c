@@ -570,6 +570,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
           
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
             {   
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+                case TYPEC_ATTACHED_SRC_ASSERT_RP_SS:
+                {
+                    /* To-do: PR_Swap module - Handle Sink-to-Source transition */
+                    break; 
+                }
+#endif 
                 /*Source Drives VBUS and VCONN required in this sub-state*/
                 case TYPEC_ATTACHED_SRC_DRIVE_PWR_SS:
                 {
@@ -988,6 +995,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
         {          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState )
             {
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+                case TYPEC_ATTACHED_SNK_ASSERT_RD_SS:
+                {
+                    /* To-do: PR_Swap module - Handle Source-to-Sink transition */
+                    break; 
+                }
+#endif 
                  /*Sink enables the CC Communication channel and notifies the external DPM
                  about the Type C Attached event this sub-state */
                 case TYPEC_ATTACHED_SNK_ENTRY_SS:

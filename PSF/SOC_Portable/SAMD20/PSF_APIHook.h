@@ -1081,6 +1081,16 @@ Description:
     gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
     when this notification is posted. 
  
+    <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: In case of PR_Swap initiated by the PSF port, 
+    this notification would be posted when the swap message is accepted by port partner and 
+    port power roles of the both the partners are changed successfully or 
+ 	when wait has been received as response for the swap message, then either of the port partners 
+    has initiated the transmission of PR_Swap within wait response time and port power roles of 
+    both the partners are changed successfully. 
+ 	In case of PR_Swap initiated by the PSF port partner, this notification would be posted 
+	when the swap message is accepted by port partner and port power roles of the both the    
+    partners are changed successfully. 
+    
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
     Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
@@ -1106,6 +1116,7 @@ eMCHP_PSF_NEW_SRC_CAPS_RCVD,        // New source capability message is received
 eMCHP_PSF_SINK_ALERT_RCVD,          // Alert message received from Sink Partner         
 eMCHP_PSF_SINK_STATUS_RCVD,         // Sink Status received from Sink Partner
 eMCHP_PSF_SINK_STATUS_NOT_RCVD,     // Sink Status not received from Sink Partner
+eMCHP_PSF_PR_SWAP_COMPLETE,         // Power Role Swap completed 
 eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
 } eMCHP_PSF_NOTIFICATION;
 

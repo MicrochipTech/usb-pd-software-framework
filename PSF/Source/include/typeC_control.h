@@ -471,12 +471,13 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHWAIT_SRC_TCC_TO_SS                2
     
 /*Defines for TYPEC_ATTACHED_SRC's substates in TYPE C SM*/
-#define TYPEC_ATTACHED_SRC_DRIVE_PWR_SS               0
-#define TYPEC_ATTACHED_SRC_CHECK_VBUS_SS              1
-#define TYPEC_ATTACHED_SRC_CHECK_VCONNON_SS           2
-#define TYPEC_ATTACHED_SRC_SET_PRL_SS                 3
-#define TYPEC_ATTACHED_SRC_RUN_SM_SS                  4
-#define TYPEC_ATTACHED_SRC_IDLE_SS				      5
+#define TYPEC_ATTACHED_SRC_ASSERT_RP_SS               0
+#define TYPEC_ATTACHED_SRC_DRIVE_PWR_SS               1
+#define TYPEC_ATTACHED_SRC_CHECK_VBUS_SS              2
+#define TYPEC_ATTACHED_SRC_CHECK_VCONNON_SS           3
+#define TYPEC_ATTACHED_SRC_SET_PRL_SS                 4
+#define TYPEC_ATTACHED_SRC_RUN_SM_SS                  5
+#define TYPEC_ATTACHED_SRC_IDLE_SS				      6
 
 /*Defines for TYPEC_UNATTACH_WAIT_SRC's substates in TYPE C SM*/ 
 #define TYPEC_UNATTACH_WAIT_SRC_ENTRY_SS            0
@@ -497,12 +498,13 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHWAIT_SNK_TCC_TO_SS                3
 
 /*Defines for TYPEC_ATTACHED_SNK's substates in TYPE C SM*/
-#define TYPEC_ATTACHED_SNK_ENTRY_SS                   0
-#define TYPEC_ATTACHED_SNK_RUN_SM_SS                  1
-#define TYPEC_ATTACHED_SNK_TPDDEB_SS                  2
-#define TYPEC_ATTACHED_SNK_TPD_TO_SS                  3
-#define TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS          4
-#define TYPEC_ATTACHED_SNK_IDLE_SS                    5
+#define TYPEC_ATTACHED_SNK_ASSERT_RD_SS               0
+#define TYPEC_ATTACHED_SNK_ENTRY_SS                   1
+#define TYPEC_ATTACHED_SNK_RUN_SM_SS                  2
+#define TYPEC_ATTACHED_SNK_TPDDEB_SS                  3
+#define TYPEC_ATTACHED_SNK_TPD_TO_SS                  4
+#define TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS          5
+#define TYPEC_ATTACHED_SNK_IDLE_SS                    6
 
 /*Defines for TYPEC_ERROR_RECOVERY's substates in TYPE C SM*/ 
 #define TYPEC_ERROR_RECOVERY_ENTRY_SS                   0
