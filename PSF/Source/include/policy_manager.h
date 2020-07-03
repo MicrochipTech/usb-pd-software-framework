@@ -1656,5 +1656,25 @@ void DPM_PRSwapWaitTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 **************************************************************************************************/
 UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwap eRoleSwapMsg); 
 
+/**************************************************************************************************
+    Function:
+        void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole);
+    Summary:
+        API to update the port's power role after a PR_Swap. 
+    Description:
+        This API changes the Type C state and sub-state for Rp/Rd assertion 
+        based on the new power role of the port. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        NewPwrRole - Port's Power role after PR_Swap
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole);
+
 #endif /*_POLICY_MANAGER_H_*/
 

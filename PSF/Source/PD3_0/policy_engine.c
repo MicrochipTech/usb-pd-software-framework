@@ -947,6 +947,19 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_VCS_TURN_OFF_VCONN,\
                                            ePE_VCS_TURN_OFF_VCONN_ENTRY_SS);
                     }
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+                    /* PS_RDY received from Power Role Swap partner */
+                    else if (ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS == \
+                                    gasPolicy_Engine[u8PortNum].ePESubState)
+                    {
+                         /*Kill the PSSourceOn timer*/
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_PRS_SRC_SNK_WAIT_SOURCE_ON,\
+                                           ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS);                        
+                        
+                    }
+#endif 
                     else
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);

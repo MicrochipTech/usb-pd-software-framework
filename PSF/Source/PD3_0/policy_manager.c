@@ -1342,5 +1342,24 @@ void DPM_PRSwapWaitTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
        Kill this timer while receiving PR_Swap message from port partner */
     
 }
+
+void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole)
+{
+    if (PD_ROLE_SOURCE == u8NewPwrRole)
+    {
+        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
+        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_ASSERT_RP_SS;         
+    }
+    else if (PD_ROLE_SINK == u8NewPwrRole)
+    {
+        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SNK;
+        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_ASSERT_RD_SS;                 
+    }
+    else
+    {
+        /* Do Nothing */
+    }
+}
+
 #endif 
 /************************************************************************************************************************/
