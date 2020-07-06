@@ -415,13 +415,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC: Entered ATTACHED"\
                                          "SRC State\r\n");
-                    /* Update the Advertised PDO array with PDO1 alone since u32aAdvertisedPDO 
-                       is used in TypeC_HandleISR() to check for VBUS voltage threshold.
-                       Rest of the PDOs would be updated after the Source caps are advertised. */
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0] = 
-                            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[INDEX_0];
-                    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = BYTE_LEN_1; 
-                    
+
                     /*Drive VBus for vSafe5V*/
                     DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
                     
@@ -1480,20 +1474,18 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
              u16Data =(UINT16)((u16Data * TYPEC_VBUS_THRX_UNITS_MILLI_V)
                               /gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor);
 
-            for (UINT8 u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
+            if (u16Data <= gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV)
             {
-                /* Fixed PDO voltage for which VBUS Threshold was configured is determined.
-                   For PPS, Source should not rely on VBUS voltage for sending 
-                   PS_RDY message. Hence, u8IntStsISR shall not be used during PPS 
-                   contract to know the voltage level.  */
-                if (u16Data <= DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index])) 
+                if (TYPEC_VBUS_5V == gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV)
                 {
-                    /*Setting the VBUS Status flag for corresponding voltage
-                        in u8IntStsISR variable*/
-                    u8IntStsISR |= (++u8Index << TYPEC_VBUS_PRESENCE_POS);
-                    break;
+                    u8IntStsISR |= TYPEC_VBUS_5V_PRES;
+                }
+                else
+                {
+                    u8IntStsISR |= (gasDPM[u8PortNum].u8NegotiatedPDOIndex << TYPEC_VBUS_PRESENCE_POS);
                 }
             }
+             
             if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {              
                  /*Disabling the VBUS discharge functionality as desired voltage is reached
@@ -2523,6 +2515,21 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 	UINT8 u8SampleEn = SET_TO_ZERO;
     float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor; 
     
+    /* Set the voltage value that is expected in VBUS once power is driven.
+       TypeC_HandleISR() would need this value to check if the same voltage 
+       for which threshold was configured is driven in VBUS.
+       For PPS, this variable needs to be 0 since a PPS Source shall not 
+       rely on VBUS voltage for sending PS_RDY */
+    if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+    {
+        gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV = SET_TO_ZERO; 
+    }
+    else
+    {
+        gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV = u16Voltage; 
+    }
+        
 	/*Setting the VBUS Comparator OFF*/
 	TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
 

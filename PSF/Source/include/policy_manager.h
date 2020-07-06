@@ -407,10 +407,11 @@ Source/Sink Power delivery objects*/
 /*Structure of Device Policy Manager*/
 typedef struct MCHP_PSF_STRUCT_PACKED_START
 {
-  UINT32  u32NegotiatedPDO;     //NegotiatedPDO
+  UINT32  u32NegotiatedPDO;           //NegotiatedPDO
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
-  UINT16 u16SinkOperatingCurrInmA;   //Operating current
-  UINT16 u16PrevVBUSVoltageInmV;    // Previous VBUS Voltage in terms of mV
+  UINT16 u16SinkOperatingCurrInmA;    //Operating current
+  UINT16 u16PrevVBUSVoltageInmV;      // Previous VBUS Voltage in terms of mV
+  UINT16 u16ExpectedVBUSVoltageInmV;  // Expected VBUS Voltage in terms of mV
   
   UINT8 u8DPMInternalEvents; // BIT(0) - DPM_INT_EVT_INITIATE_ALERT
                              // BIT(1) - DPM_INT_EVT_INITIATE_GET_STATUS

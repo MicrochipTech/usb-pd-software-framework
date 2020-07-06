@@ -196,6 +196,7 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
 {
     UINT8 u8VBUSPresence = SET_TO_ZERO; 
+    UINT16 u16VBUSVoltageInmV = SET_TO_ZERO; 
     
     /* u8IntStsISR shall be used only for fixed voltages. In case of PPS contract, 
        voltage that is driven on VBUS is the output voltage requested by Sink 
@@ -203,21 +204,27 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
     if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
             (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
     {
-        return DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
+        u16VBUSVoltageInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
     }
     else
     {
         u8VBUSPresence = ((gasTypeCcontrol[u8PortNum].u8IntStsISR & 
                           TYPEC_VBUS_PRESENCE_MASK) >> TYPEC_VBUS_PRESENCE_POS);
-        if (u8VBUSPresence!= TYPEC_VBUS_0V_PRES)
+
+        if (TYPEC_VBUS_0V_PRES == u8VBUSPresence)
         {
-            return DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[--u8VBUSPresence]);
+            u16VBUSVoltageInmV = TYPEC_VBUS_0V; 
+        }
+        else if (TYPEC_VBUS_5V_PRES == u8VBUSPresence)
+        {
+            u16VBUSVoltageInmV = TYPEC_VBUS_5V; 
         }
         else
         {
-            return TYPEC_VBUS_0V_PRES;
-        }     
+            u16VBUSVoltageInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV;
+        }
     }    
+    return u16VBUSVoltageInmV; 
 }
 
 void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
