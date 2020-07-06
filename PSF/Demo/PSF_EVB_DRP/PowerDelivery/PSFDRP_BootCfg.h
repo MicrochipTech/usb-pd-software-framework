@@ -69,6 +69,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_SOURCE_UNCONSTARINED_PWR  1U
 #define CFG_PORT_SOURCE_USB_COMM           0U
 
+#define CFG_PORT_DRP                       1U
+
 /* Source PDO defines */
 #define CFG_PORT_SOURCE_PDO_1_CURRENT         1000U 
 #define CFG_PORT_SOURCE_PDO_2_CURRENT         1000U
@@ -198,6 +200,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PDO_USB_COMMN_POS                 26 
 #define CFG_PDO_UNCONSTRAINED_PWR             27 
 #define CFG_PDO_HIGHER_CAPABILITY_POS         28
+#define CFG_PDO_DRP_POS                       29
 
 /* Power Supply type - Bits 31:10 of Power Data Object */
 #define CFG_POWER_SUPPLY_TYPE_FIXED           0x00U
@@ -225,15 +228,17 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                         (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
 
 /* Macro used to form Fixed PDO 1 */
-#define CFG_FORM_FIXED_PDO1(voltage,current,usbCommn,usbSusp,unconstrainedPwr)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
+#define CFG_FORM_FIXED_PDO1(voltage,current,usbCommn,usbSusp,unconstrainedPwr,isDrp)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
+                                         ((isDrp) << CFG_PDO_DRP_POS) | \
                                          ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
                                          ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
                                          (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                          ((current)/CFG_PDO_CURRENT_UNIT))            
 
 /* Macro used to form Sink Fixed PDO 1 */
-#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,usbCommn,unconstrainedPwr,HigherCapability)  \
-                                         (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS) | \
+#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
+                                         (((isDrp) << CFG_PDO_DRP_POS) | \
+                                         ((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS) | \
                                          ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
                                          ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
                                          (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
