@@ -351,7 +351,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         } /*end of if condition of VCONN OCS check*/
         if(gasDPM[u8PortNum].u8PowerFaultISR & ~DPM_POWER_FAULT_VCONN_OCS)
         { 
-            #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+            #if (TRUE == INCLUDE_PD_SINK)
             /*Resetting EN_SINK IO status here as the EN_SINK is reset at 
                on detection of fault at ISR itself*/
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= \
@@ -491,7 +491,7 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType)
      detected by internal mechanism */
     if (!gasDPM[u8PortNum].u8PowerFaultISR)
     {
-        #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+        #if (TRUE == INCLUDE_PD_SOURCE)
         /*Disable VBUS_EN on detection of external fault*/
         UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                 gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_DE_ASSERT);
@@ -525,14 +525,14 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             /* Process Type C Detach Event */
-            #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+            #if (TRUE == INCLUDE_PD_SOURCE)
             DPM_OnTypeCDetach(u8PortNum); 
             #endif 
             
             /* Disable Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
             
-            #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+            #if (TRUE == INCLUDE_PD_SINK)
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
                     ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
@@ -553,7 +553,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_CAPS_MISMATCH:
         {
-            #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+            #if (TRUE == INCLUDE_PD_SINK)
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_ASSERT);
             #endif
@@ -561,7 +561,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
         {
-            #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+            #if (TRUE == INCLUDE_PD_SINK)
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
                     ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);

@@ -61,7 +61,7 @@
 #include "peripheral/nvic/plib_nvic.h"
 #include "peripheral/eic/plib_eic.h"
 #include "peripheral/tc/plib_tc0.h"
-#if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+#if (TRUE == INCLUDE_PD_SINK)
 #include "peripheral/dac/plib_dac.h"
 #endif
 // DOM-IGNORE-BEGIN

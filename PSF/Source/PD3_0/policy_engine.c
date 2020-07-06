@@ -155,13 +155,13 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
         if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
         {
-	        #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+	        #if (TRUE == INCLUDE_PD_SOURCE)
 	        PE_SrcRunStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
 	        #endif
         }
 	    else if(DPM_GET_CURRENT_POWER_ROLE (u8PortNum) == PD_ROLE_SINK)
 	    {
-	        #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+	        #if (TRUE == INCLUDE_PD_SINK)
 	        PE_SnkRunStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
 	        #endif
 	    }
@@ -728,7 +728,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
         {
             switch (PRL_GET_MESSAGE_TYPE (u32Header))
             {
-                #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+                #if (TRUE == INCLUDE_PD_SINK)
                 case PE_CTRL_GOTO_MIN:
                 {
                     /*GotoMin message is received for Sink Data request*/

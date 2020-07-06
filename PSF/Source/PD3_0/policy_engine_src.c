@@ -31,7 +31,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 #include <psf_stdinc.h>
 
-#if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+#if (TRUE == INCLUDE_PD_SOURCE)
 /********************************************************************/
 /****************Source Policy Engine State Machine******************/
 /********************************************************************/

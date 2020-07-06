@@ -518,7 +518,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum)
 {
     UINT8 u8Return; 
    
-#if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+#if (TRUE == INCLUDE_PD_SINK)
     DAC_Initialize();
     u8Return = TRUE;
 #endif

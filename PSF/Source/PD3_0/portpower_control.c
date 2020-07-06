@@ -57,7 +57,7 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
     /* VBUS_DISCHARGE Init */
     MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eVBUS_DIS_FUNC);
     
-    #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+    #if (TRUE == INCLUDE_PD_SOURCE)
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, \
                                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS);
     
@@ -66,7 +66,7 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
 
     #endif
 
-    #if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+    #if (TRUE == INCLUDE_PD_SINK)
     
     UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK, \
                                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK);
@@ -83,7 +83,7 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
 /************************************************************************************/
 void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
-    #if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+    #if (TRUE == INCLUDE_PD_SOURCE)
 
     UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
     
@@ -132,7 +132,7 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
 
 void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
 {
-#if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+#if (TRUE == INCLUDE_PD_SOURCE)
     
     if (TRUE == u8EnaDisDCDCEn)
     {
@@ -150,7 +150,7 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
 #endif
 }
 /***********************************************************************************************/
-#if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+#if (TRUE == INCLUDE_PD_SINK)
 void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
 {
     UINT8 u8EnSinkMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK; 

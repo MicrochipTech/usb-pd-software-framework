@@ -251,7 +251,7 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 #endif
 }
 /*******************************************************************************/
-#if (TRUE == (INCLUDE_PD_SOURCE || INCLUDE_PD_DRP))
+#if (TRUE == INCLUDE_PD_SOURCE)
 
 /****************************** DPM Source related APIs*****************************************/
 /* Validate the received Request message */
@@ -916,7 +916,7 @@ UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
 }
 /******************************************************************************/
 
-#if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+#if (TRUE == INCLUDE_PD_SINK)
 /****************************** DPM Sink related APIs*****************************************/
 void DPM_Get_Sink_Capabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
 {   
