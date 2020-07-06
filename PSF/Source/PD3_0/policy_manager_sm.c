@@ -225,8 +225,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
   	/* Incase detach reset the Power Fault handling variables*/
     if (((gasTypeCcontrol[u8PortNum].u8TypeCState == TYPEC_UNATTACHED_SRC) &&
 		    (gasTypeCcontrol[u8PortNum].u8TypeCSubState == TYPEC_UNATTACHED_SRC_INIT_SS))||
-				 ((gasTypeCcontrol[u8PortNum].u8TypeCState == TYPEC_UNATTACHED_SNK) &&
-				   (gasTypeCcontrol[u8PortNum].u8TypeCSubState == TYPEC_UNATTACHED_SNK_INIT_SS)))
+				 ((gasTypeCcontrol[u8PortNum].u8TypeCState == TYPEC_UNATTACHED_SNK)))
     {
 		/* Enable Fault PIO to detect OCS as it would have been disabled as part of
          Power fault handling*/
