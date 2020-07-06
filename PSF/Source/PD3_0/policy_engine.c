@@ -217,7 +217,20 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             are not supported*/
             /*Any control message with message type between soft reset and Not supported are
             not supported as they are reserved fields*/
-            if ((PE_CTRL_DR_SWAP == u8MsgType) || (PE_CTRL_PR_SWAP == u8MsgType) || \
+            /* Get_Status and Get_PPS_Status messages are supported for Source
+            and if any APDOs are advertised to port partner.*/
+            if ((PE_CTRL_GET_STATUS == u8MsgType) || (PE_CTRL_GET_PPS_STATUS == u8MsgType))
+            {
+                #if (FALSE == INCLUDE_PD_SOURCE_PPS)
+                    u8RetVal = PE_UNSUPPORTED_MSG;
+                #else
+                    if (FALSE == DPM_IsAPDOEnabled(u8PortNum))
+                    {
+                        u8RetVal = PE_UNSUPPORTED_MSG;
+                    }
+                #endif    
+            }
+            else if ((PE_CTRL_DR_SWAP == u8MsgType) || (PE_CTRL_PR_SWAP == u8MsgType) || \
                 (u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
                     && (u8MsgType < PE_CTRL_NOT_SUPPORTED)) )
             {
@@ -238,29 +251,26 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             else
             {
                 /* Do Nothing */
-            }
-            
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)            
-            /* Get_Status and Get_PPS_Status messages are supported for Source
-               and if any APDOs are advertised to port partner.*/
-            if (DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE)
-            {
-                if ((PE_CTRL_GET_STATUS == u8MsgType) || (PE_CTRL_GET_PPS_STATUS == u8MsgType))
-                {
-                    if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
-                    {
-                        u8RetVal = PE_SUPPORTED_MSG;
-                    }
-                }
-            }
-#endif 
+            }             
         }
         else
         {
             /*Message type greater than Sink_Capabilities except Vendor_Defined 
               and Alert(Source only) are not supported
               Refer Table 6-6 Data Message Types of PD Specification */
-            if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED))
+            /* Alert is supported only for PPS Source */
+            if (PE_DATA_ALERT == u8MsgType)
+            {
+                #if (FALSE == INCLUDE_PD_SOURCE_PPS)
+                    u8RetVal = PE_UNSUPPORTED_MSG;
+                #else
+                    if (FALSE == DPM_IsAPDOEnabled(u8PortNum))
+                    {
+                        u8RetVal = PE_UNSUPPORTED_MSG;
+                    }
+                #endif 
+            }
+            else if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
@@ -281,22 +291,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             else
             {
                 /* Do Nothing */
-            }
-            
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)            
-            /* Get_Status and Get_PPS_Status messages are supported for Source
-               and if any APDOs are advertised to port partner.*/            
-            if (DPM_GET_DEFAULT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE)
-            {
-                if (PE_DATA_ALERT == u8MsgType)
-                {
-                    if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
-                    {
-                        u8RetVal = PE_SUPPORTED_MSG;
-                    }
-                }
-            }
-#endif 
+            }             
         }
     }
 
