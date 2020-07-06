@@ -44,7 +44,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     UINT8 u8SrcPDOCnt = SET_TO_ZERO;
 
 	/* Source Cap Objects */
-    UINT32 u32DataObj[7] = {SET_TO_ZERO};
+    UINT32 u32aDataObj[DPM_MAX_PDO_CNT] = {SET_TO_ZERO};
 
 	/* Type-C state and sub-state */
     UINT8 u8TypeCState = TYPEC_INVALID_STATE, u8TypeCSubState = TYPEC_INVALID_STATE;
@@ -69,12 +69,6 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 
 	/* Ra Presence Check */
     UINT8 u8RaPresence = FALSE;
-
-    /* Negotiated Voltage that is to be driven in VBUS*/
-    UINT16 u16DrivenVoltageInmV = SET_TO_ZERO; 
-    
-    /* Actual Voltage in VBUS */
-    UINT16 u16VBUSVoltageInmV = SET_TO_ZERO; 
     
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)    
     /* Added for negotiated PDO debug message */
@@ -89,7 +83,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     UINT32 u32DataBlock = SET_TO_ZERO; 
     
     /* Status Data Block */
-    UINT8 u8StatusDB[PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES] = {SET_TO_ZERO};
+    UINT8 u8aStatusDB[PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES] = {SET_TO_ZERO};
 #endif 
     
     /* Get the Type-C state from DPM */
@@ -217,13 +211,13 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     {
 						/* Send Source Capabilities message to Port partner */
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-ENTRY_SS: Send Source Capabilities\r\n");
-                        DPM_Get_Source_Capabilities(u8PortNum, &u8SrcPDOCnt, u32DataObj);
+                        DPM_Get_Source_Capabilities(u8PortNum, &u8SrcPDOCnt, u32aDataObj);
                         
                         u32Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,  \
                                                                             u8SrcPDOCnt, PE_NON_EXTENDED_MSG);
                         
                         u8TransmitSOP = PRL_SOP_TYPE;
-                        u32pTransmit_DataObj = u32DataObj;
+                        u32pTransmit_DataObj = u32aDataObj;
                         Transmit_cb = PE_StateChange_TransmitCB;
                         
                         if(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_PDCONNECTED_STS_MASK)
@@ -438,17 +432,10 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_TRANSITION_SUPPLY_EXIT_SS:
                 {
-                    /* Checking VBUS Voltage is not needed for PPS. */
-                    if (DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
-                    {
-                        /* Get the driven voltage status */
-                        u16DrivenVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
-                        u16VBUSVoltageInmV = DPM_GetVBUSVoltage(u8PortNum);
-                    }
-                    
-                    /* If the voltage reached the driven voltage level send the PS_RDY message */
+                    /* If the voltage reached the driven voltage level send the PS_RDY message 
+                       Checking VBUS Voltage is not needed for PPS */
                     if(((DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)) && 
-                            (u16DrivenVoltageInmV == u16VBUSVoltageInmV)) || 
+                            (DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO) == DPM_GetVBUSVoltage(u8PortNum))) || 
                             (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
                     {
                         /* Kill tSrcReady timer in case of Fixed supply. 
@@ -1548,7 +1535,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS\r\n"); 
                             
                     /* Obtain the Status Data Block from DPM */
-                    DPM_ObtainStatusDB(u8PortNum, u8StatusDB);
+                    DPM_ObtainStatusDB(u8PortNum, u8aStatusDB);
                     
                     /* Form Combined Message Header*/
                     u32Transmit_Header =  /* Combined Message Header */
@@ -1557,7 +1544,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                             PE_EXTENDED_MSG));
 
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = (UINT32 *)u8StatusDB;
+                    u32pTransmit_DataObj = (UINT32 *)u8aStatusDB;
                     Transmit_cb = PE_StateChange_TransmitCB;
                     
                     u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
