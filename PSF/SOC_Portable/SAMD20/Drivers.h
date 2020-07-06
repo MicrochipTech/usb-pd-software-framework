@@ -59,7 +59,7 @@
 #endif 
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"
 #include "../../firmware/src/config/default/peripheral/eic/plib_eic.h"
-#if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+#if (TRUE == INCLUDE_PD_SINK)
 #include "../../firmware/src/config/default/peripheral/dac/plib_dac.h"
 #endif
 // *****************************************************************************
@@ -310,7 +310,7 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
 **************************************************************************/
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
 
-#if(TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+#if(TRUE == INCLUDE_PD_SINK)
 
 /**************************************************************************
     Function:

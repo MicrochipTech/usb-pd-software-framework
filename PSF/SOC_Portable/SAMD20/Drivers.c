@@ -198,7 +198,7 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 /*****************************************************************************/
 /*********************************Sink APIs*****************************/
 /*****************************************************************************/
-#if (TRUE == (INCLUDE_PD_SINK || INCLUDE_PD_DRP))
+#if (TRUE == INCLUDE_PD_SINK)
 
 void SAMD20_Drive_DAC_I(UINT16 u16DACData)
 {
