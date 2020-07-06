@@ -37,10 +37,21 @@ static void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfg
 
 static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {    
-    pasCfgStatusData->sPerPortData[u8PortNum].u32CfgData =       
-                    ((CFG_VCONN_OCS_ENABLE) | (CFG_PORT_ENABLE) | (CFG_PORT_RP_CURRENT_VALUE)| \
-                    (CFG_PORT_POWER_ROLE));
-    
+    if(PORT0 == u8PortNum)
+    {
+        pasCfgStatusData->sPerPortData[u8PortNum].u32CfgData =       
+                ((CFG_VCONN_OCS_ENABLE) | (CFG_PORT_ENABLE) | (CFG_PORT_RP_CURRENT_VALUE_0)| \
+                (CFG_PORT_POWER_ROLE_0));
+    }
+    else
+    {
+        pasCfgStatusData->sPerPortData[u8PortNum].u32CfgData =       
+                ((CFG_VCONN_OCS_ENABLE) | (CFG_PORT_ENABLE) | (CFG_PORT_RP_CURRENT_VALUE_1)| \
+                (CFG_PORT_POWER_ROLE_1));
+    }
+
+#if (TRUE == INCLUDE_PD_SOURCE)
+
     /* PDO 1: Fixed PDO with 5V,3A capability */
     pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[0] = CFG_FORM_FIXED_PDO1(CFG_PORT_SOURCE_PDO_1_VOLTAGE, \
             CFG_PORT_SOURCE_PDO_1_CURRENT, CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
@@ -65,7 +76,14 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     
     pasCfgStatusData->sPerPortData[u8PortNum].u8SourcePDOCnt = CFG_PORT_SOURCE_NUM_OF_PDOS;
 
- pasCfgStatusData->sPerPortData[u8PortNum].u32aSinkPDO[0] = CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_SINK_PDO_1_CURRENT, \
+    pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS;
+    pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS_PIO_MODE;
+#endif
+    
+    
+#if (TRUE == INCLUDE_PD_SINK)    
+
+    pasCfgStatusData->sPerPortData[u8PortNum].u32aSinkPDO[0] = CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_SINK_PDO_1_CURRENT, \
             CFG_PORT_SINK_PDO_1_VOLTAGE, CFG_PORT_SINK_USB_COMM, \
             CFG_PORT_SINK_UNCONSTRAINED_PWR,CFG_PORT_SINK_HIGHER_CAPABILITY);    
 
@@ -89,7 +107,6 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     
     pasCfgStatusData->sPerPortData[u8PortNum].u8SinkPDOCnt = CFG_PORT_SINK_NUM_OF_PDOS;
 
-#if (TRUE == INCLUDE_PD_SINK)
     /*Assigning PDO preferred minimum current*/
     pasCfgStatusData->sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[0] = CFG_PORT_SINK_PDO_1_PREFERRED_MIN_CURRENT;
     pasCfgStatusData->sPerPortData[u8PortNum].u16aMinPDOPreferredCurInmA[1] = CFG_PORT_SINK_PDO_2_PREFERRED_MIN_CURRENT;
@@ -103,26 +120,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
      * 3000mA and 1000mA respectively*/
     pasCfgStatusData->sPerPortData[u8PortNum].u16SnkMaxOperatingCurInmA = CFG_PORT_SINK_MAX_OPERATING_CURRENT_InmA;
     pasCfgStatusData->sPerPortData[u8PortNum].u16SnkMinOperatingCurInmA = CFG_PORT_SINK_MIN_OPERATING_CURRENT_InmA;
-#endif
 
-    pasCfgStatusData->sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8OVThresholdPercentage = CFG_OVER_VOLTAGE_FACTOR;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8UVThresholdPercentage = CFG_UNDER_VOLTAGE_FACTOR;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8VCONNOCSDebounceInms = CFG_VCONN_OCS_DEBOUNCE_IN_MS;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8VBUSMaxFaultCnt = CFG_MAX_VBUS_POWER_FAULT_COUNT;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8VCONNMaxFaultCnt = CFG_MAX_VCONN_FAULT_COUNT;
-    pasCfgStatusData->sPerPortData[u8PortNum].u16PowerGoodTimerInms = MILLISECONDS_TO_TICKS(CFG_POWER_GOOD_TIMER_MS);
-    pasCfgStatusData->sPerPortData[u8PortNum].u16MaxSrcPrtCurrentIn10mA = CFG_MAX_PORT_CURRENT_IN_10mA; 
-    pasCfgStatusData->sPerPortData[u8PortNum].u16FeatureSelect = CFG_PB_PORT_ENABLE; 
-    
-#if (TRUE == INCLUDE_PD_SOURCE)
-    pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS_PIO_MODE;
-#endif
-    pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_PIO_NO;
-    pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_MODE;
-#if (TRUE == INCLUDE_PD_SINK)    
     pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_EN_SINK  = (UINT8)CFG_PORT_UPD_EN_SNK;
     pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_EN_SINK  = (UINT8)CFG_PORT_UPD_EN_SNK_PIO_MODE;
     
@@ -136,7 +134,19 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     pasCfgStatusData->sPerPortData[u8PortNum].u8DAC_I_Direction = CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
 #endif
 
-
+    pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_PIO_NO;
+    pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_MODE;
+    
+    pasCfgStatusData->sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
+    pasCfgStatusData->sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;
+    pasCfgStatusData->sPerPortData[u8PortNum].u8OVThresholdPercentage = CFG_OVER_VOLTAGE_FACTOR;
+    pasCfgStatusData->sPerPortData[u8PortNum].u8UVThresholdPercentage = CFG_UNDER_VOLTAGE_FACTOR;
+    pasCfgStatusData->sPerPortData[u8PortNum].u8VCONNOCSDebounceInms = CFG_VCONN_OCS_DEBOUNCE_IN_MS;
+    pasCfgStatusData->sPerPortData[u8PortNum].u8VBUSMaxFaultCnt = CFG_MAX_VBUS_POWER_FAULT_COUNT;
+    pasCfgStatusData->sPerPortData[u8PortNum].u8VCONNMaxFaultCnt = CFG_MAX_VCONN_FAULT_COUNT;
+    pasCfgStatusData->sPerPortData[u8PortNum].u16PowerGoodTimerInms = MILLISECONDS_TO_TICKS(CFG_POWER_GOOD_TIMER_MS);
+    pasCfgStatusData->sPerPortData[u8PortNum].u16MaxSrcPrtCurrentIn10mA = CFG_MAX_PORT_CURRENT_IN_10mA; 
+    pasCfgStatusData->sPerPortData[u8PortNum].u16FeatureSelect = CFG_PB_PORT_ENABLE;
 
 }
 
