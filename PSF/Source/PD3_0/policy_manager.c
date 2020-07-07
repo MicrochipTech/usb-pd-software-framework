@@ -221,7 +221,7 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
         }
         else
         {
-            u16VBUSVoltageInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV;
+            u16VBUSVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[--u8VBUSPresence]);
         }
     }    
     return u16VBUSVoltageInmV; 
