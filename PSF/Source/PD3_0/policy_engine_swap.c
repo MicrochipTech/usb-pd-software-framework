@@ -211,8 +211,7 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
 #if (TRUE == INCLUDE_PD_PR_SWAP)
 
-/* To-do: PR_Swap module - Check if all the arguments are necessary. */
-void PE_RunPRSwapStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
+void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 {
 	/* Transmit Message Type - SOP SOP' SOP" */
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;

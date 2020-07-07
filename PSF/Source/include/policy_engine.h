@@ -1191,7 +1191,7 @@ UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PE_RunPRSwapStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
 
     Summary:
         PR_Swap Policy Engine State Machine. 
@@ -1207,9 +1207,6 @@ UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum);
 
     Input:
         u8PortNum  - Port Number.
-        pu8DataBuf - Pointer to the UINT8 buffer containing the received PD message object
-        u8SOPType  - SOP type of the received PD message
-        u32Header  - Header of the received PD message
 
     Return:
         None.
@@ -1218,6 +1215,6 @@ UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PE_RunPRSwapStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
 
 #endif /*_POLICY_ENGINE_H_*/
