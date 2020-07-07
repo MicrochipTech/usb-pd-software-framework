@@ -239,7 +239,7 @@ Example:
     #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_BALANCING  		1
+#define INCLUDE_POWER_BALANCING  		0
 
 /**************************************************************************************************
 Summary:
