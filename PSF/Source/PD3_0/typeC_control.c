@@ -582,7 +582,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                 case TYPEC_ATTACHED_SRC_ASSERT_RP_SS:
                 {
-                    /* To-do: PR_Swap module - Handle Sink-to-Source transition */
+                    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+                    
+                    TypeC_SetDefaultRpValue (u8PortNum);
+                    
+                    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
+                    
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;
                     break; 
                 }
 #endif 
@@ -1015,7 +1021,17 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                 case TYPEC_ATTACHED_SNK_ASSERT_RD_SS:
                 {
-                    /* To-do: PR_Swap module - Handle Source-to-Sink transition */
+                    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+                    
+                    TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP);
+                            
+                    TypeC_SetPowerRole(u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD);
+            
+                    TypeC_SetCCSampleEnable (u8PortNum, (TYPEC_ENABLE_CC1_SAMPLING | TYPEC_ENABLE_CC2_SAMPLING));
+
+                    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
+                    
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_ENTRY_SS; 
                     break; 
                 }
 #endif 
