@@ -544,9 +544,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SOURCE; 
 
-                    gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
-
+                    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                    
                     gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
 
