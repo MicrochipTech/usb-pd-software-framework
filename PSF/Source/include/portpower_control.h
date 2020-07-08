@@ -190,7 +190,7 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
 
 /****************************************************************************
     Function:
-        void PWRCTRL_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16VBUSCurrent)
+        void PWRCTRL_DriveDAC_I(UINT8 u8PortNum, UINT16 u16VBUSCurrent)
     Summary:
         API to indicate Sink Hardware about the negotiated current
     Description:
@@ -207,6 +207,6 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
       None.
 
 **************************************************************************************************/
-void PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent);
+void PWRCTRL_DriveDAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent);
 
 #endif /*_PORTPOWER_CONTROL_H_*/

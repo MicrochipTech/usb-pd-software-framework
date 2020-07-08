@@ -802,7 +802,7 @@ UINT8 PE_IsMsgUnsupported(UINT8 u8PortNum, UINT16 u16Header);
 
     Description:
          This API is called inside the timer module once the software timer times out to change the
-       policy engine substate to a given value        
+       policy engine sub-state to a given value        
 
     Conditions:
         None
@@ -825,21 +825,21 @@ void PE_StateChange_TimerCB(UINT8 u8PortNum, UINT8 u8PEState);
 
     Summary:
        This API is called inside the timer module once the software timer times out to change the
-       policy engine substate to a given value
+       policy engine sub-state to a given value
 
     Devices Supported:
         UPD350 REV A
 
     Description:
         This API is called inside the timer module once the software timer times out to change the
-       policy engine substate to a given value
+       policy engine sub-state to a given value
         
     Conditions:
         None
 
     Input:
         u8PortNum     - Port Number.
-        u8PESubState  - Policy engine Substate to change after timeout
+        u8PESubState  - Policy engine Sub-state to change after timeout
 
     Return:
         None.
@@ -869,7 +869,7 @@ void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
 
     Input:
         u8PortNum     - Port Number.
-        u8PESubState  -Policy engine Substate to change after timeout
+        u8PESubState  -Policy engine Sub-state to change after timeout
 
     Return:
         None.
