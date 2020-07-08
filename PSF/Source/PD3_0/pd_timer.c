@@ -211,12 +211,12 @@ void PDTimer_InterruptHandler (void)
 				
 				if (gasPDTimers[u8TimerID].pfnTimerCallback != NULL)
 				{
-                  
                     /*Calling the callback function with a set of arguments 
                     namely port number and PD state*/
 					gasPDTimers[u8TimerID].pfnTimerCallback((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_PORT_NUM), gasPDTimers[u8TimerID].u8PDState);
+                    MCHP_PSF_HOOK_PDTIMER_EVENT();
 				}
-			
+				
 				/*Setting the timer state as "Timer Expired"*/
 				gasPDTimers[u8TimerID].u8TimerSt_PortNum &= ~PDTIMER_STATE;
                 gasPDTimers[u8TimerID].u8TimerSt_PortNum |= PDTIMER_EXPIRED;   
