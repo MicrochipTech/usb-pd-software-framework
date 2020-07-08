@@ -1644,5 +1644,93 @@ Remarks:
   *************************************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
 
+/**************************************************************************************************
+Summary:
+    PSF Notify Idle enum.
+Description:
+	eMCHP_PSF_NOTIFY_IDLE enum notifies the Idle state in PSF.
+Remarks:
+        None
+**************************************************************************************************/
+typedef enum ePSF_NOTIFY_IDLE 
+{
+    eIDLE_PE_NOTIFY,               //Notify Policy Engine Idle State
+    eIDLE_TYPEC_NOTIFY             //Notify Type C Idle State
+} eMCHP_PSF_NOTIFY_IDLE;
+/**************************************************************************
+Function:
+    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY)
+Summary:
+    Hook to notify entry of policy engine and type C state machine entry into idle state
+Description:
+    PSF calls this API to notify entry of policy engine and type C state machine entry 
+    into idle state. The entry into Idle state of Policy Engine or Type C state machine 
+    is differentiated based on the enum argument passed.
+Conditions:
+    None.
+Input:
+    u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+    eIDLESubState- Defines the idle notification of Policy Engine(eIDLE_PE_NOTIFY) or   
+                   Type C State machine(eIDLE_TYPEC_NOTIFY) 
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE (u8PortNum, eGPIO_Func, eDriveVal) 
+        App_GPIOContol_Drive(u8PortNum, eGPIO_Func, eDriveVal)
+        void App_GPIOContol_Drive(UINT8 u8PortNum, 
+                       eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc, eMCHP_PSF_GPIO_DRIVE_VAL eDriveVal )
+        {
+            switch(eGPIOFunc)
+            {
+                case eDC_DC_EN_FUNC:
+                {
+                    if (eGPIO_Assert == eDriveVal)
+                    {
+                        // Assert the DC_DC pin	
+                    }
+                    else
+                    {
+                        // De-assert the DC_DC pin
+                    }
+                    break;
+                }
+                case eVBUS_DIS_FUNC:
+                {
+                    if (eGPIO_Assert == eDriveVal)
+                    {
+                        // Assert the VBUS Discharge pin	
+                    }
+                    else
+                    {
+                        // De-assert the VBUS Discharge pin
+                    }
+                    break;
+                }
+            }
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is not mandatory and can be used to 
+    activate the PSF task in RTOS environment
+ *************************************************************************/
+#define MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLESubState)
+
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_PDTIMER_EVENT
+Summary:
+    Hook for PD timer timeout event
+Description:
+    This hook is called when PD timer gets expires for the given event to call 
+    the callback function. 
+Conditions:
+    None
+Remarks:
+    This hook is not mandatory and would be useful in RTOS environment                          
+*******************************************************************************/  
+
+#define MCHP_PSF_HOOK_PDTIMER_EVENT()
+
 #endif /*_PSF_API_HOOK_H_*/
 
