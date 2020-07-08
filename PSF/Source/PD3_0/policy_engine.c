@@ -961,6 +961,15 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                                            ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS);                        
                         
                     }
+                    else if (ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS == \
+                                    gasPolicy_Engine[u8PortNum].ePESubState)
+                    {
+                        /*Kill the PSSourceOff timer*/
+                        PE_KillPolicyEngineTimer (u8PortNum);                        
+
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_PRS_SNK_SRC_ASSERT_RP,\
+                                           (ePolicySubState)SET_TO_ZERO);                                                
+                    }
 #endif 
                     else
                     {

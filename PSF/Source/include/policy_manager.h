@@ -1676,5 +1676,8 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwap eRoleSwapMsg);
 **************************************************************************************************/
 void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole);
 
+/* TODO: PR_Swap - Add function header */
+void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+
 #endif /*_POLICY_MANAGER_H_*/
 

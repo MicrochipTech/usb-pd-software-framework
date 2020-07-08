@@ -247,8 +247,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
         u8TxFailedSt = ePE_SNK_SEND_SOFT_RESET;
         u8TxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
     }
-    
-    /* To-do: PR_Swap module - Add debug trace messages wherever needed */
+        
     switch(gasPolicy_Engine[u8PortNum].ePEState)
     {
         case ePE_PRS_SEND_SWAP:
@@ -583,14 +582,22 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS:
                 {
-                    break; 
+                    /* Initialize and run PSSourceOffTimer */
+                    gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_PS_SOURCE_OFF_TIMEOUT_MS),
+                                                            DPM_PSSourceOff_TimerCB,u8PortNum,  
+                                                            (UINT8)SET_TO_ZERO);
+                    
+                    /*Turn off the Sink circuitry to stop sinking the power from source*/
+                    PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+                    
+                    /* Assign an idle state to wait for PS_RDY reception */
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS;                                                                                    
+                    break;                     
                 }
-                case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_IDLE_SS:
+                case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS:
                 {
-                    break; 
-                }
-                case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_PSRDY_RCVD_SS:
-                {
+                    /* Idle state to wait for PS_RDY from original Source */
                     break; 
                 }
                 default:
@@ -602,6 +609,18 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
         
         case ePE_PRS_SNK_SRC_ASSERT_RP:
         {
+            /* Policy Engine enters this state when the sink circuitry has been 
+               turned off and PS_RDY received from original source. There are no 
+               sub-states involved in this state. 
+               Request DPM to assert Rp pull up resistor on CC wire */
+            DPM_UpdatePwrRoleAfterPRSwap (u8PortNum, PD_ROLE_SOURCE);
+            
+            /* Drive the DC_DC_EN pin high */
+            PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
+            
+            gasPolicy_Engine[u8PortNum].ePEState = ePE_PRS_SNK_SRC_SOURCE_ON; 
+            gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS;
+            
             break; 
         }
         
@@ -611,22 +630,77 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS:
                 {
+                    if ((TYPEC_ATTACHED_SRC == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
+                            (TYPEC_ATTACHED_SRC_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                    {
+                        /* Port has transitioned into Source. Update the Power role 
+                           and send PS_RDY message */
+                        /* Set the Current Port Power Role as Source in DPM Status variable */
+                        DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SOURCE);
+                        
+                        /* Set Port Power Role as Sink in Port Connection Status register */
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SOURCE; 
+                        
+                        u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
+                                                PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+
+                        u8TransmitSOP = PRL_SOP_TYPE;
+                        u32pTransmit_DataObj = NULL;
+                        Transmit_cb = PE_StateChange_TransmitCB;
+
+                        u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SNK_SRC_SOURCE_ON, ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS , \
+                                                        ePE_PRS_SNK_SRC_SOURCE_ON, ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS);                     
+
+                        u8IsTransmit = TRUE;
+                        /* Move the Policy Engine to Idle sub-state */
+                        gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS;
+                    }                    
                     break; 
                 }
                 case ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS:
                 {
+                    /* Start SwapSourceStart timer */
+                    gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_SWAP_SOURCE_START_TIMEOUT_MS),
+                                                            PE_SubStateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS);
+                    
+                    /* Assign an idle state to wait for timer expiry */
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS;                                                                                                        
                     break; 
                 }
                 case ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS:
                 {
+                    /* This sub-state would be entered if PS_Rdy message 
+                       transmission fails. Revert the power role to Sink and 
+                       invoke Type C Error Recovery */
+                    DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SINK);                       
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SINK; 
+                    
+                    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                    
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+                    
                     break;
                 }
                 case ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS:
                 {
+                    /* Idle state to wait for PS_RDY message transmit completion 
+                       and to wait for SwapSourceStart timer expiry */
                     break; 
                 }
                 case ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS:
                 {
+                    /* This sub-state would be entered when SwapSourceStart 
+                       timer times out */
+                    /* Send PR_Swap complete notification */
+                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE); 
+                    
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_STARTUP;
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
                     break; 
                 }
                 default:
