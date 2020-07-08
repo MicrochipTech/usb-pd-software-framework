@@ -631,7 +631,7 @@ void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8C
 		UPD350 REV A
 
 	Description:
-		This API is to set or reset the debounce corresponidng debounce type for the PIO number passed.
+		This API is to set or reset the debounce corresponding debounce type for the PIO number passed.
 		
 	Precondition:
 		None.

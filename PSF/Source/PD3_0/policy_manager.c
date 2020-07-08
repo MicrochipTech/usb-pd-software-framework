@@ -1010,7 +1010,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     /*PDO Count of the sink*/
 	UINT8 u8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
     /*PDO Count of the source derived from received src caps*/
-	UINT8 u8Recevd_SrcPDOCnt =  PRL_GET_OBJECT_COUNT(u16RecvdSrcCapsHeader);
+	UINT8 u8RcvdSrcPDOCnt =  PRL_GET_OBJECT_COUNT(u16RecvdSrcCapsHeader);
     UINT32 u32RcvdSrcPDO;
     UINT8 u8SrcPDOIndex;
     UINT8 u8SinkPDOIndex;
@@ -1031,14 +1031,14 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     
 	/*Update received source capabilities to partner variable*/
     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, 
-                                    pu32RecvdSrcCapsPayload, DPM_4BYTES_FOR_EACH_PDO_OF(u8Recevd_SrcPDOCnt));
-    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = u8Recevd_SrcPDOCnt;
+                                    pu32RecvdSrcCapsPayload, DPM_4BYTES_FOR_EACH_PDO_OF(u8RcvdSrcPDOCnt));
+    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = u8RcvdSrcPDOCnt;
     
     /* Calculate and sort the power of Sink PDOs */
     DPM_CalculateAndSortPower(u8SinkPDOCnt, gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, u8SinkPower, u8SinkMode);
     
     /* Calculate and sort the received source PDOs power */
-    DPM_CalculateAndSortPower(u8Recevd_SrcPDOCnt, pu32RecvdSrcCapsPayload, u8SrcPower, u8SinkMode);
+    DPM_CalculateAndSortPower(u8RcvdSrcPDOCnt, pu32RecvdSrcCapsPayload, u8SrcPower, u8SinkMode);
     
     /* Compare Maximum power sink PDO to received source PDOs */
     /* Storing PDO index of the Sink PDO which has maximum power.*/
@@ -1046,7 +1046,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     /* Storing Sink PDO which has maximum power*/
     u32SinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[u8SinkPDOIndex];
     
-    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8Recevd_SrcPDOCnt; u8SrcIndex++)
+    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8RcvdSrcPDOCnt; u8SrcIndex++)
     {
         /* Comparing whether any of Source power is greater than or 
          * equal to maximum Sink power*/
@@ -1093,7 +1093,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     }
     
     /* Check DPM whether minimum PDO current matches*/
-    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8Recevd_SrcPDOCnt; u8SrcIndex++)
+    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8RcvdSrcPDOCnt; u8SrcIndex++)
     {
         u8SrcPDOIndex = u8SrcPower[u8SrcIndex][DPM_PDO_INDEX];
         u32RcvdSrcPDO = pu32RecvdSrcCapsPayload[u8SrcPDOIndex];
@@ -1153,7 +1153,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     
     /*  None of the capability matches thus capability mismatch bit is set*/
     u8CapMismatch = TRUE;   
-    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8Recevd_SrcPDOCnt; u8SrcIndex++)
+    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8RcvdSrcPDOCnt; u8SrcIndex++)
     {
         u8SrcPDOIndex = u8SrcPower[u8SrcIndex][DPM_PDO_INDEX];
         u32RcvdSrcPDO = pu32RecvdSrcCapsPayload[u8SrcPDOIndex];
