@@ -33,7 +33,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <psf_stdinc.h>
 
 /*************************************VBUS & VCONN on/off Timer APIS*********************************/
-void DPM_VBUSOnOffTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+void DPM_VBUSOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {   
     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
@@ -43,7 +43,7 @@ void DPM_VBUSOnOffTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 }
-void DPM_SrcReadyTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
     if(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
     {
@@ -53,13 +53,13 @@ void DPM_SrcReadyTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     
     else
     {
-        DPM_VBUSOnOffTimerCB ( u8PortNum, u8DummyVariable);
+        DPM_VBUSOnOff_TimerCB ( u8PortNum, u8DummyVariable);
     }
     
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 }
 
-void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
+void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 { 
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
     gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
@@ -102,7 +102,7 @@ void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     }    
 }
 
-void DPM_VCONNOFFErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
+void DPM_VCONNOFFError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 {  
     /*Set it to Type C Error Recovery */
     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
@@ -136,7 +136,7 @@ void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence)
 }
 
 /**************************DPM APIs for VCONN *********************************/
-void DPM_VConnOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable)
+void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable)
 {
     if(u8VConnEnable == DPM_VCONN_ON)
     {
@@ -372,7 +372,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as Fixed Supply */
-            gasDPM[u8PortNum].u16DPM_Status &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
+            gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
             
             /* Update Negotiated current in terms of mA */            
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = \
@@ -391,7 +391,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as PPS */
-            gasDPM[u8PortNum].u16DPM_Status |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;           
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;           
             
             /* Update Negotiated current in terms of mA */            
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = \
@@ -464,7 +464,7 @@ void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32S
 }
 
 /* Get the source capabilities from the port configuration structure */
-void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu32DataObj)
+void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu32DataObj)
 {   
     UINT8 u8RaPresence = SET_TO_ZERO;
 	UINT32 *pu32SrcCap;
@@ -918,7 +918,7 @@ UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
 
 #if (TRUE == INCLUDE_PD_SINK)
 /****************************** DPM Sink related APIs*****************************************/
-void DPM_Get_Sink_Capabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
+void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
 {   
     /* Get Sink Capability from Port Configuration Data Structure */
     *u8pSinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt;
@@ -998,7 +998,7 @@ void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 
     }
 }
 
-void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
+void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
                                      UINT32 *pu32RecvdSrcCapsPayload)
 {
     /* Two dimensional array stores the Power and Original PDO index number for each PDO index*/
@@ -1214,7 +1214,7 @@ UINT8 DPM_Evaluate_VCONN_Swap(UINT8 u8PortNum)
     /*As of now, Accept the VCONN Swap without any restriction*/
     return TRUE;   
 }
-UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum)
+UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum)
 { 
     UINT8 u8IsVCONNSrc;
     if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)
@@ -1332,7 +1332,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwap eRoleSwapMsg)
 }
 
 #if (TRUE == INCLUDE_PD_PR_SWAP)
-void DPM_PRSwapWaitTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
     /* Set the timer Id to Max Concurrent Value*/
  	gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;

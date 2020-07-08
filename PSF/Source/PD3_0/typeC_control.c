@@ -605,7 +605,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     power module to reach Vsafe5V*/
                     gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
                                                               (TYPEC_VBUS_ON_TIMER_MS),
-                                                              DPM_VBUSOnOffTimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                     
 					/*Sink Attached in CC1 pin*/
@@ -691,7 +691,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             /*Failure to reach the VCONN Min will result in Error Recovery state*/
                             gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
                                                          TYPEC_VCONNON_TIMEOUT_MS,
-                                                          TypeC_VCONNONErrorTimerCB, u8PortNum,  
+                                                          TypeC_VCONNONError_TimerCB, u8PortNum,  
                                                           (UINT8)SET_TO_ZERO);
                             
                             gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_CHECK_VCONNON_SS;
@@ -802,7 +802,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 power module to reach Vsafe0V*/
                 gasTypeCcontrol[u8PortNum].u8TypeC_TimerID =PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
-                                                              DPM_VBUSOnOffTimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                 		
                  
@@ -2099,7 +2099,7 @@ void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
 {
           
     /*Clearing the CC interrupt status in u8IntStsISR variable at the start of this function to 
-    make this ISR safe as after TypeC_Reset_VCONNDIS_Settings function call,
+    make this ISR safe as after TypeC_ResetVCONNDISSettings function call,
     Interrupt will immediately be fired*/  
     gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_CCINT_STATUS_MASK;
     
@@ -2110,8 +2110,8 @@ void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
     /*VCONN discharge complete can occur while the source is still attached or detached for sink port*/
     
     /*Detach Event occurred during this VCONN Discharge process will be handled since the 
-    TypeC_Reset_VCONNDIS_Settings function will again restart the CC Comparator*/
-    TypeC_Reset_VCONNDIS_Settings(u8PortNum);
+    TypeC_ResetVCONNDISSettings function will again restart the CC Comparator*/
+    TypeC_ResetVCONNDISSettings(u8PortNum);
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_DISCHARGE_ON_MASK;     
 }
 
@@ -2548,7 +2548,7 @@ void TypeC_SetDefaultRpValue (UINT8 u8PortNum)
 
 #if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
 
-void TypeC_Reset_VCONNDIS_Settings (UINT8 u8PortNum)
+void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
 {
     
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE COMPLETED\r\n");
@@ -3068,7 +3068,7 @@ void TypeC_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
   
 }
 
-void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
+void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 {
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
     

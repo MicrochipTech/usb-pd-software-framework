@@ -181,7 +181,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             gasPolicy_Engine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	
             
             /*Ask the Device policy manager to evaluate the received source capability message*/
-            DPM_Evaluate_Received_Src_caps(u8PortNum,(UINT16) u32Header ,(UINT32*)pu8DataBuf );
+            DPM_EvaluateReceivedSrcCaps(u8PortNum,(UINT16) u32Header ,(UINT32*)pu8DataBuf );
 
             /*Invalid Source Capability Message results in Sink request object count to be 0*/
            if (gasCfgStatusData.sPerPortData[u8PortNum].u32RDO == SET_TO_ZERO)
@@ -408,16 +408,16 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     gasPolicy_Engine[u8PortNum].u8PEPortSts |= PE_HARDRESET_PROGRESS_MASK;
                      
                     /*Turn OFF VCONN if it sources currently*/
-                    if (DPM_IsPort_VCONN_Source(u8PortNum))
+                    if (DPM_IsPortVCONNSource(u8PortNum))
                     {
-                        DPM_VConnOnOff(u8PortNum,DPM_VCONN_OFF);
+                        DPM_VCONNOnOff(u8PortNum,DPM_VCONN_OFF);
                         
                         /*Start the VCONN_OFF timer*/
                         /*This Timeout is implemented outside of the PD Specification to track 
                         VCONN Turn OFF error*/
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                                   PE_VCONNOFF_TIMEOUT_MS,\
-                                                                  DPM_VCONNOFFErrorTimerCB,\
+                                                                  DPM_VCONNOFFError_TimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO); 
                     
@@ -435,7 +435,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                
                case ePE_SNK_TRANSITION_TO_DEFAULT_VCONNOFF_CHECK_SS:
                {                
-                    if(!DPM_IsPort_VCONN_Source(u8PortNum))
+                    if(!DPM_IsPortVCONNSource(u8PortNum))
                     {
                         
                         /*Stop the VCONN_OFF timer*/
@@ -496,7 +496,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
                     /*Request Device policy manager for Sink Capability Message*/
                     /*If the Port does not have sink capability, Send Reject/Not Supported message*/
-                    DPM_Get_Sink_Capabilities(u8PortNum, &u8SinkPDOCnt, u32DataObj);
+                    DPM_GetSinkCapabilities(u8PortNum, &u8SinkPDOCnt, u32DataObj);
                     
                     
                     u16Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SINK_CAP,\

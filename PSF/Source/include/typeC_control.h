@@ -1187,7 +1187,7 @@ void TypeC_DrpIntrHandler(UINT8 u8PortNum);
 void TypeC_SnkIntrHandler(UINT8 u8PortNum);
 /**************************************************************************************************
  Function:
-        void TypeC_Reset_VCONNDIS_Settings(UINT8 u8PortNum); 
+        void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum); 
 
     Summary:
         This API is called after the VCONN Discharge is completed to reset the settings done for
@@ -1212,7 +1212,7 @@ void TypeC_SnkIntrHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_Reset_VCONNDIS_Settings(UINT8 u8PortNum); 
+void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum); 
 /**************************************************************************************************
  Function:
         void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
@@ -1423,14 +1423,14 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        This API is to configure VBUS threshold to detect VBUS, undervoltage and overvoltage
+        This API is to configure VBUS threshold to detect VBUS, under-voltage and overvoltage
 
     Conditions:
         None.
 
     Input:
         u8PortNum - Port Number.
-        u16Voltage - Votlage to which the VBUS threshold has to be configured.
+        u16Voltage - Voltage to which the VBUS threshold has to be configured.
         u8PowerFaultThrConfig - It can take following value
                                 TYPEC_CONFIG_NON_PWR_FAULT_THR - Threshold for Non-Power Fault are configured
                                 TYPEC_CONFIG_PWR_FAULT_THR  - Threshold for Power Fault (undervoltage and overvoltage)
@@ -1474,7 +1474,7 @@ void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-       void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
+       void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 
     Summary:
         This API is Timer call back for VCONNErrorTimer.
@@ -1498,7 +1498,7 @@ void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
+void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:

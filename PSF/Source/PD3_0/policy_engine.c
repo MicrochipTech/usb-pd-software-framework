@@ -132,14 +132,14 @@ void PE_RunStateMachine (UINT8 u8PortNum)
             PD Specification 3.0*/
             if (DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum) > PRL_GET_PD_SPEC_REV (u32Header))
             {
-            	gasDPM[u8PortNum].u16DPM_Status &= ~DPM_CURR_PD_SPEC_REV_MASK;
-	            gasDPM[u8PortNum].u16DPM_Status |= ((PRL_GET_PD_SPEC_REV (u32Header)) << \
+            	gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+	            gasDPM[u8PortNum].u16DPMStatus |= ((PRL_GET_PD_SPEC_REV (u32Header)) << \
                                                DPM_CURR_PD_SPEC_REV_POS);
             }
             else
             {
-            	gasDPM[u8PortNum].u16DPM_Status &= ~DPM_CURR_PD_SPEC_REV_MASK;
-            	gasDPM[u8PortNum].u16DPM_Status |= ((DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum)) << \
+            	gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+            	gasDPM[u8PortNum].u16DPMStatus |= ((DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum)) << \
                               	                 DPM_CURR_PD_SPEC_REV_POS);
             }
 
@@ -510,7 +510,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     if ((ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
                          gasPolicy_Engine[u8PortNum].ePESubState)|| (ePE_SNK_READY_IDLE_SS == \
                          gasPolicy_Engine[u8PortNum].ePESubState) || \
-                       (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                       (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
 
                         if (ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
@@ -590,7 +590,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     /*Also discard the current VDM AMS to handle the new VDM message*/
                     if ((ePE_SNK_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
 						(ePE_SRC_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
 
                         gasPolicy_Engine[u8PortNum].ePEState = ePE_VDM_GET_IDENTITY;
@@ -997,7 +997,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 {
                     /*Discard VDM AMS and handle the PD message here*/
                     if ((ePE_SNK_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
-                      (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                      (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
                         /*Go to "ePE_SNK_GIVE_SINK_CAP" state if GET_SINK_CAP message is received*/
                         gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_GIVE_SINK_CAP;
@@ -1018,7 +1018,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
                         (ePE_SRC_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
 
 #if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
@@ -1123,7 +1123,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
                         (ePE_SRC_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
                         /*Kill the tPRSwapWait timer*/
                         PDTimer_Kill(gasDPM[u8PortNum].u8PRSwapWaitTmrID);
@@ -1294,7 +1294,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             
             /*Send Not Supported or Reject if Port partner requests VCONN Swap to supply the
             VCONN when the u8VCONNGoodtoSupply is false */
-            if((!DPM_IsPort_VCONN_Source(u8PortNum)) && (!gasDPM[u8PortNum].u8VCONNGoodtoSupply))
+            if((!DPM_IsPortVCONNSource(u8PortNum)) && (!gasDPM[u8PortNum].u8VCONNGoodtoSupply))
             {
                 PE_SendNotSupportedOrRejectMsg(u8PortNum);
             }
@@ -1362,7 +1362,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     /*Check whether the Port is currently sourcing VCONN and
                     transition accordingly*/
-                    if (DPM_IsPort_VCONN_Source(u8PortNum))
+                    if (DPM_IsPortVCONNSource(u8PortNum))
                     {
                          gasPolicy_Engine[u8PortNum].ePEState = ePE_VCS_WAIT_FOR_VCONN;
                          gasPolicy_Engine[u8PortNum].ePESubState = \
@@ -1431,14 +1431,14 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Entered the state\r\n");
 
                     /*Turn off VCONN since PS RDY message is received from VCONN Source partner*/
-                    DPM_VConnOnOff(u8PortNum,DPM_VCONN_OFF);            
+                    DPM_VCONNOnOff(u8PortNum,DPM_VCONN_OFF);            
                     
                     /*Start the VCONN_OFF timer*/
                     /*This Timeout is implemented outside of the PD Specification to track 
                     VCONN Turn OFF error*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                               PE_VCONNOFF_TIMEOUT_MS,\
-                                                              DPM_VCONNOFFErrorTimerCB,\
+                                                              DPM_VCONNOFFError_TimerCB,\
                                                               u8PortNum,\
                                                               (UINT8)SET_TO_ZERO);
                     
@@ -1449,7 +1449,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_VCS_TURN_OFF_VCONN_CHECK_SS:
                 {
                 
-                    if(!DPM_IsPort_VCONN_Source(u8PortNum))
+                    if(!DPM_IsPortVCONNSource(u8PortNum))
                     {
                         /*Stop the VCONN_OFF timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
@@ -1488,7 +1488,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Entered the state\r\n");
                     
                     /*Turn ON VCONN*/
-                    DPM_VConnOnOff (u8PortNum,DPM_VCONN_ON);
+                    DPM_VCONNOnOff (u8PortNum,DPM_VCONN_ON);
                     
                     /*Port Partner maintains the tVCONNSourceOn timer, So setting the VCONN_ON_self
                     timer greater than tVCONNSourceOn to send Hard reset in case of VCONN ON
@@ -1496,7 +1496,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     /*Start the VCONN_ON_self timer*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                               PE_VCONNON_SELF_TIMEOUT_MS,\
-                                                              DPM_VCONNONTimerErrorCB,\
+                                                              DPM_VCONNONError_TimerCB,\
                                                               u8PortNum,\
                                                               (UINT8)SET_TO_ZERO);
                     
@@ -1508,7 +1508,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 
                 case ePE_VCS_TURN_ON_VCONN_CHECK_SS:
                 {                 
-                    if(DPM_IsPort_VCONN_Source(u8PortNum))
+                    if(DPM_IsPortVCONNSource(u8PortNum))
                     {    
                       
                         PE_KillPolicyEngineTimer (u8PortNum);
@@ -1864,12 +1864,12 @@ void PE_FindVDMStateActiveFlag (UINT8 u8PortNum)
     {
         case ePE_VDM_GET_IDENTITY:
         {
-            gasDPM[u8PortNum].u16DPM_Status |= DPM_VDM_STATE_ACTIVE_MASK;
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_VDM_STATE_ACTIVE_MASK;
             break;
         }
         default:
         {
-           gasDPM[u8PortNum].u16DPM_Status &= ~DPM_VDM_STATE_ACTIVE_MASK;
+           gasDPM[u8PortNum].u16DPMStatus &= ~DPM_VDM_STATE_ACTIVE_MASK;
            break;
         }
     }

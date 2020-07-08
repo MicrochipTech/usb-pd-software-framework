@@ -136,8 +136,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     PRL_ProtocolReset(u8PortNum);
                     
                     /* Set spec revision to default spec revision in every detach */
-                    gasDPM[u8PortNum].u16DPM_Status &= ~DPM_CURR_PD_SPEC_REV_MASK;
-                    gasDPM[u8PortNum].u16DPM_Status |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS); 
+                    gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+                    gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS); 
         
                     /* Spec Rev is updated by PRL*/
                     PRL_UpdateSpecAndDeviceRoles (u8PortNum);
@@ -217,7 +217,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     {
 						/* Send Source Capabilities message to Port partner */
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-ENTRY_SS: Send Source Capabilities\r\n");
-                        DPM_Get_Source_Capabilities(u8PortNum, &u8SrcPDOCnt, u32DataObj);
+                        DPM_GetSourceCapabilities(u8PortNum, &u8SrcPDOCnt, u32DataObj);
                         
                         u32Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,  \
                                                                             u8SrcPDOCnt, PE_NON_EXTENDED_MSG);
@@ -400,7 +400,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                          /* Start tSrcReady timer */
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (PE_SRC_READY_TIMEOUT_MS),
-                                                              DPM_VBUSOnOffTimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;  
                     }
@@ -810,9 +810,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT-ENTRY_SS\r\n");
                     
 					/* Turn Off VCONN if it is a */
-                    if(DPM_IsPort_VCONN_Source(u8PortNum))
+                    if(DPM_IsPortVCONNSource(u8PortNum))
                     {
-                        DPM_VConnOnOff(u8PortNum, DPM_VCONN_OFF);
+                        DPM_VCONNOnOff(u8PortNum, DPM_VCONN_OFF);
                     }
 					
 					/* Turn Off VBus */
@@ -822,7 +822,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     power module to reach Vsafe0V*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
-                                                              DPM_VBUSOnOffTimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                    
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_VSAFE0V_SS;
@@ -843,7 +843,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         VCONN Turn OFF error*/
                         gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                                   PE_VCONNOFF_TIMEOUT_MS,\
-                                                                  DPM_VCONNOFFErrorTimerCB,\
+                                                                  DPM_VCONNOFFError_TimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO);
                         
@@ -860,7 +860,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_TRANSITION_TO_DEFAULT_CHECK_VCONNOFF_SS:
                 {
                     
-                     if(!DPM_IsPort_VCONN_Source(u8PortNum))
+                     if(!DPM_IsPortVCONNSource(u8PortNum))
                      {
                        
                         /*Stop the VCONN_OFF timer*/
@@ -906,7 +906,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     if(u8RaPresence)
                     {
 #endif
-                        DPM_VConnOnOff(u8PortNum, DPM_VCONN_ON);
+                        DPM_VCONNOnOff(u8PortNum, DPM_VCONN_ON);
                     }
 					
 					/* Turn On VBus */
@@ -916,7 +916,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     power module to reach Vsafe5V*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_ON_TIMER_MS),
-                                                              DPM_VBUSOnOffTimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                     
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_VBUS_CHECK_SS;
@@ -979,7 +979,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                             VCONN Turn ON error*/
                             gasPolicy_Engine[u8PortNum].u8PETimerID  =PDTimer_Start (
                                                              TYPEC_VCONNON_TIMEOUT_MS,
-                                                              DPM_VCONNONTimerErrorCB, u8PortNum,  
+                                                              DPM_VCONNONError_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                         
                             gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_VCONNON_CHECK_SS;
@@ -997,7 +997,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_TRANSITION_TO_DEFAULT_VCONNON_CHECK_SS:
                 {
                 
-                    if(DPM_IsPort_VCONN_Source(u8PortNum))
+                    if(DPM_IsPortVCONNSource(u8PortNum))
                     {                          
                         PE_KillPolicyEngineTimer (u8PortNum);                        
                         gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_EXIT_SS;                                                          
@@ -1341,8 +1341,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 			/* Pass the cable data to the DPM */
             if( PE_VDM_ACK == DPM_StoreVDMECableData(u8PortNum, u8SOPType, (UINT16) u32Header, (UINT32*) pu8DataBuf))
             {
-                gasDPM[u8PortNum].u16DPM_Status &= ~(DPM_CURR_PD_SPEC_REV_MASK);
-                gasDPM[u8PortNum].u16DPM_Status |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
+                gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_PD_SPEC_REV_MASK);
+                gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
                 gasPolicy_Engine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
@@ -1365,8 +1365,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 				PE_SRC_SEND_CAPABILITIES */
             if(gasPolicy_Engine[u8PortNum].u8DiscoverIdentityCounter > PE_N_DISCOVER_IDENTITY_COUNT)
             {
-                gasDPM[u8PortNum].u16DPM_Status &= ~(DPM_CURR_PD_SPEC_REV_MASK);
-                gasDPM[u8PortNum].u16DPM_Status |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
+                gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_PD_SPEC_REV_MASK);
+                gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
                 gasPolicy_Engine[u8PortNum].u8PEPortSts |= PE_CABLE_RESPOND_NAK;
                 gasPolicy_Engine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
@@ -1375,8 +1375,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             
             else
             {
-                gasDPM[u8PortNum].u16DPM_Status &= ~(DPM_CURR_PD_SPEC_REV_MASK);
-                gasDPM[u8PortNum].u16DPM_Status |= (PD_SPEC_REVISION_2_0 << DPM_CURR_PD_SPEC_REV_POS);
+                gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_PD_SPEC_REV_MASK);
+                gasDPM[u8PortNum].u16DPMStatus |= (PD_SPEC_REVISION_2_0 << DPM_CURR_PD_SPEC_REV_POS);
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_REQUEST;
                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;
             }
