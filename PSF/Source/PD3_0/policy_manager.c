@@ -558,7 +558,7 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     
     /* Update the Port Connection Status register by comparing the Fixed and 
        Advertised Source PDOs */
-    if (0 == DPM_ComparePDOs(u8PortNum))
+    if (FALSE == DPM_ComparePDOs(u8PortNum))
     {
         /* The advertised PDOs are equivalent to the default configured values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
