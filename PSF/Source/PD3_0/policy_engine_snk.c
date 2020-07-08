@@ -79,13 +79,14 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             from Hard Reset or Initial Power up*/
             gasPolicy_Engine[u8PortNum].u8PEPortSts &= (~PE_EXPLICIT_CONTRACT);
             
-            /*Clear partner PDO variable*/
-            for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
-            {
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = SET_TO_ZERO;
-            }
-            gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = SET_TO_ZERO;
-            
+            /*Advertised PDO is updated to Sink's PDO*/
+            (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
+                gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
+                DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
+            /*Advertised PDO Count is updated to SinkPDO Count*/
+            gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
+                gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+        
             /*Reset the all the sink status set*/
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
                         ~(DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS |
