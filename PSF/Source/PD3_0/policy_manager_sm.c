@@ -34,25 +34,25 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 void DPM_Init(UINT8 u8PortNum)
 {
-    UINT8 u16DPM_Status = gasDPM[u8PortNum].u16DPM_Status;
-    UINT8 u8DPM_ConfigData = gasDPM[u8PortNum].u8DPM_ConfigData;
+    UINT8 u16DPMStatus = gasDPM[u8PortNum].u16DPMStatus;
+    UINT8 u8DPMConfigData = gasDPM[u8PortNum].u8DPMConfigData;
     
-    u16DPM_Status |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
-    u8DPM_ConfigData |= (CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS);
+    u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
+    u8DPMConfigData |= (CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS);
         
     if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== (PD_ROLE_SOURCE))
     {   
         /* Set Port Power Role as Source in DPM Configure variable*/
-        u8DPM_ConfigData |= (PD_ROLE_SOURCE << DPM_DEFAULT_POWER_ROLE_POS); 
+        u8DPMConfigData |= (PD_ROLE_SOURCE << DPM_DEFAULT_POWER_ROLE_POS); 
         
         /* Set Port Data Role as DFP in DPM Configure variable*/
-        u8DPM_ConfigData |= (PD_ROLE_DFP << DPM_DEFAULT_DATA_ROLE_POS);
+        u8DPMConfigData |= (PD_ROLE_DFP << DPM_DEFAULT_DATA_ROLE_POS);
         
         /* Set Port Power Role as Source in DPM Status variable */
-        u16DPM_Status |= (PD_ROLE_SOURCE << DPM_CURR_POWER_ROLE_POS);
+        u16DPMStatus |= (PD_ROLE_SOURCE << DPM_CURR_POWER_ROLE_POS);
         
         /* Set Port Data Role as DFP in DPM Status variable */
-        u16DPM_Status |= (PD_ROLE_DFP << DPM_CURR_DATA_ROLE_POS);
+        u16DPMStatus |= (PD_ROLE_DFP << DPM_CURR_DATA_ROLE_POS);
         
         /* Set Port Power Role as Source in Port Connection Status register */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
@@ -75,16 +75,16 @@ void DPM_Init(UINT8 u8PortNum)
     else if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== (PD_ROLE_SINK))
     {
         /* Set the Default Port Power Role as Sink in DPM Status variable */
-        u8DPM_ConfigData |= (PD_ROLE_SINK << DPM_DEFAULT_POWER_ROLE_POS);
+        u8DPMConfigData |= (PD_ROLE_SINK << DPM_DEFAULT_POWER_ROLE_POS);
         
         /* Set the Default Port Data Role as UFP in DPM Status variable */
-        u8DPM_ConfigData |= (PD_ROLE_UFP << DPM_DEFAULT_DATA_ROLE_POS);
+        u8DPMConfigData |= (PD_ROLE_UFP << DPM_DEFAULT_DATA_ROLE_POS);
         
         /* Set the Current Port Power Role as Sink in DPM Status variable */
-        u16DPM_Status |= (PD_ROLE_SINK << DPM_CURR_POWER_ROLE_POS);
+        u16DPMStatus |= (PD_ROLE_SINK << DPM_CURR_POWER_ROLE_POS);
         
         /* Set the Current  Port Data Role as UFP in DPM Status variable */
-        u16DPM_Status |= (PD_ROLE_UFP << DPM_CURR_DATA_ROLE_POS);
+        u16DPMStatus |= (PD_ROLE_UFP << DPM_CURR_DATA_ROLE_POS);
         
         /* Set Port Power Role as Sink in Port Connection Status register */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
@@ -108,13 +108,13 @@ void DPM_Init(UINT8 u8PortNum)
     {
 #if(TRUE == INCLUDE_PD_DRP)
         /* Set Port Power Role as Source in DPM Configure variable*/
-        u8DPM_ConfigData |= (PD_ROLE_DRP << DPM_DEFAULT_POWER_ROLE_POS); 
+        u8DPMConfigData |= (PD_ROLE_DRP << DPM_DEFAULT_POWER_ROLE_POS); 
         
         /* Set Port Power Role as Source in DPM Status variable */
-        u16DPM_Status |= (PD_ROLE_DRP << DPM_CURR_POWER_ROLE_POS);
+        u16DPMStatus |= (PD_ROLE_DRP << DPM_CURR_POWER_ROLE_POS);
         
         /* Set Port Data Role as DFP in DPM Status variable */
-        u16DPM_Status |= (PD_ROLE_TOGGLING << DPM_CURR_DATA_ROLE_POS);
+        u16DPMStatus |= (PD_ROLE_TOGGLING << DPM_CURR_DATA_ROLE_POS);
         
         /* Set Port Power Role as Source in Port Connection Status register */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
@@ -128,8 +128,8 @@ void DPM_Init(UINT8 u8PortNum)
 #endif
     }
     
-    gasDPM[u8PortNum].u16DPM_Status =  u16DPM_Status;
-    gasDPM[u8PortNum].u8DPM_ConfigData  = u8DPM_ConfigData;
+    gasDPM[u8PortNum].u16DPMStatus =  u16DPMStatus;
+    gasDPM[u8PortNum].u8DPMConfigData  = u8DPMConfigData;
 	
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;

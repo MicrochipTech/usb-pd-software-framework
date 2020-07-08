@@ -301,7 +301,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* Start PR Swap Wait timer*/
                     gasDPM[u8PortNum].u8PRSwapWaitTmrID = PDTimer_Start (
                                                           (PE_PR_SWAP_WAIT_TIMEOUT_MS),
-                                                          DPM_PRSwapWaitTimerCB,u8PortNum,  
+                                                          DPM_PRSwapWait_TimerCB,u8PortNum,  
                                                           (UINT8)SET_TO_ZERO);
 
                     gasPolicy_Engine[u8PortNum].ePEState = u8TxDoneSt; 
@@ -444,7 +444,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        power module to reach vSafe0V*/
                     gasPolicy_Engine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
-                                                              DPM_VBUSOnOffTimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                    
                     gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS;                    
