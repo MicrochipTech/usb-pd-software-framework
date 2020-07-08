@@ -1332,16 +1332,6 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwap eRoleSwapMsg)
 }
 
 #if (TRUE == INCLUDE_PD_PR_SWAP)
-void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
-{
-    /* Set the timer Id to Max Concurrent Value*/
- 	gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
-    
-    /* To-do: PR_Swap module - Do PR_Swap Policy Evaluation and 
-       register internal event for PR_Swap initiation. 
-       Kill this timer while receiving PR_Swap message from port partner */
-    
-}
 
 void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole)
 {
@@ -1359,6 +1349,29 @@ void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole)
     {
         /* Do Nothing */
     }
+}
+
+void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+{
+    /* Set the timer Id to Max Concurrent Value*/
+ 	gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+    
+    /* To-do: PR_Swap module - Do PR_Swap Policy Evaluation and 
+       register internal event for PR_Swap initiation. 
+       Kill this timer while receiving PR_Swap message from port partner */
+    
+}
+
+void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+{
+    /* Set the timer Id to Max Concurrent Value*/
+ 	gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
+    
+    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                    
+    gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+    gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+    
 }
 
 #endif 
