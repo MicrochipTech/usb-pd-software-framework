@@ -132,14 +132,14 @@ void PE_RunStateMachine (UINT8 u8PortNum)
             PD Specification 3.0*/
             if (DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum) > PRL_GET_PD_SPEC_REV (u32Header))
             {
-            	gasDPM[u8PortNum].u16DPM_Status &= ~DPM_CURR_PD_SPEC_REV_MASK;
-	            gasDPM[u8PortNum].u16DPM_Status |= ((PRL_GET_PD_SPEC_REV (u32Header)) << \
+            	gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+	            gasDPM[u8PortNum].u16DPMStatus |= ((PRL_GET_PD_SPEC_REV (u32Header)) << \
                                                DPM_CURR_PD_SPEC_REV_POS);
             }
             else
             {
-            	gasDPM[u8PortNum].u16DPM_Status &= ~DPM_CURR_PD_SPEC_REV_MASK;
-            	gasDPM[u8PortNum].u16DPM_Status |= ((DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum)) << \
+            	gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+            	gasDPM[u8PortNum].u16DPMStatus |= ((DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum)) << \
                               	                 DPM_CURR_PD_SPEC_REV_POS);
             }
 
@@ -493,7 +493,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     if ((ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
                          gasPolicy_Engine[u8PortNum].ePESubState)|| (ePE_SNK_READY_IDLE_SS == \
                          gasPolicy_Engine[u8PortNum].ePESubState) || \
-                       (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                       (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
 
                         if (ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
@@ -573,7 +573,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     /*Also discard the current VDM AMS to handle the new VDM message*/
                     if ((ePE_SNK_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
 						(ePE_SRC_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
 
                         gasPolicy_Engine[u8PortNum].ePEState = ePE_VDM_GET_IDENTITY;
@@ -916,7 +916,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 {
                     /*Discard VDM AMS and handle the PD message here*/
                     if ((ePE_SNK_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
-                      (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                      (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
                         /*Go to "ePE_SNK_GIVE_SINK_CAP" state if GET_SINK_CAP message is received*/
                         gasPolicy_Engine[u8PortNum].ePEState = ePE_SNK_GIVE_SINK_CAP;
@@ -937,7 +937,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
                         (ePE_SRC_READY == gasPolicy_Engine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPM_Status & DPM_VDM_STATE_ACTIVE_MASK))
+                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
 
 #if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
@@ -1749,12 +1749,12 @@ void PE_FindVDMStateActiveFlag (UINT8 u8PortNum)
     {
         case ePE_VDM_GET_IDENTITY:
         {
-            gasDPM[u8PortNum].u16DPM_Status |= DPM_VDM_STATE_ACTIVE_MASK;
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_VDM_STATE_ACTIVE_MASK;
             break;
         }
         default:
         {
-           gasDPM[u8PortNum].u16DPM_Status &= ~DPM_VDM_STATE_ACTIVE_MASK;
+           gasDPM[u8PortNum].u16DPMStatus &= ~DPM_VDM_STATE_ACTIVE_MASK;
            break;
         }
     }
