@@ -323,7 +323,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
         case ePE_PRS_EVALUATE_SWAP:
         {
             /* Get evaluation of swap request from Device Policy Manager */
-            if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap(u8PortNum, ePR_SWAP))
+            if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap(u8PortNum, ePR_SWAP_RCVD))
             {
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_PRS_ACCEPT_SWAP; 
                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_ACCEPT_SWAP_ENTRY_SS;           
