@@ -32,7 +32,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
 #include <psf_stdinc.h>
-#include<stdio.h>
 /******************************************************************************************************/
 void UPD_RegWriteByte (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8WriteValue)
 {
@@ -675,144 +674,108 @@ void UPD_FindVBusCorrectionFactor(void)
 void UPD_RegDump(UINT8 u8PortNum)
 {
     UINT8 u8Data =0;
-    char sBuf[200] = {0};
     
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_HW_CTL_LOW);
-    sprintf(sBuf, "TYPEC_CC_HW_CTL_LOW - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);             
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_HW_CTL_LOW - ", u8Data, BYTE_LEN_1, "\r\n");
 
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_HW_CTL_HIGH);
-    sprintf(sBuf, "TYPEC_CC_HW_CTL_HIGH - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_HW_CTL_HIGH - ", u8Data, BYTE_LEN_1, "\r\n");
   
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_INT_STS);
-    sprintf(sBuf, "TYPEC_CC_INT_STS - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_INT_STS - ", u8Data, BYTE_LEN_1, "\r\n");
     
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_CHG_STS);
-    sprintf(sBuf, "TYPEC_CC1_CHG_STS - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_CHG_STS - ", u8Data, BYTE_LEN_1, "\r\n");
+ 
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_CHG_STS);
-    sprintf(sBuf, "TYPEC_CC2_CHG_STS - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_HW_CTL_LOW - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_MATCH);
-    sprintf(sBuf, "TYPEC_CC1_MATCH - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_MATCH - ", u8Data, BYTE_LEN_1, "\r\n");
 
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_MATCH);
-    sprintf(sBuf, "TYPEC_CC2_MATCH - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC2_MATCH - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_INT_EN);
-    sprintf(sBuf, "TYPEC_CC_INT_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_INT_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+ 
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_MATCH_EN);
-    sprintf(sBuf, "TYPEC_CC1_MATCH_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_MATCH_EN);
-    sprintf(sBuf, "TYPEC_CC2_MATCH_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC2_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_MATCH_EN);
-    sprintf(sBuf, "TYPEC_VBUS_MATCH_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
     
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_PWR_INT_EN);
-    sprintf(sBuf, "TYPEC_PWR_INT_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_PWR_INT_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_MATCH_DEB);
-    sprintf(sBuf, "TYPEC_MATCH_DEB - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_MATCH_DEB - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VCONN_DEB);
-    sprintf(sBuf, "TYPEC_VCONN_DEB - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VCONN_DEB - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_DBCLR_EN);
-    sprintf(sBuf, "TYPEC_CC1_DBCLR_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_DBCLR_EN);
-    sprintf(sBuf, "TYPEC_CC2_DBCLR_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC2_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_DBCLR_EN);
-    sprintf(sBuf, "TYPEC_VBUS_DBCLR_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_SAMP_EN);
-    sprintf(sBuf, "TYPEC_CC1_SAMP_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
     
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_SAMP_EN);
-    sprintf(sBuf, "TYPEC_CC2_SAMP_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC2_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_SAMP_EN);
-    sprintf(sBuf, "TYPEC_VBUS_SAMP_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_CTL1_LOW);
-    sprintf(sBuf, "TYPEC_CC_CTL1_LOW - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_CTL1_LOW - ", u8Data, BYTE_LEN_1, "\r\n");
         
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_CTL1_HIGH);
-    sprintf(sBuf, "TYPEC_CC_CTL1_HIGH - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_CTL1_HIGH - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_CTL2);
-    sprintf(sBuf, "TYPEC_VBUS_CTL2 - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_CTL2 - ", u8Data, BYTE_LEN_1, "\r\n");
     
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_CTL1);
-    sprintf(sBuf, "TYPEC_VBUS_CTL1 - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);  
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_CTL1 - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_DEB);
-    sprintf(sBuf, "TYPEC_VBUS_DEB - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf);  
-     
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_DEB - ", u8Data, BYTE_LEN_1, "\r\n");
+ 
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CTL_LOW);
-    sprintf(sBuf, "TYPEC_DRP_CTL_LOW - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-        
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CTL_LOW - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CTL_HIGH);
-    sprintf(sBuf, "TYPEC_DRP_CTL_HIGH - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CTL_HIGH - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CC_SNK_MATCH_EN);
-    sprintf(sBuf, "TYPEC_DRP_CC_SNK_MATCH_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CC_SNK_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CC_SNK_DBCLR_EN);
-    sprintf(sBuf, "TYPEC_DRP_CC_SNK_DBCLR_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CC_SNK_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+ 
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CC_SRC_MATCH_EN);
-    sprintf(sBuf, "TYPEC_DRP_CC_SRC_MATCH_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CC_SRC_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
     
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CC_SRC_DBCLR_EN);
-    sprintf(sBuf, "TYPEC_DRP_CC_SRC_DBCLR_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CC_SRC_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_SNK_SAMP_EN);
-    sprintf(sBuf, "TYPEC_DRP_SNK_SAMP_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_SNK_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_SRC_SAMP_EN);
-    sprintf(sBuf, "TYPEC_DRP_SRC_SAMP_EN - 0x%x \r\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_SRC_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
     
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_DUTY_CYC);
-    sprintf(sBuf, "TYPEC_DRP_DUTY_CYC - 0x%x \r\n\n\n", u8Data);
-    DEBUG_PRINT_PORT_STR (u8PortNum,sBuf); 
-    
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_DUTY_CYC - ", u8Data, BYTE_LEN_1, "\r\n");
 }
 /********************************************************************************************/
 #endif
