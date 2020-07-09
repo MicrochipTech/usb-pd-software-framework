@@ -498,6 +498,7 @@ typedef enum {
 #define	PE_CTRL_FR_SWAP                  19
 #define	PE_CTRL_GET_PPS_STATUS           20
 #define	PE_CTRL_GET_COUNTRY_CODES        21
+#define PE_CTRL_GET_SINK_CAP_EXTENDED    22 
 
 /*Macros for Data message type */
 #define PE_DATA_SOURCE_CAP          1
