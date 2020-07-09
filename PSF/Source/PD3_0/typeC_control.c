@@ -1490,18 +1490,6 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             /*Clearing the DRP_DONE interrupt */
             UPD_RegisterWriteISR (u8PortNum, TYPEC_CC_INT_STS, &u8Data, BYTE_LEN_1);
             
-            UPD_RegisterReadISR( u8PortNum, TYPEC_DRP_CTL_HIGH, &u8Data, BYTE_LEN_1); 
-            gasTypeCcontrol[u8PortNum].u8DRPStsISR &= ~(TYPEC_DRP_STS_ADVERTISED_STATE);
-            
-            if(TRUE == (u8Data & TYPEC_DRP_ADVERTISING_STATE))
-            {
-                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_UFP;
-            }
-            else
-            {
-                gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_STS_ADVERTISED_STATE_DFP;
-            }   
-                        
             gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_DRP_DONE_INTERRUPT;
         }
         else
@@ -2298,11 +2286,14 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
 #if(TRUE == INCLUDE_PD_DRP)
 void TypeC_DrpIntrHandler (UINT8 u8PortNum)
 {
- 	
+ 	UINT8 u8Data = SET_TO_ZERO;
+    
     if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_DRP_DONE_INTERRUPT)
     {
-        if((gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_DRP_STS_ADVERTISED_STATE) \
-                 == TYPEC_DRP_STS_ADVERTISED_STATE_UFP)
+        /*Get the state being advertised from DRP_CTL_HIGH register*/
+        UPD_RegisterRead( u8PortNum, TYPEC_DRP_CTL_HIGH, &u8Data, BYTE_LEN_1); 
+
+        if(TRUE == (u8Data & TYPEC_DRP_ADVERTISING_STATE))
         {
             /* Set the Current Port Power Role as Sink in DPM Status variable */
             DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SINK);
@@ -2316,7 +2307,6 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
                     
             gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
                         gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;  
-            
         }
         else
         {
@@ -2331,9 +2321,9 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
             (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
                         
             gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;  
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;
+        }   
             
-       }
         TypeC_InitPort(u8PortNum);
         
         /* Protocol Layer initialization based on power being advertised*/

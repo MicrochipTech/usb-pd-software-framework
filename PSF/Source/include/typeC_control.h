@@ -379,11 +379,6 @@ event for UFP*/
 
 /*Bit definitions for gasTypeCcontrol[u8PortNum].u8DRPStsISR variable*/
 #define TYPEC_DRP_DONE_INTERRUPT                    BIT(0)
-#define TYPEC_DRP_STS_ADVERTISED_STATE              (BIT(2)|BIT(1))
-#define TYPEC_DRP_STS_ADVERTISED_STATE_POS          1
-#define TYPEC_DRP_STS_ADVERTISED_STATE_UFP          (0<<TYPEC_DRP_STS_ADVERTISED_STATE_POS)
-#define TYPEC_DRP_STS_ADVERTISED_STATE_DFP          (1<<TYPEC_DRP_STS_ADVERTISED_STATE_POS)
-#define TYPEC_DRP_STS_ADVERTISED_STATE_TOGGLING     (2<<TYPEC_DRP_STS_ADVERTISED_STATE_POS)
 
 /*Defines for different Type C current values of DFP*/
 #define TYPEC_UFP                               PD_ROLE_UFP
@@ -681,9 +676,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
                                 BIT[4:6] -> VBUS_PRESENCE
                                 BIT 7 -> VCONNONERROR */
 #if(TRUE == INCLUDE_PD_DRP)
-  UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status
-                                 BIT[2:1] -> Current DRP advertising port role*/
-  UINT8 u8DrpLastAttachedState; 
+  UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status*/
+  UINT8 u8DrpLastAttachedState; /*BIT[1:0] -> Previous DRP attached power role*/
 #endif
   float fVBUSCorrectionFactor;
   
