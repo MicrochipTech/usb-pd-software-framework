@@ -78,14 +78,6 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             /*Explicit Contract becomes invalid once this state is reached 
             from Hard Reset or Initial Power up*/
             gasPolicy_Engine[u8PortNum].u8PEPortSts &= (~PE_EXPLICIT_CONTRACT);
-            
-            /*Advertised PDO is updated to Sink's PDO*/
-            (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
-                DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
-            /*Advertised PDO Count is updated to SinkPDO Count*/
-            gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
         
             /*Reset the all the sink status set*/
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
@@ -132,6 +124,14 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 {                   
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_WAIT_FOR_CAPABILITIES: Entered the state\r\n");
 
+                    /*Advertised PDO is updated with Sink's PDO*/
+                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
+                            gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
+                            DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
+                    /*Advertised PDO Count is updated to SinkPDO Count*/
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+    
                     if (gasPolicy_Engine[u8PortNum].u8HardResetCounter <= PE_N_HARD_RESET_COUNT)
                     {
                         /*Start the PE_SINKWAITCAP_TIMEOUT_MS to wait for the source 
