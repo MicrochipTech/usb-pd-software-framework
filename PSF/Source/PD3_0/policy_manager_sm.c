@@ -79,13 +79,6 @@ void DPM_Init(UINT8 u8PortNum)
         
         /* Set Port Data Role as UFP in Port Connection Status register */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS);         
-        /*On initialization Advertised PDO is updated to Sink's PDO*/
-        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
-            DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
-        /*Advertised PDO Count is updated to SinkPDO Count*/
-        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
         
         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
     }
@@ -476,9 +469,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             /* Process Type C Detach Event */
-            #if (TRUE == INCLUDE_PD_SOURCE)
             DPM_OnTypeCDetach(u8PortNum); 
-            #endif 
             
             /* Disable Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
