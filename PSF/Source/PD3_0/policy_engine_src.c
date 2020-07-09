@@ -136,8 +136,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     PRL_ProtocolReset(u8PortNum);
                     
                     /* Set spec revision to default spec revision in every detach */
-                    gasDPM[u8PortNum].u16DPM_Status &= ~DPM_CURR_PD_SPEC_REV_MASK;
-                    gasDPM[u8PortNum].u16DPM_Status |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS); 
+                    gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+                    gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS); 
         
                     /* Spec Rev is updated by PRL*/
                     PRL_UpdateSpecAndDeviceRoles (u8PortNum);
@@ -1341,8 +1341,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 			/* Pass the cable data to the DPM */
             if( PE_VDM_ACK == DPM_StoreVDMECableData(u8PortNum, u8SOPType, (UINT16) u32Header, (UINT32*) pu8DataBuf))
             {
-                gasDPM[u8PortNum].u16DPM_Status &= ~(DPM_CURR_PD_SPEC_REV_MASK);
-                gasDPM[u8PortNum].u16DPM_Status |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
+                gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_PD_SPEC_REV_MASK);
+                gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
                 gasPolicy_Engine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
@@ -1365,8 +1365,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 				PE_SRC_SEND_CAPABILITIES */
             if(gasPolicy_Engine[u8PortNum].u8DiscoverIdentityCounter > PE_N_DISCOVER_IDENTITY_COUNT)
             {
-                gasDPM[u8PortNum].u16DPM_Status &= ~(DPM_CURR_PD_SPEC_REV_MASK);
-                gasDPM[u8PortNum].u16DPM_Status |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
+                gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_PD_SPEC_REV_MASK);
+                gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
                 gasPolicy_Engine[u8PortNum].u8PEPortSts |= PE_CABLE_RESPOND_NAK;
                 gasPolicy_Engine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
@@ -1375,8 +1375,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             
             else
             {
-                gasDPM[u8PortNum].u16DPM_Status &= ~(DPM_CURR_PD_SPEC_REV_MASK);
-                gasDPM[u8PortNum].u16DPM_Status |= (PD_SPEC_REVISION_2_0 << DPM_CURR_PD_SPEC_REV_POS);
+                gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_PD_SPEC_REV_MASK);
+                gasDPM[u8PortNum].u16DPMStatus |= (PD_SPEC_REVISION_2_0 << DPM_CURR_PD_SPEC_REV_POS);
                 gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_REQUEST;
                 gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;
             }

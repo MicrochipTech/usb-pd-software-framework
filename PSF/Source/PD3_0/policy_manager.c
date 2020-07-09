@@ -372,7 +372,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as Fixed Supply */
-            gasDPM[u8PortNum].u16DPM_Status &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
+            gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
             
             /* Update Negotiated current in terms of mA */            
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = \
@@ -391,7 +391,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as PPS */
-            gasDPM[u8PortNum].u16DPM_Status |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;           
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;           
             
             /* Update Negotiated current in terms of mA */            
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = \
