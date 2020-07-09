@@ -221,6 +221,7 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
         }
         else
         {
+            u8VBUSPresence = u8VBUSPresence >> TYPEC_VBUS_PRESENCE_POS;
             u16VBUSVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[--u8VBUSPresence]);
         }
     }    
