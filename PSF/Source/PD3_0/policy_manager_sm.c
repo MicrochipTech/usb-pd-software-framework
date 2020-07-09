@@ -519,7 +519,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 
     /* DPM notifications that need to be handled by stack applications must
        be added here before calling the user function. */
-    
     switch(eDPMNotification)
     {
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
@@ -541,12 +540,16 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
+			/*TODO: <DPM-Policy> Uncomment the call after unit testing*/
+            //DPM_OnTypeCAttach(u8PortNum);
             /* Assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
+			/*TODO: <DPM-Policy> Uncomment the call after unit testing*/
+            //DPM_OnTypeCAttach(u8PortNum);
             /* De-assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
             break;
@@ -770,60 +773,129 @@ void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
 
 void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
-    if (gasDPM[u8PortNum].u8DPMInternalEvents)
+    /* Process internal events only when the Policy Engine is in PS_RDY state*/
+    if ((gasDPM[u8PortNum].u8DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)))
     {
-        /* Initiate a sequence only when the Policy Engine is in PS_RDY state*/
-        if(TRUE == PE_IsPolicyEngineIdle(u8PortNum))
+        /*If condition is ordered based on the internal event priority*/
+        if (DPM_INT_EVT_INITIATE_GET_SINK_CAPS == (gasDPM[u8PortNum].u8DPMInternalEvents &\
+                                                    DPM_INT_EVT_INITIATE_GET_SINK_CAPS))
         {
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
-            if ((DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents & DPM_INT_EVT_INITIATE_ALERT)) 
-                                && (gasDPM[u8PortNum].u8AlertType != 0))
-            {     
-                /*Clear the Internal event since it is processed*/
-                gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_ALERT);
-
-                /* Check for Port Power Role */
-                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
-                {
-                    /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
-                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
-                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;                    
-                }
-                else
-                {
-                    /* TBD for Sink */
-                }                
-                
-                /*start the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS to clear the status flag
-                  on timeout if there is no request for status*/
-                gasDPM[u8PortNum].u8StsClearTmrID = PDTimer_Start (DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS,\
-                                                          DPM_StatusFaultPersist_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
-                
-            } /* DPM_INT_EVT_INITIATE_ALERT */ 
-            else if (DPM_INT_EVT_INITIATE_GET_STATUS == (gasDPM[u8PortNum].u8DPMInternalEvents\
-                                                    & DPM_INT_EVT_INITIATE_GET_STATUS))
+            /* Check for Port Power Role */
+            if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
             {
-                /*Clear the Internal event since it is processed*/
-                gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_STATUS);
-                
-                /* Check for Port Power Role */
-                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
-                {
-                    /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
-                    gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
-                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;                    
-                }
-                else
-                {
-                    /* TBD for Sink */
-                }                
-            } /* DPM_INT_EVT_INITIATE_GET_STATUS */
+                /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
+                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
+                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;                    
+            }
             else
             {
-                /* Do Nothing */
+                /*When role is sink Get_Sink_Caps request is not applicable*/
             }
+        }
+        else if (DPM_INT_EVT_INITIATE_RENOGIATION == (gasDPM[u8PortNum].u8DPMInternalEvents &\
+                                                    DPM_INT_EVT_INITIATE_RENOGIATION))
+        {
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_RENOGIATION);
+            
+            /* TODO: <DPM_Policy> <To add policy engine states to initiate Renegonitation> */
+        }
+        else if (DPM_INT_EVT_INITIATE_VCONN_SWAP == (gasDPM[u8PortNum].u8DPMInternalEvents &\
+                                                    DPM_INT_EVT_INITIATE_VCONN_SWAP))
+        {
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VCONN_SWAP);
+            
+            if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
+            {
+                /* TODO: <VCONN-SWAP> <To add policy engine states to initiate VCONN_SWAP> */
+            }
+            
+        }
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+        else if (DPM_INT_EVT_INITIATE_PR_SWAP == (gasDPM[u8PortNum].u8DPMInternalEvents &\
+                                                    DPM_INT_EVT_INITIATE_PR_SWAP))
+        {
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_PR_SWAP);
+            
+            /*Process initiate PR_SWAP only if the port partner and PSF port supports dual
+              power and PR_SWAP initiation still valid as per the current power role*/
+            if ((DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE)) &&\
+                    ((DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
+                        (DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))))
+            {
+                /* TODO: <PR-SWAP> <To add policy engine states to initiate PR_SWAP> */
+            }
+        }
+#endif /*INCLUDE_PD_PR_SWAP*/
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+        else if (DPM_INT_EVT_INITIATE_DR_SWAP == (gasDPM[u8PortNum].u8DPMInternalEvents &\
+                                                    DPM_INT_EVT_INITIATE_DR_SWAP))
+        {
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_DR_SWAP);
+            
+            /*Check whether it still valid to initiate a swap and the partner supports dual role data*/
+            if ((DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE)) &&\
+                    ((DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
+                    (DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))))
+            {
+                    gasPolicy_Engine[u8PortNum].ePEState = ePE_DRS_SEND_SWAP;
+                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
+                
+            }
+        }
+#endif/*INCLUDE_PD_DR_SWAP*/
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+        else if ((DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents & DPM_INT_EVT_INITIATE_ALERT)) 
+                                && (gasDPM[u8PortNum].u8AlertType != SET_TO_ZERO))
+        {     
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_ALERT);
+
+            /* Check for Port Power Role */
+            if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+            {
+                /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
+                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
+                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;                    
+            }
+            else
+            {
+                /* Do nothing for sink as PPS sink not supported currently*/
+            }                
+
+            /*start the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS to clear the status flag
+              on timeout if there is no request for status*/
+            gasDPM[u8PortNum].u8StsClearTmrID = PDTimer_Start (DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS,\
+                                                      DPM_StatusFaultPersist_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
+
+        } /* DPM_INT_EVT_INITIATE_ALERT */ 
+        else if (DPM_INT_EVT_INITIATE_GET_STATUS == (gasDPM[u8PortNum].u8DPMInternalEvents\
+                                                    & DPM_INT_EVT_INITIATE_GET_STATUS))
+        {
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_STATUS);
+
+            /* Check for Port Power Role */
+            if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+            {
+                /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
+                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
+                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;                    
+            }
+            else
+            {
+                /*Do nothing for sink as PPS for sink not supported currently*/
+            }                
+        } /* DPM_INT_EVT_INITIATE_GET_STATUS */
 #endif /*INCLUDE_PD_SOURCE_PPS*/
-        } 
+        else
+        {
+            /* Do Nothing */
+        }
+          
     }
 }
 

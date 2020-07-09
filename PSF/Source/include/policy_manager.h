@@ -108,6 +108,8 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_PDO_CURRENT(X)                  ((X & 0x000003FF))
 #define DPM_GET_PDO_VOLTAGE(X)                  ((X & 0x000FFC00) >> 10)	/*in 50mv units*/
 #define DPM_GET_PDO_USB_COMM_CAP(X)             ((X & 0x04000000) >> 26)
+#define DPM_GET_PDO_DUAL_DATA(X)                ((X & 0x02000000) >> 25)
+#define DPM_GET_PDO_DUAL_POWER(X)               ((X & 0x20000000) >> 29)
 #define DPM_MAX_PDO_CNT                          7
 
 /*******************************************************************************/
@@ -145,13 +147,6 @@ Source/Sink Power delivery objects*/
 
 #define DPM_VDM_HEADER_POS              0
 #define DPM_VMD_PRODUCT_TYPE_VDO_POS    4
-
-#define DPM_DEBUG_PDO_GENERATION( USB_SUSPEND, UNCONS_POWER, USB_COM, MAX_CURRENT, MAX_VOLTAGE)  \
-        (((UINT32)USB_SUSPEND << 28) | ((UINT32)UNCONS_POWER << 27) | ((UINT32)USB_COM << 26) | (((UINT32)MAX_VOLTAGE/50) << 10) | (((UINT32)MAX_CURRENT)/10))
-
-#define DPM_DEBUG_PDO_5V_9MA      DPM_DEBUG_PDO_GENERATION(1, 1, 0, 900, 5000)
-#define DPM_DEBUG_PDO_5V_1P5A     DPM_DEBUG_PDO_GENERATION(1, 1, 0, 1500, 5000)
-#define DPM_DEBUG_PDO_5V_3A       DPM_DEBUG_PDO_GENERATION(1, 1, 0, 3000, 5000)
 
 /****************Defines to get Status from u16DPMStatus****************************/
 #define DPM_GET_DPM_STATUS(u8PortNum)				gasDPM[u8PortNum].u16DPMStatus
@@ -413,6 +408,8 @@ Source/Sink Power delivery objects*/
 #define DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL 0xFFFFFFFF
 
 /********************** Return Values from DPM_EvaluateRoleSwap API**************/
+#define DPM_IGNORE_INITIATE_SWAP            3
+#define DPM_REQUEST_SWAP                    2
 #define DPM_ACCEPT_SWAP                     1
 #define DPM_REJECT_SWAP                     0 
 
@@ -496,10 +493,29 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                                             |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
 
 /***************************Internal Events Defines**********************************/
-#define DPM_INT_EVT_INITIATE_ALERT          BIT(0)
-#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(1)
-
+#define DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
+#define DPM_INT_EVT_INITIATE_RENOGIATION    BIT(1)
+#define DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
+#define DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
+#define DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
+#define DPM_INT_EVT_INITIATE_ALERT          BIT(5)
+#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(6)
 /**********************************************************************************/
+/*u16SwapPolicy values*/
+#define DPM_AUTO_DR_SWAP_REQ_AS_DFP          BIT(0)
+#define DPM_AUTO_DR_SWAP_REQ_AS_UFP          BIT(1)
+#define DPM_AUTO_DR_SWAP_ACCEPT_AS_DFP       BIT(2)
+#define DPM_AUTO_DR_SWAP_ACCEPT_AS_UFP       BIT(3)
+#define DPM_AUTO_PR_SWAP_REQ_AS_SRC          BIT(4)
+#define DPM_AUTO_PR_SWAP_REQ_AS_SNK          BIT(5)
+#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SRC       BIT(6)
+#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SNK       BIT(7)
+#define DPM_AUTO_VCONN_SWAP_REQ_AS_SRC       BIT(8)
+#define DPM_AUTO_VCONN_SWAP_REQ_AS_SNK       BIT(9)
+#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SRC    BIT(10)
+#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SNK    BIT(11)
+                                   
+/***********************************************************************************/
 
 /* Enumeration to define the types of PDO */ 
 typedef enum PDOtype
@@ -513,10 +529,13 @@ typedef enum PDOtype
 
 /* Enum for Swap messages */
 typedef enum {
-    eVCONN_SWAP,
-    eDR_SWAP,
-    ePR_SWAP
-}eRoleSwap;
+    eVCONN_SWAP_RCVD,
+    eDR_SWAP_RCVD,
+    ePR_SWAP_RCVD,
+    eVCONN_SWAP_INITATE,
+    eDR_SWAP_INITIATE,
+    ePR_SWAP_INITIATE
+}eRoleSwapMsgtype;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1615,6 +1634,25 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
+        void DPM_OnTypeCAttach(UINT8 u8PortNum); 
+    Summary:
+        API to do necessary operation required by DPM during a type c attach event. 
+    Description:
+        This API does the internal event registering and global variable update on
+        Type C attach.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_OnTypeCAttach(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
         void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
     Summary:
         Timer callback for PE_PR_SWAP_WAIT_TIMEOUT_MS timeout
@@ -1636,25 +1674,28 @@ void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwap eRoleSwapMsg); 
+        UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
     Summary:
-        API to evaluate VCONN_Swap, DR_Swap and PR_Swap received from partner. 
+        API to evaluate VCONN_Swap, DR_Swap and PR_Swap received from partner or initiation. 
     Description:
         This API evaluates the Role swap message received from port partner 
         based on the policy bits defined by user configuration and returns 
-        accept/reject status.
+        accept/reject status. It also evaluates whether any swap message can be
+        initiated by PSF based on the user configuration.
     Conditions:
         None.
     Input:
         u8PortNum - Port number.
-        eRoleSwap - Role Swap message
+        eRoleSwapMsgtype - Role Swap message type 
     Return:
         UINT8 - DPM_ACCEPT_SWAP in case of accept
                 DPM_REJECT_SWAP in case of reject.
+                DPM_REQUEST_SWAP in case PSF has to initiate swap
+                DPM_IGNORE_INITIATE_SWAP in case PSF should not initiate 
     Remarks:
         None. 
 **************************************************************************************************/
-UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwap eRoleSwapMsg); 
+UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg); 
 
 /**************************************************************************************************
     Function:

@@ -66,7 +66,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_SOURCE_USB_SUSP           0U
 #define CFG_PORT_SOURCE_UNCONSTARINED_PWR  1U
 #define CFG_PORT_SOURCE_USB_COMM           0U
-#define CFG_PORT_DUAL_ROLE_POWER           1U  
+#define CFG_PORT_DUAL_ROLE_POWER           1U 
+#define CFG_PORT_DUAL_ROLE_DATA            0U
 
 /* Source PDO defines */
 #define CFG_PORT_SOURCE_PDO_1_CURRENT         3000U 
@@ -191,14 +192,39 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    be enabled, change the value of CFG_PT_ENABLE macro to 1U. */
 #define CFG_PT_ENABLE                         0U 
 
+/*Source PDO 
+  B31-B30   - Supply Type
+  B29       - Dual Power role
+  B28       - USB Suspend supported
+  B27       - UnConstrained Power
+  B26       - USB Communication capable
+  B25       - Dual-Role Data
+  B24       - Unchunked extended message
+  B23-B22   - Reserved
+  B21-B20   - Peak Current
+  B19-B10   - Voltage in 50mV units
+  B9-B0     - Maximum current in 10mA units */
+/*Sink PDO 
+  B31-B30   - Supply Type
+  B29       - Dual Power role
+  B28       - Higher Capability
+  B27       - UnConstrained Power
+  B26       - USB Communication capable
+  B25       - Dual-Role Data
+  B24-B23   - Fast Role Swap required USB Type-C current
+  B22-B20   - Reserved
+  B19-B10   - Voltage in 50mV units
+  B9-B0     - Maximum current in 10mA units */
 #define CFG_PDO_VOLTAGE_POS                   10 
 #define CFG_PDO_VOLTAGE_UNIT                  50
 #define CFG_PDO_CURRENT_UNIT                  10
-#define CFG_PDO_USB_SUSPEND_POS               28 
+#define CFG_PDO_DUAL_ROLE_DATA_POS            25
 #define CFG_PDO_USB_COMMN_POS                 26 
-#define CFG_PDO_UNCONSTRAINED_PWR             27 
-#define CFG_PDO_HIGHER_CAPABILITY_POS         28
+#define CFG_PDO_UNCONSTRAINED_PWR             27
+#define CFG_PDO_USB_SUSPEND_POS               28 
 #define CFG_PDO_DUAL_ROLE_PWR_POS             29 
+
+#define CFG_PDO_HIGHER_CAPABILITY_POS         28
 
 /* Power Supply type - Bits 31:10 of Power Data Object */
 #define CFG_POWER_SUPPLY_TYPE_FIXED           0x00U
@@ -226,19 +252,22 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                         (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
 
 /* Macro used to form Fixed PDO 1 */
-#define CFG_FORM_FIXED_PDO1(voltage,current,usbCommn,usbSusp,unconstrainedPwr,isDrp)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
+
+#define CFG_FORM_SOURCE_FIXED_PDO1(voltage,current,DualRoleData,usbCommn,usbSusp,unconstrainedPwr,isDrp)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
                                          ((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
                                          ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
                                          ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
+                                         ((DualRoleData << CFG_PDO_DUAL_ROLE_DATA_POS)) |\
                                          (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                          ((current)/CFG_PDO_CURRENT_UNIT))            
 
 /* Macro used to form Sink Fixed PDO 1 */
-#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
+#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,DualRoleData,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
                                          (((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
-                                         ((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS) | \
+                                         (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS)) | \
                                          ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
                                          ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
+                                         ((DualRoleData << CFG_PDO_DUAL_ROLE_DATA_POS)) |\
                                          (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
                                          ((current)/CFG_PDO_CURRENT_UNIT))  
 
