@@ -62,7 +62,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 #define CFG_PORT_SOURCE_NUM_OF_PDOS        5U
 #else 
-#define CFG_PORT_SOURCE_NUM_OF_PDOS        2U
+#define CFG_PORT_DOCK_SOURCE_NUM_OF_PDOS        3U
+#define CFG_PORT_NOTE_SOURCE_NUM_OF_PDOS        2U
 #endif 
 
 #define CFG_PORT_SOURCE_USB_SUSP           0U
@@ -71,36 +72,73 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define CFG_PORT_DRP                       1U
 
-/* Source PDO defines */
-#define CFG_PORT_SOURCE_PDO_1_CURRENT         1000U 
-#define CFG_PORT_SOURCE_PDO_2_CURRENT         1000U
-#define CFG_PORT_SOURCE_PDO_3_CURRENT         0
-#define CFG_PORT_SOURCE_PDO_4_CURRENT         0
+/***************Source PDO defines for Dock type port (port 1)*****************/
+#define CFG_PORT_DOCK_SOURCE_PDO_1_CURRENT         1000U 
+#define CFG_PORT_DOCK_SOURCE_PDO_2_CURRENT         1000U
+#define CFG_PORT_DOCK_SOURCE_PDO_3_CURRENT         1000U
+#define CFG_PORT_DOCK_SOURCE_PDO_4_CURRENT         0
 
-#define CFG_PORT_SOURCE_PDO_1_VOLTAGE         5000
-#define CFG_PORT_SOURCE_PDO_2_VOLTAGE         9000
-#define CFG_PORT_SOURCE_PDO_3_VOLTAGE         0
-#define CFG_PORT_SOURCE_PDO_4_VOLTAGE         0
-#define CFG_PORT_SINK_NUM_OF_PDOS          2U
+#define CFG_PORT_DOCK_SOURCE_PDO_1_VOLTAGE         5000
+#define CFG_PORT_DOCK_SOURCE_PDO_2_VOLTAGE         9000
+#define CFG_PORT_DOCK_SOURCE_PDO_3_VOLTAGE         15000
+#define CFG_PORT_DOCK_SOURCE_PDO_4_VOLTAGE         0
+/******************************************************************************/
+
+/***************Sink PDO defines for Dock type port (port 1)*******************/
+#define CFG_PORT_DOCK_SINK_NUM_OF_PDOS          2U
+
+#define CFG_PORT_DOCK_SINK_PDO_1_CURRENT        1000U 
+#define CFG_PORT_DOCK_SINK_PDO_2_CURRENT        1000U
+#define CFG_PORT_DOCK_SINK_PDO_3_CURRENT        0
+#define CFG_PORT_DOCK_SINK_PDO_4_CURRENT        0
+#define CFG_PORT_DOCK_SINK_PDO_5_CURRENT        0U
+#define CFG_PORT_DOCK_SINK_PDO_6_CURRENT        0U
+#define CFG_PORT_DOCK_SINK_PDO_7_CURRENT        0U
+
+#define CFG_PORT_DOCK_SINK_PDO_1_VOLTAGE        5000
+#define CFG_PORT_DOCK_SINK_PDO_2_VOLTAGE        9000
+#define CFG_PORT_DOCK_SINK_PDO_3_VOLTAGE        0
+#define CFG_PORT_DOCK_SINK_PDO_4_VOLTAGE        0
+#define CFG_PORT_DOCK_SINK_PDO_5_VOLTAGE        0
+#define CFG_PORT_DOCK_SINK_PDO_6_VOLTAGE        0
+#define CFG_PORT_DOCK_SINK_PDO_7_VOLTAGE        0
+/******************************************************************************/
+
+/************Source PDO defines for Note book type port (port 0)***************/
+#define CFG_PORT_NOTE_SOURCE_PDO_1_CURRENT         1000U 
+#define CFG_PORT_NOTE_SOURCE_PDO_2_CURRENT         1000U
+#define CFG_PORT_NOTE_SOURCE_PDO_3_CURRENT         0
+#define CFG_PORT_NOTE_SOURCE_PDO_4_CURRENT         0
+
+#define CFG_PORT_NOTE_SOURCE_PDO_1_VOLTAGE         5000
+#define CFG_PORT_NOTE_SOURCE_PDO_2_VOLTAGE         9000
+#define CFG_PORT_NOTE_SOURCE_PDO_3_VOLTAGE         0
+#define CFG_PORT_NOTE_SOURCE_PDO_4_VOLTAGE         0
+/******************************************************************************/
+
+/************Sink PDO defines for Note book type port (port 0)*****************/
+#define CFG_PORT_NOTE_SINK_NUM_OF_PDOS          3U
+
+#define CFG_PORT_NOTE_SINK_PDO_1_CURRENT        1000U 
+#define CFG_PORT_NOTE_SINK_PDO_2_CURRENT        1000U
+#define CFG_PORT_NOTE_SINK_PDO_3_CURRENT        1000U
+#define CFG_PORT_NOTE_SINK_PDO_4_CURRENT        0
+#define CFG_PORT_NOTE_SINK_PDO_5_CURRENT        0U
+#define CFG_PORT_NOTE_SINK_PDO_6_CURRENT        0U
+#define CFG_PORT_NOTE_SINK_PDO_7_CURRENT        0U
+
+#define CFG_PORT_NOTE_SINK_PDO_1_VOLTAGE        5000
+#define CFG_PORT_NOTE_SINK_PDO_2_VOLTAGE        9000
+#define CFG_PORT_NOTE_SINK_PDO_3_VOLTAGE        15000
+#define CFG_PORT_NOTE_SINK_PDO_4_VOLTAGE        0
+#define CFG_PORT_NOTE_SINK_PDO_5_VOLTAGE        0
+#define CFG_PORT_NOTE_SINK_PDO_6_VOLTAGE        0
+#define CFG_PORT_NOTE_SINK_PDO_7_VOLTAGE        0
+/******************************************************************************/
+
 #define CFG_PORT_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_SINK_UNCONSTRAINED_PWR    1U //Set to 1
 #define CFG_PORT_SINK_USB_COMM             0U
-
-#define CFG_PORT_SINK_PDO_1_CURRENT        1000U 
-#define CFG_PORT_SINK_PDO_2_CURRENT        1000U
-#define CFG_PORT_SINK_PDO_3_CURRENT        0
-#define CFG_PORT_SINK_PDO_4_CURRENT        0
-#define CFG_PORT_SINK_PDO_5_CURRENT        0U
-#define CFG_PORT_SINK_PDO_6_CURRENT        0U
-#define CFG_PORT_SINK_PDO_7_CURRENT        0U
-
-#define CFG_PORT_SINK_PDO_1_VOLTAGE        5000
-#define CFG_PORT_SINK_PDO_2_VOLTAGE        9000
-#define CFG_PORT_SINK_PDO_3_VOLTAGE        0
-#define CFG_PORT_SINK_PDO_4_VOLTAGE        0
-#define CFG_PORT_SINK_PDO_5_VOLTAGE        0
-#define CFG_PORT_SINK_PDO_6_VOLTAGE        0
-#define CFG_PORT_SINK_PDO_7_VOLTAGE        0
 
 #define CFG_PORT_SINK_PDO_1_PREFERRED_MIN_CURRENT 2000
 #define CFG_PORT_SINK_PDO_2_PREFERRED_MIN_CURRENT 2000
