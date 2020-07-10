@@ -540,16 +540,16 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
-			/*TODO: <DPM-Policy> Uncomment the call after unit testing*/
-            //DPM_OnTypeCAttach(u8PortNum);
+			/*Process Type -C attach*/
+            DPM_OnTypeCAttach(u8PortNum);
             /* Assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
-			/*TODO: <DPM-Policy> Uncomment the call after unit testing*/
-            //DPM_OnTypeCAttach(u8PortNum);
+			/* Process Type-C attach*/
+            DPM_OnTypeCAttach(u8PortNum);
             /* De-assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
             break;
@@ -780,6 +780,9 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         if (DPM_INT_EVT_INITIATE_GET_SINK_CAPS == (gasDPM[u8PortNum].u8DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_GET_SINK_CAPS))
         {
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
+            
             /* Check for Port Power Role */
             if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
             {
