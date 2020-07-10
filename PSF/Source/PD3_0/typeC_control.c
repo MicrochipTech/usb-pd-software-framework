@@ -459,6 +459,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Setting CC Comparator OFF*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
     
+                        PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
+                        
                         /*Mask CC match interrupts to avoid interrupts due to Ra/Open termination*/
                         UPD_RegByteClearBit (u8PortNum,  TYPEC_CC_INT_EN,\
                         (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
@@ -559,6 +561,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             /*Set BLK_PD_MSG. Done in cronous*/
                             UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
     
+                            PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
+                            
                              gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
                              gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
                         }
@@ -1034,7 +1038,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
-#if(TRUE == INCLUDE_PD_DRP)                    
+#if(TRUE == INCLUDE_PD_DRP)       
                     gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
 #endif
 					gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
