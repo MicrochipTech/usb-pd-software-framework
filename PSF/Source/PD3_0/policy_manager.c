@@ -1449,10 +1449,10 @@ void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     /* Set the timer Id to Max Concurrent Value*/
  	gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
     
-    /* To-do: PR_Swap module - Do PR_Swap Policy Evaluation and 
-       register internal event for PR_Swap initiation. 
-       Kill this timer while receiving PR_Swap message from port partner */
-    
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
+    } 
 }
 
 void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
