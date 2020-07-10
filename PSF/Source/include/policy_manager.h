@@ -71,6 +71,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_NEW_PDO_STATUS(u8PortNum)             ((gasDPM[u8PortNum].u8DPMConfigData & DPM_NEW_PDO_ENABLE_MASK) >> DPM_NEW_PDO_ENABLE_POS)
 /*************************************************************************************************/
 
+/*************************************************************************************************/
+/*Defines for getting port role configured to a port from 
+  gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/
+
+/*DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum) will return one of the following values
+	- PD_ROLE_SINK
+	- PD_ROLE_SOURCE
+	- PD_ROLE_DRP*/
+#define DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)  ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) \
+             >> TYPEC_PORT_TYPE_POS)
+/*************************************************************************************************/
+
 /*Bit definition for u16DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_MASK            (BIT(0)|BIT(1))
 #define DPM_CURR_DATA_ROLE_MASK             (BIT(2)|BIT(3))

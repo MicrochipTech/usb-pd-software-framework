@@ -451,7 +451,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                          "SRC State\r\n");
 
 #if(TRUE == INCLUDE_PD_DRP)
-                    if(gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SOURCE)
+                    if((gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SOURCE) \
+                            && (PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)))
                     {
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
@@ -730,7 +731,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     }
                     
 #if(TRUE == INCLUDE_PD_DRP)
-                    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SOURCE;
+                    if(PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
+                    {
+                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SOURCE;
+                    }
 #endif
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
 
@@ -873,7 +877,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
 
 #if(TRUE == INCLUDE_PD_DRP)
-                    if(gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SINK)
+                    if((gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SINK) \
+                            && (PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)))
                     {
                         /*Setting CC Comparator OFF*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
@@ -1039,7 +1044,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
 #if(TRUE == INCLUDE_PD_DRP)       
-                    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
+                    if(PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
+                    {
+                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
+                    }
 #endif
 					gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
 

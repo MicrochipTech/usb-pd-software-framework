@@ -525,7 +525,8 @@ TypeC_SetRpCollAvoidance API*/
 /* Masks used For getting Port Type from gasCfgStatusData structure*/
 /* Define to get Power role from gasCfgStatusData structure*/
 #define TYPEC_PORT_TYPE_MASK		    (BIT(2) | BIT(1) | BIT(0))
-                
+#define TYPEC_PORT_TYPE_POS             0
+
 /*Defines for setting Rp value of source*/
 #define TYPEC_RP_DISABLED             0
 #define TYPEC_RP_DEFAULT_CURRENT      1
