@@ -828,7 +828,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                     ((DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
                         (DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))))
             {
-                /* TODO: <PR-SWAP> <To add policy engine states to initiate PR_SWAP> */
+                gasPolicy_Engine[u8PortNum].ePEState = ePE_PRS_SEND_SWAP;
+                gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;                                
             }
         }
 #endif /*INCLUDE_PD_PR_SWAP*/

@@ -136,7 +136,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     pasCfgStatusData->sPerPortData[u8PortNum].u8DAC_I_Direction = CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
 #endif
 
-
+    /* TODO: <PSF Configuration> <Set default value for u16SwapPolicy> */
 
 }
 
