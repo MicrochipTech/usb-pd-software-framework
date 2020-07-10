@@ -1088,7 +1088,7 @@ Description:
     has initiated the transmission of PR_Swap within wait response time and port power roles of 
     both the partners are changed successfully. 
  	In case of PR_Swap initiated by the PSF port partner, this notification would be posted 
-	when the swap message is accepted by port partner and port power roles of the both the    
+	when the swap message is accepted by the PSF port and port power roles of the both the    
     partners are changed successfully. 
     
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
