@@ -50,7 +50,7 @@ UINT8 PDTimer_Init()
 }
 /*******************************************************************************/
 
-UINT8 PDTimer_Start (UINT32 u32Timeout_ticks, PDTimerCallback pfnTimerCallback, \
+UINT8 PDTimer_Start (UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, \
                                 UINT8 u8PortNum, UINT8 u8PDState)
 {
 	UINT8 u8TimerID;
@@ -62,9 +62,9 @@ UINT8 PDTimer_Start (UINT32 u32Timeout_ticks, PDTimerCallback pfnTimerCallback, 
 		{
 
             #if (TRUE == MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER)
-                gasPDTimers[u8TimerID].u16Timeout_Tickcnt = (UINT16)u32Timeout_ticks;
+                gasPDTimers[u8TimerID].u16Timeout_Tickcnt = (UINT16)u32TimeoutTicks;
             #else
-                gasPDTimers[u8TimerID].u32Timeout_Tickcnt = u32Timeout_ticks;
+                gasPDTimers[u8TimerID].u32Timeout_Tickcnt = u32TimeoutTicks;
             #endif
 
             /*Store the callback function address and arguments to be passed in the PD Software 
@@ -197,15 +197,15 @@ void PDTimer_InterruptHandler (void)
 		if (((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE) == PDTIMER_ACTIVE))
 		{
 			
-#if (1 == MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER)
+#if (TRUE == MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER)
 
        /*If the Timeout_Tickcnt value is 0, then the timer has expired*/
           
-			if (--gasPDTimers[u8TimerID].u16Timeout_Tickcnt == 0)
+			if (--gasPDTimers[u8TimerID].u16Timeout_Tickcnt == SET_TO_ZERO)
 			{
 #else
 			
-			if (--gasPDTimers[u8TimerID].u32Timeout_Tickcnt == 0)
+			if (--gasPDTimers[u8TimerID].u32Timeout_Tickcnt == SET_TO_ZERO)
 			{
 #endif
 				
