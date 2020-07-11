@@ -37,7 +37,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /***************************************************************************************************/
 /* DAC Values to be programmed to PRL_BB_TX_RISE0 to PRL_BB_TX_RISE11 Registers */
-const UINT16 au16BBTxRiseDACValues [] = {
+const UINT16 u16aBBTxRiseDACValues [] = {
 										PRL_BB_TX_RISE0_REG_VALUE,
 										PRL_BB_TX_RISE1_REG_VALUE,								
 										PRL_BB_TX_RISE2_REG_VALUE,
@@ -55,7 +55,7 @@ const UINT16 au16BBTxRiseDACValues [] = {
 /***************************************************************************************************/
 
 /* DAC Values to be programmed to PRL_BB_TX_FALL0 to PRL_BB_TX_FALL11 Registers */
-const UINT16 au16BBTxFallDACValues [] = {
+const UINT16 u16aBBTxFallDACValues [] = {
 										PRL_BB_TX_FALL0_REG_VALUE, 
 										PRL_BB_TX_FALL1_REG_VALUE,
 										PRL_BB_TX_FALL2_REG_VALUE,
@@ -74,7 +74,7 @@ const UINT16 au16BBTxFallDACValues [] = {
 
 /* BMC Encoder Decoder Register values  to br programmed to register PRL_BMC_RX_HI_FB_MAX_TIME to
 	PRL_BMC_RX_SQL_HOLD_TIME */
-const UINT8 au8BMCEncoderRegValues [] = {
+const UINT8 u8aBMCEncoderRegValues [] = {
   										PRL_BMC_RX_HI_FB_MAX_TIME_REG_VALUE,	
 										PRL_BMC_RX_HI_FB_MIN_TIME_REG_VALUE,
 										PRL_BMC_RX_LO_FB_MAX_TIME_REG_VALUE,
@@ -132,16 +132,16 @@ void  PRL_Init (UINT8 u8PortNum)
 
 	/* BMC encoding configuration */
 	UPD_RegisterWrite (u8PortNum, PRL_BMC_RX_HI_FB_MAX_TIME, 
-					  (UINT8 *) au8BMCEncoderRegValues, sizeof(au8BMCEncoderRegValues));
+					  (UINT8 *) u8aBMCEncoderRegValues, sizeof(u8aBMCEncoderRegValues));
 	UPD_RegWriteWord (u8PortNum, PRL_BMC_TX_BITTIME_CNT, 
 					  MAKE_UINT16(PRL_BMC_TRANSITION_WINDOW_TIME_REG_VALUE, PRL_BMC_TX_BITTIME_CNT_REG_VALUE));
 	
 	/* BB Tx Rise fall configuration */
 	UPD_RegisterWrite (u8PortNum, PRL_BB_TX_RISE0, 
-					   (UINT8 *) au16BBTxRiseDACValues, sizeof(au16BBTxRiseDACValues));
+					   (UINT8 *) u16aBBTxRiseDACValues, sizeof(u16aBBTxRiseDACValues));
 
 	UPD_RegisterWrite (u8PortNum, PRL_BB_TX_FALL0, 
-					   (UINT8 *) au16BBTxFallDACValues, sizeof(au16BBTxFallDACValues));
+					   (UINT8 *) u16aBBTxFallDACValues, sizeof(u16aBBTxFallDACValues));
 	
 	
 	/* Baseband Configuration for Rx DAC */
@@ -244,11 +244,11 @@ void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
 	/* HW Retry Counter is updated depending on Spec Rev */
 	if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8DPMStatus))
 	{
-		u8HwnRetryCount = 3;
+		u8HwnRetryCount = PRL_HW_RETRY_CNT_2_0;
 	}
 	else
 	{
-		u8HwnRetryCount = 2;
+		u8HwnRetryCount = PRL_HW_RETRY_CNT_3_0;
 	}
 
 	UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_C, 
@@ -285,7 +285,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 					   PRLTxCallback pfnTxCallback, UINT32  u32PkdPEstOnTxStatus)
 {
   
-	UINT8 u8MsgId, u8Pkt_Len, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = SET_TO_ZERO;
+	UINT8 u8MsgId, u8PktLen, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = SET_TO_ZERO;
     
     #if (TRUE == INCLUDE_PD_3_0)
     UINT16 u16MsgDataIndex;
@@ -408,16 +408,16 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	/* Spec Ref: PRL_Tx_Construct_Message - Construct message
 									Pass message to PHY Layer*/
 	/* PD message is constructed */
-	u8Pkt_Len = PRL_BuildTxPacket (u8PortNum, u32Header, pu8DataBuffer, au8TxPkt);  
+	u8PktLen = PRL_BuildTxPacket (u8PortNum, u32Header, pu8DataBuffer, au8TxPkt);  
 	
 	/* Enable the interrupt for Tx_DONE, Tx_ABORT & Tx_FAILED */
 	UPD_RegWriteByte (u8PortNum, PRL_TX_IRQ_EN, (PRL_TX_IRQ_TX_DONE | PRL_TX_IRQ_TX_ABORTED | PRL_TX_IRQ_TX_FAILED));
 	
 	/* PD Packet is copied to PD_MAC HW Buffer */
-	UPD_RegisterWrite (u8PortNum, PRL_PDMAC_TRANSMITTER_BUFF_ADDR, au8TxPkt, u8Pkt_Len);
+	UPD_RegisterWrite (u8PortNum, PRL_PDMAC_TRANSMITTER_BUFF_ADDR, au8TxPkt, u8PktLen);
 	
 	/* Update the PD Pkt length to PD_MAC HW Reg */
-	UPD_RegWriteByte(u8PortNum, PRL_TX_PKT_LEN, u8Pkt_Len);
+	UPD_RegWriteByte(u8PortNum, PRL_TX_PKT_LEN, u8PktLen);
 	
 	/* Update the Tx Param reg */
 	UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_A, (PRL_TX_PARAM_A_EXPECT_GOODCRC | PRL_TX_PARAM_A_EN_FW_TX | u8TxSOPSelect | u8MsgId));
@@ -486,14 +486,14 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 
 UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer, UINT8 *pu8TxPkt)
 {
-	UINT8 u8DataIndex , u8Pktindex = 0, 
-		u8DataObjSizeinBytes = (PRL_GET_OBJECT_COUNT(u32Header) * PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES);
+	UINT8 u8DataIndex , u8PktIndex = SET_TO_ZERO, 
+		u8DataObjSizeInBytes = (PRL_GET_OBJECT_COUNT(u32Header) * PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES);
 	/* Info: while handling u8DataObjSizeinBytes for extended message, size of extended message header
 				is not accounted nor the Chunk padded bytes count if any */
     
     #if (TRUE == INCLUDE_PD_3_0)
-    UINT8 u8ZeroPadding = 0, u8LastChunkDataobjCnt;
-	UINT16 u16ExtendedMsgHeader = 0x0;
+    UINT8 u8ZeroPadding = SET_TO_ZERO, u8LastChunkDataObjCnt;
+	UINT16 u16ExtendedMsgHeader = SET_TO_ZERO;
 	
 	if(PRL_IS_EXTENDED_MSG(u32Header))
 	{
@@ -506,12 +506,12 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 		  	/* Request Chunk packet has two bytes of Extended Message Header alone.
 				Hence, two bytes is zero padded & no data */
 			u8ZeroPadding = PRL_REQUEST_CHUNK_PADDING_BYTE_NUMBER;
-			u8DataObjSizeinBytes = PRL_REQUEST_CHUNK_DATA_SIZE;
+			u8DataObjSizeInBytes = PRL_REQUEST_CHUNK_DATA_SIZE;
 		}
 		else
 		{
 		  	/* if it is not last chunk response packet, MaxExtendedMsgChunkLen is assigned */
-			u8DataObjSizeinBytes = PRL_MAX_EXTN_MSG_CHUNK_LEN_IN_BYTES;
+			u8DataObjSizeInBytes = PRL_MAX_EXTN_MSG_CHUNK_LEN_IN_BYTES;
 				
 		  	/* if it is Response Chunk packet & last chunk*/
 			if (gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent == gasChunkSM [u8PortNum].u8TotalChunkPkt)
@@ -520,26 +520,26 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 				if ((PRL_GET_DATA_SIZE(u16ExtendedMsgHeader) % PRL_MAX_EXTN_MSG_CHUNK_LEN_IN_BYTES))
 				{
 				  	/* size of last chunk packet data is calculated*/
-					u8DataObjSizeinBytes = (PRL_GET_DATA_SIZE(u16ExtendedMsgHeader) % PRL_MAX_EXTN_MSG_CHUNK_LEN_IN_BYTES);
+					u8DataObjSizeInBytes = (PRL_GET_DATA_SIZE(u16ExtendedMsgHeader) % PRL_MAX_EXTN_MSG_CHUNK_LEN_IN_BYTES);
 					
 					/* if the data size with Extended message header size should be 4 byte aligned . 
 						Else The packet must be padded to 4 byte alignment*/
-					u8ZeroPadding = ((u8DataObjSizeinBytes + PRL_EXTN_MSG_HEADER_SIZE_IN_BYTES) % PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES);
+					u8ZeroPadding = ((u8DataObjSizeInBytes + PRL_EXTN_MSG_HEADER_SIZE_IN_BYTES) % PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES);
 					
 					/* Data Object Count is calculated for last chunk packet */
-					u8LastChunkDataobjCnt = ((u8DataObjSizeinBytes + PRL_EXTN_MSG_HEADER_SIZE_IN_BYTES) / PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES);
+					u8LastChunkDataObjCnt = ((u8DataObjSizeInBytes + PRL_EXTN_MSG_HEADER_SIZE_IN_BYTES) / PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES);
 					
 					if (u8ZeroPadding)
 					{
 						/* if the packet is to be zero padded, number of bytes to be padded is updated
 							as well as the Data Object count for last packet is incremented*/
 						u8ZeroPadding = PRL_SINGLE_DATAOBJ_SIZE_IN_BYTES - u8ZeroPadding;
-						u8LastChunkDataobjCnt++;
+						u8LastChunkDataObjCnt++;
 					}
 					
 					/* Data object count for the last chunk packet is updated to the header*/
 					u32Header = PRL_FORM_COMBINED_MSG_HEADER (u16ExtendedMsgHeader,
-				  				PRL_UPDATE_MSG_HEADER_DATA_OBJECT_COUNT(PRL_GET_MSG_HEADER(u32Header), u8LastChunkDataobjCnt));
+				  				PRL_UPDATE_MSG_HEADER_DATA_OBJECT_COUNT(PRL_GET_MSG_HEADER(u32Header), u8LastChunkDataObjCnt));
 				}
 			}
 				
@@ -552,15 +552,15 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 	
 	
 	/* Load the header to the TxPKT */
-	pu8TxPkt [u8Pktindex] = LOBYTE(u32Header);
-	pu8TxPkt [++u8Pktindex] = HIBYTE(u32Header);
+	pu8TxPkt [u8PktIndex] = LOBYTE(u32Header);
+	pu8TxPkt [++u8PktIndex] = HIBYTE(u32Header);
 	
     #if (TRUE == INCLUDE_PD_3_0)
 	if(PRL_IS_EXTENDED_MSG(u32Header))
 	{
 		/* If extended, Extended Message header is loaded */
-		pu8TxPkt [++u8Pktindex] = LOBYTE(u16ExtendedMsgHeader);
-		pu8TxPkt [++u8Pktindex] = HIBYTE(u16ExtendedMsgHeader);
+		pu8TxPkt [++u8PktIndex] = LOBYTE(u16ExtendedMsgHeader);
+		pu8TxPkt [++u8PktIndex] = HIBYTE(u16ExtendedMsgHeader);
 	}
     #endif
 	
@@ -568,9 +568,9 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 	if (pu8DataBuffer != NULL)
 	{
 		/* Load the Data Object or data*/
-		for (u8DataIndex = SET_TO_ZERO; u8DataIndex < u8DataObjSizeinBytes; u8DataIndex++)
+		for (u8DataIndex = SET_TO_ZERO; u8DataIndex < u8DataObjSizeInBytes; u8DataIndex++)
 		{
-			pu8TxPkt [++u8Pktindex] = pu8DataBuffer [u8DataIndex];
+			pu8TxPkt [++u8PktIndex] = pu8DataBuffer [u8DataIndex];
 		}
 	}
     
@@ -578,13 +578,13 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 	/* zero padding in case the data byte is not 4 byte aligned*/
 	while (u8ZeroPadding)
 	{
-		pu8TxPkt [++u8Pktindex] = PRL_ZERO_PADDING_BYTE;
+		pu8TxPkt [++u8PktIndex] = PRL_ZERO_PADDING_BYTE;
 		u8ZeroPadding --;
 	}
     #endif
     
 	/* Packet length is returned*/
-	return (++u8Pktindex);
+	return (++u8PktIndex);
 }
 
 /***************************************************************************************************/
@@ -752,15 +752,15 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
 void PRL_HandleISR (UINT8 u8PortNum)
 {
   
-	UINT8 u8MAC_IRQ_STAT = 0, u8IRQSTAT = 0, u8IRQEN = 0, u8IntrStatus;
+	UINT8 u8MACIRQSTAT = SET_TO_ZERO, u8IRQSTAT = SET_TO_ZERO, u8IRQEN = SET_TO_ZERO, u8IntrStatus;
 	
 	UINT32 u32PkdPEstOnTxStatus;
     
     /*Read the overall Mac Interrupt */
-    UPD_RegisterReadISR (u8PortNum, PRL_MAC_IRQ_STAT, &u8MAC_IRQ_STAT, BYTE_LEN_1);
+    UPD_RegisterReadISR (u8PortNum, PRL_MAC_IRQ_STAT, &u8MACIRQSTAT, BYTE_LEN_1);
 
 	/* Tx MAC interrupt Handling */
-	if (u8MAC_IRQ_STAT & PRL_MAC_IRQ_TX)
+	if (u8MACIRQSTAT & PRL_MAC_IRQ_TX)
 	{
 	  	/* Read Tx interrupt */
         
@@ -822,7 +822,7 @@ void PRL_HandleISR (UINT8 u8PortNum)
 
 	}
 
-	if (u8MAC_IRQ_STAT & PRL_MAC_IRQ_RX)
+	if (u8MACIRQSTAT & PRL_MAC_IRQ_RX)
 	{
         /* Read Rx interrupt */
         
@@ -899,10 +899,10 @@ void PRL_IncrementMsgID (UINT8 u8PortNum)
 
 void PRL_ProcessRxFIFOISR (UINT8 u8PortNum)
 {
-	UINT8* pu8FIFOBuffer = (UINT8 *) &gasPRLRecvBuff[u8PortNum];
+	UINT8* u8pFIFOBuffer = (UINT8 *) &gasPRLRecvBuff[u8PortNum];
     
 	/*Receiver packet is read from Rx FIFO*/
-	UPD_RegisterReadISR(u8PortNum, PRL_PDMAC_RECEIVER_BUFF_ADDR, pu8FIFOBuffer, sizeof(gasPRLRecvBuff [u8PortNum]));
+	UPD_RegisterReadISR(u8PortNum, PRL_PDMAC_RECEIVER_BUFF_ADDR, u8pFIFOBuffer, sizeof(gasPRLRecvBuff [u8PortNum]));
 	
 	gasPRLRecvBuff [u8PortNum].u8SOPtype = PRL_GET_SOP_TYPE_FROM_RX_STATUS(gasPRLRecvBuff [u8PortNum].u8SOPtype);
 	
@@ -921,7 +921,7 @@ void PRL_TxRxMsgID_Reset(UINT8 u8PortNum, UINT8 u8SOPType)
 {
   	/* Spec Ref: PRL_Tx_Layer_Reset_for_Transmit - Entered on soft Reset Message request Received from Policy Engine 
 											Reset MessageIDCounter.
-											Protocol Layer message reeption transition to PRL_Rx_WAIT_FOR_PHY_MESSAGE state */
+											Protocol Layer message reception transition to PRL_Rx_WAIT_FOR_PHY_MESSAGE state */
   
   	/* corresponding Tx & RX Message ID of SOP type is reset is reset */
 	UINT8 u8RxSOPSelect = SET_TO_ZERO;
@@ -1506,7 +1506,7 @@ void PRL_ResetChunkSM (UINT8 u8PortNum)
 
 void PRL_TxOriginalCBfromCH (UINT8 u8PortNum, UINT8 u8TxStateforCB)
 {
-    UINT32 u32pkdTmrID_TxSt;
+    UINT32 u32pkdTmrIDTxSt;
     
     /* Interrupt enable disable is done as the call back is expected to be called in ISR*/
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
@@ -1515,12 +1515,12 @@ void PRL_TxOriginalCBfromCH (UINT8 u8PortNum, UINT8 u8TxStateforCB)
     {
 		/* PRL Txstate is assigned as PRL_TX_FAILED_ST & callback is called*/
         gasPRL [u8PortNum].u8TxStateISR = u8TxStateforCB;
-        u32pkdTmrID_TxSt = gasChunkSM[u8PortNum].u32pkdTmrID_TxSt;
+        u32pkdTmrIDTxSt = gasChunkSM[u8PortNum].u32pkdTmrID_TxSt;
         gasChunkSM [u8PortNum].pFnTxCallback(u8PortNum, 
-                                        LOBYTE(u32pkdTmrID_TxSt), 	/* Next PE state for PRL_TX_DONE_ST or PRL_TX_EOP_ST incase of HR */
-										HIBYTE(u32pkdTmrID_TxSt), 	/* Next PE sub state for PRL_TX_DONE_ST or PRL_TX_EOP_ST incase of HR*/                                 
-										LOBYTE(HIWORD(u32pkdTmrID_TxSt)),	/* Next PE state for PRL_TX_ABORT or TX_FAILED */
-										HIBYTE(HIWORD(u32pkdTmrID_TxSt)));	/* Next PE sub state for PRL_TX_ABORT or TX_FAILED*/
+                                        LOBYTE(u32pkdTmrIDTxSt), 	/* Next PE state for PRL_TX_DONE_ST or PRL_TX_EOP_ST incase of HR */
+										HIBYTE(u32pkdTmrIDTxSt), 	/* Next PE sub state for PRL_TX_DONE_ST or PRL_TX_EOP_ST incase of HR*/                                 
+										LOBYTE(HIWORD(u32pkdTmrIDTxSt)),	/* Next PE state for PRL_TX_ABORT or TX_FAILED */
+										HIBYTE(HIWORD(u32pkdTmrIDTxSt)));	/* Next PE sub state for PRL_TX_ABORT or TX_FAILED*/
 		/* PRL Tx state is set back to PRL_TX_IDLE_ST after the callback*/
         gasPRL [u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;		
     }
