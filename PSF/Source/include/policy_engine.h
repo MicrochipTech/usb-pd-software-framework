@@ -549,7 +549,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                             // Bit 6 - HardReset Progress flag
 	UINT8 u8PETimerID;                      // Policy Engine Timer ID
 	UINT8 u8PENoResponseTimerID;            // NoResponse Timer ID
-    UINT8  u8HardResetRecvdISR;             // Hard Reset received status
+    UINT8 u8HardResetRcvdISR;              // Hard Reset received status
 }MCHP_PSF_STRUCT_PACKED_END POLICY_ENGINE_STATUS;
 
 // *****************************************************************************

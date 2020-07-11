@@ -44,7 +44,7 @@ void PE_InitPort (UINT8 u8PortNum)
     gasPolicyEngine[u8PortNum].u8PEPortSts = SET_TO_ZERO;
     
     /*Setting the Hard Reset Received Status to False*/
-    gasPolicyEngine[u8PortNum].u8HardResetRecvdISR = FALSE;
+    gasPolicyEngine[u8PortNum].u8HardResetRcvdISR = FALSE;
 
     /*Setting Timer ID to Max value */
     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
@@ -101,9 +101,9 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
         /*Check the HardReset Flag in DPMStatus variable if any hard reset is received*/
         /*State transition for Hard reset reception is done in foreground to avoid the policy
-        state and substate corruption*/
+        state and sub-state corruption*/
 
-        if (gasPolicyEngine[u8PortNum].u8HardResetRecvdISR)
+        if (gasPolicyEngine[u8PortNum].u8HardResetRcvdISR)
         {
             if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
@@ -115,7 +115,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_TRANSITION_TO_DEFAULT;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS;
             }
-            gasPolicyEngine[u8PortNum].u8HardResetRecvdISR = FALSE;
+            gasPolicyEngine[u8PortNum].u8HardResetRcvdISR = FALSE;
         }
 
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT ();
@@ -520,7 +520,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                             capability message has been received*/
                             PE_KillPolicyEngineTimer (u8PortNum);
                             PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,\
-                            ePE_SNK_EVALUATE_CAPABILITY,(ePolicySubState)0);
+                            ePE_SNK_EVALUATE_CAPABILITY,(ePolicySubState)SET_TO_ZERO);
 
                         }
                         else
@@ -552,7 +552,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }
                         
-                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SRC_NEGOTIATE_CAPABILITY,(ePolicySubState)0);
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SRC_NEGOTIATE_CAPABILITY,(ePolicySubState)SET_TO_ZERO);
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DATA_REQUEST: Source Capability message received\r\n");
                     }
 
@@ -609,7 +609,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     else if (ePE_SRC_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState)
                     {
                         PE_KillPolicyEngineTimer (u8PortNum);
-                        PE_HandleRcvdMsgAndTimeoutEvents( u8PortNum, ePE_SRC_VDM_IDENTITY_ACKED,(ePolicySubState)0);
+                        PE_HandleRcvdMsgAndTimeoutEvents( u8PortNum, ePE_SRC_VDM_IDENTITY_ACKED,(ePolicySubState)SET_TO_ZERO);
                     }
                     else
                     {
@@ -1635,7 +1635,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 					UINT32 *u32BISTObj = (UINT32 *)pu8DataBuf;
 
 					/* DATA OBJECT is checked for BIST carrier mode */
-                    if (u32BISTObj[0]== PRL_BIST_CARRIER_MODE_OBJ)
+                    if (u32BISTObj[INDEX_0]== PRL_BIST_CARRIER_MODE_OBJ)
                     {
                         /* BIST_CARRIER_MODE is configured*/
                         PRL_ConfigureBISTCarrierMode (u8PortNum, TRUE);
@@ -1800,7 +1800,7 @@ void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8Tx
 void PE_SetHardResetReceiveFlag (UINT8 u8PortNum)
 {
     /*Setting the Hard reset received flag*/
-    gasPolicyEngine[u8PortNum].u8HardResetRecvdISR = TRUE ;
+    gasPolicyEngine[u8PortNum].u8HardResetRcvdISR = TRUE ;
 }
 
 void PE_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PEState)
@@ -1863,7 +1863,7 @@ void PE_NoResponseTimerCB (UINT8 u8PortNum, UINT8 u8PE_State)
     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_NO_RESPONSE_TIMEDOUT;
     
     /*Setting the u8PENoResponseTimerID to MAX_CONCURRENT_TIMERS to indicate that
-    Timeout has occured*/
+    Timeout has occurred*/
     gasPolicyEngine[u8PortNum].u8PENoResponseTimerID = MAX_CONCURRENT_TIMERS;
 }
 
