@@ -657,11 +657,11 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
 {
   UINT8 u8TypeCState;
   UINT8 u8TypeCSubState;
-  UINT8	u8CC1_MatchISR;
-  UINT8	u8CC2_MatchISR;
+  UINT8	u8CC1MatchISR;
+  UINT8	u8CC2MatchISR;
   UINT8 u8CCDebMatch;
   UINT8 u8CCSrcSnkMatch;
-  UINT8 u8TypeC_TimerID;
+  UINT8 u8TypeCTimerID;
   UINT8 u8PortSts;              /*BIT0 - > TYPEC_PWDCABLE_PRES Field
                                 BIT[2:1] -> CURR_RPVAL Field
                                 BIT3 -> COLLISION_AVOIDANCE_ACT

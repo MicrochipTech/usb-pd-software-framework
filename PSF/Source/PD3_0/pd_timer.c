@@ -150,7 +150,7 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
 	
     /* Resetting all the module's TimerID globals */
 	gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-	gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = MAX_CONCURRENT_TIMERS;
+	gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
     #if (TRUE == INCLUDE_PD_3_0)
 	gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
     #endif

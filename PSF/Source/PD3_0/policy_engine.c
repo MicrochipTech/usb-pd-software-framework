@@ -857,7 +857,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                             is received before timeout*/
                             if ((PRL_GET_MESSAGE_TYPE (u32Header)) == PE_CTRL_WAIT)
                             {
-                                gasTypeCcontrol[u8PortNum].u8TypeC_TimerID = PDTimer_Start (PE_SINKREQUEST_TIMEOUT_MS, PE_StateChange_TimerCB,\
+                                gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start (PE_SINKREQUEST_TIMEOUT_MS, PE_StateChange_TimerCB,\
                                                u8PortNum,(UINT8) ePE_SNK_SELECT_CAPABILITY);
 
                                 gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
