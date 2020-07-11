@@ -707,6 +707,10 @@ typedef void(*PRLRxCallback) (UINT8 u8PortNum, UINT8 u8RxRcvStatus);
 #define PRL_SEND_CABLE_RESET		1
 #define PRL_SEND_HARD_RESET			0
 
+/**************************** Defines for Hardware Retry Count *******************/
+#define PRL_HW_RETRY_CNT_2_0        3
+#define PRL_HW_RETRY_CNT_3_0        2 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures - PRL Structs
