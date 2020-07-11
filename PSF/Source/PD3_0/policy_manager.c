@@ -1309,9 +1309,18 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
         if (TYPEC_DISABLED == gasTypeCcontrol[u8PortNum].u8TypeCState)
         {
             /* Enable the port by changing Type C states to 
-               TYPEC_UNATTACHED_SRC and TYPEC_UNATTACHED_SRC_ENTRY_SS  */
-            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
-            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;        
+               TYPEC_UNATTACHED_SRC in case of Source and TYPEC_UNATTACHED_SNK
+               in case of Sink */
+            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            {
+                gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
+                gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;        
+            }
+            else /* Power Role is Sink */
+            {
+                gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
+                gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
+            }
         }
         else
         {
