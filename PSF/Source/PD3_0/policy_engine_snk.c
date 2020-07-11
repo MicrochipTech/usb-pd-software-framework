@@ -39,10 +39,10 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     UINT8 u8TypeCSubState = TYPEC_INVALID_SUBSTATE;
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
     UINT32 u32DataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
-	UINT16 u16Transmit_Header = SET_TO_ZERO;
-	PRLTxCallback Transmit_cb = NULL;
-	UINT32 u32Transmit_TmrID_TxSt = SET_TO_ZERO;
-	UINT8 u8IsTransmit= FALSE;
+	UINT16 u16TransmitHeader = SET_TO_ZERO;
+	PRLTxCallback TransmitCB = NULL;
+	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
+	UINT8 u8IsTransmit = FALSE;
 
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     UINT32 u32PDODebug = SET_TO_ZERO;
@@ -219,15 +219,15 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Set the PD message transmitter API variables to send Sink Data request Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
                     
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_REQUEST,\
+                    u16TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_REQUEST,\
                                             PE_OBJECT_COUNT_1, PE_NON_EXTENDED_MSG);
                     
                     u32DataObj[0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    TransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to Soft reset state if
                     message transmission fails*/
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_SELECT_CAPABILITY,\
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_SELECT_CAPABILITY,\
                                              ePE_SNK_SELECT_CAPABILITY_REQ_SENT_SS,\
                                              ePE_SNK_SEND_SOFT_RESET,\
                                              ePE_SNK_SEND_SOFT_RESET_ENTRY_SS );
@@ -505,12 +505,12 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
                     /*Set the PD message transmitter  API to Send Sink Capability Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u16Transmit_Header = u16Header;
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    u16TransmitHeader = u16Header;
+                    TransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to Soft reset state if
                     message transmission fails*/
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_READY,\
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_READY,\
                                              ePE_SNK_READY_IDLE_SS,ePE_SNK_SEND_SOFT_RESET,\
                                              ePE_SNK_SEND_SOFT_RESET_ENTRY_SS);
                     u8IsTransmit = TRUE;
@@ -551,15 +551,15 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
                     /*Set the PD message transmitter API to Send Accept Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_ACCEPT,\
+                    u16TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_ACCEPT,\
                                                                  PE_OBJECT_COUNT_0,\
                                                                  PE_NON_EXTENDED_MSG);
                     
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    TransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to hard reset state if
                     message transmission fails*/
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_WAIT_FOR_CAPABILITIES,\
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_WAIT_FOR_CAPABILITIES,\
                                              ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS,\
                                              ePE_SNK_HARD_RESET, \
                                              ePE_SNK_HARD_RESET_SEND_SS);
@@ -598,14 +598,14 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
                     /*Set the PD message transmitter  API to Send SoftReset message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u16Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET,\
+                    u16TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET,\
                                                                   PE_OBJECT_COUNT_0, \
                                                                   PE_NON_EXTENDED_MSG);
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    TransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to hard reset state if
                     message transmission fails*/
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SNK_SEND_SOFT_RESET,\
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SNK_SEND_SOFT_RESET,\
                                              ePE_SNK_SEND_SOFT_RESET_SENT_SS,\
                                              ePE_SNK_HARD_RESET, ePE_SNK_HARD_RESET_SEND_SS);
                     u8IsTransmit = TRUE;
@@ -656,8 +656,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     /*Send PD message if the variable "u8IsTransmit" is set as true inside the state machine*/
 	if (u8IsTransmit == TRUE)
 	{
-		(void) PRL_TransmitMsg(u8PortNum, u8TransmitSOP, u16Transmit_Header, (UINT8 *)u32DataObj,\
-                        Transmit_cb, u32Transmit_TmrID_TxSt);
+		(void) PRL_TransmitMsg(u8PortNum, u8TransmitSOP, u16TransmitHeader, (UINT8 *)u32DataObj,\
+                        TransmitCB, u32TransmitTmrIDTxSt);
 	}
 
 }

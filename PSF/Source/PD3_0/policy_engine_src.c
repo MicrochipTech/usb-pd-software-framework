@@ -53,16 +53,16 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
 
 	/* Transmit Message Header */
-	UINT32 u32Transmit_Header = SET_TO_ZERO;
+	UINT32 u32TransmitHeader = SET_TO_ZERO;
 
 	/* Transmit Data Object */
-	UINT32 *u32pTransmit_DataObj = SET_TO_ZERO; 
+	UINT32 *u32pTransmitDataObj = SET_TO_ZERO; 
 
 	/* Transmit Call back */
-	PRLTxCallback Transmit_cb = NULL;
+	PRLTxCallback TransmitCB = NULL;
 
 	/* Transmit Call back variables */
-	UINT32 u32Transmit_TmrID_TxSt = SET_TO_ZERO;
+	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
 
 	/* Transmit Flag */
 	UINT8 u8IsTransmit = FALSE;
@@ -219,18 +219,18 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-ENTRY_SS: Send Source Capabilities\r\n");
                         DPM_GetSourceCapabilities(u8PortNum, &u8SrcPDOCnt, u32DataObj);
                         
-                        u32Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,  \
+                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,  \
                                                                             u8SrcPDOCnt, PE_NON_EXTENDED_MSG);
                         
                         u8TransmitSOP = PRL_SOP_TYPE;
-                        u32pTransmit_DataObj = u32DataObj;
-                        Transmit_cb = PE_StateChange_TransmitCB;
+                        u32pTransmitDataObj = u32DataObj;
+                        TransmitCB = PE_StateChange_TransmitCB;
                         
                         if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PDCONNECTED_STS_MASK)
                         {
                             /*The Protocol Layer indicates that the Message has not been sent , so
                              Send Soft reset since PD connected presently*/
-                            u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
+                            u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
                                                         ePE_SRC_SEND_CAP_GOODCRC_RECEIVED_SS, \
                                                           ePE_SRC_SEND_SOFT_RESET, ePE_SRC_SEND_SOFT_RESET_SOP_SS);                                                  
                           
@@ -241,7 +241,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                             /*The Policy Engine Shall transition to the PE_SRC_Discovery state when:
                               The Protocol Layer indicates that the Message has not been sent and we are presently not Connected
                              */
-                            u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
+                            u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
                                                         ePE_SRC_SEND_CAP_GOODCRC_RECEIVED_SS, \
                                                         ePE_SRC_DISCOVERY, ePE_SRC_DISCOVERY_ENTRY_SS);
                         }
@@ -340,14 +340,14 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_SUPPLY-ENTRY_SS\r\n");
                     
 					/* Send the Accept message */
-                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = NULL;
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    u32pTransmitDataObj = NULL;
+                    TransmitCB = PE_StateChange_TransmitCB;
       
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_TRANSITION_SUPPLY, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_TRANSITION_SUPPLY, \
                                                 ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED_SS, \
                                                 ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
 
@@ -446,14 +446,14 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                            tPpsSrcTransSmall or tPpsSrcTransLarge Timer in case of PPS. */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_SUPPLY-EXIT_SS\r\n");
-                        u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
+                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                         u8TransmitSOP = PRL_SOP_TYPE;
-                        u32pTransmit_DataObj = NULL;
-                        Transmit_cb = PE_StateChange_TransmitCB;
+                        u32pTransmitDataObj = NULL;
+                        TransmitCB = PE_StateChange_TransmitCB;
 
-                        u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, ePE_SRC_READY_ENTRY_SS, \
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, ePE_SRC_READY_ENTRY_SS, \
                                                         ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);                     
 
                         u8IsTransmit = TRUE;
@@ -488,7 +488,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 						PE state to PE_SRC_READY*/
                     if((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT))
                     {
-                        u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
                                                     ePE_SRC_READY_ENTRY_SS, ePE_SRC_SEND_SOFT_RESET, \
                                                     ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                     }
@@ -498,18 +498,18 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     else
                     {
 						/* Change the state to PE_SRC_WAIT_NEW_CAPABILITIES to wait for capabilities change */
-                        u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_WAIT_NEW_CAPABILITIES, \
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_WAIT_NEW_CAPABILITIES, \
                                                     NULL, ePE_SRC_SEND_SOFT_RESET, \
                                                     ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                     }
                     
 					/* Send Reject message for Requested Invalid Capability */
-                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT, \
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT, \
                                         PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = NULL;
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    u32pTransmitDataObj = NULL;
+                    TransmitCB = PE_StateChange_TransmitCB;
                     
                     u8IsTransmit = TRUE;
                     
@@ -1035,14 +1035,14 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_ENTRY_SS\r\n"); 
                     
-                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_SINK_CAP, \
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_SINK_CAP, \
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = NULL;
-                    Transmit_cb = PE_StateChange_TransmitCB;                 
+                    u32pTransmitDataObj = NULL;
+                    TransmitCB = PE_StateChange_TransmitCB;                 
                         
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS, \
                                                     ePE_SRC_READY, ePE_SRC_READY_END_AMS_SS);
                                                 
                     u8IsTransmit = TRUE;                                             
@@ -1130,11 +1130,11 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
 					/* Send SoftReset message */
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
 																	PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-                    u32pTransmit_DataObj = NULL;
-                    Transmit_cb = PE_StateChange_TransmitCB;
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_SOFT_RESET, \
+                    u32pTransmitDataObj = NULL;
+                    TransmitCB = PE_StateChange_TransmitCB;
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_SOFT_RESET, \
                                                     ePE_SRC_SEND_SOFT_RESET_GOODCRC_RECEIVED_SS, \
                                                     ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
                     u8IsTransmit = TRUE;
@@ -1156,11 +1156,11 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 
                     /* Send Soft Reset Message */
                     u8TransmitSOP = PRL_SOP_P_TYPE;
-                    u32Transmit_Header = PRL_FormNonSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
+                    u32TransmitHeader = PRL_FormNonSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
 																	PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-                    u32pTransmit_DataObj = NULL;
-                    Transmit_cb = PE_StateChange_TransmitCB;
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_SOFT_RESET, \
+                    u32pTransmitDataObj = NULL;
+                    TransmitCB = PE_StateChange_TransmitCB;
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_SOFT_RESET, \
                                                     ePE_SRC_SEND_SOFT_RESET_GOODCRC_RECEIVED_SS, \
                                                     ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
                     u8IsTransmit = TRUE;
@@ -1220,14 +1220,14 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     PRL_ProtocolResetAllSOPs(u8PortNum);
                     
                     /* Send Accept message */
-                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = NULL;
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    u32pTransmitDataObj = NULL;
+                    TransmitCB = PE_StateChange_TransmitCB;
 
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
                                                 ePE_SRC_SEND_CAP_ENTRY_SS, \
                                                 ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
 
@@ -1281,13 +1281,13 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
                     
 					/* Send VDM Discover Identity message to E-Cable */
-                    u32Transmit_Header = PRL_FormNonSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
+                    u32TransmitHeader = PRL_FormNonSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
                                                                         1, PE_NON_EXTENDED_MSG);
                     u8TransmitSOP = PRL_SOP_P_TYPE;
-                    u32pTransmit_DataObj = &u32VDMHeader;
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    u32pTransmitDataObj = &u32VDMHeader;
+                    TransmitCB = PE_StateChange_TransmitCB;
 
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_VDM_IDENTITY_REQUEST, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_VDM_IDENTITY_REQUEST, \
                                                 ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_SS, ePE_SRC_VDM_IDENTITY_NAKED, NULL);
               
                     gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter++;
@@ -1413,14 +1413,14 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_ENTRY_SS\r\n"); 
                     
-                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_STATUS, \
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_STATUS, \
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = NULL;
-                    Transmit_cb = PE_StateChange_TransmitCB;                 
+                    u32pTransmitDataObj = NULL;
+                    TransmitCB = PE_StateChange_TransmitCB;                 
                         
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS, \
                                                     ePE_SRC_READY, ePE_SRC_READY_END_AMS_SS);
                                                 
                     u8IsTransmit = TRUE;                                             
@@ -1508,13 +1508,13 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* Obtain the Alert Data Object from DPM */
                     u32DataBlock = DPM_ObtainAlertDO(u8PortNum);
                     
-                    u32Transmit_Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_ALERT,  \
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_ALERT,  \
                                                  PE_ALERT_DATA_OBJECT_SIZE, PE_NON_EXTENDED_MSG);
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = &u32DataBlock;
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    u32pTransmitDataObj = &u32DataBlock;
+                    TransmitCB = PE_StateChange_TransmitCB;
                     
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
                                 ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
                                 ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                     
@@ -1553,16 +1553,16 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DPM_ObtainStatusDB(u8PortNum, u8StatusDB);
                     
                     /* Form Combined Message Header*/
-                    u32Transmit_Header =  /* Combined Message Header */
+                    u32TransmitHeader =  /* Combined Message Header */
                         PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES)), /* Extended Msg Header*/
                                 PRL_FormSOPTypeMsgHeader(u8PortNum,PE_EXT_STATUS,PE_STATUS_DATA_OBJ_CNT, /* Standard Msg Header */
                                             PE_EXTENDED_MSG));
 
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = (UINT32 *)u8StatusDB;
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    u32pTransmitDataObj = (UINT32 *)u8StatusDB;
+                    TransmitCB = PE_StateChange_TransmitCB;
                     
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
                                 ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
                                 ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                     
@@ -1600,16 +1600,16 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     u32DataBlock = DPM_ObtainPPSStatusDB(u8PortNum);
                     
                     /* Form Combined Message Header*/
-                    u32Transmit_Header =  /* Combined Message Header */
+                    u32TransmitHeader =  /* Combined Message Header */
                         PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES)), /* Extended Msg Header */
                                 PRL_FormSOPTypeMsgHeader(u8PortNum,PE_EXT_PPS_STATUS,PE_PPS_STATUS_DATA_OBJ_CNT, /* Standard Msg Header */
                                             PE_EXTENDED_MSG));
 
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmit_DataObj = &u32DataBlock;
-                    Transmit_cb = PE_StateChange_TransmitCB;
+                    u32pTransmitDataObj = &u32DataBlock;
+                    TransmitCB = PE_StateChange_TransmitCB;
                     
-                    u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
                                 ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
                                 ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                     
@@ -1643,8 +1643,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 	/* Transmit the message if u8IsTransmit is set */
     if (u8IsTransmit == TRUE)
     {
-		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, u32Transmit_Header, \
-                    (UINT8 *)u32pTransmit_DataObj, Transmit_cb, u32Transmit_TmrID_TxSt); 
+		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, u32TransmitHeader, \
+                    (UINT8 *)u32pTransmitDataObj, TransmitCB, u32TransmitTmrIDTxSt); 
     }
 }
 #endif
