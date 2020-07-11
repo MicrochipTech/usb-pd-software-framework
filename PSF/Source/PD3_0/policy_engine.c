@@ -1182,7 +1182,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
     UINT32 u32TransmitHeader = SET_TO_ZERO;
     UINT32 *u32pTransmitDataObj = SET_TO_ZERO;
-    PRLTxCallback TransmitCB = NULL;
+    PRLTxCallback pfnTransmitCB = NULL;
     UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
     UINT8 u8IsTransmit = FALSE;
 #if (FALSE != INCLUDE_PDFU)
@@ -1205,7 +1205,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
 
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
 
                     if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                     {
@@ -1254,7 +1254,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
 
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
 
                     if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                     {
@@ -1333,7 +1333,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,\
                                          PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
                     u32pTransmitDataObj = NULL;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
 
                     if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
                     {
@@ -1550,7 +1550,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY,\
                                                                    PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
                     u32pTransmitDataObj = NULL;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
 
                     if (DPM_GET_CURRENT_POWER_ROLE (u8PortNum) == PD_ROLE_SOURCE)
                     {
@@ -1743,7 +1743,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     u32pTransmitDataObj = (UINT32*)&gsPdfuInfo.pu8ResponseBuffer[0u];
 
                     /** Update the Transmit Call back */
-                    TransmitCB = PE_FwUpdtTxDoneCallBack;
+                    pfnTransmitCB = PE_FwUpdtTxDoneCallBack;
 
                     /**Update the Transmit Completed Callback State Transitions*/
                     u32TransmitTmrIDTxSt = gsPdfuInfo.u32Transmit_TmrID_TxSt;
@@ -1761,7 +1761,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
     if (u8IsTransmit != FALSE)
     {
         (void)PRL_TransmitMsg (u8PortNum, u8TransmitSOP, u32TransmitHeader, (UINT8 *)u32pTransmitDataObj,\
-                TransmitCB, u32TransmitTmrIDTxSt);
+                pfnTransmitCB, u32TransmitTmrIDTxSt);
     }
 }
 
