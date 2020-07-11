@@ -38,17 +38,17 @@ void DPM_VBUSOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
     
-    gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-    gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+    gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+    gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
     
-    gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
+    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 }
 void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
-    if(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
+    if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
     {
-        gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
-        gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
+        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
     }
     
     else
@@ -56,13 +56,13 @@ void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
         DPM_VBUSOnOff_TimerCB ( u8PortNum, u8DummyVariable);
     }
     
-    gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
+    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 }
 
 void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 { 
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
-    gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
+    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
     
     if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
     {      
@@ -92,8 +92,8 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
             
             DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SNK Powered OFF state");
         }       
-        gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-        gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+        gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
     }
     else
     {
@@ -108,9 +108,9 @@ void DPM_VCONNOFFError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
     
-    gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
+    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
     /* Assign an idle state wait for detach*/
-    gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+    gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
   
 }
 
@@ -200,7 +200,7 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
     /* u8IntStsISR shall be used only for fixed voltages. In case of PPS contract, 
        voltage that is driven on VBUS is the output voltage requested by Sink 
        in RDO */
-    if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+    if((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
             (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
     {
         return DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(gasCfgStatusData.sPerPortData[u8PortNum].u32RDO);
@@ -269,7 +269,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 #endif           
     /* Get the status of E-Cable presence and ACK status */
     u8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) & \
-                    (~((gasPolicy_Engine[u8PortNum].u8PEPortSts & \
+                    (~((gasPolicyEngine[u8PortNum].u8PEPortSts & \
                                             PE_CABLE_RESPOND_NAK) >> PE_CABLE_RESPOND_NAK_POS));
     
     /* Get the Requested PDO object position from received buffer */
@@ -937,7 +937,7 @@ UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
 /*****************************DPM API that access Policy Engine************/
 UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
 {
-    UINT8 u8HardResetProgressStatus = ((gasPolicy_Engine[u8PortNum].u8PEPortSts & \
+    UINT8 u8HardResetProgressStatus = ((gasPolicyEngine[u8PortNum].u8PEPortSts & \
                                         PE_HARDRESET_PROGRESS_MASK) >> PE_HARDRESET_PROGRESS_POS);
     return u8HardResetProgressStatus;
 
@@ -1298,8 +1298,8 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS;
 
         /* Change Policy Engine state and sub-state to invalid state */
-        gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-        gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
+        gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
         
         /* Kill all the timers*/
         PDTimer_KillPortTimers (u8PortNum);
@@ -1458,12 +1458,12 @@ void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
     /* Set the timer Id to Max Concurrent Value*/
- 	gasPolicy_Engine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
+ 	gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
     
     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                     
-    gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-    gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+    gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+    gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
     
 }
 

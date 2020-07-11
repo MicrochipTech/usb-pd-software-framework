@@ -2855,7 +2855,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 {
   	UINT16 u16PrevVolt = SET_TO_ZERO; 
     
-    if(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) 
+    if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) 
     {
         u16PrevVolt = gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
     }
@@ -2889,7 +2889,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
         }
         
         /* Over voltage threshold is set in TypeC_ConfigureVBUSThr */
-        if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+        if((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
             (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
         {
             au16VBUSThrVal[INDEX_0] = (UINT16)((float)TYPEC_GET_OVER_VOLTAGE_VBUS_THR(DPM_GET_APDO_MAX_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor);
@@ -2965,7 +2965,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 		
 	  	default:
 		{
-            if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+            if((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
                 (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
             {
                 /* Minimum valid PDO voltage is configured in u16MinVoltageThr*/
@@ -3074,8 +3074,8 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
         
         /* Assign an idle state wait for detach*/
         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;       
-        gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-        gasPolicy_Engine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+        gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
         
         DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SRC Powered OFF state");
     }
