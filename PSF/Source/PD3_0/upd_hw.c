@@ -449,7 +449,7 @@ UINT8 UPD_CheckUPDsActive()
 			/*Verify any other IDLE timer is running for all other ports.
 			if its running, then lets handle in that timer expire event, so skip MCU
 			IDLE for now*/
-             (((gau8PortIdleTimerID[u8PortNo]< MAX_CONCURRENT_TIMERS) && (gasPDTimers[gau8PortIdleTimerID[u8PortNo]].u8TimerSt_PortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
+             (((gau8PortIdleTimerID[u8PortNo]< MAX_CONCURRENT_TIMERS) && (gasPDTimers[gau8PortIdleTimerID[u8PortNo]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
 
 			{
 				u8IsAllUPDsActive = TRUE;
@@ -593,7 +593,7 @@ void UPD_CheckAndDisablePorts (void)
             u8TimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(10), NULL, \
                                         (UINT8)SET_TO_ZERO, (UINT8)SET_TO_ZERO);
             
-            while ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE) != PDTIMER_EXPIRED)
+            while ((gasPDTimers[u8TimerID].u8TimerStPortNum & PDTIMER_STATE) != PDTIMER_EXPIRED)
             {
 #if (CONFIG_UPD350_SPI == CONFIG_DEFINE_UPD350_HW_INTF_SEL)            
                 /*Read SPI_TEST register*/
