@@ -40,7 +40,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
     UINT32 u32DataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
 	UINT16 u16TransmitHeader = SET_TO_ZERO;
-	PRLTxCallback TransmitCB = NULL;
+	PRLTxCallback pfnTransmitCB = NULL;
 	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
 	UINT8 u8IsTransmit = FALSE;
 
@@ -223,7 +223,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                                             PE_OBJECT_COUNT_1, PE_NON_EXTENDED_MSG);
                     
                     u32DataObj[0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to Soft reset state if
                     message transmission fails*/
@@ -506,7 +506,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Set the PD message transmitter  API to Send Sink Capability Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u16TransmitHeader = u16Header;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to Soft reset state if
                     message transmission fails*/
@@ -555,7 +555,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                                                                  PE_OBJECT_COUNT_0,\
                                                                  PE_NON_EXTENDED_MSG);
                     
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to hard reset state if
                     message transmission fails*/
@@ -601,7 +601,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     u16TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET,\
                                                                   PE_OBJECT_COUNT_0, \
                                                                   PE_NON_EXTENDED_MSG);
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to hard reset state if
                     message transmission fails*/
@@ -654,10 +654,10 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
      }  
 
     /*Send PD message if the variable "u8IsTransmit" is set as true inside the state machine*/
-	if (u8IsTransmit == TRUE)
+	if (TRUE == u8IsTransmit)
 	{
 		(void) PRL_TransmitMsg(u8PortNum, u8TransmitSOP, u16TransmitHeader, (UINT8 *)u32DataObj,\
-                        TransmitCB, u32TransmitTmrIDTxSt);
+                        pfnTransmitCB, u32TransmitTmrIDTxSt);
 	}
 
 }

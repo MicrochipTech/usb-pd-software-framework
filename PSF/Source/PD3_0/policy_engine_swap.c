@@ -43,7 +43,7 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 	UINT32 *u32pTransmitDataObj = SET_TO_ZERO; 
 
 	/* Transmit Call back */
-	PRLTxCallback TransmitCB = NULL;
+	PRLTxCallback pfnTransmitCB = NULL;
 
 	/* Transmit Call back variables */
 	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
@@ -88,7 +88,7 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_DRS_DFP_UFP_ROLE_CHANGE , \
                                                 NULL, \
@@ -124,7 +124,7 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(u8TxDoneSt, \
                                                 u8TxDoneSS, \
@@ -166,7 +166,7 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_DRS_SEND_SWAP , \
                                                 ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS, \
@@ -201,10 +201,10 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
    }
    
    /* Transmit the message if u8IsTransmit is set */
-    if (u8IsTransmit == TRUE)
+    if (TRUE == u8IsTransmit)
     {
 		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, u32TransmitHeader, \
-                    (UINT8 *)u32pTransmitDataObj, TransmitCB, u32TransmitTmrIDTxSt); 
+                    (UINT8 *)u32pTransmitDataObj, pfnTransmitCB, u32TransmitTmrIDTxSt); 
     }
 }
 #endif /*INCLUDE_PD_DR_SWAP*/
@@ -223,7 +223,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 	UINT32 *u32pTransmitDataObj = SET_TO_ZERO; 
 
 	/* Transmit Call back */
-	PRLTxCallback TransmitCB = NULL;
+	PRLTxCallback pfnTransmitCB = NULL;
 
 	/* Transmit Call back variables */
 	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
@@ -262,7 +262,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SEND_SWAP, \
                                                 ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS, \
@@ -348,7 +348,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
       
                     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {
@@ -395,7 +395,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
-                    TransmitCB = PE_StateChange_TransmitCB;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(u8TxDoneSt, \
                                                 u8TxDoneSS, u8TxFailedSt, u8TxFailedSS);
@@ -512,7 +512,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 
                         u8TransmitSOP = PRL_SOP_TYPE;
                         u32pTransmitDataObj = NULL;
-                        TransmitCB = PE_StateChange_TransmitCB;
+                        pfnTransmitCB = PE_StateChange_TransmitCB;
 
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SRC_SNK_WAIT_SOURCE_ON, ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS, \
                                                         ePE_PRS_SRC_SNK_WAIT_SOURCE_ON, ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS);                     
@@ -647,7 +647,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 
                         u8TransmitSOP = PRL_SOP_TYPE;
                         u32pTransmitDataObj = NULL;
-                        TransmitCB = PE_StateChange_TransmitCB;
+                        pfnTransmitCB = PE_StateChange_TransmitCB;
 
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SNK_SRC_SOURCE_ON, ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS , \
                                                         ePE_PRS_SNK_SRC_SOURCE_ON, ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS);                     
@@ -720,8 +720,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
     if (TRUE == u8IsTransmit)
     {
 		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, u32TransmitHeader, \
-                    (UINT8 *)u32pTransmitDataObj, TransmitCB, u32TransmitTmrIDTxSt); 
+                    (UINT8 *)u32pTransmitDataObj, pfnTransmitCB, u32TransmitTmrIDTxSt); 
     }    
 }
-#endif 
+#endif /*INCLUDE_PD_PR_SWAP*/
 
