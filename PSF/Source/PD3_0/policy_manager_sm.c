@@ -274,8 +274,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 	
     if(TRUE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
     { 
-        if((gasPolicy_Engine[u8PortNum].ePESubState == ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS) ||
-				 (gasPolicy_Engine[u8PortNum].ePEState == ePE_SNK_STARTUP))
+        if((gasPolicyEngine[u8PortNum].ePESubState == ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS) ||
+				 (gasPolicyEngine[u8PortNum].ePEState == ePE_SNK_STARTUP))
         {
             /*Checks whether VCONN max power fault count exceeds*/
             if(gasDPM[u8PortNum].u8VCONNPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
@@ -308,7 +308,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
                 }
 				/* Assign an idle state wait for detach*/
-                gasPolicy_Engine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+                gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state");
             }/*end of if condition of VBUS max count exceed check*/
             else
@@ -633,8 +633,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
             {
                 /* Move the Policy Engine to PE_SRC_SEND_CAPABILITIES state */
-                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
-                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
             }
             else
             {
@@ -652,8 +652,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
             {
                 /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
-                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
-                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;                    
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;                    
             }
             else
             {
@@ -787,8 +787,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
             {
                 /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
-                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
-                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;                    
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;                    
             }
             else
             {
@@ -828,8 +828,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                     ((DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
                         (DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))))
             {
-                gasPolicy_Engine[u8PortNum].ePEState = ePE_PRS_SEND_SWAP;
-                gasPolicy_Engine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;                                
+                gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SEND_SWAP;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;                                
             }
         }
 #endif /*INCLUDE_PD_PR_SWAP*/
@@ -845,8 +845,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                     ((DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
                     (DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))))
             {
-                    gasPolicy_Engine[u8PortNum].ePEState = ePE_DRS_SEND_SWAP;
-                    gasPolicy_Engine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_SEND_SWAP;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
                 
             }
         }
@@ -862,8 +862,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
             {
                 /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
-                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
-                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;                    
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;                    
             }
             else
             {
@@ -886,8 +886,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
             {
                 /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
-                gasPolicy_Engine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
-                gasPolicy_Engine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;                    
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;                    
             }
             else
             {

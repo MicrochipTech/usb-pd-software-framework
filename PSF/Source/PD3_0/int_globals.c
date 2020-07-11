@@ -60,7 +60,7 @@ PRL_RECVBUFF gasPRLRecvBuff [CONFIG_PD_PORT_COUNT];
 /***************************************************************************************/
     
 /*Policy Engine globals*/
-PolicyEngine_Status gasPolicy_Engine[CONFIG_PD_PORT_COUNT];
+POLICY_ENGINE_STATUS gasPolicyEngine[CONFIG_PD_PORT_COUNT];
 
 /*Policy manager globals*/
 DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];

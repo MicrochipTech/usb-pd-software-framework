@@ -62,15 +62,15 @@ typedef enum
 typedef PRLTxCallback   PE_FwUpdtTxDoneCallBack_Type;
 
 /*******************Defines to get the policy engine status ****************************/
-#define PE_FWUP_GET_CURRENT_STATE(PE_PORT_NUM)                 (gasPolicy_Engine[PE_PORT_NUM].ePEState)
-#define PE_FWUP_SET_CURRENT_STATE(PE_PORT_NUM,PE_STATE)        (gasPolicy_Engine[PE_PORT_NUM].ePEState = PE_STATE)
+#define PE_FWUP_GET_CURRENT_STATE(PE_PORT_NUM)                 (gasPolicyEngine[PE_PORT_NUM].ePEState)
+#define PE_FWUP_SET_CURRENT_STATE(PE_PORT_NUM,PE_STATE)        (gasPolicyEngine[PE_PORT_NUM].ePEState = PE_STATE)
 
-#define PE_FWUP_GET_CURRENT_SUBSTATE(PE_PORT_NUM)              (gasPolicy_Engine[PE_PORT_NUM].ePESubState)
-#define PE_FWUP_CHANGE_SUBSTATE(PE_PORT_NUM,PE_FWUP_NEXT_STATE)(gasPolicy_Engine[PE_PORT_NUM].ePESubState = PE_FWUP_NEXT_STATE)
+#define PE_FWUP_GET_CURRENT_SUBSTATE(PE_PORT_NUM)              (gasPolicyEngine[PE_PORT_NUM].ePESubState)
+#define PE_FWUP_CHANGE_SUBSTATE(PE_PORT_NUM,PE_FWUP_NEXT_STATE)(gasPolicyEngine[PE_PORT_NUM].ePESubState = PE_FWUP_NEXT_STATE)
 #define PE_FWUP_GET_CURRENT_MSGTYPE(PE_PORT_NUM)                NULL
 
-#define PE_FWUP_GET_TIMER_INDEX(PE_PORT_NUM)                   (gasPolicy_Engine[PE_PORT_NUM].u8PETimerID)
-#define PE_FWUP_SET_TIMER_INDEX(PE_PORT_NUM,PE_FWUP_TIMERIDX)  (gasPolicy_Engine[PE_PORT_NUM].u8PETimerID = PE_FWUP_TIMERIDX)
+#define PE_FWUP_GET_TIMER_INDEX(PE_PORT_NUM)                   (gasPolicyEngine[PE_PORT_NUM].u8PETimerID)
+#define PE_FWUP_SET_TIMER_INDEX(PE_PORT_NUM,PE_FWUP_TIMERIDX)  (gasPolicyEngine[PE_PORT_NUM].u8PETimerID = PE_FWUP_TIMERIDX)
 
 
 /********************* PDFU State machine generic events macro *************************/

@@ -168,7 +168,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_IMPLICIT_CONTRACT        0
 
 /* Define to get PD contract */
-#define PE_GET_PD_CONTRACT(u8PortNum)	(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_PDCONTRACT_MASK)		
+#define PE_GET_PD_CONTRACT(u8PortNum)	(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PDCONTRACT_MASK)		
 
 /*--------------VDM related macros--------------------*/
 #define PE_VDM_ACK                  1
@@ -550,7 +550,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 	UINT8 u8PETimerID;                      // Policy Engine Timer ID
 	UINT8 u8PENoResponseTimerID;            // NoResponse Timer ID
     UINT8  u8HardResetRecvdISR;             // Hard Reset received status
-}MCHP_PSF_STRUCT_PACKED_END PolicyEngine_Status;
+}MCHP_PSF_STRUCT_PACKED_END POLICY_ENGINE_STATUS;
 
 // *****************************************************************************
 // *****************************************************************************
