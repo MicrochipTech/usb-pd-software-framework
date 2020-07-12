@@ -393,16 +393,16 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
     /* Setting Monitoring bit as '0' checks whether voltage falls below the source 
             selection VBUS threshold value or the source selection PIO goes low */
 	/* Enable monitoring for Override 0 - Overvoltage alone */
-	UPD_RegWriteByte (u8PortNum, UPD_PIO_MON_VAL, UPD_PIO_OVR_0 );
+	UPD_RegWriteByte (u8PortNum, UPD_PIO_MON_VAL, UPD_PIO_OVR_0);
 	
 	/* PIO override output is set as low */
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, 0x0);
+	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO);
 	
 	/* Configure the Source for override 0 as OverVoltage Threshold 2*/
 	UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR0_SRC_SEL, \
 	  (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS2_THR_MATCH));
     
-    /* Configure the Source for override 1 as undervoltage*/
+    /* Configure the Source for override 1 as under-voltage*/
     UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR1_SRC_SEL, \
 	  (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS3_THR_MATCH));
 	
@@ -448,7 +448,7 @@ UINT8 UPD_CheckUPDsActive()
 			/*Verify any other IDLE timer is running for all other ports.
 			if its running, then lets handle in that timer expire event, so skip MCU
 			IDLE for now*/
-             (((gau8PortIdleTimerID[u8PortNo]< MAX_CONCURRENT_TIMERS) && (gasPDTimers[gau8PortIdleTimerID[u8PortNo]].u8TimerSt_PortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
+             (((gau8PortIdleTimerID[u8PortNo]< MAX_CONCURRENT_TIMERS) && (gasPDTimers[gau8PortIdleTimerID[u8PortNo]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
 
 			{
 				u8IsAllUPDsActive = TRUE;
@@ -572,7 +572,7 @@ void UPD_ResetThroughGPIO()
 
 void UPD_CheckAndDisablePorts (void)
 {
-    UINT8 u8ReadData[4];
+    UINT8 u8ReadData[BYTE_LEN_4];
     
     /*variable to hold the timer id*/
     UINT8 u8TimerID;
@@ -589,21 +589,21 @@ void UPD_CheckAndDisablePorts (void)
             & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
         {
             /*Start 10ms timer*/
-            u8TimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(10), NULL, \
+            u8TimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(BYTE_LEN_10), NULL, \
                                         (UINT8)SET_TO_ZERO, (UINT8)SET_TO_ZERO);
             
-            while ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE) != PDTIMER_EXPIRED)
+            while ((gasPDTimers[u8TimerID].u8TimerStPortNum & PDTIMER_STATE) != PDTIMER_EXPIRED)
             {
 #if (CONFIG_UPD350_SPI == CONFIG_DEFINE_UPD350_HW_INTF_SEL)            
                 /*Read SPI_TEST register*/
-                UPD_RegisterRead(u8PortNum, (UINT16)UPD_SPI_TEST, u8ReadData, 4);
+                UPD_RegisterRead(u8PortNum, (UINT16)UPD_SPI_TEST, u8ReadData, BYTE_LEN_4);
                     
                 /*Check the SPI_TEST register value is 0x02*/
                 if (u8ReadData[INDEX_0] == UPD_SPI_TEST_VAL)
                 {
 #endif
                     /*Read VID & PID register*/
-                    UPD_RegisterRead(u8PortNum, (UINT16)UPD_VID, u8ReadData, 4);          
+                    UPD_RegisterRead(u8PortNum, (UINT16)UPD_VID, u8ReadData, BYTE_LEN_4);          
              
                     /*Verify the default values*/
                     if((u8ReadData[INDEX_0] == UPD_VID_LSB) && (u8ReadData[INDEX_1] == UPD_VID_MSB) && \
@@ -662,7 +662,7 @@ void UPD_FindVBusCorrectionFactor(void)
             u16VBUSTHR3 = UPD_RegReadWord (u8PortNum, TYPEC_VBUS_THR3);
             
             gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor = \
-                                    (float)((float)u16VBUSTHR3/(float)222);
+                                    (float)((float)u16VBUSTHR3/(float)UPD_VBUS_THRS_DEFAULT);
         }
     }
         
