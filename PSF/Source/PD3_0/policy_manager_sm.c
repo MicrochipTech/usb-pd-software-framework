@@ -492,9 +492,12 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType)
     if (!gasDPM[u8PortNum].u8PowerFaultISR)
     {
         #if (TRUE == INCLUDE_PD_SOURCE)
-        /*Disable VBUS_EN on detection of external fault*/
-        UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
-                gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_DE_ASSERT);
+        if(PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
+        {
+            /*Disable VBUS_EN on detection of external fault*/
+            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_DE_ASSERT);
+        }
         #endif
         /*VBUS OCS flag is set for DPM to handle the VBUS fault*/
         MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();

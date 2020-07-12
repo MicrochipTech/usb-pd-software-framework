@@ -452,7 +452,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
 #if(TRUE == INCLUDE_PD_DRP)
                     if((gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SOURCE) \
-                            && (PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)))
+                            && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
@@ -731,7 +731,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     }
                     
 #if(TRUE == INCLUDE_PD_DRP)
-                    if(PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
+                    if(PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
                     {
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SOURCE;
                     }
@@ -878,7 +878,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
 #if(TRUE == INCLUDE_PD_DRP)
                     if((gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SINK) \
-                            && (PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)))
+                            && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Setting CC Comparator OFF*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
@@ -1044,7 +1044,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
 #if(TRUE == INCLUDE_PD_DRP)       
-                    if(PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
+                    if(PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
                     {
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
                     }
