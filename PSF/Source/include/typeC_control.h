@@ -466,12 +466,13 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHWAIT_SRC_TCC_TO_SS                2
     
 /*Defines for TYPEC_ATTACHED_SRC's substates in TYPE C SM*/
-#define TYPEC_ATTACHED_SRC_DRIVE_PWR_SS               0
-#define TYPEC_ATTACHED_SRC_CHECK_VBUS_SS              1
-#define TYPEC_ATTACHED_SRC_CHECK_VCONNON_SS           2
-#define TYPEC_ATTACHED_SRC_SET_PRL_SS                 3
-#define TYPEC_ATTACHED_SRC_RUN_SM_SS                  4
-#define TYPEC_ATTACHED_SRC_IDLE_SS				      5
+#define TYPEC_ATTACHED_SRC_ASSERT_RP_SS               0
+#define TYPEC_ATTACHED_SRC_DRIVE_PWR_SS               1
+#define TYPEC_ATTACHED_SRC_CHECK_VBUS_SS              2
+#define TYPEC_ATTACHED_SRC_CHECK_VCONNON_SS           3
+#define TYPEC_ATTACHED_SRC_SET_PRL_SS                 4
+#define TYPEC_ATTACHED_SRC_RUN_SM_SS                  5
+#define TYPEC_ATTACHED_SRC_IDLE_SS				      6
 
 /*Defines for TYPEC_UNATTACH_WAIT_SRC's substates in TYPE C SM*/ 
 #define TYPEC_UNATTACH_WAIT_SRC_ENTRY_SS            0
@@ -492,12 +493,13 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHWAIT_SNK_TCC_TO_SS                3
 
 /*Defines for TYPEC_ATTACHED_SNK's substates in TYPE C SM*/
-#define TYPEC_ATTACHED_SNK_ENTRY_SS                   0
-#define TYPEC_ATTACHED_SNK_RUN_SM_SS                  1
-#define TYPEC_ATTACHED_SNK_TPDDEB_SS                  2
-#define TYPEC_ATTACHED_SNK_TPD_TO_SS                  3
-#define TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS          4
-#define TYPEC_ATTACHED_SNK_IDLE_SS                    5
+#define TYPEC_ATTACHED_SNK_ASSERT_RD_SS               0
+#define TYPEC_ATTACHED_SNK_ENTRY_SS                   1
+#define TYPEC_ATTACHED_SNK_RUN_SM_SS                  2
+#define TYPEC_ATTACHED_SNK_TPDDEB_SS                  3
+#define TYPEC_ATTACHED_SNK_TPD_TO_SS                  4
+#define TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS          5
+#define TYPEC_ATTACHED_SNK_IDLE_SS                    6
 
 /*Defines for TYPEC_ERROR_RECOVERY's substates in TYPE C SM*/ 
 #define TYPEC_ERROR_RECOVERY_ENTRY_SS                   0
@@ -656,11 +658,11 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
 {
   UINT8 u8TypeCState;
   UINT8 u8TypeCSubState;
-  UINT8	u8CC1_MatchISR;
-  UINT8	u8CC2_MatchISR;
+  UINT8	u8CC1MatchISR;
+  UINT8	u8CC2MatchISR;
   UINT8 u8CCDebMatch;
   UINT8 u8CCSrcSnkMatch;
-  UINT8 u8TypeC_TimerID;
+  UINT8 u8TypeCTimerID;
   UINT8 u8PortSts;              /*BIT0 - > TYPEC_PWDCABLE_PRES Field
                                 BIT[2:1] -> CURR_RPVAL Field
                                 BIT3 -> COLLISION_AVOIDANCE_ACT
@@ -1180,7 +1182,7 @@ void TypeC_DrpIntrHandler(UINT8 u8PortNum);
 void TypeC_SnkIntrHandler(UINT8 u8PortNum);
 /**************************************************************************************************
  Function:
-        void TypeC_Reset_VCONNDIS_Settings(UINT8 u8PortNum); 
+        void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum); 
 
     Summary:
         This API is called after the VCONN Discharge is completed to reset the settings done for
@@ -1205,7 +1207,7 @@ void TypeC_SnkIntrHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_Reset_VCONNDIS_Settings(UINT8 u8PortNum); 
+void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum); 
 /**************************************************************************************************
  Function:
         void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
@@ -1416,14 +1418,14 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        This API is to configure VBUS threshold to detect VBUS, undervoltage and overvoltage
+        This API is to configure VBUS threshold to detect VBUS, under-voltage and overvoltage
 
     Conditions:
         None.
 
     Input:
         u8PortNum - Port Number.
-        u16Voltage - Votlage to which the VBUS threshold has to be configured.
+        u16Voltage - Voltage to which the VBUS threshold has to be configured.
         u8PowerFaultThrConfig - It can take following value
                                 TYPEC_CONFIG_NON_PWR_FAULT_THR - Threshold for Non-Power Fault are configured
                                 TYPEC_CONFIG_PWR_FAULT_THR  - Threshold for Power Fault (undervoltage and overvoltage)
@@ -1467,7 +1469,7 @@ void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-       void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
+       void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 
     Summary:
         This API is Timer call back for VCONNErrorTimer.
@@ -1491,7 +1493,7 @@ void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_VCONNONErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
+void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:

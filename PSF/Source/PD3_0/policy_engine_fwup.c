@@ -223,13 +223,13 @@ void PE_FwUpdtProcessTimerEvent(
 {
     if ((UINT8)ePE_PDFU_MODE == u8PdFwUpdtState)
     {
-        gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = PRL_IsAnyMsgPendinginPRL(u8PortNum);
+        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = PRL_IsAnyMsgPendinginPRL(u8PortNum);
 
         /* Check for Msg Header is SET_TO_ZERO */
-        if (SET_TO_ZERO == gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader)
+        if (SET_TO_ZERO == gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader)
         {
             /* Copy Receive Msg Handler Header to Timeout Header */
-            gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = gasPolicy_Engine[u8PortNum].u32MsgHeader;
+            gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = gasPolicyEngine[u8PortNum].u32MsgHeader;
         }
 
         gsPdfuInfo.u8EventType |= PE_FWUP_TIMEOUT_EVT;
@@ -356,7 +356,7 @@ void PE_FwUpdtTxDoneCallBack(
     if(gasPRL [u8PortNum].u8TxStateISR != PRL_TX_DONE_ST)
     {   /** The response has not been sent */
         gsPdfuInfo.u8EventType |= PE_FWUP_TIMEOUT_EVT;
-        gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = 0x00;
+        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = 0x00;
         gsPdfuInfo.u8ResendResponseTimes++;
     }
     else

@@ -707,6 +707,10 @@ typedef void(*PRLRxCallback) (UINT8 u8PortNum, UINT8 u8RxRcvStatus);
 #define PRL_SEND_CABLE_RESET		1
 #define PRL_SEND_HARD_RESET			0
 
+/**************************** Defines for Hardware Retry Count *******************/
+#define PRL_HW_RETRY_CNT_2_0        3
+#define PRL_HW_RETRY_CNT_3_0        2 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures - PRL Structs
@@ -736,7 +740,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _CHUNK
 	UINT8 	u8TotalChunkPkt:4 ;				/* Total Chunk packet to be transmitted in TCH or expected RCH*/
 	UINT8 	u8ChunkNumExpectedOrSent:4;		/* ChunkNumber of Chunk packet lastly sent in TCH or received in RCV*/
 	UINT8 	u8ChunkState : 4;				/* State variable for Chunk SM*/
-  	UINT8	u8EnableChunkSM:1;				/* To know wthether Chunk SM is enabled or disabled*/
+  	UINT8	u8EnableChunkSM:1;				/* To know whether Chunk SM is enabled or disabled*/
 	UINT8	u8AbortFlag:1;					/* Chunk abort flag to abort chunking*/
 
 } MCHP_PSF_STRUCT_PACKED_END PRL_CHUNK_STRUCT;
@@ -781,7 +785,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PRL_EXTENDED_MESSAGE_BUFF
 
     Summary:
         This API initialize the UPD_MAC Registers and Protocol Layer variables
-		based on port numnber passed.
+		based on port number passed.
 
     Devices Supported:
         UPD350 REV A
@@ -803,7 +807,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PRL_EXTENDED_MESSAGE_BUFF
 
     Remarks:
         This API has to be called for all the ports (0 to (CONFIG_PD_PORT_COUNT -1))
-		to initialise the Protocol Layer.
+		to initialize the Protocol Layer.
 
 **************************************************************************************************/
 void  PRL_Init (UINT8 u8PortNum);
@@ -909,7 +913,7 @@ UINT16 PRL_FormNonSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 
 
 /**************************************************************************************************
     Function:
-        void PRL_EnableRx (UINT8 u8PortNum, bool bEnable);
+        void PRL_EnableRx (UINT8 u8PortNum, UINT8 bEnable);
 
     Summary:
         This API enables or disables UPD_MAC PHY for Reception.
@@ -989,7 +993,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, \
     Function:
         UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer, UINT8 *pu8TxPkt);
     Summary:
-        This API is to form the PD message to tranmsitted into single buffer.
+        This API is to form the PD message to transmitted into single buffer.
 
     Devices Supported:
         UPD350 REV A
@@ -1070,7 +1074,7 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
         UPD350 REV A
 
     Description:
-		This API is called to receive messages or any receive error initimation from Protocol Layer
+		This API is called to receive messages or any receive error intimation from Protocol Layer
 
     Conditions:
         None.
@@ -1357,7 +1361,7 @@ void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-		This API is for the Policy Enigne to set the Collision Avoidance (Rp value SinkTxNG) or
+		This API is for the Policy Engine to set the Collision Avoidance (Rp value SinkTxNG) or
 			clear(Rp value to SinkTxOK).
 
     Conditions:

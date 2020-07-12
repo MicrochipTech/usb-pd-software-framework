@@ -202,7 +202,7 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL         0
+#define INCLUDE_POWER_MANAGEMENT_CTRL         1
 
 /**************************************************************************
 Summary:
@@ -210,7 +210,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
+    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -258,7 +258,7 @@ Example:
     #define INCLUDE_POWER_THROTTLING	0(Exclude PT functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_THROTTLING        0 
+#define INCLUDE_POWER_THROTTLING        1 
 
 /**************************************************************************************************
 Summary:
@@ -278,6 +278,44 @@ Example:
     </code>
 **************************************************************************************************/
 #define INCLUDE_PD_SOURCE_PPS           0
+
+/**************************************************************************************************
+Summary:
+    DR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_DR_SWAP as 1 enables PSF to include the Data Role 
+    swap (DR_SWAP) feature at compile time. User can set this define to 0
+    to reduce code size if none of the ports in the system require DR_SWAP
+    functionality.
+Remarks: 
+    Recommended default value is 1. User can configure it based on the
+    application.
+Example:
+    <code>
+    #define INCLUDE_PD_DR_SWAP	1(Include DR_SWAP functionality in PSF)
+    #define INCLUDE_PD_DR_SWAP	0(Exclude DR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_DR_SWAP           0
+
+/**************************************************************************************************
+Summary:
+    PR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_PR_SWAP as 1 enables PSF to include the Power Role 
+    swap (PR_SWAP) feature at compile time. User can set this define to 0
+    to reduce the code size if none of the ports in the system require Power Role
+    Swap functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_PD_PR_SWAP to be 1, 
+    INCLUDE_PD_DRP shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_PR_SWAP	1(Include PR_SWAP functionality in PSF)
+    #define INCLUDE_PD_PR_SWAP	0(Exclude PR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_PR_SWAP      0
 
 // *****************************************************************************
 // *****************************************************************************
@@ -811,6 +849,8 @@ typedef enum
 																		that power is good and a
                                                                         fault condition does not 
 																		exist.
+    u16SwapPolicy                   2         R/W          R/W       * User can configure this field
+																	    to provide Swap policy of the port                                          
     u8SourcePDOCnt                  1         R/W          R         * Number of Default Source PDOs
 																	    supported.
                                                                       * This variable is applicable 
@@ -1059,8 +1099,7 @@ typedef enum
 																		 2. 1- High Amperage - 
 																			  Min Voltage 
 																	  * This is applicable only 
-																		  for Sink operation. 
-	u16Reserved1    				2								 Reserved					 
+																		  for Sink operation. 					 
 	u8aReserved1					1								 Reserved					 
 	u8aReserved2[2]					2								 Reserved
 	u8Reserved3    					1								 Reserved
@@ -1413,6 +1452,42 @@ typedef enum
                                     * '1' Enable. 
 								    This bit is applicable only for source operation. 			
     15:1	                       Reserved 
+    </table>
+    
+    <b>h. u16SwapPolicy</b>: 
+	u16SwapPolicy. 
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R/W          R/W       EN_AUTO_DR_SWAP_REQUEST_DFP
+                                    * '0' Disable Auto Data Role Request When Data Role is DFP
+                                    * '1' Enable Auto Data Role Request when Data Role is DFP 
+    1       R/W          R/W       EN_AUTO_DR_SWAP_REQUEST_UFP
+                                    * '0' Disable Auto Data Role Request When Data Role is UFP
+                                    * '1' Enable Auto Data Role Request when Data Role is UFP
+    2       R/W          R/W       EN_AUTO_DR_SWAP_ACCEPT_DFP
+                                    * '0' Disable Auto Data Role Accept When Data Role is DFP
+                                    * '1' Enable Auto Data Role Accept when Data Role is DFP 
+    3       R/W          R/W       EN_AUTO_DR_SWAP_ACCEPT_UFP
+                                    * '0' Disable Auto Data Role Accept When Data Role is UFP
+                                    * '1' Enable Auto Data Role Accept when Data Role is UFP
+    4       R/W          R/W       EN_AUTO_PR_SWAP_REQUEST_SOURCE
+                                    * '0' Disable Auto Power Role Request When Power Role is Source
+                                    * '1' Enable Auto Power Role Request when Power Role is Source
+    5       R/W          R/W       EN_AUTO_PR_SWAP_REQUEST_SINK
+                                    * '0' Disable Auto Power Role Request When Power Role is Sink
+                                    * '1' Enable Auto Power Role Request when Power Role is Sink
+    6       R/W          R/W       EN_AUTO_PR_SWAP_ACCEPT_SOURCE
+                                    * '0' Disable Auto Power Role Accept When Power Role is Source
+                                    * '1' Enable Auto Power Role Accept when Power Role is Source
+    7       R/W          R/W       EN_AUTO_PR_SWAP_ACCEPT_SINK
+                                    * '0' Disable Auto Power Role Accept When Power Role is Sink
+                                    * '1' Enable Auto Power Role Accept when Power Role is Sink 
+    8:11    R/W          R/W       TODO:J VCONN Swap Definition
+    
+    15:12  						   Reserved 									
+	</table> 
  
   Remarks:
     None                                                                                                                                
@@ -1438,7 +1513,7 @@ typedef struct _PortCfgStatus
     UINT16 u16PortIntrMask;
     UINT16 u16PowerGoodTimerInms;
     UINT16 u16FeatureSelect; 
-    UINT16 u16Reserved1; 
+    UINT16 u16SwapPolicy; 
 	#if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
     UINT16 u16SnkMaxOperatingCurInmA; 
@@ -1767,8 +1842,7 @@ typedef struct _PPSPortCfgStatus
     u8aReserved3				     1 								 Reserved 	
     u8aReserved6				     1 								 Reserved 	
     u8aReserved7[3]				     3								 Reserved 
-    u8aReserved8[3]				     3 								 Reserved 
-    u16Reserved2 				     2 								 Reserved 																
+    u8aReserved8[3]				     3 								 Reserved 																
  	u8ReservedPadBytes[16]	         16	                              * Reserved bytes included
                                                                          based on configuration macro 
                                                                          INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
@@ -1883,7 +1957,7 @@ typedef struct _GlobalCfgStatusData
 	 Configuration and Status parameters of PSF including Type C, PD, PB, PT and PPS parameters.
 	 
 	 It is mandatory that the user has to initialize the configuration parameters for the PSF 
-	 stack to funtion properly. This can be done through MCHP_PSF_HOOK_BOOT_TIME_CONFIG which 
+	 stack to function properly. This can be done through MCHP_PSF_HOOK_BOOT_TIME_CONFIG which 
 	 initializes the parameters defined in gasCfgStatusData during compile time. For accessing 
 	 the configuration registers and reading the status registers at run time, an I2C slave
 	 interface shall be used by the user application. 																 												  																 																  

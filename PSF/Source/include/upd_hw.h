@@ -225,6 +225,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_PORT_DISABLED        0x00
 #define UPD_PORT_ENABLED         0x01
 
+/* Default UPD VBUS Threshold value */
+#define UPD_VBUS_THRS_DEFAULT    222 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Routines
@@ -631,7 +633,7 @@ void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8C
 		UPD350 REV A
 
 	Description:
-		This API is to set or reset the debounce corresponidng debounce type for the PIO number passed.
+		This API is to set or reset the debounce corresponding debounce type for the PIO number passed.
 		
 	Precondition:
 		None.

@@ -230,12 +230,12 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
     {
         //Do nothing
     }
-    PWRCTRL_Drive_DAC_I(u8PortNum, u16Current);
+    PWRCTRL_DriveDAC_I(u8PortNum, u16Current);
 
     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum, u16VBUSVoltage,u16Current);
 }
 
-void PWRCTRL_Drive_DAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
+void PWRCTRL_DriveDAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
 {
     UINT16 u16MaxNegoCurInmA =0, u16DacData =0;
     UINT16 u16MaxOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MaxOutVoltInmV;

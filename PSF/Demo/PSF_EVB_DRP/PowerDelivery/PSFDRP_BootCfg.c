@@ -47,9 +47,9 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
         if(PD_ROLE_SINK != DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
         {
             /* PDO 1: Fixed PDO with 5V,3A capability */
-            pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[0] = CFG_FORM_FIXED_PDO1(CFG_PORT_NOTE_SOURCE_PDO_1_VOLTAGE, \
-                    CFG_PORT_NOTE_SOURCE_PDO_1_CURRENT, CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
-                    CFG_PORT_SOURCE_UNCONSTARINED_PWR, CFG_PORT_DRP);    
+            pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[0] = CFG_FORM_SOURCE_FIXED_PDO1(CFG_PORT_NOTE_SOURCE_PDO_1_VOLTAGE, \
+                    CFG_PORT_NOTE_SOURCE_PDO_1_CURRENT, CFG_PORT_DUAL_ROLE_DATA, CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
+                    CFG_PORT_SOURCE_UNCONSTARINED_PWR, CFG_PORT_DUAL_ROLE_POWER);    
 
             /* PDO 2: Fixed PDO with 9V,3A capability */
             pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[1] = CFG_FORM_FIXED_PDOx(CFG_PORT_NOTE_SOURCE_PDO_2_VOLTAGE, \
@@ -80,8 +80,8 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
         if(PD_ROLE_SOURCE != DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)) /*Port role is either sink or DRP*/
         {
             pasCfgStatusData->sPerPortData[u8PortNum].u32aSinkPDO[0] = CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_NOTE_SINK_PDO_1_CURRENT, \
-                    CFG_PORT_NOTE_SINK_PDO_1_VOLTAGE, CFG_PORT_SINK_USB_COMM, \
-                    CFG_PORT_SINK_UNCONSTRAINED_PWR,CFG_PORT_SINK_HIGHER_CAPABILITY, CFG_PORT_DRP);    
+                    CFG_PORT_NOTE_SINK_PDO_1_VOLTAGE, CFG_PORT_DUAL_ROLE_DATA, CFG_PORT_SINK_USB_COMM, \
+                    CFG_PORT_SINK_UNCONSTRAINED_PWR,CFG_PORT_SINK_HIGHER_CAPABILITY, CFG_PORT_DUAL_ROLE_POWER);    
 
             pasCfgStatusData->sPerPortData[u8PortNum].u32aSinkPDO[1] = CFG_FORM_FIXED_PDOx(CFG_PORT_NOTE_SINK_PDO_2_VOLTAGE, \
                                                             CFG_PORT_NOTE_SINK_PDO_2_CURRENT);        
@@ -119,9 +119,9 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
         if(PD_ROLE_SINK != DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
         {
             /* PDO 1: Fixed PDO with 5V,3A capability */
-            pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[0] = CFG_FORM_FIXED_PDO1(CFG_PORT_DOCK_SOURCE_PDO_1_VOLTAGE, \
-                    CFG_PORT_DOCK_SOURCE_PDO_1_CURRENT, CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
-                    CFG_PORT_SOURCE_UNCONSTARINED_PWR, CFG_PORT_DRP);    
+            pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[0] = CFG_FORM_SOURCE_FIXED_PDO1(CFG_PORT_DOCK_SOURCE_PDO_1_VOLTAGE, \
+                    CFG_PORT_DOCK_SOURCE_PDO_1_CURRENT, CFG_PORT_DUAL_ROLE_DATA, CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
+                    CFG_PORT_SOURCE_UNCONSTARINED_PWR, CFG_PORT_DUAL_ROLE_POWER);    
 
             /* PDO 2: Fixed PDO with 9V,3A capability */
             pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[1] = CFG_FORM_FIXED_PDOx(CFG_PORT_DOCK_SOURCE_PDO_2_VOLTAGE, \
@@ -148,8 +148,8 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
         if(PD_ROLE_SOURCE != DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)) /*Port role is either Sink or DRP*/
         {
             pasCfgStatusData->sPerPortData[u8PortNum].u32aSinkPDO[0] = CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_DOCK_SINK_PDO_1_CURRENT, \
-                    CFG_PORT_DOCK_SINK_PDO_1_VOLTAGE, CFG_PORT_SINK_USB_COMM, \
-                    CFG_PORT_SINK_UNCONSTRAINED_PWR,CFG_PORT_SINK_HIGHER_CAPABILITY, CFG_PORT_DRP);    
+                    CFG_PORT_DOCK_SINK_PDO_1_VOLTAGE, CFG_PORT_DUAL_ROLE_DATA, CFG_PORT_SINK_USB_COMM, \
+                    CFG_PORT_SINK_UNCONSTRAINED_PWR,CFG_PORT_SINK_HIGHER_CAPABILITY, CFG_PORT_DUAL_ROLE_POWER);    
 
             pasCfgStatusData->sPerPortData[u8PortNum].u32aSinkPDO[1] = CFG_FORM_FIXED_PDOx(CFG_PORT_DOCK_SINK_PDO_2_VOLTAGE, \
                                                             CFG_PORT_DOCK_SINK_PDO_2_CURRENT);        

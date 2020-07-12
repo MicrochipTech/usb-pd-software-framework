@@ -155,6 +155,8 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_PDO_CURRENT(X)                  ((X & 0x000003FF))
 #define DPM_GET_PDO_VOLTAGE(X)                  ((X & 0x000FFC00) >> 10)	/*in 50mv units*/
 #define DPM_GET_PDO_USB_COMM_CAP(X)             ((X & 0x04000000) >> 26)
+#define DPM_GET_PDO_DUAL_DATA(X)                ((X & 0x02000000) >> 25)
+#define DPM_GET_PDO_DUAL_POWER(X)               ((X & 0x20000000) >> 29)
 #define DPM_MAX_PDO_CNT                          7
 
 /*******************************************************************************/
@@ -217,7 +219,7 @@ Source/Sink Power delivery objects*/
 #define DPM_VALID_REQUEST            1
 #define DPM_INVALID_REQUEST          0   
 
-/***********Macros for u8VConnEnable argument of DPM_VConnOnOff API ************/
+/***********Macros for u8VConnEnable argument of DPM_VCONNOnOff API ************/
 #define DPM_VCONN_ON             1
 #define DPM_VCONN_OFF            0
 
@@ -465,6 +467,12 @@ Source/Sink Power delivery objects*/
 #define DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL         0xFF
 #define DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL 0xFFFFFFFF
 
+/********************** Return Values from DPM_EvaluateRoleSwap API**************/
+#define DPM_IGNORE_INITIATE_SWAP            3
+#define DPM_REQUEST_SWAP                    2
+#define DPM_ACCEPT_SWAP                     1
+#define DPM_REJECT_SWAP                     0 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -512,6 +520,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8RealTimeFlags;
   UINT8 u8StsClearTmrID;
 #endif
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+  UINT8 u8PRSwapWaitTmrID;         // PR_Swap Wait Timer ID
+#endif 
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
 /************************ Client Request Defines ******************************/
@@ -542,10 +553,29 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                                             |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
 
 /***************************Internal Events Defines**********************************/
-#define DPM_INT_EVT_INITIATE_ALERT          BIT(0)
-#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(1)
-
+#define DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
+#define DPM_INT_EVT_INITIATE_RENOGIATION    BIT(1)
+#define DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
+#define DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
+#define DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
+#define DPM_INT_EVT_INITIATE_ALERT          BIT(5)
+#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(6)
 /**********************************************************************************/
+/*u16SwapPolicy values*/
+#define DPM_AUTO_DR_SWAP_REQ_AS_DFP          BIT(0)
+#define DPM_AUTO_DR_SWAP_REQ_AS_UFP          BIT(1)
+#define DPM_AUTO_DR_SWAP_ACCEPT_AS_DFP       BIT(2)
+#define DPM_AUTO_DR_SWAP_ACCEPT_AS_UFP       BIT(3)
+#define DPM_AUTO_PR_SWAP_REQ_AS_SRC          BIT(4)
+#define DPM_AUTO_PR_SWAP_REQ_AS_SNK          BIT(5)
+#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SRC       BIT(6)
+#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SNK       BIT(7)
+#define DPM_AUTO_VCONN_SWAP_REQ_AS_SRC       BIT(8)
+#define DPM_AUTO_VCONN_SWAP_REQ_AS_SNK       BIT(9)
+#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SRC    BIT(10)
+#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SNK    BIT(11)
+                                   
+/***********************************************************************************/
 
 /* Enumeration to define the types of PDO */ 
 typedef enum PDOtype
@@ -556,6 +586,16 @@ typedef enum PDOtype
     ePDO_PROGRAMMABLE = 0x03,
     ePDO_INVALID = 0xFF
 } ePDOtypes;
+
+/* Enum for Swap messages */
+typedef enum {
+    eVCONN_SWAP_RCVD,
+    eDR_SWAP_RCVD,
+    ePR_SWAP_RCVD,
+    eVCONN_SWAP_INITATE,
+    eDR_SWAP_INITIATE,
+    ePR_SWAP_INITIATE
+}eRoleSwapMsgtype;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -626,7 +666,7 @@ void DPM_SetPortPower(UINT8 u8PortNum);
 /****************************** DPM Source related APIs*****************************************/
 /**************************************************************************************************
     Function:
-        void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
+        void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
     Summary:
         This API is used to get the port source capabilities from the DPM.
     Devices Supported:
@@ -644,17 +684,17 @@ void DPM_SetPortPower(UINT8 u8PortNum);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_Get_Source_Capabilities(UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
+void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
 
 /**************************************************************************************************
     Function:
         UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
     Summary:
-        This API is used to validate the received request messgae from the sink port parnter.
+        This API is used to validate the received request message from the sink port partner.
     Devices Supported:
         UPD350 REV A
     Description:
-         This API is used to validate the received request messgae from the sink port parnter.
+         This API is used to validate the received request message from the sink port partner.
     Conditions:
         None.
     Input:
@@ -716,7 +756,7 @@ void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void DPM_VConnOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
+        void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
     Summary:
         This API is used to turn on/off the VCONN supply of a given port
     Devices Supported:
@@ -735,7 +775,7 @@ void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_VConnOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
+void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
 
 /**************************************************************************************************
     Function:
@@ -847,7 +887,7 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum);
+        UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum);
     Summary:
         This API is used find whether the port is currently sourcing VCONN or not
     Devices Supported:
@@ -865,11 +905,11 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Remarks:
         None
 **************************************************************************************************/
-UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum);
+UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
+        void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
 
     Summary:
         Device Policy Manager evaluates the received source capability against the sink capability and 
@@ -893,11 +933,11 @@ UINT8 DPM_IsPort_VCONN_Source(UINT8 u8PortNum);
     Remarks:
     None
 **************************************************************************************************/
-void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
+void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_Find_Src_Sink_Caps_match(UINT32 u32In_SrcPDO, UINT32 u32In_SinkPDO);
+        UINT8 DPM_FindSrcSinkCapsMatch(UINT32 u32In_SrcPDO, UINT32 u32In_SinkPDO);
     Summary:
         Device Policy Manager compares a given source PDO and a sink PDO and returns the match
     Devices Supported:
@@ -915,11 +955,11 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
     Remarks:
         None
 **************************************************************************************************/
-UINT8 DPM_Find_Src_Sink_Caps_match(UINT32 u32In_SrcPDO, UINT32 u32In_SinkPDO);
+UINT8 DPM_FindSrcSinkCapsMatch(UINT32 u32In_SrcPDO, UINT32 u32In_SinkPDO);
 
 /**************************************************************************************************
     Function:
-        void DPM_Get_Sink_Capabilities(UINT8 u8PortNum,UINT8* u8pSinkPDOCnt, UINT32 * pu32DataObj);
+        void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8* u8pSinkPDOCnt, UINT32 * pu32DataObj);
     Summary:
         Device Policy Manager updates the policy engine about the sink capability for a given port
     Devices Supported:
@@ -938,11 +978,11 @@ UINT8 DPM_Find_Src_Sink_Caps_match(UINT32 u32In_SrcPDO, UINT32 u32In_SinkPDO);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_Get_Sink_Capabilities(UINT8 u8PortNum, UINT8* u8pSinkPDOCnt, UINT32 * pu32DataObj);
+void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8* u8pSinkPDOCnt, UINT32 * pu32DataObj);
 
 /**************************************************************************************************
     Function:
-        void DPM_VBUSOnOffTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+        void DPM_VBUSOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Summary:
         This API is given as the timer call back API when starting the VBUSOnOff Timer from 
         Type-C and source policy engine state machines.
@@ -962,11 +1002,11 @@ void DPM_Get_Sink_Capabilities(UINT8 u8PortNum, UINT8* u8pSinkPDOCnt, UINT32 * p
         None.
 
 **************************************************************************************************/
-void DPM_VBUSOnOffTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+void DPM_VBUSOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void DPM_SrcReadyTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+        void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Summary:
         This API is given as the timer call back API when starting the tSrcReady Timer from 
         Type-C and source policy engine state machines.     
@@ -986,11 +1026,11 @@ void DPM_VBUSOnOffTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
         None.
 
 **************************************************************************************************/
-void DPM_SrcReadyTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
+        void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
     Summary:
         This API is given as the timer call back API when starting the VCONN ON Timer from 
         Type-C and source policy engine state machines.
@@ -1009,11 +1049,11 @@ void DPM_SrcReadyTimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Remarks:
         None.
 **************************************************************************************************/
-void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
+void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void DPM_VCONNOFFErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
+        void DPM_VCONNOFFError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
     Summary:
         This API is given as the timer call back API when starting the VCONN OFF Timer from 
         Type-C and source policy engine state machines.
@@ -1034,7 +1074,7 @@ void DPM_VCONNONTimerErrorCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
         None.
 
 **************************************************************************************************/
-void DPM_VCONNOFFErrorTimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
+void DPM_VCONNOFFError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
@@ -1156,7 +1196,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum);
     Description:
         VBUS power fault detection of under voltage and over voltage is not enabled by default.
         It is enabled after negotiation through this API. This API configures the VBUS comparator
-        to detect over voltage and under voltage for the voltage negoitated and established with the 
+        to detect over voltage and under voltage for the voltage negotiated and established with the 
         port partner.
     Conditions:
         None
@@ -1625,10 +1665,9 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable);
         None.
     Input:
         u8PortNum - Port number.
-        u8Enable - TRUE - APDO is advertised
-                   FALSE - No APDO is advertised
     Return:
-        None.
+        UINT8  - TRUE - APDO is advertised
+                 FALSE - No APDO is advertised
     Remarks:
         None. 
 **************************************************************************************************/
@@ -1652,6 +1691,110 @@ UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum);
         None. 
 **************************************************************************************************/
 void DPM_OnTypeCDetach(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_OnTypeCAttach(UINT8 u8PortNum); 
+    Summary:
+        API to do necessary operation required by DPM during a type c attach event. 
+    Description:
+        This API does the internal event registering and global variable update on
+        Type C attach.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_OnTypeCAttach(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
+    Summary:
+        Timer callback for PE_PR_SWAP_WAIT_TIMEOUT_MS timeout
+    Description:
+        API to re-initiate PR_Swap on PE_PR_SWAP_WAIT_TIMEOUT_MS timeout
+        in case the port partner has not sent a request within PE_PR_SWAP_WAIT_TIMEOUT_MS
+        of reception of Wait message from the port partner.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8DummyVariable - Dummy variable
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
+
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
+    Summary:
+        API to evaluate VCONN_Swap, DR_Swap and PR_Swap received from partner or initiation. 
+    Description:
+        This API evaluates the Role swap message received from port partner 
+        based on the policy bits defined by user configuration and returns 
+        accept/reject status. It also evaluates whether any swap message can be
+        initiated by PSF based on the user configuration.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        eRoleSwapMsgtype - Role Swap message type 
+    Return:
+        UINT8 - DPM_ACCEPT_SWAP in case of accept
+                DPM_REJECT_SWAP in case of reject.
+                DPM_REQUEST_SWAP in case PSF has to initiate swap
+                DPM_IGNORE_INITIATE_SWAP in case PSF should not initiate 
+    Remarks:
+        None. 
+**************************************************************************************************/
+UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole);
+    Summary:
+        API to update the port's power role after a PR_Swap. 
+    Description:
+        This API changes the Type C state and sub-state for Rp/Rd assertion 
+        based on the new power role of the port. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        NewPwrRole - Port's Power role after PR_Swap
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole);
+
+/**************************************************************************************************
+    Function:
+        void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+    Summary:
+        Timer callback for PE_PS_SOURCE_OFF_TIMEOUT_MS timeout
+    Description:
+        API to invoke Type C Error Recovery on PSSourceOff timer expiry.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8DummyVariable - Dummy variable
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 #endif /*_POLICY_MANAGER_H_*/
 
