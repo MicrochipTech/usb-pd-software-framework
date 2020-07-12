@@ -73,9 +73,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_DRP                       1U
 
 /***************Source PDO defines for Dock type port (port 1)*****************/
-#define CFG_PORT_DOCK_SOURCE_PDO_1_CURRENT         1000U 
-#define CFG_PORT_DOCK_SOURCE_PDO_2_CURRENT         1000U
-#define CFG_PORT_DOCK_SOURCE_PDO_3_CURRENT         1000U
+#define CFG_PORT_DOCK_SOURCE_PDO_1_CURRENT         3000U 
+#define CFG_PORT_DOCK_SOURCE_PDO_2_CURRENT         3000U
+#define CFG_PORT_DOCK_SOURCE_PDO_3_CURRENT         3000U
 #define CFG_PORT_DOCK_SOURCE_PDO_4_CURRENT         0
 
 #define CFG_PORT_DOCK_SOURCE_PDO_1_VOLTAGE         5000
@@ -87,8 +87,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /***************Sink PDO defines for Dock type port (port 1)*******************/
 #define CFG_PORT_DOCK_SINK_NUM_OF_PDOS          2U
 
-#define CFG_PORT_DOCK_SINK_PDO_1_CURRENT        1000U 
-#define CFG_PORT_DOCK_SINK_PDO_2_CURRENT        1000U
+#define CFG_PORT_DOCK_SINK_PDO_1_CURRENT        3000U 
+#define CFG_PORT_DOCK_SINK_PDO_2_CURRENT        3000U
 #define CFG_PORT_DOCK_SINK_PDO_3_CURRENT        0
 #define CFG_PORT_DOCK_SINK_PDO_4_CURRENT        0
 #define CFG_PORT_DOCK_SINK_PDO_5_CURRENT        0U
@@ -105,8 +105,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /******************************************************************************/
 
 /************Source PDO defines for Note book type port (port 0)***************/
-#define CFG_PORT_NOTE_SOURCE_PDO_1_CURRENT         1000U 
-#define CFG_PORT_NOTE_SOURCE_PDO_2_CURRENT         1000U
+#define CFG_PORT_NOTE_SOURCE_PDO_1_CURRENT         3000U 
+#define CFG_PORT_NOTE_SOURCE_PDO_2_CURRENT         3000U
 #define CFG_PORT_NOTE_SOURCE_PDO_3_CURRENT         0
 #define CFG_PORT_NOTE_SOURCE_PDO_4_CURRENT         0
 
@@ -119,9 +119,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /************Sink PDO defines for Note book type port (port 0)*****************/
 #define CFG_PORT_NOTE_SINK_NUM_OF_PDOS          3U
 
-#define CFG_PORT_NOTE_SINK_PDO_1_CURRENT        1000U 
-#define CFG_PORT_NOTE_SINK_PDO_2_CURRENT        1000U
-#define CFG_PORT_NOTE_SINK_PDO_3_CURRENT        1000U
+#define CFG_PORT_NOTE_SINK_PDO_1_CURRENT        3000U 
+#define CFG_PORT_NOTE_SINK_PDO_2_CURRENT        3000U
+#define CFG_PORT_NOTE_SINK_PDO_3_CURRENT        3000U
 #define CFG_PORT_NOTE_SINK_PDO_4_CURRENT        0
 #define CFG_PORT_NOTE_SINK_PDO_5_CURRENT        0U
 #define CFG_PORT_NOTE_SINK_PDO_6_CURRENT        0U
