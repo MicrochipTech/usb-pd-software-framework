@@ -79,8 +79,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 	- PD_ROLE_SINK
 	- PD_ROLE_SOURCE
 	- PD_ROLE_DRP*/
-#define DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)  ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) \
-             >> TYPEC_PORT_TYPE_POS)
+#define DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)  ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK) \
+             >> DPM_CFG_POWER_ROLE_POS)
 /*************************************************************************************************/
 
 /*Bit definition for u16DPMStatus variable*/
@@ -131,6 +131,21 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
 #define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)  ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
 /**************************************************************************************************/
+
+/*******************************************************************************/
+/*Defines used with gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/
+/*Defines to get Power role*/
+#define DPM_CFG_POWER_ROLE_MASK             (BIT(2) | BIT(1) | BIT(0))
+#define DPM_CFG_POWER_ROLE_POS              0
+
+/*Defines to get Rp Current*/ 
+#define DPM_CFG_RPVAL_MASK                  (BIT(4) | BIT(3))
+#define DPM_CFG_RPVAL_POS                   3
+
+/*Defines to get port enable/diable bit*/
+#define DPM_CFG_PORT_ENDIS_MASK             (BIT(5))
+#define DPM_CFG_PORT_ENDIS_POS              5
+/*******************************************************************************/
 
 // *****************************************************************************
 // *****************************************************************************

@@ -440,7 +440,7 @@ UINT8 UPD_CheckUPDsActive()
   	{
 		/*Ignore if port is disabled, so consider only for enabled ports*/
 		if (((gasCfgStatusData.sPerPortData[u8PortNo].u32CfgData \
-            & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
+            & DPM_CFG_PORT_ENDIS_MASK) >> DPM_CFG_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
 		{
 			/*UPD_STATE_ACTIVE will be set frequently by respective Alert ISR.
 			  It means that the appropriate port is active, so skip MCU IDLE*/
@@ -586,7 +586,7 @@ void UPD_CheckAndDisablePorts (void)
         /*Check if timer is Active, if Timer expired, come out of this loop */
         
         if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-            & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
+            & DPM_CFG_PORT_ENDIS_MASK) >> DPM_CFG_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
         {
             /*Start 10ms timer*/
             u8TimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(BYTE_LEN_10), NULL, \
@@ -612,14 +612,14 @@ void UPD_CheckAndDisablePorts (void)
                         /*Value read from this port is right, so enable the ports, Set SPI 
                            Communication is active for this port*/
                         gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= \
-                                (UPD_PORT_ENABLED << TYPEC_PORT_ENDIS_POS);
+                                (UPD_PORT_ENABLED << DPM_CFG_PORT_ENDIS_POS);
                         break;
                     }
                     else
                     {
                         /* If the VID and PID doesn't match, Disable the ports */
                         gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
-                                ~(TYPEC_PORT_ENDIS_MASK);
+                                ~(DPM_CFG_PORT_ENDIS_MASK);
                         
                     }
 #if (CONFIG_UPD350_SPI == CONFIG_DEFINE_UPD350_HW_INTF_SEL)            
@@ -627,7 +627,7 @@ void UPD_CheckAndDisablePorts (void)
                 else
                 {
                     gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
-                            ~(TYPEC_PORT_ENDIS_MASK);
+                            ~(DPM_CFG_PORT_ENDIS_MASK);
                 }   /*end of UPD_SPI_TEST_VAL check if else*/
 #endif            
             } /* end of while*/
@@ -639,8 +639,8 @@ void UPD_CheckAndDisablePorts (void)
     /* Work around - If port-0 as source and port-1 as sink interrupt issued continuously */
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
-        if (UPD_PORT_DISABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
-            >> TYPEC_PORT_ENDIS_POS))
+        if (UPD_PORT_DISABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_PORT_ENDIS_MASK) \
+            >> DPM_CFG_PORT_ENDIS_POS))
         {
             gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData = SET_TO_ZERO;
         }
@@ -655,8 +655,8 @@ void UPD_FindVBusCorrectionFactor(void)
       
     for(UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
-            >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
+        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_PORT_ENDIS_MASK) \
+            >> DPM_CFG_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
         {
             /* Read VBUS threshold register value from OTP */    
             u16VBUSTHR3 = UPD_RegReadWord (u8PortNum, TYPEC_VBUS_THR3);

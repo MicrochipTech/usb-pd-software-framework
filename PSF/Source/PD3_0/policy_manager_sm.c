@@ -40,7 +40,7 @@ void DPM_Init(UINT8 u8PortNum)
     u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
     u8DPMConfigData |= (CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS);
         
-    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== (PD_ROLE_SOURCE))
+    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK)== (PD_ROLE_SOURCE))
     {   
         /* Set Port Power Role as Source in DPM Configure variable*/
         u8DPMConfigData |= (PD_ROLE_SOURCE << DPM_DEFAULT_POWER_ROLE_POS); 
@@ -72,7 +72,7 @@ void DPM_Init(UINT8 u8PortNum)
                         gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;  
 
     }       
-    else if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== (PD_ROLE_SINK))
+    else if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK)== (PD_ROLE_SINK))
     {
         /* Set the Default Port Power Role as Sink in DPM Status variable */
         u8DPMConfigData |= (PD_ROLE_SINK << DPM_DEFAULT_POWER_ROLE_POS);
@@ -153,14 +153,14 @@ void DPM_StateMachineInit(void)
   	{
         
         if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-                                    & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
+                                    & DPM_CFG_PORT_ENDIS_MASK) >> DPM_CFG_PORT_ENDIS_POS))
         {
 		  	/* Init UPD350 GPIO */
 		  	UPD_GPIOInit(u8PortNum);
 			
 #if(TRUE == INCLUDE_PD_DRP)
             /*Type-C UPD350 register configuration for a port*/
-            if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_DRP)
+            if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK) == PD_ROLE_DRP)
             {
                 TypeC_InitDRPPort(u8PortNum);
 				
