@@ -174,22 +174,16 @@ void DPM_SetPortPower(UINT8 u8PortNum)
 
 void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 {
-	UINT16 u16Current;
+	UINT16 u16CurrentInmA, u16VoltageInmV;
+    
 	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
 	{
-		u16Current = gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA;
-        if (DPM_VBUS_ON == u8VbusOnorOff)
-        {
-            TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, u16Current, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-            PWRCTRL_SetPortPower (u8PortNum, TYPEC_VBUS_5V, u16Current);
-    
-        }
-        else
-        {
-            TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_0V, u16Current, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-		    PWRCTRL_SetPortPower (u8PortNum, TYPEC_VBUS_0V, u16Current);
-            PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);
-        }
+		u16CurrentInmA = gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA;
+        u16VoltageInmV = ((DPM_VBUS_ON == u8VbusOnorOff) ? TYPEC_VBUS_5V : TYPEC_VBUS_0V);
+        /* Configure VBUS threshold as per the voltage value */
+        TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+        /* Drive the VBUS as per the voltage value */
+        PWRCTRL_SetPortPower (u8PortNum, u16VoltageInmV, u16CurrentInmA);        
     }
 }
 
