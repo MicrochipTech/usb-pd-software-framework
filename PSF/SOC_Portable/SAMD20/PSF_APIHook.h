@@ -1714,7 +1714,7 @@ Remarks:
     User definition of this Hook function is not mandatory and can be used to 
     activate the PSF task in RTOS environment
  *************************************************************************/
-#define MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLESubState)
+#define MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState)
 
 /*******************************************************************************
 Function:
