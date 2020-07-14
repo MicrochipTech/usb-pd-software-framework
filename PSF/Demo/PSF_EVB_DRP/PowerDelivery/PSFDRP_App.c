@@ -273,12 +273,16 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {
             if (PORT0 == u8PortNum)
             {
-                DC_DC_EN_0_Set();
+                /*DC_DC_EN will be cleared initially. 
+                 It will be set when DRP acts as source*/
+                DC_DC_EN_0_Clear();
                 DC_DC_EN_0_OutputEnable();
             }
             else if(PORT1 == u8PortNum)
             {
-                DC_DC_EN_1_Set();
+                /*DC_DC_EN will be cleared initially. 
+                It will be set when DRP acts as source*/
+                DC_DC_EN_1_Clear();
                 DC_DC_EN_1_OutputEnable();
             }
             else
@@ -291,8 +295,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 __NOP();
             }   
-            /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_DC_DC_STATUS;
+
             break; 
         }
         case eORIENTATION_FUNC:
