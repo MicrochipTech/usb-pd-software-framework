@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFDRP_BootCfg.h
+    PDDrp_BootCfg.h
 
   Description:
     This header file contains user configurable globals and function prototypes.
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFDRP_BOOTCFG_H    /* Guard against multiple inclusion */
-#define _PSFDRP_BOOTCFG_H
+#ifndef _PDDRPPSFDRP_BOOTCFG_H    /* Guard against multiple inclusion */
+#define _PDDRP_BOOTCFG_H
 
 #define STRUCT_MAJOR_VERSION    0x01U
 #define STRUCT_MINOR_VERSION    0x00U
@@ -62,7 +62,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    - Fixed Supply: 4 Fixed PDOs only.
    Number of Source caps can be changed as per the needs of the user. */
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-#define CFG_PORT_SOURCE_NUM_OF_PDOS        5U
+#define CFG_PORT_SOURCE_NUM_OF_PDOS             5U
 #else 
 #define CFG_PORT_DOCK_SOURCE_NUM_OF_PDOS        3U
 #define CFG_PORT_NOTE_SOURCE_NUM_OF_PDOS        2U
@@ -286,39 +286,41 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_APDO_MAX_CURRENT_UNIT              50
 
 /* Macro used to form PPS APDO */
-#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) << CFG_APDO_PWR_SUPPLY_TYPE_POS) | \
-                                        ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
-                                        (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
-                                        (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
-                                        (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
+#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) \
+    << CFG_APDO_PWR_SUPPLY_TYPE_POS) | ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
+    (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
+    (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
+    (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
 
 /* Macro used to form Fixed PDO 1 */
 
-#define CFG_FORM_SOURCE_FIXED_PDO1(voltage,current,DualRoleData,usbCommn,usbSusp,unconstrainedPwr,isDrp)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
-                                         ((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
-                                         ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
-                                         ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
-                                         ((DualRoleData << CFG_PDO_DUAL_ROLE_DATA_POS)) |\
-                                         (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-                                         ((current)/CFG_PDO_CURRENT_UNIT))            
+#define CFG_FORM_SOURCE_FIXED_PDO1(voltage,current,DualRoleData,usbCommn,usbSusp,unconstrainedPwr,isDrp) \
+    (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
+    ((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
+    ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
+    ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
+    ((DualRoleData << CFG_PDO_DUAL_ROLE_DATA_POS)) |\
+    (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+    ((current)/CFG_PDO_CURRENT_UNIT))            
 
 /* Macro used to form Sink Fixed PDO 1 */
 #define CFG_FORM_SINK_FIXED_PDO1(current,voltage,DualRoleData,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
-                                         (((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
-                                         (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS)) | \
-                                         ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
-                                         ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
-                                         ((DualRoleData << CFG_PDO_DUAL_ROLE_DATA_POS)) |\
-                                         (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-                                         ((current)/CFG_PDO_CURRENT_UNIT))  
+    (((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
+    (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS)) | \
+    ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
+    ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
+    ((DualRoleData << CFG_PDO_DUAL_ROLE_DATA_POS)) |\
+    (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+    ((current)/CFG_PDO_CURRENT_UNIT))  
 
 /* Macro used to form Fixed PDOs 2 to 7 */
-#define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-                                                            ((current)/CFG_PDO_CURRENT_UNIT))
+#define CFG_FORM_FIXED_PDOx(voltage,current)   \
+    ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+    ((current)/CFG_PDO_CURRENT_UNIT))
 
 void PSF_LoadConfig(); 
 
-#endif /* _PSFDRP_BOOTCFG_H */
+#endif /* _PDDRP_BOOTCFG_H */
 
 /* *****************************************************************************
  End of File

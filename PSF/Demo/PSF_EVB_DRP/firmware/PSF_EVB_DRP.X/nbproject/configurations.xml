@@ -106,10 +106,10 @@
                      displayName="PowerDelivery"
                      projectFiles="true">
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFDRP_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFDRP_BootCfg.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_driver.h</itemPath>
+        <itemPath>../../PowerDelivery/PDDrp_App.h</itemPath>
+        <itemPath>../../PowerDelivery/PDDrp_BootCfg.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -204,10 +204,10 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFDRP_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFDRP_BootCfg.c</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.c</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_driver.c</itemPath>
+        <itemPath>../../PowerDelivery/PDDrp_App.c</itemPath>
+        <itemPath>../../PowerDelivery/PDDrp_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -263,14 +263,14 @@
         <targetDevice>ATSAMD20E16</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>AtmelIceTool</platformTool>
+        <platformTool>nEdbgTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.30</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
         <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
+        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -952,6 +952,43 @@
                   value=""/>
         <property key="warningmessagebreakoptions.warningmessages" value="holdstate"/>
       </Simulator>
+      <nEdbgTool>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="communication.activationmode" value="nohv"/>
+        <property key="communication.interface" value="swd"/>
+        <property key="communication.speed" value="2.000"/>
+        <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="firmware.path"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="firmware.update.action" value="firmware.update.use.latest"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.configurationmemory2" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.exclude.configurationmemory" value="true"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.instruction.ram.ranges"
+                  value="${memories.instruction.ram.ranges}"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.ranges" value="0-ffff"/>
+        <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/I19150/Documents/phase4-drp-repository/PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/debug/default/PSF_EVB_DRP_ptg"/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preservedataflash.ranges"
+                  value="${memories.dataflash.default}"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveeeprom.ranges" value=""/>
+        <property key="programoptions.preserveprogram.ranges" value="0-20001fff"/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
+        <property key="voltagevalue" value=""/>
+      </nEdbgTool>
     </conf>
   </confs>
 </configurationDescriptor>
