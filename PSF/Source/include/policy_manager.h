@@ -79,8 +79,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 	- PD_ROLE_SINK
 	- PD_ROLE_SOURCE
 	- PD_ROLE_DRP*/
-#define DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)  ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK) \
-             >> DPM_CFG_POWER_ROLE_POS)
+#define DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)  \
+    ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK) \
+    >> DPM_CFG_POWER_ROLE_POS)
 /*************************************************************************************************/
 
 /*Bit definition for u16DPMStatus variable*/
@@ -102,15 +103,17 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 	- PD_ROLE_SINK
 	- PD_ROLE_SOURCE
 	- PD_ROLE_DRP*/
-#define DPM_SET_POWER_ROLE_STS(u8PortNum, u8PowerRole)       gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_POWER_ROLE_MASK); \
-                                                             gasDPM[u8PortNum].u16DPMStatus |= (u8PowerRole << DPM_CURR_POWER_ROLE_POS);
+#define DPM_SET_POWER_ROLE_STS(u8PortNum, u8PowerRole)      \
+    gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_POWER_ROLE_MASK); \
+    gasDPM[u8PortNum].u16DPMStatus |= (u8PowerRole << DPM_CURR_POWER_ROLE_POS);
 
 /*u8DataRole can take one of the three values:
 	- PD_ROLE_UFP
 	- PD_ROLE_DFP
 	- PD_ROLE_TOGGLING */
-#define DPM_SET_DATA_ROLE_STS(u8PortNum, u8DataRole)       gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_DATA_ROLE_MASK); \
-                                                           gasDPM[u8PortNum].u16DPMStatus |= (u8DataRole << DPM_CURR_DATA_ROLE_POS);
+#define DPM_SET_DATA_ROLE_STS(u8PortNum, u8DataRole)     \
+  gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_DATA_ROLE_MASK); \
+  gasDPM[u8PortNum].u16DPMStatus |= (u8DataRole << DPM_CURR_DATA_ROLE_POS);
 /**************************************************************************************************/
 
 /************************************************************************************************************/
@@ -120,16 +123,21 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 	- PD_ROLE_SINK
 	- PD_ROLE_SOURCE
 	- PD_ROLE_DRP*/
-#define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
+#define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)         \
+    ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
 
 /*DPM_GET_CURRENT_DATA_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_UFP
 	- PD_ROLE_DFP
 	- PD_ROLE_TOGGLING */
-#define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)          ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
+#define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)         \
+   ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
 
-#define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)        ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
-#define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)  ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
+#define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)       \
+    ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
+#define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum) \
+    ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> \
+    DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
 /**************************************************************************************************/
 
 /*******************************************************************************/
@@ -159,12 +167,14 @@ Source/Sink Power delivery objects*/
 #define DPM_PDO_VOLTAGE_MASK                 0x3FF
 #define DPM_PDO_VOLTAGE_POS                  10
 #define DPM_PDO_VOLTAGE_UNIT                 50
-#define DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(u32PDO)    (((u32PDO >> DPM_PDO_VOLTAGE_POS) & DPM_PDO_VOLTAGE_MASK) * DPM_PDO_VOLTAGE_UNIT)
+#define DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(u32PDO)   \
+    (((u32PDO >> DPM_PDO_VOLTAGE_POS) & DPM_PDO_VOLTAGE_MASK) * DPM_PDO_VOLTAGE_UNIT)
 
 /*Defines for getting current from PDO[9:0]*/
 #define DPM_PDO_CURRENT_MASK                 0x1FF
 #define DPM_PDO_CURRENT_UNIT                 10
-#define DPM_GET_CURRENT_FROM_PDO_MILLI_A(u32PDO)    ((u32PDO & DPM_PDO_CURRENT_MASK) * DPM_PDO_CURRENT_UNIT)
+#define DPM_GET_CURRENT_FROM_PDO_MILLI_A(u32PDO)   \
+    ((u32PDO & DPM_PDO_CURRENT_MASK) * DPM_PDO_CURRENT_UNIT)
 
 #define DPM_GET_PDO_TYPE(X)   					((X & 0xC0000000) >> 30)
 #define DPM_GET_PDO_CURRENT(X)                  ((X & 0x000003FF))
@@ -220,14 +230,17 @@ Source/Sink Power delivery objects*/
 	- PD_ROLE_SINK
 	- PD_ROLE_SOURCE
 	- PD_ROLE_DRP*/
-#define DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u16DPMStatus)   ((u16DPMStatus & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
+#define DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u16DPMStatus)   \
+    ((u16DPMStatus & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
 
 /*DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u8PortNum) will return one of the following values
 	- PD_ROLE_UFP
 	- PD_ROLE_DFP
 	- PD_ROLE_TOGGLING*/
-#define DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u16DPMStatus)    ((u16DPMStatus & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
-#define DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u16DPMStatus)  ((u16DPMStatus & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
+#define DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u16DPMStatus)    \
+    ((u16DPMStatus & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
+#define DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u16DPMStatus)  \
+    ((u16DPMStatus & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
 /*****************************************************************************************/
 
 /********************** Return Values from PE_ValidateMessage API**************/
@@ -354,14 +367,16 @@ Source/Sink Power delivery objects*/
 #define DPM_PB_ENABLE                   0x10
 
 /* Macro to know if PB is enabled for the system and for the port */
-#define DPM_IS_PB_ENABLED(u8PortNum)   ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE) \
-                                            ? TRUE : FALSE)   
+#define DPM_IS_PB_ENABLED(u8PortNum)   \
+    ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE) \
+    ? TRUE : FALSE)   
 
 /* PT Enable for the system */
 #define DPM_PT_ENABLE                   0x01 
 
 /* Macro to know if PT is enabled for the system */
-#define DPM_IS_PT_ENABLED             ((gasCfgStatusData.u8PwrThrottleCfg & DPM_PT_ENABLE) ? TRUE : FALSE)  
+#define DPM_IS_PT_ENABLED             \
+    ((gasCfgStatusData.u8PwrThrottleCfg & DPM_PT_ENABLE) ? TRUE : FALSE)  
 
 /*********************PPS APDO Defines ******************/
 #define DPM_APDO_MAX_CURRENT_UNIT                50 

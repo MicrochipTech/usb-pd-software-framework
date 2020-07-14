@@ -106,10 +106,10 @@
                      displayName="PowerDelivery"
                      projectFiles="true">
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFDRP_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFDRP_BootCfg.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_driver.h</itemPath>
+        <itemPath>../../PowerDelivery/PDDrp_App.h</itemPath>
+        <itemPath>../../PowerDelivery/PDDrp_BootCfg.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -204,10 +204,10 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFDRP_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFDRP_BootCfg.c</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.c</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_driver.c</itemPath>
+        <itemPath>../../PowerDelivery/PDDrp_App.c</itemPath>
+        <itemPath>../../PowerDelivery/PDDrp_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
