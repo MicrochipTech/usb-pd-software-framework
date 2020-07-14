@@ -273,12 +273,16 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {
             if (PORT0 == u8PortNum)
             {
-                DC_DC_EN_0_Set();
+                /*DC_DC_EN will be cleared initially. 
+                 It will be set when DRP acts as source*/
+                DC_DC_EN_0_Clear();
                 DC_DC_EN_0_OutputEnable();
             }
             else if(PORT1 == u8PortNum)
             {
-                DC_DC_EN_1_Set();
+                /*DC_DC_EN will be cleared initially. 
+                It will be set when DRP acts as source*/
+                DC_DC_EN_1_Clear();
                 DC_DC_EN_1_OutputEnable();
             }
             else
@@ -291,8 +295,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 __NOP();
             }   
-            /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_DC_DC_STATUS;
+
             break; 
         }
         case eORIENTATION_FUNC:
@@ -303,20 +306,41 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eSNK_CAPS_MISMATCH_FUNC:
         {
-            SNK_CAP_MISMATCH_Clear();
-            SNK_CAP_MISMATCH_OutputEnable();            
+            if (PORT0 == u8PortNum)
+            {
+                SNK_CAP_MISMATCH_Clear();
+                SNK_CAP_MISMATCH_OutputEnable();  
+            }
+            else
+            {
+                /*Do nothing since sink specific IOs are applicable only for port 0*/
+            }
             break;
         }
         case eSNK_1_5A_IND_FUNC:
         {
-            SNK_1_5A_IND_Clear();
-            SNK_1_5A_IND_OutputEnable();            
+            if (PORT0 == u8PortNum)
+            {
+                SNK_1_5A_IND_Clear();
+                SNK_1_5A_IND_OutputEnable();            
+            }
+            else
+            {
+                /*Do nothing since sink specific IOs are applicable only for port 0*/
+            }
             break;
         }
         case eSNK_3A_IND_FUNC:
         {
-            SNK_3A_IND_Clear();
-            SNK_3A_IND_OutputEnable();            
+            if (PORT0 == u8PortNum)
+            {
+                SNK_3A_IND_Clear();
+                SNK_3A_IND_OutputEnable();  
+            }
+            else
+            {
+                /*Do nothing since sink specific IOs are applicable only for port 0*/
+            }
             break;
         }    
         default:
@@ -469,37 +493,58 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case eSNK_CAPS_MISMATCH_FUNC:
         {
-            if (eGPIO_ASSERT == eGPIODrive)
+            if (PORT0 == u8PortNum)
             {
-                SNK_CAP_MISMATCH_Set();
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    SNK_CAP_MISMATCH_Set();
+                }
+                else
+                {
+                    SNK_CAP_MISMATCH_Clear();
+                }
             }
             else
             {
-                SNK_CAP_MISMATCH_Clear();
+                /*Do nothing since sink specific IOs are applicable only for port 0*/
             }
             break;
         }
         case eSNK_1_5A_IND_FUNC:
         {
-            if (eGPIO_ASSERT == eGPIODrive)
+            if (PORT0 == u8PortNum)
             {
-                SNK_1_5A_IND_Set();
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    SNK_1_5A_IND_Set();
+                }
+                else
+                {
+                    SNK_1_5A_IND_Clear();
+                }
             }
             else
             {
-                SNK_1_5A_IND_Clear();
+                /*Do nothing since sink specific IOs are applicable only for port 0*/
             }
             break;
         }
         case eSNK_3A_IND_FUNC:
         {
-            if (eGPIO_ASSERT == eGPIODrive)
+            if (PORT0 == u8PortNum)
             {
-                SNK_3A_IND_Set();
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    SNK_3A_IND_Set();
+                }
+                else
+                {
+                    SNK_3A_IND_Clear();
+                }
             }
             else
             {
-                SNK_3A_IND_Clear();
+                /*Do nothing since sink specific IOs are applicable only for port 0*/
             }
             break;
         }

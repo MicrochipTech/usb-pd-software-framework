@@ -102,8 +102,8 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     /*Setting Match debounce register */
     UPD_RegisterWrite (u8PortNum, TYPEC_MATCH_DEB, &u8MatchDebVal, BYTE_LEN_1);	
     
-    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK)\
-                >> TYPEC_PORT_RPVAL_POS);
+    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK)\
+                >> DPM_CFG_RPVAL_POS);
     TypeC_DRP_SetCCSampleEnable(u8PortNum, u16Data);
     
     /*FW shall mask the CC1_MATCH_CHG, CC2_MATCH_CHG and CC_MATCH_VLD interrupts to
@@ -124,8 +124,8 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     
     /*FW programs DRP Current Advertisement (DRP_CUR_ADV) in DRP Control Register. This value
     will be advertised when DRP advertises Source capabilities.*/
-    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK) \
-              >> TYPEC_PORT_RPVAL_POS);        
+    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
+              >> DPM_CFG_RPVAL_POS);        
     UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, (u16Data << TYPEC_DRP_RP_POS));
     
     /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
@@ -251,15 +251,15 @@ void TypeC_InitPort (UINT8 u8PortNum)
             /*Write CCx Debounce clear enable register, CCx Match Enable register, 
             CCx sample enable register*/            
             TypeC_SetCCDebounceVariable(u8PortNum, ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
-                                       TYPEC_PORT_RPVAL_MASK) >> TYPEC_PORT_RPVAL_POS));
+                                       DPM_CFG_RPVAL_MASK) >> DPM_CFG_RPVAL_POS));
             
             /*Setting Port Role as DFP in TYPEC_CC_HW_CTL register*/
             TypeC_SetDataRole (u8PortNum,PD_ROLE_DFP);
                          
             /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and 
             CC2*/ 
-            u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK)\
-                      >> TYPEC_PORT_RPVAL_POS);
+            u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK)\
+                      >> DPM_CFG_RPVAL_POS);
             
             /*Setting the Power role as Source*/
             TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, (UINT8) u16Data);
@@ -426,7 +426,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
 
                     UINT8 u8RpValue = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
-                    TYPEC_PORT_RPVAL_MASK) >> TYPEC_PORT_RPVAL_POS);
+                    DPM_CFG_RPVAL_MASK) >> DPM_CFG_RPVAL_POS);
                                         
 					/*Power down the CC comparator*/
                     TypeC_ConfigCCComp(u8PortNum, TYPEC_CC_COMP_CTL_DIS);
@@ -450,15 +450,19 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_SRC: Entered UNATTACHED"\
                                          "SRC State\r\n");
 
+                    /*Disable DC_DC_EN if DRP does not act as source*/
+                    PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
+                    
 #if(TRUE == INCLUDE_PD_DRP)
-                    if(gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SOURCE)
+                    if((gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SOURCE) \
+                            && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
         
                         /*Setting CC Comparator OFF*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
-    
+                        
                         /*Mask CC match interrupts to avoid interrupts due to Ra/Open termination*/
                         UPD_RegByteClearBit (u8PortNum,  TYPEC_CC_INT_EN,\
                         (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
@@ -467,6 +471,20 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
                         
+                        /* Set the Current Port Power Role as Sink in DPM Status variable */
+                        DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_DRP);
+        
+                        /* Set the Current  Port Data Role as UFP in DPM Status variable */
+                        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_TOGGLING);
+            
+                        /* Set Port Power Role as Source in Port Connection Status register */
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_DRP; 
+        
+                        /* Set Port Data Role as DFP in Port Connection Status register */
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_DATA_ROLE_STATUS_MASK);
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS_TOGGLING;
+        
                         /*Enable DRP offload.*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
 
@@ -558,7 +576,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         {
                             /*Set BLK_PD_MSG. Done in cronous*/
                             UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
-    
+                            
+                            /*Enable DC_DC_EN if DRP acts as source*/
+                            PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
+                            
                              gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
                              gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
                         }
@@ -739,7 +760,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     }
                     
 #if(TRUE == INCLUDE_PD_DRP)
-                    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SOURCE;
+                    if(PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
+                    {
+                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SOURCE;
+                    }
 #endif
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
 
@@ -882,8 +906,12 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
 
 #if(TRUE == INCLUDE_PD_DRP)
-                    if(gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SINK)
+                    if((gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SINK) \
+                            && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
+                        /*Drive DAC_I to 0V if DRP is not sink*/
+                        MCHP_PSF_HOOK_DRIVE_DAC_I(SET_TO_ZERO);
+                        
                         /*Setting CC Comparator OFF*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
     
@@ -892,6 +920,20 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
                             
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+                        
+                                                /* Set the Current Port Power Role as Sink in DPM Status variable */
+                        DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_DRP);
+        
+                        /* Set the Current  Port Data Role as UFP in DPM Status variable */
+                        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_TOGGLING);
+            
+                        /* Set Port Power Role as Source in Port Connection Status register */
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_DRP; 
+        
+                        /* Set Port Data Role as DFP in Port Connection Status register */
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_DATA_ROLE_STATUS_MASK);
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS_TOGGLING;
                         
                         /*Enable DRP offload.*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
@@ -968,7 +1010,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHWAIT_SNK_TPDDEB_SS:
                 {                  
 #if(TRUE == INCLUDE_PD_DRP)
-                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK) == PD_ROLE_DRP)
+                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK) == PD_ROLE_DRP)
                     {
 						/*If source is detached during TYPEC_ATTACHWAIT_SNK state, according to
 						DRP state machine, the next state should be TYPEC_UNATTACHED_SRC*/
@@ -1064,8 +1106,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
-#if(TRUE == INCLUDE_PD_DRP)                    
-                    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
+#if(TRUE == INCLUDE_PD_DRP)       
+                    if(PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
+                    {
+                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
+                    }
 #endif
 					gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
 
@@ -1291,8 +1336,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         /*Setting Rp Current Source as user given and Rd as Open disconnect in both 
                         CC1 and CC2*/ 
-                        u8Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK) \
-                                  >> TYPEC_PORT_RPVAL_POS);            
+                        u8Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
+                                  >> DPM_CFG_RPVAL_POS);            
                         TypeC_SetPowerRole  (u8PortNum, TYPEC_ROLE_SOURCE, u8Data);
                         
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
@@ -1345,7 +1390,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Setting CC Comparator OFF*/
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
-                    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_TYPE_MASK)== PD_ROLE_SOURCE)
+                    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK)== PD_ROLE_SOURCE)
                     {
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
@@ -2301,6 +2346,18 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
             /* Set the Current  Port Data Role as UFP in DPM Status variable */
             DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_UFP);
             
+            /* Set Port Power Role as Sink in Port Connection Status register */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                    (~DPM_PORT_POWER_ROLE_STATUS_MASK);
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_POWER_ROLE_STATUS_SINK; 
+        
+            /* Set Port Data Role as UFP in Port Connection Status register */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                    (~DPM_PORT_DATA_ROLE_STATUS_MASK);
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_DATA_ROLE_STATUS_UFP; 
+        
             (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
             gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
             DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
@@ -2315,6 +2372,18 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
         
             /* Set the Current  Port Data Role as DFP in DPM Status variable */
             DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_DFP); 
+            
+                        /* Set Port Power Role as Sink in Port Connection Status register */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                    (~DPM_PORT_POWER_ROLE_STATUS_MASK);
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_POWER_ROLE_STATUS_SOURCE; 
+        
+            /* Set Port Data Role as UFP in Port Connection Status register */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                    (~DPM_PORT_DATA_ROLE_STATUS_MASK);
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                    DPM_PORT_DATA_ROLE_STATUS_DFP; 
             
             (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
             gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, 
@@ -2514,8 +2583,8 @@ void TypeC_SetDefaultRpValue (UINT8 u8PortNum)
 {
     UINT16 u16Data;    
     
-    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_RPVAL_MASK) \
-              >> TYPEC_PORT_RPVAL_POS);
+    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
+              >> DPM_CFG_RPVAL_POS);
     
     /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and CC2*/ 
     TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, (UINT8) u16Data);
