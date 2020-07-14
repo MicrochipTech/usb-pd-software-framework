@@ -564,8 +564,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #define DPM_CLEAR_ALL_CLIENT_REQ                 0x00 
 
 #define DPM_CLIENT_REQ_RENEGOTIATE               BIT(0)
-#define DPM_CLIENT_REQ_GET_SINK_CAPS             BIT(1)
-#define DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD        BIT(2)
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(3)
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(4)
 #define DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT      BIT(5)
@@ -573,13 +571,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 /* Macros to raise a client request to DPM */
 #define DPM_SET_RENEGOTIATE_REQ(u8PortNum)     (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_RENEGOTIATE)
-
-#define DPM_SET_GET_SINK_CAPS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
-                                                            |= DPM_CLIENT_REQ_GET_SINK_CAPS)
-
-#define DPM_SET_GET_STATUS_EXTD_REQ(u8PortNum)  (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
-                                                            |= DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD)
-
 #define DPM_SET_VBUS_FAULT_OV_REQ(u8PortNum)    (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
                                                             |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV)
 
