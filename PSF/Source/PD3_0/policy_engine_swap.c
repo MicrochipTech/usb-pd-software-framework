@@ -260,14 +260,14 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         u8TxDoneSt = ePE_SRC_READY;
-        u8TxDoneSS = ePE_SRC_READY_ENTRY_SS;
+        u8TxDoneSS = ePE_SRC_READY_END_AMS_SS;
         u8TxFailedSt = ePE_SRC_SEND_SOFT_RESET;
         u8TxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS;        
     }
     else
     {
         u8TxDoneSt = ePE_SNK_READY;
-        u8TxDoneSS = ePE_SNK_READY_ENTRY_SS;
+        u8TxDoneSS = ePE_SNK_READY_IDLE_SS;
         u8TxFailedSt = ePE_SNK_SEND_SOFT_RESET;
         u8TxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
     }
@@ -354,8 +354,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             }
             else
             {
-                gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_REJECT_SWAP; 
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_REJECT_SWAP_ENTRY_SS;                           
+                /* Use common state available for sending reject message */
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;                           
             }
             break; 
         }
@@ -399,41 +400,6 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* Idle state to wait for accept message transmit completion */
                     break; 
                 }
-                default:
-                {
-                    break; 
-                }
-            }
-            break; 
-        }
-        
-        case ePE_PRS_REJECT_SWAP:
-        {
-            switch(gasPolicyEngine[u8PortNum].ePESubState)
-            {
-                case ePE_PRS_REJECT_SWAP_ENTRY_SS:
-                {
-					/* Send Reject message */
-                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT, \
-                                        PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmitDataObj = NULL;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
-                    
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(u8TxDoneSt, \
-                                                u8TxDoneSS, u8TxFailedSt, u8TxFailedSS);
-                    u8IsTransmit = TRUE;
-                    /* Move the Policy engine to Idle state*/
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_REJECT_SWAP_IDLE_SS;
-                    
-                    break; 
-                }
-                case ePE_PRS_REJECT_SWAP_IDLE_SS:
-                {
-                    /* Idle state to wait for Reject message transmit completion */
-                    break; 
-                }                
                 default:
                 {
                     break; 
