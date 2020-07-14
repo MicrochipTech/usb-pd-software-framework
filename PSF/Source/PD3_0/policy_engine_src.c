@@ -1043,7 +1043,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;                 
                         
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS, \
-                                                    ePE_SRC_READY, ePE_SRC_READY_END_AMS_SS);
+                                                    ePE_SRC_SEND_SOFT_RESET, ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                                                 
                     u8IsTransmit = TRUE;                                             
                    
@@ -1421,7 +1421,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;                 
                         
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS, \
-                                                    ePE_SRC_READY, ePE_SRC_READY_END_AMS_SS);
+                                                    ePE_SRC_SEND_SOFT_RESET, ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                                                 
                     u8IsTransmit = TRUE;                                             
                    
