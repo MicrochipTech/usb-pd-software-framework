@@ -820,6 +820,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     else if ((ePE_PRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"Accept Received for PR_Swap Sent\r\n");
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
@@ -890,6 +891,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     else if ((ePE_PRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"Reject Received for PR_Swap Sent\r\n");
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
@@ -954,6 +956,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     else if (ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS == \
                                     gasPolicyEngine[u8PortNum].ePESubState)
                     {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP: PS_RDY received from Original Sink\r\n");
                          /*Kill the PSSourceOn timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
@@ -964,6 +967,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     else if (ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS == \
                                     gasPolicyEngine[u8PortNum].ePESubState)
                     {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP: PS_RDY received from Original Source\r\n");
                         /*Kill the PSSourceOff timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);                        
 
@@ -1134,6 +1138,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                          (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP Received from Partner \r\n");
                         /*Kill the tPRSwapWait timer*/
                         PDTimer_Kill(gasDPM[u8PortNum].u8PRSwapWaitTmrID);
                         /* Set the timer Id to Max Concurrent Value*/
