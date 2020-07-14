@@ -513,10 +513,6 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_DISABLED_IDLE_SS                          1 
 /*************************************************************/
 
-/*Defines for VCONN OCS Enable*/
-#define TYPEC_VCONN_OCS_EN                BIT(9)
-#define TYPEC_VCONN_OCS_EN_POS            9
-
 /*Defines for setting Rp value of source*/
 #define TYPEC_RP_DISABLED             0
 #define TYPEC_RP_DEFAULT_CURRENT      1

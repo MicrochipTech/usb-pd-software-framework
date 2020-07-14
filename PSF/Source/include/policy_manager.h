@@ -153,6 +153,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Defines to get port enable/diable bit*/
 #define DPM_CFG_PORT_ENDIS_MASK             (BIT(5))
 #define DPM_CFG_PORT_ENDIS_POS              5
+
+/*Defines to get VCONN OCS enabled bit*/
+#define DPM_CFG_VCONN_OCS_EN_POS               9U
+#define DPM_CFG_VCONN_OCS_ENABLE               (1 << DPM_CFG_VCONN_OCS_EN_POS)
 /*******************************************************************************/
 
 // *****************************************************************************
