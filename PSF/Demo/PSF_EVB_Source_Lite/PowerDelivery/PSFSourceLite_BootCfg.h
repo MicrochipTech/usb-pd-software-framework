@@ -45,8 +45,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define SILICON_VERSION         0x00U
 
 #define CFG_PORT_POWER_ROLE                1U
-#define CFG_PORT_RP_CURRENT_VALUE          (3U << TYPEC_PORT_RPVAL_POS)
-#define CFG_PORT_ENABLE                    (1U << TYPEC_PORT_ENDIS_POS)
+#define CFG_PORT_RPVAL_POS                 3U
+#define CFG_PORT_ENDIS_POS                 5U
+#define CFG_PORT_RP_CURRENT_VALUE          (3U << CFG_PORT_RPVAL_POS)
+#define CFG_PORT_ENABLE                    (1U << CFG_PORT_ENDIS_POS)
 #define CFG_PORT_SOURCE_NUM_OF_PDOS        4U
 #define CFG_PORT_SOURCE_USB_SUSP           0U
 #define CFG_PORT_SOURCE_UNCONSTARINED_PWR  1U
