@@ -921,7 +921,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
                         
-                                                /* Set the Current Port Power Role as Sink in DPM Status variable */
+    					/* Set the Current Port Power Role as Sink in DPM Status variable */
                         DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_DRP);
         
                         /* Set the Current  Port Data Role as UFP in DPM Status variable */
