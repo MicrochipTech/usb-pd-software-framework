@@ -169,12 +169,12 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 	    {
 	        /* Do Nothing */
 	    }
-
-    	PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
         
         #if (TRUE == INCLUDE_PD_PR_SWAP)
-        /* To-do: PR_Swap module - Call PE_RunPRSwapStateMachine() here */
+            PE_RunPRSwapStateMachine (u8PortNum);
         #endif 
+
+    	PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);        
 	}
 }
 
