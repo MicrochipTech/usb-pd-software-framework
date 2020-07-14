@@ -1826,5 +1826,26 @@ void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole);
 **************************************************************************************************/
 void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
+/**************************************************************************************************
+    Function:
+        void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange);
+    Summary:
+        API to update the port's Data role. 
+    Description:
+        This API changes current status variable of DPM and Status register to 
+        Data role provided.
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8DataRoleChange - New Data role to be changed
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+
+void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange);
+
 #endif /*_POLICY_MANAGER_H_*/
 
