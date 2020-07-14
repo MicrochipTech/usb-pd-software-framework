@@ -51,9 +51,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define CFG_PORT_POWER_ROLE_0                CFG_PORT_POWER_ROLE_DRP
 #define CFG_PORT_POWER_ROLE_1                CFG_PORT_POWER_ROLE_DRP
-#define CFG_PORT_RP_CURRENT_VALUE_0          (3U << DPM_CFG_RPVAL_POS)
-#define CFG_PORT_RP_CURRENT_VALUE_1          (3U << DPM_CFG_RPVAL_POS)
-#define CFG_PORT_ENABLE                    (1U << DPM_CFG_PORT_ENDIS_POS)
+#define CFG_PORT_RPVAL_POS                   3
+#define CFG_PORT_ENDIS_POS                   5
+#define CFG_PORT_RP_CURRENT_VALUE_0          (3U << CFG_PORT_RPVAL_POS)
+#define CFG_PORT_RP_CURRENT_VALUE_1          (3U << CFG_PORT_RPVAL_POS)
+#define CFG_PORT_ENABLE                      (1U << CFG_PORT_ENDIS_POS)
 
 /* Source Pro Default PDO Configuration for 60W PDP: 
    - PPS: 4 Fixed PDOs + 1 APDO
