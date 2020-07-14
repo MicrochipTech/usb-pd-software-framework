@@ -40,7 +40,7 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 	UINT32 u32TransmitHeader = SET_TO_ZERO;
 
 	/* Transmit Data Object */
-	UINT32 *u32pTransmitDataObj = SET_TO_ZERO; 
+	UINT32 *u32pTransmitDataObj = NULL; 
 
 	/* Transmit Call back */
 	PRLTxCallback pfnTransmitCB = NULL;
@@ -74,7 +74,18 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
         case ePE_DRS_EVALUATE_SWAP:
         {
             /*Evaluate swap through DPM function*/
+            if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap(u8PortNum, eDR_SWAP_RCVD))
+            {
+                gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_ACCEPT_SWAP; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_ACCEPT_SWAP_SEND_ACCEPT_SS;           
+            }
+            else
+            {
+                gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_REJECT_SWAP; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_REJECT_SWAP_SEND_REJECT_SS;                           
+            }
             break;
+            
         }
         case ePE_DRS_ACCEPT_SWAP:
         {
@@ -86,17 +97,18 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmitDataObj = NULL;
+                    /*u8TransmitSOP is set to PRL_SOP_TYPE by default and u32pTransmitDataObj is
+                     assigned to a NULL pointer */
                     pfnTransmitCB = PE_StateChange_TransmitCB;
-      
+                    
+                    /*If GoodCRC is not received, Soft reset state is set depending on
+                     Power role*/
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_DRS_DFP_UFP_ROLE_CHANGE , \
                                                 NULL, \
                                                u8TxFailedSt, u8TxFailedSS);
 
-                    u8IsTransmit = TRUE;
-                    
-                    /*Wait in a idle state to get a response for Accept*/
+                    u8IsTransmit = TRUE;        
+                    /*Wait in a idle state to get a Good_CRC response for Accept*/
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_ACCEPT_SWAP_IDLE_SS;
                     break;
                 }
@@ -121,17 +133,16 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     /* Send the Reject message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmitDataObj = NULL;
+                    /*u8TransmitSOP is set to PRL_SOP_TYPE by default and u32pTransmitDataObj is
+                     assigned to a NULL pointer */
                     pfnTransmitCB = PE_StateChange_TransmitCB;
-      
+                    
+                    /*Moved to Source and sink ready state on Good CRC reception or
+                     Soft reset state if GOOD CRC is not received */
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(u8TxDoneSt, \
                                                 u8TxDoneSS, \
                                                u8TxFailedSt, u8TxFailedSS);
-
                     u8IsTransmit = TRUE;
-                    
                     /*Wait in a idle state to get a response for Reject*/
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_REJECT_SWAP_IDLE_SS;
                    
@@ -152,6 +163,19 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
         case ePE_DRS_DFP_UFP_ROLE_CHANGE:
         {
             /*Change the present role*/
+            if (PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+            {
+                DPM_UpdateDataRole (u8PortNum, PD_ROLE_UFP);
+            }
+            else if (PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+            {
+                DPM_UpdateDataRole (u8PortNum, PD_ROLE_DFP);
+            }
+            else
+            {
+                /*Do nothing*/
+            }
+            
             break;
         }
        case ePE_DRS_SEND_SWAP:
