@@ -685,6 +685,36 @@ void DPM_OnTypeCAttach(UINT8 u8PortNum)
     
 }
 
+void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange)
+{
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                                    ~DPM_PORT_DATA_ROLE_STATUS_MASK;
+    if (PD_ROLE_DFP == u8DataRoleChange)
+    {
+        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_DFP);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                                    DPM_PORT_DATA_ROLE_STATUS_DFP;
+        /*Inform Protocol layer of the role change*/
+        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+        
+    }
+    else if (PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+    {
+        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_UFP);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                                    DPM_PORT_DATA_ROLE_STATUS_UFP;
+        /*Inform Protocol layer of the role change*/
+        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+    }
+    else
+    {
+        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_TOGGLING);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                                    PD_ROLE_TOGGLING;
+        /*Not applicable to inform protocol layer*/
+    }
+}
+
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 
 UINT32 DPM_ReturnPPSSrcTransTmrVal (UINT8 u8PortNum)
@@ -1474,3 +1504,4 @@ void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 
 #endif 
 /************************************************************************************************************************/
+
