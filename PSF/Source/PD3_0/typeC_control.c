@@ -2112,7 +2112,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         }
         
         if (TRUE == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
-                                       TYPEC_VCONN_OCS_EN) >> TYPEC_VCONN_OCS_EN_POS)) 
+                        DPM_CFG_VCONN_OCS_ENABLE) >> DPM_CFG_VCONN_OCS_EN_POS)) 
         {
             /*Enable VCONN OCS detection only if Bit 9(VCONN OCS En) of 
               gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData defined as 1*/
