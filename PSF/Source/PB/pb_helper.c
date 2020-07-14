@@ -181,7 +181,7 @@ void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattageIn250mW)
 void PB_InitiateGetSinkCapsWrapper(UINT8 u8PortNum)
 {
     /* Raise Get Sink caps request to DPM */
-    DPM_SET_GET_SINK_CAPS_REQ(u8PortNum);
+    DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
     
     PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_GET_SINKCAPS_SENT_SS);
     

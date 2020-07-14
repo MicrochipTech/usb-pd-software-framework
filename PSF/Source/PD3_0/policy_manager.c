@@ -660,7 +660,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
 void DPM_OnTypeCAttach(UINT8 u8PortNum)
 {
     /*If the port is Source set Internal event to initiate Get_SinkCaps*/
-    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+    if ((DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) && (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
     {
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
     }
@@ -1360,8 +1360,10 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
 {
     UINT8 u8RetVal = DPM_REJECT_SWAP;
+    /* Todo: VCONN_Swap module - Do remove the #if check once VCONN Swap is implemented*/
+    #if ((TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
     UINT16  u16SwapPolicy = gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy;
-            
+    #endif
     switch (eRoleSwapMsg)
     {
         case eVCONN_SWAP_RCVD: 

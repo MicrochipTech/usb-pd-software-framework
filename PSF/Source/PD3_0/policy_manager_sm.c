@@ -644,31 +644,6 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
                 /* TBD for Sink*/
             }
         } /*DPM_CLIENT_REQ_RENEGOTIATE*/
-        /* Check for Get Sink caps request */
-        else if (DPM_CLIENT_REQ_GET_SINK_CAPS & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
-        {
-            /* Clear the request since the request is accepted and going to be handled */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_GET_SINK_CAPS);                
-
-            /* Check for Port Power Role */
-            if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
-            {
-                /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;                    
-            }
-            else
-            {
-                /*When role is sink Get_Sink_Caps request is not applicable*/
-            }
-        }/*DPM_CLIENT_REQ_GET_SINK_CAPS*/
-        /* Check for Get Sink Caps Extended Request */
-        else if (DPM_CLIENT_REQ_GET_SINK_CAPS_EXTD & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
-        {
-            /* This would be needed in future phases while supporting  
-               Power Balancing on PPS ports */
-        }
         else
         {
             /* Do Nothing */
