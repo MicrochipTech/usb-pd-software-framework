@@ -522,7 +522,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
 
     /* DPM notifications that need to be handled by stack applications must
        be added here before calling the user function. */
-    
     switch(eDPMNotification)
     {
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
@@ -544,12 +543,16 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
+			/*Process Type -C attach*/
+            DPM_OnTypeCAttach(u8PortNum);
             /* Assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
+			/* Process Type-C attach*/
+            DPM_OnTypeCAttach(u8PortNum);
             /* De-assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
             break;
