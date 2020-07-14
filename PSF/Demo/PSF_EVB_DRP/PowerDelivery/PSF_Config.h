@@ -1967,7 +1967,7 @@ typedef struct _GlobalCfgStatusData
    
 extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
 
-#include "PSFDRP_App.h"
-#include "PSFDRP_BootCfg.h"
+#include "PDDrp_App.h"
+#include "PDDrp_BootCfg.h"
 
 #endif

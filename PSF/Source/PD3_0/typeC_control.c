@@ -88,8 +88,6 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
 	UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR_VSAFE0V, \
       (UINT16)((float)TYPEC_VSAFE0V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor));
     
-
-    
     /*To check VBUS below vSafe0V*/
     UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_HIGH, TYPEC_DRP_VSAFE0V_EN);
     
@@ -921,7 +919,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
                         
-    					/* Set the Current Port Power Role as Sink in DPM Status variable */
+                        /* Set the Current Port Power Role as Sink in DPM Status variable */
                         DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_DRP);
         
                         /* Set the Current  Port Data Role as UFP in DPM Status variable */

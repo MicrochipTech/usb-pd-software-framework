@@ -5,7 +5,7 @@ Power Delivery Source Pro Application header file
     Microchip Technology Inc.
 
   File Name:
-    PSFDRP_App.h
+    PDDrp_App.h
 
   Description:
     This header file contains user application specific functions and interfaces
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFDRP_APP_H
-#define _PSFDRP_APP_H
+#ifndef _PDDRP_APP_H
+#define _PDDRP_APP_H
 
 /* Defines major and minor version of PSF Source Pro Application*/
 
@@ -81,7 +81,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum);
 
 void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current);
 
-#endif /* _PSFDRP_APP_H */
+#endif /* _PDDRP_APP_H */
 
 /* *****************************************************************************
  End of File
