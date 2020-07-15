@@ -601,6 +601,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                 case TYPEC_ATTACHED_SRC_ASSERT_RP_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC_ASSERT_RP_SS\r\n");
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
                     TypeC_SetDefaultRpValue (u8PortNum);
@@ -1061,6 +1062,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                 case TYPEC_ATTACHED_SNK_ASSERT_RD_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_ASSERT_RD_SS\r\n");
+                    
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
                     TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP);
