@@ -590,7 +590,29 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
       gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8PDOIndex] = u32DataBuf[u8PDOIndex];   
     }    
 }
-
+/*********************************DPM TypeC Attach API**************************************/
+void DPM_OnTypeCAttach(UINT8 u8PortNum)
+{
+    /*Evaluate swap and register internal event*/
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITATE))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
+    }
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
+    }
+#endif /*INCLUDE_PD_DR_SWAP*/
+    
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
+    } 
+#endif /*INCLUDE_PD_PR_SWAP*/
+    
+}
 void DPM_OnTypeCDetach(UINT8 u8PortNum)
 {
     /* Clear the DPM variables whose data is no more valid after a Type C detach */
@@ -640,6 +662,10 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
 
     /* Clear all the client requests for the port. */
     DPM_ClearAllClientRequests(u8PortNum);
+    
+    /*Clear all Internal events expect Alert*/
+    gasDPM[u8PortNum].u8DPMInternalEvents = (gasDPM[u8PortNum].u8DPMInternalEvents\
+                                            & DPM_INT_EVT_INITIATE_ALERT);
 
 }
 
@@ -672,7 +698,7 @@ void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange)
         /*Not applicable to inform protocol layer*/
     }
 }
-
+/**********************************************************************************/
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 
 UINT32 DPM_ReturnPPSSrcTransTmrVal (UINT8 u8PortNum)
@@ -875,36 +901,6 @@ UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
 
 #endif /*INCLUDE_PD_SOURCE_PPS*/ 
 #endif /*INCLUDE_PD_SOURCE*/  
-
-/*********************************DPM TypeC Attach API**************************************/
-void DPM_OnTypeCAttach(UINT8 u8PortNum)
-{
-    /*If the port is Source set Internal event to initiate Get_SinkCaps*/
-    if ((DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) && (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
-    {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
-    }
-    
-    /*Evaluate swap and register internal event*/
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITATE))
-    {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
-    }
-#if (TRUE == INCLUDE_PD_DR_SWAP)
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
-    {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
-    }
-#endif /*INCLUDE_PD_DR_SWAP*/
-    
-#if (TRUE == INCLUDE_PD_PR_SWAP)
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
-    {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
-    } 
-#endif /*INCLUDE_PD_PR_SWAP*/
-    
-}
 
 /*********************************DPM VDM Cable APIs**************************************/
 UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
