@@ -65,11 +65,14 @@ UINT8 MchpPSF_Init(void)
         /*Initialize chip select in case of SPI configuration*/
         MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSPI_CHIP_SELECT_FUNC);
         #endif
+
+        /*Initialize orientation pin*/
+        MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
     }
     
     /*Since, Reset is common for all the ports. It is called only once with PORT0 as dummy value*/
     MCHP_PSF_HOOK_GPIO_FUNC_INIT(PORT0, eUPD350_RESET_FUNC);
-        
+    
 	/*Initialize Internal global variables*/
     IntGlobals_PDInitialization();
     
