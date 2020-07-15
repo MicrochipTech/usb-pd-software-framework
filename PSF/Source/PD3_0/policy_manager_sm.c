@@ -585,6 +585,19 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             #endif
             break;
         }
+#if (TRUE == INCLUDE_PD_SOURCE)
+        case eMCHP_PSF_PD_CONTRACT_NEGOTIATED:
+        {
+            /*On negotiation, initiate Get Sink caps*/
+            if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]) &&\
+                  (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) &&\
+                    (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
+            {
+                DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
+            }        
+            break;
+        }
+#endif
         default:
             break;
     }
