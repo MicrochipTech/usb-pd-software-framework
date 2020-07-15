@@ -590,114 +590,6 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
       gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8PDOIndex] = u32DataBuf[u8PDOIndex];   
     }    
 }
-/*********************************DPM TypeC Attach API**************************************/
-void DPM_OnTypeCAttach(UINT8 u8PortNum)
-{
-    /*Evaluate swap and register internal event*/
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITATE))
-    {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
-    }
-#if (TRUE == INCLUDE_PD_DR_SWAP)
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
-    {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
-    }
-#endif /*INCLUDE_PD_DR_SWAP*/
-    
-#if (TRUE == INCLUDE_PD_PR_SWAP)
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
-    {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
-    } 
-#endif /*INCLUDE_PD_PR_SWAP*/
-    
-}
-void DPM_OnTypeCDetach(UINT8 u8PortNum)
-{
-    /* Clear the DPM variables whose data is no more valid after a Type C detach */
-    gasDPM[u8PortNum].u8NegotiatedPDOIndex = RESET_TO_ZERO;
-    gasDPM[u8PortNum].u32NegotiatedPDO = RESET_TO_ZERO;
-    gasDPM[u8PortNum].u16PrevVBUSVoltageInmV = RESET_TO_ZERO;
-            
-    /* Clear the RDO register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = RESET_TO_ZERO; 
-    
-    /* Clear the ATTACHED, AS_SOURCE_PD_CONTRACT_GOOD and AS_SOURCE_RDO_ACCEPTED 
-    bits in Port Connection Status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-        ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS | \
-        DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS);
-                    
-    /* Clear the Power related registers */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = RESET_TO_ZERO; 
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
-    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
-
-    /*Clear Partner PDO registers */
-    for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
-    {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
-    }
-    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
-    
-    #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-    /* Clear Partner Alert register */
-    gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert = RESET_TO_ZERO; 
-    
-    /*Clear Partner Status register */
-    for(UINT8 u8Index = SET_TO_ZERO; u8Index < PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES; u8Index++)
-    {
-        gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = RESET_TO_ZERO;
-    }
-    
-    /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
-    PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
-    /* Set the timer Id to Max Concurrent Value*/
-    gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
-    /* Note: It is recognized that it is possible to send an alert to another 
-       partner if the current partner is disconnected and a new partner is
-       connected. So, no need to clear the other variables */     
-    #endif
-
-    /* Clear all the client requests for the port. */
-    DPM_ClearAllClientRequests(u8PortNum);
-    
-    /*Clear all Internal events expect Alert*/
-    gasDPM[u8PortNum].u8DPMInternalEvents = (gasDPM[u8PortNum].u8DPMInternalEvents\
-                                            & DPM_INT_EVT_INITIATE_ALERT);
-
-}
-
-void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange)
-{
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
-                                    ~DPM_PORT_DATA_ROLE_STATUS_MASK;
-    if (PD_ROLE_DFP == u8DataRoleChange)
-    {
-        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_DFP);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
-                                    DPM_PORT_DATA_ROLE_STATUS_DFP;
-        /*Inform Protocol layer of the role change*/
-        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
-        
-    }
-    else if (PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
-    {
-        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_UFP);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
-                                    DPM_PORT_DATA_ROLE_STATUS_UFP;
-        /*Inform Protocol layer of the role change*/
-        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
-    }
-    else
-    {
-        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_TOGGLING);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
-                                    PD_ROLE_TOGGLING;
-        /*Not applicable to inform protocol layer*/
-    }
-}
 /**********************************************************************************/
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 
@@ -1336,6 +1228,115 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
             /* Do nothing since the port shall only be enabled if it was 
             previously in the disabled state */ 
         }
+    }
+}
+
+/*********************************DPM TypeC Attach API**************************************/
+void DPM_OnTypeCAttach(UINT8 u8PortNum)
+{
+    /*Evaluate swap and register internal event*/
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITATE))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
+    }
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
+    }
+#endif /*INCLUDE_PD_DR_SWAP*/
+    
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
+    } 
+#endif /*INCLUDE_PD_PR_SWAP*/
+    
+}
+void DPM_OnTypeCDetach(UINT8 u8PortNum)
+{
+    /* Clear the DPM variables whose data is no more valid after a Type C detach */
+    gasDPM[u8PortNum].u8NegotiatedPDOIndex = RESET_TO_ZERO;
+    gasDPM[u8PortNum].u32NegotiatedPDO = RESET_TO_ZERO;
+    gasDPM[u8PortNum].u16PrevVBUSVoltageInmV = RESET_TO_ZERO;
+            
+    /* Clear the RDO register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = RESET_TO_ZERO; 
+    
+    /* Clear the ATTACHED, AS_SOURCE_PD_CONTRACT_GOOD and AS_SOURCE_RDO_ACCEPTED 
+    bits in Port Connection Status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
+        ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS | \
+        DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS);
+                    
+    /* Clear the Power related registers */
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
+
+    /*Clear Partner PDO registers */
+    for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
+    }
+    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
+    
+    #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+    /* Clear Partner Alert register */
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert = RESET_TO_ZERO; 
+    
+    /*Clear Partner Status register */
+    for(UINT8 u8Index = SET_TO_ZERO; u8Index < PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES; u8Index++)
+    {
+        gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = RESET_TO_ZERO;
+    }
+    
+    /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
+    PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
+    /* Set the timer Id to Max Concurrent Value*/
+    gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+    /* Note: It is recognized that it is possible to send an alert to another 
+       partner if the current partner is disconnected and a new partner is
+       connected. So, no need to clear the other variables */     
+    #endif
+
+    /* Clear all the client requests for the port. */
+    DPM_ClearAllClientRequests(u8PortNum);
+    
+    /*Clear all Internal events expect Alert*/
+    gasDPM[u8PortNum].u8DPMInternalEvents = (gasDPM[u8PortNum].u8DPMInternalEvents\
+                                            & DPM_INT_EVT_INITIATE_ALERT);
+
+}
+
+void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange)
+{
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                                    ~DPM_PORT_DATA_ROLE_STATUS_MASK;
+    if (PD_ROLE_DFP == u8DataRoleChange)
+    {
+        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_DFP);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                                    DPM_PORT_DATA_ROLE_STATUS_DFP;
+        /*Inform Protocol layer of the role change*/
+        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+        
+    }
+    else if (PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+    {
+        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_UFP);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                                    DPM_PORT_DATA_ROLE_STATUS_UFP;
+        /*Inform Protocol layer of the role change*/
+        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+    }
+    else
+    {
+        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_TOGGLING);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                                    PD_ROLE_TOGGLING;
+        /*Not applicable to inform protocol layer*/
     }
 }
 
