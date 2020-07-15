@@ -591,21 +591,6 @@ void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32Dat
     }    
 }
 
-UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum)
-{
-    UINT8 u8RetVal = FALSE; 
-
-    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
-    {
-        if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index]))
-        {
-            u8RetVal = TRUE; 
-            break;
-        }
-    }
-    return u8RetVal; 
-}
-
 void DPM_OnTypeCDetach(UINT8 u8PortNum)
 {
     /* Clear the DPM variables whose data is no more valid after a Type C detach */
@@ -1356,6 +1341,22 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
             previously in the disabled state */ 
         }
     }
+}
+
+/********************* DPM API to check if PPS APDO is enabled ********************/
+UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum)
+{
+    UINT8 u8RetVal = FALSE; 
+
+    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
+    {
+        if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index]))
+        {
+            u8RetVal = TRUE; 
+            break;
+        }
+    }
+    return u8RetVal; 
 }
 
 /********************* Policy Manager APIs for Swap ********************/
