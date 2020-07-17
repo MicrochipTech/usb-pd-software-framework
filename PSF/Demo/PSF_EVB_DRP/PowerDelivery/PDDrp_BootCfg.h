@@ -300,7 +300,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     ((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
     ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
     ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
-    ((DualRoleData << CFG_PDO_DUAL_ROLE_DATA_POS)) |\
+    ((DualRoleData) << CFG_PDO_DUAL_ROLE_DATA_POS) |\
     (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
     ((current)/CFG_PDO_CURRENT_UNIT))            
 
@@ -310,7 +310,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS)) | \
     ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
     ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
-    ((DualRoleData << CFG_PDO_DUAL_ROLE_DATA_POS)) |\
+    ((DualRoleData) << CFG_PDO_DUAL_ROLE_DATA_POS) |\
     (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
     ((current)/CFG_PDO_CURRENT_UNIT))  
 
