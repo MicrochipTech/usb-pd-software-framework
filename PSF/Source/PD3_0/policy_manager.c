@@ -1186,8 +1186,8 @@ void DPM_Evaluate_Received_Src_caps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeade
                 
                 /*Set the capability mismatch status*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS;
-
-				DPM_SetPortPower (u8PortNum);                
+                
+                DPM_SetPortPower(u8PortNum);                
                 return;
             }
         }
