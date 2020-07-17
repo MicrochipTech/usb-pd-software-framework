@@ -307,9 +307,11 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 DPM_ClearPowerfaultFlags(u8PortNum);
                 return;
             }
-            
+
+#if(TRUE == INCLUDE_PD_SOURCE)            
              /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
             PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);    
+#endif
             
             #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
             /*Clear PIO override enable*/
@@ -408,10 +410,12 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 			/* Set Wait for HardReset Complete bit*/
             gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_HR_COMPLETE_WAIT_MASK;
         } /* end of else part of implicit contract check*/
-        
+
+#if(TRUE == INCLUDE_PD_SOURCE)        
         /* Enable DC_DC_EN to drive power*/        
         PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE); 
-
+#endif
+        
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
         /*Enable PIO override enable*/
         UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
