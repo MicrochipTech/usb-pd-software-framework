@@ -447,11 +447,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_SRC: Entered UNATTACHED"\
                                          "SRC State\r\n");
-
-                    /*Disable DC_DC_EN if DRP does not act as source*/
-                    PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
                     
 #if(TRUE == INCLUDE_PD_DRP)
+                    /*Disable DC_DC_EN if DRP does not act as source*/
+                    PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
+                        
                     if((gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SOURCE) \
                             && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
@@ -574,10 +574,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         {
                             /*Set BLK_PD_MSG. Done in cronous*/
                             UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
-                            
+#if(TRUE == INCLUDE_PD_DRP)                            
                             /*Enable DC_DC_EN if DRP acts as source*/
                             PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
-                            
+#endif
                              gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
                              gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
                         }
