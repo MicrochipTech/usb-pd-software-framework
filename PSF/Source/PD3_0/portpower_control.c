@@ -58,7 +58,7 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
     MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eVBUS_DIS_FUNC);
     
     #if (TRUE == INCLUDE_PD_SOURCE)
-    if(PD_ROLE_SINK != DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
+    if(PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
     {
         UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, \
                                         gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS);
@@ -70,7 +70,7 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
     #endif
 
     #if (TRUE == INCLUDE_PD_SINK)
-    if(PD_ROLE_SOURCE != DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)) /*Port role is either Sink or DRP*/
+    if(PD_ROLE_SOURCE != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Sink or DRP*/
     {
         UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK, \
                                         gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK);
