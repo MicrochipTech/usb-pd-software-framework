@@ -261,7 +261,6 @@ typedef enum {
     //--------------------------DR_SWAP States-----------------------------------//
     ePE_DRS_EVALUATE_SWAP,
     ePE_DRS_ACCEPT_SWAP,
-    ePE_DRS_REJECT_SWAP,
     ePE_DRS_DFP_UFP_ROLE_CHANGE,
     ePE_DRS_SEND_SWAP,
     //---------------------------PR_Swap States-----------------------------------// 
@@ -421,9 +420,6 @@ typedef enum {
     /*ePE_DRS_ACCEPT_SWAP*/        
     ePE_DRS_ACCEPT_SWAP_SEND_ACCEPT_SS,
     ePE_DRS_ACCEPT_SWAP_IDLE_SS,
-    /*ePE_DRS_REJECT_SWAP*/
-    ePE_DRS_REJECT_SWAP_SEND_REJECT_SS,
-    ePE_DRS_REJECT_SWAP_IDLE_SS,
     /*ePE_DRS_SEND_SWAP*/
     ePE_DRS_SEND_SWAP_ENTRY_SS,
     ePE_DRS_SEND_SWAP_IDLE_SS,
@@ -1214,5 +1210,34 @@ UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum);
 
 **************************************************************************************************/
 void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void PE_DRSwapRunStateMachine (UINT8 u8PortNum);
+
+    Summary:
+        DR_SWAP Policy Engine State Machine. 
+       
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is called to run the DR Swap Policy Engine State Machine. . 
+        
+    Conditions:
+        None
+
+    Input:
+        u8PortNum  - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void PE_DRSwapRunStateMachine (UINT8 u8PortNum);
+
 
 #endif /*_POLICY_ENGINE_H_*/

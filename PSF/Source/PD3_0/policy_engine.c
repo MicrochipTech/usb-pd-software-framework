@@ -172,6 +172,11 @@ void PE_RunStateMachine (UINT8 u8PortNum)
         
         #if (TRUE == INCLUDE_PD_PR_SWAP)
             PE_RunPRSwapStateMachine (u8PortNum);
+        #endif
+        
+        #if (TRUE == INCLUDE_PD_DR_SWAP)
+			/*ToDo: <DR_SWAP> uncomment after testing*/
+            //PE_DRSwapRunStateMachine (u8PortNum);
         #endif 
 
     	PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);        
@@ -1128,6 +1133,22 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     break; 
                 }
 #endif 
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+                case PE_CTRL_DR_SWAP:
+                {
+                    /*DR_SWAP message is valid only if the PE state is SRC_READY or SNK_READY*/
+                    if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState))
+                    { 
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_EVALUATE_SWAP;
+                    }
+                    else
+                    {
+                        PE_HandleUnExpectedMsg (u8PortNum);
+                    }
+                    break;
+                }
+#endif
                 
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                 case PE_CTRL_PR_SWAP: 
