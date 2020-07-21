@@ -31,7 +31,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 #include <psf_stdinc.h>
 #if (TRUE == INCLUDE_PD_DR_SWAP) 
-void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
+void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
 {
 	/* Transmit Message Type - SOP SOP' SOP" */
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
@@ -51,20 +51,16 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 	/* Transmit Flag */
 	UINT8 u8IsTransmit = FALSE;
     
-    UINT8 u8TxFailedSt, u8TxFailedSS, u8TxDoneSt, u8TxDoneSS;
+    UINT8 u8TxFailedSt, u8TxFailedSS;
     
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
-        u8TxDoneSt = ePE_SRC_READY;
-        u8TxDoneSS = ePE_SRC_READY_ENTRY_SS;
         u8TxFailedSt = ePE_SRC_SEND_SOFT_RESET;
         u8TxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS;
         
     }
     else
     {
-        u8TxDoneSt = ePE_SNK_READY;
-        u8TxDoneSS = ePE_SNK_READY_ENTRY_SS;
         u8TxFailedSt = ePE_SNK_SEND_SOFT_RESET;
         u8TxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
     }
@@ -81,8 +77,9 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             }
             else
             {
-                gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_REJECT_SWAP; 
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_REJECT_SWAP_SEND_REJECT_SS;                           
+                /* Reject is sent through common PE state machine*/
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;                         
             }
             break;
             
@@ -113,42 +110,6 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     break;
                 }
                 case ePE_DRS_ACCEPT_SWAP_IDLE_SS:
-                {
-                    /*Idle state*/
-                    break;
-                }
-                default:
-                {
-                    break;
-                }
-            }
-            break;
-        }
-        case ePE_DRS_REJECT_SWAP:
-        {
-            switch(gasPolicyEngine[u8PortNum].ePESubState)
-            {
-                case ePE_DRS_REJECT_SWAP_SEND_REJECT_SS:
-                {
-                    /* Send the Reject message */
-                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT,
-                                            PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-                    /*u8TransmitSOP is set to PRL_SOP_TYPE by default and u32pTransmitDataObj is
-                     assigned to a NULL pointer */
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
-                    
-                    /*Moved to Source and sink ready state on Good CRC reception or
-                     Soft reset state if GOOD CRC is not received */
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(u8TxDoneSt, \
-                                                u8TxDoneSS, \
-                                               u8TxFailedSt, u8TxFailedSS);
-                    u8IsTransmit = TRUE;
-                    /*Wait in a idle state to get a response for Reject*/
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_REJECT_SWAP_IDLE_SS;
-                   
-                    break;
-                }
-                case ePE_DRS_REJECT_SWAP_IDLE_SS:
                 {
                     /*Idle state*/
                     break;
