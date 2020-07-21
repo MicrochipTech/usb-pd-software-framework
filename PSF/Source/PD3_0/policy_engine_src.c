@@ -567,11 +567,6 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     DPM_EnablePowerFaultDetection(u8PortNum);
                     
-                    #if (TRUE == INCLUDE_PD_3_0)
-                    /* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */
-                    (void)PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
-                    #endif
-
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
                     /* Start the SourcePPSCommTimer in case the current explicit 
                        contract is for a PPS APDO */
@@ -618,7 +613,17 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 #endif 
            
                 case ePE_SRC_READY_END_AMS_SS:
-                { 
+                {
+#if (TRUE == INCLUDE_PD_3_0)
+					/* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */
+                    PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
+#endif
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
+                    break;
+                }
+                case ePE_SRC_READY_IDLE_SS:
+                {
+                    /*Idle State*/
                     break;
                 }
                 
@@ -1394,7 +1399,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             DPM_StorePartnerAlertInfo(u8PortNum, pu8DataBuf);
             
             gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
-            gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
             
             /* Send notification */
             (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_ALERT_RCVD);
@@ -1563,7 +1568,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
-                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
+                                ePE_SRC_READY_IDLE_SS, ePE_SRC_SEND_SOFT_RESET, \
                                 ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                     
                     u8IsTransmit = TRUE;
@@ -1610,7 +1615,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
-                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
+                                ePE_SRC_READY_IDLE_SS, ePE_SRC_SEND_SOFT_RESET, \
                                 ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                     
                     u8IsTransmit = TRUE;
