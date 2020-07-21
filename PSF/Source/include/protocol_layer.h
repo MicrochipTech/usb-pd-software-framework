@@ -1352,7 +1352,7 @@ void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT8 PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
+        void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
 
     Summary:
         This API is to set or clear Collision Avoidance.
@@ -1374,14 +1374,13 @@ void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum);
 					  Passing 'false' sets Rp value to SinkTxOK(3A)
 
     Return:
-        UINT8 - Returns 'true' if Rp value is successfully set.
-				Returns 'false' if Rp vlaue is not set.
+        None.
 
     Remarks:
         This function confined to INCLUDE_PD_3_0 define.
 
 **************************************************************************************************/
-UINT8 PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
+void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
 
 /**************************************************************************************************
     Function:
@@ -1449,17 +1448,19 @@ void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT8 PRL_SinkIntAMS (UINT8 u8PortNum);
+        UINT8 PRL_IsAmsInitiatable (UINT8 u8PortNum);
 
     Summary:
-        This API is read the current Rp value.
+        This API returns whether an Ams can be initiated.
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-		This API returns Rp value whether it is SinkTxOK or SinkTxNG.
-
+		This API returns a value to decide whether an AMS can be initiated based
+        Rp value whether it is SinkTxOK or SinkTxNG in case of Sink and Tx buffer
+        idleness in case of Source.
+ 
     Conditions:
         None.
 
@@ -1469,14 +1470,14 @@ void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum);
 
     Return:
         This API returns
-		TYPEC_SINK_TXOK(0x0)	-  Rp value is SinkTxOK(3A)
-		TYPEC_SINK_TXNG(0x1)	-  Rp value is SinkTxNG(1.5A)
+		FALSE(0x0)	-  AMS cannot be initiated
+        TRUE(0x1) - AMS can be initiated.
 
     Remarks:
         This function confined to INCLUDE_PD_3_0 define.
 
 **************************************************************************************************/
-UINT8 PRL_SinkIntAMS (UINT8 u8PortNum);
+UINT8 PRL_IsAmsInitiatable (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

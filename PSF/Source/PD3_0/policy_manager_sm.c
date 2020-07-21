@@ -764,9 +764,17 @@ void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
 
 void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
+    UINT8 u8SetCAforSource = TYPEC_SINK_TXOK;
+    
+#if (TRUE == INCLUDE_PD_3_0)
     /* Process internal events only when the Policy Engine is in PS_RDY state*/
-    if ((gasDPM[u8PortNum].u8DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)))
+    if ((gasDPM[u8PortNum].u8DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)) &&\
+            PRL_IsAmsInitiatable(u8PortNum))
     {
+#else
+    if ((gasDPM[u8PortNum].u8DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)))
+    {      
+#endif   
         /*If condition is ordered based on the internal event priority*/
         if (DPM_INT_EVT_INITIATE_GET_SINK_CAPS == (gasDPM[u8PortNum].u8DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_GET_SINK_CAPS))
@@ -779,7 +787,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                 /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;                    
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;
+                u8SetCAforSource = TYPEC_SINK_TXNG;
             }
             else
             {
@@ -802,6 +811,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             
             if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
             {
+                u8SetCAforSource = TYPEC_SINK_TXNG;
                 /* TODO: <VCONN-SWAP> <To add policy engine states to initiate VCONN_SWAP> */
             }
             
@@ -820,7 +830,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                         (DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))))
             {
                 gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SEND_SWAP;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;                                
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;
+                u8SetCAforSource = TYPEC_SINK_TXNG;
             }
         }
 #endif /*INCLUDE_PD_PR_SWAP*/
@@ -838,6 +849,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_SEND_SWAP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
+                    u8SetCAforSource = TYPEC_SINK_TXNG;
                 
             }
         }
@@ -854,7 +866,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                 /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;                    
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;
+                u8SetCAforSource = TYPEC_SINK_TXNG;
             }
             else
             {
@@ -878,7 +891,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                 /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;                    
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;
+                u8SetCAforSource = TYPEC_SINK_TXNG;
             }
             else
             {
@@ -891,6 +905,13 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /* Do Nothing */
         }
           
+    }
+    /* Set CA to Sink TXNG in case of Source*/
+    if ((u8SetCAforSource == TYPEC_SINK_TXNG) &&  (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE))
+    {   
+        #if (TRUE == INCLUDE_PD_3_0)
+        PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXNG);
+        #endif
     }
 }
 

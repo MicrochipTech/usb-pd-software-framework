@@ -1270,14 +1270,13 @@ UINT32 PRL_IsAnyMsgPendinginPRL (UINT8 u8PortNum)
 									COLLISION AVOIDANCE APIS for Source
 *******************************************************************************************************************************************/
 
-UINT8 PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
+void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 {
-  
-  	if  (gasPRL [u8PortNum].u8TxStateISR != PRL_TX_IDLE_ST)
+    /*If the current spec role is not 3.0 return*/
+    if(PD_SPEC_REVISION_3_0 != DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
     {
-		/* Tx is not in Idle*/
-	  	return FALSE;
-    }
+        return;
+    } 
 	if (u8Enable)
 	{
 	  	/* Spec Reference: PRL_Tx_Src_Source_Tx - Set Rp = SinkTxNG */
@@ -1301,7 +1300,6 @@ UINT8 PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 		/* Rp = SinkTxOk 3A @ 5v is set*/
 		TypeC_SetRpCollAvoidance(u8PortNum, TYPEC_SINK_TXOK);
 	}
-	return TRUE;
 }
 
 /******************************************************************************************************/
@@ -1320,20 +1318,42 @@ void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 }
 /******************************************************************************************************/
 
-UINT8 PRL_SinkIntAMS (UINT8 u8PortNum)
+UINT8 PRL_IsAmsInitiatable(UINT8 u8PortNum)
 {
-  	/* Spec Ref: PRL_Tx_Snk_Start_of_AMS */
-	if (TYPEC_SINK_TXNG == TypeC_CheckRpValCollAvoidance(u8PortNum))
-	{
-		/* Spec Ref: PRL_Tx_Snk_Pending*/
-	  	/* if Rp value is SinkTxNG, PRL_TX_CA_SINK_TXNG_ST is assigned*/
-	PRL_ChangeTxState (u8PortNum, PRL_TX_CA_SINK_TXNG_ST);
-		return TYPEC_SINK_TXNG;
-	}
-	else
-	{
-		return TYPEC_SINK_TXOK;
-	}
+    UINT8 u8ReturnVal = TRUE;
+    /*If the port is 3.0 check whether the port is capable of initiating an AMS*/
+    if(PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
+    {
+        if (PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        {
+            /* Spec Ref: PRL_Tx_Snk_Start_of_AMS */
+            if (TYPEC_SINK_TXNG == TypeC_CheckRpValCollAvoidance(u8PortNum))
+            {
+                /* Spec Ref: PRL_Tx_Snk_Pending*/
+                /* if Rp value is SinkTxNG, PRL_TX_CA_SINK_TXNG_ST is assigned*/
+                PRL_ChangeTxState (u8PortNum, PRL_TX_CA_SINK_TXNG_ST);
+                /*Sink Tx NG*/
+                u8ReturnVal = FALSE;
+            }
+            else
+            {
+                /*Sink Tx OK*/
+            }
+        }
+        else if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        {
+            if  (gasPRL [u8PortNum].u8TxStateISR != PRL_TX_IDLE_ST)
+            {
+                /* Tx is not  in Idle*/
+                u8ReturnVal = FALSE;
+            }
+        }
+        else
+        {
+            /*Do nothing*/
+        }
+    }
+    return u8ReturnVal;
 }
 /******************************************************************************************************/
 void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum)
