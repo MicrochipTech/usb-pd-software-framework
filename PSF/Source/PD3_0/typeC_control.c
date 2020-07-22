@@ -746,15 +746,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Sink Attached in CC1 pin*/
                     if(u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
                     {
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                                ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS);
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);
                     }
                     /*Sink attached in CC2*/
                     else
                     {
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                                                 DPM_PORT_ORIENTATION_FLIPPED_STATUS;                        
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
                     
@@ -1092,18 +1088,12 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
                         UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
                         
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                                ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS); 
-                        
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);                        
                     }
                     /*Source Attached in CC2 pin*/
                     else
                     {
                         UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
-                        
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                                                  DPM_PORT_ORIENTATION_FLIPPED_STATUS;
                         
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
