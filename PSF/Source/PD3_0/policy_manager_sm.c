@@ -543,14 +543,22 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
+            /* Update Orientation connection status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
+                                                ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS);
 			/*Process Type -C attach*/
             DPM_OnTypeCAttach(u8PortNum);
+            
             /* Assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
+            /* Update Orientation connection status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
+                                                 DPM_PORT_ORIENTATION_FLIPPED_STATUS;                        
+
 			/* Process Type-C attach*/
             DPM_OnTypeCAttach(u8PortNum);
             /* De-assert Orientation LED */
