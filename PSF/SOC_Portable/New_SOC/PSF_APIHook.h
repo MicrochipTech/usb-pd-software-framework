@@ -1670,15 +1670,15 @@ Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE (u8PortNum, eGPIO_Func, eDriveVal) 
-        App_GPIOContol_Drive(u8PortNum, eGPIO_Func, eDriveVal)
-        void  PSF_IDLENotification(u8PortNum, eIDLE_PE_NOTIFY)
+        #define MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState) 
+        PSF_IDLENotification(u8PortNum, eIDLESubState)
+        void  PSF_IDLENotification(u8PortNum, eIDLESubState)
         {
-            if(eIDLE_PE_NOTIFY == eIDLE_PE_NOTIFY)
+            if(eIDLESubState == eIDLE_PE_NOTIFY)
         {
             gu8PEIDLEFlag[u8PortNum] = TRUE;
         }
-        else if (eIDLE_PE_NOTIFY == eIDLE_TYPEC_NOTIFY)
+        else if (eIDLESubState == eIDLE_TYPEC_NOTIFY)
         {
             gu8TypeCIDLEFlag[u8PortNum] = TRUE;
         }
