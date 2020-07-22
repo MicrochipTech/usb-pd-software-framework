@@ -326,6 +326,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
               
                 /*Source waits in this sub-state for sink attachment*/
                 case TYPEC_UNATTACHED_SRC_IDLE_SS:
+                    /* Hook to notify Type C state machine entry idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break; 
                     
@@ -361,6 +362,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                 /*Source waits in this sub-state until the tCCDebounce timer timeouts*/
                 case TYPEC_ATTACHWAIT_SRC_IDLE_SS:
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break;
                 
@@ -428,6 +430,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                                               DPM_VBUSOnOffTimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                     
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
 					
 					/*Sink Attached in CC1 pin*/
@@ -517,6 +520,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                                           (UINT8)SET_TO_ZERO);
                             
                             gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_CHECK_VCONNON_SS;
+                            /* Hook to notify Type C state machine entry into idle substate */
                             MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
 
                         }
@@ -578,6 +582,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                              
                 case TYPEC_ATTACHED_SRC_RUN_SM_SS:
                 case TYPEC_ATTACHED_SRC_IDLE_SS:
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break;
                     
@@ -643,6 +648,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 else
                 {
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACH_WAIT_SRC_CHECK_VBUS_0V_SS;
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                 }
                 
@@ -652,6 +658,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             /*Source waits in this SubState until the tPDDeounce Software timer expires or the VCONN
             Discharge is completed*/    
             case TYPEC_UNATTACH_WAIT_SRC_IDLE_SS:
+                /* Hook to notify Type C state machine entry into idle substate */
                 MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                 break;
              
@@ -739,6 +746,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                    
                 /*Sink Waits in this Sub-state for Source attachment*/    
                 case TYPEC_UNATTACHED_SNK_IDLE_SS:
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break;
                     
@@ -771,6 +779,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*Sink Waits in this sub-state until either the tCCDebounce or tPDDebounce timer 
                 expires */
                 case TYPEC_ATTACHWAIT_SNK_IDLE_SS:
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break;
                     
@@ -860,6 +869,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                 
                 case TYPEC_ATTACHED_SNK_RUN_SM_SS:	
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break;
                 
@@ -927,6 +937,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*Sink waits in this sub-state until the tPDDeounce timer expires or until the VCONN 
                 Discharge is completed*/
                 case TYPEC_ATTACHED_SNK_IDLE_SS: 
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break;
                 
@@ -1056,6 +1067,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
                 /*Device waits in this sub-state until the tErrorRecovery software timer expires*/
                 case TYPEC_ERROR_RECOVERY_IDLE_SS:
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break;
 
@@ -1171,6 +1183,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_DISABLED_IDLE_SS:
                 {
+                    /* Hook to notify Type C state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break; 
                 }

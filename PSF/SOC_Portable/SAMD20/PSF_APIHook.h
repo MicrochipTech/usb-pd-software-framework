@@ -1659,13 +1659,15 @@ typedef enum ePSF_NOTIFY_IDLE
 } eMCHP_PSF_NOTIFY_IDLE;
 /**************************************************************************
 Function:
-    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY)
+    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState)
 Summary:
-    Hook to notify entry of policy engine and type C state machine entry into idle state
+    Hook to notify entry of Policy Engine and Type C State Machine into idle state
 Description:
-    PSF calls this API to notify entry of policy engine and type C state machine entry 
-    into idle state. The entry into Idle state of Policy Engine or Type C state machine 
-    is differentiated based on the enum argument passed.
+    PSF calls this API to notify the entry of Policy Engine and Type C State Machine
+    into idle state. The entry into idle state refers to when the state machine
+    waits for an event from the partner or for the activated timer to get expired.
+    The entry into Idle state of Policy Engine or Type C state machine is 
+    differentiated based on the enum argument passed
 Conditions:
     None.
 Input:
@@ -1678,56 +1680,52 @@ Example:
     <code>
         #define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE (u8PortNum, eGPIO_Func, eDriveVal) 
         App_GPIOContol_Drive(u8PortNum, eGPIO_Func, eDriveVal)
-        void App_GPIOContol_Drive(UINT8 u8PortNum, 
-                       eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc, eMCHP_PSF_GPIO_DRIVE_VAL eDriveVal )
+        void  PSF_IDLENotification(u8PortNum, eIDLE_PE_NOTIFY)
         {
-            switch(eGPIOFunc)
-            {
-                case eDC_DC_EN_FUNC:
-                {
-                    if (eGPIO_Assert == eDriveVal)
-                    {
-                        // Assert the DC_DC pin	
-                    }
-                    else
-                    {
-                        // De-assert the DC_DC pin
-                    }
-                    break;
-                }
-                case eVBUS_DIS_FUNC:
-                {
-                    if (eGPIO_Assert == eDriveVal)
-                    {
-                        // Assert the VBUS Discharge pin	
-                    }
-                    else
-                    {
-                        // De-assert the VBUS Discharge pin
-                    }
-                    break;
-                }
-            }
+            if(eIDLE_PE_NOTIFY == eIDLE_PE_NOTIFY)
+        {
+            gu8PEIDLEFlag[u8PortNum] = TRUE;
+        }
+        else if (eIDLE_PE_NOTIFY == eIDLE_TYPEC_NOTIFY)
+        {
+            gu8TypeCIDLEFlag[u8PortNum] = TRUE;
+        }
+        else
+        {
+            //Do Nothing 
         }
     </code>
 Remarks:
-    User definition of this Hook function is not mandatory and can be used to 
-    activate the PSF task in RTOS environment
+    User definition of this Hook function is not mandatory and would be useful
+    in an RTOS environment                          
  *************************************************************************/
 #define MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState)
 
 /*******************************************************************************
 Function:
-    MCHP_PSF_HOOK_PDTIMER_EVENT
+    MCHP_PSF_HOOK_PDTIMER_EVENT()
 Summary:
     Hook for PD timer timeout event
 Description:
-    This hook is called when PD timer gets expires for the given event to call 
+    This hook is called when PD timer expires for the given event to call 
     the callback function. 
 Conditions:
     None
+Input:
+    None 
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_PDTIMER_EVENT ()  PSF_IdleExit()
+    void PSF_IdleExit()
+    {
+        gbyIdleFlag = FALSE;
+    }
+    </code>
 Remarks:
-    This hook is not mandatory and would be useful in RTOS environment                          
+    User definition of this Hook function is not mandatory and would be useful
+    in an RTOS environment                          
 *******************************************************************************/  
 
 #define MCHP_PSF_HOOK_PDTIMER_EVENT()

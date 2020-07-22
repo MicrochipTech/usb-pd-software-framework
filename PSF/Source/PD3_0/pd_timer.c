@@ -214,6 +214,8 @@ void PDTimer_InterruptHandler (void)
                     /*Calling the callback function with a set of arguments 
                     namely port number and PD state*/
 					gasPDTimers[u8TimerID].pfnTimerCallback((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_PORT_NUM), gasPDTimers[u8TimerID].u8PDState);
+
+                    /* Hook to notify that PSF stack is not idle */
                     MCHP_PSF_HOOK_PDTIMER_EVENT();
 				}
 				
