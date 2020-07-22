@@ -138,7 +138,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_VBUS_THR3             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB6
 #define TYPEC_VBUS_THR4             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB8
 
-/*Bit defintions of TYPEC_CC_CTL1_LOW register*/
+/*Bit definitions of TYPEC_CC_CTL1_LOW register*/
 #define TYPEC_CC1_PULL_DOWN		    (BIT(2) | BIT(1) | BIT(0))
 #define TYPEC_CC1_PULL_DOWN_POS     0
 #define TYPEC_CC1_PULL_DOWN_RD      (BIT(0))
@@ -151,7 +151,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CC2_PULL_DOWN_RA      (BIT(4))
 #define TYPEC_CC2_PULL_DOWN_OPEN    (BIT(4) | BIT(3))
 
-/*Bit defintions of TYPEC_CC_CTL1_HIGH register*/
+/*Bit definitions of TYPEC_CC_CTL1_HIGH register*/
 #define TYPEC_CC1_RP_VAL			(BIT(1) | BIT(0))
 #define TYPEC_CC2_RP_VAL			(BIT(3) | BIT(2))
 #define TYPEC_CC_COM_SEL			 BIT(4)
@@ -159,7 +159,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CC1_CC2_RP_MASK       0xf0ff
 #define TYPEC_CC1_CC2_PD_MASK       0xffc0
 
-/*Bit defintitions of TYPEC_CC_CTL1 register*/
+/*Bit definitions of TYPEC_CC_CTL1 register*/
 #define TYPEC_CC1_RP_VAL_POS         8
 #define TYPEC_CC2_RP_VAL_POS         10
 #define TYPEC_CC_RP_DIS              0
@@ -298,11 +298,11 @@ event for UFP*/
     (TYPEC_VSAFE0V_MAX_THR_MATCH | TYPEC_VSINKDISCONNECT_THR0_MATCH | \
       TYPEC_DESIRED_MIN_V_THR1_MATCH | TYPEC_UNDER_VOLT_THR3_MATCH)
 
-/* vSinkDisconnect match value, this value is set when undervoltage is hit*/      
+/* vSinkDisconnect match value, this value is set when under-voltage is hit*/      
 #define TYPEC_VBUS_SNKDISCNT_MATCH_VAL \
       (TYPEC_VSAFE0V_MAX_THR_MATCH | TYPEC_VSINKDISCONNECT_THR0_MATCH)
 
-/* Vsafe 0V max threshold max value*/        
+/* vSafe 0V max threshold max value*/        
 #define TYPEC_MAX_VSAFE_0V_MATCH_VAL       TYPEC_VSAFE0V_MAX_THR_MATCH
         
 /* VBUS Match bit set when overvoltage is detected*/        
@@ -601,7 +601,7 @@ from u8PortSts variable*/
     in terms of millivolts for sink. The voltage will be considered as valid Vsafe5V only if it 
     is equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
     CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be
-    considered as overvoltage for Vsafe5V for sink. 
+    considered as overvoltage for vSafe5V for sink. 
     This parameter shall never be set to 0. */
 #define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
 
@@ -614,7 +614,7 @@ from u8PortSts variable*/
 
 /*  CONFIG_VSINKDISCONNECT_VOLTAGE is the vSinkDisconnect mentioned in Type c specification v1.3.
     Specification defines it as threshold used for transition from Attached.SNK to Unattached.SNK.
-    In PSF, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as undervoltage for Vsafe5V in case of 
+    In PSF, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as under-voltage for Vsafe5V in case of 
     source. For Sink, if the voltage is below CONFIG_VSINKDISCONNECT_VOLTAGE, it is considered 
     as VBUS disconnect.
     This parameter shall never be set to 0. */
@@ -899,7 +899,7 @@ void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
                     - TYPEC_ROLE_SOURCE_15(Setting the Rp value for Type C 1.5A Current)
                     - TYPEC_ROLE_SOURCE_30(Setting the Rp value for Type C 3.0A Current)
                     - TYPEC_ROLE_SINK_RD(Setting Rd value as Trimmed Rd)
-                    - TYPEC_ROLE_SINK_OPEN_DIS(Setting Rd value as open disconnet)
+                    - TYPEC_ROLE_SINK_OPEN_DIS(Setting Rd value as open disconnect)
 
     Return:
         None.

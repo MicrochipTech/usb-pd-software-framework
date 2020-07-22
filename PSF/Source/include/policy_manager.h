@@ -514,6 +514,10 @@ Source/Sink Power delivery objects*/
 #define DPM_ACCEPT_SWAP                     1
 #define DPM_REJECT_SWAP                     0 
 
+/*********************** Define to check if PR_SWAP is in progress ********* */
+#define DPM_PR_SWAP_IN_PROGRESS(u8PortNum)  ((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PR_SWAP_IN_PROGRESS_MASK) >> \
+                                                                       PE_PR_SWAP_IN_PROGRESS_POS)
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -1788,26 +1792,6 @@ void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
         None. 
 **************************************************************************************************/
 UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg); 
-
-/**************************************************************************************************
-    Function:
-        void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole);
-    Summary:
-        API to update the port's power role after a PR_Swap. 
-    Description:
-        This API changes the Type C state and sub-state for Rp/Rd assertion 
-        based on the new power role of the port. 
-    Conditions:
-        None.
-    Input:
-        u8PortNum - Port number.
-        NewPwrRole - Port's Power role after PR_Swap
-    Return:
-        None.
-    Remarks:
-        None. 
-**************************************************************************************************/
-void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole);
 
 /**************************************************************************************************
     Function:
