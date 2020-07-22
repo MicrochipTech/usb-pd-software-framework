@@ -143,15 +143,6 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break; 
         }
         
-        case eMCHP_PSF_SINK_CAPS_NOT_RCVD: 
-        {
-            break; 
-        }  
-        
-        case eMCHP_PSF_SINK_CAPS_RCVD:
-        {
-            break;            
-        }        
         default:
             break;
     }
@@ -167,12 +158,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {           
             PORT_PinWrite(PORT_PIN_PA14, TRUE);
             PORT_PinInputEnable(PORT_PIN_PA14);
-            EIC_CallbackRegister(PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
-            EIC_InterruptEnable(PORT_PIN_PA14);
-        }
-        case eI2C_DC_DC_ALERT_FUNC:
-        {
-            /*Not applicable for Sink*/
+            EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
+            EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             break;
         }
         case eUPD350_RESET_FUNC:
@@ -196,11 +183,6 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
             UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
             break; 
-        }
-        case eDC_DC_EN_FUNC:
-        {
-            /*Not Applicable for Sink*/
-            break;
         }
         case eORIENTATION_FUNC:
         {
@@ -323,6 +305,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
             }
+            break;
         }
         case eSNK_CAPS_MISMATCH_FUNC:
         {

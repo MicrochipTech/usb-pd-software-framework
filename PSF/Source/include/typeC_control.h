@@ -556,7 +556,7 @@ from u8PortSts variable*/
 #define TYPEC_VBUS_5V           5000
 
 /*Masks used For getting VCONNON Error status from u8IntStsISR variable*/ 
-#define TYPEC_VCONNONERROR_MASK	        BIT(7)
+#define TYPEC_VCONNONERROR_MASK	       BIT(7)
 #define TYPEC_VCONNONERROR_POS         7
 /*************************************************************************************/
 

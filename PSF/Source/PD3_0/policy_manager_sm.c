@@ -59,16 +59,6 @@ void DPM_Init(UINT8 u8PortNum)
         
         /* Set Port Data Role as DFP in Port Connection Status register */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS; 
-        
-        /* During initialization, Advertised PDOs and Advertised PDO Count are 
-           updated with Default Source PDOs and Source PDO Count */
-        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, 
-                (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
-        
-        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;  
-
     }       
     else
     {
@@ -89,13 +79,6 @@ void DPM_Init(UINT8 u8PortNum)
         
         /* Set Port Data Role as UFP in Port Connection Status register */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS);         
-        /*On initialization Advertised PDO is updated to Sink's PDO*/
-        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
-            DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
-        /*Advertised PDO Count is updated to SinkPDO Count*/
-        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
         
         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
     }
@@ -324,9 +307,11 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 DPM_ClearPowerfaultFlags(u8PortNum);
                 return;
             }
-            
+
+#if(TRUE == INCLUDE_PD_SOURCE)            
              /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
             PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);    
+#endif
             
             #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
             /*Clear PIO override enable*/
@@ -425,10 +410,12 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 			/* Set Wait for HardReset Complete bit*/
             gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_HR_COMPLETE_WAIT_MASK;
         } /* end of else part of implicit contract check*/
-        
+
+#if(TRUE == INCLUDE_PD_SOURCE)        
         /* Enable DC_DC_EN to drive power*/        
         PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE); 
-
+#endif
+        
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
         /*Enable PIO override enable*/
         UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
@@ -486,9 +473,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             /* Process Type C Detach Event */
-            #if (TRUE == INCLUDE_PD_SOURCE)
             DPM_OnTypeCDetach(u8PortNum); 
-            #endif 
             
             /* Disable Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
