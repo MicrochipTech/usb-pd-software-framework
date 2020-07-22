@@ -198,17 +198,11 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
 
 void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 {
-	/* Transmit Message Type - SOP SOP' SOP" */
-    UINT8 u8TransmitSOP = PRL_SOP_TYPE;
-
 	/* Transmit Message Header */
 	UINT32 u32TransmitHeader = SET_TO_ZERO;
 
-	/* Transmit Data Object */
-	UINT32 *u32pTransmitDataObj = SET_TO_ZERO; 
-
-	/* Transmit Call back */
-	PRLTxCallback pfnTransmitCB = NULL;
+	/* Transmit Call back set to PE_StateChange_TransmitCB */
+	PRLTxCallback pfnTransmitCB = PE_StateChange_TransmitCB;
 
 	/* Transmit Call back variables */
 	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
@@ -245,10 +239,6 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 					/* Send the PR_Swap message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PR_SWAP,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmitDataObj = NULL;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SEND_SWAP, \
                                                 ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS, \
@@ -336,10 +326,6 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 					/* Send the Accept message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmitDataObj = NULL;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
       
                     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {
@@ -443,7 +429,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             /* Policy Engine enters this state when the source power supply has been turned off.
                There are no sub-states involved in this state*/
             /* Request DPM to assert Rd pull down on CC wire */
-            DPM_UpdatePwrRoleAfterPRSwap (u8PortNum, PD_ROLE_SINK);
+            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_ASSERT_RD_SS);
             
             gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON; 
             gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS;
@@ -472,10 +458,6 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-
-                        u8TransmitSOP = PRL_SOP_TYPE;
-                        u32pTransmitDataObj = NULL;
-                        pfnTransmitCB = PE_StateChange_TransmitCB;
 
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SRC_SNK_WAIT_SOURCE_ON, ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS, \
                                                         ePE_PRS_SRC_SNK_WAIT_SOURCE_ON, ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS);                     
@@ -582,8 +564,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             /* Policy Engine enters this state when the sink circuitry has been 
                turned off and PS_RDY received from original source. There are no 
                sub-states involved in this state. 
-               Request DPM to assert Rp pull up resistor on CC wire */
-            DPM_UpdatePwrRoleAfterPRSwap (u8PortNum, PD_ROLE_SOURCE);
+               Request DPM to transition Type C Port role from Sink to Source */            
+            /* TODO: <PR_SWAP> Uncomment after testing*/
+        //    DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS);             
             
             /* Drive the DC_DC_EN pin high */
             PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
@@ -615,10 +598,6 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-
-                        u8TransmitSOP = PRL_SOP_TYPE;
-                        u32pTransmitDataObj = NULL;
-                        pfnTransmitCB = PE_StateChange_TransmitCB;
 
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SNK_SRC_SOURCE_ON, ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS , \
                                                         ePE_PRS_SNK_SRC_SOURCE_ON, ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS);                     
@@ -695,8 +674,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
    /* Transmit the message if u8IsTransmit is set */
     if (TRUE == u8IsTransmit)
     {
-		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, u32TransmitHeader, \
-                    (UINT8 *)u32pTransmitDataObj, pfnTransmitCB, u32TransmitTmrIDTxSt); 
+		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
+                            NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 
     }    
 }
 #endif /*INCLUDE_PD_PR_SWAP*/

@@ -235,7 +235,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                 /*If INCLUDE_PD_DR_SWAP is true, default value PE_SUPPORTED_MSG is 
                  left as it is */
                 #if (TRUE != INCLUDE_PD_DR_SWAP)
-                    u8RetVal = PE_UNSUPPORTED_MSG;;
+                    u8RetVal = PE_UNSUPPORTED_MSG;
                 #endif
             }
             else if (PE_CTRL_PR_SWAP == u8MsgType)
@@ -250,14 +250,14 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
-            else if ((DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE) && \
+            else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
                      ((PE_CTRL_GET_SINK_CAP == u8MsgType) || (PE_CTRL_PING == u8MsgType)\
                         || (PE_CTRL_GOTO_MIN == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
 
-            else if ((DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SINK) && \
+            else if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
                      ((PE_CTRL_GET_SOURCE_CAP == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
@@ -292,13 +292,13 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
 
-            else if ((DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE) && \
+            else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
                      (PE_DATA_SOURCE_CAP == u8MsgType))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
 
-            else if ((DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SINK) && \
+            else if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
                      ((PE_DATA_SINK_CAP == u8MsgType) || (PE_DATA_REQUEST == u8MsgType) || 
                      (PE_DATA_ALERT == u8MsgType)))
             {
@@ -544,8 +544,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 
                 case PE_DATA_REQUEST:
                 {
-                    if (ePE_SRC_SEND_CAPABILITIES == gasPolicyEngine[u8PortNum].ePEState ||
-                       ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState)
+                    if ((ePE_SRC_SEND_CAPABILITIES == gasPolicyEngine[u8PortNum].ePEState) ||
+                       (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState))
                     {
                         /* Kill SenderResponse timer only in ePE_SRC_SEND_CAPABILITIES 
                            Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
@@ -560,7 +560,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SRC_NEGOTIATE_CAPABILITY,(ePolicySubState)SET_TO_ZERO);
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DATA_REQUEST: Source Capability message received\r\n");
                     }
-
                     else
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);

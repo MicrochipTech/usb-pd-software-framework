@@ -190,12 +190,10 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 		/***************** PE_SRC_SEND_CAPABILITIES *****************/
         case ePE_SRC_SEND_CAPABILITIES:
         {
-
             switch(gasPolicyEngine[u8PortNum].ePESubState)
             {
                 case ePE_SRC_SEND_CAP_ENTRY_SS:
                 {
-
                     /* If HardReset counter reaches nHardResetCount and NoResponseTimer timed out */
                     if((gasPolicyEngine[u8PortNum].u8HardResetCounter > PE_N_HARD_RESET_COUNT) &&
                        (gasPolicyEngine[u8PortNum].u8PEPortSts & PE_NO_RESPONSE_TIMEDOUT))
@@ -211,8 +209,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         {
                             gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_DISABLED; 
                         }
-                    }
-                 
+                    }                 
                     else
                     {
 						/* Send Source Capabilities message to Port partner */
@@ -236,8 +233,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                           
                         }
                         else
-                        {
-                          
+                        {                          
                             /*The Policy Engine Shall transition to the PE_SRC_Discovery state when:
                               The Protocol Layer indicates that the Message has not been sent and we are presently not Connected
                              */
@@ -311,8 +307,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_TRANSITION_SUPPLY;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_ENTRY_SS;
-            }
-            
+            }            
             else
             {
 				/* Received Request is invalid */
