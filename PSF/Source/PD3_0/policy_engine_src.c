@@ -1428,10 +1428,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             
             /* Send notification */
             (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_ALERT_RCVD);
-            
-            /* Initiate transmission of Get_Status message */
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_STATUS);
-                    
+                               
             break; 
         }       
             /************* ePE_SRC_GET_SINK_STATUS **********/
