@@ -293,7 +293,7 @@ void PWRCTRL_DriveDAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
         //Do nothing
     }
     
-    //value calculated in u16DacData should reflect in DAC_I pin
+    /* value calculated in u16DacData should reflect in DAC_I pin */
     MCHP_PSF_HOOK_DRIVE_DAC_I(u16DacData);
 }
 #endif //#if (TRUE == INCLUDE_PD_SINK)

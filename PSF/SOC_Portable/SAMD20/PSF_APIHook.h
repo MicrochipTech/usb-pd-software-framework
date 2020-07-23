@@ -1655,5 +1655,91 @@ Remarks:
   *************************************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
 
+/**************************************************************************************************
+Summary:
+    PSF Notify Idle enum.
+Description:
+	eMCHP_PSF_NOTIFY_IDLE enum notifies the Idle state in PSF.
+Remarks:
+        None
+**************************************************************************************************/
+typedef enum ePSF_NOTIFY_IDLE 
+{
+    eIDLE_PE_NOTIFY,               //Notify Policy Engine Idle State
+    eIDLE_TYPEC_NOTIFY             //Notify Type C Idle State
+} eMCHP_PSF_NOTIFY_IDLE;
+/**************************************************************************
+Function:
+    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState)
+Summary:
+    Hook to notify entry of Policy Engine and Type C State Machine into idle state
+Description:
+    PSF calls this API to notify the entry of Policy Engine and Type C State Machine
+    into idle state. The entry into idle state refers to when the state machine
+    waits for an event from the partner or for the activated timer to get expired.
+    The entry into Idle state of Policy Engine or Type C state machine is 
+    differentiated based on the enum argument passed
+Conditions:
+    None.
+Input:
+    u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+    eIDLESubState- Defines the idle notification of Policy Engine(eIDLE_PE_NOTIFY) or   
+                   Type C State machine(eIDLE_TYPEC_NOTIFY) 
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState) 
+        PSF_IDLENotification(u8PortNum, eIDLESubState)
+        void  PSF_IDLENotification(u8PortNum, eIDLESubState)
+        {
+            if(eIDLESubState == eIDLE_PE_NOTIFY)
+        {
+            gu8PEIDLEFlag[u8PortNum] = TRUE;
+        }
+        else if (eIDLESubState == eIDLE_TYPEC_NOTIFY)
+        {
+            gu8TypeCIDLEFlag[u8PortNum] = TRUE;
+        }
+        else
+        {
+            //Do Nothing 
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is not mandatory and would be useful
+    in an RTOS environment                          
+ *************************************************************************/
+#define MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState)
+
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_PDTIMER_EVENT()
+Summary:
+    Hook for PD timer timeout event
+Description:
+    This hook is called when PD timer expires for the given event to call 
+    the callback function. 
+Conditions:
+    None
+Input:
+    None 
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_PDTIMER_EVENT ()  PSF_IdleExit()
+    void PSF_IdleExit()
+    {
+        gbyIdleFlag = FALSE;
+    }
+    </code>
+Remarks:
+    User definition of this Hook function is not mandatory and would be useful
+    in an RTOS environment                          
+*******************************************************************************/  
+
+#define MCHP_PSF_HOOK_PDTIMER_EVENT()
+
 #endif /*_PSF_API_HOOK_H_*/
 
