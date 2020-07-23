@@ -569,6 +569,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #if (TRUE == INCLUDE_PD_PR_SWAP)
   UINT8 u8PRSwapWaitTmrID;         // PR_Swap Wait Timer ID
 #endif 
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+  UINT8 u8DRSwapWaitTmrID;
+#endif
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
 /************************ Client Request Defines ******************************/
@@ -626,12 +629,12 @@ typedef enum PDOtype
 
 /* Enum for Swap messages */
 typedef enum {
-    eVCONN_SWAP_RCVD,
-    eDR_SWAP_RCVD,
-    ePR_SWAP_RCVD,
-    eVCONN_SWAP_INITATE,
-    eDR_SWAP_INITIATE,
-    ePR_SWAP_INITIATE
+    eVCONN_SWAP_RCVD = 0x0,
+    eDR_SWAP_RCVD = BIT(0),
+    ePR_SWAP_RCVD = BIT(1),
+    eVCONN_SWAP_INITATE = BIT(2), /*same as DPM_INT_EVT_INITIATE_VCONN_SWAP value*/
+    ePR_SWAP_INITIATE = BIT(3),  /*same as DPM_INT_EVT_INITIATE_PR_SWAP value*/
+    eDR_SWAP_INITIATE = BIT(4)  /*same as DPM_INT_EVT_INITIATE_DR_SWAP value*/
 }eRoleSwapMsgtype;
 
 // *****************************************************************************
@@ -1750,7 +1753,7 @@ void DPM_OnTypeCAttach(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
+        void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType); 
     Summary:
         Timer callback for PE_PR_SWAP_WAIT_TIMEOUT_MS timeout
     Description:
@@ -1761,13 +1764,13 @@ void DPM_OnTypeCAttach(UINT8 u8PortNum);
         None.
     Input:
         u8PortNum - Port number.
-        u8DummyVariable - Dummy variable
+        u8SwapInitiateType - Type of Swap to be initiated on wait timeout
     Return:
         None.
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
+void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType);
 
 /**************************************************************************************************
     Function:

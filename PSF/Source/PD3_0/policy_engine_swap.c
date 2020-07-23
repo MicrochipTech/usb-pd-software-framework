@@ -33,17 +33,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #if (TRUE == INCLUDE_PD_DR_SWAP) 
 void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
 {
-	/* Transmit Message Type - SOP SOP' SOP" */
-    UINT8 u8TransmitSOP = PRL_SOP_TYPE;
-
 	/* Transmit Message Header */
 	UINT32 u32TransmitHeader = SET_TO_ZERO;
 
-	/* Transmit Data Object */
-	UINT32 *u32pTransmitDataObj = NULL; 
-
 	/* Transmit Call back */
-	PRLTxCallback pfnTransmitCB = NULL;
+	PRLTxCallback pfnTransmitCB = PE_StateChange_TransmitCB;
 
 	/* Transmit Call back variables */
 	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
@@ -51,16 +45,20 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
 	/* Transmit Flag */
 	UINT8 u8IsTransmit = FALSE;
     
-    UINT8 u8TxFailedSt, u8TxFailedSS;
+    UINT8 u8TxFailedSt, u8TxFailedSS, u8TxDoneSt, u8TxDoneSS;
     
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
+        u8TxDoneSt = ePE_SRC_READY;
+        u8TxDoneSS = ePE_SRC_READY_END_AMS_SS;
         u8TxFailedSt = ePE_SRC_SEND_SOFT_RESET;
         u8TxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS;
         
     }
     else
     {
+        u8TxDoneSt = ePE_SNK_READY;
+        u8TxDoneSS = ePE_SNK_READY_IDLE_SS;
         u8TxFailedSt = ePE_SNK_SEND_SOFT_RESET;
         u8TxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
     }
@@ -69,6 +67,8 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
    {
         case ePE_DRS_EVALUATE_SWAP:
         {
+            /* Inform DR_SWAP has been received notification*/
+            DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_RCVD);
             /*Evaluate swap through DPM function*/
             if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap(u8PortNum, eDR_SWAP_RCVD))
             {
@@ -90,13 +90,11 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
             {
                 case ePE_DRS_ACCEPT_SWAP_SEND_ACCEPT_SS:
                 {
+                    /*SOP type is hard coded to SOP and Data object pointer to NULL
+                     and Transmit call back to PE_StateChange_TransmitCB*/
                     /* Send the Accept message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-
-                    /*u8TransmitSOP is set to PRL_SOP_TYPE by default and u32pTransmitDataObj is
-                     assigned to a NULL pointer */
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     /*If GoodCRC is not received, Soft reset state is set depending on
                      Power role*/
@@ -120,7 +118,7 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
                 }
             }
             break;
-        }   
+        }
         case ePE_DRS_DFP_UFP_ROLE_CHANGE:
         {
             /*Change the present role*/
@@ -136,6 +134,8 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
             {
                 /*Do nothing*/
             }
+            /* Inform DR_SWAP completion notification*/
+            DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_COMPLETED);
             
             break;
         }
@@ -148,10 +148,6 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
                     /* Send the Reject message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_DR_SWAP,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmitDataObj = NULL;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_DRS_SEND_SWAP , \
                                                 ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS, \
@@ -164,11 +160,49 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
                    
                     break;
                 }
-                case ePE_DRS_SEND_SWAP_IDLE_SS:
+                case ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS:
                 {
+                    /* Start Sender Response Timer */
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_SENDERRESPONSE_TIMEOUT_MS),
+                                                            PE_SubStateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_DRS_SEND_SWAP_NO_RESPONSE_SS);
+                    
+                    /*Wait in a idle state for a response*/
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_IDLE_SS;                                            
+                    break; 
+                }
+                case ePE_DRS_SEND_SWAP_NO_RESPONSE_SS:
+                {
+                    /* Response not received within tSenderResponse. Assign
+                     * PE_SRC_READY/PE_SNK_READY state*/
+                    gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;
+                    break; 
+                }
+                case ePE_DRS_SEND_SWAP_WAIT_RCVD_SS:
+                {
+                    /* Start Wait timer*/
+                    gasDPM[u8PortNum].u8DRSwapWaitTmrID = PDTimer_Start (
+                                                          (PE_DR_SWAP_WAIT_TIMEOUT_MS),
+                                                          DPM_SwapWait_TimerCB,u8PortNum,  
+                                                          (UINT8)eDR_SWAP_INITIATE);
+                    /*PE_SRC_READY/PE_SNK_READY state is set*/
+                    gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;
+                                 
+                    break; 
+                }
+                case ePE_DRS_SEND_SWAP_REJECT_RCVD_SS:
+                {
+                    /* Inform DR_SWAP has been received notification*/
+                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_REJECTED);
+                    /*SRC_READY/SNK_READY state is set*/
+                    gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS; 
                     break;
                 }
-                case ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS:
+                case ePE_DRS_SEND_SWAP_IDLE_SS:
                 {
                     break;
                 }
@@ -188,8 +222,8 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
    /* Transmit the message if u8IsTransmit is set */
     if (TRUE == u8IsTransmit)
     {
-		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, u32TransmitHeader, \
-                    (UINT8 *)u32pTransmitDataObj, pfnTransmitCB, u32TransmitTmrIDTxSt); 
+		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
+                    (UINT8 *)NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 
     }
 }
 #endif /*INCLUDE_PD_DR_SWAP*/
@@ -277,8 +311,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* Start PR Swap Wait timer*/
                     gasDPM[u8PortNum].u8PRSwapWaitTmrID = PDTimer_Start (
                                                           (PE_PR_SWAP_WAIT_TIMEOUT_MS),
-                                                          DPM_PRSwapWait_TimerCB,u8PortNum,  
-                                                          (UINT8)SET_TO_ZERO);
+                                                          DPM_SwapWait_TimerCB,u8PortNum,  
+                                                          (UINT8)ePR_SWAP_INITIATE);
 
                     gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;

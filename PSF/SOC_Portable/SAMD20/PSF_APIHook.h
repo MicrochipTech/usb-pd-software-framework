@@ -1091,6 +1091,18 @@ Description:
 	when the swap message is accepted by the PSF port and port power roles of the both the    
     partners are changed successfully. 
     
+    <b>eMCHP_PSF_DR_SWAP_COMPLETE</b>: This notification indicates that DR_SWAP
+    successfully completed and the data role is reversed.
+        
+    <b>eMCHP_PSF_DR_SWAP_REJECTED</b>: This notification indicates PSF has initiated
+    DR_SWAP message based on u16SwapPolicy configured by user and it is rejected 
+    by the port partner.
+ 
+    <b>eMCHP_PSF_DR_SWAP_RCVD</b>: This occurs whenever there is a DR_SWAP message
+    from port partner. User can modify u16SwapPolicy dynamically to Accept or 
+    Reject DR_SWAP. Note for dynamic DR_SWAP initiation by PSF, client request 
+    has to be raised apart from dynamic change of u16SwapPolicy configuration.
+    
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
     Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
@@ -1116,7 +1128,10 @@ eMCHP_PSF_NEW_SRC_CAPS_RCVD,        // New source capability message is received
 eMCHP_PSF_SINK_ALERT_RCVD,          // Alert message received from Sink Partner         
 eMCHP_PSF_SINK_STATUS_RCVD,         // Sink Status received from Sink Partner
 eMCHP_PSF_SINK_STATUS_NOT_RCVD,     // Sink Status not received from Sink Partner
-eMCHP_PSF_PR_SWAP_COMPLETE,         // Power Role Swap completed 
+eMCHP_PSF_PR_SWAP_COMPLETE,         // Power Role Swap completed
+eMCHP_PSF_DR_SWAP_COMPLETED,        // Data Role Swap completed
+eMCHP_PSF_DR_SWAP_REJECTED,         // Data Role Swap Rejected by port partner
+eMCHP_PSF_DR_SWAP_RCVD,             // Data Role swap received from port partner
 eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
 } eMCHP_PSF_NOTIFICATION;
 
