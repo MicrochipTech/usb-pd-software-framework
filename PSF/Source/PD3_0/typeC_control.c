@@ -679,7 +679,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
 					
 					/*Sink Attached in CC1 pin*/
-                    if(u8CC1_MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
+                    if(u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
                     {
                         gasTypeCcontrol[u8PortNum].u8PortSts &= ~(TYPEC_CC_ATTACHED_ORIENTATION_MASK); 
                         UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL); 
@@ -3084,7 +3084,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
        for which threshold was configured is driven in VBUS.
        For PPS, this variable needs to be 0 since a PPS Source shall not 
        rely on VBUS voltage for sending PS_RDY */
-    if((gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+    if((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
             (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
     {
         gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV = SET_TO_ZERO; 

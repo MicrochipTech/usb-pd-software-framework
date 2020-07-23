@@ -777,62 +777,6 @@ UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
 #endif /*INCLUDE_PD_SOURCE_PPS*/ 
 #endif /*INCLUDE_PD_SOURCE*/  
 
-/************************API to handle TypeC detach****************************/
-void DPM_OnTypeCDetach(UINT8 u8PortNum)
-{
-    /* Clear the DPM variables whose data is no more valid after a Type C detach */
-    gasDPM[u8PortNum].u8NegotiatedPDOIndex = RESET_TO_ZERO;
-    gasDPM[u8PortNum].u32NegotiatedPDO = RESET_TO_ZERO;
-    gasDPM[u8PortNum].u16PrevVBUSVoltageInmV = RESET_TO_ZERO;
-            
-    /* Clear the RDO register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = RESET_TO_ZERO; 
-                    
-    /* Clear the Power related registers */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = RESET_TO_ZERO; 
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
-    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
-
-    /*Clear Partner PDO and Advertised PDO registers */
-    for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
-    {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;
-    }
-    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
-    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = RESET_TO_ZERO; 
-    
-#if(TRUE == INCLUDE_PD_SOURCE)
-    /* Clear the ATTACHED and AS_SOURCE_PD_CONTRACT_GOOD bits in 
-    Port Connection Status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-        ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS);
-    
-    #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-    /* Clear Partner Alert register */
-    gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert = RESET_TO_ZERO; 
-    
-    /*Clear Partner Status register */
-    for(UINT8 u8Index = SET_TO_ZERO; u8Index < PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES; u8Index++)
-    {
-        gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = RESET_TO_ZERO;
-    }
-    
-    /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
-    PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
-    /* Set the timer Id to Max Concurrent Value*/
-    gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
-    /* Note: It is recognized that it is possible to send an alert to another 
-       partner if the current partner is disconnected and a new partner is
-       connected. So, no need to clear the other variables */     
-    #endif
-#endif
-
-    /* Clear all the client requests for the port. */
-    DPM_ClearAllClientRequests(u8PortNum);
-
-}
-
 /*********************************DPM VDM Cable APIs**************************************/
 UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
 {
@@ -1162,7 +1106,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
                 /*Updating the globals with Sink PDO selected */
                 gasDPM[u8PortNum].u32NegotiatedPDO = u32RcvdSrcPDO;
                 /*Updating the globals with Sink PDO index selected*/
-                gasDPM[u8PortNum].u8NegotiatedPDOIndex = (u8SinkPDOIndex + BYTE_LEN_1);
+                gasDPM[u8PortNum].u8NegotiatedPDOIndex = (u8SinkAdvertisedPDOIndex + BYTE_LEN_1);
    
                 /*Update Negotiated value*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = (DPM_GET_PDO_VOLTAGE(u32RcvdSrcPDO) * DPM_PDO_VOLTAGE_UNIT);
@@ -1293,6 +1237,8 @@ void DPM_OnTypeCAttach(UINT8 u8PortNum)
 #endif /*INCLUDE_PD_PR_SWAP*/
     
 }
+
+/*********************************DPM TypeC Detach API**************************************/
 void DPM_OnTypeCDetach(UINT8 u8PortNum)
 {
     /* Clear the DPM variables whose data is no more valid after a Type C detach */

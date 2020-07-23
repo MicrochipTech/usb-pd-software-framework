@@ -208,13 +208,13 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     {
 						/* Send Source Capabilities message to Port partner */
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-ENTRY_SS: Send Source Capabilities\r\n");
-                        DPM_GetSourceCapabilities(u8PortNum, &u8SrcPDOCnt, u32DataObj);
+                        DPM_GetSourceCapabilities(u8PortNum, &u8SrcPDOCnt, u32aDataObj);
                         
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,  \
                                                                             u8SrcPDOCnt, PE_NON_EXTENDED_MSG);
                         
                         u8TransmitSOP = PRL_SOP_TYPE;
-                        u32pTransmitDataObj = u32DataObj;
+                        u32pTransmitDataObj = u32aDataObj;
                         pfnTransmitCB = PE_StateChange_TransmitCB;
                         
                         if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PDCONNECTED_STS_MASK)
