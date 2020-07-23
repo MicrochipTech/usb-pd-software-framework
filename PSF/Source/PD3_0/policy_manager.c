@@ -83,14 +83,14 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
             
-            DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SRC Powered OFF state");
+            DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SRC Powered OFF state\r\n");
         }
         else
         { 
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
             
-            DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SNK Powered OFF state");
+            DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SNK Powered OFF state\r\n");
         }       
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
@@ -1148,11 +1148,11 @@ UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum)
     UINT8 u8IsVCONNSrc;
     if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)
     {
-        u8IsVCONNSrc =TRUE;
+        u8IsVCONNSrc = TRUE;
     }
     else
     {
-        u8IsVCONNSrc =FALSE;
+        u8IsVCONNSrc = FALSE;
     }
     return u8IsVCONNSrc;
 }
@@ -1462,24 +1462,6 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
 
 
 #if (TRUE == INCLUDE_PD_PR_SWAP)
-
-void DPM_UpdatePwrRoleAfterPRSwap (UINT8 u8PortNum, UINT8 u8NewPwrRole)
-{
-    if (PD_ROLE_SOURCE == u8NewPwrRole)
-    {
-        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
-        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_ASSERT_RP_SS;         
-    }
-    else if (PD_ROLE_SINK == u8NewPwrRole)
-    {
-        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SNK;
-        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_ASSERT_RD_SS;                 
-    }
-    else
-    {
-        /* Do Nothing */
-    }
-}
 
 void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {

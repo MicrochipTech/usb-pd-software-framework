@@ -479,13 +479,13 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	UPD_RegByteClearBit (u8PortNum, UPD_CLK_CTL , \
             (UPD_RING_OSC_ENABLE | UPD_48MHZ_OSC_ENABLE | UPD_SYS_CLK_ENABLE) );
     
-    DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set Port Idle");
+    DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set Port Idle\r\n");
 	
 	//Put MCU into IDLE
 
 	if (FALSE == UPD_CheckUPDsActive())
 	{
-        DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE\r\n");
                 
 		gu8SetMCUidle = UPD_MCU_IDLE;
 	}
