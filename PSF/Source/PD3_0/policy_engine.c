@@ -230,8 +230,21 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             are not supported*/
             /*Any control message with message type between soft reset and Not supported are
             not supported as they are reserved fields*/
-            if(PE_CTRL_DR_SWAP == u8MsgType)
+            /* Get_Status and Get_PPS_Status messages are supported for Source
+            and if any APDOs are advertised to port partner.*/
+            if ((PE_CTRL_GET_STATUS == u8MsgType) || (PE_CTRL_GET_PPS_STATUS == u8MsgType))
             {
+                #if (FALSE == INCLUDE_PD_SOURCE_PPS)
+                    u8RetVal = PE_UNSUPPORTED_MSG;
+                #else
+                    if (FALSE == DPM_IsAPDOEnabled(u8PortNum))
+                    {
+                        u8RetVal = PE_UNSUPPORTED_MSG;
+                    }
+                #endif    
+            }
+            else if(PE_CTRL_DR_SWAP == u8MsgType)
+			{
                 /*If INCLUDE_PD_DR_SWAP is true, default value PE_SUPPORTED_MSG is 
                  left as it is */
                 #if (TRUE != INCLUDE_PD_DR_SWAP)
@@ -265,29 +278,26 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             else
             {
                 /* Do Nothing */
-            }
-            
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)            
-            /* Get_Status and Get_PPS_Status messages are supported for Source
-               and if any APDOs are advertised to port partner.*/
-            if (DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE)
-            {
-                if ((PE_CTRL_GET_STATUS == u8MsgType) || (PE_CTRL_GET_PPS_STATUS == u8MsgType))
-                {
-                    if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
-                    {
-                        u8RetVal = PE_SUPPORTED_MSG;
-                    }
-                }
-            }
-#endif 
-        }
+			}
+        }             
         else
         {
             /*Message type greater than Sink_Capabilities except Vendor_Defined 
               and Alert(Source only) are not supported
               Refer Table 6-6 Data Message Types of PD Specification */
-            if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED))
+            /* Alert is supported only for PPS Source */
+            if (PE_DATA_ALERT == u8MsgType)
+            {
+                #if (FALSE == INCLUDE_PD_SOURCE_PPS)
+                    u8RetVal = PE_UNSUPPORTED_MSG;
+                #else
+                    if (FALSE == DPM_IsAPDOEnabled(u8PortNum))
+                    {
+                        u8RetVal = PE_UNSUPPORTED_MSG;
+                    }
+                #endif 
+            }
+            else if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
@@ -309,22 +319,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 /* Do Nothing */
             }
-            
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)            
-            /* Get_Status and Get_PPS_Status messages are supported for Source
-               and if any APDOs are advertised to port partner.*/            
-            if (DPM_GET_CURRENT_DATA_ROLE (u8PortNum) == PD_ROLE_SOURCE)
-            {
-                if (PE_DATA_ALERT == u8MsgType)
-                {
-                    if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
-                    {
-                        u8RetVal = PE_SUPPORTED_MSG;
-                    }
-                }
-            }
-#endif 
-        }
+		}
     }
 
     return u8RetVal;
@@ -1256,6 +1251,8 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 /*Wait here until the message is sent*/
                 case ePE_SEND_NOT_SUPPORTED_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 default:
@@ -1306,6 +1303,8 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 /*Wait here until the message is sent*/
                 case ePE_SEND_REJECT_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 default:
@@ -1388,6 +1387,8 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 /*Wait here until the message is sent*/
                 case ePE_VCS_ACCEPT_SWAP_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 case ePE_VCS_ACCEPT_SWAP_ACCEPT_SENT_SS:
@@ -1444,6 +1445,8 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS:
                 {
                     /*Wait for PS_RDY message*/
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 default:
@@ -1477,6 +1480,8 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                                                               (UINT8)SET_TO_ZERO);
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_OFF_VCONN_CHECK_SS;
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
             
                     break;            
                 }
@@ -1535,8 +1540,10 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                                                               (UINT8)SET_TO_ZERO);
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_ON_VCONN_CHECK_SS;
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     
-                     break;
+                    break;
                   
                 }
                 
@@ -1605,6 +1612,8 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 /*Wait here until the PS_RDY message is sent*/
                 case ePE_VCS_SEND_PS_RDY_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 default:
@@ -1680,6 +1689,8 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_BIST_MODE_IDLE_SS:
                 {
 				  	/*Idle state for BISTContModeTimer timeout*/
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 case ePE_BIST_MODE_EXIT_SS:

@@ -78,14 +78,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             /*Explicit Contract becomes invalid once this state is reached 
             from Hard Reset or Initial Power up*/
             gasPolicyEngine[u8PortNum].u8PEPortSts &= (~PE_EXPLICIT_CONTRACT);
-            
-            /*Clear partner PDO variable*/
-            for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
-            {
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = SET_TO_ZERO;
-            }
-            gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = SET_TO_ZERO;
-            
+        
             /*Reset the all the sink status set*/
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
                         ~(DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS |
@@ -160,6 +153,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 from source partner*/    
                 case ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break; 
                 }
                 default:
@@ -239,6 +234,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                  /*Wait here until the Sink data request message is sent*/
                 case ePE_SNK_SELECT_CAPABILITY_SEND_REQ_IDLE_SS:
                 {    
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                     
@@ -259,6 +256,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here for the accept message from Source for the sink data request*/
                 case ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 default:
@@ -296,6 +295,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here for the PS Ready message from Source for the sink data request*/
                 case ePE_SNK_TRANSITION_SINK_WAIT_FOR_PSRDY_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 default:
@@ -343,6 +344,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 
                 case ePE_SNK_READY_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 default:
@@ -420,6 +423,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                                                                   DPM_VCONNOFFError_TimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO); 
+                        /* Hook to notify PE state machine entry into idle substate */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_VCONNOFF_CHECK_SS;
                     
@@ -523,6 +528,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here until the Sink capability message is sent*/
                 case ePE_SNK_GIVE_SINK_CAP_IDLE_SS:
                 { 
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;  
                 }
                 default:
@@ -571,6 +578,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here until the accept message for the received soft reset is sent*/
                 case ePE_SNK_SOFT_RESET_WAIT_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);               
                     break;
                 }
                 default:
@@ -615,6 +624,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here until the Soft reset message is sent*/               
                 case ePE_SNK_SEND_SOFT_RESET_SEND_IDLE_SS:
                 {  
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 /*This Substate is entered once GoodCrc for the Soft reset message is received*/      
@@ -637,6 +648,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here for the accept message from source for the soft reset sent*/   
                 case ePE_SNK_SEND_SOFT_RESET_WAIT_FOR_ACCEPT_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 default:

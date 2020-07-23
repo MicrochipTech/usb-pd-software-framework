@@ -896,8 +896,8 @@ UINT16 PE_FwUpdtGetFWIDRequest(void)
             (CONFIG_HWMAJOR_VERSION << PE_FWUP_HWMAJOR_VER_Pos)
         );
 
-    /*Set Silicon revision to 1; To be requested to Richard*/
-    stGetFWID.u8SiVersion = (UINT8)CONFIG_SILICON_VERSION;
+    /*Set Silicon revision */
+    stGetFWID.u8SiVersion = gasCfgStatusData.u8SiVersion; 
 
     /*Firmware Revision*/
     stGetFWID.u16FWVersion1 = (UINT16)SET_TO_ZERO;
