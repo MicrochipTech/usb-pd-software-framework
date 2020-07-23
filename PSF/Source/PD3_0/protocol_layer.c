@@ -286,7 +286,6 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 {
   
 	UINT8 u8MsgId, u8PktLen, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = SET_TO_ZERO;
-    UINT8 u8RxCtlBRegVal; 
     
     #if (TRUE == INCLUDE_PD_3_0)
     UINT16 u16MsgDataIndex;
@@ -355,25 +354,17 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	gasPRL[u8PortNum].u32PkdPEstOnTxStatus = u32PkdPEstOnTxStatus;
 	gasPRL[u8PortNum].pFnTxCallback = pfnTxCallback;
     
-    /* PD3_Auto_Decode and RX_SOP_ENABLE_SOP are enabled by default */
-    u8RxCtlBRegVal = (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP); 
-    
-    /* Enable RX_SOP_ENABLE_SOP_P and RX_SOP_ENABLE_SOP_PP based on the 
-       packet transmitted */
-    if (PRL_SOP_P_TYPE == u8SOPType)
-    {   
-        u8RxCtlBRegVal |= PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_P;
-    }
-    else if (PRL_SOP_PP_TYPE == u8SOPType)
-    {
-        u8RxCtlBRegVal |= PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_PP;
-    }
-    else 
-    {
-        /* Do Nothing */
-    }
-	/* Update the RX_CTL_B PD MAC register */
-    UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, u8RxCtlBRegVal);
+	if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+    {	  
+		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
+						  (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP |
+						   PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_P | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_PP));
+	}
+	else
+	{
+		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
+						  (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP));
+	}
     
 	/* Depending on the Packet type; MessageID is updated in the Pkt Header and 
 		PD_MAC Reg is updated for Pkt type */
