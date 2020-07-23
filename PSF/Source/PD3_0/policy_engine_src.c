@@ -1592,7 +1592,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                             PE_EXTENDED_MSG));
 
                     u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmitDataObj = (UINT32 *)u8aStatusDB;
+                    u32pTransmitDataObj = (UINT32 *)u8StatusDB;
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \

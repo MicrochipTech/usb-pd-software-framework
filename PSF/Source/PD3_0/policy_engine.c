@@ -152,7 +152,11 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
         /*Setting Timeout sub-state to invalid state*/
         gasPolicyEngine[u8PortNum].ePETimeoutSubState = ePE_INVALIDSUBSTATE;
-
+        
+        #if (TRUE == INCLUDE_PD_DR_SWAP)
+			/*ToDo: <DR_SWAP> uncomment after testing*/
+            //PE_DRSwapRunStateMachine (u8PortNum);
+        #endif 
         if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
         {
 	        #if (TRUE == INCLUDE_PD_SOURCE)
@@ -173,11 +177,6 @@ void PE_RunStateMachine (UINT8 u8PortNum)
         #if (TRUE == INCLUDE_PD_PR_SWAP)
             PE_RunPRSwapStateMachine (u8PortNum);
         #endif
-        
-        #if (TRUE == INCLUDE_PD_DR_SWAP)
-			/*ToDo: <DR_SWAP> uncomment after testing*/
-            //PE_DRSwapRunStateMachine (u8PortNum);
-        #endif 
 
     	PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);        
 	}
@@ -834,6 +833,17 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         }                        
                     }
 #endif 
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+                    else if((ePE_DRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
+                            (ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState))
+                    {
+						/*Accept handling for DR_SWAP*/
+                        /* Kill the Sender Response Timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_DRS_DFP_UFP_ROLE_CHANGE, 
+                                    ePE_INVALIDSUBSTATE);
+                    }
+#endif
                     else
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);
@@ -917,7 +927,30 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                             /* Do Nothing */
                         }
                     }
-#endif 
+#endif
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+                    else if ((ePE_DRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
+                            (ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
+                    {
+						/*Reject and wait handling for DR_SWAP*/
+                        /* Kill the Sender Response Timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        
+                        if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
+                        {
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_REJECT_RCVD_SS;
+                                                                            
+                        }
+                        else if (PE_CTRL_WAIT == (PRL_GET_MESSAGE_TYPE (u32Header)))
+                        {
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_WAIT_RCVD_SS;                        
+                        }
+                        else
+                        {
+                            /* Do Nothing */
+                        }
+                    }
+#endif
                     else
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);
@@ -1133,7 +1166,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     /*DR_SWAP message is valid only if the PE state is SRC_READY or SNK_READY*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState))
-                    { 
+                    {
+                        /*Kill the u8DRSwapWaitTmrID timer*/
+                        PDTimer_Kill(gasDPM[u8PortNum].u8DRSwapWaitTmrID);
+                        gasDPM[u8PortNum].u8DRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
                         gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_EVALUATE_SWAP;
                     }
                     else

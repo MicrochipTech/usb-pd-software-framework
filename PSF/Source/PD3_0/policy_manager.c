@@ -1445,21 +1445,38 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
     return u8RetVal; 
 }
 
-
-#if (TRUE == INCLUDE_PD_PR_SWAP)
-
-void DPM_PRSwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
 {
-    /* Set the timer Id to Max Concurrent Value*/
- 	gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
-    
-    /* Re-initiate PR_Swap on tPRSwapWait timer expiry */
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
+    switch (u8SwapInitiateType)
     {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+        case ePR_SWAP_INITIATE:
+        {
+            /* Set the timer Id to Max Concurrent Value*/
+            gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+            break;
+        }
+#endif /*INCLUDE_PD_PR_SWAP*/
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+        case eDR_SWAP_INITIATE:
+        {
+            /* Set the timer Id to Max Concurrent Value*/
+            gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+            break;
+        }
+#endif /*INCLUDE_PD_DR_SWAP*/
+        default:
+            break;
+    }
+
+    /* Re-initiate PR_Swap on tPRSwapWait timer expiry */
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, u8SwapInitiateType))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, u8SwapInitiateType);
     } 
 }
 
+#if (TRUE == INCLUDE_PD_PR_SWAP)
 void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
     /* Set the timer Id to Max Concurrent Value*/

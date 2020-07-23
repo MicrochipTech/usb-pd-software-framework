@@ -426,7 +426,11 @@ typedef enum {
     /*ePE_DRS_SEND_SWAP*/
     ePE_DRS_SEND_SWAP_ENTRY_SS,
     ePE_DRS_SEND_SWAP_IDLE_SS,
-    ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS,   
+    ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS,
+    ePE_DRS_SEND_SWAP_NO_RESPONSE_SS,
+    ePE_DRS_SEND_SWAP_WAIT_RCVD_SS,
+    ePE_DRS_SEND_SWAP_REJECT_RCVD_SS,
+            
     //--------------------PR_Swap specific Sub-States---------------------------//
     ePE_PRS_SEND_SWAP_ENTRY_SS,
     ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS,
