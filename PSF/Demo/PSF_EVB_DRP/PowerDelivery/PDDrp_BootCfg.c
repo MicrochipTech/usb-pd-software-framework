@@ -53,6 +53,8 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
                     CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
                     CFG_PORT_SOURCE_UNCONSTARINED_PWR, CFG_PORT_DUAL_ROLE_POWER);    
 
+            /* TODO: <PSF Configuration> No need to load these registers since 
+                    PDO count for Notebook port is 1 */
             /* PDO 2: Fixed PDO with 9V,3A capability */
             pasCfgStatusData->sPerPortData[u8PortNum].u32aSourcePDO[1] = \
                     CFG_FORM_FIXED_PDOx(CFG_PORT_NOTE_SOURCE_PDO_2_VOLTAGE, \
