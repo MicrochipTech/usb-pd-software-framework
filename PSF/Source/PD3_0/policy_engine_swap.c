@@ -327,6 +327,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
       
+                    /* Move to Transition to Off state based on the current power role */
                     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {
                         u8TxDoneSt = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF;
@@ -532,15 +533,27 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS\r\n");
+                    /* Set PR_Swap in progress Flag. This would prevent PSF Sink from 
+                       detach when VBUS drops below VSinkDisconnect.
+                       PD Spec Reference Note: during the Power Role Swap process the 
+                       initial Sink does not disconnect even though VBUS drops below vSafe5V */
+                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PR_SWAP_IN_PROGRESS_MASK;
+                                        
+                    /* Transition to Sink Standby.
+                       Configure the Type C VBUS threshold for vSafe0v detection */
+                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA; 
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_0V,
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                    
+                    /*Turn off the Sink circuitry to stop sinking the power from source*/
+                    PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+                    
                     /* Initialize and run PSSourceOffTimer */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_PS_SOURCE_OFF_TIMEOUT_MS),
                                                             DPM_PSSourceOff_TimerCB,u8PortNum,  
                                                             (UINT8)SET_TO_ZERO);
-                    
-                    /*Turn off the Sink circuitry to stop sinking the power from source*/
-                    PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
-                    
+               
                     /* Assign an idle state to wait for PS_RDY reception */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS;                                                                                    
                     break;                     
@@ -565,12 +578,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                turned off and PS_RDY received from original source. There are no 
                sub-states involved in this state. 
                Request DPM to transition Type C Port role from Sink to Source */            
-            /* TODO: <PR_SWAP> Uncomment after testing*/
-        //    DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS);             
+            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS);             
             
-            /* Drive the DC_DC_EN pin high */
-            PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
-            
+            /* Once port role is transitioned to Source, send a PS_RDY message */
             gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SNK_SRC_SOURCE_ON; 
             gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS;
             
@@ -587,14 +597,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                             (TYPEC_ATTACHED_SRC_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS\r\n");
-                        /* Port has transitioned into Source. Update the Power role 
-                           and send PS_RDY message */
-                        /* Set the Current Port Power Role as Source in DPM Status variable */
-                        DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SOURCE);
+                        /* Port has transitioned into Source.  
+                           Send PS_RDY message with power role updated as Source */                        
                         
-                        /* Set Port Power Role as Sink in Port Connection Status register */
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SOURCE; 
+                        /* Inform Protocol Layer of the port power role change */
+                        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
                         
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -611,6 +618,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS\r\n");
+                    
                     /* Start SwapSourceStart timer */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_SWAP_SOURCE_START_TIMEOUT_MS),
@@ -649,12 +657,17 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* This sub-state would be entered when SwapSourceStart 
                        timer times out */                    
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
-
+                    
+                    /* Clear the PR_Swap in progress flag */
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+                    
+                    /* Move the Policy Engine to PE_SRC_STARTUP state */
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
+                    
                     /* Send PR_Swap complete notification */
                     DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE); 
                     
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
                     break; 
                 }
                 default:

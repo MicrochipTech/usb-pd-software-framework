@@ -157,7 +157,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CC_COM_SEL			 BIT(4)
 
 #define TYPEC_CC1_CC2_RP_MASK       0xf0ff
-#define TYPEC_CC1_CC2_PD_MASK       0xffc0
+#define TYPEC_CC1_CC2_RD_MASK       0xffc0
 
 /*Bit definitions of TYPEC_CC_CTL1 register*/
 #define TYPEC_CC1_RP_VAL_POS         8
@@ -397,9 +397,10 @@ event for UFP*/
 
 
 /*Defines that can be passed as an argument for variable "u8CCEnablePins" for 
-TypeC_SetCCSampleEnable API*/
-#define TYPEC_ENABLE_CC1_SAMPLING    0x01
-#define TYPEC_ENABLE_CC2_SAMPLING    0x02
+TypeC_SetCCSampleEnable and "u8CCPin" argument of TypeC_SetPowerRole APIs */
+#define TYPEC_ENABLE_CC1           0x01
+#define TYPEC_ENABLE_CC2           0x02
+#define TYPEC_ENABLE_CC1_CC2       (TYPEC_ENABLE_CC1 | TYPEC_ENABLE_CC2)
 
 /*Defines that can be passed as an argument for variable "u8ConfigVal" for 
 TypeC_SetVBUSCompONOFF API*/
@@ -466,13 +467,14 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHWAIT_SRC_TCC_TO_SS                2
     
 /*Defines for TYPEC_ATTACHED_SRC's substates in TYPE C SM*/
-#define TYPEC_ATTACHED_SRC_ASSERT_RP_SS               0
-#define TYPEC_ATTACHED_SRC_DRIVE_PWR_SS               1
-#define TYPEC_ATTACHED_SRC_CHECK_VBUS_SS              2
-#define TYPEC_ATTACHED_SRC_CHECK_VCONNON_SS           3
-#define TYPEC_ATTACHED_SRC_SET_PRL_SS                 4
-#define TYPEC_ATTACHED_SRC_RUN_SM_SS                  5
-#define TYPEC_ATTACHED_SRC_IDLE_SS				      6
+#define TYPEC_ATTACHED_SRC_PRS_ASSERT_RP_SS           0
+#define TYPEC_ATTACHED_SRC_PRS_WAIT_FOR_RD_MATCH      1
+#define TYPEC_ATTACHED_SRC_DRIVE_PWR_SS               2
+#define TYPEC_ATTACHED_SRC_CHECK_VBUS_SS              3
+#define TYPEC_ATTACHED_SRC_CHECK_VCONNON_SS           4
+#define TYPEC_ATTACHED_SRC_SET_PRL_SS                 5
+#define TYPEC_ATTACHED_SRC_RUN_SM_SS                  6
+#define TYPEC_ATTACHED_SRC_IDLE_SS				      7
 
 /*Defines for TYPEC_UNATTACH_WAIT_SRC's substates in TYPE C SM*/ 
 #define TYPEC_UNATTACH_WAIT_SRC_ENTRY_SS            0
@@ -500,6 +502,7 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHED_SNK_TPD_TO_SS                  4
 #define TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS          5
 #define TYPEC_ATTACHED_SNK_IDLE_SS                    6
+#define TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS        7
 
 /*Defines for TYPEC_ERROR_RECOVERY's substates in TYPE C SM*/ 
 #define TYPEC_ERROR_RECOVERY_ENTRY_SS                   0
@@ -519,6 +522,9 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_RP_CURRENT_15           2
 #define TYPEC_RP_CURRENT_30           3
 
+/* Defines for CC Orientation */
+#define TYPEC_ORIENTATION_CC1         0
+#define TYPEC_ORIENTATION_CC2         1
 
 
 /*************************************************************************************/
@@ -548,6 +554,13 @@ from u8PortSts variable*/
 #define TYPEC_VCONN2_ON_REQ	         BIT(6)
 #define TYPEC_VCONN_ON_REQ_MASK	    (BIT(6) | BIT(5))
 
+/* Mask to indicate current CC pin Orientation in u8PortSts variable */
+#define TYPEC_CC_ATTACHED_ORIENTATION_MASK  BIT(7)
+#define TYPEC_CC_ATTACHED_ORIENTATION_POS   7 
+
+/* Define for getting the CC orientation status from u8PortSts variable */
+#define TYPEC_GET_CC_ORIENTATION_STS(u8PortNum) ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CC_ATTACHED_ORIENTATION_MASK) \
+                                                    >> TYPEC_CC_ATTACHED_ORIENTATION_POS)
 /*************************************************************************************/         
 /*************************************************************************************/
 
@@ -824,9 +837,9 @@ void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum , UINT8 u8ConfigVal);
 
     Input:
         u8PortNum - Port Number.
-        u8CCEnablePins - TYPEC_ENABLE_CC1_SAMPLING(To enable Sampling of CC1 pin alone)
-                       - TYPEC_ENABLE_CC2_SAMPLING(To enable Sampling of CC2 pin alone)
-                       -(TYPEC_ENABLE_CC1_SAMPLING|TYPEC_ENABLE_CC2_SAMPLING)(To enable Sampling of both the CC1 and CC2 pin)
+        u8CCEnablePins - TYPEC_ENABLE_CC1(To enable Sampling of CC1 pin alone)
+                       - TYPEC_ENABLE_CC2(To enable Sampling of CC2 pin alone)
+                       - TYPEC_ENABLE_CC1_CC2(To enable Sampling of both the CC1 and CC2 pin)
 
     Return:
         None.
@@ -873,10 +886,11 @@ void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal);
+        void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
 
     Summary:
-        This API is used to Configure the given Rp or given Rd value for a port
+        This API is used to Configure the given Rp or given Rd value for a port for a given
+        CC pin.
 
     Devices Supported:
         UPD350 REV A
@@ -900,6 +914,9 @@ void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
                     - TYPEC_ROLE_SOURCE_30(Setting the Rp value for Type C 3.0A Current)
                     - TYPEC_ROLE_SINK_RD(Setting Rd value as Trimmed Rd)
                     - TYPEC_ROLE_SINK_OPEN_DIS(Setting Rd value as open disconnect)
+        u8CCPin - TYPEC_ENABLE_CC1(To set power role of CC1 pin alone)
+                - TYPEC_ENABLE_CC2(To set power role of CC2 pin alone)
+                - TYPEC_ENABLE_CC1_CC2(To set power role of CC1 and CC2 pins) 
 
     Return:
         None.
@@ -907,28 +924,28 @@ void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal);
+void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetDataRole(UINT8 u8PortNum,UINT8 u8DataRole);
+        void TypeC_SetDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
 
     Summary:
-        This API is used to set the data role as either DFP or UFP for a given port number
+        This API is used to set the device role as either DFP or UFP for a given port.
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-         This API is used to set the data role as either DFP or UFP for a given port number
+         This API is used to set the device role as either DFP or UFP for a given port number
 
     Conditions:
         None.
 
     Input:
         u8PortNum - Port Number.
-        u8DataRole - PD_ROLE_DFP(To Set the Port role as DFP)
-                   - PD_ROLE_UFP(To Set the Port role as UFP)
+        u8DevRole - PD_ROLE_DFP(To Set the Port device role as DFP)
+                  - PD_ROLE_UFP(To Set the Port device role as UFP)
 
     Return:
         None.
@@ -936,7 +953,7 @@ void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SetDataRole(UINT8 u8PortNum,UINT8 u8DataRole);
+void TypeC_SetDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
 /**************************************************************************************************
 
  Function:
