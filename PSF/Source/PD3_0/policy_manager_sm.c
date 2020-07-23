@@ -591,6 +591,14 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             break;
         }
 #endif
+        case eMCHP_PSF_SINK_ALERT_RCVD:
+        {
+            #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+            /* Initiate transmission of Get_Status message on reception of Alert from partner */
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_STATUS);
+            #endif 
+            break; 
+        }
         default:
             break;
     }
