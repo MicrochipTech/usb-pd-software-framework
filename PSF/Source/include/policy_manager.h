@@ -59,7 +59,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 	- PD_ROLE_SINK
 	- PD_ROLE_SOURCE
 	- PD_ROLE_DRP*/
-#define DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)         ((gasDPM[u8PortNum].u8DPMConfigData & DPM_DEFAULT_POWER_ROLE_MASK) >> DPM_DEFAULT_POWER_ROLE_POS)
+#define DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)\
+((gasDPM[u8PortNum].u8DPMConfigData & DPM_DEFAULT_POWER_ROLE_MASK) >> DPM_DEFAULT_POWER_ROLE_POS)
 
 /*DPM_GET_CURRENT_DATA_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_UFP
@@ -88,10 +89,24 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     TYPEC_DFP_DEFAULT_CURRENT				(0x01)
     TYPEC_DFP_1A5_CURRENT				    (0x02)
     TYPEC_DFP_3A0_CURRENT				    (0x03) */
-
 #define DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)\
     ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
                             >> DPM_CFG_RPVAL_POS)
+
+/*Possible value for below define
+    UPD_PORT_ENABLED - 0x1
+    UPD_PORT_DISABLED - 0x0*/
+/*Define to get Port Enable*/
+#define DPM_GET_CONFIGURED_PORT_EN(u8PortNum)\
+((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_PORT_ENDIS_MASK) \
+            >> DPM_CFG_PORT_ENDIS_POS)
+
+/*Define to Get VCONN OCS - Possible value
+    DPM_CFG_VCONN_OCS_ENABLE - BIT(9) in case of enable or 0x00 in case of disable*/
+#define DPM_GET_CONFIGURED_VCONN_OCS_EN(u8PortNum)\
+((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
+                        DPM_CFG_VCONN_OCS_ENABLE) >> DPM_CFG_VCONN_OCS_EN_POS)
+    
 /*************************************************************************************************/
 
 /*Bit definition for u16DPMStatus variable*/

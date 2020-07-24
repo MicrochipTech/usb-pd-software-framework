@@ -436,19 +436,18 @@ UINT8 UPD_CheckUPDsActive()
 {
     UINT8 u8IsAllUPDsActive = FALSE;
     
-    for (UINT8 u8PortNo = SET_TO_ZERO; u8PortNo < CONFIG_PD_PORT_COUNT; u8PortNo++)
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
 		/*Ignore if port is disabled, so consider only for enabled ports*/
-		if (((gasCfgStatusData.sPerPortData[u8PortNo].u32CfgData \
-            & DPM_CFG_PORT_ENDIS_MASK) >> DPM_CFG_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
+		if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
 		{
 			/*UPD_STATE_ACTIVE will be set frequently by respective Alert ISR.
 			  It means that the appropriate port is active, so skip MCU IDLE*/
-			if ((gau8ISRPortState[u8PortNo] == UPD_STATE_ACTIVE) ||
+			if ((gau8ISRPortState[u8PortNum] == UPD_STATE_ACTIVE) ||
 			/*Verify any other IDLE timer is running for all other ports.
 			if its running, then lets handle in that timer expire event, so skip MCU
 			IDLE for now*/
-             (((gau8PortIdleTimerID[u8PortNo]< MAX_CONCURRENT_TIMERS) && (gasPDTimers[gau8PortIdleTimerID[u8PortNo]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
+             (((gau8PortIdleTimerID[u8PortNum]< MAX_CONCURRENT_TIMERS) && (gasPDTimers[gau8PortIdleTimerID[u8PortNum]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
 
 			{
 				u8IsAllUPDsActive = TRUE;
@@ -585,8 +584,7 @@ void UPD_CheckAndDisablePorts (void)
     {
         /*Check if timer is Active, if Timer expired, come out of this loop */
         
-        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-            & DPM_CFG_PORT_ENDIS_MASK) >> DPM_CFG_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             /*Start 10ms timer*/
             u8TimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(BYTE_LEN_10), NULL, \
@@ -639,8 +637,7 @@ void UPD_CheckAndDisablePorts (void)
     /* Work around - If port-0 as source and port-1 as sink interrupt issued continuously */
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
-        if (UPD_PORT_DISABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_PORT_ENDIS_MASK) \
-            >> DPM_CFG_PORT_ENDIS_POS))
+        if (UPD_PORT_DISABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData = SET_TO_ZERO;
         }
@@ -655,8 +652,7 @@ void UPD_FindVBusCorrectionFactor(void)
       
     for(UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_PORT_ENDIS_MASK) \
-            >> DPM_CFG_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             /* Read VBUS threshold register value from OTP */    
             u16VBUSTHR3 = UPD_RegReadWord (u8PortNum, TYPEC_VBUS_THR3);

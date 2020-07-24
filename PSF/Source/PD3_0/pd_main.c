@@ -91,8 +91,7 @@ UINT8 MchpPSF_Init(void)
         
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-                                    & DPM_CFG_PORT_ENDIS_MASK) >> DPM_CFG_PORT_ENDIS_POS))
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             /*Port Power Initialization*/
             u8InitStatus &= PWRCTRL_Initialization(u8PortNum);
@@ -101,8 +100,7 @@ UINT8 MchpPSF_Init(void)
     
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-                                    & DPM_CFG_PORT_ENDIS_MASK) >> DPM_CFG_PORT_ENDIS_POS))
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             /* Initialize the Port's IRQ*/
             MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eUPD350_ALERT_FUNC);
@@ -125,8 +123,7 @@ void MchpPSF_RUN()
 {
 	for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
-        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-                                  & DPM_CFG_PORT_ENDIS_MASK) >> DPM_CFG_PORT_ENDIS_POS))
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
            DPM_RunStateMachine (u8PortNum);
         }

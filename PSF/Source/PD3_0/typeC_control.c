@@ -100,8 +100,8 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     /*Setting Match debounce register */
     UPD_RegisterWrite (u8PortNum, TYPEC_MATCH_DEB, &u8MatchDebVal, BYTE_LEN_1);	
     
-    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK)\
-                >> DPM_CFG_RPVAL_POS);
+    u16Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
+    
     TypeC_DRP_SetCCSampleEnable(u8PortNum, u16Data);
     
     /*FW shall mask the CC1_MATCH_CHG, CC2_MATCH_CHG and CC_MATCH_VLD interrupts to
@@ -122,8 +122,8 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     
     /*FW programs DRP Current Advertisement (DRP_CUR_ADV) in DRP Control Register. This value
     will be advertised when DRP advertises Source capabilities.*/
-    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
-              >> DPM_CFG_RPVAL_POS);        
+    u16Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
+    
     UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, (u16Data << TYPEC_DRP_RP_POS));
     
     /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
@@ -248,16 +248,14 @@ void TypeC_InitPort (UINT8 u8PortNum)
             					
             /*Write CCx Debounce clear enable register, CCx Match Enable register, 
             CCx sample enable register*/            
-            TypeC_SetCCDebounceVariable(u8PortNum, ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
-                                       DPM_CFG_RPVAL_MASK) >> DPM_CFG_RPVAL_POS));
+            TypeC_SetCCDebounceVariable(u8PortNum, DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum));
             
             /*Setting Port Role as DFP in TYPEC_CC_HW_CTL register*/
             TypeC_SetDeviceRole (u8PortNum,PD_ROLE_DFP);
                          
             /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and 
             CC2*/ 
-            u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK)\
-                      >> DPM_CFG_RPVAL_POS);
+            u16Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
             
             /*Setting the Power role as Source*/
             TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, (UINT8) u16Data, TYPEC_ENABLE_CC1_CC2);
@@ -423,8 +421,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 					/*Reset the VBUS threshold for 5V detection*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
 
-                    UINT8 u8RpValue = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
-                    DPM_CFG_RPVAL_MASK) >> DPM_CFG_RPVAL_POS);
+                    UINT8 u8RpValue = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                                         
 					/*Power down the CC comparator*/
                     TypeC_ConfigCCComp(u8PortNum, TYPEC_CC_COMP_CTL_DIS);
@@ -631,8 +628,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                            UPD350 to act as Source */
                         TypeC_SetDeviceRole (u8PortNum,PD_ROLE_DFP);
                         /* Get Rp value from user configuration */
-                        UINT8 u8Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
-                                                >> DPM_CFG_RPVAL_POS);
+                        UINT8 u8Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                         /*Set the u8CCDebMatch and u8CCSrcSnkMatch variable accordingly as per Rp Value*/
                         TypeC_SetCCDebounceVariable(u8PortNum, u8Data);
                           
@@ -1059,7 +1055,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHWAIT_SNK_TPDDEB_SS:
                 {                  
 #if(TRUE == INCLUDE_PD_DRP)
-                    if ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK) == PD_ROLE_DRP)
+                    if (PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
                     {
 						/*If source is detached during TYPEC_ATTACHWAIT_SNK state, according to
 						DRP state machine, the next state should be TYPEC_UNATTACHED_SRC*/
@@ -1261,8 +1257,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
                     /* Get Rp current source value from user configuration */
-                    UINT8 u8RpValue = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
-                            >> DPM_CFG_RPVAL_POS);
+                    UINT8 u8RpValue = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                     
                     /* Disable Rd terminations from both the CC pins and enable 
                        Rp only in the connected CC pin. 
@@ -1430,8 +1425,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         /*Setting Rp Current Source as user given and Rd as Open disconnect in both 
                         CC1 and CC2*/ 
-                        u8Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
-                                  >> DPM_CFG_RPVAL_POS);            
+                        u8Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
+                        
                         TypeC_SetPowerRole  (u8PortNum, TYPEC_ROLE_SOURCE, u8Data, TYPEC_ENABLE_CC1_CC2);
                         
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
@@ -1486,7 +1481,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Setting CC Comparator OFF*/
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
-                    if((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK)== PD_ROLE_SOURCE)
+                    if(PD_ROLE_SOURCE == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
                     {
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
@@ -2240,8 +2235,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
             UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1, TYPEC_VCONN2_ENABLE);
         }
         
-        if (TRUE == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
-                        DPM_CFG_VCONN_OCS_ENABLE) >> DPM_CFG_VCONN_OCS_EN_POS)) 
+        if (DPM_CFG_VCONN_OCS_ENABLE == DPM_GET_CONFIGURED_VCONN_OCS_EN(u8PortNum)) 
         {
             /*Enable VCONN OCS detection only if Bit 9(VCONN OCS En) of 
               gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData defined as 1*/
@@ -2725,8 +2719,7 @@ void TypeC_SetDefaultRpValue (UINT8 u8PortNum)
 {
     UINT16 u16Data;    
     
-    u16Data = ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
-              >> DPM_CFG_RPVAL_POS);
+    u16Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
     
     /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and CC2*/ 
     TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, (UINT8) u16Data, TYPEC_ENABLE_CC1_CC2);
