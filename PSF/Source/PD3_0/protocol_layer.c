@@ -94,6 +94,7 @@ const UINT8 u8aBMCEncoderRegValues [] = {
 void  PRL_Init (UINT8 u8PortNum)
 {
   	UINT16 u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_NEU_VALUE;
+    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
 	
 	/* Protocol Tx PHY layer is Reset */
 	PRL_PHYLayerReset (u8PortNum);
@@ -148,11 +149,11 @@ void  PRL_Init (UINT8 u8PortNum)
 	UPD_RegWriteByte (u8PortNum, PRL_BB_CC_RX_DAC_FILT, PRL_CC_RX_DAC_FILT_CC_RX_DAC_FILTER_ENABLE);
     
     /* Rx DAC value is selected depending upon the Power Role */
-	if ((DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) == PD_ROLE_SOURCE)
+	if (PD_ROLE_SOURCE == u8CurrentPwrRole)
 	{
 		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SRC_VALUE;
 	}
-	else if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SINK)
+	else if (PD_ROLE_SINK == u8CurrentPwrRole)
 	{
 		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SNK_VALUE;
 	}
@@ -170,7 +171,7 @@ void  PRL_Init (UINT8 u8PortNum)
 
 	/* PD3_AUTO_DECODE is enabled so that HW decodes spec revision from received messages.*/
 	/* At init, Rx SOP type is set to all SOP* type*/
-	if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+	if(PD_ROLE_SOURCE == u8CurrentPwrRole)
     {
 	  
 		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
@@ -1319,13 +1320,12 @@ void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 
 UINT8 PRL_IsAmsInitiatable(UINT8 u8PortNum)
 {
-    UINT8 u8ReturnVal = TRUE;
+    UINT8 u8ReturnVal = TRUE, u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     /*If the port is 3.0 check whether the port is capable of initiating an AMS*/
     if(PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
     {
         /*If Role is Sink, check whether Source Rp capability is 3A*/
-        if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&
-                (DPM_PORT_RP_VAL_DETECT_3A_STATUS ==
+        if ((PD_ROLE_SINK == u8CurrentPwrRole) && (DPM_PORT_RP_VAL_DETECT_3A_STATUS ==\
                       (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &
                         DPM_PORT_RP_VAL_DETECT_MASK_STATUS)))
         {
@@ -1343,7 +1343,7 @@ UINT8 PRL_IsAmsInitiatable(UINT8 u8PortNum)
                 /*Sink Tx OK -Return TRUE */
             }
         }
-        else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&
+        else if ((PD_ROLE_SOURCE == u8CurrentPwrRole) &&
                 (TYPEC_DFP_3A0_CURRENT == DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)))
         {
             if  (gasPRL [u8PortNum].u8TxStateISR != PRL_TX_IDLE_ST)

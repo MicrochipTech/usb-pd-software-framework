@@ -388,7 +388,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Resetted ");
 				
-                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+                if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {			
 					/* Assign an idle state wait for detach*/
                     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
@@ -761,7 +761,7 @@ void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
 
 void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
-    UINT8 u8SetCAforSource = TYPEC_SINK_TXOK;
+    UINT8 u8SetCAforSource = TYPEC_SINK_TXOK, u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     
 #if (TRUE == INCLUDE_PD_3_0)
     /* Process internal events only when the Policy Engine is in PS_RDY state*/
@@ -780,7 +780,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
             
             /* Check for Port Power Role */
-            if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+            if (PD_ROLE_SOURCE == u8DPMPowerRole)
             {
                 /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
@@ -859,7 +859,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_ALERT);
 
             /* Check for Port Power Role */
-            if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+            if (PD_ROLE_SOURCE == u8DPMPowerRole)
             {
                 /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
@@ -884,7 +884,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_STATUS);
 
             /* Check for Port Power Role */
-            if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+            if (PD_ROLE_SOURCE == u8DPMPowerRole)
             {
                 /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
@@ -904,7 +904,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
           
     }
     /* Set CA to Sink TXNG in case of Source*/
-    if ((u8SetCAforSource == TYPEC_SINK_TXNG) &&  (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE))
+    if ((u8SetCAforSource == TYPEC_SINK_TXNG) &&  (PD_ROLE_SOURCE == u8DPMPowerRole))
     {   
         #if (TRUE == INCLUDE_PD_3_0)
         PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXNG);
