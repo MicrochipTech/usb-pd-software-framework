@@ -133,6 +133,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					
 					/* Reset the Protocol Layer */
                     PRL_ProtocolReset(u8PortNum);
+                    
+                    /*Reset collision avoidance set*/
+                    PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
                     					
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_IDLE_SS;
                     

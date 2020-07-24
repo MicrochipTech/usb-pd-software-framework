@@ -1270,8 +1270,9 @@ UINT32 PRL_IsAnyMsgPendinginPRL (UINT8 u8PortNum)
 
 void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 {
-    /*If the current spec role is not 3.0 return*/
-    if(PD_SPEC_REVISION_3_0 != DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
+    /*If the current spec role is not 3.0 return and default configured Rp value is not 3A*/
+    if((PD_SPEC_REVISION_3_0 != DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) &&\
+            (TYPEC_DFP_3A0_CURRENT != DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)))
     {
         return;
     } 
@@ -1322,7 +1323,11 @@ UINT8 PRL_IsAmsInitiatable(UINT8 u8PortNum)
     /*If the port is 3.0 check whether the port is capable of initiating an AMS*/
     if(PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
     {
-        if (PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        /*If Role is Sink, check whether Source Rp capability is 3A*/
+        if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && /
+                (DPM_PORT_RP_VAL_DETECT_3A_STATUS == \
+                      (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & \
+                        DPM_PORT_RP_VAL_DETECT_MASK_STATUS)))
         {
             /* Spec Ref: PRL_Tx_Snk_Start_of_AMS */
             if (TYPEC_SINK_TXNG == TypeC_CheckRpValCollAvoidance(u8PortNum))
@@ -1335,10 +1340,11 @@ UINT8 PRL_IsAmsInitiatable(UINT8 u8PortNum)
             }
             else
             {
-                /*Sink Tx OK*/
+                /*Sink Tx OK -Return TRUE */
             }
         }
-        else if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&/
+                (TYPEC_DFP_3A0_CURRENT == DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)))
         {
             if  (gasPRL [u8PortNum].u8TxStateISR != PRL_TX_IDLE_ST)
             {
