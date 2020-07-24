@@ -100,6 +100,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CONFIGURED_PORT_EN(u8PortNum)\
 ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_PORT_ENDIS_MASK) \
             >> DPM_CFG_PORT_ENDIS_POS)
+#define DPM_DISABLE_CONFIGURED_PORT_EN(u8PortNum)\
+(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= ~(DPM_CFG_PORT_ENABLE))
+#define DPM_ENABLE_CONFIGURED_PORT_EN(u8PortNum)\
+(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= (DPM_CFG_PORT_ENABLE))
 
 /*Define to Get VCONN OCS - Possible value
     DPM_CFG_VCONN_OCS_ENABLE - BIT(9) in case of enable or 0x00 in case of disable*/
