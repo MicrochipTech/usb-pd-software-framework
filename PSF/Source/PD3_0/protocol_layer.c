@@ -1324,9 +1324,9 @@ UINT8 PRL_IsAmsInitiatable(UINT8 u8PortNum)
     if(PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
     {
         /*If Role is Sink, check whether Source Rp capability is 3A*/
-        if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && /
-                (DPM_PORT_RP_VAL_DETECT_3A_STATUS == \
-                      (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & \
+        if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&
+                (DPM_PORT_RP_VAL_DETECT_3A_STATUS ==
+                      (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &
                         DPM_PORT_RP_VAL_DETECT_MASK_STATUS)))
         {
             /* Spec Ref: PRL_Tx_Snk_Start_of_AMS */
@@ -1343,7 +1343,7 @@ UINT8 PRL_IsAmsInitiatable(UINT8 u8PortNum)
                 /*Sink Tx OK -Return TRUE */
             }
         }
-        else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&/
+        else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&
                 (TYPEC_DFP_3A0_CURRENT == DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)))
         {
             if  (gasPRL [u8PortNum].u8TxStateISR != PRL_TX_IDLE_ST)
