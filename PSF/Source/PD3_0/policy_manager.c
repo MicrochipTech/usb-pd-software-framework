@@ -1287,7 +1287,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     #endif
 
     /* Clear all the client requests for the port. */
-    DPM_ClearAllClientRequests(u8PortNum);
+    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
     
     /*Clear all Internal events except Alert*/
     gasDPM[u8PortNum].u8DPMInternalEvents = (gasDPM[u8PortNum].u8DPMInternalEvents\
