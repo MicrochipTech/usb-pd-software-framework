@@ -36,8 +36,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
 {
     do
     {
-        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_PORT_ENDIS_MASK) \
-            >> DPM_CFG_PORT_ENDIS_POS)== UPD_PORT_DISABLED)
+        if (UPD_PORT_DISABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             break;
         }
