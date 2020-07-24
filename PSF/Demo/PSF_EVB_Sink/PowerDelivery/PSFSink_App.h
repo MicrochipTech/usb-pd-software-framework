@@ -37,7 +37,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*v1.03 release*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x04
+#define APP_REV_MINOR	0x05
 
 /* ************************************************************************** */
 /* ************************************************************************** */
