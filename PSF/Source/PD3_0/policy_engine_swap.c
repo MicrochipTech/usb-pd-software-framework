@@ -195,8 +195,6 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
                 }
                 case ePE_DRS_SEND_SWAP_REJECT_RCVD_SS:
                 {
-                    /* Inform DR_SWAP has been received notification*/
-                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_REJECTED);
                     /*SRC_READY/SNK_READY state is set*/
                     gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS; 
