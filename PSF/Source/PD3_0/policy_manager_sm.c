@@ -531,10 +531,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             /* Update Attached and Orientation connection status */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                                ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS);
-			/*Process Type -C attach*/
-            DPM_OnTypeCAttach(u8PortNum);
-            
+                                                ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS);            
             /* Assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
             break;
@@ -545,8 +542,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                             (DPM_PORT_ATTACHED_STATUS | DPM_PORT_ORIENTATION_FLIPPED_STATUS);                        
 
-			/* Process Type-C attach*/
-            DPM_OnTypeCAttach(u8PortNum);
             /* De-assert Orientation LED */
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
             break;
@@ -579,19 +574,12 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             #endif
             break;
         }
-#if (TRUE == INCLUDE_PD_SOURCE)
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED:
         {
-            /*On negotiation, initiate Get Sink caps*/
-            if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]) &&\
-                  (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) &&\
-                    (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
-            {
-                DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
-            }        
+            /*On PD negotiation complete, inform DPM to initiate internal events*/
+            DPM_OnPDNegotiationCmplt(u8PortNum);
             break;
         }
-#endif
         case eMCHP_PSF_SINK_ALERT_RCVD:
         {
             #if (TRUE == INCLUDE_PD_SOURCE_PPS)

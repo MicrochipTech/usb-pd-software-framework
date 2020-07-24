@@ -82,6 +82,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)  \
     ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_POWER_ROLE_MASK) \
     >> DPM_CFG_POWER_ROLE_POS)
+
+/*Possible value of below define
+    TYPEC_UFP                               PD_ROLE_UFP
+    TYPEC_DFP_DEFAULT_CURRENT				(0x01)
+    TYPEC_DFP_1A5_CURRENT				    (0x02)
+    TYPEC_DFP_3A0_CURRENT				    (0x03) */
+
+#define DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)\
+    ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_RPVAL_MASK) \
+                            >> DPM_CFG_RPVAL_POS)
 /*************************************************************************************************/
 
 /*Bit definition for u16DPMStatus variable*/
@@ -1713,12 +1723,11 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_OnTypeCAttach(UINT8 u8PortNum); 
+        void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum); 
     Summary:
-        API to do necessary operation required by DPM during a type c attach event. 
+        API to do necessary operation required by DPM during a PD negotiation complete. 
     Description:
-        This API does the internal event registering and global variable update on
-        Type C attach.
+        This API does the internal event registering on PD negotiation complete.
     Conditions:
         None.
     Input:
@@ -1728,7 +1737,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_OnTypeCAttach(UINT8 u8PortNum);
+void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
