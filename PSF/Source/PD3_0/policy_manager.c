@@ -1214,9 +1214,18 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
     }
 }
 
-/*********************************DPM TypeC Attach API**************************************/
-void DPM_OnTypeCAttach(UINT8 u8PortNum)
+/*********************************DPM PD negotiation API**************************************/
+void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 {
+#if (TRUE == INCLUDE_PD_SOURCE)
+    /*On negotiation, initiate Get Sink caps*/
+    if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]) &&\
+          (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) &&\
+            (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
+    }        
+#endif
     /*Evaluate swap and register internal event*/
     if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITATE))
     {
@@ -1235,7 +1244,6 @@ void DPM_OnTypeCAttach(UINT8 u8PortNum)
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
     } 
 #endif /*INCLUDE_PD_PR_SWAP*/
-    
 }
 
 /*********************************DPM TypeC Detach API**************************************/
