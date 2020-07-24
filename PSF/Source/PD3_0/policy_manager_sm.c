@@ -621,12 +621,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     return u8Return;
 }
 
-/************************DPM Client Request Handling APIs ******************************/ 
-void DPM_ClearAllClientRequests(UINT8 u8PortNum) 
-{
-    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
-}
-
+/************************DPM Client Request Handling API ******************************/ 
 void DPM_ClientRequestHandler(UINT8 u8PortNum)
 {
     /* Check if at least one request is initiated by any application. This 
@@ -682,7 +677,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
            DPM cannot handle any of the Client Requests. So, clear the 
            flag and send Busy notification, so that the application can 
            re-initiate the request on receiving the Busy notification */
-        DPM_ClearAllClientRequests(u8PortNum);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
+        
        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_BUSY); 
     } /*else part of PE engine idle check*/
 
@@ -754,7 +750,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 #endif         
 }
 
-/**************************************************************************************/
+/************************DPM Internal Event Handling APIs *******************************/
 void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
 {
     if ((DPM_INT_EVT_INITIATE_ALERT == u8EventType) || 

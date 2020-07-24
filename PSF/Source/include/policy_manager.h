@@ -1432,27 +1432,6 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType);
 
 /**************************************************************************************************
     Function:
-        void DPM_ClearAllClientRequests(UINT8 u8PortNum);  
-    Summary:
-        Clears all the pending Client requests raised by applications. 
-    Description:
-        This API can be called in scenarios where clearing of all the existing
-        client requests is needed, say when a detach has occurred in a port
-        or before sending Busy notification in case of DPM not able 
-        to handle the request. 
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-    Return:
-        None. 
-    Remarks:
-        None.
-**************************************************************************************************/
-void DPM_ClearAllClientRequests(UINT8 u8PortNum); 
-
-/**************************************************************************************************
-    Function:
         void DPM_StoreSinkAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf);  
     Summary:
         Stores the details of Alert message received from Port Partner.  
