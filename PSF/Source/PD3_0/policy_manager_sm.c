@@ -528,7 +528,8 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
-            /* Update Orientation connection status */
+            /* Update Attached and Orientation connection status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
                                                 ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS);
 			/*Process Type -C attach*/
@@ -542,7 +543,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         {
             /* Update Orientation connection status */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                                                 DPM_PORT_ORIENTATION_FLIPPED_STATUS;                        
+                            (DPM_PORT_ATTACHED_STATUS | DPM_PORT_ORIENTATION_FLIPPED_STATUS);                        
 
 			/* Process Type-C attach*/
             DPM_OnTypeCAttach(u8PortNum);

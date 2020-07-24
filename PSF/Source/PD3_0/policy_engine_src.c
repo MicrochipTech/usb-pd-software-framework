@@ -100,10 +100,15 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         PDTimer_KillPortTimers(u8PortNum);
         gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
         gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
-        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
-        
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;        
         gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;
-
+        
+        /* Set spec revision to default spec revision on every detach */
+        gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+        gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS); 
+        
+        /* Spec Rev is updated by PRL*/
+        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
     }
      
     /* Source Policy Engine State Machine */
@@ -128,14 +133,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					
 					/* Reset the Protocol Layer */
                     PRL_ProtocolReset(u8PortNum);
-                    
-                    /* Set spec revision to default spec revision in every detach */
-                    gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
-                    gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS); 
-        
-                    /* Spec Rev is updated by PRL*/
-                    PRL_UpdateSpecAndDeviceRoles (u8PortNum);
-					
+                    					
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_IDLE_SS;
                     
                     #if (FALSE != INCLUDE_PDFU)
