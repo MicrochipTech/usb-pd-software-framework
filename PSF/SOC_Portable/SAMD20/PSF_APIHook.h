@@ -1648,7 +1648,7 @@ Remarks:
 Summary:
     PSF Notify Idle enum.
 Description:
-	eMCHP_PSF_NOTIFY_IDLE enum notifies the Idle state in PSF.
+	eMCHP_PSF_NOTIFY_IDLE enum notifies the Idle state in PSF  
 Remarks:
         None
 **************************************************************************************************/
@@ -1657,6 +1657,7 @@ typedef enum ePSF_NOTIFY_IDLE
     eIDLE_PE_NOTIFY,               //Notify Policy Engine Idle State
     eIDLE_TYPEC_NOTIFY             //Notify Type C Idle State
 } eMCHP_PSF_NOTIFY_IDLE;
+
 /**************************************************************************
 Function:
     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState)
