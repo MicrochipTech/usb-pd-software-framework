@@ -600,6 +600,18 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             #endif 
             break; 
         }
+        case eMCHP_PSF_PR_SWAP_COMPLETE:
+        {
+            #if (TRUE == INCLUDE_PD_PR_SWAP)
+            /*Clear Partner PDO registers so that Get Sink Caps event would be 
+              triggered once an explicit contract is established */
+            for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
+            {
+                gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
+            }
+            gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
+            #endif
+        }
         default:
             break;
     }
