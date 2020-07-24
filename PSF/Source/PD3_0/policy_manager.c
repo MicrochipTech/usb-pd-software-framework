@@ -1289,7 +1289,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     /* Clear all the client requests for the port. */
     DPM_ClearAllClientRequests(u8PortNum);
     
-    /*Clear all Internal events expect Alert*/
+    /*Clear all Internal events except Alert*/
     gasDPM[u8PortNum].u8DPMInternalEvents = (gasDPM[u8PortNum].u8DPMInternalEvents\
                                             & DPM_INT_EVT_INITIATE_ALERT);
 

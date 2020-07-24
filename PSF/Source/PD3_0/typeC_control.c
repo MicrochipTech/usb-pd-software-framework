@@ -807,9 +807,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SOURCE;
                     }
-#endif
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
-
+#endif                    
                     /* Enabling PRL Rx */
                     PRL_EnableRx(u8PortNum, TRUE);                  
 
@@ -947,7 +945,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     PRL_EnableRx (u8PortNum, FALSE);
                     
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &=\
-                                ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_RP_VAL_DETECT_MASK_STATUS);
+                                ~(DPM_PORT_RP_VAL_DETECT_MASK_STATUS);
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
@@ -1164,8 +1162,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
                     }
 #endif
-					gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
-
                     PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_5V,\
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                                        
