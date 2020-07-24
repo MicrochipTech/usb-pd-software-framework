@@ -58,8 +58,7 @@ UINT8 MchpPSF_Init(void)
         /*If Timer and HW module of SOC are not initialized properly disable all the ports*/
         if (TRUE != u8InitStatus)
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
-                                                       ~(DPM_CFG_PORT_ENDIS_MASK);
+            DPM_DISABLE_CONFIGURED_PORT_EN(u8PortNum);
         }
         #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
         /*Initialize chip select in case of SPI configuration*/

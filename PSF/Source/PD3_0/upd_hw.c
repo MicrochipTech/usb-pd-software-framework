@@ -609,23 +609,20 @@ void UPD_CheckAndDisablePorts (void)
                     {  
                         /*Value read from this port is right, so enable the ports, Set SPI 
                            Communication is active for this port*/
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= \
-                                (UPD_PORT_ENABLED << DPM_CFG_PORT_ENDIS_POS);
+                        DPM_ENABLE_CONFIGURED_PORT_EN(u8PortNum);
                         break;
                     }
                     else
                     {
                         /* If the VID and PID doesn't match, Disable the ports */
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
-                                ~(DPM_CFG_PORT_ENDIS_MASK);
+                        DPM_DISABLE_CONFIGURED_PORT_EN(u8PortNum);
                         
                     }
 #if (CONFIG_UPD350_SPI == CONFIG_DEFINE_UPD350_HW_INTF_SEL)            
                 } /*end of UPD_SPI_TEST_VAL check if*/
                 else
                 {
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
-                            ~(DPM_CFG_PORT_ENDIS_MASK);
+                    DPM_DISABLE_CONFIGURED_PORT_EN(u8PortNum);
                 }   /*end of UPD_SPI_TEST_VAL check if else*/
 #endif            
             } /* end of while*/
