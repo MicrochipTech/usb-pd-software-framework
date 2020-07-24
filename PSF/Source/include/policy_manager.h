@@ -108,9 +108,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Define to Get VCONN OCS - Possible value
     DPM_CFG_VCONN_OCS_ENABLE - BIT(9) in case of enable or 0x00 in case of disable*/
 #define DPM_GET_CONFIGURED_VCONN_OCS_EN(u8PortNum)\
-((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & \
-                        DPM_CFG_VCONN_OCS_ENABLE) >> DPM_CFG_VCONN_OCS_EN_POS)
-    
+(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & (DPM_CFG_VCONN_OCS_ENABLE))
 /*************************************************************************************************/
 
 /*Bit definition for u16DPMStatus variable*/
@@ -182,6 +180,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Defines to get port enable/diable bit*/
 #define DPM_CFG_PORT_ENDIS_MASK             (BIT(5))
 #define DPM_CFG_PORT_ENDIS_POS              5
+#define DPM_CFG_PORT_ENABLE                 (1 << DPM_CFG_PORT_ENDIS_POS)
 
 /*Defines to get VCONN OCS enabled bit*/
 #define DPM_CFG_VCONN_OCS_EN_POS               9U
