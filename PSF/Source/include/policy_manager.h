@@ -464,10 +464,6 @@ Source/Sink Power delivery objects*/
 /* vPpsSmallStep of USB PD Spec 3.0 */
 #define DPM_PPS_VOLTAGE_SMALL_STEP               500
 
-/******************Partner Status Store/Clear Defines **********/
-#define DPM_STORE_PARTNER_STATUS                     1
-#define DPM_CLEAR_PARTNER_STATUS                     0 
-
 /* Macro to get current PT Bank */
 #define DPM_PT_BANK_MASK                    0x06 
 #define DPM_PT_BANK_POS                     1
@@ -1436,28 +1432,6 @@ UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
 **************************************************************************************************/
 
 void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType); 
-
-/**************************************************************************************************
-    Function:
-        void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr);
-    Summary:
-        Stores or Clears the details of Status message received from Port Partner.  
-    Description:
-        This API is used by DPM to store or clear the details of Status message 
-        received from Port Partner, which can later be used by the application.
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u8DataBuf - Pointer which holds the data objects of received alert message.
-        u8StrClr - TRUE - Store the Data in Status array, 
-                   FALSE - Clear the Status array 
-    Return:
-        None. 
-    Remarks:
-        None.
-**************************************************************************************************/
-void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr);
 
 /**************************************************************************************************
     Function:

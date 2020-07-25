@@ -595,23 +595,6 @@ UINT32 DPM_ReturnPPSSrcTransTmrVal (UINT8 u8PortNum)
     }
 }
 
-void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr)
-{
-    /* Store/Clear the Status information received from Port Partner */
-    for (UINT8 u8Index = INDEX_0; u8Index < PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES; u8Index++)
-    {
-        if (DPM_STORE_PARTNER_STATUS == u8StrClr)
-        {
-            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = \
-                                                   u8DataBuf[u8Index];   
-        }
-        else
-        {
-            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[u8Index] = \
-                                                    RESET_TO_ZERO;               
-        }
-    }        
-}
 /***********************Status API******************************************/
 UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum)
 {
