@@ -1366,27 +1366,6 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_ComparePDOs(UINT8 u8PortNum); 
-    Summary:
-        Compares advertised PDOs and Fixed PDOs. 
-    Description:
-        This API compares the default Source capabilities(Fixed PDOs) with the 
-        advertised Source capabilities(Advertised PDOs).       . 
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT. 
-    Return:
-        TRUE - If Fixed and advertised PDOs are same.
-        FALSE - If Fixed and advertised PDOs are not same.   
-    Remarks:
-        None.
-**************************************************************************************************/
-
-UINT8 DPM_ComparePDOs(UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
         UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     Summary:
         Notifies client of the PD Events from stack. 
