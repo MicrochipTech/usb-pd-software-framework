@@ -1421,8 +1421,10 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         case ePE_SRC_SINK_ALERT_RECEIVED: 
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_SINK_ALERT_RECEIVED\r\n"); 
-            /* Inform the DPM of the details of the Sink alert */
-            DPM_StorePartnerAlertInfo(u8PortNum, pu8DataBuf);
+            /* Store the Alert Information received from Sink Partner */
+            gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert = \
+                    MAKE_UINT32_FROM_BYTES(pu8DataBuf[INDEX_0], pu8DataBuf[INDEX_1], \
+                                        pu8DataBuf[INDEX_2], pu8DataBuf[INDEX_3]);
             
             gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
             gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;

@@ -1439,26 +1439,6 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType);
 
 /**************************************************************************************************
     Function:
-        void DPM_StoreSinkAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf);  
-    Summary:
-        Stores the details of Alert message received from Port Partner.  
-    Description:
-        This API is used by DPM to store the details of Alert message 
-        received from Port Partner, which can later be used by the application.
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u8DataBuf - Pointer which holds the data objects of received alert message.
-    Return:
-        None. 
-    Remarks:
-        None.
-**************************************************************************************************/
-void DPM_StorePartnerAlertInfo(UINT8 u8PortNum, UINT8 *u8DataBuf); 
-
-/**************************************************************************************************
-    Function:
         void DPM_StoreOrClearPartnerStatus(UINT8 u8PortNum, UINT8 *u8DataBuf, UINT8 u8StrClr);
     Summary:
         Stores or Clears the details of Status message received from Port Partner.  
