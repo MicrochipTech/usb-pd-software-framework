@@ -1422,10 +1422,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_SINK_ALERT_RECEIVED\r\n"); 
             /* Store the Alert Information received from Sink Partner */
-            gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert = \
-                    MAKE_UINT32_FROM_BYTES(pu8DataBuf[INDEX_0], pu8DataBuf[INDEX_1], \
-                                        pu8DataBuf[INDEX_2], pu8DataBuf[INDEX_3]);
-            
+            (void)MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert, 
+                                            pu8DataBuf, BYTE_LEN_4);
+            /* Move to PE_SRC_READY state */                                
             gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
             gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
             
