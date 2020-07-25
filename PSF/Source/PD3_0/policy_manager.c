@@ -518,6 +518,7 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
 
 void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
 {
+    UINT8 u8PDOCompare; 
     if (TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum))
     {
         /* Update Advertised PDO Count */
@@ -541,7 +542,12 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     
     /* Update the Port Connection Status register by comparing the Fixed and 
        Advertised Source PDOs */
-    if (FALSE == DPM_ComparePDOs(u8PortNum))
+    u8PDOCompare = MCHP_PSF_HOOK_MEMCMP(&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[INDEX_0],
+                    &gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0], 
+                    ((MAX(gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt, 
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt)) * BYTE_LEN_4));
+    
+    if (FALSE == u8PDOCompare)
     {
         /* The advertised PDOs are equivalent to the default configured values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
@@ -553,14 +559,6 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                             DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS;                 
     }    
-}
-
-UINT8 DPM_ComparePDOs(UINT8 u8PortNum)
-{
-    return MCHP_PSF_HOOK_MEMCMP(&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[INDEX_0],
-                    &gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0], 
-                    ((MAX(gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt, 
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt)) * BYTE_LEN_4)); 
 }
 
 void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf)
