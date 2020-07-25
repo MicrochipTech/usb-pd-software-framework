@@ -130,10 +130,6 @@ void DPM_SetTypeCState(UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubStat
     gasTypeCcontrol[u8PortNum].u8TypeCState = u8TypeCState;
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = u8TypeCSubState;
 }
-void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence)
-{
-    *pu8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK);
-}
 
 /**************************DPM APIs for VCONN *********************************/
 void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable)
@@ -449,7 +445,6 @@ void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32S
 /* Get the source capabilities from the port configuration structure */
 void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu32DataObj)
 {   
-    UINT8 u8RaPresence = SET_TO_ZERO;
 	UINT32 *u32pSrcCap;
     
 #if (TRUE == INCLUDE_POWER_THROTTLING)
@@ -474,11 +469,9 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
    
         u32pSrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[INDEX_0];        
     }
-    
-    DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
-   
-    /* E-Cable presents */
-    if(TRUE == u8RaPresence)
+
+    /* E-Cable present */
+    if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK)
     {
         /* If E-Cable max current is 5A, pass the capabilities without change */
         if(gasDPM[u8PortNum].u16MaxCurrSupportedin10mA == DPM_CABLE_CURR_5A_UNIT)

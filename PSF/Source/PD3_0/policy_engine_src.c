@@ -88,9 +88,11 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     
     /* Get the Type-C state from DPM */
     DPM_GetTypeCStates(u8PortNum, &u8TypeCState, &u8TypeCSubState);
-    DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
     
-	/* Setting Timeout sub-state to invalid state */
+    /* Get Powered Cable Presence */
+    u8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK);
+	
+    /* Setting Timeout sub-state to invalid state */
     gasPolicyEngine[u8PortNum].ePETimeoutSubState = ePE_INVALIDSUBSTATE;
     
     /* If port partner detached set the Policy Engine State to PE_SRC_STARTUP */

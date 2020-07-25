@@ -906,27 +906,6 @@ void DPM_SetTypeCState(UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubStat
 
 /**************************************************************************************************
     Function:
-        void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence);
-    Summary:
-        This API is used to find out the presence of powered cable in the CC lines for a given port
-    Devices Supported:
-        UPD350 REV A
-    Description:
-         This API is used to find out the presence of powered cable in the CC lines for a given port
-    Conditions:
-        None.
-    Input:
-        u8PortNum       - Port Number 
-        *pu8RaPresence  - Pointer returning the Powered cable presence
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void DPM_GetPoweredCablePresence(UINT8 u8PortNum, UINT8 *pu8RaPresence);
-
-/**************************************************************************************************
-    Function:
         void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Summary:
         This API drives the VBUS line of a given port to either 0V or 5V.
