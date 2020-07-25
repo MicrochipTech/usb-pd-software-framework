@@ -478,7 +478,7 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
     DPM_GetPoweredCablePresence(u8PortNum, &u8RaPresence);
    
     /* E-Cable presents */
-    if((TRUE == u8RaPresence))
+    if(TRUE == u8RaPresence)
     {
         /* If E-Cable max current is 5A, pass the capabilities without change */
         if(gasDPM[u8PortNum].u16MaxCurrSupportedin10mA == DPM_CABLE_CURR_5A_UNIT)
