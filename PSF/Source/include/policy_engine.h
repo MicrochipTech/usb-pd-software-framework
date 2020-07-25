@@ -1052,33 +1052,7 @@ void PE_SendSoftResetMsg (UINT8 u8PortNum);
 
 **************************************************************************************************/
 void PE_SendHardResetMsg (UINT8 u8PortNum);
-/**************************************************************************************************
-    Function:
-        void PE_SetHardResetReceiveFlag(UINT8 u8PortNum);
 
-    Summary:
-        This API is called by the protocol layer upon reception of Hard reset signal for a port
-       
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-         This API is called by the protocol layer upon reception of Hard reset signal for a port
-        
-    Conditions:
-        None
-
-    Input:
-        u8PortNum - Port Number.
-
-    Return:
-        None.
-
-    Remarks:
-        None.
-
-**************************************************************************************************/
-void PE_SetHardResetReceiveFlag(UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
         void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);

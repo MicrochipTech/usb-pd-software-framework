@@ -850,7 +850,8 @@ void PRL_HandleISR (UINT8 u8PortNum)
 			gasPRL [u8PortNum].u8RxHRRcvdISR = TRUE;
 			/*Enable PD message processing by FW*/
             gasPRL[u8PortNum].u8RxDisable = FALSE;
-            PE_SetHardResetReceiveFlag(u8PortNum);
+            /*Setting the Hard reset received flag*/
+            gasPolicyEngine[u8PortNum].u8HardResetRcvdISR = TRUE;
 		}
 	}
 }

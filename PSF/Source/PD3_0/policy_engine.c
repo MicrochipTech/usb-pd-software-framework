@@ -1869,12 +1869,6 @@ void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8Tx
     }
 }
 
-void PE_SetHardResetReceiveFlag (UINT8 u8PortNum)
-{
-    /*Setting the Hard reset received flag*/
-    gasPolicyEngine[u8PortNum].u8HardResetRcvdISR = TRUE ;
-}
-
 void PE_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PEState)
 {
 	gasPolicyEngine[u8PortNum].ePEState = (ePolicyState) u8PEState;
