@@ -1483,14 +1483,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                       SINK_STATUS_NOT_RECEIVED notification and move to 
                       PE_SRC_READY state */ 
                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS\r\n"); 
-                   
-                   /* Clear the Partner Status array. It should not contain 
-                      the previous Status information since posting not received 
-                      notification along with some data in Partner Status array 
-                      would create confusion for the application */
-                   DPM_StoreOrClearPartnerStatus (u8PortNum, pu8DataBuf, 
-                                                    DPM_CLEAR_PARTNER_STATUS); 
-                   
+                                      
                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
                    
@@ -1503,9 +1496,10 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS\r\n"); 
                     
-                    /* Pass the received Sink Status to DPM and send notification */         
-                    DPM_StoreOrClearPartnerStatus (u8PortNum, pu8DataBuf, DPM_STORE_PARTNER_STATUS); 
-                    
+                    /* Store the received Sink Status and send notification */                            
+                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus, 
+                                 pu8DataBuf, PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES);           
+
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
                     
