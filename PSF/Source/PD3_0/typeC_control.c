@@ -2478,13 +2478,6 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
                     (~DPM_PORT_DATA_ROLE_STATUS_MASK);
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
                     DPM_PORT_DATA_ROLE_STATUS_UFP; 
-        
-            (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
-            DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
-                    
-            gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;  
         }
         else
         {
@@ -2505,13 +2498,6 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
                     (~DPM_PORT_DATA_ROLE_STATUS_MASK);
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
                     DPM_PORT_DATA_ROLE_STATUS_DFP; 
-            
-            (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, 
-            (gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt * 4));
-                        
-            gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;
         }   
             
         TypeC_InitPort(u8PortNum);
