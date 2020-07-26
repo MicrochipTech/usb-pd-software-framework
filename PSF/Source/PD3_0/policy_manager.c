@@ -1301,8 +1301,8 @@ void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange)
     }
 }
 
-/********************* DPM API to check if PPS APDO is enabled ********************/
-UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum)
+/********************* DPM API to check if PPS APDO is advertised ********************/
+UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum)
 {
     UINT8 u8RetVal = FALSE; 
 
