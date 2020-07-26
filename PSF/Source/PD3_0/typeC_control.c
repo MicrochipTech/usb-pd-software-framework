@@ -141,7 +141,6 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     UPD_RegByteSetBit (u8PortNum, TYPEC_PWR_INT_EN,\
                        (TYPEC_VBUS_MATCH_VLD | TYPEC_VCONN_OVER_CURR_ERR));
     
-            
     /*Setting the UPD350 high level interrupt register for CC interrupt, VBUS interrupt and Power 
     interrupt*/
 	u16Data = ((UPD_RegReadWord(u8PortNum, UPDINTR_INT_EN)) | \
@@ -449,7 +448,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Disable DC_DC_EN if DRP does not act as source*/
                     PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
                         
-                    if((gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SOURCE) \
+                    if((PD_ROLE_SOURCE == gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState) \
                             && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Disable VBUS by driving to vSafe0V*/
@@ -576,6 +575,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
 #if(TRUE == INCLUDE_PD_DRP)                            
                             /*Enable DC_DC_EN if DRP acts as source*/
+                            /*For demos other than DRP, DC_DC_EN is high by default*/
                             PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
 #endif
                              gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
