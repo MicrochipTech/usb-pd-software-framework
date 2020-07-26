@@ -609,6 +609,9 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
      *15V       0       1       0
      *20V       0       0       1
      */  
+    /* Update Port IO Status */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+              ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
     
     switch(u16Voltage)
     {
@@ -617,9 +620,6 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
-            /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                  ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
             break;
         }
         case APP_VOLTAGE_9000mV:
@@ -628,10 +628,7 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
             /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
-                                                DPM_PORT_IO_VSEL0_STATUS;
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                    ~(DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL0_STATUS;
             break;
         }
         case APP_VOLTAGE_15000mV:
@@ -640,10 +637,7 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
             UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
             /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
-                                                DPM_PORT_IO_VSEL1_STATUS;
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                    ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL1_STATUS;
             break;
         }
         case APP_VOLTAGE_20000mV:
@@ -652,10 +646,7 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
             UPDPIO_DriveHigh(u8PortNum, eUPD_PIO9);
             /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
-                                                DPM_PORT_IO_VSEL2_STATUS;
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                    ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS); 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL2_STATUS;
             break;
         }
         default:
@@ -665,9 +656,6 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
-            /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                  ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
             break;
         }
     }
