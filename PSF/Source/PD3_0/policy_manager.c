@@ -1234,12 +1234,14 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
 
-    /*Clear Partner PDO registers */
+    /*Clear Partner PDO and Advertised PDO registers */
     for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;
     }
     gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = RESET_TO_ZERO; 
     
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
     /* Clear Partner Alert register */
