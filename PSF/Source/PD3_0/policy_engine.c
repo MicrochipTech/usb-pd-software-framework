@@ -204,7 +204,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
         else if (PE_EXT_STATUS == u8MsgType)
         {
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-            if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+            if (TRUE == DPM_IsAPDOAdvertised(u8PortNum))
             {
                 u8RetVal = PE_SUPPORTED_EXTDMSG;
             }
@@ -236,7 +236,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                 #if (FALSE == INCLUDE_PD_SOURCE_PPS)
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 #else
-                    if (FALSE == DPM_IsAPDOEnabled(u8PortNum))
+                    if (FALSE == DPM_IsAPDOAdvertised(u8PortNum))
                     {
                         u8RetVal = PE_UNSUPPORTED_MSG;
                     }
@@ -290,7 +290,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                 #if (FALSE == INCLUDE_PD_SOURCE_PPS)
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 #else
-                    if (FALSE == DPM_IsAPDOEnabled(u8PortNum))
+                    if (FALSE == DPM_IsAPDOAdvertised(u8PortNum))
                     {
                         u8RetVal = PE_UNSUPPORTED_MSG;
                     }

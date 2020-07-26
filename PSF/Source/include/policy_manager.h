@@ -1597,8 +1597,7 @@ UINT8 DPM_ReturnTemperatureStatus (void);
     Summary:
         API to enable/disable a port 
     Description:
-        This API can be called if a particular ports needs to be 
-        disabled or enabled.
+        This API can be called to disable or enable a particular port.
     Conditions:
         None.
     Input:
@@ -1614,12 +1613,12 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable);
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum);  
+        UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum);  
     Summary:
         API to know if at least one APDO is advertised.
     Description:
-        This API can be called to know if at least one of the PDOs advertised
-        in source capabilities is an APDO. 
+        This API can be called to know if the advertised Source Capabilities 
+        contain a PPS APDO.
     Conditions:
         None.
     Input:
@@ -1630,7 +1629,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable);
     Remarks:
         None. 
 **************************************************************************************************/
-UINT8 DPM_IsAPDOEnabled(UINT8 u8PortNum); 
+UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:

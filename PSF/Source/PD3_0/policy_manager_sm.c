@@ -747,7 +747,7 @@ void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
         if (PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
         {
             /* Alert and Get_Status Tx shall be supported only if PPS is enabled for the port */
-            if (TRUE == DPM_IsAPDOEnabled(u8PortNum))
+            if (TRUE == DPM_IsAPDOAdvertised(u8PortNum))
             {
                 gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;                
             }
