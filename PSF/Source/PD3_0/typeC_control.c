@@ -939,7 +939,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Drive DAC_I to 0V if DRP is not sink*/
-                        App_DriveDAC_I(u8PortNum, SET_TO_ZERO);
+                        MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, SET_TO_ZERO);
                         
                         /*Setting CC Comparator OFF*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);

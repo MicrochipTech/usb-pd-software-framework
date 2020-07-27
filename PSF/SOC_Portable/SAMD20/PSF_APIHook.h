@@ -1546,6 +1546,70 @@ Remarks:
 *******************************************************************************************/
 #define MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
 
+// *****************************************************************************
+// *****************************************************************************
+// Section:  DAC 
+// *****************************************************************************
+// *****************************************************************************
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_DRIVE_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
+Summary:
+    Indicates the implicit/explicit current capability of attached source partner.
+Description:
+    This hook is called to indicate the sink hardware of the implicit/explicit 
+    current capability of attached source partner. The current capability is 
+    indicated thorough a voltage level on Digital to Analog Converter(DAC)'s 
+    output pin. The voltage level on DAC's output pin is calculated based on 
+    per port Configuration parameters, which were configured using 
+    MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData) hook.
+  
+    In gasCfgStatusData structure, if u16DAC_I_CurrentInd_MaxInA is 5000mA, 
+    u16DAC_I_MaxOutVoltInmV is 2500mV, u16DAC_I_MinOutVoltInmV is 0V and direction 
+    mentioned in u8DAC_I_Direction is High Amperage - Max Voltage, then 
+        1. 0.5A > DAC_I = 0.25V 
+        2. 1.5A > DAC_I = 0.75V
+        3. 2.0A > DAC_I = 1V
+        4. 3.0A > DAC_I = 1.5V 
+        5. 4.0A > DAC_I = 2.0V
+        6. 5.0A > DAC_I = 2.5V
+    In gasCfgStatusData structure, if u16DAC_I_CurrentInd_MaxInA is 3000mA, 
+    u16DAC_I_MaxOutVoltInmV is 2500mV, u16DAC_I_MinOutVoltInmV is 0V and direction 
+    mentioned in u8DAC_I_Direction is High Amperage - Max Voltage, then 																	  * If it is 3A and maximum 
+        1. 0.5A > DAC_I = 0.42V 
+        2. 1.5A > DAC_I = 1.25V
+        3. 2.0A > DAC_I = 1.67V
+        4. 3.0A > DAC_I = 2.5V
+        5. 4.0A > DAC_I = 2.5V
+        6. 5.0A > DAC_I = 2.5V
+    This is applicable only for Sink operation.
+
+    A suitable function that initializes DAC from SoC may be 
+    implemented in this hook. 
+Conditions:
+    SoC should support a DAC. And the DAC should be initialized under 
+    MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
+Input:
+    u8PortNum   - Port number for which DAC_I needs to be driven
+    u16DACData  - Analog voltage to be driven on DAC_I pin
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)   HW_Drive_DAC_I(u8PortNum, u16DACData)
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData);
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
+        {
+            //Implement user specific application to output volatge provided under 
+            //u16DACData argument in DAC's output pin
+        }
+    </code>
+Remarks:
+    This hook is applicable only if INCLUDE_PD_SINK macro is 1. Definition of this
+    hook is not mandatory.
+*******************************************************************************/ 
+#define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)  App_DriveDAC_I(u8PortNum, u16DACData)
+
 /*******************************************************************************
 Function:
     MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV(u8PortNum)
