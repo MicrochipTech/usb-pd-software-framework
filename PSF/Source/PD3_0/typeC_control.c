@@ -3040,7 +3040,13 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum)
 /**************************************************************/
 void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
 {
-  	UINT16 u16PrevVoltInmV = SET_TO_ZERO; 
+  	UINT16 u16PrevVoltInmV = SET_TO_ZERO;
+    /* Used to check if the port is Source port */
+    UINT8 u8IsSourcePort = ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) ? TRUE : FALSE);
+    /* Used to check if the current contract is a PPS contract */
+    UINT8 u8IsPPSContract = (((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
+            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))) ? TRUE : FALSE);
+    
     
     if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) 
     {
@@ -3059,8 +3065,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
        for which threshold was configured is driven in VBUS.
        For PPS, this variable needs to be 0 since a PPS Source shall not 
        rely on VBUS voltage for sending PS_RDY */
-    if((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
-            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+    if(u8IsPPSContract)
     {
         gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV = SET_TO_ZERO; 
     }
@@ -3091,8 +3096,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
         }
         
         /* Over voltage threshold is set in TypeC_ConfigureVBUSThr */
-        if((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
-            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+        if(u8IsPPSContract)
         {
             u16aVBUSThrVal[INDEX_0] = (UINT16)((float)TYPEC_GET_OVER_VOLTAGE_VBUS_THR(DPM_GET_APDO_MAX_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor);
             u16aVBUSThrVal[INDEX_1] = (UINT16)((float)TYPEC_GET_UNDER_VOLTAGE_VBUS_THR(DPM_GET_APDO_MIN_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor);
@@ -3137,7 +3141,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
             /* Corresponding VSafe0V VBUS sample enable */
             u8SampleEn = TYPEC_VSAFE0V_MAX_THR_MATCH;
 			
-            if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            if(u8IsSourcePort)
             {
                 /* Enable VBUS discharge only if the port role is source*/
                 PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);            
@@ -3150,7 +3154,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 		{
             /* Minimum valid Vsafe5V threshold is configured in u16MinVoltageThr*/
             /* Maximum Vsafe5V threshold is configured in u16MaxVoltageThr*/
-            if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            if(u8IsSourcePort)
             {
                 u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor));
                 u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor)); 
@@ -3166,8 +3170,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 		
 	  	default:
 		{
-            if((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
-                (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
+            if(u8IsPPSContract)
             {
                 /* Minimum valid PDO voltage is configured in u16MinVoltageThr*/
                 u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(DPM_GET_APDO_MIN_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor)); 
@@ -3195,7 +3198,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 
         if (u16PrevVoltInmV > u16Voltage)
         {
-            if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            if(u8IsSourcePort)
             {
                /* Enable VBUS discharge only if the port role is source*/
                 PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);            
