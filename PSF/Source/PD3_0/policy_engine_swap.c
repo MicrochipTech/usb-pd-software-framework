@@ -483,12 +483,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         /* Port has transitioned into Sink. Update the Power role 
                            and send PS_RDY message */
                         /* Set the Current Port Power Role as Sink in DPM Status variable */
-                        DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SINK);
-                        
-                        /* Set Port Power Role as Sink in Port Connection Status register */
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SINK; 
-                        
+                        DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_SINK);
+            
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
@@ -519,10 +515,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS\r\n");
                     /* PS_RDY message transmission failed or PSSourceOn Timer expired. 
                        So, revert the port's power role and invoke Type C Error Recovery */
-                    DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SOURCE);                       
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SOURCE; 
-
+                    DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_SOURCE);
+                    
                     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                     
                     gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
@@ -667,9 +661,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* This sub-state would be entered if PS_Rdy message 
                        transmission fails. Revert the power role to Sink and 
                        invoke Type C Error Recovery */
-                    DPM_SET_POWER_ROLE_STS(u8PortNum, PD_ROLE_SINK);                       
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SINK; 
+                    DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_SINK);
                     
                     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                     

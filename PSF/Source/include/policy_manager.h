@@ -327,14 +327,16 @@ Source/Sink Power delivery objects*/
 /* ****************************** Port Connection Status parameters *********** */
 #define DPM_PORT_ATTACHED_STATUS                              BIT(0)
 #define DPM_PORT_ORIENTATION_FLIPPED_STATUS                   BIT(1)
-#define DPM_PORT_DATA_ROLE_STATUS_MASK                        (BIT(2)|BIT(3))
-#define DPM_PORT_DATA_ROLE_STATUS_UFP                         (0 << 2)
-#define DPM_PORT_DATA_ROLE_STATUS_DFP                         (1 << 2)
-#define DPM_PORT_DATA_ROLE_STATUS_TOGGLING                    (2 << 2)
-#define DPM_PORT_POWER_ROLE_STATUS_MASK                       (BIT(4)|BIT(5))
-#define DPM_PORT_POWER_ROLE_STATUS_SINK                       (0 << 4)
-#define DPM_PORT_POWER_ROLE_STATUS_SOURCE                     (1 << 4)
-#define DPM_PORT_POWER_ROLE_STATUS_DRP                        (2 << 4)
+#define DPM_PORT_DATA_ROLE_STATUS_POS                         2
+#define DPM_PORT_DATA_ROLE_STATUS_MASK                        ((BIT(0)|BIT(1)) << DPM_PORT_DATA_ROLE_STATUS_POS)
+#define DPM_PORT_DATA_ROLE_STATUS_UFP                         (0 << DPM_PORT_DATA_ROLE_STATUS_POS)
+#define DPM_PORT_DATA_ROLE_STATUS_DFP                         (1 << DPM_PORT_DATA_ROLE_STATUS_POS)
+#define DPM_PORT_DATA_ROLE_STATUS_TOGGLING                    (2 << DPM_PORT_DATA_ROLE_STATUS_POS)
+#define DPM_PORT_POWER_ROLE_STATUS_POS                        4
+#define DPM_PORT_POWER_ROLE_STATUS_MASK                       ((BIT(0)|BIT(1)) << DPM_PORT_POWER_ROLE_STATUS_POS)
+#define DPM_PORT_POWER_ROLE_STATUS_SINK                       (0 << DPM_PORT_POWER_ROLE_STATUS_POS)
+#define DPM_PORT_POWER_ROLE_STATUS_SOURCE                     (1 << DPM_PORT_POWER_ROLE_STATUS_POS)
+#define DPM_PORT_POWER_ROLE_STATUS_DRP                        (2 << DPM_PORT_POWER_ROLE_STATUS_POS)
 #define DPM_PORT_VCONN_STATUS                                 BIT(6)
 #define DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS        BIT(7)
 #define DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS              BIT(8)
@@ -771,6 +773,62 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32Dat
         None
 **************************************************************************************************/
 UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
+
+/**************************************************************************************************
+    Function:
+        void DPM_SetPowerRoleStatus(UINT8 u8PortNum, UINT8 u8PowerRole)
+    Summary:
+        This API is used to set power role in gasDPM[u8PortNum].u16DPMStatus
+        variable, Port Connect Status register and Port IO Status register.
+    Devices Supported:
+        UPD350 REV A
+    Description:
+        This API is used to assign power role in various status fields
+        namely gasDPM[u8PortNum].u16DPMStatus variable, Port Connect Status register
+        and Port IO Status register.
+    Conditions:
+        None.
+    Input:
+        u8PortNum   - Port Number for power and data roles need to be assigned
+        u8PowerRole - Power role to be assigned to the port.
+                      This can take the following values:
+                      1. PD_ROLE_SOURCE
+                      2. PD_ROLE_SINK
+                      3. PD_ROLE_DRP
+    Return:
+        None
+    Remarks:
+        None
+**************************************************************************************************/
+void DPM_SetPowerRoleStatus(UINT8 u8PortNum, UINT8 u8PowerRole);
+
+/**************************************************************************************************
+    Function:
+        void DPM_SetDataRoleStatus(UINT8 u8PortNum, UINT8 u8DataRole)
+    Summary:
+        This API is used to set data role in gasDPM[u8PortNum].u16DPMStatus
+        variable, Port Connect Status register and Port IO Status register.
+    Devices Supported:
+        UPD350 REV A
+    Description:
+        This API is used to assign data role in various status fields
+        namely gasDPM[u8PortNum].u16DPMStatus variable, Port Connect Status register
+        and Port IO Status register.
+    Conditions:
+        None.
+    Input:
+        u8PortNum   - Port Number for power and data roles need to be assigned
+        u8DataRole - Data role to be assigned to the port.
+                      This can take the following values:
+                      1. PD_ROLE_DFP
+                      2. PD_ROLE_UFP
+                      3. PD_ROLE_TOGGLING
+    Return:
+        None
+    Remarks:
+        None
+**************************************************************************************************/
+void DPM_SetDataRoleStatus(UINT8 u8PortNum, UINT8 u8DataRole);
 
 /**************************************************************************************************
     Function:
