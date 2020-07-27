@@ -3040,15 +3040,15 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum)
 /**************************************************************/
 void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
 {
-  	UINT16 u16PrevVolt = SET_TO_ZERO; 
+  	UINT16 u16PrevVoltInmV = SET_TO_ZERO; 
     
     if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) 
     {
-        u16PrevVolt = gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
+        u16PrevVoltInmV = gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
     }
     else
     {
-        u16PrevVolt = DPM_GetVBUSVoltage(u8PortNum);
+        u16PrevVoltInmV = DPM_GetVBUSVoltage(u8PortNum);
     }
            
 	UINT8 u8SampleEn = SET_TO_ZERO;
@@ -3193,7 +3193,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
         /* Minimum valid voltage is configured to VBUS Threshold 1*/
         UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR1, u16MinVoltageThr);
 
-        if (u16PrevVolt > u16Voltage)
+        if (u16PrevVoltInmV > u16Voltage)
         {
             if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
