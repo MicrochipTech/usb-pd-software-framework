@@ -466,8 +466,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
                         
                         /*Set power and data role status*/
-                        DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_DRP);
-                        DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_TOGGLING);
+                        DPM_UpdatePowerRole(u8PortNum, PD_ROLE_DRP);
+                        DPM_UpdateDataRole(u8PortNum, PD_ROLE_TOGGLING);
                         
                         /*Enable DRP offload.*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
@@ -604,7 +604,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         /* Set the Port Power role variable as Source, so that 
                            moving forward all the APIs would act upon the new power role */
-                        DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_SOURCE);
+                        DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
                         
                         /* Enable DC_DC_EN pin for Source functionality */
                         PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);                                                
@@ -951,8 +951,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
                         
                         /*Set power and data role status*/
-                        DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_DRP);
-                        DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_TOGGLING);
+                        DPM_UpdatePowerRole(u8PortNum, PD_ROLE_DRP);
+                        DPM_UpdateDataRole(u8PortNum, PD_ROLE_TOGGLING);
                         
                         /*Enable DRP offload.*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
@@ -2440,14 +2440,14 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
         if(TRUE == (u8Data & TYPEC_DRP_ADVERTISING_STATE))
         {
             /*Set power and data role status as Sink/UFP*/
-            DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_SINK);
-            DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_UFP);
+            DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SINK);
+            DPM_UpdateDataRole(u8PortNum, PD_ROLE_UFP);
         }
         else
         {
             /*Set power and data role status as Sink/UFP*/
-            DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_SOURCE);
-            DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_DFP);
+            DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
+            DPM_UpdateDataRole(u8PortNum, PD_ROLE_DFP);
         }   
             
         TypeC_InitPort(u8PortNum);
