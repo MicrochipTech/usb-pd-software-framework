@@ -246,7 +246,7 @@ void PWRCTRL_DriveDAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
     UINT16 u16MinOpVoltInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_MinOutVoltInmV;
     UINT16 u16MaxCurIndInmA = gasCfgStatusData.sPerPortData[u8PortNum].u16DAC_I_CurrentInd_MaxInA;
 
-    //Approximate the current value
+    /*Approximate the current value*/
     if(u16VBUSCurrent > DPM_5000mA)
     {
         u16MaxNegoCurInmA = DPM_5000mA;
@@ -298,7 +298,7 @@ void PWRCTRL_DriveDAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
     }
     
     /* value calculated in u16DacData should reflect in DAC_I pin */
-    MCHP_PSF_HOOK_DRIVE_DAC_I(u16DacData);
+    App_DriveDAC_I(u8PortNum, u16DacData);
 }
 #endif //#if (TRUE == INCLUDE_PD_SINK)
 
