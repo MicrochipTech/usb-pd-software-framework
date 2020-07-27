@@ -2512,10 +2512,10 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 		case TYPEC_UFP_ATT_DEF:
         case TYPEC_UFP_ATT_3A0:
 		{
-            if (TYPEC_ATTACHED_SRC_PRS_WAIT_FOR_RD_MATCH == u8TypeCSubState)
+            if ((TYPEC_ATTACHED_SRC == u8TypeCState) && 
+                    (TYPEC_ATTACHED_SRC_PRS_WAIT_FOR_RD_MATCH == u8TypeCSubState))
             {                
                 /* This condition would be hit during Sink to Source PR_Swap */
-                u8TypeCState = TYPEC_ATTACHED_SRC;
                 u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;                                
             }
             else if(u8TypeCState != ((UINT8) TYPEC_ATTACHED_SRC))
@@ -2560,9 +2560,9 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 u8TypeCSubState = TYPEC_ATTACHWAIT_SRC_DEB_SS;                
             } 
 #if (TRUE == INCLUDE_PD_PR_SWAP)
-            else if (TYPEC_ATTACHED_SRC_PRS_WAIT_FOR_RD_MATCH == u8TypeCSubState)
+            else if ((TYPEC_ATTACHED_SRC == u8TypeCState) &&
+                            (TYPEC_ATTACHED_SRC_PRS_WAIT_FOR_RD_MATCH == u8TypeCSubState))
             {                
-                u8TypeCState = TYPEC_ATTACHED_SRC;
                 u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;                                
             }
 #endif 
