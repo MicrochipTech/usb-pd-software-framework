@@ -1255,13 +1255,16 @@ typedef enum
     8       R            R         3.0_IND Status  
                                     * '1' Asserted 
                                     * '0' De-asserted
-    9       R            R         PS_RDY Received 
+    9       R            R         Capability Mismatch
                                     * '1' Asserted 
                                     * '0' De-asserted
-    10      R            R         Capability Mismatch  
-                                    * '1' Asserted 
-                                    * '0' De-asserted
-    31:11                          Reserved 
+    10      R            R         Power role  
+                                    * '1' Asserted if Source
+                                    * '0' De-asserted if Sink
+    11      R            R         Data role  
+                                    * '1' Asserted if DFP
+                                    * '0' De-asserted if UFP
+    31:12                          Reserved 
 	</table>
 	
 	<b>d. u32PortStatusChange</b>: 

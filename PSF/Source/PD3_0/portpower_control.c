@@ -57,6 +57,10 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
     /* VBUS_DISCHARGE Init */
     MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eVBUS_DIS_FUNC);
     
+    /*Power and Data role IOs Init*/
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, ePOWER_ROLE_FUNC);
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eDATA_ROLE_FUNC);
+    
     #if (TRUE == INCLUDE_PD_SOURCE)
     if(PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
     {

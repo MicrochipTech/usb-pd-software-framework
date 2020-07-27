@@ -1295,7 +1295,9 @@ typedef enum eMCHP_PSF_GPIO_Functionality
     eORIENTATION_FUNC,             
     eSNK_CAPS_MISMATCH_FUNC,       
     eSNK_1_5A_IND_FUNC,            
-    eSNK_3A_IND_FUNC               
+    eSNK_3A_IND_FUNC,
+    ePOWER_ROLE_FUNC,
+    eDATA_ROLE_FUNC            
 } eMCHP_PSF_GPIO_FUNCTIONALITY;
 
 /**************************************************************************************************
