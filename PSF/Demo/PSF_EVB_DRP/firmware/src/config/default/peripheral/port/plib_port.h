@@ -102,6 +102,15 @@
 #define DC_DC_EN_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 5)
 #define DC_DC_EN_0_PIN                  PORT_PIN_PA05
 
+/*** Macros for POWER_ROLE_0 pin ***/
+#define POWER_ROLE_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 6)
+#define POWER_ROLE_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 6)
+#define POWER_ROLE_0_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 6)
+#define POWER_ROLE_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 6)) & 0x01)
+#define POWER_ROLE_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 6)
+#define POWER_ROLE_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 6)
+#define POWER_ROLE_0_PIN                  PORT_PIN_PA06
+
 /*** Macros for SPI_SS_0 pin ***/
 #define SPI_SS_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 10)
 #define SPI_SS_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 10)
@@ -110,6 +119,24 @@
 #define SPI_SS_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 10)
 #define SPI_SS_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 10)
 #define SPI_SS_0_PIN                  PORT_PIN_PA10
+
+/*** Macros for POWER_ROLE_1 pin ***/
+#define POWER_ROLE_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 16)
+#define POWER_ROLE_1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 16)
+#define POWER_ROLE_1_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 16)
+#define POWER_ROLE_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 16)) & 0x01)
+#define POWER_ROLE_1_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 16)
+#define POWER_ROLE_1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 16)
+#define POWER_ROLE_1_PIN                  PORT_PIN_PA16
+
+/*** Macros for DATA_ROLE_1 pin ***/
+#define DATA_ROLE_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 17)
+#define DATA_ROLE_1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 17)
+#define DATA_ROLE_1_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 17)
+#define DATA_ROLE_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 17)) & 0x01)
+#define DATA_ROLE_1_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 17)
+#define DATA_ROLE_1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 17)
+#define DATA_ROLE_1_PIN                  PORT_PIN_PA17
 
 /*** Macros for SNK_1_5A_IND pin ***/
 #define SNK_1_5A_IND_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 24)
@@ -128,6 +155,15 @@
 #define SNK_3A_IND_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 25)
 #define SNK_3A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 25)
 #define SNK_3A_IND_PIN                  PORT_PIN_PA25
+
+/*** Macros for DATA_ROLE_0 pin ***/
+#define DATA_ROLE_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 27)
+#define DATA_ROLE_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 27)
+#define DATA_ROLE_0_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 27)
+#define DATA_ROLE_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 27)) & 0x01)
+#define DATA_ROLE_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 27)
+#define DATA_ROLE_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 27)
+#define DATA_ROLE_0_PIN                  PORT_PIN_PA27
 
 /*** Macros for DC_DC_EN_1 pin ***/
 #define DC_DC_EN_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 28)

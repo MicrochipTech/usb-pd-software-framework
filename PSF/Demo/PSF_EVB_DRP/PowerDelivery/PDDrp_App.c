@@ -348,6 +348,42 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             }
             break;
         }    
+        case ePOWER_ROLE_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                POWER_ROLE_0_Clear();
+                POWER_ROLE_0_OutputEnable();  
+            }
+            else if (PORT1 == u8PortNum)
+            {
+                POWER_ROLE_1_Clear();
+                POWER_ROLE_1_OutputEnable(); 
+            }
+            else
+            {
+                /*Do nothing*/
+            }
+            break;
+        }     
+        case eDATA_ROLE_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                DATA_ROLE_0_Clear();
+                DATA_ROLE_0_OutputEnable();  
+            }
+            else if (PORT1 == u8PortNum)
+            {
+                DATA_ROLE_1_Clear();
+                DATA_ROLE_1_OutputEnable(); 
+            }
+            else
+            {
+                /*Do nothing*/
+            }
+            break;
+        } 
         default:
         {
             break; 
@@ -553,7 +589,66 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             }
             break;
         }
-  
+        case ePOWER_ROLE_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    POWER_ROLE_0_Set();
+                }
+                else
+                {
+                    POWER_ROLE_0_Clear();
+                }
+            }
+            else if (PORT1 == u8PortNum)
+            {
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    POWER_ROLE_1_Set();
+                }
+                else
+                {
+                    POWER_ROLE_1_Clear();
+                }            
+            }
+            else
+            {
+                /*Do nothing*/
+            }
+            break;
+        }
+        case eDATA_ROLE_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    DATA_ROLE_0_Set();
+                }
+                else
+                {
+                    DATA_ROLE_0_Clear();
+                }
+            }
+            else if (PORT1 == u8PortNum)
+            {
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    DATA_ROLE_1_Set();
+                }
+                else
+                {
+                    DATA_ROLE_1_Clear();
+                }            
+            }
+            else
+            {
+                /*Do nothing*/
+            }
+            break;
+        }
         default:
         {
             break; 
