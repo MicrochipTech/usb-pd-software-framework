@@ -57,9 +57,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_RP_CURRENT_VALUE_1          (3U << CFG_PORT_RPVAL_POS)
 #define CFG_PORT_ENABLE                      (1U << CFG_PORT_ENDIS_POS)
 
-/* DRP Demo default number of Source PDOs for Notebook port */
+/* DRP configuration default number of Source PDOs for Notebook port */
 #define CFG_PORT_NOTE_SOURCE_NUM_OF_PDOS      1U
-/* DRP Demo default number of Source PDOs for Dock port */
+/* DRP configuration default number of Source PDOs for Dock port */
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 #define CFG_PORT_DOCK_SOURCE_NUM_OF_PDOS      5U
 #else 

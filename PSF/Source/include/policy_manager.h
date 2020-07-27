@@ -778,7 +778,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
 
 /**************************************************************************************************
     Function:
-        void DPM_SetPowerRoleStatus(UINT8 u8PortNum, UINT8 u8PowerRole)
+        void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
     Summary:
         This API is used to set power role in gasDPM[u8PortNum].u16DPMStatus
         variable, Port Connect Status register and Port IO Status register.
@@ -791,8 +791,8 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
     Conditions:
         None.
     Input:
-        u8PortNum   - Port Number for power and data roles need to be assigned
-        u8PowerRole - Power role to be assigned to the port.
+        u8PortNum      - Port Number for power and data roles need to be assigned
+        u8NewPowerRole - New Power role to be assigned to the port.
                       This can take the following values:
                       1. PD_ROLE_SOURCE
                       2. PD_ROLE_SINK
@@ -802,11 +802,11 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_SetPowerRoleStatus(UINT8 u8PortNum, UINT8 u8PowerRole);
+void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole);
 
 /**************************************************************************************************
     Function:
-        void DPM_SetDataRoleStatus(UINT8 u8PortNum, UINT8 u8DataRole)
+        void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
     Summary:
         This API is used to set data role in gasDPM[u8PortNum].u16DPMStatus
         variable, Port Connect Status register and Port IO Status register.
@@ -819,8 +819,8 @@ void DPM_SetPowerRoleStatus(UINT8 u8PortNum, UINT8 u8PowerRole);
     Conditions:
         None.
     Input:
-        u8PortNum   - Port Number for power and data roles need to be assigned
-        u8DataRole - Data role to be assigned to the port.
+        u8PortNum     - Port Number for power and data roles need to be assigned
+        u8NewDataRole - Data role to be assigned to the port.
                       This can take the following values:
                       1. PD_ROLE_DFP
                       2. PD_ROLE_UFP
@@ -830,7 +830,7 @@ void DPM_SetPowerRoleStatus(UINT8 u8PortNum, UINT8 u8PowerRole);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_SetDataRoleStatus(UINT8 u8PortNum, UINT8 u8DataRole);
+void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole);
 
 /**************************************************************************************************
     Function:
@@ -1792,27 +1792,6 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg);
         None. 
 **************************************************************************************************/
 void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
-
-/**************************************************************************************************
-    Function:
-        void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange);
-    Summary:
-        API to update the port's Data role. 
-    Description:
-        This API changes current status variable of DPM and Status register to 
-        Data role provided.
-    Conditions:
-        None.
-    Input:
-        u8PortNum - Port number.
-        u8DataRoleChange - New Data role to be changed
-    Return:
-        None.
-    Remarks:
-        None. 
-**************************************************************************************************/
-
-void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange);
 
 #endif /*_POLICY_MANAGER_H_*/
 

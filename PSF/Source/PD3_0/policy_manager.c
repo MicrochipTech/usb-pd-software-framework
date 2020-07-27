@@ -744,17 +744,17 @@ UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
 #endif /*INCLUDE_PD_SOURCE*/  
 
 /***********DPM APIs to set power and data roles in status variables************/
-void DPM_SetPowerRoleStatus(UINT8 u8PortNum, UINT8 u8PowerRole)
+void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
 {
     /*Set power role in gasDPM[u8PortNum].u16DPMStatus variable*/
-    DPM_SET_POWER_ROLE_STS(u8PortNum, u8PowerRole);
+    DPM_SET_POWER_ROLE_STS(u8PortNum, u8NewPowerRole);
     
     /* Set Port Power Role in Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8PowerRole << DPM_PORT_POWER_ROLE_STATUS_POS); 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8NewPowerRole << DPM_PORT_POWER_ROLE_STATUS_POS); 
 
     /*Set power role in Port X IO Status register*/
-    if(PD_ROLE_SOURCE == u8PowerRole)
+    if(PD_ROLE_SOURCE == u8NewPowerRole)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_POWER_ROLE_STATUS);
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, ePOWER_ROLE_FUNC, eGPIO_ASSERT);
@@ -766,17 +766,16 @@ void DPM_SetPowerRoleStatus(UINT8 u8PortNum, UINT8 u8PowerRole)
     }
 }
 
-void DPM_SetDataRoleStatus(UINT8 u8PortNum, UINT8 u8DataRole)
+void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
 {
     /*Set data role in gasDPM[u8PortNum].u16DPMStatus variable*/
-    DPM_SET_DATA_ROLE_STS(u8DataRole, u8DataRole);
+    DPM_SET_DATA_ROLE_STS(u8PortNum, u8NewDataRole);
     
     /* Set Port Data Role in Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS_MASK);
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8DataRole << DPM_PORT_DATA_ROLE_STATUS_POS); 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8NewDataRole << DPM_PORT_DATA_ROLE_STATUS_POS); 
 
-    /*Set data role in Port X IO Status register*/
-    if(PD_ROLE_DFP == u8DataRole)
+    if(PD_ROLE_DFP == u8NewDataRole)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_DATA_ROLE_STATUS);
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDATA_ROLE_FUNC, eGPIO_ASSERT);
@@ -1314,31 +1313,6 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8DPMInternalEvents = (gasDPM[u8PortNum].u8DPMInternalEvents\
                                             & DPM_INT_EVT_INITIATE_ALERT);
 
-}
-
-void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange)
-{
-    if (PD_ROLE_DFP == u8DataRoleChange)
-    {
-        DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_DFP);
-                
-        /*Inform Protocol layer of the role change*/
-        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
-        
-    }
-    else if (PD_ROLE_UFP == u8DataRoleChange)
-    {
-        DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_UFP);
-
-        /*Inform Protocol layer of the role change*/
-        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
-    }
-    else
-    {
-        DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_TOGGLING);
-                
-        /*Not applicable to inform protocol layer*/
-    }
 }
 
 /********************* DPM API to check if PPS APDO is advertised ********************/

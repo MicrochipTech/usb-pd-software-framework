@@ -121,14 +121,21 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
         }
         case ePE_DRS_DFP_UFP_ROLE_CHANGE:
         {
+            UINT8 u8CurrentDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
             /*Change the present role*/
-            if (PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+            if (PD_ROLE_DFP == u8CurrentDataRole)
             {
-                DPM_UpdateDataRole (u8PortNum, PD_ROLE_UFP);
+                DPM_UpdateDataRole(u8PortNum, PD_ROLE_UFP);
+                
+                /*Inform Protocol layer of the role change*/
+                PRL_UpdateSpecAndDeviceRoles (u8PortNum);
             }
-            else if (PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+            else if (PD_ROLE_UFP == u8CurrentDataRole)
             {
-                DPM_UpdateDataRole (u8PortNum, PD_ROLE_DFP);
+                DPM_UpdateDataRole(u8PortNum, PD_ROLE_DFP);
+                
+                /*Inform Protocol layer of the role change*/
+                PRL_UpdateSpecAndDeviceRoles (u8PortNum);
             }
             else
             {
@@ -483,7 +490,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         /* Port has transitioned into Sink. Update the Power role 
                            and send PS_RDY message */
                         /* Set the Current Port Power Role as Sink in DPM Status variable */
-                        DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_SINK);
+                        DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SINK);
             
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -515,7 +522,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS\r\n");
                     /* PS_RDY message transmission failed or PSSourceOn Timer expired. 
                        So, revert the port's power role and invoke Type C Error Recovery */
-                    DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_SOURCE);
+                    DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
                     
                     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                     
@@ -661,7 +668,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* This sub-state would be entered if PS_Rdy message 
                        transmission fails. Revert the power role to Sink and 
                        invoke Type C Error Recovery */
-                    DPM_SetPowerRoleStatus(u8PortNum, PD_ROLE_SINK);
+                    DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SINK);
                     
                     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                     
