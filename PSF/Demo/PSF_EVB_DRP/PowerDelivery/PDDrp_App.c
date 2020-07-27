@@ -759,6 +759,24 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
     MPQDCDC_SetPortPower(u8PortNum, u16Voltage, u16Current);
 #endif     
 }
+
+#if (TRUE == INCLUDE_PD_SINK)
+void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData)
+{
+    if(PORT0 == u8PortNum)
+    {
+        /*SAMD20 internally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
+        /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
+        /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
+
+        UINT32 u32DACCalculate = u16DACData * 0x3FF;
+
+        u16DACData = (UINT16)(u32DACCalculate / 3300);
+        DAC_DataWrite(u16DACData);
+    }
+}
+#endif
+
 /* *****************************************************************************
  End of File
  */
