@@ -743,6 +743,29 @@ UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
 #endif /*INCLUDE_PD_SOURCE_PPS*/ 
 #endif /*INCLUDE_PD_SOURCE*/  
 
+/***********DPM APIs to set power and data roles in status variables************/
+void DPM_SetPowerRoleStatus(UINT8 u8PortNum, UINT8 u8PowerRole)
+{
+    /*Set power role in gasDPM[u8PortNum].u16DPMStatus variable*/
+    DPM_SET_POWER_ROLE_STS(u8PortNum, u8PowerRole);
+    
+    /* Set Port Power Role in Port Connection Status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8PowerRole << DPM_PORT_POWER_ROLE_STATUS_POS); 
+
+}
+
+void DPM_SetDataRoleStatus(UINT8 u8PortNum, UINT8 u8DataRole)
+{
+    /*Set data role in gasDPM[u8PortNum].u16DPMStatus variable*/
+    DPM_SET_DATA_ROLE_STS(u8DataRole, u8DataRole);
+    
+    /* Set Port Data Role in Port Connection Status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS_MASK);
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8DataRole << DPM_PORT_DATA_ROLE_STATUS_POS); 
+
+}
+
 /*********************************DPM VDM Cable APIs**************************************/
 UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
 {
@@ -1273,30 +1296,25 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
 
 void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8DataRoleChange)
 {
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
-                                    ~DPM_PORT_DATA_ROLE_STATUS_MASK;
     if (PD_ROLE_DFP == u8DataRoleChange)
     {
-        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_DFP);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
-                                    DPM_PORT_DATA_ROLE_STATUS_DFP;
+        DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_DFP);
+                
         /*Inform Protocol layer of the role change*/
         PRL_UpdateSpecAndDeviceRoles (u8PortNum);
         
     }
     else if (PD_ROLE_UFP == u8DataRoleChange)
     {
-        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_UFP);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
-                                    DPM_PORT_DATA_ROLE_STATUS_UFP;
+        DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_UFP);
+
         /*Inform Protocol layer of the role change*/
         PRL_UpdateSpecAndDeviceRoles (u8PortNum);
     }
     else
     {
-        DPM_SET_DATA_ROLE_STS(u8PortNum, PD_ROLE_TOGGLING);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
-                                    PD_ROLE_TOGGLING;
+        DPM_SetDataRoleStatus(u8PortNum, PD_ROLE_TOGGLING);
+                
         /*Not applicable to inform protocol layer*/
     }
 }
