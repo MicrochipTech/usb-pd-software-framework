@@ -1018,19 +1018,16 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 }
                 
                 case ePE_SRC_TRANSITION_TO_DEFAULT_VCONNON_CHECK_SS:
-                {
-                
+                {                
                     if(DPM_IsPortVCONNSource(u8PortNum))
                     {                          
                         PE_KillPolicyEngineTimer (u8PortNum);                        
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_EXIT_SS;                                                          
                     }                    
-                    break;
-                  
+                    break;                  
                 }
                 case ePE_SRC_TRANSITION_TO_DEFAULT_EXIT_SS:
-                {
-                  
+                {                  
                     /*Start NoResponse timer */
                     gasPolicyEngine[u8PortNum].u8PENoResponseTimerID = PDTimer_Start (
                                                         (PE_NORESPONSE_TIMEOUT_MS),
