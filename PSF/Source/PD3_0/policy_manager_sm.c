@@ -37,9 +37,6 @@ void DPM_Init(UINT8 u8PortNum)
     UINT8 u8CfgPowerRole = DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum);
     UINT8 u8DataRole = 0;
 
-    gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
-    gasDPM[u8PortNum].u8DPMConfigData |= (CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS);
-    
     if(PD_ROLE_SOURCE == u8CfgPowerRole)
     {   
         u8DataRole = PD_ROLE_DFP;
@@ -61,6 +58,14 @@ void DPM_Init(UINT8 u8PortNum)
     DPM_UpdateDataRole(u8PortNum, u8DataRole);
     DPM_UpdatePowerRole(u8PortNum, u8CfgPowerRole); 
 	
+    /*Update PD spec revision, power and data roles in u8DPMConfigData*/
+	gasDPM[u8PortNum].u8DPMConfigData |= ((CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS)\
+            | (u8CfgPowerRole << DPM_DEFAULT_POWER_ROLE_POS) \
+            | (u8DataRole << DPM_DEFAULT_DATA_ROLE_POS));
+   
+    /*Update PD spec revision in u16DPMStatus*/
+    gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
+
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
