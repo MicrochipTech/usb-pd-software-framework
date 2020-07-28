@@ -122,8 +122,8 @@ void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset,
     UINT8 u8Writebuffer [UPD_I2C_MAX_BYTE_WRITE];
     UINT8 u8WriteBufLen = 2;
     
-    u8Writebuffer[0] = HIBYTE (u16RegOffset);
-    u8Writebuffer[1] = LOBYTE (u16RegOffset);
+    u8Writebuffer[INDEX_0] = HIBYTE (u16RegOffset);
+    u8Writebuffer[INDEX_1] = LOBYTE (u16RegOffset);
     
     for (; u8WriteBufLen < (u8WriteDataLen+2); u8WriteBufLen++)
     {
@@ -143,10 +143,10 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
   
     UINT8 u8Command [UPD_SPI_READ_CMD_LEN];
     
-	u8Command[0] = UPD_SPI_READ_OPCODE;
-	u8Command[1] = HIBYTE (u16RegOffset);
-	u8Command[2] = LOBYTE (u16RegOffset);
-	u8Command[3] = UPD_SPI_DUMMY_BYTE;
+	u8Command[INDEX_0] = UPD_SPI_READ_OPCODE;
+	u8Command[INDEX_1] = HIBYTE (u16RegOffset);
+	u8Command[INDEX_2] = LOBYTE (u16RegOffset);
+	u8Command[INDEX_3] = UPD_SPI_DUMMY_BYTE;
     
     /*Enable SPI Select for communication*/
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_ASSERT);
@@ -160,8 +160,8 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
 
     UINT8 u8Command [UPD_I2C_REG_CMD_LEN];
     
-    u8Command[0] = HIBYTE (u16RegOffset);
-    u8Command[1] = LOBYTE (u16RegOffset);
+    u8Command[INDEX_0] = HIBYTE (u16RegOffset);
+    u8Command[INDEX_1] = LOBYTE (u16RegOffset);
     
     (void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
     
