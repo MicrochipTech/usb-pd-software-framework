@@ -565,7 +565,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
 #if(TRUE == INCLUDE_PD_DRP)                            
                             /*Enable DC_DC_EN if DRP acts as source*/
-                            /*For demos other than DRP, DC_DC_EN is high by default*/
+                            /*For configurations other than DRP, DC_DC_EN is high by default*/
                             PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
 #endif
                              gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
@@ -2432,7 +2432,7 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
 {
  	UINT8 u8Data = SET_TO_ZERO;
     
-    if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_DRP_DONE_INTERRUPT)
+    if(TRUE == (gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_DRP_DONE_INTERRUPT))
     {
         /*Get the state being advertised from DRP_CTL_HIGH register*/
         UPD_RegisterRead( u8PortNum, TYPEC_DRP_CTL_HIGH, &u8Data, BYTE_LEN_1); 
