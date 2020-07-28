@@ -1,5 +1,5 @@
 /***************************************************************************
-  Power Delivery Source Pro Configurable globals Header File
+  Power Delivery DRP Configurable globals Header File
 
   Company:
     Microchip Technology Inc.
@@ -11,7 +11,7 @@
     This header file contains user configurable globals and function prototypes.
 ************************************************************************** */
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility

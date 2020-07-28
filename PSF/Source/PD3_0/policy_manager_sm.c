@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 void DPM_Init(UINT8 u8PortNum)
 {
     UINT8 u8CfgPowerRole = DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum);
-    UINT8 u8DataRole = 0;
+    UINT8 u8DataRole = SET_TO_ZERO;
 
     if(PD_ROLE_SOURCE == u8CfgPowerRole)
     {   
