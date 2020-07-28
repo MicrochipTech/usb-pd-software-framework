@@ -123,7 +123,7 @@ Example:
     #define INCLUDE_PD_DRP	0(Exclude USB PD DRP functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_DRP    		1
+#define INCLUDE_PD_DRP    		0
 
 /**************************************************************************************************
 Summary:

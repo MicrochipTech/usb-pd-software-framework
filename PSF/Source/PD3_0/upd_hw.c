@@ -443,11 +443,12 @@ UINT8 UPD_CheckUPDsActive()
 		{
 			/*UPD_STATE_ACTIVE will be set frequently by respective Alert ISR.
 			  It means that the appropriate port is active, so skip MCU IDLE*/
-			if ((gau8ISRPortState[u8PortNum] == UPD_STATE_ACTIVE) ||
+			if ((UPD_STATE_ACTIVE == gau8ISRPortState[u8PortNum]) ||
 			/*Verify any other IDLE timer is running for all other ports.
 			if its running, then lets handle in that timer expire event, so skip MCU
 			IDLE for now*/
-             (((gau8PortIdleTimerID[u8PortNum]< MAX_CONCURRENT_TIMERS) && (gasPDTimers[gau8PortIdleTimerID[u8PortNum]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
+             (((gau8PortIdleTimerID[u8PortNum]< MAX_CONCURRENT_TIMERS) && \
+             (gasPDTimers[gau8PortIdleTimerID[u8PortNum]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
 
 			{
 				u8IsAllUPDsActive = TRUE;
@@ -497,7 +498,7 @@ void PD_StartIdleTimer(UINT8 u8PortNum)
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
                 
     /*if UPD350 is active; Restart UPD IDLE Timer*/
-    if (gau8ISRPortState[u8PortNum] == UPD_STATE_ACTIVE)
+    if (UPD_STATE_ACTIVE == gau8ISRPortState[u8PortNum])
     {
         
         PDTimer_Kill (gau8PortIdleTimerID[u8PortNum]);
@@ -597,15 +598,15 @@ void UPD_CheckAndDisablePorts (void)
                 UPD_RegisterRead(u8PortNum, (UINT16)UPD_SPI_TEST, u8ReadData, BYTE_LEN_4);
                     
                 /*Check the SPI_TEST register value is 0x02*/
-                if (u8ReadData[INDEX_0] == UPD_SPI_TEST_VAL)
+                if (UPD_SPI_TEST_VAL == u8ReadData[INDEX_0])
                 {
 #endif
                     /*Read VID & PID register*/
                     UPD_RegisterRead(u8PortNum, (UINT16)UPD_VID, u8ReadData, BYTE_LEN_4);          
              
                     /*Verify the default values*/
-                    if((u8ReadData[INDEX_0] == UPD_VID_LSB) && (u8ReadData[INDEX_1] == UPD_VID_MSB) && \
-                      (u8ReadData[INDEX_2] == UPD_PID_LSB) && (u8ReadData[INDEX_3] == UPD_PID_MSB)) 
+                    if((UPD_VID_LSB == u8ReadData[INDEX_0]) && (UPD_VID_MSB == u8ReadData[INDEX_1]) && \
+                      (UPD_PID_LSB == u8ReadData[INDEX_2]) && (UPD_PID_MSB == u8ReadData[INDEX_3])) 
                     {  
                         /*Value read from this port is right, so enable the ports, Set SPI 
                            Communication is active for this port*/
