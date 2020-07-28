@@ -539,7 +539,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                   
                     /*VBUS should be at vSafe0V before transition to AttachedSRC State*/
                     /*Check for VBUS Absence before moving to Attached SRC state */
-                    if ((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_0V_PRES))
+                    if (TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
                         u32PDODebug = SET_TO_ZERO;
@@ -704,7 +704,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_ATTACHED_SRC_CHECK_VBUS_SS:
                 {   
-                    if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_5V_PRES))
+                    if(TYPEC_VBUS_5V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {
                       
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
@@ -887,7 +887,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             /*Wait in this sub-state until the VBUS goes to 0V before moving into Unattached state*/
             case TYPEC_UNATTACH_WAIT_SRC_CHECK_VBUS_0V_SS:
             {
-                if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_0V_PRES))
+                if(TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                 {
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
                     u32PDODebug = SET_TO_ZERO;
@@ -935,7 +935,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
 
 #if(TRUE == INCLUDE_PD_DRP)
-                    if((gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState == PD_ROLE_SINK) \
+                    if((PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState) \
                             && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Drive DAC_I to 0V if DRP is not sink*/
@@ -966,7 +966,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_UNATTACHED_SNK_VSAFE0V_WAIT_SS:
                 {
-                    if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_0V_PRES))
+                    if(TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {
                       
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
@@ -1060,7 +1060,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHWAIT_SNK_TCC_TO_SS:
                 {                  
                     /*Check for VBUS Presence before moving to Attached SNK state */
-                    if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == (TYPEC_VBUS_5V_PRES))
+                    if(TYPEC_VBUS_5V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {
                         /*Set BLK_PD_MSG. Done in cronus*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
@@ -1293,7 +1293,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Setting CC Comparator OFF*/
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
-                    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+                    if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {                    
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
@@ -1367,7 +1367,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_ERROR_RECOVERY_WAIT_FOR_VBUS_0V_SS:
                 {
-                    if(((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) == TYPEC_VBUS_0V_PRES))
+                    if(TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {
                         #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
                         u32PDODebug = SET_TO_ZERO;
@@ -1397,7 +1397,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {    
                     
                     /*Resetting the Port Power Role*/
-                    if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+                    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {                      
                         UINT8 u8Data;
                         
@@ -1635,7 +1635,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             UPD_RegisterReadISR( u8PortNum, TYPEC_CC_MATCH, (UINT8 *)&u16Data, BYTE_LEN_2); 
 
             /*For Source Port*/
-            if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+            if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {             
                 /*For a source port, a bit in CC Match register will be "cleared" , if a 
                 match of the particular bit occurs. Hence the CC match register is negated while
@@ -1831,8 +1831,8 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         }
         else
         #endif /* endif for INCLUDE_POWER_FAULT_HANDLING*/       
-        if((u8Data == TYPEC_VBUS_DESIRED_V_MATCH_VAL) || \
-                        (u8Data == TYPEC_VBUS_DESIRED_N_UNDER_MATCH_VAL))
+        if((TYPEC_VBUS_DESIRED_V_MATCH_VAL == u8Data) || \
+                        (TYPEC_VBUS_DESIRED_N_UNDER_MATCH_VAL == u8Data))
         {
             u8IntStsISR &= ~TYPEC_VBUS_PRESENCE_MASK;
             UPD_RegisterReadISR (u8PortNum, TYPEC_VBUS_THR1, (UINT8 *)&u16Data, BYTE_LEN_2);
@@ -1881,7 +1881,7 @@ void TypeC_ConfigCCComp(UINT8 u8PortNum ,UINT8 u8ConfigVal)
      UPD_RegisterWrite (u8PortNum, TYPEC_CC_CTL1_HIGH, &u8Data, BYTE_LEN_1);
      
     /*Set CC Comparator OFF*/
-    if(u8ConfigVal == TYPEC_CC_COMP_CTL_DIS)
+    if(TYPEC_CC_COMP_CTL_DIS == u8ConfigVal)
     {  
         /* Wait until the CC Debouncer goes to inactive state  */ 
         u8DesiredDBState = TYPEC_CC_DB_ACTIVE;             
@@ -1905,7 +1905,7 @@ void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum,UINT8 u8ConfigVal)
     UINT8 u8DesiredDBState;
       
     /*Set VBUS Comparator OFF*/
-    if(u8ConfigVal == TYPEC_VBUSCOMP_OFF)
+    if(TYPEC_VBUSCOMP_OFF == u8ConfigVal)
     {
         /*Disabling the VBUS Debouncer */
         UPD_RegByteClearBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VBUS_DET);
@@ -2030,7 +2030,7 @@ void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UI
      u16CCControlReg1Val &= TYPEC_CC1_CC2_RP_MASK;
      u16CCControlReg1Val &= TYPEC_CC1_CC2_RD_MASK;  
      
-     if (u8PowerRole == PD_ROLE_SINK)
+     if (PD_ROLE_SINK == u8PowerRole)
      {                   
         if (u8CCPin & TYPEC_ENABLE_CC1)
         {
@@ -2045,7 +2045,7 @@ void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UI
         /*Setting the pull up resistor as open disconnect*/
         u16CCControlReg1Val |=(TYPEC_CC_RP_DIS);
      }
-     else if (u8PowerRole == PD_ROLE_SOURCE)
+     else if (PD_ROLE_SOURCE == u8PowerRole)
      {
          if (u8CCPin & TYPEC_ENABLE_CC1) 
          {
@@ -2075,11 +2075,11 @@ void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UI
 void TypeC_SetDeviceRole (UINT8 u8PortNum,UINT8 u8DevRole)
 {
     /* Setting Port Device Role in TYPEC_CC_HW_CTL register */
-    if (u8DevRole == PD_ROLE_UFP)
+    if (PD_ROLE_UFP == u8DevRole)
     {      
         UPD_RegByteClearBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, TYPEC_DEV_ROLE);
     }
-    else if (u8DevRole == PD_ROLE_DFP)
+    else if (PD_ROLE_DFP == u8DevRole)
     {
         UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, TYPEC_DEV_ROLE);
     }  
@@ -2093,7 +2093,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
 {
     UINT8 u8Data;
     
-    if (u8EnableDisable == TYPEC_VCONN_DISABLE)
+    if (TYPEC_VCONN_DISABLE == u8EnableDisable)
     {     
         gasTypeCcontrol[u8PortNum].u8PortSts |= TYPEC_VCONN_DISCHARGE_ON_MASK;
 
@@ -2114,7 +2114,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         gasTypeCcontrol[u8PortNum].u8CCDebMatch = (TYPEC_CC_THRES0_MATCH); 
 
         /*Poll the variable to see which CC pin was VCONN Source*/
-        if ((gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) == (TYPEC_VCONN_SOURCE_CC1))
+        if (TYPEC_VCONN_SOURCE_CC1 == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
         {
             /*CC1 is the source of VCONN*/
             u8Data &= ~TYPEC_CC1_PULL_DOWN;
@@ -2172,7 +2172,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         
         UINT8 u8CCRead = UPD_RegReadByte (u8PortNum, TYPEC_CC_CTL1_HIGH);
                
-        if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+        if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {       
             /*Powered cable attached in CC1 when CC1 is greater than CC2*/
             /*Powered cable attached in CC1 when PD Communication is enabled in CC2*/
@@ -2249,7 +2249,7 @@ void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
 
 void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
 {
-    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+    if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         /*VCONN Enabled in CC1 and Sink Attached in CC2*/
         if((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN1_ON_REQ) && \
@@ -2265,7 +2265,7 @@ void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
         }
 		 /*VCONN Enabled in CC2 and Sink Attached in CC1*/
         else if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN2_ON_REQ) && \
-            (gasTypeCcontrol[u8PortNum].u8CC2MatchISR == 0x00 ) &&
+            (SET_TO_ZERO == gasTypeCcontrol[u8PortNum].u8CC2MatchISR) &&
             (gasTypeCcontrol[u8PortNum].u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch ))
         {
         
@@ -2283,7 +2283,7 @@ void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
     else
     {    /*VCONN Enabled in CC1 and Source Attached in CC2*/
         if((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN1_ON_REQ) && \
-            (gasTypeCcontrol[u8PortNum].u8CC1MatchISR == TYPEC_SNK_CCTHRES_VCONN_ON) &&
+            (TYPEC_SNK_CCTHRES_VCONN_ON == gasTypeCcontrol[u8PortNum].u8CC1MatchISR) &&
             ((gasTypeCcontrol[u8PortNum].u8CC2MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)))
         {
          
@@ -2294,7 +2294,7 @@ void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
         }
          /*VCONN Enabled in CC2 and Source Attached in CC1*/
         else if((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN2_ON_REQ) && \
-            (gasTypeCcontrol[u8PortNum].u8CC2MatchISR == TYPEC_SNK_CCTHRES_VCONN_ON) &&
+            (TYPEC_SNK_CCTHRES_VCONN_ON == gasTypeCcontrol[u8PortNum].u8CC2MatchISR) &&
              (gasTypeCcontrol[u8PortNum].u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch))
         {
         
@@ -2486,12 +2486,12 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n"); 
             
             /*Move to TYPEC_UNATTACH_WAIT_SRC state if current state is TYPEC_ATTACHED_SRC*/
-            if (u8TypeCState == TYPEC_ATTACHED_SRC)
+            if (TYPEC_ATTACHED_SRC == u8TypeCState)
             {
                 u8TypeCState = TYPEC_UNATTACH_WAIT_SRC;
                 u8TypeCSubState = TYPEC_UNATTACH_WAIT_SRC_ENTRY_SS;            
             } 
-            else if (u8TypeCState == TYPEC_ATTACHWAIT_SRC)
+            else if (TYPEC_ATTACHWAIT_SRC == u8TypeCState)
             {
                 /*Kill the TCC debounce timer running already*/
                 TypeC_KillTypeCTimer(u8PortNum);
@@ -2553,7 +2553,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");
             
-            if(u8TypeCState == TYPEC_UNATTACHED_SRC)
+            if(TYPEC_UNATTACHED_SRC == u8TypeCState)
             {             
                 /*Setting the state for tCCDebounce*/
                 u8TypeCState = TYPEC_ATTACHWAIT_SRC;
@@ -2582,7 +2582,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 /*Consider the CC Sample values as valid Audio accessory attach only at the 
                 unattached state*/
                 /*This avoids unwanted transition in attached state*/
-                if(u8TypeCState == TYPEC_UNATTACHED_SRC)
+                if(TYPEC_UNATTACHED_SRC == u8TypeCState)
                 {                
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: AUDIO ACCESSORY is present\r\n");
                     
@@ -2600,7 +2600,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 DPM_ResetVCONNErrorCnt (u8PortNum);
                 DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: No Devices are present\r\n");
                 
-                if(u8TypeCState == TYPEC_ATTACHWAIT_SRC)
+                if(TYPEC_ATTACHWAIT_SRC == u8TypeCState)
                 {
                     /*Kill the TCC debounce timer running already*/
                      TypeC_KillTypeCTimer(u8PortNum);
@@ -2630,7 +2630,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                   /*Consider the CC Sample values as valid Debug accessory attach only at the 
                 unattached state*/
                 /*This avoids unwanted transition in attached state*/              
-                if(u8TypeCState == TYPEC_UNATTACHED_SRC)
+                if(TYPEC_UNATTACHED_SRC == u8TypeCState)
                 {
                   
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: DEBUG ACCESSORY is present\r\n");
@@ -2688,7 +2688,7 @@ void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
     UPD_RegWriteWord (u8PortNum, TYPEC_CC_THR0, TYPEC_CC_THR0_VAL);    
     
     #if (TRUE == INCLUDE_PD_SOURCE)
-    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+    if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         /*Setting the user given Rp value for source since it is changed to open disconnect
         while VCONN Discharge*/
@@ -2697,7 +2697,7 @@ void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
     #endif
 
     #if (TRUE == INCLUDE_PD_SINK)
-    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SINK)
+    if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP);
           
@@ -2734,14 +2734,14 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             /*Decode and store the Rp value of Source attached*/ 
             TypeC_DecodeSourceRpValue(u8PortNum);
                        
-            if (u8TypeCState == TYPEC_ATTACHWAIT_SNK)
+            if (TYPEC_ATTACHWAIT_SNK == u8TypeCState)
             {
                     /*Kill the TPD Debounce timer running for last detach event or
                     Kill the TCC Debounce timer running for previous attach event*/
                     TypeC_KillTypeCTimer(u8PortNum);
                     
             }
-            else if ((u8TypeCState == TYPEC_ATTACHED_SNK) && (u8TypeCSubState == ((UINT8)TYPEC_ATTACHED_SNK_RUN_SM_SS)))
+            else if ((TYPEC_ATTACHED_SNK == u8TypeCState) && (((UINT8)TYPEC_ATTACHED_SNK_RUN_SM_SS) == u8TypeCSubState))
             {
                  break;
             }
@@ -2750,7 +2750,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                  /*Attach event has occurred within the TPD Debounce timeout of previous Detach event
                  So in this case moving to the Attach wait state and also killing the 
                  TPD Debounce timer which is active currently*/
-                 if((u8TypeCState == TYPEC_ATTACHED_SNK) && (u8TypeCSubState != ((UINT8)TYPEC_ATTACHED_SNK_RUN_SM_SS)))
+                 if((TYPEC_ATTACHED_SNK == u8TypeCState) && (u8TypeCSubState != ((UINT8)TYPEC_ATTACHED_SNK_RUN_SM_SS)))
                  {
                     /*Kill the TPD Debounce timer running previously for detach event*/
                     TypeC_KillTypeCTimer(u8PortNum);
@@ -2775,28 +2775,28 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
         case TYPEC_NO_THRESHOLD:
         {          
             /*Valid Detach event happens only when both the CC1 and CC2 are 0*/  
-            if(gasTypeCcontrol[u8PortNum].u8CC1MatchISR == SET_TO_ZERO)
+            if(SET_TO_ZERO == gasTypeCcontrol[u8PortNum].u8CC1MatchISR)
             {
 
                 DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: NO DEVICES ARE PRESENT\r\n");
                 DPM_ResetVCONNErrorCnt (u8PortNum);	
 
-                if (u8TypeCState == TYPEC_ATTACHWAIT_SNK)
+                if (TYPEC_ATTACHWAIT_SNK == u8TypeCState)
                 {
                     /*Kill the TCC Debounce timer running previously attach event*/
                     TypeC_KillTypeCTimer(u8PortNum);
                     u8TypeCSubState  = TYPEC_ATTACHWAIT_SNK_TPDDEB_SS;
                 }
                 /*Source detach occurs before the VBUS drops below VSinkdisconnect */
-                else if ((u8TypeCState == TYPEC_ATTACHED_SNK) && \
-                         (u8TypeCSubState == TYPEC_ATTACHED_SNK_RUN_SM_SS))
+                else if ((TYPEC_ATTACHED_SNK == u8TypeCState) && \
+                         (TYPEC_ATTACHED_SNK_RUN_SM_SS == u8TypeCSubState))
                 {
                      /*Go to TYPEC_ATTACHED_SNK_TPDDEB_SS sub-state for starting tPDDebounce*/
                      u8TypeCSubState  = TYPEC_ATTACHED_SNK_TPDDEB_SS;
                 }
                 /*This condition occurs if VCONN Discharge is enabled in Attached Sink State
                 or Source detach occurs after VBUS drops below VSinkdisconnect*/
-                else if (u8TypeCState == TYPEC_ATTACHED_SNK)
+                else if (TYPEC_ATTACHED_SNK == u8TypeCState)
                 {
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS;
                 }
@@ -2896,7 +2896,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);  
   
     /*Rp value as 1.5A@5V */
-    if(u8RpValue == TYPEC_SINK_TXNG)
+    if(TYPEC_SINK_TXNG == u8RpValue)
     {
         gasTypeCcontrol[u8PortNum].u8CCDebMatch = (TYPEC_CC_THRES1_MATCH | TYPEC_CC_THRES5_MATCH);
         gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = (TYPEC_CC_THRES5_MATCH);
@@ -2925,7 +2925,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
     /*Enabling the CC Sampling in the sink attached CC pin if both sink and powered cable 
     are attached*/   
     /*Sink Attached in CC1 since VCONN is enabled in CC2*/
-    if (((gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)) == TYPEC_VCONN_SOURCE_CC2)
+    if (TYPEC_VCONN_SOURCE_CC2 == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
     {      
         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1);
         
@@ -2933,7 +2933,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1);
     }
     /*Sink Attached in CC2 since VCONN is enabled in CC1*/
-    else if(((gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)) == TYPEC_VCONN_SOURCE_CC1)
+    else if(TYPEC_VCONN_SOURCE_CC1 == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
     {        
         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC2);
         
@@ -2963,8 +2963,8 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
      gasTypeCcontrol[u8PortNum].u8PortSts  |= (TYPEC_COLLISION_AVOIDANCE_ACT);
     
      /*Return True if the current Rp Value set by source is TYPEC_SINK_TXOK*/
-     if(((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
-         >> TYPEC_CURR_RPVAL_POS) == TYPEC_RP_CURRENT_30)
+     if(TYPEC_RP_CURRENT_30 == ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
+         >> TYPEC_CURR_RPVAL_POS))
      {
         /*Clear the Collision avoidance Status variable*/
         gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_COLLISION_AVOIDANCE_ACT;

@@ -134,7 +134,7 @@ void DPM_SetTypeCState(UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubStat
 /**************************DPM APIs for VCONN *********************************/
 void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable)
 {
-    if(u8VConnEnable == DPM_VCONN_ON)
+    if(DPM_VCONN_ON == u8VConnEnable)
     {
         /*Enable VCONN by switching on the VCONN FETS*/
         TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_ENABLE);              
@@ -310,7 +310,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         Requested object position is invalid, received request is invalid request */ 
     u8RetVal = (u16SinkReqCurrVal > u16SrcPDOCurrVal) ? DPM_INVALID_REQUEST : (((u8SinkReqObjPos<= FALSE) || \
                (u8SinkReqObjPos> gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt))) ? \
-                DPM_INVALID_REQUEST : (u8RaPresence == FALSE) ? DPM_VALID_REQUEST : \
+                DPM_INVALID_REQUEST : (FALSE == u8RaPresence) ? DPM_VALID_REQUEST : \
                 (u16SinkReqCurrVal > gasDPM[u8PortNum].u16MaxCurrSupportedin10mA) ? \
                 DPM_INVALID_REQUEST : DPM_VALID_REQUEST;   
    
@@ -330,7 +330,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 #endif 
     
     /* If request is valid set the Negotiated PDO as requested */
-    if(u8RetVal == DPM_VALID_REQUEST)
+    if(DPM_VALID_REQUEST == u8RetVal)
     {
         gasDPM[u8PortNum].u32NegotiatedPDO = u32PDO; 
         gasDPM[u8PortNum].u8NegotiatedPDOIndex = u8SinkReqObjPos;
@@ -474,7 +474,7 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
     if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK)
     {
         /* If E-Cable max current is 5A, pass the capabilities without change */
-        if(gasDPM[u8PortNum].u16MaxCurrSupportedin10mA == DPM_CABLE_CURR_5A_UNIT)
+        if(DPM_CABLE_CURR_5A_UNIT == gasDPM[u8PortNum].u16MaxCurrSupportedin10mA)
         {
             /* The attached USB-C cable supports the locally-defined Source PDOs */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
@@ -798,7 +798,7 @@ UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
     u8RetVal = DPM_VDM_GET_CMD_TYPE(u32DataBuf[DPM_VDM_HEADER_POS]);
     
     /* if Data object is one, received message is NAK */
-    if(u8RetVal == PE_VDM_NAK || u8RetVal == PE_VDM_BUSY)
+    if((PE_VDM_NAK == u8RetVal) || (PE_VDM_BUSY == u8RetVal))
     {
         u8RetVal = PE_VDM_NAK;
     }
@@ -811,12 +811,12 @@ UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
         u8CurVal = DPM_GET_CABLE_CUR_VAL(u32ProductTypeVDO);
         
         /* Setting E-Cable Max Current Value */
-        if(u8CurVal == DPM_CABLE_CURR_3A)
+        if(DPM_CABLE_CURR_3A == u8CurVal)
         {
             gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_CABLE_CURR_3A_UNIT;
         }
         
-        else if(u8CurVal == DPM_CABLE_CURR_5A)
+        else if(DPM_CABLE_CURR_5A == u8CurVal)
         {
             gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_CABLE_CURR_5A_UNIT;
         }
@@ -877,7 +877,7 @@ void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 
     {          
         for(u8PowerIndex = SET_TO_ZERO; u8PowerIndex < (u8PDOCount - u8PDOIndex - BYTE_LEN_1); u8PowerIndex++)
         {
-            if(u8SinkMode == DPM_SINK_MODE_A)
+            if(DPM_SINK_MODE_A == u8SinkMode)
             {
                 if(u8Power[u8PowerIndex][DPM_PDO_PWR] <= u8Power[u8PowerIndex + BYTE_LEN_1][DPM_PDO_PWR])
                 {
@@ -889,7 +889,7 @@ void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 
                    u8Power[DPM_NEXT_PWR_INDEX(u8PowerIndex)][DPM_PDO_INDEX] = u8PowerSwapIndex;
                 }
             }
-            else if (u8SinkMode == DPM_SINK_MODE_B)
+            else if (DPM_SINK_MODE_B == u8SinkMode)
             {
                 if(u8Power[u8PowerIndex][DPM_PDO_PWR] < u8Power[u8PowerIndex + BYTE_LEN_1][DPM_PDO_PWR])
                 {
@@ -1230,7 +1230,7 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_SOURCE)
     /*On negotiation, initiate Get Sink caps*/
     if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]) &&\
-          (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE) &&\
+          (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&\
             (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
     {
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);

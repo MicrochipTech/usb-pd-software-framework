@@ -355,7 +355,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	gasPRL[u8PortNum].u32PkdPEstOnTxStatus = u32PkdPEstOnTxStatus;
 	gasPRL[u8PortNum].pFnTxCallback = pfnTxCallback;
     
-	if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {	  
 		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
 						  (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP |
@@ -1086,9 +1086,9 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected Chunk msg received");
                      
                     /* Unexpected message received*/
-                    if ((gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST)
-                        || (gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_SEND_CHUNK_REQUEST_ST)
-                        || (gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST))
+                    if ((PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST == gasChunkSM [u8PortNum].u8ChunkState)
+                        || (PRL_RCH_SEND_CHUNK_REQUEST_ST == gasChunkSM [u8PortNum].u8ChunkState)
+                        || (PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST == gasChunkSM [u8PortNum].u8ChunkState))
                     {
                         /* Chunk Rx Handling*/
                         /* Spec Ref: On RCH_WAITING_CHUNK if other message received Report RCH_Report_Error*/
@@ -1190,9 +1190,9 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
         if ((gasChunkSM [u8PortNum].u8EnableChunkSM) && (PRL_GET_MESSAGE_TYPE(gasPRLRecvBuff [u8PortNum].u16Header) != PE_CTRL_PING))
         {
 		  	/* Unexpected message received and received message is not PING */
-            if ((gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST)
-                || (gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_SEND_CHUNK_REQUEST_ST)
-                || (gasChunkSM [u8PortNum].u8ChunkState == PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST))
+            if ((PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST == gasChunkSM [u8PortNum].u8ChunkState)
+                || (PRL_RCH_SEND_CHUNK_REQUEST_ST == gasChunkSM [u8PortNum].u8ChunkState)
+                || (PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST == gasChunkSM [u8PortNum].u8ChunkState))
             {
                 DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg");
 			  	
@@ -1400,7 +1400,7 @@ void PRL_TCHChunkSMStateChange_TCHCB (UINT8 u8PortNum, UINT8 u8TimerID, UINT8 Tx
 {
   	/* Callback for Chunk Request Messages*/ 
 	/* Policy engine state is assigned based  on Tx Interrupt status*/
-	if (gasPRL[u8PortNum].u8TxStateISR == PRL_TX_DONE_ST)
+	if (PRL_TX_DONE_ST == gasPRL[u8PortNum].u8TxStateISR)
 	{
 		/* Checks whether GoodCRC received is not last Chunk Response packet*/
 		if (gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent != gasChunkSM [u8PortNum].u8TotalChunkPkt)
@@ -1435,7 +1435,8 @@ void PRL_TCHChunkSMStateChange_TCHCB (UINT8 u8PortNum, UINT8 u8TimerID, UINT8 Tx
 	
 	/* In case of Transmission failure of Chunk packet, PE is informed through CB
 		& Chunk State machine is reset*/
-	else if ((gasPRL[u8PortNum].u8TxStateISR == PRL_TX_ABORTED_ST) || (gasPRL[u8PortNum].u8TxStateISR == PRL_TX_FAILED_ST))
+	else if ((PRL_TX_ABORTED_ST == gasPRL[u8PortNum].u8TxStateISR) || \
+            (PRL_TX_FAILED_ST == gasPRL[u8PortNum].u8TxStateISR))
 	{
 	  	/* TCH_REPORT_ERROR - Report Error to Policy Engine. 
 										TCH_REPORT_ERROR entered on condition 
@@ -1458,7 +1459,7 @@ void PRL_RCHChunkSMStateChange_RCHCB (UINT8 u8PortNum, UINT8 u8TimerID, UINT8 Tx
 {
   	/* Callback for Chunk Request Tx Message*/
   
-	if (gasPRL[u8PortNum].u8TxStateISR == PRL_TX_DONE_ST)
+	if (PRL_TX_DONE_ST == gasPRL[u8PortNum].u8TxStateISR)
 	{
 	  	/* if GOODCRC is received, SenderRequestTimer is started*/
 		gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = PDTimer_Start (PRL_CHUNKSENDERRESPONSE_TIMEOUT_MS, 
@@ -1470,7 +1471,7 @@ void PRL_RCHChunkSMStateChange_RCHCB (UINT8 u8PortNum, UINT8 u8TimerID, UINT8 Tx
 		
 		gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST;
 	}
-	else if ((gasPRL[u8PortNum].u8TxStateISR == PRL_TX_ABORTED_ST) || (gasPRL[u8PortNum].u8TxStateISR == PRL_TX_FAILED_ST))
+	else if ((PRL_TX_ABORTED_ST == gasPRL[u8PortNum].u8TxStateISR) || (PRL_TX_FAILED_ST == gasPRL[u8PortNum].u8TxStateISR))
 	{
 	  	/* Spec Ref: RCH_Report_Error - Report Error to Policy Engine 
 										Entered on condition "Unexpected Chunk Number" */
@@ -1687,7 +1688,7 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 		
 		case PRL_TCH_CHUNKSENDERREQUEST_TIMEOUT_ST:
 		{
-		  	if (gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent == PRL_FIRST_CHUNK_PACKET)
+		  	if (PRL_FIRST_CHUNK_PACKET == gasChunkSM [u8PortNum].u8ChunkNumExpectedOrSent)
             {
 				/*Spec Ref: TCH Shall transition to the TCH_Message_Sent state when
 			  	ChunkSenderRequestTimer has expired and Chunk Number equals zero.*/
@@ -1740,7 +1741,7 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 UINT32 PRL_FormRequestChunkMsgHeader(UINT8 u8PortNum)
 {						
 	UINT32 u32CombinedHeader;
-  	if (gasExtendedMsgBuff [u8PortNum].u8SOPtype == PRL_SOP_TYPE)
+  	if (PRL_SOP_TYPE == gasExtendedMsgBuff [u8PortNum].u8SOPtype)
     {
 		u32CombinedHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, 
 								  PRL_GET_MESSAGE_TYPE(gasExtendedMsgBuff [u8PortNum].u16Header),
