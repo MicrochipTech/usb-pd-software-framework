@@ -76,10 +76,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_DUAL_ROLE_DATA            0U
 
 /***************Source PDO defines for Dock type port (port 1)*****************/
-#define CFG_PORT_DOCK_SOURCE_PDO_1_CURRENT         1500U 
-#define CFG_PORT_DOCK_SOURCE_PDO_2_CURRENT         1500U
-#define CFG_PORT_DOCK_SOURCE_PDO_3_CURRENT         1500U
-#define CFG_PORT_DOCK_SOURCE_PDO_4_CURRENT         1500U
+#define CFG_PORT_DOCK_SOURCE_PDO_1_CURRENT         3000U 
+#define CFG_PORT_DOCK_SOURCE_PDO_2_CURRENT         3000U
+#define CFG_PORT_DOCK_SOURCE_PDO_3_CURRENT         3000U
+#define CFG_PORT_DOCK_SOURCE_PDO_4_CURRENT         3000U
 
 #define CFG_PORT_DOCK_SOURCE_PDO_1_VOLTAGE         5000U
 #define CFG_PORT_DOCK_SOURCE_PDO_2_VOLTAGE         9000U
@@ -102,7 +102,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /******************************************************************************/
 
 /************Source PDO defines for Note book type port (port 0)***************/
-#define CFG_PORT_NOTE_SOURCE_PDO_1_CURRENT         1500U 
+#define CFG_PORT_NOTE_SOURCE_PDO_1_CURRENT         3000U 
 #define CFG_PORT_NOTE_SOURCE_PDO_2_CURRENT         0U
 #define CFG_PORT_NOTE_SOURCE_PDO_3_CURRENT         0U
 #define CFG_PORT_NOTE_SOURCE_PDO_4_CURRENT         0U
