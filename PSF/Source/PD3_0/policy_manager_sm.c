@@ -76,6 +76,18 @@ void DPM_Init(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
     gasDPM[u8PortNum].u8VCONNPowerFaultCount = SET_TO_ZERO;
 #endif
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+    gasDPM[u8PortNum].u8AlertType = SET_TO_ZERO;
+    gasDPM[u8PortNum].u8StatusEventFlags = SET_TO_ZERO;;
+    gasDPM[u8PortNum].u8RealTimeFlags = SET_TO_ZERO;
+    gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+#endif
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+    gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+#endif 
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+    gasDPM[u8PortNum].u8DRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+#endif
 }
 /********************************************************************************************/
 
@@ -152,8 +164,6 @@ static void DPM_ClearPowerfaultFlags(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 }
-
-
 void DPM_PowerFaultHandler(UINT8 u8PortNum)
 {
   	/* Incase detach reset the Power Fault handling variables*/
@@ -180,7 +190,6 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         
         gasDPM[u8PortNum].u8PowerFaultFlags = SET_TO_ZERO;
         	
-        
         /*******Resetting the VCONN OCS related variables************/
         
         /*Setting VCONNGoodtoSupply flag as true*/        
@@ -221,8 +230,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				/* Disable the receiver*/
                 PRL_EnableRx (u8PortNum, FALSE);
 				/* kill all the timers*/
-                PDTimer_KillPortTimers (u8PortNum);
-				
+                PDTimer_KillPortTimers (u8PortNum);		
 				/* set the fault count to zero */
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
 				
@@ -427,7 +435,7 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType)
     if (!gasDPM[u8PortNum].u8PowerFaultISR)
     {
         #if (TRUE == INCLUDE_PD_SOURCE)
-        if(PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
+        if(PD_ROLE_SINK != DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
         {
             /*Disable VBUS_EN on detection of external fault*/
             UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
@@ -755,7 +763,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VCONN_SWAP);
             
-            if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
+            if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
             {
                 u8SetCAforSource = TYPEC_SINK_TXNG;
                 /* TODO: <VCONN-SWAP> <To add policy engine states to initiate VCONN_SWAP> */
