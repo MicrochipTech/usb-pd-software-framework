@@ -619,19 +619,37 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         UINT8 u8Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                         /*Set the u8CCDebMatch and u8CCSrcSnkMatch variable accordingly as per Rp Value*/
                         TypeC_SetCCDebounceVariable(u8PortNum, u8Data);
-                          
+                               
+                        UINT8 u8CCEnablePin, u8CCCompCtrl; 
+                        /* It is always recommended to enable thresholds on the other pin when we (as UPD350) 
+                           supply VCONN, to monitor changes in VCONN voltage, because VCONN is visible only to 
+                           the VCONN supplier and the cable on the supply end and is not visible to the port partner. */
+                        if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)
+                        {
+                            u8CCEnablePin = TYPEC_ENABLE_CC1_CC2; 
+                            u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC1_CC2; 
+                        }
+                        else /* Not VCONN Source */
+                        {
+                            /* We are not VCONN Source, enable CC Debounce thresholds only for 
+                               the connected CC pin. */
+                            if (TYPEC_ORIENTATION_CC1 == TYPEC_GET_CC_ORIENTATION_STS(u8PortNum))
+                            {
+                                u8CCEnablePin = TYPEC_ENABLE_CC1;
+                                u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC1; 
+                            }
+                            else
+                            {
+                                u8CCEnablePin = TYPEC_ENABLE_CC2;
+                                u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC2; 
+                            }
+                        }
                         /*Reset the CC Debounce clear enable,CC Match Enable,CC Sample Enable register*/                                                                    
-                        /* TODO: <PR_Swap> Check if this needs to be done for both the CC pins */
-                        if (TYPEC_ORIENTATION_CC1 == TYPEC_GET_CC_ORIENTATION_STS(u8PortNum))
-                        {
-                            TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1);
-                            TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1);
-                        }
-                        else
-                        {
-                            TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC2);
-                            TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC2);
-                        }
+                        TypeC_SetCCSampleEnable (u8PortNum, u8CCEnablePin);
+                        
+                        /* Turn on the CC Comparator */
+                        TypeC_ConfigCCComp (u8PortNum, u8CCCompCtrl);
+                        
                         /* Wait for CC RD match valid interrupt */
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_PRS_WAIT_FOR_RD_MATCH;                    
                     }
@@ -2512,6 +2530,12 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 		case TYPEC_UFP_ATT_DEF:
         case TYPEC_UFP_ATT_3A0:
 		{
+            /*Clearing the Powered cable presence in u16PortSts variable*/
+            gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
+            
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Sink is Present in CC");
+            DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");               
+            
             if ((TYPEC_ATTACHED_SRC == u8TypeCState) && 
                     (TYPEC_ATTACHED_SRC_PRS_WAIT_FOR_RD_MATCH == u8TypeCSubState))
             {                
@@ -2519,16 +2543,10 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;                                
             }
             else if(u8TypeCState != ((UINT8) TYPEC_ATTACHED_SRC))
-            {              
-                /*Clearing the Powered cable presence in u16PortSts variable*/
-                gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
-                    
+            {                                  
                 /*Setting the state for tCCDebounce*/
                 u8TypeCState = TYPEC_ATTACHWAIT_SRC; 
-                u8TypeCSubState  = TYPEC_ATTACHWAIT_SRC_DEB_SS;
-                                
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Sink is Present in CC");
-                DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");               
+                u8TypeCSubState  = TYPEC_ATTACHWAIT_SRC_DEB_SS;                                
             } 
             else 
             {
