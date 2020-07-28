@@ -157,9 +157,9 @@ static void DPM_ClearPowerfaultFlags(UINT8 u8PortNum)
 void DPM_PowerFaultHandler(UINT8 u8PortNum)
 {
   	/* Incase detach reset the Power Fault handling variables*/
-    if (((gasTypeCcontrol[u8PortNum].u8TypeCState == TYPEC_UNATTACHED_SRC) &&
-		    (gasTypeCcontrol[u8PortNum].u8TypeCSubState == TYPEC_UNATTACHED_SRC_INIT_SS))||
-				 ((gasTypeCcontrol[u8PortNum].u8TypeCState == TYPEC_UNATTACHED_SNK)))
+    if (((TYPEC_UNATTACHED_SRC == gasTypeCcontrol[u8PortNum].u8TypeCState) &&
+		    (TYPEC_UNATTACHED_SRC_INIT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))||
+				 ((TYPEC_UNATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState)))
     {
 		/* Enable Fault PIO to detect OCS as it would have been disabled as part of
          Power fault handling*/
@@ -205,8 +205,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 	
     if(TRUE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
     { 
-        if((gasPolicyEngine[u8PortNum].ePESubState == ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS) ||
-				 (gasPolicyEngine[u8PortNum].ePEState == ePE_SNK_STARTUP))
+        if((ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS == gasPolicyEngine[u8PortNum].ePESubState) ||
+				 (ePE_SNK_STARTUP == gasPolicyEngine[u8PortNum].ePEState))
         {
             /*Checks whether VCONN max power fault count exceeds*/
             if(gasDPM[u8PortNum].u8VCONNPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
@@ -228,7 +228,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted ");
 				
-                if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+                if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {			
 					/* Assign an idle state wait for detach*/
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
@@ -315,7 +315,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: VBUS Power Fault");
         } /*end of if condition of VBUS Fault check*/
         
-        if(PE_GET_PD_CONTRACT(u8PortNum) == PE_IMPLICIT_CONTRACT)
+        if(PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
         {
 			/* Set it to Type C Error Recovery */
             gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
@@ -591,7 +591,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             DPM_ENABLE_NEW_PDO(u8PortNum);
             
             /* Check for Port Power Role */
-            if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) == PD_ROLE_SOURCE)
+            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
                 /* Move the Policy Engine to PE_SRC_SEND_CAPABILITIES state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
@@ -853,7 +853,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
           
     }
     /* Set CA to Sink TXNG in case of Source*/
-    if ((u8SetCAforSource == TYPEC_SINK_TXNG) &&  (PD_ROLE_SOURCE == u8DPMPowerRole))
+    if ((TYPEC_SINK_TXNG == u8SetCAforSource) &&  (PD_ROLE_SOURCE == u8DPMPowerRole))
     {   
         #if (TRUE == INCLUDE_PD_3_0)
         PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXNG);

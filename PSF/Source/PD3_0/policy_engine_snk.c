@@ -103,8 +103,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             from ePE_SNK_TRANSITION_TO_DEFAULT state*/
     
             /*Query the Device policy manager for VBUS of 5V Presence*/
-            if ((DPM_GetVBUSVoltage(u8PortNum) == TYPEC_VBUS_5V) && \
-                (u8TypeCState == TYPEC_ATTACHED_SNK))
+            if ((TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum)) && \
+                (TYPEC_ATTACHED_SNK == u8TypeCState))
             {
 			  	/* Enable Power fault thresholds for TYPEC_VBUS_5V to detect Power faults*/
                 TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
@@ -187,11 +187,11 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             DPM_EvaluateReceivedSrcCaps(u8PortNum,(UINT16) u32Header ,(UINT32*)pu8DataBuf );
 
             /*Invalid Source Capability Message results in Sink request object count to be 0*/
-           if (gasCfgStatusData.sPerPortData[u8PortNum].u32RDO == SET_TO_ZERO)
+           if (SET_TO_ZERO == gasCfgStatusData.sPerPortData[u8PortNum].u32RDO)
            {
                 /*Transition to Ready state if already in PD contract*/
-                if ((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PDCONTRACT_MASK ) == \
-                    PE_EXPLICIT_CONTRACT)
+                if (PE_EXPLICIT_CONTRACT == (gasPolicyEngine[u8PortNum].u8PEPortSts \
+                        & PE_PDCONTRACT_MASK ))
                 {
                      gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
                      gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
@@ -474,7 +474,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                case ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS:
                {                     
                     /*Transition only after the VBUS from Source has gone down to 0V*/
-                    if(DPM_GetVBUSVoltage(u8PortNum) == TYPEC_VBUS_0V)
+                    if(TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
                     {  						
                         /*Inform Protocol Layer about Hard Reset Complete */
                         PRL_HRorCRCompltIndicationFromPE(u8PortNum);

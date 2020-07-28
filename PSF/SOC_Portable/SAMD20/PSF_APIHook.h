@@ -1280,6 +1280,22 @@ Remarks:
 												 is user specific.
                                                * This is applicable only for sink functionality and it is
                                                  not mandatory,depends on user application.
+    ePOWER_ROLE_FUNC          \Output         * Power role indicator functionality is to indicate that the current 
+                                                 power role is source. PSF request the application to assert
+												 when current power role is source. PSF request the application 
+                                                 to deassert on detach event or during renegotiation. The state of
+												 GPIO during init, Assert and Deassert of this functionality 
+												 is user specific.
+                                               * This is applicable only for DRP functionality and it is
+                                                 not mandatory,depends on user application.
+    eDATA_ROLE_FUNC           \Output         * Data role indicator functionality is to indicate that the current 
+                                                 data role is Host/Hub DFP. PSF request the application to assert
+												 when current data role is Host/Hub DFP. PSF request the application
+												 to deassert on detach event or during renegotiation. The state of
+												 GPIO during init, Assert and Deassert of this functionality 
+												 is user specific.
+                                               * This is applicable only for DRP functionality and it is
+                                                 not mandatory,depends on user application.
     </table>
   Remarks:
     None                                                                                                       
