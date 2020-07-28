@@ -126,21 +126,17 @@ void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
             if (PD_ROLE_DFP == u8CurrentDataRole)
             {
                 DPM_UpdateDataRole(u8PortNum, PD_ROLE_UFP);
-                
-                /*Inform Protocol layer of the role change*/
-                PRL_UpdateSpecAndDeviceRoles (u8PortNum);
             }
             else if (PD_ROLE_UFP == u8CurrentDataRole)
             {
                 DPM_UpdateDataRole(u8PortNum, PD_ROLE_DFP);
-                
-                /*Inform Protocol layer of the role change*/
-                PRL_UpdateSpecAndDeviceRoles (u8PortNum);
             }
             else
             {
                 /*Do nothing*/
             }
+            /*Inform Protocol layer of the role change*/
+            PRL_UpdateSpecAndDeviceRoles (u8PortNum);
             /* Inform DR_SWAP completion notification*/
             DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_COMPLETED);
             
