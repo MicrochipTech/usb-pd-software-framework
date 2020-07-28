@@ -833,14 +833,6 @@ UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
     return u8RetVal;
 }
 /*******************************************************************************/
-/*****************************DPM API that access Policy Engine************/
-UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum)
-{
-    UINT8 u8HardResetProgressStatus = ((gasPolicyEngine[u8PortNum].u8PEPortSts & \
-                                        PE_HARDRESET_PROGRESS_MASK) >> PE_HARDRESET_PROGRESS_POS);
-    return u8HardResetProgressStatus;
-
-}
 /******************************************************************************/
 
 #if (TRUE == INCLUDE_PD_SINK)
@@ -1452,7 +1444,7 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
         case eDR_SWAP_INITIATE:
         {
             /* Set the timer Id to Max Concurrent Value*/
-            gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+            gasDPM[u8PortNum].u8DRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
             break;
         }
 #endif /*INCLUDE_PD_DR_SWAP*/
