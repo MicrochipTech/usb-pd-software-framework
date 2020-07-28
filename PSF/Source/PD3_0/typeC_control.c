@@ -326,9 +326,11 @@ void TypeC_InitPort (UINT8 u8PortNum)
 	/*Setting VBUS Comparator ON*/
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
     
+#if(TRUE == INCLUDE_PD_DRP)
     /*Disable DRP offload.*/
     UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
-            
+#endif
+    
     /*Setting CC Comparator ON*/
     TypeC_ConfigCCComp (u8PortNum,TYPEC_CC_COMP_CTL_CC1_CC2);
     
