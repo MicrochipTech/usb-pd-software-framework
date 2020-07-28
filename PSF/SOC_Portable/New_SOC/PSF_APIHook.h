@@ -1290,7 +1290,9 @@ typedef enum eMCHP_PSF_GPIO_Functionality
     eORIENTATION_FUNC,             
     eSNK_CAPS_MISMATCH_FUNC,       
     eSNK_1_5A_IND_FUNC,            
-    eSNK_3A_IND_FUNC               
+    eSNK_3A_IND_FUNC,
+    ePOWER_ROLE_FUNC,
+    eDATA_ROLE_FUNC            
 } eMCHP_PSF_GPIO_FUNCTIONALITY;
 
 /**************************************************************************************************
@@ -1543,7 +1545,7 @@ Remarks:
 // *****************************************************************************
 /*******************************************************************************
 Function:
-    MCHP_PSF_HOOK_DRIVE_DAC_I()
+    MCHP_PSF_HOOK_DRIVE_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
 Summary:
     Indicates the implicit/explicit current capability of attached source partner.
 Description:
@@ -1579,13 +1581,16 @@ Description:
 Conditions:
     SoC should support a DAC. And the DAC should be initialized under 
     MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
+Input:
+    u8PortNum   - Port number for which DAC_I needs to be driven
+    u16DACData  - Analog voltage to be driven on DAC_I pin
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)   SAMD20_Drive_DAC_I(u16DACData)
-        void SAMD20_Drive_DAC_I(UINT16 u16DACData);
-        void SAMD20_Drive_DAC_I(UINT16 u16DACData)
+        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)   HW_Drive_DAC_I(u8PortNum, u16DACData)
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData);
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
         {
             //Implement user specific application to output volatge provided under 
             //u16DACData argument in DAC's output pin
@@ -1595,7 +1600,7 @@ Remarks:
     This hook is applicable only if INCLUDE_PD_SINK macro is 1. Definition of this
     hook is not mandatory.
 *******************************************************************************/ 
-#define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData) 
+#define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)  
 
 /*******************************************************************************
 Function:

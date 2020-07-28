@@ -104,7 +104,24 @@ Example:
     #define INCLUDE_PD_SINK	0(Exclude USB PD Sink functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_SINK    	1	
+#define INCLUDE_PD_SINK    		1
+
+/**************************************************************************************************
+Summary:
+    DRP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_DRP as 1 enables PSF to include USB PD DRP functionality at the 
+	compile time. User can set this define to 0 to reduce code size if none of the PD enabled ports 
+	are configured for DRP operation.
+Remarks:
+    Recommended default value is '1' for DRP Application.
+Example:
+    <code>
+    #define INCLUDE_PD_DRP	1(Include USB PD DRP functionality in PSF)
+    #define INCLUDE_PD_DRP	0(Exclude USB PD DRP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_DRP    		1
 
 /**************************************************************************************************
 Summary:
@@ -794,6 +811,8 @@ typedef enum
 																		that power is good and a
                                                                         fault condition does not 
 																		exist.
+    u16SwapPolicy                   2         R/W          R/W       * User can configure this field
+																	    to provide Swap policy of the port                                          
     u8SourcePDOCnt                  1         R/W          R         * Number of Default Source PDOs
 																	    supported.
                                                                       * This variable is applicable 
@@ -1063,9 +1082,13 @@ typedef enum
     Bit     R/W Config   R/W Run   \Description
              time         time      
     ------  -----------  --------  --------------------
-    2:0     RW           R         Port Power Role
-                                    * '000' Sink
-                                    * '001' Source 
+    1:0     RW           R         Port Power Role
+                                    * '00' Sink
+                                    * '01' Source 
+                                    * '10' DRP
+    2       RW           R         Dual Data Role Capability
+                                    * '0' No Dual Role Data
+                                    * '1' Dual Role Data supported
     4:3     RW           R         Rp Selection
                                     * '00' Disabled
                                     * '01' USB Power
@@ -1199,13 +1222,16 @@ typedef enum
     8       R            R         3.0_IND Status  
                                     * '1' Asserted 
                                     * '0' De-asserted
-    9       R            R         PS_RDY Received 
+    9       R            R         Capability Mismatch
                                     * '1' Asserted 
                                     * '0' De-asserted
-    10      R            R         Capability Mismatch  
-                                    * '1' Asserted 
-                                    * '0' De-asserted
-    31:11                          Reserved 
+    10      R            R         Power role  
+                                    * '1' Asserted if Source
+                                    * '0' De-asserted if Sink
+    11      R            R         Data role  
+                                    * '1' Asserted if DFP
+                                    * '0' De-asserted if UFP
+    31:12                          Reserved 
 	</table>
 	
 	<b>d. u32PortStatusChange</b>: 
@@ -1396,6 +1422,42 @@ typedef enum
                                     * '1' Enable. 
 								    This bit is applicable only for source operation. 			
     15:1	                       Reserved 
+    </table>
+    
+    <b>h. u16SwapPolicy</b>: 
+	u16SwapPolicy. 
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R/W          R/W       EN_AUTO_DR_SWAP_REQUEST_DFP
+                                    * '0' Disable Auto Data Role Request When Data Role is DFP
+                                    * '1' Enable Auto Data Role Request when Data Role is DFP 
+    1       R/W          R/W       EN_AUTO_DR_SWAP_REQUEST_UFP
+                                    * '0' Disable Auto Data Role Request When Data Role is UFP
+                                    * '1' Enable Auto Data Role Request when Data Role is UFP
+    2       R/W          R/W       EN_AUTO_DR_SWAP_ACCEPT_DFP
+                                    * '0' Disable Auto Data Role Accept When Data Role is DFP
+                                    * '1' Enable Auto Data Role Accept when Data Role is DFP 
+    3       R/W          R/W       EN_AUTO_DR_SWAP_ACCEPT_UFP
+                                    * '0' Disable Auto Data Role Accept When Data Role is UFP
+                                    * '1' Enable Auto Data Role Accept when Data Role is UFP
+    4       R/W          R/W       EN_AUTO_PR_SWAP_REQUEST_SOURCE
+                                    * '0' Disable Auto Power Role Request When Power Role is Source
+                                    * '1' Enable Auto Power Role Request when Power Role is Source
+    5       R/W          R/W       EN_AUTO_PR_SWAP_REQUEST_SINK
+                                    * '0' Disable Auto Power Role Request When Power Role is Sink
+                                    * '1' Enable Auto Power Role Request when Power Role is Sink
+    6       R/W          R/W       EN_AUTO_PR_SWAP_ACCEPT_SOURCE
+                                    * '0' Disable Auto Power Role Accept When Power Role is Source
+                                    * '1' Enable Auto Power Role Accept when Power Role is Source
+    7       R/W          R/W       EN_AUTO_PR_SWAP_ACCEPT_SINK
+                                    * '0' Disable Auto Power Role Accept When Power Role is Sink
+                                    * '1' Enable Auto Power Role Accept when Power Role is Sink 
+    8:11    R/W          R/W       TODO:J VCONN Swap Definition
+    
+    15:12  						   Reserved 									
+	</table> 
  
   Remarks:
     None                                                                                                                                
@@ -1421,7 +1483,7 @@ typedef struct _PortCfgStatus
     UINT16 u16PortIntrMask;
     UINT16 u16PowerGoodTimerInms;
     UINT16 u16FeatureSelect; 
-    UINT16 u16Reserved1; 
+    UINT16 u16SwapPolicy; 
 	#if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
     UINT16 u16SnkMaxOperatingCurInmA; 
