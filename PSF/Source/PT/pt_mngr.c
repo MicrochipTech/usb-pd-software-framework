@@ -38,7 +38,7 @@ void PT_Init(UINT8 u8PortNum)
 {
     if (TRUE == DPM_IS_PT_ENABLED)
     {
-        gasPTPortParam[u8PortNum].u8PrevPTBank = PD_THROTTLE_BANK_A; 
+        gasPTPortParam[u8PortNum].u8PrevPTBank = DPM_PD_THROTTLE_BANK_A; 
     
         gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_NOT_INITIATED; 
     }
@@ -60,9 +60,9 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
         
         switch(u8CurrPTBank)
         {
-            case PD_THROTTLE_BANK_A:              
-            case PD_THROTTLE_BANK_B:
-            case PD_THROTTLE_BANK_C:
+            case DPM_PD_THROTTLE_BANK_A:              
+            case DPM_PD_THROTTLE_BANK_B:
+            case DPM_PD_THROTTLE_BANK_C:
             {
                 /* Trigger Alert message on bank change with Type of Alert as 
                    Operating Condition Change*/
@@ -71,7 +71,7 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
                 DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT); 
                 #endif 
 
-                if (PD_THROTTLE_SHUTDOWN_MODE == u8PrevPTBank)
+                if (DPM_PD_THROTTLE_SHUTDOWN_MODE == u8PrevPTBank)
                 {
                     /* Enable the Port which would have been previously disabled */
                     DPM_EnablePort(u8PortNum, TRUE); 
@@ -108,7 +108,7 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
                 break; 
             }
             
-            case PD_THROTTLE_SHUTDOWN_MODE:
+            case DPM_PD_THROTTLE_SHUTDOWN_MODE:
             {
                 /* Disable the port so that no further Type-C attach can occur */
                 DPM_EnablePort(u8PortNum, FALSE); 
@@ -130,15 +130,15 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
     UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK;
     UINT16 u16PowerIn250mW = SET_TO_ZERO; 
     
-    if (PD_THROTTLE_BANK_A == u8CurrPTBank)
+    if (DPM_PD_THROTTLE_BANK_A == u8CurrPTBank)
     {
         u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW;
     }
-    else if (PD_THROTTLE_BANK_B == u8CurrPTBank)
+    else if (DPM_PD_THROTTLE_BANK_B == u8CurrPTBank)
     { 
         u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW;
     }
-    else if (PD_THROTTLE_BANK_C == u8CurrPTBank)
+    else if (DPM_PD_THROTTLE_BANK_C == u8CurrPTBank)
     {
         u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW;
     }

@@ -679,12 +679,12 @@ UINT8 DPM_ReturnTemperatureStatus (void)
    3..7   Reserved and Shall be set to zero 
    ---------------------------------------- */
     
-    if (PD_THROTTLE_BANK_A == DPM_GET_CURRENT_PT_BANK)
+    if (DPM_PD_THROTTLE_BANK_A == DPM_GET_CURRENT_PT_BANK)
     {
         u8TempStatus = DPM_TEMP_STATUS_NORMAL; 
     }
-    else if ((PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK) || 
-                        (PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK))
+    else if ((DPM_PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK) || 
+                        (DPM_PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK))
     {
         u8TempStatus = DPM_TEMP_STATUS_WARNING;
     }
@@ -725,8 +725,8 @@ UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
             u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_INSUFF_PWR_AVAIL; 
         }  
 
-        if ((PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK) || 
-                            (PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK))
+        if ((DPM_PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK) || 
+                            (DPM_PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK))
         {
             u8PwrStatus |= DPM_PWRSTS_SRCPWR_LTD_TEMP; 
         }        
