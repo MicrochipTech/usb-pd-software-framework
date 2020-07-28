@@ -1119,9 +1119,13 @@ typedef enum
     Bit     R/W Config   R/W Run   \Description
              time         time      
     ------  -----------  --------  --------------------
-    2:0     RW           R         Port Power Role
-                                    * '000' Sink
-                                    * '001' Source 
+    1:0     RW           R         Port Power Role
+                                    * '00' Sink
+                                    * '01' Source 
+                                    * '10' DRP
+    2       RW           R         Dual Data Role Capability
+                                    * '0' No Dual Role Data
+                                    * '1' Dual Role Data supported
     4:3     RW           R         Rp Selection
                                     * '00' Disabled
                                     * '01' USB Power

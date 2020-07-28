@@ -46,7 +46,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     {
         pasCfgStatusData->sPerPortData[u8PortNum].u32CfgData =       
                 ((CFG_VCONN_OCS_ENABLE) | (CFG_PORT_ENABLE) | (CFG_PORT_RP_CURRENT_VALUE_0)| \
-                (CFG_PORT_POWER_ROLE_0));
+                (CFG_PORT_DUAL_ROLE_DATA_0) | (CFG_PORT_POWER_ROLE_0));
         
         switch(DPM_GET_CONFIGURED_POWER_ROLE(PORT0))
         {
@@ -84,7 +84,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     {
         pasCfgStatusData->sPerPortData[u8PortNum].u32CfgData =       
                 ((CFG_VCONN_OCS_ENABLE) | (CFG_PORT_ENABLE) | (CFG_PORT_RP_CURRENT_VALUE_1)| \
-                (CFG_PORT_POWER_ROLE_1));
+                (CFG_PORT_DUAL_ROLE_DATA_1) | (CFG_PORT_POWER_ROLE_1));
         
         switch(DPM_GET_CONFIGURED_POWER_ROLE(PORT1))
         {
