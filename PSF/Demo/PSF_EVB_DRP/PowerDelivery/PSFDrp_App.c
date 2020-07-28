@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PDDRP_App.c
+    PSFDrp_App.c
 
   Summary:
     User Application Source file

@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PDDrp_BootCfg.c
+    PSFDrp_BootCfg.c
 
   Summary:
     User Configuration Source file

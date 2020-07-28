@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PDDrp_BootCfg.h
+    PSFDrp_BootCfg.h
 
   Description:
     This header file contains user configurable globals and function prototypes.
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PDDRP_BOOTCFG_H    /* Guard against multiple inclusion */
-#define _PDDRP_BOOTCFG_H
+#ifndef _PSFDRP_BOOTCFG_H    /* Guard against multiple inclusion */
+#define _PSFDRP_BOOTCFG_H
 
 #define STRUCT_MAJOR_VERSION    0x01U
 #define STRUCT_MINOR_VERSION    0x00U
@@ -341,7 +341,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 void PSF_LoadConfig(); 
 
-#endif /* _PDDRP_BOOTCFG_H */
+#endif /* _PSFDRP_BOOTCFG_H */
 
 /* *****************************************************************************
  End of File
