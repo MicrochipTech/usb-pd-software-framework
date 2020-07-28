@@ -747,7 +747,8 @@ UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
 void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
 {
     /*Set power role in gasDPM[u8PortNum].u16DPMStatus variable*/
-    DPM_SET_POWER_ROLE_STS(u8PortNum, u8NewPowerRole);
+    gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_POWER_ROLE_MASK);
+    gasDPM[u8PortNum].u16DPMStatus |= (u8NewPowerRole << DPM_CURR_POWER_ROLE_POS);
     
     /* Set Port Power Role in Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
@@ -769,7 +770,8 @@ void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
 void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
 {
     /*Set data role in gasDPM[u8PortNum].u16DPMStatus variable*/
-    DPM_SET_DATA_ROLE_STS(u8PortNum, u8NewDataRole);
+    gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_DATA_ROLE_MASK); 
+    gasDPM[u8PortNum].u16DPMStatus |= (u8NewDataRole << DPM_CURR_DATA_ROLE_POS);
     
     /* Set Port Data Role in Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS_MASK);
@@ -1234,7 +1236,7 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
     }        
 #endif
     /*Evaluate swap and register internal event*/
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITATE))
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
     {
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
     }
@@ -1347,7 +1349,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
                on policy bits */
             break; 
         }
-        case eVCONN_SWAP_INITATE:
+        case eVCONN_SWAP_INITIATE:
         {
             /* Todo: VCONN_Swap module - Do evaluation of initiation of VCONN SWAP*/
             break;
