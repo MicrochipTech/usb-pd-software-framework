@@ -277,6 +277,44 @@ Example:
 **************************************************************************************************/
 #define INCLUDE_PD_SOURCE_PPS           1
 
+/**************************************************************************************************
+Summary:
+    DR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_DR_SWAP as 1 enables PSF to include the Data Role 
+    swap (DR_SWAP) feature at compile time. User can set this define to 0
+    to reduce code size if none of the ports in the system require DR_SWAP
+    functionality.
+Remarks: 
+    Recommended default value is 1. User can configure it based on the
+    application.
+Example:
+    <code>
+    #define INCLUDE_PD_DR_SWAP	1(Include DR_SWAP functionality in PSF)
+    #define INCLUDE_PD_DR_SWAP	0(Exclude DR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_DR_SWAP           1
+
+/**************************************************************************************************
+Summary:
+    PR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_PR_SWAP as 1 enables PSF to include the Power Role 
+    swap (PR_SWAP) feature at compile time. User can set this define to 0
+    to reduce the code size if none of the ports in the system require Power Role
+    Swap functionality.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_PD_PR_SWAP to be 1, 
+    INCLUDE_PD_DRP shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_PR_SWAP	1(Include PR_SWAP functionality in PSF)
+    #define INCLUDE_PD_PR_SWAP	0(Exclude PR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_PR_SWAP      1
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Power Delivery IDs
