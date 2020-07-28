@@ -275,12 +275,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PT_BANK_MASK                    0x06 
 #define DPM_PT_BANK_POS                     1
 #define DPM_GET_CURRENT_PT_BANK             ((gasCfgStatusData.u8PwrThrottleCfg & DPM_PT_BANK_MASK) >> DPM_PT_BANK_POS)
-#define DPM_FIXED_PDO_CURRENT_MASK              0x000003FF 
+
 /* Power Throttling Bank values */
-#define PD_THROTTLE_BANK_A                      0U 
-#define PD_THROTTLE_BANK_B                      1U
-#define PD_THROTTLE_BANK_C                      2U
-#define PD_THROTTLE_SHUTDOWN_MODE               3U
+#define DPM_PD_THROTTLE_BANK_A                      0U 
+#define DPM_PD_THROTTLE_BANK_B                      1U
+#define DPM_PD_THROTTLE_BANK_C                      2U
+#define DPM_PD_THROTTLE_SHUTDOWN_MODE               3U
 
 
 // *****************************************************************************
@@ -299,10 +299,8 @@ Source/Sink Power delivery objects*/
     (((u32PDO >> DPM_PDO_VOLTAGE_POS) & DPM_PDO_VOLTAGE_MASK) * DPM_PDO_VOLTAGE_UNIT)
 
 /*Defines for getting current from PDO[9:0]*/
-#define DPM_PDO_CURRENT_MASK                 0x1FF
+#define DPM_FIXED_PDO_CURRENT_MASK              0x000003FF 
 #define DPM_PDO_CURRENT_UNIT                 10
-#define DPM_GET_CURRENT_FROM_PDO_MILLI_A(u32PDO)   \
-    ((u32PDO & DPM_PDO_CURRENT_MASK) * DPM_PDO_CURRENT_UNIT)
 
 #define DPM_GET_PDO_TYPE(X)   					((X & 0xC0000000) >> 30)
 #define DPM_GET_PDO_CURRENT(X)                  ((X & 0x000003FF))
