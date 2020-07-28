@@ -122,7 +122,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     pasCfgStatusData->sPerPortData[u8PortNum].u8Pio_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_PIO_NO;
     pasCfgStatusData->sPerPortData[u8PortNum].u8Mode_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_MODE;
     
-    pasCfgStatusData->sPerPortData[u8PortNum].u8OCSThresholdPercentage = 0x00;
+    pasCfgStatusData->sPerPortData[u8PortNum].u8OCSThresholdPercentage = SET_TO_ZERO;
     pasCfgStatusData->sPerPortData[u8PortNum].u8FaultInDebounceInms = CFG_FAULT_IN_OCS_DEBOUNCE_MS;
     pasCfgStatusData->sPerPortData[u8PortNum].u8OVThresholdPercentage = CFG_OVER_VOLTAGE_FACTOR;
     pasCfgStatusData->sPerPortData[u8PortNum].u8UVThresholdPercentage = CFG_UNDER_VOLTAGE_FACTOR;
@@ -148,7 +148,7 @@ void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusD
 void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
         /* PDO 1: Fixed PDO with 5V,3A capability */
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[0] = \
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_0] = \
             CFG_FORM_SOURCE_FIXED_PDO1(CFG_PORT_NOTE_SOURCE_PDO_1_VOLTAGE, \
             CFG_PORT_NOTE_SOURCE_PDO_1_CURRENT, CFG_PORT_DUAL_ROLE_DATA, \
             CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
@@ -157,17 +157,17 @@ void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     /* TODO: <PSF Configuration> No need to load these registers since 
             PDO count for Notebook port is 1 */
     /* PDO 2: Fixed PDO with 9V,3A capability */
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[1] = \
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_1] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_NOTE_SOURCE_PDO_2_VOLTAGE, \
             CFG_PORT_NOTE_SOURCE_PDO_2_CURRENT);        
 
     /* PDO 3: Fixed PDO with 15V,3A capability */
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[2] = \
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_2] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_NOTE_SOURCE_PDO_3_VOLTAGE, \
             CFG_PORT_NOTE_SOURCE_PDO_3_CURRENT);     
 
     /* PDO 4: Fixed PDO with 20V,3A capability */
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[3] = \
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_3] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_NOTE_SOURCE_PDO_4_VOLTAGE, \
             CFG_PORT_NOTE_SOURCE_PDO_4_CURRENT);         
 
@@ -206,13 +206,13 @@ void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             CFG_PORT_NOTE_SINK_MIN_OPERATING_CURRENT_InmA;
     
     /*Assigning PDO preferred minimum current for Note type port*/
-    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[0] = \
+    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_0] = \
             CFG_PORT_SINK_PDO_1_PREFERRED_MIN_CURRENT;
-    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[1] = \
+    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_1] = \
             CFG_PORT_SINK_PDO_2_PREFERRED_MIN_CURRENT;
-    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[2] = \
+    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_2] = \
             CFG_PORT_SINK_PDO_3_PREFERRED_MIN_CURRENT;
-    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[3] = \
+    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_3] = \
             CFG_PORT_SINK_PDO_4_PREFERRED_MIN_CURRENT;
     
     pasCfgStatusData->sPerPortData[PORT0].u8Pio_EN_SINK  = (UINT8)CFG_PORT_UPD_EN_SNK;
@@ -235,29 +235,29 @@ void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     /* PDO 1: Fixed PDO with 5V,3A capability */
-    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[0] = \
+    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_0] = \
             CFG_FORM_SOURCE_FIXED_PDO1(CFG_PORT_DOCK_SOURCE_PDO_1_VOLTAGE, \
             CFG_PORT_DOCK_SOURCE_PDO_1_CURRENT, CFG_PORT_DUAL_ROLE_DATA, \
             CFG_PORT_SOURCE_USB_COMM, CFG_PORT_SOURCE_USB_SUSP,  \
             CFG_PORT_SOURCE_UNCONSTARINED_PWR, CFG_PORT_DUAL_ROLE_POWER);    
 
     /* PDO 2: Fixed PDO with 9V,3A capability */
-    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[1] = \
+    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_1] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_DOCK_SOURCE_PDO_2_VOLTAGE, \
             CFG_PORT_DOCK_SOURCE_PDO_2_CURRENT);        
 
     /* PDO 3: Fixed PDO with 15V,3A capability */
-    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[2] = \
+    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_2] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_DOCK_SOURCE_PDO_3_VOLTAGE, \
             CFG_PORT_DOCK_SOURCE_PDO_3_CURRENT);     
 
     /* PDO 4: Fixed PDO with 20V,3A capability */
-    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[3] = \
+    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_3] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_DOCK_SOURCE_PDO_4_VOLTAGE, \
             CFG_PORT_DOCK_SOURCE_PDO_4_CURRENT);         
 
     /* PDO 5: PPS APDO with 3.3V-21V, 3A capability */
-    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[4] = \
+    pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_4] = \
             CFG_FORM_PPS_APDO(CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE, \
             CFG_PORT_SOURCE_APDO_5_MIN_VOLTAGE, CFG_PORT_SOURCE_APDO_5_MAX_VOLTAGE, \
             CFG_PORT_SOURCE_APDO_5_MAX_CURRENT, CFG_PORT_SOURCE_APDO_5_PPS_PWR_LTD);            
@@ -270,21 +270,21 @@ void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 
 void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-    pasCfgStatusData->sPerPortData[PORT1].u32aSinkPDO[0] = 
+    pasCfgStatusData->sPerPortData[PORT1].u32aSinkPDO[INDEX_0] = 
             CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_DOCK_SINK_PDO_1_CURRENT, \
             CFG_PORT_DOCK_SINK_PDO_1_VOLTAGE, CFG_PORT_DUAL_ROLE_DATA, \
             CFG_PORT_SINK_USB_COMM, CFG_PORT_SINK_UNCONSTRAINED_PWR, \
             CFG_PORT_SINK_HIGHER_CAPABILITY, CFG_PORT_DUAL_ROLE_POWER);    
 
-    pasCfgStatusData->sPerPortData[PORT1].u32aSinkPDO[1] = \
+    pasCfgStatusData->sPerPortData[PORT1].u32aSinkPDO[INDEX_1] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_DOCK_SINK_PDO_2_VOLTAGE, \
             CFG_PORT_DOCK_SINK_PDO_2_CURRENT);        
 
-    pasCfgStatusData->sPerPortData[PORT1].u32aSinkPDO[2] = \
+    pasCfgStatusData->sPerPortData[PORT1].u32aSinkPDO[INDEX_2] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_DOCK_SINK_PDO_3_VOLTAGE, \
             CFG_PORT_DOCK_SINK_PDO_3_CURRENT);     
 
-    pasCfgStatusData->sPerPortData[PORT1].u32aSinkPDO[3] = \
+    pasCfgStatusData->sPerPortData[PORT1].u32aSinkPDO[INDEX_3] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_DOCK_SINK_PDO_4_VOLTAGE, \
             CFG_PORT_DOCK_SINK_PDO_4_CURRENT);         \
 
@@ -313,7 +313,7 @@ void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 /* ************************************************************************** */
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-    UINT8 u8PortNum = 0;
+    UINT8 u8PortNum = SET_TO_ZERO;
     
     pasCfgStatusData->u16ProducdID = PRODUCT_ID;
     pasCfgStatusData->u16VendorID = VENDOR_ID;
@@ -338,7 +338,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->u16MinPowerBankCIn250mW = CFG_PB_MIN_POWER_BANKC;
 #endif     
     
-    for (u8PortNum = 0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+    for (u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         CFG_PerPortParams (u8PortNum, pasCfgStatusData);  
         CFG_PBPerPortParams (u8PortNum, pasCfgStatusData);
