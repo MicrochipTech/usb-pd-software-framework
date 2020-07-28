@@ -34,85 +34,32 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 void DPM_Init(UINT8 u8PortNum)
 {
-    UINT8 u16DPMStatus = gasDPM[u8PortNum].u16DPMStatus;
-    UINT8 u8DPMConfigData = gasDPM[u8PortNum].u8DPMConfigData;
+    UINT8 u8CfgPowerRole = DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum);
+    UINT8 u8DataRole = 0;
+
+    gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
+    gasDPM[u8PortNum].u8DPMConfigData |= (CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS);
     
-    u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
-    u8DPMConfigData |= (CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS);
-        
-    if(PD_ROLE_SOURCE == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
+    if(PD_ROLE_SOURCE == u8CfgPowerRole)
     {   
-        /* Set Port Power Role as Source in DPM Configure variable*/
-        u8DPMConfigData |= (PD_ROLE_SOURCE << DPM_DEFAULT_POWER_ROLE_POS); 
-        
-        /* Set Port Data Role as DFP in DPM Configure variable*/
-        u8DPMConfigData |= (PD_ROLE_DFP << DPM_DEFAULT_DATA_ROLE_POS);
-        
-        /* Set Port Power Role as Source in DPM Status variable */
-        u16DPMStatus |= (PD_ROLE_SOURCE << DPM_CURR_POWER_ROLE_POS);
-        
-        /* Set Port Data Role as DFP in DPM Status variable */
-        u16DPMStatus |= (PD_ROLE_DFP << DPM_CURR_DATA_ROLE_POS);
-        
-        /* Set Port Power Role as Source in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SOURCE; 
-        
-        /* Set Port Data Role as DFP in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_DATA_ROLE_STATUS_MASK);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS_DFP; 
+        u8DataRole = PD_ROLE_DFP;
     }       
-    else if(PD_ROLE_SINK == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
+    else if(PD_ROLE_SINK == u8CfgPowerRole)
     {
-        /* Set the Default Port Power Role as Sink in DPM Status variable */
-        u8DPMConfigData |= (PD_ROLE_SINK << DPM_DEFAULT_POWER_ROLE_POS);
-        
-        /* Set the Default Port Data Role as UFP in DPM Status variable */
-        u8DPMConfigData |= (PD_ROLE_UFP << DPM_DEFAULT_DATA_ROLE_POS);
-        
-        /* Set the Current Port Power Role as Sink in DPM Status variable */
-        u16DPMStatus |= (PD_ROLE_SINK << DPM_CURR_POWER_ROLE_POS);
-        
-        /* Set the Current  Port Data Role as UFP in DPM Status variable */
-        u16DPMStatus |= (PD_ROLE_UFP << DPM_CURR_DATA_ROLE_POS);
-        
-        /* Set Port Power Role as Sink in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_SINK; 
-        
-        /* Set Port Data Role as UFP in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_DATA_ROLE_STATUS_MASK);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS_UFP;        
-        
-        
-        gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+        u8DataRole = PD_ROLE_UFP;
+        gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;        
     }
     else
     {
 #if(TRUE == INCLUDE_PD_DRP)
-        /* Set Port Power Role as Source in DPM Configure variable*/
-        u8DPMConfigData |= (PD_ROLE_DRP << DPM_DEFAULT_POWER_ROLE_POS); 
-        
-        /* Set Port Power Role as Source in DPM Status variable */
-        u16DPMStatus |= (PD_ROLE_DRP << DPM_CURR_POWER_ROLE_POS);
-        
-        /* Set Port Data Role as DFP in DPM Status variable */
-        u16DPMStatus |= (PD_ROLE_TOGGLING << DPM_CURR_DATA_ROLE_POS);
-        
-        /* Set Port Power Role as Source in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_POWER_ROLE_STATUS_MASK);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_POWER_ROLE_STATUS_DRP; 
-        
-        /* Set Port Data Role as DFP in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= (~DPM_PORT_DATA_ROLE_STATUS_MASK);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_DATA_ROLE_STATUS_TOGGLING;
+        u8DataRole = PD_ROLE_TOGGLING;
         
         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
 #endif
     }
     
-    gasDPM[u8PortNum].u16DPMStatus =  u16DPMStatus;
-    gasDPM[u8PortNum].u8DPMConfigData  = u8DPMConfigData;
+    DPM_UpdateDataRole(u8PortNum, u8DataRole);
+    DPM_UpdatePowerRole(u8PortNum, u8CfgPowerRole); 
 	
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
@@ -123,10 +70,7 @@ void DPM_Init(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8VCONNGoodtoSupply = TRUE;
     gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
     gasDPM[u8PortNum].u8VCONNPowerFaultCount = SET_TO_ZERO;
-
 #endif
-	
-    
 }
 /********************************************************************************************/
 
