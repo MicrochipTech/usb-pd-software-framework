@@ -170,8 +170,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*******************************************************************************/
 /*Defines used with gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/
 /*Defines to get Power role*/
-#define DPM_CFG_POWER_ROLE_MASK             (BIT(2) | BIT(1) | BIT(0))
+#define DPM_CFG_POWER_ROLE_MASK             (BIT(1) | BIT(0))
 #define DPM_CFG_POWER_ROLE_POS              0
+
+#define DPM_CFG_DUAL_ROLE_DATA_POS          2
+#define DPM_CFG_DUAL_ROLE_DATA              (1 << DPM_CFG_DUAL_ROLE_DATA_POS)
 
 /*Defines to get Rp Current*/ 
 #define DPM_CFG_RPVAL_MASK                  (BIT(4) | BIT(3))
