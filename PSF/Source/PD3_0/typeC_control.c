@@ -1714,7 +1714,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             {
 				/* Verifies whether VBUS Drop is due to Source detach*/
 	            if((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) &&
-	                  (!DPM_IsHardResetInProgress(u8PortNum)) && 
+	                  (!DPM_IS_HARDRESET_IN_PROGRESS(u8PortNum)) && 
                       (FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum))) 
 	            {
 	                /*Setting the flag that VBUS has gone below VSinkDisconnect*/
@@ -1736,7 +1736,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             {
                 /* Verifies whether VBUS Drop is due to Source detach*/
                 if((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) &&
-                      (!DPM_IsHardResetInProgress(u8PortNum)))                       
+                      (!DPM_IS_HARDRESET_IN_PROGRESS(u8PortNum)))                       
                 {                                                              
                     if (FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum))
                     {

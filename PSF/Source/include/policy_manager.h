@@ -190,6 +190,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CFG_VCONN_OCS_ENABLE               (1 << DPM_CFG_VCONN_OCS_EN_POS)
 /*******************************************************************************/
 
+/*Defines to get hardreset status*/
+#define DPM_IS_HARDRESET_IN_PROGRESS(u8PortNum)    \
+((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_HARDRESET_PROGRESS_MASK) >> \
+    PE_HARDRESET_PROGRESS_POS)
 // *****************************************************************************
 // *****************************************************************************
 // Section: Defines to get data from given PDO
@@ -571,8 +575,13 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         //      01 - Variable
                                         //      10 - Battery
                                         //      11 - Programmable
-  UINT8 u8DPMInternalEvents; // BIT(0) - DPM_INT_EVT_INITIATE_ALERT
-                             // BIT(1) - DPM_INT_EVT_INITIATE_GET_STATUS
+  UINT8 u8DPMInternalEvents;        //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
+                                    //DPM_INT_EVT_INITIATE_RENOGIATION    BIT(1)
+                                    //DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
+                                    //DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
+                                    //DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
+                                    //DPM_INT_EVT_INITIATE_ALERT          BIT(5)
+                                    //DPM_INT_EVT_INITIATE_GET_STATUS     BIT(6)
   UINT8 u8DPMConfigData;   //Bit 0 - Default Port Role <p />
                             //Bit 1 - Default Data Role <p />
                             //Bit 3:2 - Default PD Spec Revision <p />
@@ -1201,29 +1210,6 @@ void DPM_VCONNOFFError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
         None.
 **************************************************************************************************/
 void DPM_ResetVCONNErrorCnt (UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
-        void DPM_IsHardResetInProgress (UINT8 u8PortNum);
-    Summary:
-        This API is used to Identify the Status of HardReset Progress.
-    Devices Supported:
-        UPD350 REV A
-    Description:
-        This API is used to Identify the current Status of HardReset Progress.       
-    Conditions:
-        None
-    Input:
-        u8PortNum       - Port Number.
-    Return:
-        0 - Hard Reset Not in Progress
-        1 - Hard Reset is in Progress
-    Remarks:
-        None.
-
-**************************************************************************************************/
-UINT8 DPM_IsHardResetInProgress(UINT8 u8PortNum);
-
 /**************************************************************************************************
     Function:
         void DPM_StateMachineInit();
