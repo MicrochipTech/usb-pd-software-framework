@@ -73,7 +73,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*************************************************************************************************/
 
 /*************************************************************************************************/
-/*Defines for getting port role configured to a port from 
+/*Defines for getting data configured to a port from 
   gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/
 
 /*DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum) will return one of the following values
