@@ -179,20 +179,20 @@ void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 
 void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[0] = \
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_0] = \
                    CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_NOTE_SINK_PDO_1_CURRENT, \
                    CFG_PORT_NOTE_SINK_PDO_1_VOLTAGE, CFG_PORT_DUAL_ROLE_DATA, CFG_PORT_SINK_USB_COMM, \
                    CFG_PORT_SINK_UNCONSTRAINED_PWR,CFG_PORT_SINK_HIGHER_CAPABILITY, CFG_PORT_DUAL_ROLE_POWER);    
 
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[1] = \
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_1] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_NOTE_SINK_PDO_2_VOLTAGE, \
             CFG_PORT_NOTE_SINK_PDO_2_CURRENT);        
 
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[2] = \
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_2] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_NOTE_SINK_PDO_3_VOLTAGE, \
             CFG_PORT_NOTE_SINK_PDO_3_CURRENT);     
 
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[3] = \
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_3] = \
             CFG_FORM_FIXED_PDOx(CFG_PORT_NOTE_SINK_PDO_4_VOLTAGE, \
             CFG_PORT_NOTE_SINK_PDO_4_CURRENT);         
 

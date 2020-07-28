@@ -73,7 +73,7 @@ void PE_FwUpdtInitialize(void)
     gsPdfuInfo.u16PDFUResponseLength = SET_TO_ZERO;
     gsPdfuInfo.u8TransferPhaseComplete = PE_FWUP_TRANSFER_PHASE_NOTSTARTED;
     gsPdfuInfo.u16ExptDataBlockIdx = SET_TO_ZERO;
-    gsPdfuInfo.pu8ResponseBuffer = &gu8PDFUResBuffer[0];
+    gsPdfuInfo.pu8ResponseBuffer = &gu8PDFUResBuffer[INDEX_0];
 }
 
 /**************************************************************************************************
