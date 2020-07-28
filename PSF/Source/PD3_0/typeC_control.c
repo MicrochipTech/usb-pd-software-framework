@@ -411,9 +411,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_UNATTACHED_SRC_ENTRY_SS:
                 {     
-                    /* Notify external DPM of Type C Detach event through a user defined call back*/
-                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
-                     
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
                      
@@ -479,6 +476,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;                    
                     }
                    
+                    /* Notify external DPM of Type C Detach event through a user defined call back*/
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
+                    
                     break;
                 }
 				
@@ -949,9 +949,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &=\
                                 ~(DPM_PORT_RP_VAL_DETECT_MASK_STATUS);
                     
-                    /*Notify external DPM of Type Detach event through a user defined call back*/
-                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
-
 #if(TRUE == INCLUDE_PD_DRP)
                     if((PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState) \
                             && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
@@ -979,6 +976,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK: Entered"\
                                         "UNATTACHED SNK State\r\n");
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_VSAFE0V_WAIT_SS;
+                    
+                    /*Notify external DPM of Type Detach event through a user defined call back*/
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
+                    
                     break;
                 }
                 
