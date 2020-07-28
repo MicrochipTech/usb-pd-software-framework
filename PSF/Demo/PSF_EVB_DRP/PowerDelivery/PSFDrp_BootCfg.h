@@ -33,6 +33,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSFDRP_BOOTCFG_H    /* Guard against multiple inclusion */
 #define _PSFDRP_BOOTCFG_H
 
+/*********************************Common Configuration*****************************************/
 #define STRUCT_MAJOR_VERSION    0x01U
 #define STRUCT_MINOR_VERSION    0x00U
 #define PRODUCT_ID              0x301CU
@@ -44,21 +45,55 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define HW_VERSION              0x00U
 #define SILICON_VERSION         0x00U
 
-/**************************Defines for power roles*****************************/
-#define CFG_PORT_POWER_ROLE_SINK        0U
-#define CFG_PORT_POWER_ROLE_SOURCE      1U
-#define CFG_PORT_POWER_ROLE_DRP         2U
+/***********************************Port Specific configuration***********************/    
+/*Configuration value for u32CfgData*/
+/*Power Role values 0 - Sink, 1- Source, 2- DRP*/
+#define CFG_PORT_POWER_ROLE_0                2
+#define CFG_PORT_POWER_ROLE_1                2
+/*Data Role Values 0- Todo*/
+#define CFG_PORT_DUAL_ROLE_DATA_0            (1U << 2)
+#define CFG_PORT_DUAL_ROLE_DATA_1            (1U << 2)
+/*Rp Value */
+#define CFG_PORT_RP_CURRENT_VALUE_0          (3U << 3)
+#define CFG_PORT_RP_CURRENT_VALUE_1          (3U << 3)
+/*Port Enable*/
+#define CFG_PORT_ENABLE                      (1U << 5)
 
-#define CFG_PORT_POWER_ROLE_0                CFG_PORT_POWER_ROLE_DRP
-#define CFG_PORT_POWER_ROLE_1                CFG_PORT_POWER_ROLE_DRP
-#define CFG_PORT_DUAL_ROLE_DATA_POS          2U
-#define CFG_PORT_DUAL_ROLE_DATA_0            (1 << CFG_PORT_DUAL_ROLE_DATA_POS)
-#define CFG_PORT_DUAL_ROLE_DATA_1            (1 << CFG_PORT_DUAL_ROLE_DATA_POS)
-#define CFG_PORT_RPVAL_POS                   3U
-#define CFG_PORT_ENDIS_POS                   5U
-#define CFG_PORT_RP_CURRENT_VALUE_0          (3U << CFG_PORT_RPVAL_POS)
-#define CFG_PORT_RP_CURRENT_VALUE_1          (3U << CFG_PORT_RPVAL_POS)
-#define CFG_PORT_ENABLE                      (1U << CFG_PORT_ENDIS_POS)
+
+/*****************Defines to form PDOs ****************************************/
+/* Macro used to form Fixed PDO 1 */
+#define CFG_FORM_SOURCE_FIXED_PDO1(voltage,current,DualRoleData,usbCommn,usbSusp,unconstrainedPwr,isDrp) \
+    (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
+    ((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
+    ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
+    ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
+    ((DualRoleData) << CFG_PDO_DUAL_ROLE_DATA_POS) |\
+    (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+    ((current)/CFG_PDO_CURRENT_UNIT))            
+
+/* Macro used to form Sink Fixed PDO 1 */
+#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,DualRoleData,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
+    (((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
+    (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS)) | \
+    ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
+    ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
+    ((DualRoleData) << CFG_PDO_DUAL_ROLE_DATA_POS) |\
+    (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+    ((current)/CFG_PDO_CURRENT_UNIT))  
+
+/* Macro used to form Fixed PDOs 2 to 7 */
+#define CFG_FORM_FIXED_PDOx(voltage,current)   \
+    ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
+    ((current)/CFG_PDO_CURRENT_UNIT))
+
+/* Macro used to form PPS APDO */
+#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) \
+    << CFG_APDO_PWR_SUPPLY_TYPE_POS) | ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
+    (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
+    (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
+    (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
+
+
 
 /* DRP configuration default number of Source PDOs for Notebook port */
 #define CFG_PORT_NOTE_SOURCE_NUM_OF_PDOS      1U
@@ -306,38 +341,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_APDO_MAX_VOLTAGE_UNIT              100U
 #define CFG_APDO_MAX_CURRENT_UNIT              50U
 
-/* Macro used to form PPS APDO */
-#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) \
-    << CFG_APDO_PWR_SUPPLY_TYPE_POS) | ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
-    (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
-    (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
-    (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
-
-/* Macro used to form Fixed PDO 1 */
-
-#define CFG_FORM_SOURCE_FIXED_PDO1(voltage,current,DualRoleData,usbCommn,usbSusp,unconstrainedPwr,isDrp) \
-    (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
-    ((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
-    ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
-    ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
-    ((DualRoleData) << CFG_PDO_DUAL_ROLE_DATA_POS) |\
-    (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-    ((current)/CFG_PDO_CURRENT_UNIT))            
-
-/* Macro used to form Sink Fixed PDO 1 */
-#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,DualRoleData,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
-    (((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
-    (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS)) | \
-    ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
-    ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
-    ((DualRoleData) << CFG_PDO_DUAL_ROLE_DATA_POS) |\
-    (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-    ((current)/CFG_PDO_CURRENT_UNIT))  
-
-/* Macro used to form Fixed PDOs 2 to 7 */
-#define CFG_FORM_FIXED_PDOx(voltage,current)   \
-    ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-    ((current)/CFG_PDO_CURRENT_UNIT))
 
 void PSF_LoadConfig(); 
 
