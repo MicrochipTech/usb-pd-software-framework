@@ -373,12 +373,12 @@ void PE_FwUpdtTxDoneCallBack(
   
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
-        if (u8TxDoneSubState == (UINT8)ePE_SRC_READY_END_AMS_SS)
+        if ((UINT8)ePE_SRC_READY_END_AMS_SS == u8TxDoneSubState)
             PE_FwUpdtInitialize();
     }
     else
     {
-        if (u8TxDoneSubState == (UINT8)ePE_SNK_READY_IDLE_SS)
+        if ((UINT8)ePE_SNK_READY_IDLE_SS == u8TxDoneSubState)
             PE_FwUpdtInitialize();
     }
 
