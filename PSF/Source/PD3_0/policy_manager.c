@@ -100,12 +100,6 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
         PE_SendHardResetMsg(u8PortNum);    
     }    
 }
-
-void DPM_ResetVCONNErrorCnt (UINT8 u8PortNum)
-{  
-    gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;  
-}
-
 /****************************** DPM APIs Accessing Type C Port Control Module*********************/
 void DPM_GetTypeCStates(UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSubState)
 {
@@ -131,6 +125,23 @@ void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable)
         /*Disable VCONN by switching off the VCONN FETS*/
         TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);     
     }
+}
+void DPM_ResetVCONNErrorCnt (UINT8 u8PortNum)
+{  
+    gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;  
+}
+UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum)
+{ 
+    UINT8 u8IsVCONNSrc;
+    if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)
+    {
+        u8IsVCONNSrc = TRUE;
+    }
+    else
+    {
+        u8IsVCONNSrc = FALSE;
+    }
+    return u8IsVCONNSrc;
 }
 /*******************************************************************************/
 
@@ -208,18 +219,114 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
 void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 {	
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-
-    UINT16 u16VoltageInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV;
-    UINT16 u16CurrentInmA = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA; 
     /* set the threshold to detect fault*/
-    TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_PWR_FAULT_THR);
+    TypeC_ConfigureVBUSThr(u8PortNum,
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV,
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA,
+            TYPEC_CONFIG_PWR_FAULT_THR);
     
 #endif
 }
 /*******************************************************************************/
-#if (TRUE == INCLUDE_PD_SOURCE)
+/***********DPM APIs to set power and data roles in status variables************/
+/*********************************************************************************/
+void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
+{
+    /*Set power role in gasDPM[u8PortNum].u16DPMStatus variable*/
+    gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_POWER_ROLE_MASK);
+    gasDPM[u8PortNum].u16DPMStatus |= (u8NewPowerRole << DPM_CURR_POWER_ROLE_POS);
+    
+    /* Set Port Power Role in Port Connection Status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8NewPowerRole << DPM_PORT_POWER_ROLE_STATUS_POS); 
 
+    /*Set power role in Port X IO Status register*/
+    if(PD_ROLE_SOURCE == u8NewPowerRole)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_POWER_ROLE_STATUS);
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, ePOWER_ROLE_FUNC, eGPIO_ASSERT);
+    }
+    else
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_POWER_ROLE_STATUS);        
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, ePOWER_ROLE_FUNC, eGPIO_DEASSERT);
+    }
+}
+
+void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
+{
+    /*Set data role in gasDPM[u8PortNum].u16DPMStatus variable*/
+    gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_DATA_ROLE_MASK); 
+    gasDPM[u8PortNum].u16DPMStatus |= (u8NewDataRole << DPM_CURR_DATA_ROLE_POS);
+    
+    /* Set Port Data Role in Port Connection Status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS_MASK);
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8NewDataRole << DPM_PORT_DATA_ROLE_STATUS_POS); 
+
+    if(PD_ROLE_DFP == u8NewDataRole)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_DATA_ROLE_STATUS);
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDATA_ROLE_FUNC, eGPIO_ASSERT);
+    }
+    else
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_DATA_ROLE_STATUS);   
+        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDATA_ROLE_FUNC, eGPIO_DEASSERT);
+    }
+}
+/**************************************************************************************************/
+/*********************************DPM VDM Cable APIs**************************************/
+/**************************************************************************************************/
+UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
+{
+    UINT32 u32ProductTypeVDO;
+    UINT8 u8RetVal = FALSE;
+    UINT8 u8CurVal;
+    
+    /* Get the CMD type from received VDM */
+    u8RetVal = DPM_VDM_GET_CMD_TYPE(u32DataBuf[DPM_VDM_HEADER_POS]);
+    
+    /* if Data object is one, received message is NAK */
+    if((PE_VDM_NAK == u8RetVal) || (PE_VDM_BUSY == u8RetVal))
+    {
+        u8RetVal = PE_VDM_NAK;
+    }
+    else
+    {
+        /* Get the product VDO from the received message */
+        u32ProductTypeVDO = u32DataBuf[DPM_VMD_PRODUCT_TYPE_VDO_POS];               
+       
+        /* Get the Cable supported current value */
+        u8CurVal = DPM_GET_CABLE_CUR_VAL(u32ProductTypeVDO);
+        
+        /* Setting E-Cable Max Current Value */
+        if(DPM_CABLE_CURR_3A == u8CurVal)
+        {
+            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_CABLE_CURR_3A_UNIT;
+        }
+        
+        else if(DPM_CABLE_CURR_5A == u8CurVal)
+        {
+            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_CABLE_CURR_5A_UNIT;
+        }
+        
+        else
+        {
+           /* Do nothing */ 
+        }
+        
+        /* Received message is ACK */
+        u8RetVal = PE_VDM_ACK;
+    }
+    
+    return u8RetVal;
+}
+/*******************************************************************************/
+
+/*******************************************************************************************/
+#if (TRUE == INCLUDE_PD_SOURCE)
 /****************************** DPM Source related APIs*****************************************/
+/***********************************************************************************************/
 /* Validate the received Request message */
 UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 {
@@ -730,102 +837,10 @@ UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
 #endif /*INCLUDE_PD_SOURCE_PPS*/ 
 #endif /*INCLUDE_PD_SOURCE*/  
 
-/***********DPM APIs to set power and data roles in status variables************/
-void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
-{
-    /*Set power role in gasDPM[u8PortNum].u16DPMStatus variable*/
-    gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_POWER_ROLE_MASK);
-    gasDPM[u8PortNum].u16DPMStatus |= (u8NewPowerRole << DPM_CURR_POWER_ROLE_POS);
-    
-    /* Set Port Power Role in Port Connection Status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8NewPowerRole << DPM_PORT_POWER_ROLE_STATUS_POS); 
-
-    /*Set power role in Port X IO Status register*/
-    if(PD_ROLE_SOURCE == u8NewPowerRole)
-    {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_POWER_ROLE_STATUS);
-        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, ePOWER_ROLE_FUNC, eGPIO_ASSERT);
-    }
-    else
-    {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_POWER_ROLE_STATUS);        
-        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, ePOWER_ROLE_FUNC, eGPIO_DEASSERT);
-    }
-}
-
-void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
-{
-    /*Set data role in gasDPM[u8PortNum].u16DPMStatus variable*/
-    gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_DATA_ROLE_MASK); 
-    gasDPM[u8PortNum].u16DPMStatus |= (u8NewDataRole << DPM_CURR_DATA_ROLE_POS);
-    
-    /* Set Port Data Role in Port Connection Status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS_MASK);
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8NewDataRole << DPM_PORT_DATA_ROLE_STATUS_POS); 
-
-    if(PD_ROLE_DFP == u8NewDataRole)
-    {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_DATA_ROLE_STATUS);
-        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDATA_ROLE_FUNC, eGPIO_ASSERT);
-    }
-    else
-    {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_DATA_ROLE_STATUS);   
-        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDATA_ROLE_FUNC, eGPIO_DEASSERT);
-    }
-}
-
-/*********************************DPM VDM Cable APIs**************************************/
-UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
-{
-    UINT32 u32ProductTypeVDO;
-    UINT8 u8RetVal = FALSE;
-    UINT8 u8CurVal;
-    
-    /* Get the CMD type from received VDM */
-    u8RetVal = DPM_VDM_GET_CMD_TYPE(u32DataBuf[DPM_VDM_HEADER_POS]);
-    
-    /* if Data object is one, received message is NAK */
-    if((PE_VDM_NAK == u8RetVal) || (PE_VDM_BUSY == u8RetVal))
-    {
-        u8RetVal = PE_VDM_NAK;
-    }
-    else
-    {
-        /* Get the product VDO from the received message */
-        u32ProductTypeVDO = u32DataBuf[DPM_VMD_PRODUCT_TYPE_VDO_POS];               
-       
-        /* Get the Cable supported current value */
-        u8CurVal = DPM_GET_CABLE_CUR_VAL(u32ProductTypeVDO);
-        
-        /* Setting E-Cable Max Current Value */
-        if(DPM_CABLE_CURR_3A == u8CurVal)
-        {
-            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_CABLE_CURR_3A_UNIT;
-        }
-        
-        else if(DPM_CABLE_CURR_5A == u8CurVal)
-        {
-            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_CABLE_CURR_5A_UNIT;
-        }
-        
-        else
-        {
-           /* Do nothing */ 
-        }
-        
-        /* Received message is ACK */
-        u8RetVal = PE_VDM_ACK;
-    }
-    
-    return u8RetVal;
-}
-/*******************************************************************************/
 /******************************************************************************/
-
 #if (TRUE == INCLUDE_PD_SINK)
 /****************************** DPM Sink related APIs*****************************************/
+/**************************************************************************************************/
 void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
 {   
     /* Get Sink Capability from Port Configuration Data Structure */
@@ -1116,21 +1131,6 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
 }
 #endif
 
-/********************************VCONN Related APIs**********************************************/
-UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum)
-{ 
-    UINT8 u8IsVCONNSrc;
-    if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)
-    {
-        u8IsVCONNSrc = TRUE;
-    }
-    else
-    {
-        u8IsVCONNSrc = FALSE;
-    }
-    return u8IsVCONNSrc;
-}
-
 /************************  DPM Renegotiation APIs **********************/
 #if (TRUE == INCLUDE_POWER_THROTTLING || (TRUE == INCLUDE_POWER_BALANCING))
 
@@ -1155,13 +1155,15 @@ void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
         
         /* Load the New PDO registers with the new PDO values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8Index] = \
-                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index] & ~(DPM_FIXED_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
+                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index] & ~(DPM_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
 
     }
 }
 
 #endif 
-
+/*********************************************************************************/
+/***************DPM Common APIs***************************************************/
+/*******************************************************************************/
 /********************* DPM API for Port Enable/Disable ******************/
 void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 {

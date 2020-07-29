@@ -3237,7 +3237,7 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     
     if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
     {   
-        gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;
+        DPM_ResetVCONNErrorCnt(u8PortNum);
         
         /*Disable VBUS by driving to vSafe0V*/
         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
