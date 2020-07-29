@@ -324,8 +324,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         if(PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
         {
 			/* Set it to Type C Error Recovery */
-            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
-            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
+            DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
             
             gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_TYPEC_ERR_RECOVERY_FLAG_MASK;
 						
@@ -346,15 +345,12 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {			
 					/* Assign an idle state wait for detach*/
-                    gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
-        
+                    DPM_SetTypeCState(u8PortNum, TYPEC_ATTACHED_SRC, TYPEC_ATTACHED_SRC_IDLE_SS);
                 }
                 else
                 { 
 					/* Assign an idle state wait for detach*/
-                    gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SNK;
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
+                    DPM_SetTypeCState(u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_IDLE_SS);
                 }
 
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state");

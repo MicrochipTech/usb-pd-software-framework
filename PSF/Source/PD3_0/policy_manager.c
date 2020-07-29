@@ -34,10 +34,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*************************************VBUS & VCONN on/off Timer APIS*********************************/
 void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
-{   
-    gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
-    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
-    
+{
+    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+   
     gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
     gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
     
@@ -1170,9 +1169,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
     {
         /* Disable the port by changing Type C states to 
            TYPEC_DISABLED and TYPEC_DISABLED_ENTRY_SS */
-        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
-        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS;
-
+        DPM_SetTypeCState(u8PortNum, TYPEC_DISABLED, TYPEC_DISABLED_ENTRY_SS);
         /* Change Policy Engine state and sub-state to invalid state */
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
@@ -1189,18 +1186,15 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
                in case of Sink */
             if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
-                gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
-                gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;        
+                DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SRC, TYPEC_UNATTACHED_SRC_ENTRY_SS);       
             }
             else if (PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
-                gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
-                gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
+                DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SNK, TYPEC_UNATTACHED_SNK_ENTRY_SS);       
             }
             else /*Power role is DRP*/
             {
-                gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
-                gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS;  
+                DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SRC, TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS);       
             }
         }
         else
