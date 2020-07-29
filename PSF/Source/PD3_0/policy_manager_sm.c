@@ -44,20 +44,18 @@ void DPM_Init(UINT8 u8PortNum)
     else if(PD_ROLE_SINK == u8CfgPowerRole)
     {
         u8DataRole = PD_ROLE_UFP;
-        gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;        
     }
     else
     {
 #if(TRUE == INCLUDE_PD_DRP)
         u8DataRole = PD_ROLE_TOGGLING;
-        
-        gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
 #endif
     }
     
     DPM_UpdateDataRole(u8PortNum, u8DataRole);
     DPM_UpdatePowerRole(u8PortNum, u8CfgPowerRole); 
-	
+    gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;        
+
     /*Update PD spec revision, power and data roles in u8DPMConfigData*/
 	gasDPM[u8PortNum].u8DPMConfigData |= ((CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS)\
             | (u8CfgPowerRole << DPM_DEFAULT_POWER_ROLE_POS) \
