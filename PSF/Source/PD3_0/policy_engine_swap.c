@@ -423,7 +423,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        power module to reach vSafe0V*/
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
-                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS;                    

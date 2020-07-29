@@ -407,7 +407,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                          /* Start tSrcReady timer */
                         gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (PE_SRC_READY_TIMEOUT_MS),
-                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;  
                         /* Hook to notify PE state machine entry into idle substate */
@@ -837,7 +837,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     power module to reach Vsafe0V*/
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
-                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_VSAFE0V_SS;
@@ -860,7 +860,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         VCONN Turn OFF error*/
                         gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                                   PE_VCONNOFF_TIMEOUT_MS,\
-                                                                  DPM_VCONNOFFError_TimerCB,\
+                                                                  DPM_VBUSorVCONNOnOff_TimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO);
                         /* Hook to notify PE state machine entry into idle substate */
@@ -937,7 +937,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     power module to reach Vsafe5V*/
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_ON_TIMER_MS),
-                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                     /* Hook to notify PE state machine entry into idle substate */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);

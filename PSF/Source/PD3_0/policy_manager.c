@@ -33,7 +33,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <psf_stdinc.h>
 
 /*************************************VBUS & VCONN on/off Timer APIS*********************************/
-void DPM_VBUSOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {   
     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
@@ -53,7 +53,7 @@ void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     
     else
     {
-        DPM_VBUSOnOff_TimerCB ( u8PortNum, u8DummyVariable);
+        DPM_VBUSorVCONNOnOff_TimerCB ( u8PortNum, u8DummyVariable);
     }
     
     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
@@ -100,18 +100,6 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
         gasDPM[u8PortNum].u8VCONNErrCounter++;    
         PE_SendHardResetMsg(u8PortNum);    
     }    
-}
-
-void DPM_VCONNOFFError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
-{  
-    /*Set it to Type C Error Recovery */
-    gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
-    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
-    
-    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-    /* Assign an idle state wait for detach*/
-    gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-  
 }
 
 void DPM_ResetVCONNErrorCnt (UINT8 u8PortNum)
