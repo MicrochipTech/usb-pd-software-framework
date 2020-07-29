@@ -367,6 +367,16 @@ Source/Sink Power delivery objects*/
 
 /* vPpsSmallStep of USB PD Spec 3.0 */
 #define DPM_PPS_VOLTAGE_SMALL_STEP               500
+
+/***************************PPS status Data block *********************/
+#define DPM_PPSSDB_OUTPUT_VOLTAGE_FIELD_POS       0
+#define DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS       16
+#define DPM_PPSSDB_REAL_TIME_FLAG_FIELD_POS       24
+
+#define DPM_PPSSDB_OUTPUT_VOLT_UNSUPPORTED_VAL            0xFFFF
+#define DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL         0xFF
+#define DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL 0xFFFFFFFF
+
 /*******************************************************************************/
 
 // *****************************************************************************
@@ -377,10 +387,8 @@ Source/Sink Power delivery objects*/
 /** Macros for E-Cable *****/
 #define DPM_VDM_GET_CMD_TYPE(u32VDMHeader)      ((u32VDMHeader & DPM_VDM_CMD_TYPE_MASK) >> \
                                                         DPM_VDM_CMD_TYPE_POS)
-
 #define DPM_GET_CABLE_CUR_VAL(u32ProductTypeVDO)    ((u32ProductTypeVDO & DPM_CABLE_CUR_VAL_BIT_MASK) >> \
                                                         DPM_CABLE_CUR_VAL_BIT_POS)
-
 #define DPM_CABLE_CUR_VAL_BIT_MASK       (BIT(5) | BIT(6))
 #define DPM_CABLE_CUR_VAL_BIT_POS        5
 
@@ -522,21 +530,11 @@ Source/Sink Power delivery objects*/
 #define DPM_REAL_TIME_FLAG_OMF_IN_CL_MODE          BIT(3)
 #define DPM_REAL_TIME_FLAG_OMF_FIELD_MASK          BIT(3)
 
-/***************************PPS status Data block *********************/
-#define DPM_PPSSDB_OUTPUT_VOLTAGE_FIELD_POS       0
-#define DPM_PPSSDB_OUTPUT_CURRENT_FIELD_POS       16
-#define DPM_PPSSDB_REAL_TIME_FLAG_FIELD_POS       24
-
-#define DPM_PPSSDB_OUTPUT_VOLT_UNSUPPORTED_VAL            0xFFFF
-#define DPM_PPSSDB_OUTPUT_CURRENT_UNSUPPORTED_VAL         0xFF
-#define DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL 0xFFFFFFFF
-
 /**************************Defines for u8PowerFaultFlags***********************/
 #define DPM_HR_COMPLETE_WAIT_POS              0
 #define DPM_TYPEC_ERR_RECOVERY_FLAG_POS       1
 #define DPM_HR_COMPLETE_WAIT_MASK             (1 << DPM_HR_COMPLETE_WAIT_POS)
 #define DPM_TYPEC_ERR_RECOVERY_FLAG_MASK      (1 << DPM_TYPEC_ERR_RECOVERY_FLAG_POS)
-
  
 /****************** New PDO Enable/Disable Defines ************/
 #define DPM_ENABLE_NEW_PDO(u8PortNum)     (gasDPM[u8PortNum].u8DPMConfigData |= DPM_NEW_PDO_ENABLE_MASK)
@@ -568,7 +566,6 @@ Source/Sink Power delivery objects*/
 #define DPM_INT_EVT_INITIATE_ALERT          BIT(5)
 #define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(6)
 /**********************************************************************************/                                   
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures
@@ -630,6 +627,11 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #endif
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
+// *****************************************************************************
+// *****************************************************************************
+// Section: Enum
+// *****************************************************************************
+// *****************************************************************************
 /***********************************************************************************/
 /* Enumeration to define the types of PDO */ 
 typedef enum PDOtype
@@ -1071,7 +1073,7 @@ void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8* u8pSinkPDOCnt, UINT32 * pu3
 
 /**************************************************************************************************
     Function:
-        void DPM_VBUSOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+        void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Summary:
         This API is given as the timer call back API when starting the VBUSOnOff Timer from 
         Type-C and source policy engine state machines.
@@ -1091,7 +1093,7 @@ void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8* u8pSinkPDOCnt, UINT32 * pu3
         None.
 
 **************************************************************************************************/
-void DPM_VBUSOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
@@ -1139,31 +1141,6 @@ void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
         None.
 **************************************************************************************************/
 void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
-
-/**************************************************************************************************
-    Function:
-        void DPM_VCONNOFFError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
-    Summary:
-        This API is given as the timer call back API when starting the VCONN OFF Timer from 
-        Type-C and source policy engine state machines.
-    Devices Supported:
-        UPD350 REV A
-    Description:
-        This API is given as the timer call back API when starting the VCONN OFF Timer from 
-        Type-C and source policy engine state machines.    
-    Conditions:
-        None
-    Input:
-        u8PortNum       - Port Number.
-        u8DummyVariable - Dummy Argument
-    Return:
-        None.
-
-    Remarks:
-        None.
-
-**************************************************************************************************/
-void DPM_VCONNOFFError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:

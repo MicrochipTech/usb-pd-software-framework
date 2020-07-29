@@ -528,7 +528,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 }   
                     
-                    
                 /*Source waits in this sub-state until the tCCDebounce timer timeouts*/
                 case TYPEC_ATTACHWAIT_SRC_IDLE_SS:
                     /* Hook to notify Type C state machine entry into idle substate */
@@ -538,7 +537,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*Source enters this sub-state after the tCCDebounce timer timeouts*/
                 case TYPEC_ATTACHWAIT_SRC_TCC_TO_SS:
                 {
-                  
                     /*VBUS should be at vSafe0V before transition to AttachedSRC State*/
                     /*Check for VBUS Absence before moving to Attached SRC state */
                     if (TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
@@ -676,7 +674,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     power module to reach Vsafe5V*/
                     gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_ON_TIMER_MS),
-                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                     
                     /* Hook to notify Type C state machine entry into idle substate */
@@ -871,7 +869,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 power module to reach Vsafe0V*/
                 gasTypeCcontrol[u8PortNum].u8TypeCTimerID =PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
-                                                              DPM_VBUSOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                 		
                  
