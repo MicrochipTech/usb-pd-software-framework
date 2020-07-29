@@ -292,14 +292,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 Source/Sink Power delivery objects*/
 
 /*Defines for getting voltage from PDO*/
-#define DPM_PDO_VOLTAGE_MASK                 0x3FF
+#define DPM_PDO_VOLTAGE_MASK                 0x000FFC00
 #define DPM_PDO_VOLTAGE_POS                  10
 #define DPM_PDO_VOLTAGE_UNIT                 50
 #define DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(u32PDO)   \
-    (((u32PDO >> DPM_PDO_VOLTAGE_POS) & DPM_PDO_VOLTAGE_MASK) * DPM_PDO_VOLTAGE_UNIT)
+    (((u32PDO & DPM_PDO_VOLTAGE_MASK) >> DPM_PDO_VOLTAGE_POS) * DPM_PDO_VOLTAGE_UNIT)
 
 /*Defines for getting current from PDO[9:0]*/
-#define DPM_FIXED_PDO_CURRENT_MASK              0x000003FF 
+#define DPM_PDO_CURRENT_MASK              0x000003FF 
 #define DPM_PDO_CURRENT_UNIT                 10
 
 #define DPM_GET_PDO_TYPE(X)   					((X & 0xC0000000) >> 30)
