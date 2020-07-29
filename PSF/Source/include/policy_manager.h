@@ -9,10 +9,10 @@ File Name:
 
 Description:
     This header file contains the data structures, constant definition,
-		function prototypes and definitions for Policy Manager
+	function prototypes and definitions for Policy Manager
 *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
