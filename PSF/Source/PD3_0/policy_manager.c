@@ -1302,7 +1302,9 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
     /* Note: It is recognized that it is possible to send an alert to another 
        partner if the current partner is disconnected and a new partner is
-       connected. So, no need to clear the other variables */     
+       connected. So, no need to clear the other variables - 
+       gasDPM[u8PortNum].u8AlertType, gasDPM[u8PortNum].u8StatusEventFlags 
+       and gasDPM[u8PortNum].u8RealTimeFlags */     
     #endif
 
     /* Clear all the client requests for the port. */
