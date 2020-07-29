@@ -14,7 +14,7 @@
     This source file contains user application specific functions and interfaces
 ************************************************************************** */
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -661,11 +661,10 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 
 UINT8 App_PortPowerInit(UINT8 u8PortNum)
 {
-    UINT8 u8Return; 
+    UINT8 u8Return = TRUE; 
    
 #if (TRUE == INCLUDE_PD_SINK)
     DAC_Initialize();
-    u8Return = TRUE;
 #endif
 	
 #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
@@ -685,7 +684,6 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum)
     UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
     
-    u8Return = TRUE; 
 #elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
     u8Return = MPQDCDC_Initialize(u8PortNum); /* MPQ4230 - I2C based DC/DC */ 
 #endif 
