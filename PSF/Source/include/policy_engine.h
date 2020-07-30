@@ -853,7 +853,7 @@ void PE_StateChange_TimerCB(UINT8 u8PortNum, UINT8 u8PEState);
 void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
 /**************************************************************************************************
     Function:
-        void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState);
+        void PE_SSChngAndTimeoutValidate_TimerCB(UINT8 u8PortNum, UINT8 u8PESubState);
 
     Summary:
         This API is set as a timer callback by the policy engine when the PE expects a 
@@ -880,7 +880,7 @@ void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
         None.
 
 **************************************************************************************************/
-void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState);
+void PE_SSChngAndTimeoutValidate_TimerCB(UINT8 u8PortNum, UINT8 u8PESubState);
 /**************************************************************************************************
     Function:
         void PE_SendNotSupportedOrRejectMsg(UINT8 u8PortNum);
@@ -1087,7 +1087,7 @@ void PE_SendHardResetMsg (UINT8 u8PortNum);
 void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
-        void PE_NoResponseTimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
+        void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
 
     Summary:
         This API is given as the timer call back API when starting the NoResponse timer from 
@@ -1114,7 +1114,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         None.
 
 **************************************************************************************************/
-void PE_NoResponseTimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
+void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
 /**************************************************************************************************
     Function:
         void PE_SnkRunStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
