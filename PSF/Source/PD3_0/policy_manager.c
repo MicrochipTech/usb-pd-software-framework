@@ -605,7 +605,6 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
 
 void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
 {
-    UINT8 u8PDOCompare; 
     if (TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum))
     {
         /* Update Advertised PDO Count */
@@ -628,13 +627,11 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     }
     
     /* Update the Port Connection Status register by comparing the Fixed and 
-       Advertised Source PDOs */
-    u8PDOCompare = MCHP_PSF_HOOK_MEMCMP(&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[INDEX_0],
+       Advertised Source PDOs */    
+    if (FALSE == MCHP_PSF_HOOK_MEMCMP(&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[INDEX_0],
                     &gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0], 
                     ((MAX(gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt, 
-                        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt)) * BYTE_LEN_4));
-    
-    if (FALSE == u8PDOCompare)
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt)) * BYTE_LEN_4)))
     {
         /* The advertised PDOs are equivalent to the default configured values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 

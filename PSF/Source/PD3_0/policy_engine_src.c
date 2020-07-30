@@ -275,7 +275,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					ePE_SRC_HARD_RESET sate and ePE_SRC_HARD_RESET_ENTRY_SS sub state if timeout happens */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
-                                                            PE_SubStateChangeAndTimeoutValidateCB, u8PortNum,  
+                                                            PE_SSChngAndTimeoutValidate_TimerCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                     /* Register an internal event for sending Alert for Cable Limitation 
@@ -1033,7 +1033,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /*Start NoResponse timer */
                     gasPolicyEngine[u8PortNum].u8PENoResponseTimerID = PDTimer_Start (
                                                         (PE_NORESPONSE_TIMEOUT_MS),
-                                                        PE_NoResponseTimerCB, u8PortNum,  
+                                                        PE_NoResponse_TimerCB, u8PortNum,  
                                                         (UINT8)SET_TO_ZERO);
                     
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
@@ -1347,7 +1347,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 						sub-state to ePE_SRC_VDM_IDENTITY_REQUEST_SENDER_RESPONSE_TIMEOUT */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_VDMRESPONSE_TIMEOUT_MS),
-                                                            PE_SubStateChangeAndTimeoutValidateCB,u8PortNum,  
+                                                            PE_SSChngAndTimeoutValidate_TimerCB,u8PortNum,  
                                                             (UINT8)ePE_SRC_VDM_IDENTITY_REQUEST_SENDER_RESPONSE_TIMEOUT);
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS;
                     break;  
