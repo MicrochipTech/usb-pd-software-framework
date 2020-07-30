@@ -73,11 +73,34 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 	#define PD_SYS_PWR_MNGMNT_CTRL              0
 #endif
 
+/*Maximum active concurrent timers for a port when PPS is enabled*/
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+	#define PD_SYS_PPS_STATUS_TIMER              1
+#else
+	#define PD_SYS_PPS_STATUS_TIMER              0
+#endif
+
+/*Maximum active concurrent timers for a port when DR_SWAP is enabled*/
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+	#define PD_SYS_DRSWAP_WAIT_TIMER              1
+#else
+	#define PD_SYS_DRSWAP_WAIT_TIMER              0
+#endif
+
+/*Maximum active concurrent timers for a port when PR_SWAP is enabled*/
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+	#define PD_SYS_PRSWAP_WAIT_TIMER              1
+#else
+	#define PD_SYS_PRSWAP_WAIT_TIMER              0
+#endif
 /***********************************************************************************/
 /*Maximum concurrent timer per port*/
 #define MAX_CONCURRENT_TIMERS_PER_PORT           (PD_SYS_MAX_CONCURRENT_TIMERS + \
                                                  PD_SYS_POWER_FAULT_TIMER + \
-                                                 PD_SYS_PWR_MNGMNT_CTRL)
+                                                 PD_SYS_PWR_MNGMNT_CTRL + \
+                                                 PD_SYS_PPS_STATUS_TIMER + \
+                                                 PD_SYS_DRSWAP_WAIT_TIMER + \
+                                                 PD_SYS_PRSWAP_WAIT_TIMER)
 
 /* This variable of size MAX_CONCURRENT_TIMERS is the software timer which stores the timeout value, timer state,
  call back function and arguments to be passed to call back function*/
