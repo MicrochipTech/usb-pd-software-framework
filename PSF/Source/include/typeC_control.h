@@ -397,7 +397,7 @@ event for UFP*/
 
 
 /*Defines that can be passed as an argument for variable "u8CCEnablePins" for 
-TypeC_SetCCSampleEnable and "u8CCPin" argument of TypeC_SetPowerRole APIs */
+TypeC_SetCCSampleEnable and "u8CCPin" argument of TypeC_SetCCPowerRole APIs */
 #define TYPEC_ENABLE_CC1           0x01
 #define TYPEC_ENABLE_CC2           0x02
 #define TYPEC_ENABLE_CC1_CC2       (TYPEC_ENABLE_CC1 | TYPEC_ENABLE_CC2)
@@ -416,18 +416,18 @@ TypeC_EnabDisVCONN API */
 #define TYPEC_VCONN_FETS    	   (BIT(3) | BIT(2))
 
 /*Defines that can be passed as an argument for variable "u8ConfigVal" for 
-TypeC_SetPowerRole API for Source*/
+TypeC_SetCCPowerRole API for Source*/
 #define TYPEC_ROLE_SOURCE_OPEN_DIS    0
 #define TYPEC_ROLE_SOURCE_DC          1
 #define TYPEC_ROLE_SOURCE_15          2
 #define TYPEC_ROLE_SOURCE_30          3
 
 /*Defines that can be passed as an argument for variable "u8ConfigVal" for 
-TypeC_SetPowerRole API for Sink*/
+TypeC_SetCCPowerRole API for Sink*/
 #define TYPEC_ROLE_SINK_RD            1
 #define TYPEC_ROLE_SINK_OPEN_DIS      3
 
-/*Defines that can be passed as an argument for variable "u8PowerRole" for TypeC_SetPowerRole API*/
+/*Defines that can be passed as an argument for variable "u8PowerRole" for TypeC_SetCCPowerRole API*/
 #define TYPEC_ROLE_SINK                0
 #define TYPEC_ROLE_SOURCE              1
 
@@ -853,7 +853,7 @@ void TypeC_SetCCSampleEnable(UINT8 u8PortNum,UINT8 u8CCEnablePins);
 /**************************************************************************************************
 
  Function:
-	void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
+	void TypeC_DRPSetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
 
     Summary:
         This API is used to enable DRP offload to sample for a particular given CC Thresholds
@@ -881,12 +881,12 @@ void TypeC_SetCCSampleEnable(UINT8 u8PortNum,UINT8 u8CCEnablePins);
         None.
 
 **************************************************************************************************/
-void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
+void TypeC_DRPSetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
 
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
+        void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
 
     Summary:
         This API is used to Configure the given Rp or given Rd value for a port for a given
@@ -924,11 +924,11 @@ void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
+void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
+        void TypeC_SetCCDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
 
     Summary:
         This API is used to set the device role as either DFP or UFP for a given port.
@@ -953,7 +953,7 @@ void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UI
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SetDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
+void TypeC_SetCCDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
 /**************************************************************************************************
 
  Function:
@@ -1242,7 +1242,7 @@ void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum);
 void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
 /**************************************************************************************************
  Function:
-        void TypeC_SetDefaultRpValue (UINT8 u8PortNum); 
+        void TypeC_SetCCDefaultRpValue (UINT8 u8PortNum); 
 
     Summary:
         This API is called to reset the Rp value for a given source to its default user given value
@@ -1267,10 +1267,10 @@ void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SetDefaultRpValue (UINT8 u8PortNum); 
+void TypeC_SetCCDefaultRpValue (UINT8 u8PortNum); 
 /**************************************************************************************************
  Function:
-        void TypeC_DecodeSourceRpValue(UINT8 u8PortNum); 
+        void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum); 
 
     Summary:
         This API is called by the protocol layer to see whether the source port partner has set the
@@ -1296,7 +1296,7 @@ void TypeC_SetDefaultRpValue (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_DecodeSourceRpValue(UINT8 u8PortNum); 
+void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum); 
 /**************************************************************************************************
  Function:
         void TypeC_RunStateMachine(UINT8 u8PortNum); 

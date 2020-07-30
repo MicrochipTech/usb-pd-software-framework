@@ -45,6 +45,9 @@ const UINT16 u16aCCThrVal[] = { TYPEC_CC_THR0_VAL,
                                   
                             };
 /****************************************************************************************/
+/*******************************************************************************************/
+/*********************************TypeC Port Initialization**************************************/
+/*******************************************************************************************/
 
 #if(TRUE == INCLUDE_PD_DRP)
 void TypeC_InitDRPPort(UINT8 u8PortNum)
@@ -102,7 +105,7 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     
     u16Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
     
-    TypeC_DRP_SetCCSampleEnable(u8PortNum, u16Data);
+    TypeC_DRPSetCCSampleEnable(u8PortNum, u16Data);
     
     /*FW shall mask the CC1_MATCH_CHG, CC2_MATCH_CHG and CC_MATCH_VLD interrupts to
     prevent an interrupt due to Ra/Open or Open/Ra detection.*/  
@@ -168,7 +171,7 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     
 }
 #endif
-
+/**************************************************************************************/
 void TypeC_InitPort (UINT8 u8PortNum)
 {
 	UINT16 u16Data;
@@ -250,14 +253,14 @@ void TypeC_InitPort (UINT8 u8PortNum)
             TypeC_SetCCDebounceVariable(u8PortNum, DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum));
             
             /*Setting Port Role as DFP in TYPEC_CC_HW_CTL register*/
-            TypeC_SetDeviceRole (u8PortNum,PD_ROLE_DFP);
+            TypeC_SetCCDeviceRole (u8PortNum,PD_ROLE_DFP);
                          
             /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and 
             CC2*/ 
             u16Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
             
             /*Setting the Power role as Source*/
-            TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, (UINT8) u16Data, TYPEC_ENABLE_CC1_CC2);
+            TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, (UINT8) u16Data, TYPEC_ENABLE_CC1_CC2);
             
             /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
             gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
@@ -284,10 +287,10 @@ void TypeC_InitPort (UINT8 u8PortNum)
             u8VBUSDebVal = (BYTE_LEN_4 * TYPEC_SNK_VBUSTHRES_CNT);
           
             /*Setting Port Role as UFP in TYPEC_CC_HW_CTL register */
-            TypeC_SetDeviceRole (u8PortNum,PD_ROLE_UFP);
+            TypeC_SetCCDeviceRole (u8PortNum,PD_ROLE_UFP);
            
             /*Setting the Rd Value */ 
-            TypeC_SetPowerRole (u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
+            TypeC_SetCCPowerRole (u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
 
             TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP); 
            
@@ -431,7 +434,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         /*Setting the user given Rp value since it is changed by collision 
                         avoidance*/
-                        TypeC_SetDefaultRpValue (u8PortNum);
+                        TypeC_SetCCDefaultRpValue (u8PortNum);
 
                         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: RP Value of Source set to"\
                                              "User given Value\r\n");                       
@@ -614,7 +617,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                          to do it here once again */
                         /* Configure the device role as DFP for the 
                            UPD350 to act as Source */
-                        TypeC_SetDeviceRole (u8PortNum,PD_ROLE_DFP);
+                        TypeC_SetCCDeviceRole (u8PortNum,PD_ROLE_DFP);
                         /* Get Rp value from user configuration */
                         UINT8 u8Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                         /*Set the u8CCDebMatch and u8CCSrcSnkMatch variable accordingly as per Rp Value*/
@@ -1113,7 +1116,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP);
                             
-                    TypeC_SetPowerRole(u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
+                    TypeC_SetCCPowerRole(u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
             
                     TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
 
@@ -1264,11 +1267,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                        connected CC pin and monitor its state */
                     if (TYPEC_ORIENTATION_CC1 == TYPEC_GET_CC_ORIENTATION_STS(u8PortNum))
                     {
-                        TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, u8RpValue, TYPEC_ENABLE_CC1);
+                        TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, u8RpValue, TYPEC_ENABLE_CC1);
                     }
                     else /* Attached Orientation - CC2 */
                     {
-                        TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, u8RpValue, TYPEC_ENABLE_CC2);
+                        TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, u8RpValue, TYPEC_ENABLE_CC2);
                     }                    
                     
                     /*Setting user given Rp Value as Current Rp Value in CurrentRpVal bit of u8PortSts variable*/
@@ -1328,7 +1331,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         #endif
             
                         /*Setting the CC1 and CC2 line as Open Disconnect*/
-                        TypeC_SetPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2); 
+                        TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2); 
                     
                     }
                     else
@@ -1344,7 +1347,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         #endif
                         
                          /*Setting the CC1 and CC2 line as Open Disconnect*/
-                        TypeC_SetPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS,                                  
+                        TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS,                                  
                                      TYPEC_ENABLE_CC1_CC2);
                     
                     }
@@ -1424,7 +1427,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         CC1 and CC2*/ 
                         u8Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                         
-                        TypeC_SetPowerRole  (u8PortNum, TYPEC_ROLE_SOURCE, u8Data, TYPEC_ENABLE_CC1_CC2);
+                        TypeC_SetCCPowerRole  (u8PortNum, TYPEC_ROLE_SOURCE, u8Data, TYPEC_ENABLE_CC1_CC2);
                         
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SRC_ENTRY_SS; 
@@ -1441,7 +1444,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     }
                     else
                     {
-                        TypeC_SetPowerRole(u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);                    
+                        TypeC_SetCCPowerRole(u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);                    
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_ENTRY_SS; 
                     }
@@ -1488,7 +1491,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
                         
                         /*Setting the CC1 and CC2 line as Open Disconnect*/
-                        TypeC_SetPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2); 
+                        TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2); 
                     }
                     else
                     {
@@ -1499,7 +1502,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                         #endif
                          /*Setting the CC1 and CC2 line as Open Disconnect*/
-                        TypeC_SetPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);                        
+                        TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);                        
                     }
                     #if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
                     /*Disable VCONN if the port sources the VCONN already or failed while trying to
@@ -1543,68 +1546,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
     }
   
 }
-
-void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole)
-{
-    UINT8 u8CCDebMatch = gasTypeCcontrol[u8PortNum].u8CCDebMatch;
-    UINT8 u8CCSrcSnkMatch = gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch;
-    
-    switch (u8Pwrrole)
-    {
-        #if  (TRUE == INCLUDE_PD_SINK)
-        case TYPEC_UFP:
-        {
-          /* UFP_DFP_DEF (CC_THR0) ,UFP_DFP_1A5(CC_THR2), UFP_DFP_3A0 (CC_THR4) */ 
-            u8CCDebMatch = (TYPEC_CC_THRES0_MATCH | TYPEC_CC_THRES2_MATCH \
-                                                       | TYPEC_CC_THRES4_MATCH | TYPEC_CC_THRES7_MATCH); 
-            /*u8CCSrcSnkMatch variable will be set depending on the type of Source Rp attached
-            TypeC_DecodeSourceRpValue(u8PortNum); function*/
-            break;
-        }
-        #endif 
-        
-        
-        #if  (TRUE == INCLUDE_PD_SOURCE)
-        case TYPEC_DFP_DEFAULT_CURRENT:
-        {          
-            /*DFP_ACT_DEF(CC_THR0),DFP_UFP_DEF(CC_THR5)*/
-            u8CCDebMatch = (TYPEC_CC_THRES0_MATCH | TYPEC_CC_THRES5_MATCH); 
-            
-            /*u8CCSrcSnkMatch is useful for finding which CC line has Sink attachment*/
-            u8CCSrcSnkMatch = (TYPEC_CC_THRES5_MATCH); 
-            break;
-        }
-        
-        case TYPEC_DFP_1A5_CURRENT:
-        {
-            /*DFP_ACT_1A5(CC_THR1),DFP_UFP_1A5(CC_THR5)*/
-            u8CCDebMatch = (TYPEC_CC_THRES1_MATCH | TYPEC_CC_THRES5_MATCH);
-            
-            /*u8CCSrcSnkMatch is useful for finding which CC line has Sink attachment*/
-            u8CCSrcSnkMatch = (TYPEC_CC_THRES5_MATCH); 
-            break;
-        }
-        
-        case TYPEC_DFP_3A0_CURRENT:
-        {
-            /*DFP_ACT_3A0 (CC_THR3),DFP_UFP_3A0 (CC_THR6)*/
-            u8CCDebMatch = (TYPEC_CC_THRES3_MATCH | TYPEC_CC_THRES6_MATCH);
-     
-            /*u8CCSrcSnkMatch is useful for finding which CC line has Sink attachment*/
-            u8CCSrcSnkMatch = (TYPEC_CC_THRES6_MATCH); 
-            break;
-        }
-        #endif /*INCLUDE_PD_SOURCE*/
-        
-        default:
-            break; 
-    }
-    
-    gasTypeCcontrol[u8PortNum].u8CCDebMatch = u8CCDebMatch;
-    gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = u8CCSrcSnkMatch;
-
-}
-
+/*******************************************************************************************/
+/*********************************TypeC Interrupt Handler**************************************/
+/*******************************************************************************************/
 void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 {
     UINT8 u8Data;
@@ -1916,6 +1860,70 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
     gasTypeCcontrol[u8PortNum].u8IntStsISR = u8IntStsISR;
 }
 
+/*******************************************************************************************/
+/*********************************TypeC CC Support Functions**************************************/
+/*******************************************************************************************/
+
+void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole)
+{
+    UINT8 u8CCDebMatch = gasTypeCcontrol[u8PortNum].u8CCDebMatch;
+    UINT8 u8CCSrcSnkMatch = gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch;
+    
+    switch (u8Pwrrole)
+    {
+        #if  (TRUE == INCLUDE_PD_SINK)
+        case TYPEC_UFP:
+        {
+          /* UFP_DFP_DEF (CC_THR0) ,UFP_DFP_1A5(CC_THR2), UFP_DFP_3A0 (CC_THR4) */ 
+            u8CCDebMatch = (TYPEC_CC_THRES0_MATCH | TYPEC_CC_THRES2_MATCH \
+                                                       | TYPEC_CC_THRES4_MATCH | TYPEC_CC_THRES7_MATCH); 
+            /*u8CCSrcSnkMatch variable will be set depending on the type of Source Rp attached
+            TypeC_DecodeCCSourceRpValue(u8PortNum); function*/
+            break;
+        }
+        #endif 
+        
+        
+        #if  (TRUE == INCLUDE_PD_SOURCE)
+        case TYPEC_DFP_DEFAULT_CURRENT:
+        {          
+            /*DFP_ACT_DEF(CC_THR0),DFP_UFP_DEF(CC_THR5)*/
+            u8CCDebMatch = (TYPEC_CC_THRES0_MATCH | TYPEC_CC_THRES5_MATCH); 
+            
+            /*u8CCSrcSnkMatch is useful for finding which CC line has Sink attachment*/
+            u8CCSrcSnkMatch = (TYPEC_CC_THRES5_MATCH); 
+            break;
+        }
+        
+        case TYPEC_DFP_1A5_CURRENT:
+        {
+            /*DFP_ACT_1A5(CC_THR1),DFP_UFP_1A5(CC_THR5)*/
+            u8CCDebMatch = (TYPEC_CC_THRES1_MATCH | TYPEC_CC_THRES5_MATCH);
+            
+            /*u8CCSrcSnkMatch is useful for finding which CC line has Sink attachment*/
+            u8CCSrcSnkMatch = (TYPEC_CC_THRES5_MATCH); 
+            break;
+        }
+        
+        case TYPEC_DFP_3A0_CURRENT:
+        {
+            /*DFP_ACT_3A0 (CC_THR3),DFP_UFP_3A0 (CC_THR6)*/
+            u8CCDebMatch = (TYPEC_CC_THRES3_MATCH | TYPEC_CC_THRES6_MATCH);
+     
+            /*u8CCSrcSnkMatch is useful for finding which CC line has Sink attachment*/
+            u8CCSrcSnkMatch = (TYPEC_CC_THRES6_MATCH); 
+            break;
+        }
+        #endif /*INCLUDE_PD_SOURCE*/
+        
+        default:
+            break; 
+    }
+    
+    gasTypeCcontrol[u8PortNum].u8CCDebMatch = u8CCDebMatch;
+    gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = u8CCSrcSnkMatch;
+
+}
 void TypeC_ConfigCCComp(UINT8 u8PortNum ,UINT8 u8ConfigVal)
 {     
     UINT8 u8Data;
@@ -1948,37 +1956,50 @@ void TypeC_ConfigCCComp(UINT8 u8PortNum ,UINT8 u8ConfigVal)
     }while((u8Data & TYPEC_CC_DB_ACTIVE) == u8DesiredDBState); 
     
 }
-void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum,UINT8 u8ConfigVal)
+#if(TRUE == INCLUDE_PD_DRP)
+void TypeC_DRPSetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent)
 {
-    UINT8 u8Data;
-    UINT8 u8DesiredDBState;
-      
-    /*Set VBUS Comparator OFF*/
-    if(TYPEC_VBUSCOMP_OFF == u8ConfigVal)
-    {
-        /*Disabling the VBUS Debouncer */
-        UPD_RegByteClearBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VBUS_DET);
-
-        /* Wait until the VBUS Debouncer goes to inactive state  */
-        u8DesiredDBState = TYPEC_VBUS_DB_ACTIVE;           
-    }
-    /*Set VBUS Comparator ON*/
-    else
-    {
-        /* Setting the VBUS Comparator Control ON*/
-        UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VBUS_DET);
-        
-        /* Wait until VBUS Comparator goes to active state */
-        u8DesiredDBState = FALSE; 
-    }
+  
+    UINT8 u8MatchSel = 0x01;
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_SNK_SAMP_EN, &u8MatchSel,\
+                       BYTE_LEN_1); 
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SNK_MATCH_EN, &u8MatchSel,\
+                       BYTE_LEN_1);   
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SNK_DBCLR_EN, &u8MatchSel,\
+                       BYTE_LEN_1);
     
-    do
+    switch(u8RpCurrent)
     {
-        UPD_RegisterRead (u8PortNum, TYPEC_VBUS_CTL1_LOW, &u8Data, BYTE_LEN_1);
-        
-    }while((u8Data & TYPEC_VBUS_DB_ACTIVE)  == u8DesiredDBState);
+        case TYPEC_DFP_DEFAULT_CURRENT:
+        {
+            /*DFP_ACT_DEF(CC_THR0),DFP_UFP_DEF(CC_THR5)*/
+            u8MatchSel = (TYPEC_CC_THRES0_MATCH | TYPEC_CC_THRES5_MATCH);
+            break;
+        }
+        case TYPEC_DFP_1A5_CURRENT:
+        {
+            /*DFP_ACT_1A5(CC_THR1),DFP_UFP_1A5(CC_THR5)*/
+            u8MatchSel = (TYPEC_CC_THRES1_MATCH | TYPEC_CC_THRES5_MATCH);
+            break;
+        }
+        case TYPEC_DFP_3A0_CURRENT:
+        {
+            /*DFP_ACT_3A0 (CC_THR3),DFP_UFP_3A0 (CC_THR6)*/
+            u8MatchSel = (TYPEC_CC_THRES3_MATCH | TYPEC_CC_THRES6_MATCH);
+            break;
+        }
+        default:
+            break;
+            
+    }
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_SRC_SAMP_EN, &u8MatchSel,\
+                       BYTE_LEN_1); 
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SRC_MATCH_EN, &u8MatchSel,\
+                       BYTE_LEN_1);   
+    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SRC_DBCLR_EN, &u8MatchSel,\
+                       BYTE_LEN_1);    
 }
-
+#endif /*INCLUDE_PD_DRP*/
 void TypeC_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8CCEnablePins)
 {
     if (u8CCEnablePins & TYPEC_ENABLE_CC1)
@@ -2023,52 +2044,7 @@ void TypeC_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8CCEnablePins)
     }
 }
 
-#if(TRUE == INCLUDE_PD_DRP)
-void TypeC_DRP_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent)
-{
-  
-    UINT8 u8MatchSel = 0x01;
-    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_SNK_SAMP_EN, &u8MatchSel,\
-                       BYTE_LEN_1); 
-    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SNK_MATCH_EN, &u8MatchSel,\
-                       BYTE_LEN_1);   
-    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SNK_DBCLR_EN, &u8MatchSel,\
-                       BYTE_LEN_1);
-    
-    switch(u8RpCurrent)
-    {
-        case TYPEC_DFP_DEFAULT_CURRENT:
-        {
-            /*DFP_ACT_DEF(CC_THR0),DFP_UFP_DEF(CC_THR5)*/
-            u8MatchSel = (TYPEC_CC_THRES0_MATCH | TYPEC_CC_THRES5_MATCH);
-            break;
-        }
-        case TYPEC_DFP_1A5_CURRENT:
-        {
-            /*DFP_ACT_1A5(CC_THR1),DFP_UFP_1A5(CC_THR5)*/
-            u8MatchSel = (TYPEC_CC_THRES1_MATCH | TYPEC_CC_THRES5_MATCH);
-            break;
-        }
-        case TYPEC_DFP_3A0_CURRENT:
-        {
-            /*DFP_ACT_3A0 (CC_THR3),DFP_UFP_3A0 (CC_THR6)*/
-            u8MatchSel = (TYPEC_CC_THRES3_MATCH | TYPEC_CC_THRES6_MATCH);
-            break;
-        }
-        default:
-            break;
-            
-    }
-    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_SRC_SAMP_EN, &u8MatchSel,\
-                       BYTE_LEN_1); 
-    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SRC_MATCH_EN, &u8MatchSel,\
-                       BYTE_LEN_1);   
-    UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SRC_DBCLR_EN, &u8MatchSel,\
-                       BYTE_LEN_1);    
-}
-#endif
-
-void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin)
+void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin)
 {   
      UINT16 u16CCControlReg1Val;
      
@@ -2120,8 +2096,7 @@ void TypeC_SetPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UI
     UPD_RegisterWrite (u8PortNum, TYPEC_CC_CTL1, (UINT8 *)&u16CCControlReg1Val, BYTE_LEN_2);
 
 }
-
-void TypeC_SetDeviceRole (UINT8 u8PortNum,UINT8 u8DevRole)
+void TypeC_SetCCDeviceRole (UINT8 u8PortNum,UINT8 u8DevRole)
 {
     /* Setting Port Device Role in TYPEC_CC_HW_CTL register */
     if (PD_ROLE_UFP == u8DevRole)
@@ -2137,7 +2112,99 @@ void TypeC_SetDeviceRole (UINT8 u8PortNum,UINT8 u8DevRole)
         /* Do Nothing */
     }
 }
-                               
+#if (TRUE == INCLUDE_PD_SOURCE)
+void TypeC_SetCCDefaultRpValue (UINT8 u8PortNum)
+{
+    UINT16 u16Data;    
+    
+    u16Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
+    
+    /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and CC2*/ 
+    TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, (UINT8) u16Data, TYPEC_ENABLE_CC1_CC2);
+  
+    /*Setting the u8CCDebMatch and u8CCSrcSnkMatch variable accordingly as per Rp Value*/
+    TypeC_SetCCDebounceVariable(u8PortNum, (UINT8) u16Data);
+     
+    /*Resetting the CC Debounce clear enable,CC Match Enable,CC Sample Enable register*/
+    TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
+       
+    /*Setting user given Rp Value as Current Rp Value in CurrentRpVal bit of u8PortSts variable*/
+    gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+    gasTypeCcontrol[u8PortNum].u8PortSts |= (u16Data << TYPEC_CURR_RPVAL_POS);
+}
+#endif /*INCLUDE_PD_SOURCE*/
+
+#if (TRUE == INCLUDE_PD_SINK)
+void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum)
+{   
+    /*Assigning the structure variables to local variables to reduce the code size as
+    accessing the structure members takes lot of code*/
+    UINT8 u8PortSts =  gasTypeCcontrol[u8PortNum].u8PortSts;
+    
+    UINT8 u8CCSrcSnkMatch = gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch;
+    
+    /*Clearing the Current Rp Value of Source*/    
+    u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+     
+    switch (gasTypeCcontrol[u8PortNum].u8CC1MatchISR ^ gasTypeCcontrol[u8PortNum].u8CC2MatchISR)	
+	{
+		case TYPEC_DFP_DEF_ATT:
+        {
+            /*Setting the Current Rp Value of Source as Default Current*/
+            u8PortSts |= (TYPEC_RP_DEFAULT_CURRENT << TYPEC_CURR_RPVAL_POS);
+            
+            u8CCSrcSnkMatch = TYPEC_DFP_DEF_ATT;
+            break;
+        }
+        
+		case TYPEC_DFP_1A5_ATT:
+        {
+              /*Setting the Current Rp Value of Source as 1.5A@5V */
+             u8PortSts |= (TYPEC_RP_CURRENT_15 << TYPEC_CURR_RPVAL_POS); 
+             
+             u8CCSrcSnkMatch = TYPEC_DFP_1A5_ATT;
+             break;
+          
+        }
+        
+		case TYPEC_DFP_3A0_ATT:
+		{
+            /*Setting the Current Rp Value of Source as 3.0A@5V */
+            u8PortSts |= (TYPEC_RP_CURRENT_30 << TYPEC_CURR_RPVAL_POS);
+            
+            u8CCSrcSnkMatch = TYPEC_DFP_3A0_ATT;
+             
+             /*Call the Collision avoidance API provided by the PRL if only the Collision avoidance
+             Status is set*/
+             if(u8PortSts & TYPEC_COLLISION_AVOIDANCE_ACT)
+             {
+                 /*Clear the Collision avoidance Status variable*/
+                 u8PortSts &= ~TYPEC_COLLISION_AVOIDANCE_ACT;
+                 
+            #if (TRUE == INCLUDE_PD_3_0)
+                /*Calling the callback API provided by the protocol layer here*/
+                PRL_CommitPendingTxOnCAISR (u8PortNum);
+                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Collision Avoidance Callback API called\r\n");
+            #endif                      
+             }
+             break;
+        }
+        
+        default:
+        {
+            break;
+        }
+         
+    }
+    
+    gasTypeCcontrol[u8PortNum].u8PortSts = u8PortSts; 
+    gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = u8CCSrcSnkMatch;
+    
+}
+#endif/*INCLUDE_PD_SINK*/
+/*******************************************************************************************/
+/*********************************TypeC VCONN Support Functions**************************************/
+/*******************************************************************************************/
 void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
 {
     UINT8 u8Data;
@@ -2273,10 +2340,11 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         /* Set VCONN_STATUS bit in Port Connection Status register */
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_VCONN_STATUS;
     } 
-}
- 
-
-void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
+}                               
+/*******************************************************************************************/
+/*********************************Type C modules Interrupt Functions**************************************/
+/**********************************************************************************************/ 
+void TypeC_VCONNDisOn_IntrHandler(UINT8 u8PortNum)
 {
           
     /*Clearing the CC interrupt status in u8IntStsISR variable at the start of this function to 
@@ -2296,7 +2364,7 @@ void TypeC_VCONNDis_On_IntrHandler(UINT8 u8PortNum)
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_DISCHARGE_ON_MASK;     
 }
 
-void TypeC_VCONN_ON_IntrHandler(UINT8 u8PortNum)
+void TypeC_VCONNOn_IntrHandler(UINT8 u8PortNum)
 {
     if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
@@ -2407,11 +2475,11 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
 #if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
         if(gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_DISCHARGE_ON_MASK)
         {
-            TypeC_VCONNDis_On_IntrHandler(u8PortNum);
+            TypeC_VCONNDisOn_IntrHandler(u8PortNum);
         }   
         else if(gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_ON_REQ_MASK)
         {
-            TypeC_VCONN_ON_IntrHandler(u8PortNum);
+            TypeC_VCONNOn_IntrHandler(u8PortNum);
         }
         else
         {
@@ -2699,70 +2767,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
          
 }
 
-
-void TypeC_SetDefaultRpValue (UINT8 u8PortNum)
-{
-    UINT16 u16Data;    
-    
-    u16Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
-    
-    /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and CC2*/ 
-    TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, (UINT8) u16Data, TYPEC_ENABLE_CC1_CC2);
-  
-    /*Setting the u8CCDebMatch and u8CCSrcSnkMatch variable accordingly as per Rp Value*/
-    TypeC_SetCCDebounceVariable(u8PortNum, (UINT8) u16Data);
-     
-    /*Resetting the CC Debounce clear enable,CC Match Enable,CC Sample Enable register*/
-    TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
-       
-    /*Setting user given Rp Value as Current Rp Value in CurrentRpVal bit of u8PortSts variable*/
-    gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
-    gasTypeCcontrol[u8PortNum].u8PortSts |= (u16Data << TYPEC_CURR_RPVAL_POS);
-}
-
-#endif
-/*#if (TRUE == INCLUDE_PD_SOURCE)*/
-
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
-
-void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
-{
-    
-    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE COMPLETED\r\n");
-    
-    /*Power down the CC comparator*/
-    TypeC_ConfigCCComp(u8PortNum, TYPEC_CC_COMP_CTL_DIS);
-    
-    /*Resetting the CC Threshold 0 register to default value*/
-    UPD_RegWriteWord (u8PortNum, TYPEC_CC_THR0, TYPEC_CC_THR0_VAL);    
-    
-    #if (TRUE == INCLUDE_PD_SOURCE)
-    if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-    {
-        /*Setting the user given Rp value for source since it is changed to open disconnect
-        while VCONN Discharge*/
-        TypeC_SetDefaultRpValue (u8PortNum);
-    }
-    #endif
-
-    #if (TRUE == INCLUDE_PD_SINK)
-    if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-    {
-        TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP);
-          
-        /*Reset only the Rd value for the CC pin in which VCONN was sourced*/
-        TypeC_SetPowerRole(u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
-        
-        /*Resetting the CC Debounce clear enable,CC Match Enable,CC Sample Enable register*/
-        TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
-    }
-    #endif
-  
-    /*Set the CC Comparator to sample both CC1 and CC2*/
-    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2); 
-}
-
-#endif 
+#endif /*INCLUDE_PD_SOURCE*/
 
 #if (TRUE == INCLUDE_PD_SINK)
 
@@ -2781,7 +2786,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
 		case TYPEC_DFP_3A0_ATT:
 		{    
             /*Decode and store the Rp value of Source attached*/ 
-            TypeC_DecodeSourceRpValue(u8PortNum);
+            TypeC_DecodeCCSourceRpValue(u8PortNum);
                        
             if (TYPEC_ATTACHWAIT_SNK == u8TypeCState)
             {
@@ -2866,77 +2871,52 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = u8TypeCSubState;
 
 }
-
-void TypeC_DecodeSourceRpValue(UINT8 u8PortNum)
-{   
-    /*Assigning the structure variables to local variables to reduce the code size as
-    accessing the structure members takes lot of code*/
-    UINT8 u8PortSts =  gasTypeCcontrol[u8PortNum].u8PortSts;
-    
-    UINT8 u8CCSrcSnkMatch = gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch;
-    
-    /*Clearing the Current Rp Value of Source*/    
-    u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
-     
-    switch (gasTypeCcontrol[u8PortNum].u8CC1MatchISR ^ gasTypeCcontrol[u8PortNum].u8CC2MatchISR)	
-	{
-		case TYPEC_DFP_DEF_ATT:
-        {
-            /*Setting the Current Rp Value of Source as Default Current*/
-            u8PortSts |= (TYPEC_RP_DEFAULT_CURRENT << TYPEC_CURR_RPVAL_POS);
-            
-            u8CCSrcSnkMatch = TYPEC_DFP_DEF_ATT;
-            break;
-        }
-        
-		case TYPEC_DFP_1A5_ATT:
-        {
-              /*Setting the Current Rp Value of Source as 1.5A@5V */
-             u8PortSts |= (TYPEC_RP_CURRENT_15 << TYPEC_CURR_RPVAL_POS); 
-             
-             u8CCSrcSnkMatch = TYPEC_DFP_1A5_ATT;
-             break;
-          
-        }
-        
-		case TYPEC_DFP_3A0_ATT:
-		{
-            /*Setting the Current Rp Value of Source as 3.0A@5V */
-            u8PortSts |= (TYPEC_RP_CURRENT_30 << TYPEC_CURR_RPVAL_POS);
-            
-            u8CCSrcSnkMatch = TYPEC_DFP_3A0_ATT;
-             
-             /*Call the Collision avoidance API provided by the PRL if only the Collision avoidance
-             Status is set*/
-             if(u8PortSts & TYPEC_COLLISION_AVOIDANCE_ACT)
-             {
-                 /*Clear the Collision avoidance Status variable*/
-                 u8PortSts &= ~TYPEC_COLLISION_AVOIDANCE_ACT;
-                 
-            #if (TRUE == INCLUDE_PD_3_0)
-                /*Calling the callback API provided by the protocol layer here*/
-                PRL_CommitPendingTxOnCAISR (u8PortNum);
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Collision Avoidance Callback API called\r\n");
-            #endif                      
-             }
-             break;
-        }
-        
-        default:
-        {
-            break;
-        }
-         
-    }
-    
-    gasTypeCcontrol[u8PortNum].u8PortSts = u8PortSts; 
-    gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = u8CCSrcSnkMatch;
-    
-}
 #endif
 /*INCLUDE_PD_SINK*/
 
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
 
+void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
+{
+    
+    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE COMPLETED\r\n");
+    
+    /*Power down the CC comparator*/
+    TypeC_ConfigCCComp(u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+    
+    /*Resetting the CC Threshold 0 register to default value*/
+    UPD_RegWriteWord (u8PortNum, TYPEC_CC_THR0, TYPEC_CC_THR0_VAL);    
+    
+    #if (TRUE == INCLUDE_PD_SOURCE)
+    if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+    {
+        /*Setting the user given Rp value for source since it is changed to open disconnect
+        while VCONN Discharge*/
+        TypeC_SetCCDefaultRpValue (u8PortNum);
+    }
+    #endif
+
+    #if (TRUE == INCLUDE_PD_SINK)
+    if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+    {
+        TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP);
+          
+        /*Reset only the Rd value for the CC pin in which VCONN was sourced*/
+        TypeC_SetCCPowerRole(u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
+        
+        /*Resetting the CC Debounce clear enable,CC Match Enable,CC Sample Enable register*/
+        TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
+    }
+    #endif
+  
+    /*Set the CC Comparator to sample both CC1 and CC2*/
+    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2); 
+}
+
+#endif 
+/*******************************************************************************************/
+/*********************************TypeC Collision avoidance Support APIs**************************************/
+/*******************************************************************************************/
 /*Change the Rp Value only for the CC pin in which source is connected*/
 void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
 {
@@ -2955,7 +2935,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         gasTypeCcontrol[u8PortNum].u8PortSts |= (TYPEC_RP_CURRENT_15 << TYPEC_CURR_RPVAL_POS);
         
         /*Setting the Rp Value as SinkTxNG*/
-        TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, TYPEC_ROLE_SOURCE_15, TYPEC_ENABLE_CC1_CC2);    
+        TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, TYPEC_ROLE_SOURCE_15, TYPEC_ENABLE_CC1_CC2);    
     }
     /*Rp value as 3.0A@5V */
     else
@@ -2968,7 +2948,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         gasTypeCcontrol[u8PortNum].u8PortSts |= (TYPEC_RP_CURRENT_30 << TYPEC_CURR_RPVAL_POS);
         
         /*Setting the Rp Value as SinkTxOk*/
-        TypeC_SetPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, TYPEC_ROLE_SOURCE_30, TYPEC_ENABLE_CC1_CC2);
+        TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, TYPEC_ROLE_SOURCE_30, TYPEC_ENABLE_CC1_CC2);
     }
     
     /*Enabling the CC Sampling in the sink attached CC pin if both sink and powered cable 
@@ -3023,19 +3003,39 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
      return u8RpStatus;
  
 }
-
-
-void TypeC_KillTypeCTimer (UINT8 u8PortNum)
+/*******************************************************************************************/
+/*********************************TypeC VBUS Comparator Support Functions**************************************/
+/*******************************************************************************************/
+void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum,UINT8 u8ConfigVal)
 {
-    PDTimer_Kill (gasTypeCcontrol[u8PortNum].u8TypeCTimerID);
+    UINT8 u8Data;
+    UINT8 u8DesiredDBState;
+      
+    /*Set VBUS Comparator OFF*/
+    if(TYPEC_VBUSCOMP_OFF == u8ConfigVal)
+    {
+        /*Disabling the VBUS Debouncer */
+        UPD_RegByteClearBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VBUS_DET);
+
+        /* Wait until the VBUS Debouncer goes to inactive state  */
+        u8DesiredDBState = TYPEC_VBUS_DB_ACTIVE;           
+    }
+    /*Set VBUS Comparator ON*/
+    else
+    {
+        /* Setting the VBUS Comparator Control ON*/
+        UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VBUS_DET);
+        
+        /* Wait until VBUS Comparator goes to active state */
+        u8DesiredDBState = FALSE; 
+    }
     
-    /*Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
-    TimerID does not hold any valid timer IDs anymore*/
-    gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
-    
+    do
+    {
+        UPD_RegisterRead (u8PortNum, TYPEC_VBUS_CTL1_LOW, &u8Data, BYTE_LEN_1);
+        
+    }while((u8Data & TYPEC_VBUS_DB_ACTIVE)  == u8DesiredDBState);
 }
-
-
 /**************************************************************/
 void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
 {
@@ -3228,9 +3228,11 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 	
 }
 /************************************************************************/								   
+/*******************************************************************************************/
+/*********************************TypeC Timer CB**************************************/
+/*******************************************************************************************/
 	
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-
 								   
 void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
 {
@@ -3240,8 +3242,6 @@ void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
 	/* Reset the fault Count*/
 	gasDPM[u8PortNum].u8VBUSPowerFaultCount = RESET_TO_ZERO;
 }
-
-
 #endif /*INCLUDE_POWER_FAULT_HANDLING endif*/
 
 /*********************************************************************/
@@ -3294,8 +3294,18 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
    
 }
-
-/**********************************************************************/
+void TypeC_KillTypeCTimer (UINT8 u8PortNum)
+{
+    PDTimer_Kill (gasTypeCcontrol[u8PortNum].u8TypeCTimerID);
+    
+    /*Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
+    TimerID does not hold any valid timer IDs anymore*/
+    gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
+    
+}
+/*******************************************************************************************/
+/*********************************TypeC Common Support APIs**************************************/
+/*******************************************************************************************/
 UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
 {
     UINT16 u16ReturnVal;
