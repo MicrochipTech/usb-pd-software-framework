@@ -299,17 +299,28 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     break; 
                 }
                 case ePE_PRS_SEND_SWAP_NO_RESPONSE_RCVD_SS:
-                {
-                    /* Post PR_SWAP_NO_RESP_RCVD notification*/
-                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD);
-                    
+                {                    
                     /* Response not received within tSenderResponse. Move to 
-                       ePE_SRC_READY/ePE_SNK_READY states */
+                       ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;
 
+                    /* Post PR_SWAP_NO_RESP_RCVD notification*/
+                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD);
+
                     break; 
                 }
+                case ePE_PRS_SEND_SWAP_REJECT_RCVD_SS:
+                {
+                    /* Move to ePE_SRC_READY/ePE_SNK_READY state */
+                    gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;
+                    
+                    /* Post PR_Swap complete notification as PR_Swap is rejected by partner */
+                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE); 
+
+                    break;
+                }                
                 case ePE_PRS_SEND_SWAP_WAIT_RCVD_SS:
                 {
                     /* Start PR Swap Wait timer*/
@@ -317,7 +328,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                                                           (PE_PR_SWAP_WAIT_TIMEOUT_MS),
                                                           DPM_SwapWait_TimerCB,u8PortNum,  
                                                           (UINT8)ePR_SWAP_INITIATE);
-
+                    /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;
                                  

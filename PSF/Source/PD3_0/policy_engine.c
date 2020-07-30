@@ -905,18 +905,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
                         if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
-                        {
-                            /* Move to ePE_SRC_READY/ePE_SNK_READY state */
-                            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                            {
-                                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
-                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;                            
-                            }
-                            else
-                            {
-                                gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;                            
-                            }                                                                              
+                        {                            
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_REJECT_RCVD_SS;
                         }
                         else if (PE_CTRL_WAIT == (PRL_GET_MESSAGE_TYPE (u32Header)))
                         {
