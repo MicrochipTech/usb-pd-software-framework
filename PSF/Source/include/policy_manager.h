@@ -1691,24 +1691,5 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType);
 **************************************************************************************************/
 UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg); 
 
-/**************************************************************************************************
-    Function:
-        void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
-    Summary:
-        Timer callback for PE_PS_SOURCE_OFF_TIMEOUT_MS timeout
-    Description:
-        API to invoke Type C Error Recovery on PSSourceOff timer expiry.
-    Conditions:
-        None.
-    Input:
-        u8PortNum - Port number.
-        u8DummyVariable - Dummy variable
-    Return:
-        None.
-    Remarks:
-        None. 
-**************************************************************************************************/
-void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
-
 #endif /*_POLICY_MANAGER_H_*/
 

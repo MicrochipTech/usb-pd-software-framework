@@ -1442,19 +1442,5 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
     } 
 }
 
-#if (TRUE == INCLUDE_PD_PR_SWAP)
-void DPM_PSSourceOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
-{
-    /* Set the timer Id to Max Concurrent Value*/
- 	gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-    
-    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
-                    
-    gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-    gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
-    
-}
-
-#endif 
 /************************************************************************************************************************/
 

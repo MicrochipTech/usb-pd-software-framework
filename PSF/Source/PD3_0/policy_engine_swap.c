@@ -596,10 +596,13 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /*Turn off the Sink circuitry to stop sinking the power from source*/
                     PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                     
-                    /* Initialize and run PSSourceOffTimer */
+                    /* Initialize and run PSSourceOffTimer. 
+                       Note: DPM_VBUSorVCONNOnOff_TimerCB API is reused for PSSourceOff 
+                       timer call back intentionally, as both the time outs invoke
+                       Error Recovery. This would save the usage of code memory  */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_PS_SOURCE_OFF_TIMEOUT_MS),
-                                                            DPM_PSSourceOff_TimerCB,u8PortNum,  
+                                                            DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
                                                             (UINT8)SET_TO_ZERO);
                
                     /* Assign an idle state to wait for PS_RDY reception */
