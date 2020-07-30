@@ -196,8 +196,7 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
     }
     else
     {
-        u8VBUSPresence = (gasTypeCcontrol[u8PortNum].u8IntStsISR & 
-                          TYPEC_VBUS_PRESENCE_MASK);
+        u8VBUSPresence = (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK);
 
         if (TYPEC_VBUS_0V_PRES == u8VBUSPresence)
         {
