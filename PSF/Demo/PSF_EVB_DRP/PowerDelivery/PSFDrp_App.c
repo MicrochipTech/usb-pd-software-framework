@@ -777,9 +777,9 @@ void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData)
         /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
         /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
 
-        UINT32 u32DACCalculate = u16DACData * 0x3FF;
+        UINT32 u32DACCalculate = u16DACData * APP_DAC_MAX_STEP_COUNT;
 
-        u16DACData = (UINT16)(u32DACCalculate / 3300);
+        u16DACData = (UINT16)(u32DACCalculate / APP_DAC_VREF);
         DAC_DataWrite(u16DACData);
     }
 }
