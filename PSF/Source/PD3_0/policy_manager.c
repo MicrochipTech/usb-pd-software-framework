@@ -648,16 +648,6 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     }    
 }
 
-void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf)
-{   
-    /* Store the count in Partner PDO Count. */
-    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = PRL_GET_OBJECT_COUNT(u16Header); 
-    
-    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt; u8PDOIndex++)
-    {
-      gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8PDOIndex] = u32DataBuf[u8PDOIndex];   
-    }    
-}
 /**********************************************************************************/
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 

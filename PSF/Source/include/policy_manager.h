@@ -1277,29 +1277,6 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf);
-    Summary:
-        Stores the Sink capabilities received from Port Partner. 
-    Description:
-        This API is used to store the Sink capabilities received from Port Partner 
-        that is attached as Sink. This will be called from PE Source State machine 
-        once the response is received for GET_SINK_CAP PD message. 
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u16Header - Header Data of the Sink Caps message
-        u32DataBuf - Data Buffer containing Sink capabilities 
-    Return:
-        None.  
-    Remarks:
-        None.
-**************************************************************************************************/
-
-void DPM_StoreSinkCapabilities(UINT8 u8PortNum, UINT16 u16Header, UINT32* u32DataBuf);
-
-/**************************************************************************************************
-    Function:
         void DPM_ResetNewPDOParameters(UINT8 u8PortNum);
     Summary:
         Resets the New PDO parameters once New PDOs are advertised. 
