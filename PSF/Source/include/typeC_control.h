@@ -666,12 +666,12 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
                                 BIT4 -> VCONN_DISCHARGE_ON
                                 BIT5 -> VCONN1_ON_REQ
                                 BIT6 -> TYPEC_VCONN2_ON
-                                BIT7 -> Reserved */
+                                BIT7 -> CC Pin Orientation */
   UINT8 u8IntStsISR;            /*BIT0 -> VSINKDISCONNECT_STATUS
                                 BIT1 -> CCINT_STATUS
                                 BIT2 -> VCONN_SOURCE_CC1
                                 BIT3 -> VCONN_SOURCE_CC2
-                                BIT[4:6] -> VBUS_PRESENCE
+                                BIT[6:4] -> VBUS_PRESENCE
                                 BIT 7 -> VCONNONERROR */
 #if(TRUE == INCLUDE_PD_DRP)
   UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status*/
