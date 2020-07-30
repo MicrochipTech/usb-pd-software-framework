@@ -481,7 +481,7 @@ void PB_SinkCapsReceivedHandler(UINT8 u8PortNum)
             /* Change the states of the port */
             PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS);
             
-            gasCfgStatusData.u16SharedPwrCapacityIn250mW = 0;
+            gasCfgStatusData.u16SharedPwrCapacityIn250mW = SET_TO_ZERO;
             gsPBIntSysParam.u8RecoveringMode = FALSE;
         }        
     }

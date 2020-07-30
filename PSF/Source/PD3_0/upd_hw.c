@@ -695,7 +695,7 @@ void UPD_FindVBusCorrectionFactor(void)
 /********************************************************************************************/
 void UPD_RegDump(UINT8 u8PortNum)
 {
-    UINT8 u8Data =0;
+    UINT8 u8Data = SET_TO_ZERO;
     
     u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_HW_CTL_LOW);
     DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_HW_CTL_LOW - ", u8Data, BYTE_LEN_1, "\r\n");
