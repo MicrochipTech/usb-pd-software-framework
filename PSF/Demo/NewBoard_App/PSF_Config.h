@@ -115,6 +115,7 @@ Description:
 	are configured for DRP operation.
 Remarks:
     Recommended default value is '1' for DRP Application.
+    For INCLUDE_PD_DRP to be 1, both INCLUDE_PD_SOURCE and INCLUDE_PD_SINK shall be set to 1.
 Example:
     <code>
     #define INCLUDE_PD_DRP	1(Include USB PD DRP functionality in PSF)
