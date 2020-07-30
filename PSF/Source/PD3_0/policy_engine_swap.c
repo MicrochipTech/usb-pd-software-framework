@@ -300,6 +300,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SEND_SWAP_NO_RESPONSE_RCVD_SS:
                 {
+                    /* Post PR_SWAP_NO_RESP_RCVD notification*/
+                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD);
+                    
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY states */
                     gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
@@ -336,6 +339,10 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
         case ePE_PRS_EVALUATE_SWAP:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_EVALUATE_SWAP\r\n");
+            
+            /* Post PR_SWAP_RCVD notification*/
+            DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_RCVD);
+
             /* Get evaluation of swap request from Device Policy Manager */
             if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap(u8PortNum, ePR_SWAP_RCVD))
             {
@@ -540,10 +547,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
-                    /* Send PR_Swap complete notification */
-                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE); 
                     
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
+                    
+                    /* Send PR_Swap complete notification */
+                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE);                                         
                     break; 
                 }
                 default:

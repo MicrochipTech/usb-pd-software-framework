@@ -1051,46 +1051,63 @@ Description:
    
     <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
     Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
-    message initiated by PSF on request from the application through u32ClientRequest variable 
-    in sPerPortDatastructure. Application can read the sink capabilities by accessing 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[7].
+    message initiated by PSF. Application can read the sink capabilities by accessing 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[7]. This event is applicable 
+    only when PSF is operating as Source.  
     
     <b> eMCHP_PSF_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink capabilities has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Sink_Caps message initiated by PSF on request from application
-    through u32ClientRequest variable in sPerPortDatastructure.
+    as a response to the Get_Sink_Caps message initiated by PSF. This event is applicable 
+    only when PSF is operating as Source.  
     
     <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
-    mismatch with Source partner PDOs in a PD negotiation.
+    mismatch with Source partner PDOs in a PD negotiation. This event is applicable 
+    only when PSF is operating as Sink.
     
     <b> eMCHP_PSF_NEW_SRC_CAPS_RCVD</b>: It is notified by PSF when new source capability
-    message is received from the Source Partner.
+    message is received from the Source Partner. This event is applicable 
+    only when PSF is operating as Sink.
   
     <b> eMCHP_PSF_SINK_ALERT_RCVD</b>: This event is used by PSF to notify application when PD
 	Alert message has been received from Sink Partner. Application can read the alert
     information by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlert.
+    This event is applicable only when PSF is operating as Source.  
  
     <b> eMCHP_PSF_SINK_STATUS_RCVD</b>: This event is used by PSF to notify application when 
     Sink Status has been received from Port Partner in response to the Get_Status
-    message initiated by PSF on request from the application. Application can read the 
-    Sink Status by accessing gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6]
-    
+    message initiated by PSF. Application can read the Sink Status by accessing 
+    gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6]
+    This event is applicable only when PSF is operating as Source.   
+ 
     <b> eMCHP_PSF_SINK_STATUS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink Status has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Status message initiated by PSF on request from application.
+    as a response to the Get_Status message initiated by PSF.
     gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
-    when this notification is posted. 
+    when this notification is posted. This event is applicable only when PSF is operating as Source. 
  
     <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: In case of PR_Swap initiated by the PSF port, 
     this notification would be posted when the swap message is accepted by port partner and 
     port power roles of the both the partners are changed successfully or 
  	when wait has been received as response for the swap message, then either of the port partners 
     has initiated the transmission of PR_Swap within wait response time and port power roles of 
-    both the partners are changed successfully. 
+    both the partners are changed successfully or when the swap request is rejected
+    by the port partner.
  	In case of PR_Swap initiated by the PSF port partner, this notification would be posted 
 	when the swap message is accepted by the PSF port and port power roles of the both the    
     partners are changed successfully. 
+    This event is applicable only when PSF is operating as DRP.
     
+    <b> eMCHP_PSF_PR_SWAP_RCVD</b>: This notification would be posted by PSF when a Power 
+    Role Swap message is received from port partner. Application can make use of this event to 
+    dynamically update the Power Role Swap Policy Configuration through u16SwapPolicy based on 
+    which the Power Role Swap request would be accepted or rejected by PSF. 
+    This event is applicable only when PSF is operating as DRP.
+  
+    <b> eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD </b>: This notification would be posted by PSF 
+    when a Power Role Swap message has been initiated by PSF and no response has been 
+    received from the port partner. 
+    This event is applicable only when PSF is operating as DRP.
+   
     <b>eMCHP_PSF_DR_SWAP_COMPLETE</b>: This notification indicates that DR_SWAP
     successfully completed and the data role is reversed.
         
@@ -1101,9 +1118,9 @@ Description:
     
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
-    Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
-    application through u32ClientRequest variable in sPerPortDatastructure. On 
-    receiving this notification, the application can re-initiate the request.
+    Renegotiation, etc., which were raised by the application through 
+    u32ClientRequest variable in sPerPortDatastructure. On receiving this notification, 
+    the application can re-initiate the request.
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1125,6 +1142,8 @@ eMCHP_PSF_SINK_ALERT_RCVD,          // Alert message received from Sink Partner
 eMCHP_PSF_SINK_STATUS_RCVD,         // Sink Status received from Sink Partner
 eMCHP_PSF_SINK_STATUS_NOT_RCVD,     // Sink Status not received from Sink Partner
 eMCHP_PSF_PR_SWAP_COMPLETE,         // Power Role Swap completed
+eMCHP_PSF_PR_SWAP_RCVD,             // Power Role Swap Received from port partner
+eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD, // No response from port partner for Power Role Swap sent 
 eMCHP_PSF_DR_SWAP_COMPLETED,        // Data Role Swap completed
 eMCHP_PSF_DR_SWAP_RCVD,             // Data Role swap received from port partner
 eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
