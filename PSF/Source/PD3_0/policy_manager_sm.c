@@ -302,8 +302,15 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             }
 
 #if(TRUE == INCLUDE_PD_SOURCE)            
-             /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
-            PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);    
+            if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            {
+                /*Toggle DC_DC EN on VBUS fault to reset the DC-DC controller*/
+                PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);    
+            }
+            else
+            {
+                /*Do nothing*/
+            }
 #endif
             
             #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
@@ -400,9 +407,16 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_HR_COMPLETE_WAIT_MASK;
         } /* end of else part of implicit contract check*/
 
-#if(TRUE == INCLUDE_PD_SOURCE)        
-        /* Enable DC_DC_EN to drive power*/        
-        PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE); 
+#if(TRUE == INCLUDE_PD_SOURCE) 
+        if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        {
+            /* Enable DC_DC_EN to drive power*/        
+            PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE); 
+        }
+        else
+        {
+            /*Do nothing*/
+        }
 #endif
         
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
