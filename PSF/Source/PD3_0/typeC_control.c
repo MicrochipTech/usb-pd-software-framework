@@ -2494,7 +2494,7 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
         }
         else
         {
-            /*Set power and data role status as Sink/UFP*/
+            /*Set power and data role status as Source/DFP*/
             DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
             DPM_UpdateDataRole(u8PortNum, PD_ROLE_DFP);
         }   
