@@ -141,11 +141,11 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
 		DPM_PowerFaultHandler(u8PortNum);
 	#endif
 
-    /* Client Request Handling */
-    DPM_ClientRequestHandler(u8PortNum);
-    
     /*Internal Event Handler*/
     DPM_InternalEventHandler(u8PortNum);
+    
+    /* Client Request Handling */
+    DPM_ClientRequestHandler(u8PortNum);
         
     /* UPD Power Management */
     #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)

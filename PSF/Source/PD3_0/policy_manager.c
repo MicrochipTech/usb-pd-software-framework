@@ -1120,7 +1120,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
 /************************  DPM Renegotiation APIs **********************/
 #if (TRUE == INCLUDE_POWER_THROTTLING || (TRUE == INCLUDE_POWER_BALANCING))
 
-void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
+void DPM_UpdateNewPDOFrmSrcPwr(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
 {
     float fVoltageInmV = SET_TO_ZERO; 
     UINT16 u16CurrentIn10mA = SET_TO_ZERO; 

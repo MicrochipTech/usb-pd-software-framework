@@ -151,7 +151,7 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
        sent from u32aNewPDO[7] array */
     DPM_ENABLE_NEW_PDO(u8PortNum);
     
-    DPM_UpdatePDO(u8PortNum, u16PowerIn250mW);
+    DPM_UpdateNewPDOFrmSrcPwr(u8PortNum, u16PowerIn250mW);
 }
 
 #endif 
