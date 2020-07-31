@@ -170,10 +170,10 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
 void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattageIn250mW)
 {
     /* Update the PDOs in New PDO registers */
-    DPM_UpdatePDO(u8PortNum, u16NewWattageIn250mW); 
+    DPM_UpdateSrcPDOfromPwr(u8PortNum, u16NewWattageIn250mW); 
     
     /* Raise Renegotiation request to DPM */
-    DPM_SET_RENEGOTIATE_REQ(u8PortNum); 
+    DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENOGIATION);
             
     gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = u16NewWattageIn250mW;   
 }
