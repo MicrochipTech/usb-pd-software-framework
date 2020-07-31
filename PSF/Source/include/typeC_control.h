@@ -500,9 +500,8 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHED_SNK_RUN_SM_SS                  2
 #define TYPEC_ATTACHED_SNK_TPDDEB_SS                  3
 #define TYPEC_ATTACHED_SNK_TPD_TO_SS                  4
-#define TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS          5
-#define TYPEC_ATTACHED_SNK_IDLE_SS                    6
-#define TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS        7
+#define TYPEC_ATTACHED_SNK_IDLE_SS                    5
+#define TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS        6
 
 /*Defines for TYPEC_ERROR_RECOVERY's substates in TYPE C SM*/ 
 #define TYPEC_ERROR_RECOVERY_ENTRY_SS                   0
