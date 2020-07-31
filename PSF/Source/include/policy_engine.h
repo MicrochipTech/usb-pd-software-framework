@@ -433,7 +433,7 @@ typedef enum {
             
     //--------------------PR_Swap specific Sub-States---------------------------//
     ePE_PRS_SEND_SWAP_ENTRY_SS,
-    ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS,
+    ePE_PRS_SEND_SWAP_MSG_DONE_SS,
     ePE_PRS_SEND_SWAP_NO_RESPONSE_RCVD_SS,
     ePE_PRS_SEND_SWAP_IDLE_SS,
     ePE_PRS_SEND_SWAP_REJECT_RCVD_SS,
