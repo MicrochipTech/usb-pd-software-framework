@@ -774,7 +774,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                     /* Accept message received for PR_Swap request */
                     else if ((ePE_PRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
-                            (ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
+                            (ePE_PRS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"Accept Received for PR_Swap Sent\r\n");
                         /* Kill the Sender Response Timer */
@@ -856,7 +856,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                     /* Reject or Wait message received for PR_Swap request */
                     else if ((ePE_PRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
-                            (ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
+                            (ePE_PRS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"Reject Received for PR_Swap Sent\r\n");
                         /* Kill the Sender Response Timer */
@@ -1591,12 +1591,10 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_VCS_TURN_ON_VCONN_CHECK_SS:
                 {                 
                     if(DPM_IsPortVCONNSource(u8PortNum))
-                    {    
-                      
+                    {                          
                         PE_KillPolicyEngineTimer (u8PortNum);
                         gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_SEND_PS_RDY;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_ENTRY_SS;
-                                       
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_ENTRY_SS;                                       
                     }                    
                     break;                                        
                 }
