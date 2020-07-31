@@ -434,7 +434,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         /* Hook to notify PE state machine entry into idle substate */
                         MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_VCONNOFF_CHECK_SS;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS;
                     
                     }
                     else
@@ -446,11 +446,10 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     break;                    
                }
                
-               case ePE_SNK_TRANSITION_TO_DEFAULT_VCONNOFF_CHECK_SS:
+               case ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS:
                {                
                     if(!DPM_IsPortVCONNSource(u8PortNum))
-                    {
-                        
+                    {                        
                         /*Stop the VCONN_OFF timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
                     
@@ -480,7 +479,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         PRL_HRorCRCompltIndicationFromPE(u8PortNum);
                         
                         /*Clearing the Hard Reset IN Progress status bit since Hard Reset 
-                        is complete after the Vsafe0V transition*/
+                        is complete after the vSafe0V transition*/
                         gasPolicyEngine[u8PortNum].u8PEPortSts &= ~ PE_HARDRESET_PROGRESS_MASK;
                  
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;

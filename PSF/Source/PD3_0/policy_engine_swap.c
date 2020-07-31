@@ -296,13 +296,13 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_SENDERRESPONSE_TIMEOUT_MS),
                                                             PE_SubStateChange_TimerCB,u8PortNum,  
-                                                            (UINT8)ePE_PRS_SEND_SWAP_NO_RESPONSE_RCVD_SS);
+                                                            (UINT8)ePE_PRS_SEND_SWAP_NO_RESPONSE_SS);
                     
                     /* Assign an idle sub-state to wait for timer expiry */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_IDLE_SS;                                            
                     break; 
                 }
-                case ePE_PRS_SEND_SWAP_NO_RESPONSE_RCVD_SS:
+                case ePE_PRS_SEND_SWAP_NO_RESPONSE_SS:
                 {                    
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
