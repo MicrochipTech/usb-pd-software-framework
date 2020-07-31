@@ -1391,7 +1391,7 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
+        void DPM_UpdateNewPDOFrmSrcPwr (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
 
     Summary:
         This API is used to form the PDOs as per power wattage value given.   
@@ -1415,7 +1415,7 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType);
         None. 
 
 **************************************************************************************************/
-void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
+void DPM_UpdateNewPDOFrmSrcPwr(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
 
 /**************************************************************************************************
     Function:
