@@ -527,17 +527,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             #endif
             break;
         }
-        case eMCHP_PSF_BUSY:
-        {
-            #if (TRUE == INCLUDE_POWER_THROTTLING)
-            if (TRUE == DPM_IS_PT_ENABLED)
-            {
-                /* Busy is the only notification applicable for PT */
-                PT_HandleDPMBusy(u8PortNum); 
-            }
-            #endif
-            break;
-        }
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED:
         {
             /*On PD negotiation complete, inform DPM to initiate internal events*/
@@ -593,38 +582,20 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         {
             /* Clear the request since the request is accepted and going to be handled */
             gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_RENEGOTIATE);
+                                      ~(DPM_CLIENT_REQ_RENEGOTIATE);                
             /* Enable New PDO Select in DPM Config */
             DPM_ENABLE_NEW_PDO(u8PortNum);
+            
             /* Check for Port Power Role */
             if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-            {  
-                #if (TRUE == INCLUDE_PD_SOURCE)
-                /*Update the Count to new variable*/
-                gasDPM[u8PortNum].u8SrcNewPDOcnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt;
-                
-                /*Copy the PDOs too*/
-                (void)MCHP_PSF_HOOK_MEMCPY(gasDPM[u8PortNum].u32aSrcNewPDOs, 
-                                    gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO,
-                                    DPM_4BYTES_FOR_EACH_PDO_OF(DPM_MAX_PDO_CNT));
-                
+            {
                 /* Move the Policy Engine to PE_SRC_SEND_CAPABILITIES state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
-                #endif
             }
-            else if (PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            else
             {
-                #if (TRUE == INCLUDE_PD_SINK)
-                /*Update the Count to new variable*/
-                gasDPM[u8PortNum].u8SnkNewPDOcnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt;
-                
-                /*Copy the PDOs too*/
-                (void)MCHP_PSF_HOOK_MEMCPY(gasDPM[u8PortNum].u32aSnkNewPDOs,
-                                    gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO,
-                                    DPM_4BYTES_FOR_EACH_PDO_OF(DPM_MAX_PDO_CNT));
                 /* TBD for Sink*/
-                #endif
             }
         } /*DPM_CLIENT_REQ_RENEGOTIATE*/
         else
@@ -766,19 +737,19 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 /*When role is sink Get_Sink_Caps request is not applicable*/
             }
         }
-        else if (DPM_INT_EVT_INITIATE_RENOGIATION == (gasDPM[u8PortNum].u8DPMInternalEvents &\
-                                                    DPM_INT_EVT_INITIATE_RENOGIATION))
+        else if (DPM_INT_EVT_INITIATE_RENEGOTIATION == (gasDPM[u8PortNum].u8DPMInternalEvents &\
+                                                    DPM_INT_EVT_INITIATE_RENEGOTIATION))
         {
             /*Clear the Internal event since it is processed*/
-            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_RENOGIATION);               
+            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_RENEGOTIATION);
             
             #if (TRUE == INCLUDE_POWER_THROTTLING)
-                /* Update the renegotiation request status as accepted
-                if it was initiated by PT Mngr */
-                if (ePT_RENEG_REQ_INITIATED == gasPTPortParam[u8PortNum].ePTRenegSts)
-                {
-                    gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_ACCEPTED;
-                }
+            /* Update the renegotiation request status as accepted
+               if it was initiated by PT Mngr */
+            if (ePT_RENEG_REQ_INITIATED == gasPTPortParam[u8PortNum].ePTRenegSts)
+            {
+                gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_ACCEPTED;
+            }
             #endif 
             /* Enable New PDO Select in DPM Config */
             DPM_ENABLE_NEW_PDO(u8PortNum);

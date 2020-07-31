@@ -559,7 +559,7 @@ Source/Sink Power delivery objects*/
 
 /***************************Internal Events Defines**********************************/
 #define DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
-#define DPM_INT_EVT_INITIATE_RENOGIATION    BIT(1)
+#define DPM_INT_EVT_INITIATE_RENEGOTIATION   BIT(1)
 #define DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
 #define DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
 #define DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
@@ -575,12 +575,6 @@ Source/Sink Power delivery objects*/
 typedef struct MCHP_PSF_STRUCT_PACKED_START
 {
   UINT32  u32NegotiatedPDO;           //NegotiatedPDO
-#if (TRUE == INCLUDE_PD_SOURCE)
-  UINT32 u32aSrcNewPDOs[DPM_MAX_PDO_CNT];
-#endif
-#if (TRUE == INCLUDE_PD_SINK)
-  UINT32 u32aSnkNewPDOs[DPM_MAX_PDO_CNT];
-#endif
   UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
   UINT16 u16SinkOperatingCurrInmA;    //Operating current
   UINT16 u16PrevVBUSVoltageInmV;      // Previous VBUS Voltage in terms of mV
@@ -595,7 +589,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         //      10 - Battery
                                         //      11 - Programmable
   UINT8 u8DPMInternalEvents;        //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
-                                    //DPM_INT_EVT_INITIATE_RENOGIATION    BIT(1)
+                                    //DPM_INT_EVT_INITIATE_RENEGOTIATION    BIT(1)
                                     //DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
                                     //DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
                                     //DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
@@ -605,16 +599,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                             //Bit 1 - Default Data Role <p />
                             //Bit 3:2 - Default PD Spec Revision <p />
                             //Bit 4 - New PDO Enable <p /> 
-  
 
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
-#if (TRUE == INCLUDE_PD_SOURCE)
-  UINT8 u8SrcNewPDOcnt;
-#endif
-#if (TRUE == INCLUDE_PD_SINK)
-  UINT8 u8SnkNewPDOcnt;
-#endif
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
       UINT8 u8PowerFaultISR;          //Power fault ISR flag
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
@@ -1404,7 +1391,7 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdateSrcPDOfromPwr (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
+        void DPM_UpdatePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
 
     Summary:
         This API is used to form the PDOs as per power wattage value given.   
@@ -1428,7 +1415,7 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType);
         None. 
 
 **************************************************************************************************/
-void DPM_UpdateSrcPDOfromPwr(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
+void DPM_UpdatePDO(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
 
 /**************************************************************************************************
     Function:
