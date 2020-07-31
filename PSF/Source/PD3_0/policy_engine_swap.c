@@ -509,7 +509,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS:
                 {
                     if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
-                            (TYPEC_ATTACHED_SNK_PRS_WAIT_FOR_VBUS_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                            (TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS\r\n");
                         /* Port has transitioned into Sink. Update the Power role 
