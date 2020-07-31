@@ -440,7 +440,7 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_UNATTACHED_SRC                    0
 #define TYPEC_ATTACHWAIT_SRC                    1
 #define TYPEC_ATTACHED_SRC                      2
-#define TYPEC_UNATTACH_WAIT_SRC                 3
+#define TYPEC_UNATTACHED_WAIT_SRC               3
 #define TYPEC_UNORIENTED_DEBUG_ACCESSORY_SRC    4
 #define TYPEC_UNATTACHED_SNK                    5
 #define TYPEC_ATTACHWAIT_SNK                    6
@@ -462,55 +462,55 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS          4
 
 /*Defines for TYPEC_ATTACHWAIT_SRC's substates in TYPE C SM*/
-#define TYPEC_ATTACHWAIT_SRC_DEB_SS                   0
+#define TYPEC_ATTACHWAIT_SRC_ENTRY_SS                 0
 #define TYPEC_ATTACHWAIT_SRC_IDLE_SS                  1
-#define TYPEC_ATTACHWAIT_SRC_TCC_TO_SS                2
+#define TYPEC_ATTACHWAIT_SRC_CC_DEB_TIMEOUT_SS        2
     
 /*Defines for TYPEC_ATTACHED_SRC's substates in TYPE C SM*/
 #define TYPEC_ATTACHED_SRC_PRS_ASSERT_RP_SS           0
-#define TYPEC_ATTACHED_SRC_PRS_WAIT_FOR_RD_MATCH      1
+#define TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS      1
 #define TYPEC_ATTACHED_SRC_DRIVE_PWR_SS               2
-#define TYPEC_ATTACHED_SRC_CHECK_VBUS_SS              3
-#define TYPEC_ATTACHED_SRC_CHECK_VCONNON_SS           4
+#define TYPEC_ATTACHED_SRC_WAIT_FOR_VBUS_ON_SS        3
+#define TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS       4
 #define TYPEC_ATTACHED_SRC_SET_PRL_SS                 5
 #define TYPEC_ATTACHED_SRC_RUN_SM_SS                  6
 #define TYPEC_ATTACHED_SRC_IDLE_SS				      7
 #define TYPEC_ATTACHED_SRC_PRS_TRANS_TO_SNK_SS        8
 
-/*Defines for TYPEC_UNATTACH_WAIT_SRC's substates in TYPE C SM*/ 
-#define TYPEC_UNATTACH_WAIT_SRC_ENTRY_SS            0
-#define TYPEC_UNATTACH_WAIT_SRC_TPD_TO_SS           1
-#define TYPEC_UNATTACH_WAIT_SRC_IDLE_SS             2
-#define TYPEC_UNATTACH_WAIT_SRC_CHECK_VBUS_0V_SS    3
+/*Defines for TYPEC_UNATTACHED_WAIT_SRC's substates in TYPE C SM*/ 
+#define TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS            0
+#define TYPEC_UNATTACHED_WAIT_SRC_PD_DEB_TIMEOUT_SS   1
+#define TYPEC_UNATTACHED_WAIT_SRC_IDLE_SS             2
+#define TYPEC_UNATTACHED_WAIT_SRC_CHECK_VBUS_OFF_SS   3
 
 /*Defines for TYPEC_UNATTACHED_SNK's substates in TYPE C SM*/
 #define TYPEC_UNATTACHED_SNK_ENTRY_SS      	        0
-#define TYPEC_UNATTACHED_SNK_VSAFE0V_WAIT_SS        1
+#define TYPEC_UNATTACHED_SNK_WAIT_FOR_VSAFE0V_SS    1
 #define TYPEC_UNATTACHED_SNK_INIT_SS	            2					
 #define TYPEC_UNATTACHED_SNK_IDLE_SS                3
 
 /*Defines for TYPEC_ATTACHWAIT_SNK's substates in TYPE C SM*/  
-#define TYPEC_ATTACHWAIT_SNK_TCCDEB_SS                0
+#define TYPEC_ATTACHWAIT_SNK_ENTRY_SS                 0
 #define TYPEC_ATTACHWAIT_SNK_IDLE_SS                  1
-#define TYPEC_ATTACHWAIT_SNK_TPDDEB_SS                2
-#define TYPEC_ATTACHWAIT_SNK_TCC_TO_SS                3
+#define TYPEC_ATTACHWAIT_SNK_START_PD_DEB_SS          2
+#define TYPEC_ATTACHWAIT_SNK_CC_DEB_TIMEOUT_SS        3
 
 /*Defines for TYPEC_ATTACHED_SNK's substates in TYPE C SM*/
 #define TYPEC_ATTACHED_SNK_PRS_ASSERT_RD_SS            0
-#define TYPEC_ATTACHED_SNK_PRS_WAIT_FOR_VBUS_DETECT_SS 1
+#define TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS     1
 #define TYPEC_ATTACHED_SNK_ENTRY_SS                    2
 #define TYPEC_ATTACHED_SNK_RUN_SM_SS                   3
-#define TYPEC_ATTACHED_SNK_TPDDEB_SS                   4
-#define TYPEC_ATTACHED_SNK_TPD_TO_SS                   5
+#define TYPEC_ATTACHED_SNK_START_PD_DEB_SS             4
+#define TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS           5
 #define TYPEC_ATTACHED_SNK_IDLE_SS                     6
 #define TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS         7
 
 /*Defines for TYPEC_ERROR_RECOVERY's substates in TYPE C SM*/ 
 #define TYPEC_ERROR_RECOVERY_ENTRY_SS                   0
-#define TYPEC_ERROR_RECOVERY_WAIT_FOR_VCONN_DIS_SS      1
-#define TYPEC_ERROR_RECOVERY_WAIT_FOR_VBUS_0V_SS        2
+#define TYPEC_ERROR_RECOVERY_WAIT_FOR_VCONN_OFF_SS      1
+#define TYPEC_ERROR_RECOVERY_WAIT_FOR_VBUS_OFF_SS       2
 #define TYPEC_ERROR_RECOVERY_IDLE_SS                    3
-#define TYPEC_ERROR_RECOVERY_TO_SS                      4
+#define TYPEC_ERROR_RECOVERY_TIMEOUT_SS                 4
     
 /*Defines for TYPEC_DISABLED state's sub-states in TYPE C SM*/
 #define TYPEC_DISABLED_ENTRY_SS                         0
@@ -1499,7 +1499,7 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-       UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum)
+       UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
 
     Summary:
         Obtains current value from Rp.
@@ -1522,5 +1522,5 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
     Remarks:
         None.
 **************************************************************************************************/
-UINT16 TypeC_ObtainCurrentValuefrmRp(UINT8 u8PortNum);
+UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
 #endif /*_TYPECCONTROL_H_*/
