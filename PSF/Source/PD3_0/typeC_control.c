@@ -1225,18 +1225,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     }
                     else
                     {
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS;
+                        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_ENTRY_SS;
                     }
-                    break;
-                    
+                    break;                    
                 }
-                
-                case TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS:
-                {                                                             
-                    gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_ENTRY_SS;
-                    break;
-                } 
                 
                 /*Sink waits in this sub-state until the tPDDeounce timer expires or until the VCONN 
                 Discharge is completed*/
@@ -2850,7 +2843,8 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 or Source detach occurs after VBUS drops below VSinkdisconnect*/
                 else if (TYPEC_ATTACHED_SNK == u8TypeCState)
                 {
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_SET_UNATTACHED_SS;
+                    u8TypeCState = TYPEC_UNATTACHED_SNK;
+                    u8TypeCSubState  = TYPEC_UNATTACHED_SNK_ENTRY_SS;
                 }
                 else
                 {
