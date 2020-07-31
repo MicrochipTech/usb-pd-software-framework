@@ -154,33 +154,6 @@ void PT_HandleBankSwitch(UINT8 u8PortNum);
 **************************************************************************************************/
 void PT_CalculateSrcPDOs(UINT8 u8PortNum);
 
-/**************************************************************************************************
-    Function:
-        void PT_HandleDPMBusy(UINT8 u8PortNum);
-
-    Summary:
-        Handles the busy notification posted by DPM.
-
-    Description:
-        DPM would post a busy notification in case the client request raised to 
-        trigger renegotiation is rejected. This API handles the busy notification 
-        by raising the client request again. 
- 
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port Number 
-
-    Return:
-        None. 
-
-    Remarks:
-        None. 
-
-**************************************************************************************************/
-void PT_HandleDPMBusy(UINT8 u8PortNum); 
-
 #endif /* _PT_MNGR_H */
 /* *****************************************************************************
  End of File

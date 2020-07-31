@@ -92,8 +92,8 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
                     {
                         if (gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
                         {
-                            /* Raise Client Request to trigger renegotiation */
-                            DPM_SET_RENEGOTIATE_REQ(u8PortNum);
+                            /* Raise to DPM for renegotiation */
+                            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
                             
                             /* Change reneg status as initiated */
                             gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_INITIATED;
@@ -151,19 +151,7 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
        sent from u32aNewPDO[7] array */
     DPM_ENABLE_NEW_PDO(u8PortNum);
     
-    DPM_UpdateSrcPDOfromPwr(u8PortNum, u16PowerIn250mW);
-}
-
-void PT_HandleDPMBusy(UINT8 u8PortNum)
-{
-    /* If the request was not accepted, DPM_Busy notification would have 
-       been posted. Handle the busy notification by raising the client 
-       request again */
-    if (ePT_RENEG_REQ_INITIATED == gasPTPortParam[u8PortNum].ePTRenegSts)
-    {
-        /* Raise Client Request to trigger renegotiation */
-        DPM_SET_RENEGOTIATE_REQ(u8PortNum);        
-    }
+    DPM_UpdatePDO(u8PortNum, u16PowerIn250mW);
 }
 
 #endif 
