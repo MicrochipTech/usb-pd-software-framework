@@ -440,7 +440,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     if (ePE_SRC_GET_SINK_STATUS == gasPolicyEngine[u8PortNum].ePEState)
                     {                       
                         PE_KillPolicyEngineTimer (u8PortNum);
-                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS);
+                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS);
                     }
                     else
                     {
@@ -656,7 +656,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     if (ePE_SRC_GET_SINK_CAP == gasPolicyEngine[u8PortNum].ePEState)
                     {                       
                         PE_KillPolicyEngineTimer (u8PortNum);
-                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS);
+                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS);
                     }
                     else
                     {
@@ -761,7 +761,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 
                     }
                     else if ((ePE_SRC_SEND_SOFT_RESET_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) ||
-                            (ePE_SRC_SEND_SOFT_RESET_GOODCRC_RECEIVED_SS == gasPolicyEngine[u8PortNum].ePESubState))
+                            (ePE_SRC_SEND_SOFT_RESET_GOODCRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_ACCEPT: SenderResponse Timer Killed\r\n");
                         PE_KillPolicyEngineTimer (u8PortNum);
