@@ -604,26 +604,27 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
 
 void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
 {
+    UINT8 u8AdvertisedPDOCnt;
     if (TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum))
     {
         /* Update Advertised PDO Count */
-        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                            gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt;
+        u8AdvertisedPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt;
 
        /* Update Advertised PDO Registers with New PDOs if NewPDOSlct is enabled. */
         (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO, DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8NewPDOCnt));            
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO, DPM_4BYTES_FOR_EACH_PDO_OF(u8AdvertisedPDOCnt));            
     }
     else
     {
         /* Update Advertised PDO Count */
-        gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                            gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;
+        u8AdvertisedPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;
 
         /* Update Advertised PDO Registers with Default Source PDOs if NewPDOSlct is not enabled. */
         (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt));           
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO, DPM_4BYTES_FOR_EACH_PDO_OF(u8AdvertisedPDOCnt));           
     }
+    /*Update Advertised PDO count*/
+    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = u8AdvertisedPDOCnt;
     
     /* Update the Port Connection Status register by comparing the Fixed and 
        Advertised Source PDOs */    
