@@ -727,6 +727,7 @@ typedef struct  MCHP_PSF_STRUCT_PACKED_START _PROTOCOL_LAYER
 	UINT8	u8RxError : 1;              /* Rx Error - intimates Chunk error to Policy engine */
 	UINT8 	u8RxRcvdISR : 1;            /* ISR to Foreground Sync variable indicating Message Recv*/
     UINT8   u8RxHRRcvdISR : 1;          /* ISR to Foreground Sync variable indicating HR Recv*/
+    UINT8   u8TxStsWithCAISR : 1;       /* ISR to Foreground sync variable indicating Tx status with CA*/
     UINT8   u8RxDisable:1;
 
 } MCHP_PSF_STRUCT_PACKED_END PROTOCOL_LAYER_STRUCT;

@@ -1423,7 +1423,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                             pu8DataBuf, BYTE_LEN_4);
             /* Move to PE_SRC_READY state */                                
             gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
-            gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
             
             /* Send notification */
             (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_ALERT_RCVD);
@@ -1589,7 +1589,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
-                                ePE_SRC_READY_IDLE_SS, ePE_SRC_SEND_SOFT_RESET, \
+                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
                                 ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                     
                     u8IsTransmit = TRUE;
@@ -1638,7 +1638,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
-                                ePE_SRC_READY_IDLE_SS, ePE_SRC_SEND_SOFT_RESET, \
+                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
                                 ePE_SRC_SEND_SOFT_RESET_SOP_SS);
                     
                     u8IsTransmit = TRUE;
