@@ -134,12 +134,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CURR_PD_SPEC_REV_MASK           (BIT(4)|BIT(5))
 #define DPM_VDM_STATE_ACTIVE_MASK           BIT(6)
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK (BIT(8) | BIT(7))
+#define DPM_CA_ENABLED_MASK                       (BIT(9))
 /*Bit position for u16DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
 #define DPM_CURR_DATA_ROLE_POS             2
 #define DPM_CURR_PD_SPEC_REV_POS           4
 #define DPM_VDM_STATE_ACTIVE_POS           6
-#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7 
+#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7
+#define DPM_CA_ENABLED_POS                  9
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u16DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_SINK
@@ -160,6 +162,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum) \
     ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> \
     DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
+
+#define DPM_GET_IS_CA_ENABLED(u8PortNum)\
+     ((gasDPM[u8PortNum].u16DPMStatus & DPM_CA_ENABLED_MASK) >> DPM_CA_ENABLED_POS)
+#define DPM_SET_CA_ENABLED_STS(u8PortNum)\
+    (gasDPM[u8PortNum].u16DPMStatus |= DPM_CA_ENABLED_MASK)
+#define DPM_CLEAR_CA_ENABLED_STS(u8PortNum)\
+    ((gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CA_ENABLED_MASK))
 /**************************************************************************************************/
 
 /*******************************************************************************/
@@ -172,7 +181,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Define to check if PR_SWAP is in progress ****/
 #define DPM_PR_SWAP_IN_PROGRESS(u8PortNum)  ((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PR_SWAP_IN_PROGRESS_MASK) >> \
                                                                        PE_PR_SWAP_IN_PROGRESS_POS)
-
 
 // *****************************************************************************
 // *****************************************************************************
@@ -588,6 +596,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         //      01 - Variable
                                         //      10 - Battery
                                         //      11 - Programmable
+                                        //Bits 9: Collision Avoidance Enabled
   UINT8 u8DPMInternalEvents;        //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
                                     //DPM_INT_EVT_INITIATE_RENEGOTIATION    BIT(1)
                                     //DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)

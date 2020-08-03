@@ -778,6 +778,12 @@ void PRL_HandleISR (UINT8 u8PortNum)
 		if (PRL_TX_IRQ_TX_DONE & u8IntrStatus)
 		{
 			gasPRL [u8PortNum].u8TxStateISR =  PRL_TX_DONE_ST;
+            #if(TRUE == INCLUDE_PD_3_0)
+            if (gasPRL[u8PortNum].u8TxStsWithCAISR)
+            {
+                gasPRL[u8PortNum].u8TxStsWithCAISR = FALSE;
+            }
+            #endif
 		}
 		
 		/* PD_MAC state variable is updated depending Tx interrupt received */
@@ -1290,7 +1296,10 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 		
 		
 		/* u8Txstate is set to PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST*/
-		PRL_ChangeTxState (u8PortNum, PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST); 
+		PRL_ChangeTxState (u8PortNum, PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST);
+        
+		/*Inform DPM that CA is enabled*/
+        DPM_SET_CA_ENABLED_STS(u8PortNum);
 		
         DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: CONFIG_PRL_SINK_TX_TIMEOUT_MS is set\r\n");
 	}
@@ -1299,6 +1308,8 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 	  	/* Spec Reference: PRL_tx_Src_Sink_Tx - Set Rp = SinkTxOK */
 		/* Rp = SinkTxOk 3A @ 5v is set*/
 		TypeC_SetRpCollAvoidance(u8PortNum, TYPEC_SINK_TXOK);
+        /* Clear the CA status in DPM*/
+		DPM_CLEAR_CA_ENABLED_STS(u8PortNum);
 	}
 }
 
