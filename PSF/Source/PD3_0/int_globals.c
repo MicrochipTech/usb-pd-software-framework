@@ -100,7 +100,7 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 /********************Power Throttling globals************************************/
 #if (TRUE == INCLUDE_POWER_THROTTLING)
     /* Power Throttling Port Parameters */
-    PT_PORT_PARAM gasPTPortParam[CONFIG_PD_PORT_COUNT];  
+    UINT8 gau8PTPrevBank[CONFIG_PD_PORT_COUNT];  
 #endif 
 /**************************************************************************************************/  
     

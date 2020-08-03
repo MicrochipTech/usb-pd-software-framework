@@ -38,16 +38,14 @@ void PT_Init(UINT8 u8PortNum)
 {
     if (TRUE == DPM_IS_PT_ENABLED)
     {
-        gasPTPortParam[u8PortNum].u8PrevPTBank = DPM_PD_THROTTLE_BANK_A; 
-    
-        gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_NOT_INITIATED; 
+        gau8PTPrevBank[u8PortNum] = DPM_PD_THROTTLE_BANK_A; 
     }
 }
 
 void PT_HandleBankSwitch(UINT8 u8PortNum)
 {
     UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK; 
-    UINT8 u8PrevPTBank = gasPTPortParam[u8PortNum].u8PrevPTBank; 
+    UINT8 u8PrevPTBank = gau8PTPrevBank[u8PortNum];
     
     if (FALSE == DPM_IS_PT_ENABLED)
     {
@@ -56,7 +54,7 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
     
     if (u8CurrPTBank != u8PrevPTBank)
     {
-        gasPTPortParam[u8PortNum].u8PrevPTBank = u8CurrPTBank; 
+        gau8PTPrevBank[u8PortNum] = u8CurrPTBank; 
         
         switch(u8CurrPTBank)
         {
@@ -93,10 +91,7 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
                         if (gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
                         {
                             /* Raise to DPM for renegotiation */
-                            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
-                            
-                            /* Change reneg status as initiated */
-                            gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_INITIATED;
+                            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);          
                         }
                         else
                         {
