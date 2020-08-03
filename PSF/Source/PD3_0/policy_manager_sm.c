@@ -732,15 +732,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         {
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_RENEGOTIATION);
-            
-            #if (TRUE == INCLUDE_POWER_THROTTLING)
-            /* Update the renegotiation request status as accepted
-               if it was initiated by PT Mngr */
-            if (ePT_RENEG_REQ_INITIATED == gasPTPortParam[u8PortNum].ePTRenegSts)
-            {
-                gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_ACCEPTED;
-            }
-            #endif 
+
             /* Enable New PDO Select in DPM Config */
             DPM_ENABLE_NEW_PDO(u8PortNum);
             

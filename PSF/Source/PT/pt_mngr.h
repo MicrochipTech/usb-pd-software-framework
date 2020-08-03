@@ -40,36 +40,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* ************************************************************************** */ 
 
-/***************************************************************************************/
-// *****************************************************************************
-// *****************************************************************************
-// Section: Data Structures
-// *****************************************************************************
-// *****************************************************************************
-
-typedef enum RenegStatus
-{
-    ePT_RENEG_REQ_NOT_INITIATED = 1,
-    ePT_RENEG_REQ_INITIATED, 
-    ePT_RENEG_REQ_ACCEPTED
-}PT_RENEG_STATUS;
-
-/*****************************************************************************
-  Summary:
-    Power Throttling Port Parameters   
-
-  Description:
-    This structure contains the port parameters that are specific to PT layer. 
-
-  Remarks:
-    Need to be packed always based on type of microcontroller.
-**********************************************************************************/
-typedef struct MCHP_PSF_STRUCT_PACKED_START _PTPortParam 
-{
-    UINT8 u8PrevPTBank;      // Holds the previously selected Throttling Bank
-    PT_RENEG_STATUS ePTRenegSts; // Holds the renegotiation request status 
-} MCHP_PSF_STRUCT_PACKED_END  PT_PORT_PARAM;
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions
