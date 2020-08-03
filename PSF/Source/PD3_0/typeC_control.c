@@ -1149,8 +1149,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* CC Comparator would have been turned off in 
                        TYPEC_ATTACHED_SRC_PRS_TRANS_TO_SNK_SS sub-state. No need
                        to do it here once again */
-                    /* Update the Power role status variables as Sink */
-                    DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SINK); 
                     
                     /* Configure the device role as UFP for the UPD350 to act as Sink */
                     TypeC_SetCCDeviceRole (u8PortNum, PD_ROLE_UFP);
@@ -1204,7 +1202,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_PRS_WAIT_FOR_5V_SS: 5V HIT\r\n");                    
                         
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_ENTRY_SS;
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_ENTRY_SS;
                     }                    
                     break; 
                 }
@@ -1394,10 +1392,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                         
-#if(TRUE == INCLUDE_PD_SOURCE)
+                        #if(TRUE == INCLUDE_PD_SOURCE)
                          /*Disable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                         PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
-#endif
+                        #endif
                         
                         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                         /*Disable PIO override enable*/
@@ -1439,10 +1437,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);
                     }
                   
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ERROR_RECOVERY_WAIT_FOR_VCONN_OFF_SS;
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_WAIT_FOR_VCONN_OFF_SS;
                     
                     #else
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ERROR_RECOVERY_WAIT_FOR_VBUS_OFF_SS; 
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_WAIT_FOR_VBUS_OFF_SS; 
                     #endif
                     break;
                     
@@ -2139,7 +2137,7 @@ void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, 
             u16CCControlReg1Val |= (u8ConfigVal << TYPEC_CC2_PULL_DOWN_POS); 
         }
         /*Setting the pull up resistor as open disconnect*/
-        u16CCControlReg1Val |=(TYPEC_CC_RP_DIS);
+        u16CCControlReg1Val |= (TYPEC_CC_RP_DIS);
      }
      else if (PD_ROLE_SOURCE == u8PowerRole)
      {
@@ -2705,7 +2703,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             {                                  
                 /*Setting the state for tCCDebounce*/
                 u8TypeCState = TYPEC_ATTACHWAIT_SRC; 
-                u8TypeCSubState  = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;                                
+                u8TypeCSubState = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;                                
             } 
             else 
             {
@@ -2765,7 +2763,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                     
                     /*Setting the state for tCCDebounce*/
                     u8TypeCState = TYPEC_ATTACHWAIT_SRC;
-                    u8TypeCSubState  = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;                
+                    u8TypeCSubState = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;                
                 }			    				
             }
             /*No Devices are Present*/
@@ -2773,11 +2771,23 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             {             
                 /*Clearing the Powered cable presence in u8PortSts variable*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
-                /* TODO: <PR_Swap> Check if this needs to be blocked when PR_Swap
-                   is in progress */
-                DPM_ResetVCONNErrorCnt (u8PortNum);
+                
                 DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: No Devices are present\r\n");
                 
+                /* A PR_Swap from Sink to Source should not be considered 
+                   as a detach. So, don't do anything */
+                #if (TRUE == INCLUDE_PD_PR_SWAP)
+                if ((TYPEC_ATTACHED_SRC == u8TypeCState) && 
+                        (TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS == u8TypeCSubState)) 
+                {
+                    break; 
+                }
+                else
+                #endif 
+                {
+                    DPM_ResetVCONNErrorCnt (u8PortNum);
+                }
+                                                
                 if(TYPEC_ATTACHWAIT_SRC == u8TypeCState)
                 {
                     /*Kill the TCC debounce timer running already*/
@@ -2786,10 +2796,9 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                     /*Move to TYPEC_UNATTACHED_SRC state  if current state is 
                     TYPEC_ATTACHWAIT_SRC*/
                     u8TypeCState = TYPEC_UNATTACHED_SRC;
-                    u8TypeCSubState  = TYPEC_UNATTACHED_SRC_ENTRY_SS;                              
+                    u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;                              
                 }
-                else if ((TYPEC_ATTACHED_SRC == u8TypeCState) && 
-                          (u8TypeCSubState != TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS)) 
+                else if (TYPEC_ATTACHED_SRC == u8TypeCState)
                 {
                     /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is 
                     TYPEC_ATTACHED_SRC*/
@@ -2799,8 +2808,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 else
                 {
                     /* Do Nothing */
-                }
-                
+                }                
             }			
             /*Debug Accessory is Present*/
             else
@@ -2809,12 +2817,11 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 unattached state*/
                 /*This avoids unwanted transition in attached state*/              
                 if(TYPEC_UNATTACHED_SRC == u8TypeCState)
-                {
-                  
+                {                  
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: DEBUG ACCESSORY is present\r\n");
                     /*Setting the state for tCCDebounce	*/
                     u8TypeCState = TYPEC_ATTACHWAIT_SRC;
-                    u8TypeCSubState  = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;
+                    u8TypeCSubState = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;
                 }
             } 
             break;
@@ -2896,9 +2903,21 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             /*Valid Detach event happens only when both the CC1 and CC2 are 0*/  
             if(SET_TO_ZERO == gasTypeCcontrol[u8PortNum].u8CC1MatchISR)
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: NO DEVICES ARE PRESENT\r\n");
-                /* TODO: Check if this should be blocked when PR_swap is in progress */
-                DPM_ResetVCONNErrorCnt (u8PortNum);	
+                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: NO DEVICES ARE PRESENT\r\n");                
+                
+                /* A PR_Swap from Source to Sink should not be considered 
+                   as a detach. So, don't do anything */
+                #if (TRUE == INCLUDE_PD_PR_SWAP)
+                if ((TYPEC_ATTACHED_SNK == u8TypeCState) && 
+                        (TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS == u8TypeCSubState))
+                {
+                    break; 
+                }
+                else
+                #endif 
+                {
+                    DPM_ResetVCONNErrorCnt (u8PortNum);
+                }
 
                 if (TYPEC_ATTACHWAIT_SNK == u8TypeCState)
                 {
@@ -2911,16 +2930,11 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                          (TYPEC_ATTACHED_SNK_RUN_SM_SS == u8TypeCSubState))
                 {
                      /*Go to TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state for starting tPDDebounce*/
-                     u8TypeCSubState  = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
+                     u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
                 }
                 /*This condition occurs if VCONN Discharge is enabled in Attached Sink State
-                or Source detach occurs after VBUS drops below VSinkdisconnect or 
-                during PR_Swap from Source to sink */
-                else if ((TYPEC_ATTACHED_SNK == u8TypeCState) 
-                        #if (TRUE == INCLUDE_PD_PR_SWAP)
-                        && (u8TypeCSubState != TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS)
-                        #endif 
-                        )
+                or Source detach occurs after VBUS drops below VSinkdisconnect */ 
+                else if (TYPEC_ATTACHED_SNK == u8TypeCState)                         
                 {
                     u8TypeCState = TYPEC_UNATTACHED_SNK;
                     u8TypeCSubState  = TYPEC_UNATTACHED_SNK_ENTRY_SS;

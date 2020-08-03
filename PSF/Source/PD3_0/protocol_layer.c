@@ -172,8 +172,7 @@ void  PRL_Init (UINT8 u8PortNum)
 	/* PD3_AUTO_DECODE is enabled so that HW decodes spec revision from received messages.*/
 	/* At init, Rx SOP type is set to all SOP* type*/
 	if(PD_ROLE_SOURCE == u8CurrentPwrRole)
-    {
-	  
+    {	  
 		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
 						  (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP |
 						   PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_P | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_PP));

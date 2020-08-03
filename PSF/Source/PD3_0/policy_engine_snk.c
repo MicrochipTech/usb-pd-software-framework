@@ -104,7 +104,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     
             /*Query the Device policy manager for VBUS of 5V Presence*/
             if ((TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum)) && \
-                (TYPEC_ATTACHED_SNK == u8TypeCState))
+                (TYPEC_ATTACHED_SNK == u8TypeCState) && (TYPEC_ATTACHED_SNK_RUN_SM_SS == u8TypeCSubState))
             {
 			  	/* Enable Power fault thresholds for TYPEC_VBUS_5V to detect Power faults*/
                 TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
