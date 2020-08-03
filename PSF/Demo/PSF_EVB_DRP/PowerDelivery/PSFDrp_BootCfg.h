@@ -34,8 +34,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define _PSFDRP_BOOTCFG_H
 
 /*********************************Common Configuration*****************************************/
-#define STRUCT_MAJOR_VERSION    0x01U
-#define STRUCT_MINOR_VERSION    0x00U
 #define PRODUCT_ID              0x301CU
 #define VENDOR_ID               0x0424U
 #define PRODUCT_TYPE_VDO        0x0000U

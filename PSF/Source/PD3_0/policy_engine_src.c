@@ -155,7 +155,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_STARTUP_IDLE_SS:
                 {
-                    if(( TYPEC_ATTACHED_SRC == u8TypeCState) && (TYPEC_ATTACHED_SRC_RUN_SM_SS == u8TypeCSubState))
+                    if((TYPEC_ATTACHED_SRC == u8TypeCState) && (TYPEC_ATTACHED_SRC_RUN_SM_SS == u8TypeCSubState))
                     {
 						/* If E-Cable attached with port partner, before sending the source capabilities message
 							Cable discovery identity message will be send to the cable to find the cable capabilities */
@@ -1468,7 +1468,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                             PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChange_TimerCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS); 
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     
                     break;
@@ -1507,7 +1507,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_GET_SINK_STATUS_IDLE_SS:
                 {
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break; 
                 }    

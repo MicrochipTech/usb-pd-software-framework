@@ -1581,13 +1581,11 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
         }
 
         case ePE_VCS_TURN_ON_VCONN:
-        {
-          
+        {          
             switch (gasPolicyEngine[u8PortNum].ePESubState)
             {
                 case ePE_VCS_TURN_ON_VCONN_ENTRY_SS:
-                {
-                  
+                {                  
                     DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Entered the state\r\n");
                     
                     /*Turn ON VCONN*/
@@ -1604,11 +1602,10 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                                                               (UINT8)SET_TO_ZERO);
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_ON_VCONN_CHECK_SS;
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     
-                    break;
-                  
+                    break;                  
                 }
                 
                 case ePE_VCS_TURN_ON_VCONN_CHECK_SS:
