@@ -367,7 +367,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #endif
 
     UINT8 u8CC1MatchISR = SET_TO_ZERO;
+#if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8CC2MatchISR  = SET_TO_ZERO;
+#endif
     
     UINT8 u8IntStsISR = SET_TO_ZERO;
     
@@ -377,7 +379,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
 
     u8CC1MatchISR = gasTypeCcontrol[u8PortNum].u8CC1MatchISR;
+#if (TRUE == INCLUDE_PD_SOURCE)
     u8CC2MatchISR = gasTypeCcontrol[u8PortNum].u8CC2MatchISR;
+#endif
     
     u8IntStsISR = gasTypeCcontrol[u8PortNum].u8IntStsISR;
 

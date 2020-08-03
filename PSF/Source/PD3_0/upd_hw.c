@@ -394,18 +394,20 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 	/* Override 0 - Overvoltage Threshold*/
     /* Override 1 - UnderVoltage Threshold */
   	/* Override 2 - Fault Low*/
-	UINT8 u8PIOEnVBUS;
-    UINT8 u8PIOEnSink;
     UINT16 u16PIOPos;
     
 #if (TRUE == INCLUDE_PD_DRP)   
+    UINT8 u8PIOEnVBUS;
+    UINT8 u8PIOEnSink;
     u8PIOEnVBUS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
     u8PIOEnSink = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
     u16PIOPos = (BIT(u8PIOEnVBUS) | BIT(u8PIOEnSink));
 #elif (TRUE == INCLUDE_PD_SOURCE)
+    UINT8 u8PIOEnVBUS;
     u8PIOEnVBUS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
     u16PIOPos = BIT(u8PIOEnVBUS);
 #else
+    UINT8 u8PIOEnSink;
     u8PIOEnSink = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
     u16PIOPos = BIT(u8PIOEnSink);
 #endif
