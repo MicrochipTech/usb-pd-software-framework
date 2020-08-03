@@ -342,7 +342,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_APDO_MAX_CURRENT_UNIT              50U
 
 
-void PSF_LoadConfig(); 
+void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData); 
 
 #endif /* _PSFDRP_BOOTCFG_H */
 

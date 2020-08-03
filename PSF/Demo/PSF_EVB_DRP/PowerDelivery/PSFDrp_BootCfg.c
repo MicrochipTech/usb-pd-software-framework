@@ -54,10 +54,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
-void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
 static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {    
@@ -154,7 +154,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
 
 }
 
-void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {   
     #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))
     pasCfgStatusData->sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_POWER_BANKA;
@@ -164,7 +164,7 @@ void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusD
     #endif
 }
 
-void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
         /* PDO 1: Fixed PDO with 5V,3A capability */
     pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_0] = \
@@ -196,7 +196,7 @@ void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u8Mode_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS_PIO_MODE;
 }
 
-void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_0] = \
                    CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_NOTE_SINK_PDO_1_CURRENT, \
@@ -251,7 +251,7 @@ void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
 }
 
-void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     /* PDO 1: Fixed PDO with 5V,3A capability */
     pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_0] = \
@@ -287,7 +287,7 @@ void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT1].u8Mode_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS_PIO_MODE;
 }
 
-void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT1].u32aSinkPDO[INDEX_0] = 
             CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_DOCK_SINK_PDO_1_CURRENT, \
