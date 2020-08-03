@@ -141,11 +141,11 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
 		DPM_PowerFaultHandler(u8PortNum);
 	#endif
 
-    /*Internal Event Handler*/
-    DPM_InternalEventHandler(u8PortNum);
-    
     /* Client Request Handling */
     DPM_ClientRequestHandler(u8PortNum);
+    
+    /*Internal Event Handler*/
+    DPM_InternalEventHandler(u8PortNum);
         
     /* UPD Power Management */
     #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
@@ -576,8 +576,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         return;
     }
     
-    /* Check if Policy Engine is Idle. */
-    if(TRUE == PE_IsPolicyEngineIdle(u8PortNum))
+    /* Check if Policy Engine is Idle and no internal event pending*/
+    if((TRUE == PE_IsPolicyEngineIdle(u8PortNum)) && (!gasDPM[u8PortNum].u8DPMInternalEvents))
     {            
         /* Check for renegotiation request */
         if (DPM_CLIENT_REQ_RENEGOTIATE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
@@ -585,20 +585,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             /* Clear the request since the request is accepted and going to be handled */
             gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_RENEGOTIATE);                
-            /* Enable New PDO Select in DPM Config */
-            DPM_ENABLE_NEW_PDO(u8PortNum);
-            
-            /* Check for Port Power Role */
-            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-            {
-                /* Move the Policy Engine to PE_SRC_SEND_CAPABILITIES state */
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
-            }
-            else
-            {
-                /* TBD for Sink*/
-            }
+            /* Raise to DPM for renegotiation */
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
         } /*DPM_CLIENT_REQ_RENEGOTIATE*/
         else
         {
