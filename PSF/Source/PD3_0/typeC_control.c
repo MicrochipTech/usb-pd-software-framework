@@ -3366,6 +3366,8 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
         
         DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SRC Powered OFF state");
+        
+        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
     }
     else
     {

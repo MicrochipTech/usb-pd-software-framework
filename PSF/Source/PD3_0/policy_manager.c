@@ -93,6 +93,8 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
         }       
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+        
+        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
     }
     else
     {
