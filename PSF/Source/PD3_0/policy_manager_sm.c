@@ -95,7 +95,7 @@ void DPM_StateMachineInit(void)
 			
 #if(TRUE == INCLUDE_PD_DRP)
             /*Type-C UPD350 register configuration for a port*/
-            if(PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
+            if(PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
             {
                 TypeC_InitDRPPort(u8PortNum);
 				
