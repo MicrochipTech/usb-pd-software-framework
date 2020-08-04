@@ -34,175 +34,259 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define _PSFDRP_BOOTCFG_H
 
 /*********************************Common Configuration*****************************************/
-#define PRODUCT_ID              0x301CU
-#define VENDOR_ID               0x0424U
-#define PRODUCT_TYPE_VDO        0x0000U
-#define PRODUCT_VDO             0x0000U  
-#define CERT_STAT_VDO           0x0000U
-#define ID_HEADER_VDO           0x0000U
-#define HW_VERSION              0x00U
-#define SILICON_VERSION         0x00U
+#define CFG_PRODUCT_ID              0x301CU
+#define CFG_VENDOR_ID               0x0424U
+#define CFG_PRODUCT_TYPE_VDO        0x0000U
+#define CFG_PRODUCT_VDO             0x0000U  
+#define CFG_CERT_STAT_VDO           0x0000U
+#define CFG_ID_HEADER_VDO           0x0000U
+#define CFG_HW_VERSION              0x00U
+#define CFG_SILICON_VERSION         0x00U
+
+/*******************Power Throttling configuration**********************/
+/* Note: By default, PT is disabled for the system since support for 
+   PPS + PT coexistence is planned for future phases. If PT needs to 
+   be enabled, change the value of CFG_PT_ENABLE macro to 1U. */
+#define CFG_PT_ENABLE                         0U 
+/*Bank A - 0, Bank B - 1, Bank C - 2, Shutdown mode - 3*/
+#define CFG_PT_POWER_THROTTLE_BANK_SEL  0U /*Bank A selected*/
+
+/**************************Power Balancing configuration******************* */
+/* Note: By default, PB is disabled for the system since support for 
+   PPS + PB coexistence is planned for future phases. If PB needs to be 
+   enabled, change the value of CFG_PB_ENABLE macro to 0x10U and 
+   CFG_PB_PORT_ENABLE to 0x01U. This will enable PB for the system 
+   with FCFS as Selection Algorithm and for the ports. */
+#define CFG_PB_ENABLE                         0x00U 
+/* Default Total System Power Bank A is 120W */
+#define CFG_PB_TOT_SYS_POWER_BANKA_IN_250mW            0x01E0U 
+/* Guaranteed Minimum Power for Bank A is 15W */
+#define CFG_PB_MIN_POWER_BANKA_IN_250mW                0x003CU
+/* Default Total System Power Bank B is 120W */
+#define CFG_PB_TOT_SYS_POWER_BANKB_IN_250mW            0x01E0U
+/* Guaranteed Minimum Power for Bank A is 15W */
+#define CFG_PB_MIN_POWER_BANKB_IN_250mW                0x003CU
+/* Default Total System Power Bank C is 120W */
+#define CFG_PB_TOT_SYS_POWER_BANKC_IN_250mW            0x01E0U
+/* Guaranteed Minimum Power for Bank A is 15W */
+#define CFG_PB_MIN_POWER_BANKC_IN_250mW                0x003CU
 
 /***********************************Port Specific configuration***********************/    
 /*Configuration value for u32CfgData*/
 /*Power Role values 0 - Sink, 1- Source, 2- DRP*/
-#define CFG_PORT_POWER_ROLE_0                2
-#define CFG_PORT_POWER_ROLE_1                2
-/*Data Role Values 0- Todo*/
-#define CFG_PORT_DUAL_ROLE_DATA_0            (1U << 2)
-#define CFG_PORT_DUAL_ROLE_DATA_1            (1U << 2)
-/*Rp Value */
-#define CFG_PORT_RP_CURRENT_VALUE_0          (3U << 3)
-#define CFG_PORT_RP_CURRENT_VALUE_1          (3U << 3)
-/*Port Enable*/
-#define CFG_PORT_ENABLE                      (1U << 5)
+#define CFG_PORT_0_POWER_ROLE                2
+#define CFG_PORT_1_POWER_ROLE                2
 
+/*Data Role supported values 0-Dual Role Data Not supported, 1- Dual Role Date Supported */
+#define CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT    (1U << 2)
+#define CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT     (1U << 2)
 
-/*****************Defines to form PDOs ****************************************/
-/* Macro used to form Fixed PDO 1 */
-#define CFG_FORM_SOURCE_FIXED_PDO1(voltage,current,DualRoleData,usbCommn,usbSusp,unconstrainedPwr,isDrp) \
-    (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
-    ((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
-    ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
-    ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
-    ((DualRoleData) << CFG_PDO_DUAL_ROLE_DATA_POS) |\
-    (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-    ((current)/CFG_PDO_CURRENT_UNIT))            
+/*Rp Value - 0 -Rd(Sink), 1-Default USB Rp, 2- 1.5A Rp, 3-3.0A Rp */
+#define CFG_PORT_0_RP_CURRENT_VALUE          (3U << 3)
+#define CFG_PORT_1_RP_CURRENT_VALUE          (3U << 3)
 
-/* Macro used to form Sink Fixed PDO 1 */
-#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,DualRoleData,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
-    (((isDrp) << CFG_PDO_DUAL_ROLE_PWR_POS) | \
-    (((HigherCapability) << CFG_PDO_HIGHER_CAPABILITY_POS)) | \
-    ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
-    ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
-    ((DualRoleData) << CFG_PDO_DUAL_ROLE_DATA_POS) |\
-    (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-    ((current)/CFG_PDO_CURRENT_UNIT))  
+/*Port Enable - 0- Port Disable; 1- Port Enable*/
+#define CFG_PORT_0_ENABLE       (1U << 5)
+#define CFG_PORT_1_ENABLE       (1U << 5)
 
-/* Macro used to form Fixed PDOs 2 to 7 */
-#define CFG_FORM_FIXED_PDOx(voltage,current)   \
-    ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-    ((current)/CFG_PDO_CURRENT_UNIT))
+/*VCONN OCS Enable - 0- Disbale, 1-Enable*/
+#define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
+#define CFG_PORT_1_VCONN_OCS_ENABLE      (1U << 9)  
 
-/* Macro used to form PPS APDO */
-#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) \
-    << CFG_APDO_PWR_SUPPLY_TYPE_POS) | ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
-    (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
-    (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
-    (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
+/********************************PIO Specific configuraiton******************************/
+#define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
+#define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 
+#define CFG_PORT_0_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
+#define CFG_PORT_1_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
 
+#define CFG_PORT_0_UPD_EN_VBUS               eUPD_PIO3
+#define CFG_PORT_1_UPD_EN_VBUS               eUPD_PIO3
+#define CFG_PORT_0_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
+#define CFG_PORT_1_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 
-/* DRP configuration default number of Source PDOs for Notebook port */
-#define CFG_PORT_NOTE_SOURCE_NUM_OF_PDOS      1U
-/* DRP configuration default number of Source PDOs for Dock port */
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
-#define CFG_PORT_DOCK_SOURCE_NUM_OF_PDOS      5U
-#else 
-#define CFG_PORT_DOCK_SOURCE_NUM_OF_PDOS      4U
-#endif 
+#define CFG_PORT_0_UPD_EN_SNK                eUPD_PIO6
+#define CFG_PORT_1_UPD_EN_SNK                eUPD_PIO6
+#define CFG_PORT_0_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
+#define CFG_PORT_1_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 
-#define CFG_PORT_SOURCE_USB_SUSP           0U
-#define CFG_PORT_SOURCE_UNCONSTARINED_PWR  1U
-#define CFG_PORT_SOURCE_USB_COMM           0U
-#define CFG_PORT_DUAL_ROLE_POWER           1U 
-#define CFG_PORT_DUAL_ROLE_DATA            0U
-
-/***************Source PDO defines for Dock type port (port 1)*****************/
-#define CFG_PORT_DOCK_SOURCE_PDO_1_CURRENT         3000U 
-#define CFG_PORT_DOCK_SOURCE_PDO_2_CURRENT         3000U
-#define CFG_PORT_DOCK_SOURCE_PDO_3_CURRENT         3000U
-#define CFG_PORT_DOCK_SOURCE_PDO_4_CURRENT         3000U
-
-#define CFG_PORT_DOCK_SOURCE_PDO_1_VOLTAGE         5000U
-#define CFG_PORT_DOCK_SOURCE_PDO_2_VOLTAGE         9000U
-#define CFG_PORT_DOCK_SOURCE_PDO_3_VOLTAGE         15000U
-#define CFG_PORT_DOCK_SOURCE_PDO_4_VOLTAGE         20000U
-/******************************************************************************/
-
-/***************Sink PDO defines for Dock type port (port 1)*******************/
-#define CFG_PORT_DOCK_SINK_NUM_OF_PDOS          1U
-
-#define CFG_PORT_DOCK_SINK_PDO_1_CURRENT        0U 
-#define CFG_PORT_DOCK_SINK_PDO_2_CURRENT        0U
-#define CFG_PORT_DOCK_SINK_PDO_3_CURRENT        0U
-#define CFG_PORT_DOCK_SINK_PDO_4_CURRENT        0U
-
-#define CFG_PORT_DOCK_SINK_PDO_1_VOLTAGE        5000U
-#define CFG_PORT_DOCK_SINK_PDO_2_VOLTAGE        0U
-#define CFG_PORT_DOCK_SINK_PDO_3_VOLTAGE        0U
-#define CFG_PORT_DOCK_SINK_PDO_4_VOLTAGE        0U
-/******************************************************************************/
-
-/************Source PDO defines for Note book type port (port 0)***************/
-#define CFG_PORT_NOTE_SOURCE_PDO_1_CURRENT         3000U 
-#define CFG_PORT_NOTE_SOURCE_PDO_2_CURRENT         0U
-#define CFG_PORT_NOTE_SOURCE_PDO_3_CURRENT         0U
-#define CFG_PORT_NOTE_SOURCE_PDO_4_CURRENT         0U
-
-#define CFG_PORT_NOTE_SOURCE_PDO_1_VOLTAGE         5000U
-#define CFG_PORT_NOTE_SOURCE_PDO_2_VOLTAGE         0U
-#define CFG_PORT_NOTE_SOURCE_PDO_3_VOLTAGE         0U
-#define CFG_PORT_NOTE_SOURCE_PDO_4_VOLTAGE         0U
-/******************************************************************************/
-
-/************Sink PDO defines for Note book type port (port 0)*****************/
-#define CFG_PORT_NOTE_SINK_NUM_OF_PDOS          4U
-
-#define CFG_PORT_NOTE_SINK_PDO_1_CURRENT        3000U 
-#define CFG_PORT_NOTE_SINK_PDO_2_CURRENT        3000U
-#define CFG_PORT_NOTE_SINK_PDO_3_CURRENT        3000U
-#define CFG_PORT_NOTE_SINK_PDO_4_CURRENT        3000U
-
-#define CFG_PORT_NOTE_SINK_PDO_1_VOLTAGE        5000U
-#define CFG_PORT_NOTE_SINK_PDO_2_VOLTAGE        9000U
-#define CFG_PORT_NOTE_SINK_PDO_3_VOLTAGE        15000U
-#define CFG_PORT_NOTE_SINK_PDO_4_VOLTAGE        20000U
-/******************************************************************************/
-
-#define CFG_PORT_SINK_HIGHER_CAPABILITY    1U
-#define CFG_PORT_SINK_UNCONSTRAINED_PWR    1U 
-#define CFG_PORT_SINK_USB_COMM             0U
-
-#define CFG_PORT_SINK_PDO_1_PREFERRED_MIN_CURRENT 2000U
-#define CFG_PORT_SINK_PDO_2_PREFERRED_MIN_CURRENT 2000U
-#define CFG_PORT_SINK_PDO_3_PREFERRED_MIN_CURRENT 2000U
-#define CFG_PORT_SINK_PDO_4_PREFERRED_MIN_CURRENT 2000U
-#define CFG_PORT_SINK_PDO_5_PREFERRED_MIN_CURRENT 0U
-#define CFG_PORT_SINK_PDO_6_PREFERRED_MIN_CURRENT 0U
-#define CFG_PORT_SINK_PDO_7_PREFERRED_MIN_CURRENT 0U
-
-/* Source APDO defines */
-#define CFG_PORT_SOURCE_APDO_5_MIN_VOLTAGE    3300U
-#define CFG_PORT_SOURCE_APDO_5_MAX_VOLTAGE    21000U
-#define CFG_PORT_SOURCE_APDO_5_MAX_CURRENT    3000U
-#define CFG_PORT_SOURCE_APDO_5_PPS_PWR_LTD    0U
-
-#define CFG_MAX_PDO_COUNT                 7U
+/**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
 #define CFG_UNDER_VOLTAGE_FACTOR		  85U
+#define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5U
+#define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2U
 #define CFG_MAX_VBUS_POWER_FAULT_COUNT	  3U
 #define CFG_MAX_VCONN_FAULT_COUNT		  3U
 #define CFG_POWER_GOOD_TIMER_MS			  10000U
-#define CFG_PORT_SINK_MODE_A              0x00
-#define CFG_PORT_SINK_MODE_B              0x01
-#define CFG_PORT_SINK_GIVE_BACK_FLAG      0U
-#define CFG_PORT_SINK_USB_SUSP            0U
+#define CFG_MAX_PORT_CURRENT_IN_10mA       300U 
 
+/*********************************************************************************/
+/*********************************PDO Configuration ******************************/
+/**********************************************************************************/
+
+/********************************************************************************/
+/**********************************Port 0****************************************/
+/*********************************************************************************/
+/*Port 0 Notebook common PDO configuration for Source and Sink*/
+#define CFG_PORT_0_DUAL_ROLE_POWER           1U 
+#define CFG_PORT_0_DUAL_ROLE_DATA            0U
+
+/*Port - 0 NoteBook Source PDO Configuration***/
+#define CFG_PORT_0_SOURCE_NUM_OF_PDOS      1U
+#define CFG_PORT_0_SOURCE_USB_SUSP           0U
+#define CFG_PORT_0_SOURCE_UNCONSTARINED_PWR  1U
+#define CFG_PORT_0_SOURCE_USB_COMM           0U
+
+#define CFG_PORT_0_SOURCE_PDO_1_VOLTAGE         5000U
+
+
+#define CFG_PORT_0_SOURCE_PDO_2_VOLTAGE         0U
+#define CFG_PORT_0_SOURCE_PDO_3_VOLTAGE         0U
+#define CFG_PORT_0_SOURCE_PDO_4_VOLTAGE         0U
+#define CFG_PORT_0_SOURCE_PDO_5_VOLTAGE         0U
+#define CFG_PORT_0_SOURCE_PDO_6_VOLTAGE         0U
+#define CFG_PORT_0_SOURCE_PDO_7_VOLTAGE         0U
+
+#define CFG_PORT_0_SOURCE_PDO_1_CURRENT         3000U 
+#define CFG_PORT_0_SOURCE_PDO_2_CURRENT         0U
+#define CFG_PORT_0_SOURCE_PDO_3_CURRENT         0U
+#define CFG_PORT_0_SOURCE_PDO_4_CURRENT         0U
+#define CFG_PORT_0_SOURCE_PDO_5_CURRENT         0U
+#define CFG_PORT_0_SOURCE_PDO_6_CURRENT         0U
+#define CFG_PORT_0_SOURCE_PDO_7_CURRENT         0U
+
+/*Port - 0 Note Book Sink PDO configuration*/
+#define CFG_PORT_0_SINK_NUM_OF_PDOS          4U
+#define CFG_PORT_0_SINK_HIGHER_CAPABILITY    1U
+#define CFG_PORT_0_SINK_UNCONSTRAINED_PWR    1U 
+#define CFG_PORT_0_SINK_USB_COMM             0U
+
+#define CFG_PORT_0_SINK_PDO_1_VOLTAGE        5000U
+#define CFG_PORT_0_SINK_PDO_2_VOLTAGE        9000U
+#define CFG_PORT_0_SINK_PDO_3_VOLTAGE        15000U
+#define CFG_PORT_0_SINK_PDO_4_VOLTAGE        20000U
+#define CFG_PORT_0_SINK_PDO_5_VOLTAGE        0U
+#define CFG_PORT_0_SINK_PDO_6_VOLTAGE        0U
+#define CFG_PORT_0_SINK_PDO_7_VOLTAGE        0U
+
+#define CFG_PORT_0_SINK_PDO_1_CURRENT        3000U 
+#define CFG_PORT_0_SINK_PDO_2_CURRENT        3000U
+#define CFG_PORT_0_SINK_PDO_3_CURRENT        3000U
+#define CFG_PORT_0_SINK_PDO_4_CURRENT        3000U
+#define CFG_PORT_0_SINK_PDO_5_CURRENT        0U
+#define CFG_PORT_0_SINK_PDO_6_CURRENT        0U
+#define CFG_PORT_0_SINK_PDO_7_CURRENT        0U
+
+/********************************************************************************/
+/**********************************Port 1****************************************/
+/*********************************************************************************/
+/*Port 1 Dock common PDO configuration for Source and Sink*/
+#define CFG_PORT_1_DUAL_ROLE_POWER           1U 
+#define CFG_PORT_1_DUAL_ROLE_DATA            0U
+
+/*Port - 1 Dock Source PDO Configuration***/
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+#define CFG_PORT_1_SOURCE_NUM_OF_PDOS      5U
+#else 
+#define CFG_PORT_1_SOURCE_NUM_OF_PDOS      4U
+#endif 
+#define CFG_PORT_1_SOURCE_USB_SUSP           0U
+#define CFG_PORT_1_SOURCE_UNCONSTARINED_PWR  1U
+#define CFG_PORT_1_SOURCE_USB_COMM           0U
+
+#define CFG_PORT_1_SOURCE_PDO_1_VOLTAGE         5000U
+#define CFG_PORT_1_SOURCE_PDO_2_VOLTAGE         9000U
+#define CFG_PORT_1_SOURCE_PDO_3_VOLTAGE         15000U
+#define CFG_PORT_1_SOURCE_PDO_4_VOLTAGE         20000U
+#define CFG_PORT_1_SOURCE_PDO_5_VOLTAGE         0U
+#define CFG_PORT_1_SOURCE_PDO_6_VOLTAGE         0U
+#define CFG_PORT_1_SOURCE_PDO_7_VOLTAGE         0U
+
+#define CFG_PORT_1_SOURCE_PDO_1_CURRENT         3000U 
+#define CFG_PORT_1_SOURCE_PDO_2_CURRENT         3000U
+#define CFG_PORT_1_SOURCE_PDO_3_CURRENT         3000U
+#define CFG_PORT_1_SOURCE_PDO_4_CURRENT         3000U
+#define CFG_PORT_1_SOURCE_PDO_5_CURRENT         0U
+#define CFG_PORT_1_SOURCE_PDO_6_CURRENT         0U
+#define CFG_PORT_1_SOURCE_PDO_7_CURRENT         0U
+
+/* Source APDO defines */
+#define CFG_PORT_1_SOURCE_APDO_5_MIN_VOLTAGE    3300U
+#define CFG_PORT_1_SOURCE_APDO_5_MAX_VOLTAGE    21000U
+#define CFG_PORT_1_SOURCE_APDO_5_MAX_CURRENT    3000U
+#define CFG_PORT_1_SOURCE_APDO_5_PPS_PWR_LTD    0U
+
+/*Port - 1 Dock Sink PDO configuration*/
+#define CFG_PORT_1_SINK_NUM_OF_PDOS          1U
+#define CFG_PORT_1_SINK_HIGHER_CAPABILITY    1U
+#define CFG_PORT_1_SINK_UNCONSTRAINED_PWR    1U 
+#define CFG_PORT_1_SINK_USB_COMM             0U
+
+#define CFG_PORT_1_SINK_PDO_1_VOLTAGE        5000U
+#define CFG_PORT_1_SINK_PDO_2_VOLTAGE        0U
+#define CFG_PORT_1_SINK_PDO_3_VOLTAGE        0U
+#define CFG_PORT_1_SINK_PDO_4_VOLTAGE        0U
+#define CFG_PORT_1_SINK_PDO_5_VOLTAGE        0U
+#define CFG_PORT_1_SINK_PDO_6_VOLTAGE        0U
+#define CFG_PORT_1_SINK_PDO_7_VOLTAGE        0U
+
+#define CFG_PORT_1_SINK_PDO_1_CURRENT        0U 
+#define CFG_PORT_1_SINK_PDO_2_CURRENT        0U
+#define CFG_PORT_1_SINK_PDO_3_CURRENT        0U
+#define CFG_PORT_1_SINK_PDO_4_CURRENT        0U
+#define CFG_PORT_1_SINK_PDO_5_CURRENT        0U
+#define CFG_PORT_1_SINK_PDO_6_CURRENT        0U
+#define CFG_PORT_1_SINK_PDO_7_CURRENT        0U
+
+
+/********************************Sink Specific Configuration********************************/
+/*u8SinkConfigSel configuration*/
+/*Sink Mode A - 0x00, Mode B - 0x01*/
+#define CFG_PORT_0_SINK_MODE            0x00
+#define CFG_PORT_1_SINK_MODE            0x00
+/*Sink Give Back Flag - 0 - Disabled, 1 - Enabled*/
+#define CFG_PORT_0_SINK_GIVE_BACK_FLAG      (0U << 2)
+#define CFG_PORT_1_SINK_GIVE_BACK_FLAG      (0U << 2)
+/*Sink USB Suspend support - 0- Disabled, 1-Enabled*/
+#define CFG_PORT_0_SINK_USB_SUSP            (0U << 3)
+#define CFG_PORT_1_SINK_USB_SUSP            (0U << 3)
+
+#define CFG_PORT_0_SINK_MIN_OPERATING_CURRENT_InmA             1000U
+#define CFG_PORT_0_SINK_MAX_OPERATING_CURRENT_InmA             3000U
+#define CFG_PORT_1_SINK_MIN_OPERATING_CURRENT_InmA             0U
+#define CFG_PORT_1_SINK_MAX_OPERATING_CURRENT_InmA             0U
+
+#define CFG_PORT_0_SINK_PDO_1_PREFERRED_MIN_CURRENT 2000U
+#define CFG_PORT_0_SINK_PDO_2_PREFERRED_MIN_CURRENT 2000U
+#define CFG_PORT_0_SINK_PDO_3_PREFERRED_MIN_CURRENT 2000U
+#define CFG_PORT_0_SINK_PDO_4_PREFERRED_MIN_CURRENT 2000U
+#define CFG_PORT_0_SINK_PDO_5_PREFERRED_MIN_CURRENT 0U
+#define CFG_PORT_0_SINK_PDO_6_PREFERRED_MIN_CURRENT 0U
+#define CFG_PORT_0_SINK_PDO_7_PREFERRED_MIN_CURRENT 0U
+
+#define CFG_PORT_1_SINK_PDO_1_PREFERRED_MIN_CURRENT 0U
+#define CFG_PORT_1_SINK_PDO_2_PREFERRED_MIN_CURRENT 0U
+#define CFG_PORT_1_SINK_PDO_3_PREFERRED_MIN_CURRENT 0U
+#define CFG_PORT_1_SINK_PDO_4_PREFERRED_MIN_CURRENT 0U
+#define CFG_PORT_1_SINK_PDO_5_PREFERRED_MIN_CURRENT 0U
+#define CFG_PORT_1_SINK_PDO_6_PREFERRED_MIN_CURRENT 0U
+#define CFG_PORT_1_SINK_PDO_7_PREFERRED_MIN_CURRENT 0U
 
 /*********************DAC_I defines******************/
-#define CFG_PORT_SINK_DAC_I_MAX_OP_VOLTAGE             2500U
-#define CFG_PORT_SINK_DAC_I_MIN_OP_VOLTAGE             0U
-#define CFG_PORT_SINK_DAC_I_CUR_INDICATION_MAX         5000U
-#define CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT      0U
-#define CFG_PORT_SINK_DAC_I_DIR_HIGH_AMP_MIN_VOLT      1U
+#define CFG_PORT_0_SINK_DAC_I_MAX_OP_VOLTAGE             2500U
+#define CFG_PORT_0_SINK_DAC_I_MIN_OP_VOLTAGE             0U
+#define CFG_PORT_0_SINK_DAC_I_CUR_INDICATION_MAX         5000U
+#define CFG_PORT_0_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT      0U
+#define CFG_PORT_0_SINK_DAC_I_DIR_HIGH_AMP_MIN_VOLT      1U
 
-/*****************Sink Hardware defines**************/
-#define CFG_PORT_NOTE_SINK_MIN_OPERATING_CURRENT_InmA             1000U
-#define CFG_PORT_NOTE_SINK_MAX_OPERATING_CURRENT_InmA             3000U
-#define CFG_PORT_DOCK_SINK_MIN_OPERATING_CURRENT_InmA             0U
-#define CFG_PORT_DOCK_SINK_MAX_OPERATING_CURRENT_InmA             0U
+#define CFG_PORT_1_SINK_DAC_I_MAX_OP_VOLTAGE             2500U
+#define CFG_PORT_1_SINK_DAC_I_MIN_OP_VOLTAGE             0U
+#define CFG_PORT_1_SINK_DAC_I_CUR_INDICATION_MAX         5000U
+#define CFG_PORT_1_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT      0U
+#define CFG_PORT_1_SINK_DAC_I_DIR_HIGH_AMP_MIN_VOLT      1U
 
+
+/******************Swap Policy******************************************************/
 /**************************Role Swap Policy defines*****************************/
 #define CFG_PORT_AS_DFP_REQUEST_DR_SWAP_POS         0
 #define CFG_PORT_AS_UFP_REQUEST_DR_SWAP_POS         1
@@ -213,80 +297,27 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS          6
 #define CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS          7
 
-#define CFG_PORT_NOTE_AS_DFP_REQUEST_DR_SWAP  (0 << CFG_PORT_AS_DFP_REQUEST_DR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_UFP_REQUEST_DR_SWAP  (1 << CFG_PORT_AS_UFP_REQUEST_DR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_DFP_ACCEPT_DR_SWAP   (0 << CFG_PORT_AS_DFP_ACCEPT_DR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_UFP_ACCEPT_DR_SWAP   (1 << CFG_PORT_AS_UFP_ACCEPT_DR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_SRC_REQUEST_PR_SWAP  (1 << CFG_PORT_AS_SRC_REQUEST_PR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_SNK_REQUEST_PR_SWAP  (0 << CFG_PORT_AS_SNK_REQUEST_PR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_SRC_ACCEPT_PR_SWAP   (1 << CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_SNK_ACCEPT_PR_SWAP   (0 << CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS)
+#define CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP  (0 << CFG_PORT_AS_DFP_REQUEST_DR_SWAP_POS)
+#define CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP  (1 << CFG_PORT_AS_UFP_REQUEST_DR_SWAP_POS)
+#define CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP   (0 << CFG_PORT_AS_DFP_ACCEPT_DR_SWAP_POS)
+#define CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP   (1 << CFG_PORT_AS_UFP_ACCEPT_DR_SWAP_POS)
+#define CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP  (1 << CFG_PORT_AS_SRC_REQUEST_PR_SWAP_POS)
+#define CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP  (0 << CFG_PORT_AS_SNK_REQUEST_PR_SWAP_POS)
+#define CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP   (1 << CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS)
+#define CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP   (0 << CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS)
 
-#define CFG_PORT_DOCK_AS_DFP_REQUEST_DR_SWAP  (1 << CFG_PORT_AS_DFP_REQUEST_DR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_UFP_REQUEST_DR_SWAP  (0 << CFG_PORT_AS_UFP_REQUEST_DR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_DFP_ACCEPT_DR_SWAP   (1 << CFG_PORT_AS_DFP_ACCEPT_DR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_UFP_ACCEPT_DR_SWAP   (0 << CFG_PORT_AS_UFP_ACCEPT_DR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_SRC_REQUEST_PR_SWAP  (0 << CFG_PORT_AS_SRC_REQUEST_PR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_SNK_REQUEST_PR_SWAP  (1 << CFG_PORT_AS_SNK_REQUEST_PR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_SRC_ACCEPT_PR_SWAP   (0 << CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_SNK_ACCEPT_PR_SWAP   (1 << CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS)
-/*******************************************************************************/
+#define CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP  (0 << CFG_PORT_AS_DFP_REQUEST_DR_SWAP_POS)
+#define CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP  (0 << CFG_PORT_AS_UFP_REQUEST_DR_SWAP_POS)
+#define CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP   (1 << CFG_PORT_AS_DFP_ACCEPT_DR_SWAP_POS)
+#define CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP   (1 << CFG_PORT_AS_UFP_ACCEPT_DR_SWAP_POS)
+#define CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP  (0 << CFG_PORT_AS_SRC_REQUEST_PR_SWAP_POS)
+#define CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP  (0 << CFG_PORT_AS_SNK_REQUEST_PR_SWAP_POS)
+#define CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP   (0 << CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS)
+#define CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP   (0 << CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS)
 
-#define CFG_PORT_UPD_EN_VBUS               eUPD_PIO3
-#define CFG_PORT_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
-#define CFG_PORT_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
-#define CFG_PORT_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
-#define CFG_PORT_UPD_EN_SNK                eUPD_PIO6
-#define CFG_PORT_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 
-#define CFG_VCONN_OCS_EN_POS               9U
-#define CFG_VCONN_OCS_ENABLE               (1 << CFG_VCONN_OCS_EN_POS)
-#define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2U
-#define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5U
-
-#define CFG_MAX_PORT_CURRENT_IN_10mA       300U 
-
-/* Power Throttling Bank values */
-#define CFG_PD_THROTTLE_BANK_A             0U 
-#define CFG_PD_THROTTLE_BANK_B             1U
-#define CFG_PD_THROTTLE_BANK_C             2U
-#define CFG_PD_THROTTLE_SHUTDOWN_MODE      3U
-
-/* Default Total System Power Bank A is 120W */
-#define CFG_PB_TOT_SYS_POWER_BANKA            0x01E0U
-/* Guaranteed Minimum Power for Bank A is 15W */
-#define CFG_PB_MIN_POWER_BANKA                0x003CU
-/* Default Total System Power Bank B is 120W */
-#define CFG_PB_TOT_SYS_POWER_BANKB            0x01E0U
-/* Guaranteed Minimum Power for Bank A is 15W */
-#define CFG_PB_MIN_POWER_BANKB                0x003CU
-/* Default Total System Power Bank C is 120W */
-#define CFG_PB_TOT_SYS_POWER_BANKC            0x01E0U
-/* Guaranteed Minimum Power for Bank A is 15W */
-#define CFG_PB_MIN_POWER_BANKC                0x003CU
-
-/* Default Max Port Power for Bank A is 60W */
-#define CFG_PB_MAX_PORT_POWER_BANKA           0x00F0U
-/* Default Max Port Power for Bank B is 60W */
-#define CFG_PB_MAX_PORT_POWER_BANKB           0x00F0U
-/* Default Max Port Power for Bank C is 60W */
-#define CFG_PB_MAX_PORT_POWER_BANKC           0x00F0U
-/* Default Max Port current is 3A */
-#define CFG_PB_MAX_PORT_CURRENT               0x012CU
-
-/* Note: By default, PB is disabled for the system since support for 
-   PPS + PB coexistence is planned for future phases. If PB needs to be 
-   enabled, change the value of CFG_PB_ENABLE macro to 0x10U and 
-   CFG_PB_PORT_ENABLE to 0x01U. This will enable PB for the system 
-   with FCFS as Selection Algorithm and for the ports. */
-#define CFG_PB_ENABLE                         0x00U 
-#define CFG_PB_PORT_ENABLE                    0x00U
-
-/* Note: By default, PT is disabled for the system since support for 
-   PPS + PT coexistence is planned for future phases. If PT needs to 
-   be enabled, change the value of CFG_PT_ENABLE macro to 1U. */
-#define CFG_PT_ENABLE                         0U 
-
+/*****************Defines to form PDOs ****************************************/
+/* Macro used to form Fixed PDO 1 */
 /*Source PDO 
   B31-B30   - Supply Type
   B29       - Dual Power role
@@ -299,6 +330,15 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
   B21-B20   - Peak Current
   B19-B10   - Voltage in 50mV units
   B9-B0     - Maximum current in 10mA units */
+#define CFG_FORM_SOURCE_FIXED_PDO1(voltage,current,DualRoleData,usbCommn,usbSusp,unconstrainedPwr,isDrp) \
+    (((isDrp) << 29) | \
+    ((usbSusp) << 28) | \
+    ((unconstrainedPwr) << 27) | \
+    ((usbCommn) << 26) | \
+    ((DualRoleData) << 25) |\
+    (((voltage)/50) << 10) | \
+    ((current)/10))            
+
 /*Sink PDO 
   B31-B30   - Supply Type
   B29       - Dual Power role
@@ -310,16 +350,26 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
   B22-B20   - Reserved
   B19-B10   - Voltage in 50mV units
   B9-B0     - Maximum current in 10mA units */
-#define CFG_PDO_VOLTAGE_POS                   10U 
-#define CFG_PDO_VOLTAGE_UNIT                  50U
-#define CFG_PDO_CURRENT_UNIT                  10U
-#define CFG_PDO_DUAL_ROLE_DATA_POS            25U
-#define CFG_PDO_USB_COMMN_POS                 26U
-#define CFG_PDO_UNCONSTRAINED_PWR             27U
-#define CFG_PDO_USB_SUSPEND_POS               28U
-#define CFG_PDO_DUAL_ROLE_PWR_POS             29U
+/* Macro used to form Sink Fixed PDO 1 */
+#define CFG_FORM_SINK_FIXED_PDO1(current,voltage,DualRoleData,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
+    (((isDrp) << 29) | \
+    (((HigherCapability) << 28)) | \
+    ((unconstrainedPwr) << 27) | \
+    ((usbCommn) << 26) | \
+    ((DualRoleData) << 25) |\
+    (((voltage)/50) << 10) | \
+    ((current)/10))  
 
-#define CFG_PDO_HIGHER_CAPABILITY_POS         28U
+/* Macro used to form Fixed PDOs 2 to 7 */
+#define CFG_FORM_FIXED_PDOx(voltage,current)   ((((voltage)/50) << 10) | ((current)/10))
+
+
+/* Macro used to form PPS APDO */
+#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) \
+    << CFG_APDO_PWR_SUPPLY_TYPE_POS) | ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
+    (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
+    (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
+    (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
 
 /* Power Supply type - Bits 31:10 of Power Data Object */
 #define CFG_POWER_SUPPLY_TYPE_FIXED           0x00U
@@ -338,6 +388,19 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_APDO_MIN_VOLTAGE_UNIT              100U
 #define CFG_APDO_MAX_VOLTAGE_UNIT              100U
 #define CFG_APDO_MAX_CURRENT_UNIT              50U
+
+
+/* Default Max Port Power for Bank A is 60W */
+#define CFG_PB_MAX_PORT_POWER_BANKA           0x00F0U
+/* Default Max Port Power for Bank B is 60W */
+#define CFG_PB_MAX_PORT_POWER_BANKB           0x00F0U
+/* Default Max Port Power for Bank C is 60W */
+#define CFG_PB_MAX_PORT_POWER_BANKC           0x00F0U
+/* Default Max Port current is 3A */
+#define CFG_PB_MAX_PORT_CURRENT               0x012CU
+
+
+#define CFG_PB_PORT_ENABLE                    0x00U
 
 
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData); 
