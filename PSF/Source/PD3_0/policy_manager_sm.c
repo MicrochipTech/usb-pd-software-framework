@@ -538,16 +538,27 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             break; 
         }
         case eMCHP_PSF_PR_SWAP_COMPLETE:
-        {
-            #if (TRUE == INCLUDE_PD_PR_SWAP)
+        {            
             /*Clear Partner PDO registers so that Get Sink Caps event would be 
-              triggered once an explicit contract is established */
-            for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
+              triggered once an explicit contract is established.
+              Note: eMCHP_PSF_PR_SWAP_COMPLETE would be posted when 
+              1. Source to Sink PR_Swap is complete
+              2. Sink to Source PR_Swap is complete 
+              3. PR_Swap initiated by PSF is rejected by the partner
+              Clearing of Partner PDOs should not happen during 3rd scenario and hence the if 
+              condition */
+            #if (TRUE == INCLUDE_PD_PR_SWAP)
+            if ((ePE_SRC_STARTUP == gasPolicyEngine[u8PortNum].ePEState) || 
+                    (ePE_SNK_STARTUP == gasPolicyEngine[u8PortNum].ePEState))
             {
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
+                for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
+                {
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
+                }
+                gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
             }
-            gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
             #endif
+            break; 
         }
         default:
             break;
