@@ -521,7 +521,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         
                         /* The Policy Engine then directs the Protocol Layer to generate a 
                            PS_RDY Message, with the Port Power Role bit in the Message 
-                           Header set to ?Sink?, to tell its Port Partner that it 
+                           Header set to Sink, to tell its Port Partner that it 
                            can begin to Source VBUS. */  
                         DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SINK); 
                         

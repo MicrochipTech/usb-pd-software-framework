@@ -611,6 +611,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
+#if (TRUE == INCLUDE_PD_3_0)
+	UINT8 u8InternalEvntInProgress; //carries internal event that is currently in progress  
+#endif
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
       UINT8 u8PowerFaultISR;          //Power fault ISR flag
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
