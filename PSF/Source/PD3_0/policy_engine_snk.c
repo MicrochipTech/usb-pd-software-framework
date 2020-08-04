@@ -225,7 +225,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     u16TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_REQUEST,\
                                             PE_OBJECT_COUNT_1, PE_NON_EXTENDED_MSG);
                     
-                    u32DataObj[0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
+                    u32DataObj[Index_0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to Soft reset state if

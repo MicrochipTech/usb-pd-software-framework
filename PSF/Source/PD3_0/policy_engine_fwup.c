@@ -73,7 +73,7 @@ void PE_FwUpdtInitialize(void)
     gsPdfuInfo.u16PDFUResponseLength = SET_TO_ZERO;
     gsPdfuInfo.u8TransferPhaseComplete = PE_FWUP_TRANSFER_PHASE_NOTSTARTED;
     gsPdfuInfo.u16ExptDataBlockIdx = SET_TO_ZERO;
-    gsPdfuInfo.pu8ResponseBuffer = &gu8PDFUResBuffer[0];
+    gsPdfuInfo.pu8ResponseBuffer = &gu8PDFUResBuffer[Index_0];
 }
 
 /**************************************************************************************************
@@ -356,7 +356,7 @@ void PE_FwUpdtTxDoneCallBack(
     if(gasPRL [u8PortNum].u8TxStateISR != PRL_TX_DONE_ST)
     {   /** The response has not been sent */
         gsPdfuInfo.u8EventType |= PE_FWUP_TIMEOUT_EVT;
-        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = 0x00;
+        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = SET_TO_ZERO;
         gsPdfuInfo.u8ResendResponseTimes++;
     }
     else
