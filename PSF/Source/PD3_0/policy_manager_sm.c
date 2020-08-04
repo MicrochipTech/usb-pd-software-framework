@@ -35,31 +35,21 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 void DPM_Init(UINT8 u8PortNum)
 {
     UINT8 u8CfgPowerRole = DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum);
-    UINT8 u8DataRole = SET_TO_ZERO;
 
-    if(PD_ROLE_SOURCE == u8CfgPowerRole)
-    {   
-        u8DataRole = PD_ROLE_DFP;
-    }       
-    else if(PD_ROLE_SINK == u8CfgPowerRole)
-    {
-        u8DataRole = PD_ROLE_UFP;
-    }
-    else
-    {
-#if(TRUE == INCLUDE_PD_DRP)
-        u8DataRole = PD_ROLE_TOGGLING;
-#endif
-    }
+    /*Assigning u8CfgPowerRole in places of both power and data roles because,
+     during init, power and data roles will be tied together and they have same values.
+     PD_ROLE_SOURCE - PD_ROLE_DFP - Value is 1
+     PD_ROLE_SINK - PD_ROLE_UFP - Value is 0
+     PD_ROLE_DRP - PD_ROLE_TOGGLING - Value is 2*/
     
-    DPM_UpdateDataRole(u8PortNum, u8DataRole);
+    DPM_UpdateDataRole(u8PortNum, u8CfgPowerRole);
     DPM_UpdatePowerRole(u8PortNum, u8CfgPowerRole); 
     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;        
 
     /*Update PD spec revision, power and data roles in u8DPMConfigData*/
 	gasDPM[u8PortNum].u8DPMConfigData |= ((CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS)\
             | (u8CfgPowerRole << DPM_DEFAULT_POWER_ROLE_POS) \
-            | (u8DataRole << DPM_DEFAULT_DATA_ROLE_POS));
+            | (u8CfgPowerRole << DPM_DEFAULT_DATA_ROLE_POS));
    
     /*Update PD spec revision in u16DPMStatus*/
     gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
