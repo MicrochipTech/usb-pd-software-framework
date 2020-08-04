@@ -644,7 +644,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* Initialize and run PSSourceOffTimer. 
                        Note: DPM_VBUSorVCONNOnOff_TimerCB API is reused for PSSourceOff 
                        timer call back intentionally, as both the time outs invoke
-                       Error Recovery. This would save the usage of code memory  */
+                       Error Recovery. This would save the usage of code memory.
+                       DPM_CLR_PR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
+                       so that PR_Swap In Progress mask would be cleared on Timeout */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_PS_SOURCE_OFF_TIMEOUT_MS),
                                                             DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
