@@ -570,13 +570,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         {
                             /*Set BLK_PD_MSG. Done in cronus*/
                             UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
-#if(TRUE == INCLUDE_PD_DRP)                            
+                            #if(TRUE == INCLUDE_PD_DRP)                            
                             /*Enable DC_DC_EN if DRP acts as source*/
                             /*For configurations other than DRP, DC_DC_EN is high by default*/
                             PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
-#endif
-                             gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
-                             gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
+                            #endif
+                            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
+                            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
                         }
                         
                         PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
@@ -611,21 +611,21 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         /* Set the Port Power role variable as Source, so that 
                            moving forward all the APIs would act upon the new power role */
-                        DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
+                        DPM_UpdatePowerRole (u8PortNum, PD_ROLE_SOURCE);
                         
                         /* Enable DC_DC_EN pin for Source functionality */
-                        PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);                                                
+                        PWRCTRL_ConfigDCDCEn (u8PortNum, TRUE);                                                
                         
                         /* CC Comparator would have been turned off in 
                          TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS sub-state. No need
                          to do it here once again */
                         /* Configure the device role as DFP for the 
                            UPD350 to act as Source */
-                        TypeC_SetCCDeviceRole (u8PortNum,PD_ROLE_DFP);
+                        TypeC_SetCCDeviceRole (u8PortNum, PD_ROLE_DFP);
                         /* Get Rp value from user configuration */
                         UINT8 u8Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                         /*Set the u8CCDebMatch and u8CCSrcSnkMatch variable accordingly as per Rp Value*/
-                        TypeC_SetCCDebounceVariable(u8PortNum, u8Data);
+                        TypeC_SetCCDebounceVariable (u8PortNum, u8Data);
                                
                         UINT8 u8CCEnablePin, u8CCCompCtrl; 
                         /* It is always recommended to enable thresholds on the other pin when we (as UPD350) 
@@ -664,7 +664,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                 case TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS:
                 {
-                    /* Idle state to wait for CC match valid interrupt */
+                    /* Source waits in this sub-state to detect the presence of Sink */
                     break; 
                 }
 #endif 
@@ -1515,7 +1515,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
                         TypeC_SetCCPowerRole(u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);                    
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_ENTRY_SS; 
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS; 
                     }
                     
                     /*Setting CC Comparator ON*/
