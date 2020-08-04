@@ -1284,7 +1284,9 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     /*Clear all Internal events except Alert*/
     gasDPM[u8PortNum].u8DPMInternalEvents = (gasDPM[u8PortNum].u8DPMInternalEvents\
                                             & DPM_INT_EVT_INITIATE_ALERT);
-
+    #if (TRUE ==  INCLUDE_PD_3_0)
+    gasDPM[u8PortNum].u8InternalEvntInProgress = SET_TO_ZERO;
+    #endif
 }
 
 /********************* DPM API to check if PPS APDO is advertised ********************/

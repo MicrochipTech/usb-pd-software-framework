@@ -54,6 +54,10 @@ void DPM_Init(UINT8 u8PortNum)
     /*Update PD spec revision in u16DPMStatus*/
     gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
 
+#if (TRUE ==  INCLUDE_PD_3_0)
+    gasDPM[u8PortNum].u8InternalEvntInProgress = SET_TO_ZERO;
+#endif
+    gasDPM[u8PortNum].u8DPMInternalEvents = SET_TO_ZERO;
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
@@ -686,7 +690,7 @@ void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
 
 void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
-    UINT8 u8IsAmsInitiated = FALSE, u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    UINT8 u8IsAmsInProgress = FALSE, u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     
 #if (TRUE == INCLUDE_PD_3_0)
     /* Process internal events only when the Policy Engine is in PS_RDY state*/
@@ -710,7 +714,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;
-                u8IsAmsInitiated = TRUE;
+                u8IsAmsInProgress = DPM_INT_EVT_INITIATE_GET_SINK_CAPS;
             }
             else
             {
@@ -737,7 +741,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                 /* TBD for Sink*/
             }
-            u8IsAmsInitiated = TRUE;
+            u8IsAmsInProgress = DPM_INT_EVT_INITIATE_RENEGOTIATION;
         }
         else if (DPM_INT_EVT_INITIATE_VCONN_SWAP == (gasDPM[u8PortNum].u8DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_VCONN_SWAP))
@@ -747,7 +751,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             
             if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
             {
-                u8IsAmsInitiated = TRUE;
+                u8IsAmsInProgress = DPM_INT_EVT_INITIATE_VCONN_SWAP;
                 /* TODO: <VCONN-SWAP> <To add policy engine states to initiate VCONN_SWAP> */
             }
             
@@ -767,7 +771,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                 gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SEND_SWAP;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;
-                u8IsAmsInitiated = TRUE;
+                u8IsAmsInProgress = DPM_INT_EVT_INITIATE_PR_SWAP;
             }
         }
 #endif /*INCLUDE_PD_PR_SWAP*/
@@ -785,7 +789,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_SEND_SWAP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
-                    u8IsAmsInitiated = TRUE;
+                    u8IsAmsInProgress = DPM_INT_EVT_INITIATE_DR_SWAP;
                 
             }
         }
@@ -803,7 +807,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;
-                u8IsAmsInitiated = TRUE;
+                u8IsAmsInProgress = DPM_INT_EVT_INITIATE_ALERT;
             }
             else
             {
@@ -828,7 +832,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;
-                u8IsAmsInitiated = TRUE;
+                u8IsAmsInProgress = DPM_INT_EVT_INITIATE_GET_STATUS;
             }
             else
             {
@@ -842,9 +846,10 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         }
           
     }
-    if (u8IsAmsInitiated)
+    if (u8IsAmsInProgress)
     {
         #if (TRUE == INCLUDE_PD_3_0)
+		gasDPM[u8PortNum].u8InternalEvntInProgress = u8IsAmsInProgress;
         if (PD_ROLE_SOURCE == u8DPMPowerRole)
         {
             PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXNG);   
