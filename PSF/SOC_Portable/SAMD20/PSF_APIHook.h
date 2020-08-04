@@ -1025,8 +1025,8 @@ Description:
 	algorithm backend for Power management control. If there is no activity in UPD350 for 
 	CONFIG_PORT_UPD_IDLE_TIMEOUT_MS corresponding UPD350 is put to low power mode. When all the
 	UPD350 present in the system enters low mode, eMCHP_PSF_UPDS_IN_IDLE is posted. User can put 
-	SOC in low power mode as required on this notification. This notification occurs only when
-    INCLUDE_POWER_MANAGEMENT_CTRL defined as 1.
+	SoC in low power mode as required on this notification. This notification occurs only when
+    INCLUDE_POWER_MANAGEMENT_CTRL is defined as 1.
     
     <b> eMCHP_PSF_VCONN_PWR_FAULT:</b> UPD350 has VCONN comparators to detect VCONN OCS faults. 
 	This event is notified when VCONN OCS fault is detected by UPD350. For this notification, PSF
@@ -1056,39 +1056,46 @@ Description:
    
     <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
     Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
-    message initiated by PSF. Application can read the sink capabilities by accessing 
+    message initiated by PSF. Application can read the Sink Capabilities by accessing 
     gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[7]. This event is applicable 
-    only when PSF is operating as Source.  
+    only when PSF is operating as Source or the power role of the port is resolved as 
+    Source during DRP operation.  
     
     <b> eMCHP_PSF_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink capabilities has not been received from Port Partner within tSenderResponseTimer
     as a response to the Get_Sink_Caps message initiated by PSF. This event is applicable 
-    only when PSF is operating as Source.  
+    only when PSF is operating as Source or the power role of the port is resolved as 
+    Source during DRP operation. 
     
     <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
     mismatch with Source partner PDOs in a PD negotiation. This event is applicable 
-    only when PSF is operating as Sink.
+    only when PSF is operating as Sink or the power role of the port is resolved as 
+    Sink during DRP operation. 
     
     <b> eMCHP_PSF_NEW_SRC_CAPS_RCVD</b>: It is notified by PSF when new source capability
     message is received from the Source Partner. This event is applicable 
-    only when PSF is operating as Sink.
+    only when PSF is operating as Sink or the power role of the port is resolved as 
+    Sink during DRP operation. 
   
     <b> eMCHP_PSF_SINK_ALERT_RCVD</b>: This event is used by PSF to notify application when PD
 	Alert message has been received from Sink Partner. Application can read the alert
-    information by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlert.
-    This event is applicable only when PSF is operating as Source.  
+    data by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlert.
+    This event is applicable only when PSF is operating as Source or the power role of the port 
+    is resolved as Source during DRP operation.   
  
     <b> eMCHP_PSF_SINK_STATUS_RCVD</b>: This event is used by PSF to notify application when 
     Sink Status has been received from Port Partner in response to the Get_Status
     message initiated by PSF. Application can read the Sink Status by accessing 
     gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6]
-    This event is applicable only when PSF is operating as Source.   
+    This event is applicable only when PSF is operating as Source or the power role of the port is
+    resolved as Source during DRP operation. 
  
     <b> eMCHP_PSF_SINK_STATUS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink Status has not been received from Port Partner within tSenderResponseTimer
     as a response to the Get_Status message initiated by PSF.
     gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
-    when this notification is posted. This event is applicable only when PSF is operating as Source. 
+    when this notification is posted. This event is applicable only when PSF is operating as Source
+    or the power role of the port is resolved as Source during DRP operation. 
  
     <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: In case of PR_Swap initiated by the PSF port, 
     this notification would be posted when the swap message is accepted by port partner and 
@@ -1209,7 +1216,7 @@ Remarks:
     eMCHP_PSF_GPIO_FUNCTIONALITY enum defines the various GPIO
     functionality Pins that are used in PSF.
     <table>
-    Funtionality              \Input/Output   \Description
+    Functionality             \Input/Output   \Description
     ------------------------  --------------  -----------------------------------------------------------------
     eUPD350_ALERT_FUNC        \Input          * PSF requires a GPIO specific to each port of UPD350 for
                                                  interrupt detection via UPD350's IRQ_N lines.
@@ -1556,8 +1563,8 @@ Conditions:
     It is applicable only for Sink operation.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u16voltage -  Enable Sink HW Circuitry if the u16voltage is not Vsafe0V to drain power.
-                    Disable sink HW circuitry if the u16voltage is VSafe0V.
+    u16voltage -  Enable Sink HW Circuitry if the u16voltage is not vSafe0V to drain power.
+                    Disable sink HW circuitry if the u16voltage is vSafe0V.
                     Configure the HW to requested u16voltage in mV.
     u16Current -  Configure the HW for the requested current passed in terms of mA.
 Return:
@@ -1690,7 +1697,7 @@ Remarks:
     This hook is called when PSF needs to know about the current drawn from
     external DC_DC controller. The function should be defined with return
     type UINT32 and UINT8 type as input parameter. If the DC_DC controller
-    doesnot have feature to get output current, return 0xFFFFFFFF to denote
+    does not have feature to get output current, return 0xFFFFFFFF to denote
     the feature is not supported.
   Conditions:
     \Output Current shall be returned in terms of mA.

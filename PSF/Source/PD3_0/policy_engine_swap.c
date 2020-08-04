@@ -567,7 +567,10 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         TimerID does not hold any valid timer IDs anymore */
                     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
                     
-                    /* Revert the port's power role and invoke Type C Error Recovery */
+                    /* Revert the port's power role to Source and invoke Type C Error Recovery, 
+                       so that Type C SM would move to Unattached Source state after Error 
+                       recovery where the DrpLastAttachedState condition would pass and DRP 
+                       Offload would be enabled */
                     DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
                     
                     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
@@ -645,7 +648,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_PS_SOURCE_OFF_TIMEOUT_MS),
                                                             DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
-                                                            (UINT8)SET_TO_ZERO);
+                                                            (UINT8)DPM_CLR_PR_SWAP_IN_PROGRESS_MASK);
                
                     /* Assign an idle state to wait for PS_RDY reception */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS;                                                                                    
@@ -690,10 +693,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                             (TYPEC_ATTACHED_SRC_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS\r\n");
-                        /* Port has transitioned into Source.  
-                           Send PS_RDY message with power role updated as Source */                        
-                        
-                        /* Inform Protocol Layer of the port power role change */
+                        /*  Policy Engine, when its power supply is ready to supply power,
+                            tells the Protocol Layer to form a PS_RDY Message */
+                            
+                        /*  The Port Power Role bit used in this and subsequent Message 
+                            Headers is now set to 'Source' */                                                                        
                         PRL_UpdateSpecAndDeviceRoles (u8PortNum);
                         
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
@@ -712,7 +716,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS\r\n");
                     
-                    /* Start SwapSourceStart timer */
+                    /* Start SwapSourceStart timer which must timeout before sending 
+                       any Source_Capabilities Message */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_SWAP_SOURCE_START_TIMEOUT_MS),
                                                             PE_SubStateChange_TimerCB,u8PortNum,  
@@ -726,10 +731,18 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS\r\n");
                     /* This sub-state would be entered if PS_Rdy message 
-                       transmission fails. Revert the power role to Sink and 
-                       invoke Type C Error Recovery */
-                    DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SINK);
+                       is not sent after retries */
+                    /* Clear the PR_Swap In Progress Flag since PE would come out of Swap 
+                       SM after this and this flag should not cause any issues during the normal 
+                       flow */
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
                     
+                    /* No need to revert the port role to Sink since gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState 
+                       would be PD_ROLE_SOURCE. After Error recovery, Type C SM would enter 
+                       Unattached Source state and DRP offload would be enabled there.
+                       If role is updated as Sink, then Type C SM would move to Unattached 
+                       Sink after Error recovery where the DrpLastAttachedState condition would fail
+                       and DRP Offload will not be enabled */
                     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                     
                     gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
@@ -749,10 +762,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        timer times out */                    
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
                     
-                    /* Clear the PR_Swap in progress flag */
+                    /* Clear the PR_Swap in progress flag since the Swap is complete */
                     gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
                     
-                    /* Move the Policy Engine to PE_SRC_STARTUP state */
+                    /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
+                       and Protocol Layer would be taken care by the startup state */
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
                     

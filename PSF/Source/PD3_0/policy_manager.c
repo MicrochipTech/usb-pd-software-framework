@@ -41,6 +41,16 @@ void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
     
     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
+    
+    #if (TRUE == INCLUDE_PD_PR_SWAP)
+    /* Clear the PR_Swap In Progress Flag during PSSourceOff Timer expiry.
+       This scenario would get hit only when PS_RDY is not received from the 
+       Original Source during Sink to Source PR_Swap  */
+    if (DPM_CLR_PR_SWAP_IN_PROGRESS_MASK == u8DummyVariable)
+    {
+        gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+    }
+    #endif 
 }
 void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
