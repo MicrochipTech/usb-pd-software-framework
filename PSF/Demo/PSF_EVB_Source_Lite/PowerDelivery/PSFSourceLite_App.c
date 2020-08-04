@@ -109,6 +109,12 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             u8RetVal = TRUE;
             break;
         }
+        
+        case eMCHP_PSF_PORT_POWERED_OFF:
+        {
+            break;
+        }
+        
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             break;

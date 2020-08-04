@@ -1040,12 +1040,17 @@ Description:
     <b> eMCHP_PSF_VBUS_PWR_FAULT</b>: PSF notifies all VBUS power fault VBUS Over voltage, VBUS
 	under voltage, VBUS OCS via this notification. For this notification, PSF expects a return
 	value to decide whether to handle the fault occurred.When user returns TRUE for power fault,
-    Incase of explicit contract, if power fault count is less than CONFIG_MAX_VBUS_POWER_FAULT_COUNT,
+    Incase of explicit contract, if power fault count is less than CFG_MAX_VBUS_POWER_FAULT_COUNT,
 	PSF DPM power fault manager handles it by sending Hard Reset. When the power fault count 
 	exceeds the max fault count,CC termination on the port is removed until the physical detach of
 	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery.
 	This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
  
+    <b> eMCHP_PSF_PORT_POWERED_OFF</b>: This event is used by PSF to notify application when 
+    the port has been powered off as a result of VBUS or VCONN fault count exceeding the 
+    CFG_MAX_VBUS_POWER_FAULT_COUNT or CFG_MAX_VCONN_FAULT_COUNT respectively within 
+    CFG_POWER_GOOD_TIMER_MS time period. 
+
     <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
     established with the Port partner.
    
@@ -1133,6 +1138,7 @@ eMCHP_PSF_TYPEC_ERROR_RECOVERY,     // Entered Error recovery State
 eMCHP_PSF_UPDS_IN_IDLE,             // All the UPD350s are in Idle
 eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
+eMCHP_PSF_PORT_POWERED_OFF,         // Port powered off since fault count exceeded maximum fault count        
 eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
 eMCHP_PSF_SINK_CAPS_RCVD,          // Sink Caps received from Port Partner
 eMCHP_PSF_SINK_CAPS_NOT_RCVD,      // Sink Caps not received from Port Partner

@@ -241,6 +241,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				/* Assign an idle state wait for detach*/
                 gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state");
+                
+                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
             }/*end of if condition of VBUS max count exceed check*/
             else
             {
@@ -357,6 +359,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state");
                 
                 gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_TYPEC_ERR_RECOVERY_FLAG_MASK);
+                
+                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
             }
         } /*end of if condition that checks implicit contract*/
         else
