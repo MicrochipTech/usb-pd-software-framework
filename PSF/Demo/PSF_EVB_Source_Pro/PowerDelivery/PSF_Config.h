@@ -605,20 +605,22 @@ Example:
 #define INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION            0
 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: PIO configurations
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
+/******************************************************************************************************
+  Section:
+     PIO configurations
+    
+    * *************************************************************************** *
+    * *************************************************************************** *
+    * *********************************************************************************************** *
+  Summary:
     UPD350 GPIO Output mode enum.
-Description:
-	eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes applicable for UPD350 GPIO
-    in output mode.
-Remarks:
-        None
-**************************************************************************************************/
+  Description:
+    eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes
+    applicable for UPD350 GPIO in output mode. This is applicable only for
+    EN_SINK and EN_VBUS unctionality.
+  Remarks:
+    None                                                                                               
+  ******************************************************************************************************/
 typedef enum
 {
     ePUSH_PULL_ACTIVE_HIGH       = 0x0CU,   // Active High output signal
@@ -1340,7 +1342,7 @@ typedef enum
 	</table> 	
 		
 	<b>e. u32ClientRequest</b>: 
-	u32ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
+	u32ClientRequest variable defines the client request mask bits. It's size is 4 bytes. Application 
 	can make use of this variable to request PSF to handle the mentioned client requests. Except 
 	VBUS Power Fault Request, all the other requests cannot coexist i.e Only one 
 	client request could be handled by PSF at a given time. So, it is recommended that the 
@@ -1374,11 +1376,7 @@ typedef enum
 									notification would be posted depending on the Sink partner's 
 									response to Get_Sink_Caps message. User can read the received 
 									sink capabilities from u32aPartnerPDO array. 
-    2       R/W          R/W       Get Sink capabilities Extended Request 
-                                    * '0' PSF has not received any request for getting the extended 
-										  sink capabilities.
-                                    * '1' PSF has received a request for getting the extended sink 
-									      capabilities.
+    2       R/W          R/W       Reserved 
     3       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
                                     * Set this bit to request PSF to process externally detected
                                         over voltage VBUS fault.
