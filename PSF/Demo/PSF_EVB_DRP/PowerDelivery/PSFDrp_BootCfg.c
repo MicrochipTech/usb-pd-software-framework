@@ -52,8 +52,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* ************************************************************************** */
 static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-
 static void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
@@ -133,16 +131,6 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
     }
     
     
-}
-
-static void CFG_PBPerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
-{   
-    #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))
-    pasCfgStatusData->sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_POWER_BANKA;
-    pasCfgStatusData->sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW = CFG_PB_MAX_PORT_POWER_BANKB;
-    pasCfgStatusData->sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW = CFG_PB_MAX_PORT_POWER_BANKC;
-    pasCfgStatusData->sPBPerPortData[u8PortNum].u8PortPriority = u8PortNum;
-    #endif
 }
 
 static void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
@@ -377,11 +365,20 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     for (u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
         CFG_PerPortParams (u8PortNum, pasCfgStatusData);  
-        CFG_PBPerPortParams (u8PortNum, pasCfgStatusData);
     }
+    #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))
+    pasCfgStatusData->sPBPerPortData[PORT0].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_0_POWER_BANKA_IN_250mW;
+    pasCfgStatusData->sPBPerPortData[PORT0].u16MaxPrtPwrBankBIn250mW = CFG_PB_MAX_PORT_0_POWER_BANKB_IN_250mW;
+    pasCfgStatusData->sPBPerPortData[PORT0].u16MaxPrtPwrBankCIn250mW = CFG_PB_MAX_PORT_0_POWER_BANKC_IN_250mW;
+    pasCfgStatusData->sPBPerPortData[PORT0].u8PortPriority = PORT0;
+    
+    pasCfgStatusData->sPBPerPortData[PORT1].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_1_POWER_BANKA_IN_250mW;
+    pasCfgStatusData->sPBPerPortData[PORT1].u16MaxPrtPwrBankBIn250mW = CFG_PB_MAX_PORT_1_POWER_BANKB_IN_250mW;
+    pasCfgStatusData->sPBPerPortData[PORT1].u16MaxPrtPwrBankCIn250mW = CFG_PB_MAX_PORT_1_POWER_BANKC_IN_250mW;
+    pasCfgStatusData->sPBPerPortData[PORT1].u8PortPriority = PORT1;
+    #endif
 
 }
-
 
 /* *****************************************************************************
  End of File

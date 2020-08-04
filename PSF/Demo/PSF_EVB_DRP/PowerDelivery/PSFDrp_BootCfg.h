@@ -58,6 +58,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    CFG_PB_PORT_ENABLE to 0x01U. This will enable PB for the system 
    with FCFS as Selection Algorithm and for the ports. */
 #define CFG_PB_ENABLE                         0x00U 
+#define CFG_PB_PORT_ENABLE                    0x00U
+
 /* Default Total System Power Bank A is 120W */
 #define CFG_PB_TOT_SYS_POWER_BANKA_IN_250mW            0x01E0U 
 /* Guaranteed Minimum Power for Bank A is 15W */
@@ -70,6 +72,19 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PB_TOT_SYS_POWER_BANKC_IN_250mW            0x01E0U
 /* Guaranteed Minimum Power for Bank A is 15W */
 #define CFG_PB_MIN_POWER_BANKC_IN_250mW                0x003CU
+
+/* Default Max Port Power for Bank A is 60W */
+#define CFG_PB_MAX_PORT_0_POWER_BANKA_IN_250mW           0x00F0U
+/* Default Max Port Power for Bank B is 60W */
+#define CFG_PB_MAX_PORT_0_POWER_BANKB_IN_250mW           0x00F0U
+/* Default Max Port Power for Bank C is 60W */
+#define CFG_PB_MAX_PORT_0_POWER_BANKC_IN_250mW           0x00F0U
+
+#define CFG_PB_MAX_PORT_1_POWER_BANKA_IN_250mW           0x00F0U
+/* Default Max Port Power for Bank B is 60W */
+#define CFG_PB_MAX_PORT_1_POWER_BANKB_IN_250mW           0x00F0U
+/* Default Max Port Power for Bank C is 60W */
+#define CFG_PB_MAX_PORT_1_POWER_BANKC_IN_250mW           0x00F0U
 
 /***********************************Port Specific configuration***********************/    
 /*Configuration value for u32CfgData*/
@@ -297,24 +312,23 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS          6
 #define CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS          7
 
-#define CFG_PORT_NOTE_AS_DFP_REQUEST_DR_SWAP  (0 << CFG_PORT_AS_DFP_REQUEST_DR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_UFP_REQUEST_DR_SWAP  (1 << CFG_PORT_AS_UFP_REQUEST_DR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_DFP_ACCEPT_DR_SWAP   (0 << CFG_PORT_AS_DFP_ACCEPT_DR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_UFP_ACCEPT_DR_SWAP   (1 << CFG_PORT_AS_UFP_ACCEPT_DR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_SRC_REQUEST_PR_SWAP  (1 << CFG_PORT_AS_SRC_REQUEST_PR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_SNK_REQUEST_PR_SWAP  (0 << CFG_PORT_AS_SNK_REQUEST_PR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_SRC_ACCEPT_PR_SWAP   (1 << CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS)
-#define CFG_PORT_NOTE_AS_SNK_ACCEPT_PR_SWAP   (0 << CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS)
+#define CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP  (0 << CFG_PORT_AS_DFP_REQUEST_DR_SWAP_POS)
+#define CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP  (1 << CFG_PORT_AS_UFP_REQUEST_DR_SWAP_POS)
+#define CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP   (0 << CFG_PORT_AS_DFP_ACCEPT_DR_SWAP_POS)
+#define CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP   (1 << CFG_PORT_AS_UFP_ACCEPT_DR_SWAP_POS)
+#define CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP  (1 << CFG_PORT_AS_SRC_REQUEST_PR_SWAP_POS)
+#define CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP  (0 << CFG_PORT_AS_SNK_REQUEST_PR_SWAP_POS)
+#define CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP   (1 << CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS)
+#define CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP   (0 << CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS)
 
-#define CFG_PORT_DOCK_AS_DFP_REQUEST_DR_SWAP  (1 << CFG_PORT_AS_DFP_REQUEST_DR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_UFP_REQUEST_DR_SWAP  (0 << CFG_PORT_AS_UFP_REQUEST_DR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_DFP_ACCEPT_DR_SWAP   (1 << CFG_PORT_AS_DFP_ACCEPT_DR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_UFP_ACCEPT_DR_SWAP   (0 << CFG_PORT_AS_UFP_ACCEPT_DR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_SRC_REQUEST_PR_SWAP  (0 << CFG_PORT_AS_SRC_REQUEST_PR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_SNK_REQUEST_PR_SWAP  (1 << CFG_PORT_AS_SNK_REQUEST_PR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_SRC_ACCEPT_PR_SWAP   (0 << CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS)
-#define CFG_PORT_DOCK_AS_SNK_ACCEPT_PR_SWAP   (1 << CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS)
-
+#define CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP  (1 << CFG_PORT_AS_DFP_REQUEST_DR_SWAP_POS)
+#define CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP  (0 << CFG_PORT_AS_UFP_REQUEST_DR_SWAP_POS)
+#define CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP   (1 << CFG_PORT_AS_DFP_ACCEPT_DR_SWAP_POS)
+#define CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP   (0 << CFG_PORT_AS_UFP_ACCEPT_DR_SWAP_POS)
+#define CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP  (0 << CFG_PORT_AS_SRC_REQUEST_PR_SWAP_POS)
+#define CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP  (1 << CFG_PORT_AS_SNK_REQUEST_PR_SWAP_POS)
+#define CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP   (0 << CFG_PORT_AS_SRC_ACCEPT_PR_SWAP_POS)
+#define CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP   (1 << CFG_PORT_AS_SNK_ACCEPT_PR_SWAP_POS)
 
 /*****************Defines to form PDOs ****************************************/
 /* Macro used to form Fixed PDO 1 */
@@ -363,44 +377,23 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Macro used to form Fixed PDOs 2 to 7 */
 #define CFG_FORM_FIXED_PDOx(voltage,current)   ((((voltage)/50) << 10) | ((current)/10))
 
-
+/*APDO Source
+  B31-30    -11b Augumented Power Data Object
+  B29-28    - 00b Programmable Power Supply
+  B27       - PPS Power Limited
+  B26-25    - Reserved
+  B24-17    - Maximum voltage in 100mV increment 
+  B16       - Reserved
+  B15-8     - Minimum voltage in 100mV increment 
+  B7        - Reserved
+  B6-0      - Maximum current in 50mA increment */
 /* Macro used to form PPS APDO */
-#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd) (((pdoType) \
-    << CFG_APDO_PWR_SUPPLY_TYPE_POS) | ((pwrLtd) << CFG_APDO_PPS_PWR_LIMITED_POS) | \
-    (((maxVolt) / CFG_APDO_MAX_VOLTAGE_UNIT) << CFG_APDO_MAX_VOLTAGE_POS) | \
-    (((minVolt) / CFG_APDO_MIN_VOLTAGE_UNIT) << CFG_APDO_MIN_VOLTAGE_POS) | \
-    (((maxCurrent) / CFG_APDO_MAX_CURRENT_UNIT) << CFG_APDO_MAX_CURRENT_POS)) 
-
-/* Power Supply type - Bits 31:10 of Power Data Object */
-#define CFG_POWER_SUPPLY_TYPE_FIXED           0x00U
-#define CFG_POWER_SUPPLY_TYPE_VARIABLE        0x01U
-#define CFG_POWER_SUPPLY_TYPE_BATTERY         0x02U
-#define CFG_POWER_SUPPLY_TYPE_PROGRAMMABLE    0x03U
-
-/* Position of various APDO Fields */
-#define CFG_APDO_MIN_VOLTAGE_POS               8U
-#define CFG_APDO_MAX_VOLTAGE_POS               17U
-#define CFG_APDO_MAX_CURRENT_POS               0U
-#define CFG_APDO_PPS_PWR_LIMITED_POS           27U
-#define CFG_APDO_PWR_SUPPLY_TYPE_POS           30U
-
-/* Units of various APDO Fields */
-#define CFG_APDO_MIN_VOLTAGE_UNIT              100U
-#define CFG_APDO_MAX_VOLTAGE_UNIT              100U
-#define CFG_APDO_MAX_CURRENT_UNIT              50U
-
-
-/* Default Max Port Power for Bank A is 60W */
-#define CFG_PB_MAX_PORT_POWER_BANKA           0x00F0U
-/* Default Max Port Power for Bank B is 60W */
-#define CFG_PB_MAX_PORT_POWER_BANKB           0x00F0U
-/* Default Max Port Power for Bank C is 60W */
-#define CFG_PB_MAX_PORT_POWER_BANKC           0x00F0U
-/* Default Max Port current is 3A */
-#define CFG_PB_MAX_PORT_CURRENT               0x012CU
-
-
-#define CFG_PB_PORT_ENABLE                    0x00U
+#define CFG_FORM_PPS_APDO(pdoType,minVolt,maxVolt,maxCurrent,pwrLtd)\
+    (((0x3) << 30U) |\
+    ((pwrLtd) << 27U) | \
+    (((maxVolt) / 100U) << 17U) | \
+    (((minVolt) / 100U) << 8U) | \
+    ((maxCurrent) / 50U)) 
 
 
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData); 
