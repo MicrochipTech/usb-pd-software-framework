@@ -1089,7 +1089,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHWAIT_SNK_START_PD_DEB_SS:
                 {                  
 #if(TRUE == INCLUDE_PD_DRP)
-                    if (PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
+                    if (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
                     {
 						/*If source is detached during TYPEC_ATTACHWAIT_SNK state, according to
 						DRP state machine, the next state should be TYPEC_UNATTACHED_SRC*/
@@ -1550,7 +1550,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Setting CC Comparator OFF*/
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
-                    if(PD_ROLE_SOURCE == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum))
+                    if(PD_ROLE_SOURCE == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
                     {
                         /*Disable VBUS by driving to vSafe0V*/
                         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
