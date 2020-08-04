@@ -7,8 +7,8 @@ PSF provides a range of configuration options for your custom PD design and is p
 | Development Phase 	| Planned Features 	| Status 	| Support Added in 	|
 |:-----------------:	|-------------------------------------------------------------------------------------------------------------------------------------------	|-------------	|----------------------------------	|
 | I 	| Multi-Port PD Source Only, VCONN sourcing, Fault Handling 	| **Completed** 	| [PSF_STACK_V1.00](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.00) (Stable) 	|
-| II 	| I2C Mode DC-DC control, PD Balancing, PD Throttling,  Automotive source-only PPS support, PD policy management support from  external SOC 	| *In-Progress* 	| [PSF_STACK_V1.04](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.04) (Beta Release) 	|
-| III 	| PD sink support, Multiple Sink PDO selection algorithms, Custom Sink PDO  selection algorithm, PD sink policy management from external SOC  	| *In-Progress* 	| [PSF_STACK_V1.03](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.03)  (Alpha Release) 	|  	|
+| II 	| I2C Mode DC-DC control, PD Balancing, PD Throttling,  Automotive source-only PPS support, PD policy management support from  external SOC 	| *In-Progress* 	| [PSF_STACK_V1.05](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.05) (Bugfix for Beta Release) 	|
+| III 	| PD sink support, Multiple Sink PDO selection algorithms, Custom Sink PDO  selection algorithm, PD sink policy management from external SOC  	| *In-Progress* 	| [PSF_STACK_V1.05](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.05)  (Bugfix for Alpha Release) 	|  	|
 | IV 	| Dual Role Power (DRP) and Dual Role Data (DRD) support,  DRP/DRD policy management from external SOC 	|  *In-Progress* 	|  	|
 | V 	| Alternate modes support, Alternate mode policy management  from external SOC 	| Planned 	|  	|
 | VI 	| PD charge through device support, Fast role swap 	| Planned 	|  	|
