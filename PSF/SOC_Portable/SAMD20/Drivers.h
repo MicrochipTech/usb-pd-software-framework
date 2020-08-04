@@ -310,31 +310,6 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
 **************************************************************************/
 int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
 
-#if(TRUE == INCLUDE_PD_SINK)
-
-/**************************************************************************
-    Function:
-        void SAMD20_Drive_DAC_I(UINT16 u16DACData)
-    Summary:
-        Wrapper to initialize DAC from SoC.
-    Description:
-        This API serves as a wrapper between PSF stack's MCHP_PSF_HOOK_DRIVE_DAC_I()
-        and Harmony generated code to output a voltage on output pin of SoC's
-        Digital to Analog Converter(DAC) to indicate the implicit/explicit current
-        capability of attached source partner.
-    Conditions:
-        None.
-    Input:
-        None.
-    Return:
-        None.
-    Remarks:
-        None                    
-**************************************************************************/
-void SAMD20_Drive_DAC_I(UINT16 u16DACData);
-
-#endif /*INCLUDE_PD_SINK*/
-
 /*Debug UART APIs*/
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 void SAMD20_UART_Initialisation(void);

@@ -60,7 +60,7 @@ PRL_RECVBUFF gasPRLRecvBuff [CONFIG_PD_PORT_COUNT];
 /***************************************************************************************/
     
 /*Policy Engine globals*/
-PolicyEngine_Status gasPolicy_Engine[CONFIG_PD_PORT_COUNT];
+POLICY_ENGINE_STATUS gasPolicyEngine[CONFIG_PD_PORT_COUNT];
 
 /*Policy manager globals*/
 DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
@@ -79,7 +79,7 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 
 /*PDFU globals*/
 #if (FALSE != INCLUDE_PDFU)    
-    UINT8 gu8PDFUResBuffer[260] = {0};
+    UINT8 gu8PDFUResBuffer[PRL_MAX_EXTN_MSG_LEN_IN_BYTES] = {SET_TO_ZERO};
 #endif
 
 /**************************************************************************************************/
