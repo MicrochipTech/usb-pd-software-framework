@@ -107,7 +107,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
                 CFG_DockSinkParams(pasCfgStatusData);
 
 /* TODO: <Role swap> <Enable the below line once role swap is stable> */
-#if 1                
+#if 0                
                 /*Configure role swap policy for dock type port*/
                 gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = \
                     (CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP | \
