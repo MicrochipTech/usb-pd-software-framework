@@ -485,7 +485,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         {
             /* Do Nothing */
         }
-        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Requested is Valid \r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Request is Valid \r\n");
     }
 
     return u8RetVal;
