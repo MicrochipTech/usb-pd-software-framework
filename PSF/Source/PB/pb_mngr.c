@@ -34,7 +34,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #if (TRUE == INCLUDE_POWER_BALANCING)
 
-
 UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
 {
     UINT32 u32SourcePDO            = SET_TO_ZERO; 
@@ -355,18 +354,12 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
         case eMCHP_PSF_BUSY:
             
             /*If the DPM Busy notification is received that means the request was 
-             rejected. There are only 2 client request as of now.
-             1. Get Sink Caps
-             2. Renegotiation*/
+             rejected. There are only 1 client request as of now.
+             1. Renegotiation*/
             
             if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))
             {
-                if (ePB_GET_SINKCAPS_SENT_SS == gasPBIntPortParam[u8PortNum].eRenegSubState)
-                {
-                    /*Re initiate Sink Caps*/
-                    PB_InitiateGetSinkCapsWrapper (u8PortNum);
-                }
-                else if ((ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS == gasPBIntPortParam[u8PortNum].eRenegSubState) ||\
+                if ((ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS == gasPBIntPortParam[u8PortNum].eRenegSubState) ||\
                         (ePB_SECOND_RENEGOTIATION_IN_PROGRESS_SS == gasPBIntPortParam[u8PortNum].eRenegSubState))
                 {            
                     /*Initiate renegotiation with the required power again*/ 

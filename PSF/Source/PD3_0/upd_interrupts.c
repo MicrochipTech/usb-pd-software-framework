@@ -36,8 +36,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
 {
     do
     {
-        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
-            >> TYPEC_PORT_ENDIS_POS)== UPD_PORT_DISABLED)
+        if (UPD_PORT_DISABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             break;
         }
@@ -50,7 +49,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         UINT8 u8ReadData = 0x00;
 	
-        if (gau8ISRPortState[u8PortNum] ==  UPD_STATE_IDLE)
+        if (UPD_STATE_IDLE == gau8ISRPortState[u8PortNum])
         {             
             /*UPD350 was in idle , make sure SPI_TEST register is read as 0x02*/
             while (TRUE)
@@ -59,7 +58,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
                 UPD_RegisterReadISR(u8PortNum, (UINT16)UPD_SPI_TEST, &u8ReadData, BYTE_LEN_1);
                     
                 /*Check the SPI_TEST register value is 0x02*/
-                if (u8ReadData == UPD_SPI_TEST_VAL)
+                if (UPD_SPI_TEST_VAL == u8ReadData)
                 {
                     break;
                 }

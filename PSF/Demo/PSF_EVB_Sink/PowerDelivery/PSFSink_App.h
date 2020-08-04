@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Defines major and minor version of PSF Sink Application*/
 
-/*v1.03 release*/
+/*v1.04 release*/
 #define APP_REV_MAJOR	0x01
 #define APP_REV_MINOR	0x05
 
@@ -64,6 +64,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 UINT8 App_PortPowerInit(UINT8 u8PortNum);
 
 
+void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData);
 #endif /* _PSFSINK_APP_H */
 
 /* *****************************************************************************

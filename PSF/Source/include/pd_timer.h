@@ -111,14 +111,14 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _Timer
 {
   
     #if (TRUE == MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER)
-	UINT16 u16Timeout_Tickcnt; /*Stores Timer value in terms of tick count*/			
+	UINT16 u16TimeoutTickCnt; /*Stores Timer value in terms of tick count*/			
     #else
-	UINT32 u32Timeout_Tickcnt;			
+	UINT32 u32TimeoutTickCnt;			
     #endif	
 	
 	PDTimerCallback pfnTimerCallback;	
 
-	volatile UINT8 u8TimerSt_PortNum; /*[3:0] - PortNum  [5:4] - TimerState*/
+	volatile UINT8 u8TimerStPortNum; /*[3:0] - PortNum  [5:4] - TimerState*/
 	
 	UINT8 u8PDState;		/* Stores SM states of TypeC or PE state machine if 
                              required in callback for reference*/			
@@ -163,7 +163,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _Timer
 UINT8 PDTimer_Init(void);
 /**************************************************************************************************
     Function:
-        UINT8 PDTimer_Start (UINT32 u32Timeout_ticks, PDTimerCallback pfnTimerCallback, 
+        UINT8 PDTimer_Start (UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, 
                                       UINT8 u8PortNum, UINT8 u8PDState)
 
 	Summary:
@@ -173,7 +173,7 @@ UINT8 PDTimer_Init(void);
 		UPD350 REV A
 
 	Description:
-		This API will start the software timer for a given timeout (u32Timeout_ticks).
+		This API will start the software timer for a given timeout (u32TimeoutTicks).
         pfnTimerCallback Timer call back function is registered and called on timeout.
         This API also returns the Timer ID of the software instance.
 
@@ -181,7 +181,7 @@ UINT8 PDTimer_Init(void);
 		None.
 
 	Parameters:
-		u32Timeout_ticks - Timeout value in ticks
+		u32TimeoutTicks - Timeout value in ticks
 		pfnTimerCallback - Address of the Callback function to be executed after the
                             software timer expiration
 		u8PortNum - Port Number for which the timeout has to be set
@@ -189,7 +189,7 @@ UINT8 PDTimer_Init(void);
 
 	Returns:
 		UINT8 - returns the Timer ID of the software instance.
-        This Timer ID can be used to kill the timer started via PDTimer_Kill if requried
+        This Timer ID can be used to kill the timer started via PDTimer_Kill if required
         before its expiration.
 
 	Remarks:
@@ -197,11 +197,11 @@ UINT8 PDTimer_Init(void);
     if there are no functions to be executed after the timer expiration
     Similarly, u8PDState parameter is not mandatory.
 **************************************************************************************************/
-UINT8 PDTimer_Start(UINT32 u32Timeout_ticks, PDTimerCallback pfnTimerCallback, \
+UINT8 PDTimer_Start(UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, \
                         UINT8 u8PortNum, UINT8 u8PDState);
 /**************************************************************************************************
     Function:
-		void PDTimer_WaitforTicks (UINT32 u32Timeout_ticks);
+		void PDTimer_WaitforTicks (UINT32 u32TimeoutTicks);
 
 	Summary:
 		API to start a blocking timer
@@ -210,13 +210,13 @@ UINT8 PDTimer_Start(UINT32 u32Timeout_ticks, PDTimerCallback pfnTimerCallback, \
 		UPD350 REV A
 
 	Description:
-		This API is called to start a blocking timer for u32Timeout_ticks.
+		This API is called to start a blocking timer for u32TimeoutTicks.
 
 	Precondition:
 		None.
 
 	Parameters:
-		u32Timeout_ticks - Timeout for which blocking timer has to be started
+		u32TimeoutTicks - Timeout for which blocking timer has to be started
 
 	Return:
 		None.
@@ -224,7 +224,7 @@ UINT8 PDTimer_Start(UINT32 u32Timeout_ticks, PDTimerCallback pfnTimerCallback, \
 	Remarks:
 		None.
 **************************************************************************************************/
-void PDTimer_WaitforTicks (UINT32 u32Timeout_ticks);
+void PDTimer_WaitforTicks (UINT32 u32TimeoutTicks);
 /**************************************************************************************************
 
     Function:

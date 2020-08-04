@@ -1076,6 +1076,24 @@ Description:
     gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
     when this notification is posted. 
  
+    <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: In case of PR_Swap initiated by the PSF port, 
+    this notification would be posted when the swap message is accepted by port partner and 
+    port power roles of the both the partners are changed successfully or 
+ 	when wait has been received as response for the swap message, then either of the port partners 
+    has initiated the transmission of PR_Swap within wait response time and port power roles of 
+    both the partners are changed successfully. 
+ 	In case of PR_Swap initiated by the PSF port partner, this notification would be posted 
+	when the swap message is accepted by the PSF port and port power roles of the both the    
+    partners are changed successfully. 
+    
+    <b>eMCHP_PSF_DR_SWAP_COMPLETE</b>: This notification indicates that DR_SWAP
+    successfully completed and the data role is reversed.
+        
+    <b>eMCHP_PSF_DR_SWAP_RCVD</b>: This occurs whenever there is a DR_SWAP message
+    from port partner. User can modify u16SwapPolicy dynamically to Accept or 
+    Reject DR_SWAP. Note for dynamic DR_SWAP initiation by PSF, client request 
+    has to be raised apart from dynamic change of u16SwapPolicy configuration.
+    
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
     Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
@@ -1101,6 +1119,9 @@ eMCHP_PSF_NEW_SRC_CAPS_RCVD,        // New source capability message is received
 eMCHP_PSF_SINK_ALERT_RCVD,          // Alert message received from Sink Partner         
 eMCHP_PSF_SINK_STATUS_RCVD,         // Sink Status received from Sink Partner
 eMCHP_PSF_SINK_STATUS_NOT_RCVD,     // Sink Status not received from Sink Partner
+eMCHP_PSF_PR_SWAP_COMPLETE,         // Power Role Swap completed
+eMCHP_PSF_DR_SWAP_COMPLETED,        // Data Role Swap completed
+eMCHP_PSF_DR_SWAP_RCVD,             // Data Role swap received from port partner
 eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
 } eMCHP_PSF_NOTIFICATION;
 
@@ -1254,6 +1275,22 @@ Remarks:
 												 is user specific.
                                                * This is applicable only for sink functionality and it is
                                                  not mandatory,depends on user application.
+    ePOWER_ROLE_FUNC          \Output         * Power role indicator functionality is to indicate that the current 
+                                                 power role is source. PSF request the application to assert
+												 when current power role is source. PSF request the application 
+                                                 to deassert on detach event or during renegotiation. The state of
+												 GPIO during init, Assert and Deassert of this functionality 
+												 is user specific.
+                                               * This is applicable only for DRP functionality and it is
+                                                 not mandatory,depends on user application.
+    eDATA_ROLE_FUNC           \Output         * Data role indicator functionality is to indicate that the current 
+                                                 data role is Host/Hub DFP. PSF request the application to assert
+												 when current data role is Host/Hub DFP. PSF request the application
+												 to deassert on detach event or during renegotiation. The state of
+												 GPIO during init, Assert and Deassert of this functionality 
+												 is user specific.
+                                               * This is applicable only for DRP functionality and it is
+                                                 not mandatory,depends on user application.
     </table>
   Remarks:
     None                                                                                                       
@@ -1269,7 +1306,9 @@ typedef enum eMCHP_PSF_GPIO_Functionality
     eORIENTATION_FUNC,             
     eSNK_CAPS_MISMATCH_FUNC,       
     eSNK_1_5A_IND_FUNC,            
-    eSNK_3A_IND_FUNC               
+    eSNK_3A_IND_FUNC,
+    ePOWER_ROLE_FUNC,
+    eDATA_ROLE_FUNC            
 } eMCHP_PSF_GPIO_FUNCTIONALITY;
 
 /**************************************************************************************************
@@ -1522,7 +1561,7 @@ Remarks:
 // *****************************************************************************
 /*******************************************************************************
 Function:
-    MCHP_PSF_HOOK_DRIVE_DAC_I()
+    MCHP_PSF_HOOK_DRIVE_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
 Summary:
     Indicates the implicit/explicit current capability of attached source partner.
 Description:
@@ -1558,13 +1597,16 @@ Description:
 Conditions:
     SoC should support a DAC. And the DAC should be initialized under 
     MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
+Input:
+    u8PortNum   - Port number for which DAC_I needs to be driven
+    u16DACData  - Analog voltage to be driven on DAC_I pin
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)   SAMD20_Drive_DAC_I(u16DACData)
-        void SAMD20_Drive_DAC_I(UINT16 u16DACData);
-        void SAMD20_Drive_DAC_I(UINT16 u16DACData)
+        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)   HW_Drive_DAC_I(u8PortNum, u16DACData)
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData);
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
         {
             //Implement user specific application to output volatge provided under 
             //u16DACData argument in DAC's output pin
@@ -1574,7 +1616,7 @@ Remarks:
     This hook is applicable only if INCLUDE_PD_SINK macro is 1. Definition of this
     hook is not mandatory.
 *******************************************************************************/ 
-#define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData) 
+#define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)  
 
 /*******************************************************************************
 Function:

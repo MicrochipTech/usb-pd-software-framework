@@ -90,7 +90,7 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
                     }
                     else 
                     {
-                        if (gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
+                        if (gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
                         {
                             /* Raise Client Request to trigger renegotiation */
                             DPM_SET_RENEGOTIATE_REQ(u8PortNum);
