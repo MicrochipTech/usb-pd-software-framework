@@ -47,7 +47,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         UINT16 u16Data = SET_TO_ZERO;
 
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
-        UINT8 u8ReadData = 0x00;
+        UINT8 u8ReadData = SET_TO_ZERO;
 	
         if (UPD_STATE_IDLE == gau8ISRPortState[u8PortNum])
         {             
