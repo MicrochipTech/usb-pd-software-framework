@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define _PROJECT_VERSION_
 
 
-#define SYSTEM_FW_REV     0x0104U //v1.04 release
+#define SYSTEM_FW_REV     0x0105U //v1.05 release
 
 /* Configuration and Status register structure version */
 #define STRUCT_MAJOR_VERSION    0x01U
