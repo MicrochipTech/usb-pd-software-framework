@@ -564,8 +564,11 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                                         DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS; 
   
-                    /* Reset New PDO Parameters if renegotiation was requested */
-                    if (TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum)) 
+                    /* Reset New PDO Parameters if renegotiation was initiated by DPM
+                       TODO: <DPM_Policy> Take care of this while implementing DPM Client request
+                       functionality */                    
+                    if ((TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum)) && 
+                             (DPM_INT_EVT_INITIATE_RENEGOTIATION == (gasDPM[u8PortNum].u8InternalEvntInProgress & DPM_INT_EVT_INITIATE_RENEGOTIATION)))
                     {                                                
                         DPM_ResetNewPDOParameters(u8PortNum);
                     }                    
