@@ -872,7 +872,9 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         }
         
         /*Irrespective of the Role indicate DPM AMS is initiated with CA*/
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
         gasPRL[u8PortNum].u8TxStsWithCAISR = TRUE;
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
         #endif  
     }
 }
