@@ -74,6 +74,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define INDEX_3                                 3
 #define INDEX_4                                 4
 #define INDEX_5                                 5
+#define INDEX_6                                 6
 
 /********************************************************************************************/
 /*Low Byte and High byte from a UINT16*/
