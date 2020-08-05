@@ -40,36 +40,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* ************************************************************************** */ 
 
-/***************************************************************************************/
-// *****************************************************************************
-// *****************************************************************************
-// Section: Data Structures
-// *****************************************************************************
-// *****************************************************************************
-
-typedef enum RenegStatus
-{
-    ePT_RENEG_REQ_NOT_INITIATED = 1,
-    ePT_RENEG_REQ_INITIATED, 
-    ePT_RENEG_REQ_ACCEPTED
-}PT_RENEG_STATUS;
-
-/*****************************************************************************
-  Summary:
-    Power Throttling Port Parameters   
-
-  Description:
-    This structure contains the port parameters that are specific to PT layer. 
-
-  Remarks:
-    Need to be packed always based on type of microcontroller.
-**********************************************************************************/
-typedef struct MCHP_PSF_STRUCT_PACKED_START _PTPortParam 
-{
-    UINT8 u8PrevPTBank;      // Holds the previously selected Throttling Bank
-    PT_RENEG_STATUS ePTRenegSts; // Holds the renegotiation request status 
-} MCHP_PSF_STRUCT_PACKED_END  PT_PORT_PARAM;
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions
@@ -153,33 +123,6 @@ void PT_HandleBankSwitch(UINT8 u8PortNum);
 
 **************************************************************************************************/
 void PT_CalculateSrcPDOs(UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
-        void PT_HandleDPMBusy(UINT8 u8PortNum);
-
-    Summary:
-        Handles the busy notification posted by DPM.
-
-    Description:
-        DPM would post a busy notification in case the client request raised to 
-        trigger renegotiation is rejected. This API handles the busy notification 
-        by raising the client request again. 
- 
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port Number 
-
-    Return:
-        None. 
-
-    Remarks:
-        None. 
-
-**************************************************************************************************/
-void PT_HandleDPMBusy(UINT8 u8PortNum); 
 
 #endif /* _PT_MNGR_H */
 /* *****************************************************************************

@@ -208,7 +208,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
+    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.

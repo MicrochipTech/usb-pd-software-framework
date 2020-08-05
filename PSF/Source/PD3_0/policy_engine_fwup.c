@@ -11,7 +11,7 @@
     This file contains the function definitions for Policy Engine Firmware Update
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -73,7 +73,7 @@ void PE_FwUpdtInitialize(void)
     gsPdfuInfo.u16PDFUResponseLength = SET_TO_ZERO;
     gsPdfuInfo.u8TransferPhaseComplete = PE_FWUP_TRANSFER_PHASE_NOTSTARTED;
     gsPdfuInfo.u16ExptDataBlockIdx = SET_TO_ZERO;
-    gsPdfuInfo.pu8ResponseBuffer = &gu8PDFUResBuffer[Index_0];
+    gsPdfuInfo.pu8ResponseBuffer = &gu8PDFUResBuffer[INDEX_0];
 }
 
 /**************************************************************************************************

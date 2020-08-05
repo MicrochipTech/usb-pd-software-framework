@@ -13,7 +13,7 @@
 *******************************************************************************/
 
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -193,12 +193,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_PS_SOURCE_ON_TIMEOUT_MS              MILLISECONDS_TO_TICKS(420)
 
 /* PE_PS_SOURCE_OFF_TIMEOUT_MS defines the tPSSourceOff specified in the 
-   UPD PD Specification. Default value of PE_PS_SOURCE_OFF_TIMEOUT_MS is 
+   USB PD Specification. Default value of PE_PS_SOURCE_OFF_TIMEOUT_MS is 
    set as 800 milliseconds. */
 #define PE_PS_SOURCE_OFF_TIMEOUT_MS             MILLISECONDS_TO_TICKS(800)
 
 /* PE_SWAP_SOURCE_START_TIMEOUT_MS defines the tSwapSourceStart specified in the 
-   UPD PD Specification. Default value of PE_SWAP_SOURCE_START_TIMEOUT_MS is 
+   USB PD Specification. Default value of PE_SWAP_SOURCE_START_TIMEOUT_MS is 
    set as 20 milliseconds. */
 #define PE_SWAP_SOURCE_START_TIMEOUT_MS         MILLISECONDS_TO_TICKS(20)
 
