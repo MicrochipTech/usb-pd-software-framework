@@ -9,10 +9,10 @@ File Name:
 
 Description:
   This header file contains the data structures, constant definition,
-      function prototypes and definitions for Protocol Layer.
+  function prototypes and definitions for Protocol Layer.
 *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -727,6 +727,7 @@ typedef struct  MCHP_PSF_STRUCT_PACKED_START _PROTOCOL_LAYER
 	UINT8	u8RxError : 1;              /* Rx Error - intimates Chunk error to Policy engine */
 	UINT8 	u8RxRcvdISR : 1;            /* ISR to Foreground Sync variable indicating Message Recv*/
     UINT8   u8RxHRRcvdISR : 1;          /* ISR to Foreground Sync variable indicating HR Recv*/
+    UINT8   u8TxStsWithCAISR : 1;       /* ISR to Foreground sync variable indicating Tx status with CA*/
     UINT8   u8RxDisable:1;
 
 } MCHP_PSF_STRUCT_PACKED_END PROTOCOL_LAYER_STRUCT;

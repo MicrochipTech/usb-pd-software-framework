@@ -38,16 +38,14 @@ void PT_Init(UINT8 u8PortNum)
 {
     if (TRUE == DPM_IS_PT_ENABLED)
     {
-        gasPTPortParam[u8PortNum].u8PrevPTBank = PD_THROTTLE_BANK_A; 
-    
-        gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_NOT_INITIATED; 
+        gau8PTPrevBank[u8PortNum] = DPM_PD_THROTTLE_BANK_A; 
     }
 }
 
 void PT_HandleBankSwitch(UINT8 u8PortNum)
 {
     UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK; 
-    UINT8 u8PrevPTBank = gasPTPortParam[u8PortNum].u8PrevPTBank; 
+    UINT8 u8PrevPTBank = gau8PTPrevBank[u8PortNum];
     
     if (FALSE == DPM_IS_PT_ENABLED)
     {
@@ -56,13 +54,13 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
     
     if (u8CurrPTBank != u8PrevPTBank)
     {
-        gasPTPortParam[u8PortNum].u8PrevPTBank = u8CurrPTBank; 
+        gau8PTPrevBank[u8PortNum] = u8CurrPTBank; 
         
         switch(u8CurrPTBank)
         {
-            case PD_THROTTLE_BANK_A:              
-            case PD_THROTTLE_BANK_B:
-            case PD_THROTTLE_BANK_C:
+            case DPM_PD_THROTTLE_BANK_A:              
+            case DPM_PD_THROTTLE_BANK_B:
+            case DPM_PD_THROTTLE_BANK_C:
             {
                 /* Trigger Alert message on bank change with Type of Alert as 
                    Operating Condition Change*/
@@ -71,7 +69,7 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
                 DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT); 
                 #endif 
 
-                if (PD_THROTTLE_SHUTDOWN_MODE == u8PrevPTBank)
+                if (DPM_PD_THROTTLE_SHUTDOWN_MODE == u8PrevPTBank)
                 {
                     /* Enable the Port which would have been previously disabled */
                     DPM_EnablePort(u8PortNum, TRUE); 
@@ -92,11 +90,8 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
                     {
                         if (gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
                         {
-                            /* Raise Client Request to trigger renegotiation */
-                            DPM_SET_RENEGOTIATE_REQ(u8PortNum);
-                            
-                            /* Change reneg status as initiated */
-                            gasPTPortParam[u8PortNum].ePTRenegSts = ePT_RENEG_REQ_INITIATED;
+                            /* Raise to DPM for renegotiation */
+                            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);          
                         }
                         else
                         {
@@ -108,7 +103,7 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
                 break; 
             }
             
-            case PD_THROTTLE_SHUTDOWN_MODE:
+            case DPM_PD_THROTTLE_SHUTDOWN_MODE:
             {
                 /* Disable the port so that no further Type-C attach can occur */
                 DPM_EnablePort(u8PortNum, FALSE); 
@@ -130,15 +125,15 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
     UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK;
     UINT16 u16PowerIn250mW = SET_TO_ZERO; 
     
-    if (PD_THROTTLE_BANK_A == u8CurrPTBank)
+    if (DPM_PD_THROTTLE_BANK_A == u8CurrPTBank)
     {
         u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW;
     }
-    else if (PD_THROTTLE_BANK_B == u8CurrPTBank)
+    else if (DPM_PD_THROTTLE_BANK_B == u8CurrPTBank)
     { 
         u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW;
     }
-    else if (PD_THROTTLE_BANK_C == u8CurrPTBank)
+    else if (DPM_PD_THROTTLE_BANK_C == u8CurrPTBank)
     {
         u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankCIn250mW;
     }
@@ -151,19 +146,7 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
        sent from u32aNewPDO[7] array */
     DPM_ENABLE_NEW_PDO(u8PortNum);
     
-    DPM_UpdatePDO(u8PortNum, u16PowerIn250mW);
-}
-
-void PT_HandleDPMBusy(UINT8 u8PortNum)
-{
-    /* If the request was not accepted, DPM_Busy notification would have 
-       been posted. Handle the busy notification by raising the client 
-       request again */
-    if (ePT_RENEG_REQ_INITIATED == gasPTPortParam[u8PortNum].ePTRenegSts)
-    {
-        /* Raise Client Request to trigger renegotiation */
-        DPM_SET_RENEGOTIATE_REQ(u8PortNum);        
-    }
+    DPM_UpdateNewPDOFrmSrcPwr(u8PortNum, u16PowerIn250mW);
 }
 
 #endif 

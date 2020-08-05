@@ -122,8 +122,8 @@ void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset,
     UINT8 u8Writebuffer [UPD_I2C_MAX_BYTE_WRITE];
     UINT8 u8WriteBufLen = 2;
     
-    u8Writebuffer[Index_0] = HIBYTE (u16RegOffset);
-    u8Writebuffer[Index_1] = LOBYTE (u16RegOffset);
+    u8Writebuffer[INDEX_0] = HIBYTE (u16RegOffset);
+    u8Writebuffer[INDEX_1] = LOBYTE (u16RegOffset);
     
     for (; u8WriteBufLen < (u8WriteDataLen+2); u8WriteBufLen++)
     {
@@ -143,10 +143,10 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
   
     UINT8 u8Command [UPD_SPI_READ_CMD_LEN];
     
-	u8Command[Index_0] = UPD_SPI_READ_OPCODE;
-	u8Command[Index_1] = HIBYTE (u16RegOffset);
-	u8Command[Index_2] = LOBYTE (u16RegOffset);
-	u8Command[Index_3] = UPD_SPI_DUMMY_BYTE;
+	u8Command[INDEX_0] = UPD_SPI_READ_OPCODE;
+	u8Command[INDEX_1] = HIBYTE (u16RegOffset);
+	u8Command[INDEX_2] = LOBYTE (u16RegOffset);
+	u8Command[INDEX_3] = UPD_SPI_DUMMY_BYTE;
     
     /*Enable SPI Select for communication*/
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_ASSERT);
@@ -160,8 +160,8 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
 
     UINT8 u8Command [UPD_I2C_REG_CMD_LEN];
     
-    u8Command[Index_0] = HIBYTE (u16RegOffset);
-    u8Command[Index_1] = LOBYTE (u16RegOffset);
+    u8Command[INDEX_0] = HIBYTE (u16RegOffset);
+    u8Command[INDEX_1] = LOBYTE (u16RegOffset);
     
     (void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
     
@@ -350,19 +350,34 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
         }
     
 		#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-            UINT8 u8VBUSEn;
+            UINT8 u8PioNum;
             /*When PIO override is disabled; disable EN_VBUS/EN_SINK based on the
              role on a power fault*/
-            #if (TRUE == INCLUDE_PD_SOURCE)
-            u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
-            #else
-            u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
-            #endif
-			UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
-									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-			u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
-			UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
-										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+            if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            {
+                u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
+
+                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+                u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
+                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
+                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+            
+            }
+            else if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            {
+                u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+
+                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+                u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
+                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
+                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                
+            }
+            else
+            {
+                /*Execution should not hit here ideally*/
+            }
 		#endif
 	}
 	#endif
@@ -379,52 +394,62 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 	/* Override 0 - Overvoltage Threshold*/
     /* Override 1 - UnderVoltage Threshold */
   	/* Override 2 - Fault Low*/
-	UINT8 u8PIONum;
+    UINT16 u16PIOPos;
     
-    #if (TRUE == INCLUDE_PD_SOURCE)
-	/* Get the PIO number for EN_VBUS */
-	u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
-    #else
-    u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
-    #endif
+#if (TRUE == INCLUDE_PD_DRP)   
+    UINT8 u8PIOEnVBUS;
+    UINT8 u8PIOEnSink;
+    u8PIOEnVBUS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
+    u8PIOEnSink = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+    u16PIOPos = (BIT(u8PIOEnVBUS) | BIT(u8PIOEnSink));
+#elif (TRUE == INCLUDE_PD_SOURCE)
+    UINT8 u8PIOEnVBUS;
+    u8PIOEnVBUS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
+    u16PIOPos = BIT(u8PIOEnVBUS);
+#else
+    UINT8 u8PIOEnSink;
+    u8PIOEnSink = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+    u16PIOPos = BIT(u8PIOEnSink);
+#endif
 
     /*Setting Monitoring bit as '1' checks whether voltage exceeds the configured source 
         selection VBUS threshold value or the source selection PIO goes high */
     /* Setting Monitoring bit as '0' checks whether voltage falls below the source 
             selection VBUS threshold value or the source selection PIO goes low */
-	/* Enable monitoring for Override 0 - Overvoltage alone */
-	UPD_RegWriteByte (u8PortNum, UPD_PIO_MON_VAL, UPD_PIO_OVR_0);
-	
-	/* PIO override output is set as low */
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO);
-	
-	/* Configure the Source for override 0 as OverVoltage Threshold 2*/
-	UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR0_SRC_SEL, \
-	  (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS2_THR_MATCH));
-    
+    /* Enable monitoring for Override 0 - Overvoltage alone */
+    UPD_RegWriteByte (u8PortNum, UPD_PIO_MON_VAL, UPD_PIO_OVR_0);
+
+    /* PIO override output is set as low */
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO);
+
+    /* Configure the Source for override 0 as OverVoltage Threshold 2*/
+    UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR0_SRC_SEL, \
+      (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS2_THR_MATCH));
+
     /* Configure the Source for override 1 as under-voltage*/
     UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR1_SRC_SEL, \
-	  (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS3_THR_MATCH));
-	
-	/* Configure the Source for override 2 as Fault_IN/PRT_CTL pin low from Load switch */
-	UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR2_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN);
-	
-	/* EN_VBUS is configured as override Pin in output mode */
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, BIT(u8PIONum));
-    
-    /* Override 0*/
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR0_OUT_EN, BIT(u8PIONum));
-    
-    /* Override 1*/
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR1_OUT_EN, BIT(u8PIONum));
+      (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS3_THR_MATCH));
 
-	/* Override 2*/
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR2_OUT_EN, BIT(u8PIONum));
-    
+    /* Configure the Source for override 2 as Fault_IN/PRT_CTL pin low from Load switch */
+    UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR2_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN);
+
+    /* EN_VBUS is configured as override Pin in output mode */
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, u16PIOPos);
+
+    /* Override 0*/
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR0_OUT_EN, u16PIOPos);
+
+    /* Override 1*/
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR1_OUT_EN, u16PIOPos);
+
+    /* Override 2*/
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR2_OUT_EN, u16PIOPos);
+
     /* Enable the override for FAULT_IN*/
     /* Under voltage and overvoltage override is enabled after configuring the
         threshold*/
     UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
+
 }
 #endif
 

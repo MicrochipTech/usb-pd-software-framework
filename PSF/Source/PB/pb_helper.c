@@ -12,7 +12,7 @@
    State Machine. 
 *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -170,10 +170,10 @@ void PB_CalculateNegotiatedPower(UINT8 u8PortNum, UINT32 u32PDO, UINT32 u32RDO)
 void PB_InitiateNegotiationWrapper(UINT8 u8PortNum, UINT16 u16NewWattageIn250mW)
 {
     /* Update the PDOs in New PDO registers */
-    DPM_UpdatePDO(u8PortNum, u16NewWattageIn250mW); 
+    DPM_UpdateNewPDOFrmSrcPwr(u8PortNum, u16NewWattageIn250mW); 
     
     /* Raise Renegotiation request to DPM */
-    DPM_SET_RENEGOTIATE_REQ(u8PortNum); 
+    DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
             
     gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = u16NewWattageIn250mW;   
 }
@@ -683,19 +683,19 @@ void PB_HandleHighPriorityPortDetach(UINT8 u8PortNum)
 void PB_OnPTBankSwitch(UINT8 u8PortNum)
 {
     /* Update global and per port parameters of PB */
-    if (PD_THROTTLE_BANK_A == DPM_GET_CURRENT_PT_BANK)
+    if (DPM_PD_THROTTLE_BANK_A == DPM_GET_CURRENT_PT_BANK)
     {
         gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankAIn250mW;
         gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankAIn250mW;
         gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW;         
     }
-    else if (PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK)
+    else if (DPM_PD_THROTTLE_BANK_B == DPM_GET_CURRENT_PT_BANK)
     {
         gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankBIn250mW;
         gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankBIn250mW;
         gasPBIntPortParam[u8PortNum].u16MaxPortPwrIn250mW       = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankBIn250mW; 
     }
-    else if (PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK)
+    else if (DPM_PD_THROTTLE_BANK_C == DPM_GET_CURRENT_PT_BANK)
     {
         gsPBIntSysParam.u16TotalSysPwrIn250mW = gasCfgStatusData.u16SystemPowerBankCIn250mW;                
         gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW = gasCfgStatusData.u16MinPowerBankCIn250mW;

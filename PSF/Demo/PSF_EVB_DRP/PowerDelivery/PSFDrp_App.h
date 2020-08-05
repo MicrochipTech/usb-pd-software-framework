@@ -1,5 +1,5 @@
 /***************************************************************************
-Power Delivery Source Pro Application header file
+Power Delivery DRP Application header file
 
   Company:
     Microchip Technology Inc.
@@ -11,7 +11,7 @@ Power Delivery Source Pro Application header file
     This header file contains user application specific functions and interfaces
 ************************************************************************** */
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -52,6 +52,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define APP_VOLTAGE_15000mV     15000
 #define APP_VOLTAGE_20000mV     20000
 
+/*Defines used by DAC*/
+#define APP_DAC_MAX_STEP_COUNT  0x3FF
+#define APP_DAC_VREF            3300
 
 /* Macro to indicate GPIO based DC-DC Controller */
 #define PWRCTRL_GPIO_DC_DC     1

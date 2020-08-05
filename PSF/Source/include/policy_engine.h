@@ -292,7 +292,7 @@ typedef enum {
 	/* ePE_SRC_SEND_CAPABILITIES */
     ePE_SRC_SEND_CAP_ENTRY_SS,
     ePE_SRC_SEND_CAP_IDLE_SS,
-    ePE_SRC_SEND_CAP_GOODCRC_RECEIVED_SS,
+    ePE_SRC_SEND_CAP_GOODCRC_RCVD_SS,
 	/* ePE_SRC_DISCOVERY */
     ePE_SRC_DISCOVERY_ENTRY_SS,
     ePE_SRC_DISCOVERY_IDLE_SS,
@@ -304,11 +304,11 @@ typedef enum {
     ePE_SRC_TRANSITION_SUPPLY_ENTRY_SS,
     ePE_SRC_TRANSITION_SUPPLY_EXIT_SS,
     ePE_SRC_TRANSITION_SUPPLY_IDLE_SS,
-    ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED_SS,
-    ePE_SRC_TRANSITION_SUPPLY_POWER_ON_SS,
+    ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RCVD_SS,
+    ePE_SRC_TRANSITION_SUPPLY_DRIVE_POWER_SS,
 	/* ePE_SRC_READY */
     ePE_SRC_READY_ENTRY_SS,
-    ePE_SRC_READY_PPS_COMM_TIMER_EXPIRED_SS, 
+    ePE_SRC_READY_PPS_COMM_TIMEOUT_SS, 
     ePE_SRC_READY_END_AMS_SS,
     ePE_SRC_READY_IDLE_SS,
 	/* ePE_SRC_DISABLED */
@@ -324,40 +324,40 @@ typedef enum {
     ePE_SRC_HARD_RESET_RECEIVED_EXIT_SS,
 	/* ePE_SRC_TRANSITION_TO_DEFAULT */
     ePE_SRC_TRANSITION_TO_DEFAULT_ENTRY_SS,
-    ePE_SRC_TRANSITION_TO_DEFAULT_VSAFE0V_SS,
-    ePE_SRC_TRANSITION_TO_DEFAULT_CHECK_VCONNOFF_SS,
+    ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_OFF_SS,
+    ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS,
     ePE_SRC_TRANSITION_TO_DEFAULT_IDLE_SS,
     ePE_SRC_TRANSITION_TO_DEFAULT_SRCRECOVER_TIMEOUT_SS,
     ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS,
-    ePE_SRC_TRANSITION_TO_DEFAULT_VBUS_CHECK_SS,
-    ePE_SRC_TRANSITION_TO_DEFAULT_VCONNON_CHECK_SS,
+    ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_ON_SS,
+    ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_ON_SS,
     ePE_SRC_TRANSITION_TO_DEFAULT_EXIT_SS,
 	/* ePE_SRC_GET_SINK_CAP */
     ePE_SRC_GET_SINK_CAP_ENTRY_SS,
     ePE_SRC_GET_SINK_CAP_IDLE_SS,
-    ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS,
-    ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT_SS,
-    ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS, 
+    ePE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS,
+    ePE_SRC_GET_SINK_CAP_NO_RESPONSE_SS,
+    ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS, 
 	/* ePE_SRC_SOFT_RESET */
     ePE_SRC_SOFT_RESET_ENTRY_SS,
     ePE_SRC_SOFT_RESET_IDLE_SS,
 	/* ePE_SRC_SEND_SOFT_RESET */
     ePE_SRC_SEND_SOFT_RESET_SOP_SS,
     ePE_SRC_SEND_SOFT_RESET_SOP_P_SS,
-    ePE_SRC_SEND_SOFT_RESET_SOP_DP_SS,
+    ePE_SRC_SEND_SOFT_RESET_SOP_PP_SS,
     ePE_SRC_SEND_SOFT_RESET_IDLE_SS,
-    ePE_SRC_SEND_SOFT_RESET_SENDER_RESPONSE_TIMEDOUT,
-    ePE_SRC_SEND_SOFT_RESET_GOODCRC_RECEIVED_SS,
+    ePE_SRC_SEND_SOFT_RESET_NO_RESPONSE_SS,
+    ePE_SRC_SEND_SOFT_RESET_GOODCRC_RCVD_SS,
 	/* ePE_SRC_VDM_IDENTITY_REQUEST */
     ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS,
     ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS,
-    ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_SS,
-    ePE_SRC_VDM_IDENTITY_REQUEST_SENDER_RESPONSE_TIMEOUT,
+    ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_RCVD_SS,
+    ePE_SRC_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS,
     /* ePE_SRC_GET_SINK_STATUS */
     ePE_SRC_GET_SINK_STATUS_ENTRY_SS, 
-    ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS,
-    ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS, 
-    ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS,
+    ePE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS,
+    ePE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS, 
+    ePE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS,
     ePE_SRC_GET_SINK_STATUS_IDLE_SS,
     /* ePE_SRC_SEND_SOURCE_ALERT */
     ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS,
@@ -395,7 +395,7 @@ typedef enum {
     ePE_SNK_HARD_RESET_SEND_SS,
     /*ePE_SNK_TRANSITION_TO_DEFAULT*/
     ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS,
-    ePE_SNK_TRANSITION_TO_DEFAULT_VCONNOFF_CHECK_SS,
+    ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS,
     ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS,
     ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS,
     /*ePE_SNK_GIVE_SINK_CAP*/
@@ -433,9 +433,10 @@ typedef enum {
             
     //--------------------PR_Swap specific Sub-States---------------------------//
     ePE_PRS_SEND_SWAP_ENTRY_SS,
-    ePE_PRS_SEND_SWAP_GOODCRC_RCVD_SS,
-    ePE_PRS_SEND_SWAP_NO_RESPONSE_RCVD_SS,
+    ePE_PRS_SEND_SWAP_MSG_DONE_SS,
+    ePE_PRS_SEND_SWAP_NO_RESPONSE_SS,
     ePE_PRS_SEND_SWAP_IDLE_SS,
+    ePE_PRS_SEND_SWAP_REJECT_RCVD_SS,
     ePE_PRS_SEND_SWAP_WAIT_RCVD_SS, 
     ePE_PRS_ACCEPT_SWAP_ENTRY_SS,
     ePE_PRS_ACCEPT_SWAP_IDLE_SS, 
@@ -852,7 +853,7 @@ void PE_StateChange_TimerCB(UINT8 u8PortNum, UINT8 u8PEState);
 void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
 /**************************************************************************************************
     Function:
-        void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState);
+        void PE_SSChngAndTimeoutValidate_TimerCB(UINT8 u8PortNum, UINT8 u8PESubState);
 
     Summary:
         This API is set as a timer callback by the policy engine when the PE expects a 
@@ -879,7 +880,7 @@ void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
         None.
 
 **************************************************************************************************/
-void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState);
+void PE_SSChngAndTimeoutValidate_TimerCB(UINT8 u8PortNum, UINT8 u8PESubState);
 /**************************************************************************************************
     Function:
         void PE_SendNotSupportedOrRejectMsg(UINT8 u8PortNum);
@@ -1086,7 +1087,7 @@ void PE_SendHardResetMsg (UINT8 u8PortNum);
 void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
-        void PE_NoResponseTimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
+        void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
 
     Summary:
         This API is given as the timer call back API when starting the NoResponse timer from 
@@ -1113,7 +1114,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         None.
 
 **************************************************************************************************/
-void PE_NoResponseTimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
+void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
 /**************************************************************************************************
     Function:
         void PE_SnkRunStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);

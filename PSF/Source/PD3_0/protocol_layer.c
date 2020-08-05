@@ -172,8 +172,7 @@ void  PRL_Init (UINT8 u8PortNum)
 	/* PD3_AUTO_DECODE is enabled so that HW decodes spec revision from received messages.*/
 	/* At init, Rx SOP type is set to all SOP* type*/
 	if(PD_ROLE_SOURCE == u8CurrentPwrRole)
-    {
-	  
+    {	  
 		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
 						  (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP |
 						   PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_P | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_PP));
@@ -240,10 +239,10 @@ void  PRL_Init (UINT8 u8PortNum)
 /***************************************************************************************************/
 void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
 {
-  	UINT8 u8HwnRetryCount, u8DPMStatus = DPM_GET_DPM_STATUS(u8PortNum);
+  	UINT8 u8HwnRetryCount;
 	
 	/* HW Retry Counter is updated depending on Spec Rev */
-	if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8DPMStatus))
+	if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
 	{
 		u8HwnRetryCount = PRL_HW_RETRY_CNT_2_0;
 	}
@@ -255,19 +254,18 @@ void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
 	UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_C, 
 					  	PRL_TX_PARAM_C_UPD_SPEC_REV_2_0 							|	 			/*	Spec Rev */
 						PRL_UPDATE_TX_PARAM_C_N_RETRY_CNT(u8HwnRetryCount)			| 				/* nRetryCount corresponding to spec */
-						PRL_UPDATE_TX_PARAM_C_PORT_DATA_ROLE(DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u8DPMStatus)) |	/* Data Role*/
-						PRL_UPDATE_TX_PARAM_C_PORT_POWER_ROLE(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8DPMStatus))); 	/* Power Role*/	
+						PRL_UPDATE_TX_PARAM_C_PORT_DATA_ROLE(DPM_GET_CURRENT_DATA_ROLE(u8PortNum) ) |	/* Data Role*/
+						PRL_UPDATE_TX_PARAM_C_PORT_POWER_ROLE(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) )); 	/* Power Role*/	
 }
 
 /***************************************************************************************************/
 
 UINT16 PRL_FormSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 u8ObjectCount, UINT8 u8Extended)
 {
-  UINT8 u8DPMStatus = DPM_GET_DPM_STATUS(u8PortNum);
 	return((u8MessageType)
-		   |((UINT16)(DPM_GET_CURRENT_DATA_ROLE_FRM_STATUS(u8DPMStatus)) << PRL_PORT_DATA_ROLE_BIT_POS)
-		   |((UINT16)(DPM_GET_CURRENT_PD_SPEC_REV_FRM_STATUS(u8DPMStatus)) << PRL_SPEC_REV_FIELD_START_BIT_POS) 		
-		   |((UINT16)(DPM_GET_CURRENT_POWER_ROLE_FRM_STATUS(u8DPMStatus)) << PRL_PORT_POWER_ROLE_OR_CABLE_PLUG_BIT_POS)
+		   |((UINT16)(DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) << PRL_PORT_DATA_ROLE_BIT_POS)
+		   |((UINT16)(DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) << PRL_SPEC_REV_FIELD_START_BIT_POS) 		
+		   |((UINT16)(DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) << PRL_PORT_POWER_ROLE_OR_CABLE_PLUG_BIT_POS)
 		   |((UINT16)u8ObjectCount << PRL_DATA_OBJECTS_FIELD_START_BIT_POS) 						
 		   |((UINT16)u8Extended << PRL_EXTENDED_BIT_POS));
 }
@@ -779,6 +777,12 @@ void PRL_HandleISR (UINT8 u8PortNum)
 		if (PRL_TX_IRQ_TX_DONE & u8IntrStatus)
 		{
 			gasPRL [u8PortNum].u8TxStateISR =  PRL_TX_DONE_ST;
+            #if(TRUE == INCLUDE_PD_3_0)
+            if (gasPRL[u8PortNum].u8TxStsWithCAISR)
+            {
+                gasPRL[u8PortNum].u8TxStsWithCAISR = FALSE;
+            }
+            #endif
 		}
 		
 		/* PD_MAC state variable is updated depending Tx interrupt received */
@@ -1291,7 +1295,10 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 		
 		
 		/* u8Txstate is set to PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST*/
-		PRL_ChangeTxState (u8PortNum, PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST); 
+		PRL_ChangeTxState (u8PortNum, PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST);
+        
+		/*Inform DPM that CA is enabled*/
+        DPM_SET_CA_ENABLED_STS(u8PortNum);
 		
         DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: CONFIG_PRL_SINK_TX_TIMEOUT_MS is set\r\n");
 	}
@@ -1300,6 +1307,8 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 	  	/* Spec Reference: PRL_tx_Src_Sink_Tx - Set Rp = SinkTxOK */
 		/* Rp = SinkTxOk 3A @ 5v is set*/
 		TypeC_SetRpCollAvoidance(u8PortNum, TYPEC_SINK_TXOK);
+        /* Clear the CA status in DPM*/
+		DPM_CLEAR_CA_ENABLED_STS(u8PortNum);
 	}
 }
 
