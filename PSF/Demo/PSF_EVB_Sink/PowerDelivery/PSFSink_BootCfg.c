@@ -51,61 +51,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Local Functions                                                   */
 /* ************************************************************************** */
 /* ************************************************************************** */
-static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-
-static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
-{    
-    pasCfgStatusData->sPerPortData[PORT0].u8SinkPDOCnt = CFG_PORT_0_SINK_NUM_OF_PDOS;
-    
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_0] = \
-                   CFG_FORM_SINK_FIXED_PDO1(CFG_PORT_0_SINK_PDO_1_CURRENT, \
-                   CFG_PORT_0_SINK_PDO_1_VOLTAGE, CFG_PORT_0_SINK_USB_COMM, \
-                   CFG_PORT_0_SINK_UNCONSTRAINED_PWR,CFG_PORT_0_SINK_HIGHER_CAPABILITY);    
-
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_1] = \
-            CFG_FORM_FIXED_PDOx(CFG_PORT_0_SINK_PDO_2_VOLTAGE, \
-            CFG_PORT_0_SINK_PDO_2_CURRENT);        
-
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_2] = \
-            CFG_FORM_FIXED_PDOx(CFG_PORT_0_SINK_PDO_3_VOLTAGE, \
-            CFG_PORT_0_SINK_PDO_3_CURRENT);     
-
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_3] = \
-            CFG_FORM_FIXED_PDOx(CFG_PORT_0_SINK_PDO_4_VOLTAGE, \
-            CFG_PORT_0_SINK_PDO_4_CURRENT); 
-
-
-     /*Assigning PDO preferred minimum current*/
-    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_0] = \
-            CFG_PORT_0_SINK_PDO_1_PREFERRED_MIN_CURRENT;
-    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_1] = \
-            CFG_PORT_0_SINK_PDO_2_PREFERRED_MIN_CURRENT;
-    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_2] = \
-            CFG_PORT_0_SINK_PDO_3_PREFERRED_MIN_CURRENT;
-    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_3] = \
-            CFG_PORT_0_SINK_PDO_4_PREFERRED_MIN_CURRENT;
-    
-    /*Assigning maximum operating current and minimum operating current to
-      3000mA and 1000mA respectively*/
-    pasCfgStatusData->sPerPortData[PORT0].u16SnkMaxOperatingCurInmA = \
-            CFG_PORT_0_SINK_MAX_OPERATING_CURRENT_InmA;
-    pasCfgStatusData->sPerPortData[PORT0].u16SnkMinOperatingCurInmA = \
-            CFG_PORT_0_SINK_MIN_OPERATING_CURRENT_InmA;
-   pasCfgStatusData->sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
-            (CFG_PORT_0_SINK_USB_SUSP << DPM_SINK_CONFIG_NO_USB_SUSP_POS) |\
-            (CFG_PORT_0_SINK_GIVE_BACK_FLAG << DPM_SINK_CONFIG_GIVE_BACK_FLAG_POS));
- 
-    
-    pasCfgStatusData->sPerPortData[PORT0].u16DAC_I_CurrentInd_MaxInA = \
-            CFG_PORT_0_SINK_DAC_I_CUR_INDICATION_MAX;
-    pasCfgStatusData->sPerPortData[PORT0].u16DAC_I_MaxOutVoltInmV = \
-            CFG_PORT_0_SINK_DAC_I_MAX_OP_VOLTAGE;
-    pasCfgStatusData->sPerPortData[PORT0].u16DAC_I_MinOutVoltInmV = \
-            CFG_PORT_0_SINK_DAC_I_MIN_OP_VOLTAGE;
-    pasCfgStatusData->sPerPortData[PORT0].u8DAC_I_Direction = \
-            CFG_PORT_0_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
-}
-
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -114,8 +59,6 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
 /* ************************************************************************** */
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-    UINT8 u8PortNum = SET_TO_ZERO;
-    
     pasCfgStatusData->u16ProducdID = CFG_PRODUCT_ID;
     pasCfgStatusData->u16VendorID = CFG_VENDOR_ID;
     pasCfgStatusData->u16ProductTypeVDO = CFG_PRODUCT_TYPE_VDO;
@@ -143,10 +86,44 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u16PowerGoodTimerInms = MILLISECONDS_TO_TICKS(CFG_POWER_GOOD_TIMER_MS);
     pasCfgStatusData->sPerPortData[PORT0].u16MaxSrcPrtCurrentIn10mA = CFG_MAX_PORT_CURRENT_IN_10mA;
     
-    for (u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
-    {
-        CFG_PerPortParams (u8PortNum, pasCfgStatusData);  
-    }
+        /*Assigning PDOs*/
+    pasCfgStatusData->sPerPortData[PORT0].u8SinkPDOCnt = CFG_PORT_0_SINK_NUM_OF_PDOS;
+    
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_0] = CFG_PORT_0_SINK_PDO_1;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_1] = CFG_PORT_0_SINK_PDO_2;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_2] = CFG_PORT_0_SINK_PDO_3;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_3] = CFG_PORT_0_SINK_PDO_4;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_4] = CFG_PORT_0_SINK_PDO_5;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_5] = CFG_PORT_0_SINK_PDO_6;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_6] = CFG_PORT_0_SINK_PDO_7;
+    
+    /*Assigning maximum operating current and minimum operating current for Note
+      type port to 3000mA and 1000mA respectively*/
+    pasCfgStatusData->sPerPortData[PORT0].u16SnkMaxOperatingCurInmA = \
+            CFG_PORT_0_SINK_MAX_OPERATING_CURRENT_InmA;
+    pasCfgStatusData->sPerPortData[PORT0].u16SnkMinOperatingCurInmA = \
+            CFG_PORT_0_SINK_MIN_OPERATING_CURRENT_InmA;
+
+
+     /*Assigning PDO preferred minimum current*/
+    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_0] = \
+            CFG_PORT_0_SINK_PDO_1_PREFERRED_MIN_CURRENT;
+    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_1] = \
+            CFG_PORT_0_SINK_PDO_2_PREFERRED_MIN_CURRENT;
+    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_2] = \
+            CFG_PORT_0_SINK_PDO_3_PREFERRED_MIN_CURRENT;
+    pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_3] = \
+            CFG_PORT_0_SINK_PDO_4_PREFERRED_MIN_CURRENT;
+    
+    /*Assigning DAC_I configuration*/
+    pasCfgStatusData->sPerPortData[PORT0].u16DAC_I_CurrentInd_MaxInA = \
+            CFG_PORT_0_SINK_DAC_I_CUR_INDICATION_MAX;
+    pasCfgStatusData->sPerPortData[PORT0].u16DAC_I_MaxOutVoltInmV = \
+            CFG_PORT_0_SINK_DAC_I_MAX_OP_VOLTAGE;
+    pasCfgStatusData->sPerPortData[PORT0].u16DAC_I_MinOutVoltInmV = \
+            CFG_PORT_0_SINK_DAC_I_MIN_OP_VOLTAGE;
+    pasCfgStatusData->sPerPortData[PORT0].u8DAC_I_Direction = \
+            CFG_PORT_0_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
 
 }
 
