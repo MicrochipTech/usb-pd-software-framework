@@ -51,89 +51,62 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Local Functions                                                   */
 /* ************************************************************************** */
 /* ************************************************************************** */
-static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_0_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_1_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
-static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
-{    
-    if(PORT0 == u8PortNum)
-    {    
-        switch(DPM_GET_CONFIGURED_POWER_ROLE(PORT0))
-        {
-            case PD_ROLE_DRP:
-            {
-                CFG_NoteSourceParams(pasCfgStatusData);
-                CFG_NoteSinkPDOs(pasCfgStatusData);
-
-/* TODO: <Role swap> <Enable the below line once role swap is stable> */
-#if 0                
-                /*Configure role swap policy for note type port*/
-                gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = \
-                    (CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP | \
-                    CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP | \
-                    CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP |\
-                    CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP);
-#endif
-                break;
-            }
-            case PD_ROLE_SOURCE:
-            {
-                CFG_NoteSourceParams(pasCfgStatusData);
-                break;
-            }
-            case PD_ROLE_SINK:
-            {
-                CFG_NoteSinkPDOs(pasCfgStatusData);
-                break;
-            }
-            default:
-                break;
-        }
-    }
-    else /*PORT1*/
+static void CFG_Port_0_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+{
+    switch(DPM_GET_CONFIGURED_POWER_ROLE(PORT0))
     {
-        
-        
-        switch(DPM_GET_CONFIGURED_POWER_ROLE(PORT1))
+        case PD_ROLE_DRP:
         {
-            case PD_ROLE_DRP:
-            {
-                CFG_DockSourceParams(pasCfgStatusData);
-                CFG_DockSinkParams(pasCfgStatusData);
-
-/* TODO: <Role swap> <Enable the below line once role swap is stable> */
-#if 0                
-                /*Configure role swap policy for dock type port*/
-                gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = \
-                    (CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP | \
-                    CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP | \
-                    CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP |\
-                    CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP);
-#endif                
-                break;
-            }
-            case PD_ROLE_SOURCE:
-            {
-                CFG_DockSourceParams(pasCfgStatusData);
-                break;
-            }
-            case PD_ROLE_SINK:
-            {
-                CFG_DockSinkParams(pasCfgStatusData);
-                break;
-            }
-            default:
-                break;
+            CFG_Port_0_SourcePDOs(pasCfgStatusData);
+            CFG_Port_0_SinkPDOs(pasCfgStatusData);
+            break;
         }
+        case PD_ROLE_SOURCE:
+        {
+            CFG_Port_0_SourcePDOs(pasCfgStatusData);
+            break;
+        }
+        case PD_ROLE_SINK:
+        {
+            CFG_Port_0_SinkPDOs(pasCfgStatusData);
+            break;
+        }
+        default:
+            break;
     }
-    
-    
 }
 
-static void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_1_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+{
+    switch(DPM_GET_CONFIGURED_POWER_ROLE(PORT1))
+    {
+        case PD_ROLE_DRP:
+        {
+            CFG_Port_1_SourcePDOs(pasCfgStatusData);
+            CFG_Port_1_SinkPDOs(pasCfgStatusData);
+            break;
+        }
+        case PD_ROLE_SOURCE:
+        {
+            CFG_Port_1_SourcePDOs(pasCfgStatusData);
+            break;
+        }
+        case PD_ROLE_SINK:
+        {
+            CFG_Port_1_SinkPDOs(pasCfgStatusData);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+static void CFG_Port_0_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT0].u8SourcePDOCnt = CFG_PORT_0_SOURCE_NUM_OF_PDOS;  
     
@@ -148,7 +121,7 @@ static void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     
 }
 
-static void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
             (CFG_PORT_0_SINK_USB_SUSP << DPM_SINK_CONFIG_NO_USB_SUSP_POS) |\
@@ -191,7 +164,7 @@ static void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             CFG_PORT_0_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
 }
 
-static void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_1_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT1].u8SourcePDOCnt = CFG_PORT_1_SOURCE_NUM_OF_PDOS;
     /* PDO Update*/
@@ -204,7 +177,7 @@ static void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_6] = CFG_PORT_1_SOURCE_PDO_7;
 }
 
-static void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT1].u8SinkPDOCnt = CFG_PORT_1_SINK_NUM_OF_PDOS;
     /*PDO Updated*/
@@ -234,8 +207,6 @@ static void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 /* ************************************************************************** */
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-    UINT8 u8PortNum = SET_TO_ZERO;
-    
     pasCfgStatusData->u16ProducdID = CFG_PRODUCT_ID;
     pasCfgStatusData->u16VendorID = CFG_VENDOR_ID;
     pasCfgStatusData->u16ProductTypeVDO = CFG_PRODUCT_TYPE_VDO;
@@ -306,10 +277,29 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT1].u16FeatureSelect = CFG_PB_PORT_ENABLE;
 
     
-    for (u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
-    {
-        CFG_PerPortParams (u8PortNum, pasCfgStatusData);  
-    }
+    CFG_Port_0_PDOs (pasCfgStatusData);  
+    CFG_Port_1_PDOs (pasCfgStatusData);  
+    
+    /* TODO: <Role swap> <Enable the below line once role swap is stable> */
+#if 0                
+                /*Configure role swap policy for note type port*/
+                gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = \
+                    (CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP | \
+                    CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP | \
+                    CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP |\
+                    CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP);
+#endif
+                
+/* TODO: <Role swap> <Enable the below line once role swap is stable> */
+#if 0                
+                /*Configure role swap policy for dock type port*/
+                gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = \
+                    (CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP | \
+                    CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP | \
+                    CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP |\
+                    CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP);
+#endif                
+    
     #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))
     pasCfgStatusData->sPBPerPortData[PORT0].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_0_POWER_BANKA_IN_250mW;
     pasCfgStatusData->sPBPerPortData[PORT0].u16MaxPrtPwrBankBIn250mW = CFG_PB_MAX_PORT_0_POWER_BANKB_IN_250mW;
