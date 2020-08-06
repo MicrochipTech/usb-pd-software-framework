@@ -52,8 +52,7 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
         u8TxDoneSt = ePE_SRC_READY;
         u8TxDoneSS = ePE_SRC_READY_END_AMS_SS;
         u8TxFailedSt = ePE_SRC_SEND_SOFT_RESET;
-        u8TxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS;
-        
+        u8TxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS;        
     }
     else
     {
@@ -137,6 +136,11 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
             }
             /*Inform Protocol layer of the role change*/
             PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+            
+            /* Move the Policy Engine to ePE_SRC_READY/ePE_SNK_READY state */
+            gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
+            gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;
+
             /* Inform DR_SWAP completion notification*/
             DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_COMPLETED);
             
