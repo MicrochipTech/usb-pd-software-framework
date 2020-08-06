@@ -1328,7 +1328,7 @@ void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 }
 /******************************************************************************************************/
 
-UINT8 PRL_IsAmsInitiatable(UINT8 u8PortNum)
+UINT8 PRL_IsAMSInitiatable(UINT8 u8PortNum)
 {
     UINT8 u8ReturnVal = TRUE, u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     /*If the port is 3.0 check whether the port is capable of initiating an AMS*/

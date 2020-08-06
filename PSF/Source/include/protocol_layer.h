@@ -1478,7 +1478,7 @@ void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum);
         This function confined to INCLUDE_PD_3_0 define.
 
 **************************************************************************************************/
-UINT8 PRL_IsAmsInitiatable (UINT8 u8PortNum);
+UINT8 PRL_IsAMSInitiatable (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
