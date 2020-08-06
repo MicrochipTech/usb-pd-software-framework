@@ -280,25 +280,21 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     CFG_Port_0_PDOs (pasCfgStatusData);  
     CFG_Port_1_PDOs (pasCfgStatusData);  
     
-    /* TODO: <Role swap> <Enable the below line once role swap is stable> */
-#if 0                
-                /*Configure role swap policy for note type port*/
-                gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = \
+                  
+    /*Configure role swap policy for note type port*/
+    gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = \
                     (CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP | \
                     CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP | \
                     CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP |\
                     CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP);
-#endif
-                
-/* TODO: <Role swap> <Enable the below line once role swap is stable> */
-#if 0                
-                /*Configure role swap policy for dock type port*/
-                gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = \
+               
+    /*Configure role swap policy for dock type port*/
+    gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = \
                     (CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP | \
                     CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP | \
                     CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP |\
                     CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP);
-#endif                
+               
     
     #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))
     pasCfgStatusData->sPBPerPortData[PORT0].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_0_POWER_BANKA_IN_250mW;
