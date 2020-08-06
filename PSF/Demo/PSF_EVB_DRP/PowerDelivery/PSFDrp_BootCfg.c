@@ -53,7 +53,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_NoteSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_DockSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_DockSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
@@ -66,7 +66,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
             case PD_ROLE_DRP:
             {
                 CFG_NoteSourceParams(pasCfgStatusData);
-                CFG_NoteSinkPDOs(pasCfgStatusData);
+                CFG_NoteSinkParams(pasCfgStatusData);
                
                 /*Configure role swap policy for note type port*/
                 gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = \
@@ -83,7 +83,7 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
             }
             case PD_ROLE_SINK:
             {
-                CFG_NoteSinkPDOs(pasCfgStatusData);
+                CFG_NoteSinkParams(pasCfgStatusData);
                 break;
             }
             default:
@@ -141,7 +141,7 @@ static void CFG_NoteSourceParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     
 }
 
-static void CFG_NoteSinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_NoteSinkParams(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
             (CFG_PORT_0_SINK_USB_SUSP << DPM_SINK_CONFIG_NO_USB_SUSP_POS) |\

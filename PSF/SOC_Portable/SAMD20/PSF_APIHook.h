@@ -1315,16 +1315,18 @@ Remarks:
     ePOWER_ROLE_FUNC          \Output         * Power role indicator functionality is to indicate that the current 
                                                  power role is source. PSF requests the application to assert the pin
 												 when current power role is source. PSF requests the application 
-                                                 to deassert the pin on detach event or during renegotiation. The state of
-												 GPIO during init, Assert and Deassert of this functionality 
+                                                 to deassert the pin on detach event or when the power role is 
+                                                 changed to Sink as a result of PD PR_Swap. The state of
+												 GPIO during Init, Assert and Deassert of this functionality 
 												 is user specific.
                                                * This is applicable only for DRP functionality and it is
                                                  not mandatory,depends on user application.
     eDATA_ROLE_FUNC           \Output         * Data role indicator functionality is to indicate that the current 
                                                  data role is Host/Hub DFP. PSF requests the application to assert the pin
 												 when current data role is Host/Hub DFP. PSF requests the application
-												 to deassert the pin on detach event or during renegotiation. The state of
-												 GPIO during init, Assert and Deassert of this functionality 
+												 to deassert the pin on detach event or when the data role of the port is 
+                                                 changed to UFP as a result of PD DR_Swap. The state of
+												 GPIO during Init, Assert and Deassert of this functionality 
 												 is user specific.
                                                * This is applicable only for DRP functionality and it is
                                                  not mandatory,depends on user application.
