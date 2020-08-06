@@ -2334,10 +2334,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
            
         /*Setting CC Comparator to sample both the CC1 and CC2*/
         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
-        
-        /* Clear VCONN_STATUS bit in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_VCONN_STATUS);
-        
+                
         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE initiated\r\n");        
     }
     else
@@ -2401,10 +2398,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
               gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData defined as 1*/
             /*Enable the VCONN OCS monitoring in VBUS_CTL1 register*/
             UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_LOW, TYPEC_VCONN_OCS_ENABLE);
-        }
-        
-        /* Set VCONN_STATUS bit in Port Connection Status register */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_VCONN_STATUS;
+        }                
     } 
 }                               
 /*******************************************************************************************/
@@ -2421,6 +2415,9 @@ void TypeC_VCONNDisOn_IntrHandler(UINT8 u8PortNum)
     /*Setting the VCONN source bit in u8IntStsISR variable as VCONN disabled */
     gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_VCONN_SOURCE_MASK;
     
+    /* Clearing VCONN_STATUS bit in Port Connection Status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_VCONN_STATUS);
+
     /*VCONN discharge complete can occur while the sink is still attached or detached for source port*/
     /*VCONN discharge complete can occur while the source is still attached or detached for sink port*/
     
@@ -2494,7 +2491,9 @@ void TypeC_VCONNOn_IntrHandler(UINT8 u8PortNum)
 
          /*Clearing the CC Interrupt flag since CC change is because of the VCONN ON event*/
          gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_CCINT_STATUS_MASK;
-    
+         
+         /* Setting the Port Connect Status to indicate VCONN is enabled */
+         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_VCONN_STATUS;    
     }
 }
 
