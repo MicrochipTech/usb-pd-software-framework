@@ -144,7 +144,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*********************************************************************************/
 /*Port 0 Notebook common PDO configuration for Source and Sink*/
 #define CFG_PORT_0_DUAL_ROLE_POWER           1U 
-#define CFG_PORT_0_DUAL_ROLE_DATA            0U
+#define CFG_PORT_0_DUAL_ROLE_DATA            1U
 
 /*Port - 0 NoteBook Source PDO Configuration***/
 #define CFG_PORT_0_SOURCE_NUM_OF_PDOS      1U
@@ -190,7 +190,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*********************************************************************************/
 /*Port 1 Dock common PDO configuration for Source and Sink*/
 #define CFG_PORT_1_DUAL_ROLE_POWER           1U 
-#define CFG_PORT_1_DUAL_ROLE_DATA            0U
+#define CFG_PORT_1_DUAL_ROLE_DATA            1U
 
 /*Port - 1 Dock Source PDO Configuration***/
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)

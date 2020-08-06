@@ -182,8 +182,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
         gasPolicyEngine[u8PortNum].ePETimeoutSubState = ePE_INVALIDSUBSTATE;
         
         #if (TRUE == INCLUDE_PD_DR_SWAP)
-			/*ToDo: <DR_SWAP> uncomment after testing*/
-            //PE_RunDRSwapStateMachine (u8PortNum);
+            PE_RunDRSwapStateMachine (u8PortNum);
         #endif 
         if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
