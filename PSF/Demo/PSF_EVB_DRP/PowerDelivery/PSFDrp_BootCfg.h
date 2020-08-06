@@ -228,9 +228,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
 #define CFG_PORT_1_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0)
 
-
-
-
 /*Port - 1 Dock Sink PDO configuration*/
 #define CFG_PORT_1_SINK_NUM_OF_PDOS          1U
 #define CFG_PORT_1_SINK_HIGHER_CAPABILITY    1U
@@ -392,6 +389,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     (((minVolt) / 100U) << 8U) | \
     ((maxCurrent) / 50U)) 
 
+/*Defines for getting default power role configured to a port from 
+ * gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/
+/*CFG_GET_CONFIGURED_POWER_ROLE(u8PortNum) will return one of the following values
+	- 0 (Sink)
+	- 1 (Source)
+	- 2 (DRP) */
+#define CFG_GET_CONFIGURED_POWER_ROLE(u8PortNum)  \
+    (gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & (BIT(0)|BIT(1)))
 
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData); 
 

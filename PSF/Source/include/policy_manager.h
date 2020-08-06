@@ -90,7 +90,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CFG_PORT_ENABLE                 (1 << DPM_CFG_PORT_ENDIS_POS)
 #define DPM_CFG_VCONN_OCS_ENABLE               (1 << DPM_CFG_VCONN_OCS_EN_POS)
 
-/*Defines for getting default values configured to a port from gasDPM[u8PortNum].u8DPMConfigData*/
+/*Defines for getting default values configured to a port from 
+ gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/
 /*DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_SINK
 	- PD_ROLE_SOURCE
