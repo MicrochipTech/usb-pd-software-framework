@@ -67,16 +67,13 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
             {
                 CFG_NoteSourceParams(pasCfgStatusData);
                 CFG_NoteSinkPDOs(pasCfgStatusData);
-
-/* TODO: <Role swap> <Enable the below line once role swap is stable> */
-#if 0                
+               
                 /*Configure role swap policy for note type port*/
                 gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = \
                     (CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP | \
                     CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP | \
                     CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP |\
                     CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP);
-#endif
                 break;
             }
             case PD_ROLE_SOURCE:
@@ -103,16 +100,12 @@ static void CFG_PerPortParams (UINT8 u8PortNum, GLOBAL_CFG_STATUS_DATA *pasCfgSt
             {
                 CFG_DockSourceParams(pasCfgStatusData);
                 CFG_DockSinkParams(pasCfgStatusData);
-
-/* TODO: <Role swap> <Enable the below line once role swap is stable> */
-#if 0                
                 /*Configure role swap policy for dock type port*/
                 gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = \
                     (CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP | \
                     CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP | \
                     CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP |\
-                    CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP);
-#endif                
+                    CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP);          
                 break;
             }
             case PD_ROLE_SOURCE:
