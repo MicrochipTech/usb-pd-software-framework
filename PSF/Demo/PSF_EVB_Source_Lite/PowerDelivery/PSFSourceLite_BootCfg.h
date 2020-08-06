@@ -33,75 +33,134 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSFSOURCELITE_BOOTCFG_H    /* Guard against multiple inclusion */
 #define _PSFSOURCELITE_BOOTCFG_H
 
-#define PRODUCT_ID              0x301CU
-#define VENDOR_ID               0x0424U
-#define PRODUCT_TYPE_VDO        0x0000U
-#define PRODUCT_VDO             0x0000U  
-#define CERT_STAT_VDO           0x0000U
-#define ID_HEADER_VDO           0x0000U
-#define HW_VERSION              0x00U
-#define SILICON_VERSION         0x00U
+/*********************************Common Configuration*****************************************/
+#define CFG_PRODUCT_ID              0x301CU
+#define CFG_VENDOR_ID               0x0424U
+#define CFG_PRODUCT_TYPE_VDO        0x0000U
+#define CFG_PRODUCT_VDO             0x0000U  
+#define CFG_CERT_STAT_VDO           0x0000U
+#define CFG_ID_HEADER_VDO           0x0000U
+#define CFG_HW_VERSION              0x00U
+#define CFG_SILICON_VERSION         0x00U
 
-#define CFG_PORT_POWER_ROLE                1U
-#define CFG_PORT_RPVAL_POS                 3U
-#define CFG_PORT_ENDIS_POS                 5U
-#define CFG_PORT_RP_CURRENT_VALUE          (3U << CFG_PORT_RPVAL_POS)
-#define CFG_PORT_ENABLE                    (1U << CFG_PORT_ENDIS_POS)
-#define CFG_PORT_SOURCE_NUM_OF_PDOS        4U
-#define CFG_PORT_SOURCE_USB_SUSP           0U
-#define CFG_PORT_SOURCE_UNCONSTARINED_PWR  1U
-#define CFG_PORT_SOURCE_USB_COMM           0U
+/***********************************Port Specific configuration***********************/    
+/*Configuration value for u32CfgData*/
+/*Power Role values 0 - Sink, 1- Source, 2- DRP*/
+#define CFG_PORT_0_POWER_ROLE                1
+#define CFG_PORT_1_POWER_ROLE                1
 
-#define CFG_PORT_SOURCE_PDO_1_CURRENT      3000U 
-#define CFG_PORT_SOURCE_PDO_2_CURRENT      3000U
-#define CFG_PORT_SOURCE_PDO_3_CURRENT      3000U
-#define CFG_PORT_SOURCE_PDO_4_CURRENT      3000U
-#define CFG_PORT_SOURCE_PDO_5_CURRENT      0U
-#define CFG_PORT_SOURCE_PDO_6_CURRENT      0U
-#define CFG_PORT_SOURCE_PDO_7_CURRENT      0U
+/*Data Role supported values 0-Dual Role Data Not supported, 1- Dual Role Date Supported */
+#define CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT    (0U << 2)
+#define CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT     (0U << 2)
 
-#define CFG_PORT_SOURCE_PDO_1_VOLTAGE      5000
-#define CFG_PORT_SOURCE_PDO_2_VOLTAGE      9000
-#define CFG_PORT_SOURCE_PDO_3_VOLTAGE      15000
-#define CFG_PORT_SOURCE_PDO_4_VOLTAGE      20000
-#define CFG_PORT_SOURCE_PDO_5_VOLTAGE      0
-#define CFG_PORT_SOURCE_PDO_6_VOLTAGE      0
-#define CFG_PORT_SOURCE_PDO_7_VOLTAGE      0
+/*Rp Value - 0 -Rd(Sink), 1-Default USB Rp, 2- 1.5A Rp, 3-3.0A Rp */
+#define CFG_PORT_0_RP_CURRENT_VALUE          (3U << 3)
+#define CFG_PORT_1_RP_CURRENT_VALUE          (3U << 3)
 
-#define CFG_MAX_PDO_COUNT                 7
-#define CFG_OVER_VOLTAGE_FACTOR			  115
-#define CFG_UNDER_VOLTAGE_FACTOR		  85
-#define CFG_MAX_VBUS_POWER_FAULT_COUNT	  3
-#define CFG_MAX_VCONN_FAULT_COUNT		  3
-#define CFG_POWER_GOOD_TIMER_MS			  10000
+/*Port Enable - 0- Port Disable; 1- Port Enable*/
+#define CFG_PORT_0_ENABLE       (1U << 5)
+#define CFG_PORT_1_ENABLE       (1U << 5)
 
-#define CFG_PORT_UPD_EN_VBUS               eUPD_PIO3
-#define CFG_PORT_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
-#define CFG_PORT_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
-#define CFG_PORT_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
+/*VCONN OCS Enable - 0- Disbale, 1-Enable*/
+#define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
+#define CFG_PORT_1_VCONN_OCS_ENABLE      (1U << 9)  
 
-#define CFG_VCONN_OCS_EN_POS               9U
-#define CFG_VCONN_OCS_ENABLE               (1 << CFG_VCONN_OCS_EN_POS)
-#define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2U
+/********************************PIO Specific configuraiton******************************/
+#define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
+#define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
+
+#define CFG_PORT_0_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
+#define CFG_PORT_1_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
+
+#define CFG_PORT_0_UPD_EN_VBUS               eUPD_PIO3
+#define CFG_PORT_1_UPD_EN_VBUS               eUPD_PIO3
+#define CFG_PORT_0_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
+#define CFG_PORT_1_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
+
+/**********************Fault Related configuration**************************/
+#define CFG_OVER_VOLTAGE_FACTOR			  115U
+#define CFG_UNDER_VOLTAGE_FACTOR		  85U
 #define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5U
+#define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2U
+#define CFG_MAX_VBUS_POWER_FAULT_COUNT	  3U
+#define CFG_MAX_VCONN_FAULT_COUNT		  3U
+#define CFG_POWER_GOOD_TIMER_MS			  10000U
+#define CFG_MAX_PORT_CURRENT_IN_10mA       300U 
 
-#define CFG_PDO_VOLTAGE_POS                   10 
-#define CFG_PDO_VOLTAGE_UNIT                  50
-#define CFG_PDO_CURRENT_UNIT                  10
-#define CFG_PDO_USB_SUSPEND_POS               28 
-#define CFG_PDO_USB_COMMN_POS                 26 
-#define CFG_PDO_UNCONSTRAINED_PWR             27 
+/*********************************************************************************/
+/*********************************PDO Configuration ******************************/
+/**********************************************************************************/
 
+/********************************************************************************/
+/**********************************Port 0****************************************/
+/*********************************************************************************/
+/*Port 0 PDO configuration*/
+#define CFG_PORT_0_DUAL_ROLE_POWER           1U 
+#define CFG_PORT_0_DUAL_ROLE_DATA            0U
+#define CFG_PORT_0_SOURCE_NUM_OF_PDOS        4U
+#define CFG_PORT_0_SOURCE_USB_SUSP           0U
+#define CFG_PORT_0_SOURCE_UNCONSTARINED_PWR  1U
+#define CFG_PORT_0_SOURCE_USB_COMM           0U
+#define CFG_PORT_0_SOURCE_PDO_1     CFG_FORM_SOURCE_FIXED_PDO1(5000U, 3000U,\
+                                    CFG_PORT_0_DUAL_ROLE_DATA, \
+                                    CFG_PORT_0_SOURCE_USB_COMM, \
+                                    CFG_PORT_0_SOURCE_USB_SUSP,  \
+                                    CFG_PORT_0_SOURCE_UNCONSTARINED_PWR, \
+                                    CFG_PORT_0_DUAL_ROLE_POWER);
+#define CFG_PORT_0_SOURCE_PDO_2     CFG_FORM_FIXED_PDOx(9000U, 3000U)    
+#define CFG_PORT_0_SOURCE_PDO_3     CFG_FORM_FIXED_PDOx(15000U, 3000U)   
+#define CFG_PORT_0_SOURCE_PDO_4     CFG_FORM_FIXED_PDOx(20000U, 3000U)
+#define CFG_PORT_0_SOURCE_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
+#define CFG_PORT_0_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
+#define CFG_PORT_0_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0)   
+/********************************************************************************/
+/**********************************Port 1****************************************/
+/*********************************************************************************/
+#define CFG_PORT_1_DUAL_ROLE_POWER           1U 
+#define CFG_PORT_1_DUAL_ROLE_DATA            0U
+#define CFG_PORT_1_SOURCE_NUM_OF_PDOS        4U
+#define CFG_PORT_1_SOURCE_USB_SUSP           0U
+#define CFG_PORT_1_SOURCE_UNCONSTARINED_PWR  1U
+#define CFG_PORT_1_SOURCE_USB_COMM           0U
+#define CFG_PORT_1_SOURCE_PDO_1     CFG_FORM_SOURCE_FIXED_PDO1(5000U, 3000U, \
+                                    CFG_PORT_1_DUAL_ROLE_DATA, \
+                                    CFG_PORT_1_SOURCE_USB_COMM, \
+                                    CFG_PORT_1_SOURCE_USB_SUSP,  \
+                                    CFG_PORT_1_SOURCE_UNCONSTARINED_PWR, \
+                                    CFG_PORT_1_DUAL_ROLE_POWER);
+#define CFG_PORT_1_SOURCE_PDO_2     CFG_FORM_FIXED_PDOx(9000U,3000U)    
+#define CFG_PORT_1_SOURCE_PDO_3     CFG_FORM_FIXED_PDOx(15000U,3000U)   
+#define CFG_PORT_1_SOURCE_PDO_4     CFG_FORM_FIXED_PDOx(20000U,3000U)
+#define CFG_PORT_1_SOURCE_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
+#define CFG_PORT_1_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)  
+#define CFG_PORT_1_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0)  
+
+/*****************Defines to form PDOs ****************************************/
 /* Macro used to form Fixed PDO 1 */
-#define CFG_FORM_FIXED_PDO1(voltage,current,usbCommn,usbSusp,unconstrainedPwr)  (((usbSusp) << CFG_PDO_USB_SUSPEND_POS) | \
-                                         ((unconstrainedPwr) << CFG_PDO_UNCONSTRAINED_PWR) | \
-                                         ((usbCommn) << CFG_PDO_USB_COMMN_POS) | \
-                                         (((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-                                         ((current)/CFG_PDO_CURRENT_UNIT))            
+/*Source PDO 
+  B31-B30   - Supply Type
+  B29       - Dual Power role
+  B28       - USB Suspend supported
+  B27       - UnConstrained Power
+  B26       - USB Communication capable
+  B25       - Dual-Role Data
+  B24       - Unchunked extended message
+  B23-B22   - Reserved
+  B21-B20   - Peak Current
+  B19-B10   - Voltage in 50mV units
+  B9-B0     - Maximum current in 10mA units */
+#define CFG_FORM_SOURCE_FIXED_PDO1(voltage,current,DualRoleData,usbCommn,usbSusp,unconstrainedPwr,isDrp) \
+    (((isDrp) << 29) | \
+    ((usbSusp) << 28) | \
+    ((unconstrainedPwr) << 27) | \
+    ((usbCommn) << 26) | \
+    ((DualRoleData) << 25) |\
+    (((voltage)/50) << 10) | \
+    ((current)/10))            
 
 /* Macro used to form Fixed PDOs 2 to 7 */
-#define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/CFG_PDO_VOLTAGE_UNIT) << CFG_PDO_VOLTAGE_POS) | \
-                                                            ((current)/CFG_PDO_CURRENT_UNIT))
+#define CFG_FORM_FIXED_PDOx(voltage,current)   ((((voltage)/50) << 10) | ((current)/10))
+
 
 
 void PSF_LoadConfig(); 

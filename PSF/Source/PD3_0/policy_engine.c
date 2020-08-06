@@ -1798,7 +1798,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 u8TempRespBuffer[PE_FWUP_RESPBUFF_PROTOCOL_VERSION_INDEX] = PE_FWUP_PROTOCOL_VERSION;
                 u8TempRespBuffer[PE_FWUP_RESPBUFF_RESPONSE_TYPE_INDEX] = ((~0x80) & pu8DataBuf[PE_FWUP_RESPBUFF_REQUEST_TYPE_INDEX]);
                 u8TempRespBuffer[PE_FWUP_RESPBUFF_STATUS_INDEX] = (UINT8)ePE_FWUP_errUNKNOWN;
-                //u8TempRespBuffer[PE_FWUP_RESPBUFF_STATUS_INDEX + 1u] = 0x00u; /** Padding byte */
+                //u8TempRespBuffer[PE_FWUP_RESPBUFF_STATUS_INDEX + 1u] = SET_TO_ZERO; /** Padding byte */
                 /**Clear the Interruption event*/
                 gsPdfuInfo.u8EventType &= (~PE_FWUP_INTERRUPTION_EVT);
                 

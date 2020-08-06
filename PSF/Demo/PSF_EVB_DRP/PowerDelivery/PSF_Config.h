@@ -1461,7 +1461,8 @@ typedef enum
     </table>
     
     <b>h. u16SwapPolicy</b>: 
-	u16SwapPolicy. 
+	u16SwapPolicy defines the policy of a port whether to accept, request or reject Power Role Swap,
+    Data Role Swap and VCONN Swap based on its power and data roles.
 	<table> 
     Bit     R/W Config   R/W Run   \Description
              time         time      
