@@ -1195,7 +1195,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PE_DRSwapRunStateMachine (UINT8 u8PortNum);
+        void PE_RunDRSwapStateMachine (UINT8 u8PortNum);
 
     Summary:
         DR_SWAP Policy Engine State Machine. 
@@ -1219,7 +1219,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PE_DRSwapRunStateMachine (UINT8 u8PortNum);
+void PE_RunDRSwapStateMachine (UINT8 u8PortNum);
 
 
 #endif /*_POLICY_ENGINE_H_*/

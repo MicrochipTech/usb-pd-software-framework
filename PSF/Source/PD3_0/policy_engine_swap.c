@@ -31,7 +31,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 #include <psf_stdinc.h>
 #if (TRUE == INCLUDE_PD_DR_SWAP) 
-void PE_DRSwapRunStateMachine(UINT8 u8PortNum)
+void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
 {
 	/* Transmit Message Header */
 	UINT32 u32TransmitHeader = SET_TO_ZERO;
