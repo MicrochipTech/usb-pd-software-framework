@@ -58,7 +58,7 @@ static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
 static void CFG_Port_0_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-    switch(DPM_GET_CONFIGURED_POWER_ROLE(PORT0))
+    switch(CFG_GET_CONFIGURED_POWER_ROLE(PORT0))
     {
         case PD_ROLE_DRP:
         {
@@ -83,7 +83,7 @@ static void CFG_Port_0_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 
 static void CFG_Port_1_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-    switch(DPM_GET_CONFIGURED_POWER_ROLE(PORT1))
+    switch(CFG_GET_CONFIGURED_POWER_ROLE(PORT1))
     {
         case PD_ROLE_DRP:
         {
