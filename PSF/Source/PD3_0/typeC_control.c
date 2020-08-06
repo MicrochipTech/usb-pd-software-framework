@@ -2029,7 +2029,7 @@ void TypeC_ConfigCCComp(UINT8 u8PortNum ,UINT8 u8ConfigVal)
 void TypeC_DRPSetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent)
 {
   
-    UINT8 u8MatchSel = 0x01;
+    UINT8 u8MatchSel = TYPEC_CC_THRES0_MATCH;
     UPD_RegisterWrite (u8PortNum, TYPEC_DRP_SNK_SAMP_EN, &u8MatchSel,\
                        BYTE_LEN_1); 
     UPD_RegisterWrite (u8PortNum, TYPEC_DRP_CC_SNK_MATCH_EN, &u8MatchSel,\
