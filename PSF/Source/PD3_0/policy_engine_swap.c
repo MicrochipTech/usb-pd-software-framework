@@ -804,3 +804,404 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 }
 #endif /*INCLUDE_PD_PR_SWAP*/
 
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
+{
+	/* Transmit Message Header */
+	UINT32 u32TransmitHeader = SET_TO_ZERO;
+
+	/* Transmit Call back set to PE_StateChange_TransmitCB */
+	PRLTxCallback pfnTransmitCB = PE_StateChange_TransmitCB;
+
+	/* Transmit Call back variables */
+	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
+
+	/* Transmit Flag */
+	UINT8 u8IsTransmit = FALSE;
+    
+    UINT8 u8TxFailedSt, u8TxFailedSS, u8TxDoneSt, u8TxDoneSS;
+    
+    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+    {
+        u8TxDoneSt = ePE_SRC_READY;
+        u8TxDoneSS = ePE_SRC_READY_END_AMS_SS;
+        u8TxFailedSt = ePE_SRC_SEND_SOFT_RESET;
+        u8TxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS;        
+    }
+    else
+    {
+        u8TxDoneSt = ePE_SNK_READY;
+        u8TxDoneSS = ePE_SNK_READY_IDLE_SS;
+        u8TxFailedSt = ePE_SNK_SEND_SOFT_RESET;
+        u8TxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
+    }
+        
+    switch(gasPolicyEngine[u8PortNum].ePEState)
+    {
+        case ePE_VCS_SEND_SWAP:
+        {
+            switch(gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_VCS_SEND_SWAP_ENTRY_SS:
+                {                 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_ENTRY_SS\r\n");                    
+					/* Send the VCONN_Swap message */
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_VCONN_SWAP,
+                                            PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+      
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VCS_SEND_SWAP, \
+                                                ePE_VCS_SEND_SWAP_MSG_DONE_SS, \
+                                                u8TxFailedSt, u8TxFailedSS);
+
+                    u8IsTransmit = TRUE;                                        
+                             
+                    /* Assign an idle sub-state to wait for message transmit completion */
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_SWAP_IDLE_SS;                    
+                    break; 
+                }
+                case ePE_VCS_SEND_SWAP_MSG_DONE_SS:
+                {                   
+                    /* Policy Engine would enter this sub-state on reception of GoodCRC 
+                       for the VCONN_Swap message sent */
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_MSG_DONE_SS\r\n");
+                    /* Start Sender Response Timer. Either Accept, Reject or wait would be 
+                       received as response. If no response is received, move to 
+                       ePE_SRC_READY or ePE_SNK_READY state */
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_SENDERRESPONSE_TIMEOUT_MS),
+                                                            PE_SubStateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_VCS_SEND_SWAP_NO_RESPONSE_SS);
+                    
+                    /* Assign an idle sub-state to wait for timer expiry */
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_SWAP_IDLE_SS;                                            
+                    break; 
+                }
+                case ePE_VCS_SEND_SWAP_NO_RESPONSE_SS:
+                case ePE_VCS_SEND_SWAP_REJECT_RCVD_SS:
+                {                    
+                    /* Response not received within tSenderResponse. Move to 
+                       ePE_SRC_READY/ePE_SNK_READY state */
+                    gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;
+
+                    /* Post VCONN_SWAP_NO_RESP_RCVD notification*/
+                    DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD);
+                    break; 
+                }
+                case ePE_VCS_SEND_SWAP_WAIT_RCVD_SS:
+                {
+                    /* Policy Engine would enter this sub-state on reception of 
+                       Wait response from the port partner. Start PR Swap Wait timer
+                       and move to ePE_SRC_READY or ePE_SNK_READY state. On PR_Swap
+                       wait timer expiry, re-initiate PR_Swap transmission if not 
+                       done by the port partner */
+                    gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = PDTimer_Start (
+                                                          (PE_VCONN_SWAP_WAIT_TIMEOUT_MS),
+                                                          DPM_SwapWait_TimerCB,u8PortNum,  
+                                                          (UINT8)eVCONN_SWAP_INITIATE);
+                    /* Move to ePE_SRC_READY/ePE_SNK_READY state */
+                    gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;
+                                 
+                    break; 
+                }
+                case ePE_VCS_SEND_SWAP_ACCEPT_RCVD_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-ACCEPT_RCVD_SS: Entered the SubState \r\n");
+
+                    /*Check whether the Port is currently sourcing VCONN and
+                    transition accordingly*/
+                    if (DPM_IsPortVCONNSource(u8PortNum))
+                    {
+                         gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_WAIT_FOR_VCONN;
+                         gasPolicyEngine[u8PortNum].ePESubState = \
+                           ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS;
+                    }
+                    else
+                    {                      
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_TURN_ON_VCONN;                        
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_ON_VCONN_ENTRY_SS;
+                        
+                    }
+                    break;
+                }
+                case ePE_VCS_SEND_SWAP_IDLE_SS:
+                {
+                    /* Idle state to wait for message transmit completion or timer expiry */
+                    break; 
+                }
+                default:
+                {
+                    break; 
+                }
+            }
+            break; 
+        }
+        
+        case ePE_VCS_EVALUATE_SWAP:
+        {
+            /*Transition directly to next state as PSF accepts VCONN Swap always*/
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP: Entered the state\r\n");
+
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+            
+            /*Send Not Supported or Reject if Port partner requests VCONN Swap to supply the
+            VCONN when the u8VCONNGoodtoSupply is false */
+            if((!DPM_IsPortVCONNSource(u8PortNum)) && (!gasDPM[u8PortNum].u8VCONNGoodtoSupply))
+            {
+                PE_SendNotSupportedOrRejectMsg(u8PortNum);
+            }
+            else
+            {
+                gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS;
+            }
+#else 
+            gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS;
+#endif
+
+            break;
+        }
+        case ePE_VCS_ACCEPT_SWAP:
+        {
+            switch (gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-SEND_ACCEPT_SS: Entered the SubState \r\n");
+
+                     /*Send Accept message*/
+                    /*Set the PD message transmitter API to Send Accept Message*/
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,\
+                                         PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+
+                    /*Set the transmitter callback to transition to source soft reset state if
+                    message transmission fails*/
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (ePE_VCS_ACCEPT_SWAP,\
+                                             ePE_VCS_ACCEPT_SWAP_ACCEPT_SENT_SS,\
+                                             u8TxFailedSt, u8TxFailedSS);
+
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_IDLE_SS;
+                    u8IsTransmit = TRUE;
+
+                    break;
+
+                }
+                /*Wait here until the message is sent*/
+                case ePE_VCS_ACCEPT_SWAP_IDLE_SS:
+                {
+                    break;
+                }
+                case ePE_VCS_ACCEPT_SWAP_ACCEPT_SENT_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-ACCEPT_SENT_SS: Entered the SubState \r\n");
+
+                    /*Check whether the Port is currently sourcing VCONN and
+                    transition accordingly*/
+                    if (DPM_IsPortVCONNSource(u8PortNum))
+                    {
+                         gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_WAIT_FOR_VCONN;
+                         gasPolicyEngine[u8PortNum].ePESubState = \
+                           ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS;
+                    }
+                    else
+                    {                      
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_TURN_ON_VCONN;                        
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_ON_VCONN_ENTRY_SS;
+                        
+                    }
+                    break;
+                }
+                 default:
+                {
+                    break;
+                }
+            }
+            break;
+        }
+        case ePE_VCS_WAIT_FOR_VCONN:
+        {
+            switch (gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS:
+                {
+                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_WAIT_FOR_VCONN-START_TIMER_SS: Entered the SubState \r\n");
+
+                    /*If PS RDY message is not received from port partner, then transition to Hard
+                    reset state*/
+
+                    /*Start the VCONN timer*/
+                    /*Set the timer callback to transition to ePE_SRC_HARD_RESET state
+                     * ePE_SRC_HARD_RESET_ENTRY_SS sub state if timeout happens*/
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
+                                                              PE_VCONNON_TIMEOUT_MS,\
+                                                              PE_SSChngAndTimeoutValidate_TimerCB,\
+                                                              u8PortNum,\
+                                                              (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
+
+
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS;
+                    break;
+                }
+                case ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS:
+                {
+                   break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+            break;
+        }
+
+        case ePE_VCS_TURN_OFF_VCONN:
+        {          
+            switch (gasPolicyEngine[u8PortNum].ePESubState)
+            {
+              
+                case ePE_VCS_TURN_OFF_VCONN_ENTRY_SS:
+                {
+                  
+                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Entered the state\r\n");
+
+                    /*Turn off VCONN since PS RDY message is received from VCONN Source partner*/
+                    DPM_VCONNOnOff(u8PortNum,DPM_VCONN_OFF);            
+                    
+                    /*Start the VCONN_OFF timer*/
+                    /*This Timeout is implemented outside of the PD Specification to track 
+                    VCONN Turn OFF error*/
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
+                                                              PE_VCONNOFF_TIMEOUT_MS,\
+                                                              DPM_VBUSorVCONNOnOff_TimerCB,\
+                                                              u8PortNum,\
+                                                              (UINT8)SET_TO_ZERO);
+                    
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_OFF_VCONN_CHECK_SS;
+                    break;            
+                }
+                case ePE_VCS_TURN_OFF_VCONN_CHECK_SS:
+                {
+                
+                    if(!DPM_IsPortVCONNSource(u8PortNum))
+                    {
+                        /*Stop the VCONN_OFF timer*/
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        
+                        gasPolicyEngine[u8PortNum].ePEState = u8TxDoneSt;
+                        gasPolicyEngine[u8PortNum].ePESubState = u8TxDoneSS;
+                    }
+                    
+                    break;                 
+                }
+                
+                default:
+                {
+                    break;
+                }
+            }
+             break;
+        }
+
+        case ePE_VCS_TURN_ON_VCONN:
+        {
+          
+            switch (gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_VCS_TURN_ON_VCONN_ENTRY_SS:
+                {
+                  
+                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Entered the state\r\n");
+                    
+                    /*Turn ON VCONN*/
+                    DPM_VCONNOnOff (u8PortNum,DPM_VCONN_ON);
+                    
+                    /*Port Partner maintains the tVCONNSourceOn timer, So setting the VCONN_ON_self
+                    timer greater than tVCONNSourceOn to send Hard reset in case of VCONN ON
+                    failure*/
+                    /*Start the VCONN_ON_self timer*/
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
+                                                              PE_VCONNON_SELF_TIMEOUT_MS,\
+                                                              DPM_VCONNONError_TimerCB,\
+                                                              u8PortNum,\
+                                                              (UINT8)SET_TO_ZERO);
+                    
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_ON_VCONN_CHECK_SS;
+                    /* Hook to notify PE state machine entry into idle substate */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
+                    break;
+                  
+                }
+                
+                case ePE_VCS_TURN_ON_VCONN_CHECK_SS:
+                {                 
+                    if(DPM_IsPortVCONNSource(u8PortNum))
+                    {                          
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_SEND_PS_RDY;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_ENTRY_SS;                                       
+                    }                    
+                    break;                                        
+                }
+                
+                default:
+                {
+                    break;
+                }
+              
+            }       
+            break;
+
+        }
+
+        case ePE_VCS_SEND_PS_RDY:
+        {
+            switch (gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_VCS_SEND_PS_RDY_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_PS_RDY-ENTRY_SS: Entered the SubState \r\n");
+                    /*Send PS_RDY message*/
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY,\
+                                                                   PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+
+                    /*Set the transmitter callback to transition to source soft reset state if
+                     message transmission fails*/
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (u8TxDoneSt,\
+                                             u8TxDoneSS,\
+                                             u8TxFailedSt,\
+                                             u8TxFailedSS);
+                    u8IsTransmit = TRUE;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_IDLE_SS;
+
+                     break;
+                }
+                /*Wait here until the PS_RDY message is sent*/
+                case ePE_VCS_SEND_PS_RDY_IDLE_SS:
+                {
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+             break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+
+    /* Transmit the message if u8IsTransmit is set */
+    if (TRUE == u8IsTransmit)
+    {
+		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
+                            NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 
+    }    
+}
+#endif /*INCLUDE_VCONN_SWAP_SUPPORT*/        
+        
