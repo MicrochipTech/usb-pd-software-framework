@@ -256,13 +256,14 @@ void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
     /*Set power role in Port X IO Status register*/
     if(PD_ROLE_SOURCE == u8NewPowerRole)
     {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_POWER_ROLE_STATUS);
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, ePOWER_ROLE_FUNC, eGPIO_ASSERT);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_POWER_ROLE_STATUS);
+
     }
     else
     {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_POWER_ROLE_STATUS);        
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, ePOWER_ROLE_FUNC, eGPIO_DEASSERT);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_POWER_ROLE_STATUS);        
     }
 }
 
@@ -278,13 +279,13 @@ void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
 
     if(PD_ROLE_DFP == u8NewDataRole)
     {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_DATA_ROLE_STATUS);
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDATA_ROLE_FUNC, eGPIO_ASSERT);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_DATA_ROLE_STATUS);
     }
     else
     {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_DATA_ROLE_STATUS);   
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDATA_ROLE_FUNC, eGPIO_DEASSERT);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_DATA_ROLE_STATUS);   
     }
 }
 /**************************************************************************************************/

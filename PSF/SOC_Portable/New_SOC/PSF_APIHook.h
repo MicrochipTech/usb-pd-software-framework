@@ -1027,24 +1027,29 @@ Description:
 	This event is notified when VCONN OCS fault is detected by UPD350. For this notification, PSF
 	expects a return value to decide whether to handle the fault occurred. When user returns TRUE
 	for VCONN power fault, Incase of explicit contract, if VCONN power fault count is less than
-	CONFIG_MAX_VCONN_POWER_FAULT_COUNT, PSF DPM power fault manager handles it by sending Hard Reset.
-	If the count exceeds max fault count,VCONN is powered off until physical detach of port partner.
-	Incase of implicit contract, PSF handles by entering TypeC Error Recovery. This notification
-	occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+	gasCfgStatusData.sPerPortData[PORT0].u8VCONNMaxFaultCnt, PSF DPM power fault manager handles
+    it by sending Hard Reset. If the count exceeds max fault count,VCONN is powered off until 
+    physical detach of port partner. Incase of implicit contract, PSF handles by entering 
+    TypeC Error Recovery. This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is 
+    defined as 1.
     
     <b> eMCHP_PSF_VBUS_PWR_FAULT</b>: PSF notifies all VBUS power fault VBUS Over voltage, VBUS
 	under voltage, VBUS OCS via this notification. For this notification, PSF expects a return
 	value to decide whether to handle the fault occurred.When user returns TRUE for power fault,
-    Incase of explicit contract, if power fault count is less than CFG_MAX_VBUS_POWER_FAULT_COUNT,
-	PSF DPM power fault manager handles it by sending Hard Reset. When the power fault count 
-	exceeds the max fault count,CC termination on the port is removed until the physical detach of
-	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery.
-	This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+    Incase of explicit contract, if power fault count is less than 
+    gasCfgStatusData.sPerPortData[PORT0].u8VBUSMaxFaultCnt, PSF DPM power fault manager handles
+    it by sending Hard Reset. When the power fault count exceeds the max fault count,
+    CC termination on the port is removed until the physical detach of 	the port partner. 
+    Incase of implicit contract, PSF handles by entering TypeC Error Recovery. This notification
+    occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
  
     <b> eMCHP_PSF_PORT_POWERED_OFF</b>: This event is used by PSF to notify application when 
     the port has been powered off as a result of VBUS or VCONN fault count exceeding the 
-    CFG_MAX_VBUS_POWER_FAULT_COUNT or CFG_MAX_VCONN_FAULT_COUNT respectively within 
-    CFG_POWER_GOOD_TIMER_MS time period. 
+    values present in gasCfgStatusData.sPerPortData[PORT0].u8VBUSMaxFaultCnt or 
+    gasCfgStatusData.sPerPortData[PORT0].u8VCONNMaxFaultCnt variables respectively within 
+    gasCfgStatusData.sPerPortData[PORT0].u16PowerGoodTimerInms time period. When a port is
+    powered off, it stops sourcing/sinking power and waits for a detach. The port can be revived
+    only when the partner is detached and attached again. 
 
     <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
     established with the Port partner.
@@ -1299,24 +1304,22 @@ Remarks:
 												 is user specific.
                                                * This is applicable only for sink functionality and it is
                                                  not mandatory,depends on user application.
-    ePOWER_ROLE_FUNC          \Output         * Power role indicator functionality is to indicate that the current 
-                                                 power role is source. PSF requests the application to assert the pin
-												 when current power role is source. PSF requests the application 
-                                                 to deassert the pin on detach event or when the power role is 
-                                                 changed to Sink as a result of PD PR_Swap. The state of
-												 GPIO during Init, Assert and Deassert of this functionality 
-												 is user specific.
+    ePOWER_ROLE_FUNC          \Output         * Power role indicator functionality is to indicate whether the current 
+                                                 power role of a port is source or sink. PSF will request the application
+                                                 to assert this pin when the current power role is source. PSF will
+                                                 request the application to de-assert the pin when the current power role
+                                                 is sink or when the port partner is detached. The state of GPIO during
+                                                 Init, Assert and De-assert of this functionality is user specific.
                                                * This is applicable only for DRP functionality and it is
-                                                 not mandatory,depends on user application.
+                                                 not mandatory, depends on user application.
     eDATA_ROLE_FUNC           \Output         * Data role indicator functionality is to indicate that the current 
-                                                 data role is Host/Hub DFP. PSF requests the application to assert the pin
-												 when current data role is Host/Hub DFP. PSF requests the application
-												 to deassert the pin on detach event or when the data role of the port is 
-                                                 changed to UFP as a result of PD DR_Swap. The state of
-												 GPIO during Init, Assert and Deassert of this functionality 
-												 is user specific.
+                                                 data role is Host/Hub DFP. PSF will request the application to assert the pin
+												 when current data role is DFP. PSF will request the application
+												 to de-assert the pin when the current data role is UFP or when the port
+                                                 partner is detached. The state of GPIO during Init, Assert and De-assert
+                                                 of this functionality is user specific.
                                                * This is applicable only for DRP functionality and it is
-                                                 not mandatory,depends on user application.
+                                                 not mandatory, depends on user application.
     </table>
   Remarks:
     None                                                                                                       
