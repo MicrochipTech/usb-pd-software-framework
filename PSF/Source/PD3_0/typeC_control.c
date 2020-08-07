@@ -1200,7 +1200,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Check for VBUS Presence before moving to Attached SNK state */
                     if(TYPEC_VBUS_5V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_PRS_WAIT_FOR_5V_SS: 5V HIT\r\n");                    
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS\r\n");                    
                         
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_ENTRY_SS;
                     }                    
