@@ -1221,10 +1221,12 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
     }        
 #endif
     /*Evaluate swap and register internal event*/
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
     if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
     {
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
     }
+#endif
 #if (TRUE == INCLUDE_PD_DR_SWAP)
     if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
     {
@@ -1324,25 +1326,48 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
 {
     UINT8 u8RetVal = DPM_REJECT_SWAP; 
             
-    /* Todo: VCONN_Swap module - Do remove the #if check once VCONN Swap is implemented*/
-    #if ((TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
     UINT16  u16SwapPolicy = gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy;
     UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum),
             u8CurrentDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
-    #endif
     switch (eRoleSwapMsg)
     {
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
         case eVCONN_SWAP_RCVD: 
         {
-            /* Todo: VCONN_Swap module - Do evaluation of VCONN_Swap message based 
-               on policy bits */
-            break; 
+            /*Evaluate whether received VCONN_SWAP message can be accepted or rejected
+             based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
+            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
+                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SRC)) ||
+               ((PD_ROLE_SINK == u8CurrentPwrRole) && 
+                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SNK)))
+            {
+                u8RetVal = DPM_ACCEPT_SWAP;
+            }
+            else
+            {
+                u8RetVal = DPM_REJECT_SWAP;
+            }
+            break;
+            
         }
         case eVCONN_SWAP_INITIATE:
         {
-            /* Todo: VCONN_Swap module - Do evaluation of initiation of VCONN SWAP*/
-            break;
+            /*Evaluate whether to initiate VCONN_SWAP message 
+            based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
+            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
+                           (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_SRC)) ||
+              ((PD_ROLE_SINK == u8CurrentPwrRole) && 
+                           (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_SNK)))
+            {
+                u8RetVal = DPM_REQUEST_SWAP;
+            }
+            else
+            {
+                u8RetVal = DPM_IGNORE_INITIATE_SWAP;
+            }
+            break; 
         }
+#endif
 #if (TRUE == INCLUDE_PD_DR_SWAP)
         case eDR_SWAP_RCVD:
         {     
@@ -1428,6 +1453,14 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
 {
     switch (u8SwapInitiateType)
     {
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+        case eVCONN_SWAP_INITIATE:
+        {
+            /* Set the timer Id to Max Concurrent Value*/
+            gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+            break;
+        }
+#endif /*INCLUDE_VCONN_SWAP_SUPPORT*/
 #if (TRUE == INCLUDE_PD_PR_SWAP)
         case ePR_SWAP_INITIATE:
         {

@@ -634,6 +634,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8RealTimeFlags;
   UINT8 u8StsClearTmrID;
 #endif
+#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+  UINT8 u8VCONNSwapWaitTmrID;      // VCONN_Swap Wait Timer ID
+#endif
 #if (TRUE == INCLUDE_PD_PR_SWAP)
   UINT8 u8PRSwapWaitTmrID;         // PR_Swap Wait Timer ID
 #endif 

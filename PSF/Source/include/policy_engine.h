@@ -253,6 +253,7 @@ typedef enum {
 	ePE_SNK_SEND_SOFT_RESET,
 	ePE_SNK_GIVE_SOURCE_CAP,
 	/*VCONN Swap related States*/
+    ePE_VCS_SEND_SWAP,
     ePE_VCS_EVALUATE_SWAP,
     ePE_VCS_ACCEPT_SWAP,
     ePE_VCS_WAIT_FOR_VCONN,
@@ -402,6 +403,13 @@ typedef enum {
     ePE_SNK_GIVE_SINK_CAP_ENTRY_SS,
     ePE_SNK_GIVE_SINK_CAP_IDLE_SS,
     //----------------------------VCONN SWAP Sub states-------------------------------//
+    ePE_VCS_SEND_SWAP_ENTRY_SS,
+    ePE_VCS_SEND_SWAP_MSG_DONE_SS,
+    ePE_VCS_SEND_SWAP_NO_RESPONSE_SS,
+    ePE_VCS_SEND_SWAP_IDLE_SS,
+    ePE_VCS_SEND_SWAP_ACCEPT_RCVD_SS,
+    ePE_VCS_SEND_SWAP_REJECT_RCVD_SS,
+    ePE_VCS_SEND_SWAP_WAIT_RCVD_SS,
     /*PE_VCS_WAIT_FOR_VCONN*/
     ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS,
     ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS,
@@ -1221,5 +1229,32 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
 **************************************************************************************************/
 void PE_RunDRSwapStateMachine (UINT8 u8PortNum);
 
+/**************************************************************************************************
+    Function:
+        void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum);
 
+    Summary:
+        VCONN_SWAP Policy Engine State Machine. 
+       
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is called to run the VCONN Swap Policy Engine State Machine. . 
+        
+    Conditions:
+        None
+
+    Input:
+        u8PortNum  - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+
+void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum);
 #endif /*_POLICY_ENGINE_H_*/

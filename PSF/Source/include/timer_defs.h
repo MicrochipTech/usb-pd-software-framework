@@ -178,6 +178,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    is set as 13 seconds. */
 #define PE_SOURCE_PPS_COMM_TIMEOUT_MS           MILLISECONDS_TO_TICKS(13000)
 
+/* PE_VCONN_SWAP_WAIT_TIMEOUT_MS defines the tPRSwapWait specified in the 
+   PD Specification. Default value of PE_VCONN_SWAP_WAIT_TIMEOUT_MS is 
+   set as 100 milliseconds. */
+#define PE_VCONN_SWAP_WAIT_TIMEOUT_MS           MILLISECONDS_TO_TICKS(100)
+
 /* PE_PR_SWAP_WAIT_TIMEOUT_MS defines the tPRSwapWait specified in the 
    PD Specification. Default value of PE_PR_SWAP_WAIT_TIMEOUT_MS is 
    set as 100 milliseconds. */
