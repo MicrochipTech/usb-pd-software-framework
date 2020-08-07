@@ -237,14 +237,12 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
                 ((CFG_PORT_1_VCONN_OCS_ENABLE) | (CFG_PORT_1_ENABLE) | (CFG_PORT_1_RP_CURRENT_VALUE)| \
                 (CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_1_POWER_ROLE));
     
-    
     pasCfgStatusData->sPerPortData[PORT0].u8Pio_FAULT_IN = (UINT8)CFG_PORT_0_UPD_FAULT_IN_PIO_NO;
     pasCfgStatusData->sPerPortData[PORT0].u8Mode_FAULT_IN = (UINT8)CFG_PORT_0_UPD_FAULT_IN_MODE;
     pasCfgStatusData->sPerPortData[PORT0].u8Pio_EN_VBUS = (UINT8)CFG_PORT_0_UPD_EN_VBUS;
     pasCfgStatusData->sPerPortData[PORT0].u8Mode_EN_VBUS = (UINT8)CFG_PORT_0_UPD_EN_VBUS_PIO_MODE;
     pasCfgStatusData->sPerPortData[PORT0].u8Pio_EN_SINK  = (UINT8)CFG_PORT_0_UPD_EN_SNK;
     pasCfgStatusData->sPerPortData[PORT0].u8Mode_EN_SINK  = (UINT8)CFG_PORT_0_UPD_EN_SNK_PIO_MODE;
-    
     
     pasCfgStatusData->sPerPortData[PORT1].u8Pio_FAULT_IN = (UINT8)CFG_PORT_1_UPD_FAULT_IN_PIO_NO;
     pasCfgStatusData->sPerPortData[PORT1].u8Mode_FAULT_IN = (UINT8)CFG_PORT_1_UPD_FAULT_IN_MODE;
@@ -276,25 +274,14 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u16FeatureSelect = CFG_PB_PORT_ENABLE;
     pasCfgStatusData->sPerPortData[PORT1].u16FeatureSelect = CFG_PB_PORT_ENABLE;
 
-    
     CFG_Port_0_PDOs (pasCfgStatusData);  
     CFG_Port_1_PDOs (pasCfgStatusData);  
-    
                   
     /*Configure role swap policy for note type port*/
-    gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = \
-                    (CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP | \
-                    CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP | \
-                    CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP |\
-                    CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP);
+    gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
                
     /*Configure role swap policy for dock type port*/
-    gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = \
-                    (CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP | CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP | \
-                    CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP| CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP | \
-                    CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP | CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP |\
-                    CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP | CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP);
-               
+    gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = CFG_PORT_1_ROLE_SWAP_POLICY;
     
     #if ((TRUE == INCLUDE_POWER_BALANCING) || (TRUE == INCLUDE_POWER_THROTTLING))
     pasCfgStatusData->sPBPerPortData[PORT0].u16MaxPrtPwrBankAIn250mW = CFG_PB_MAX_PORT_0_POWER_BANKA_IN_250mW;
