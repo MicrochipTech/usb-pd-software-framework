@@ -1097,25 +1097,17 @@ Description:
     when this notification is posted. This event is applicable only when PSF is operating as Source
     or the power role of the port is resolved as Source during DRP operation. 
  
-    <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: In case of PR_Swap initiated by the PSF port, 
-    this notification would be posted when the swap message is accepted by port partner and 
-    port power roles of the both the partners are changed successfully or 
- 	when wait has been received as response for the swap message, then either of the port partners 
-    has initiated the transmission of PR_Swap within wait response time and port power roles of 
-    both the partners are changed successfully or when the swap request is rejected
-    by the port partner.
- 	In case of PR_Swap initiated by the PSF port partner, this notification would be posted 
-	when the swap message is accepted by the PSF port and port power roles of the both the    
-    partners are changed successfully. 
+    <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: This notification will be posted when the PR Swap
+    is completed and the power roles of the both the partners are changed successfully.
     This event is applicable only when PSF is operating as DRP.
     
-    <b> eMCHP_PSF_PR_SWAP_RCVD</b>: This notification would be posted by PSF when a Power 
+    <b> eMCHP_PSF_PR_SWAP_RCVD</b>: This notification will be posted by PSF when a Power 
     Role Swap message is received from port partner. Application can make use of this event to 
     dynamically update the Power Role Swap Policy Configuration through u16SwapPolicy based on 
     which the Power Role Swap request would be accepted or rejected by PSF. 
     This event is applicable only when PSF is operating as DRP.
   
-    <b> eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD </b>: This notification would be posted by PSF 
+    <b> eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD </b>: This notification will be posted by PSF 
     when a Power Role Swap message has been initiated by PSF and no response has been 
     received from the port partner. 
     This event is applicable only when PSF is operating as DRP.
