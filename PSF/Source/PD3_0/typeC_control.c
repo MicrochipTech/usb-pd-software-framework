@@ -159,7 +159,7 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     /*Setting the VBUS to vSafe0V before entering the Source State machine*/
     DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
     
-    gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+    gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
     gasTypeCcontrol[u8PortNum].u8TypeCState = (UINT8)TYPEC_UNATTACHED_SRC;
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS;
     
@@ -454,7 +454,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Disable DC_DC_EN if DRP does not act as source*/
                     PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
                         
-                    if((PD_ROLE_SOURCE == gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState) \
+                    if((PD_ROLE_SOURCE == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) \
                             && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Disable VBUS by driving to vSafe0V*/
@@ -469,7 +469,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
-                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
                         
                         /*Set power and data role status*/
                         DPM_UpdatePowerRole(u8PortNum, PD_ROLE_DRP);
@@ -477,7 +477,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         /*Enable DRP offload.*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
-
                     }
                     else
 #endif
@@ -503,7 +502,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
               
                 /*Source waits in this sub-state for sink attachment*/
                 case TYPEC_UNATTACHED_SRC_IDLE_SS:
-                    /* Hook to notify Type C state machine entry idle substate */
+                    /* Hook to notify Type C state machine entry idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break; 
                     
@@ -523,8 +522,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHWAIT_SRC_ENTRY_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SRC: Entered ATTACHWAIT "\
-                                                                              "SRC State\r\n");
-                    
+                                                                              "SRC State\r\n");                    
                     gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start ( \
                                                       (TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_SubStateChange_TimerCB, u8PortNum,\
@@ -577,8 +575,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             #endif
                             gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
                             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
-                        }
-                        
+                        }                        
                         PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
                     }
                     break;
@@ -813,7 +810,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     #if(TRUE == INCLUDE_PD_DRP)
                     if(PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
                     {
-                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SOURCE;
+                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_SOURCE;
                     }
                     #endif                    
                     /* Enabling PRL Rx */
@@ -989,7 +986,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                 ~(DPM_PORT_RP_VAL_DETECT_MASK_STATUS);
                     
 #if(TRUE == INCLUDE_PD_DRP)
-                    if((PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState) \
+                    if((PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) \
                             && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Drive DAC_I to 0V if DRP is not sink*/
@@ -1002,7 +999,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         UPD_RegByteClearBit (u8PortNum,  TYPEC_CC_INT_EN,\
                         (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
                             
-                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_DRP;
+                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
                         
                         /*Set power and data role status*/
                         DPM_UpdatePowerRole(u8PortNum, PD_ROLE_DRP);
@@ -1123,8 +1120,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_ENTRY_SS;
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SNK;                    
-                    }
-                    
+                    }                    
                     break;
                 }
                    
@@ -1237,7 +1233,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     #if(TRUE == INCLUDE_PD_DRP)       
                     if(PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
                     {
-                        gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState = PD_ROLE_SINK;
+                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_SINK;
                     }
                     #endif
 

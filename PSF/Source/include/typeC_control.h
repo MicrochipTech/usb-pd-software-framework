@@ -676,7 +676,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
                                 BIT 7 -> VCONNONERROR */
 #if(TRUE == INCLUDE_PD_DRP)
   UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status*/
-  UINT8 u8DrpLastAttachedState; /*BIT[1:0] -> Previous DRP attached power role*/
+  UINT8 u8DRPLastAttachedState; /*BIT[1:0] -> Previous DRP attached power role*/
 #endif
   float fVBUSCorrectionFactor;
   
