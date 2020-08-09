@@ -94,7 +94,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Data Role supported values 0-Dual Role Data Not supported, 1- Dual Role Date Supported */
 #define CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT    (1U << 2)
-#define CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT     (1U << 2)
+#define CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT    (1U << 2)
 
 /*Rp Value - 0 -Rd(Sink), 1-Default USB Rp, 2- 1.5A Rp, 3-3.0A Rp */
 #define CFG_PORT_0_RP_CURRENT_VALUE          (3U << 3)
@@ -106,7 +106,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*VCONN OCS Enable - 0-Disable, 1-Enable*/
 #define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
-#define CFG_PORT_1_VCONN_OCS_ENABLE      (1U << 9)  
+#define CFG_PORT_1_VCONN_OCS_ENABLE     (1U << 9)  
 
 /********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
