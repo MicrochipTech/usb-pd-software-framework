@@ -1667,10 +1667,11 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum);
     Function:
         void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType); 
     Summary:
-        Timer callback for PE_PR_SWAP_WAIT_TIMEOUT_MS timeout
+        Timer callback for PE_PR_SWAP_WAIT_TIMEOUT_MS, PE_DR_SWAP_WAIT_TIMEOUT_MS
+        and PE_VCONN_SWAP_WAIT_TIMEOUT_MS timeouts
     Description:
-        API to re-initiate PR_Swap on PE_PR_SWAP_WAIT_TIMEOUT_MS timeout
-        in case the port partner has not sent a request within PE_PR_SWAP_WAIT_TIMEOUT_MS
+        API to re-initiate the respective Swap on WAIT timeout
+        in case the port partner has not sent a request within tSwapWait timer
         of reception of Wait message from the port partner.
     Conditions:
         None.
