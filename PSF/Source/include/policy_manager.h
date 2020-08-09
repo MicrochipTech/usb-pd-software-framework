@@ -88,7 +88,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CFG_VCONN_OCS_EN_POS            9
 /*Enable defines for gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData */
 #define DPM_CFG_PORT_ENABLE                 (1 << DPM_CFG_PORT_ENDIS_POS)
-#define DPM_CFG_VCONN_OCS_ENABLE               (1 << DPM_CFG_VCONN_OCS_EN_POS)
+#define DPM_CFG_VCONN_OCS_ENABLE            (1 << DPM_CFG_VCONN_OCS_EN_POS)
 
 /*Defines for getting default values configured to a port from 
  gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/

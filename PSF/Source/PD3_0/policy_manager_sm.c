@@ -838,7 +838,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_STATUS);
 
-            /* Process Alert transmission only if current PD Spec rev is 3.0, 
+            /* Process Get_Status transmission only if current PD Spec rev is 3.0, 
                a PPS APDO is advertised */            
             if ((PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) &&\
                         (TRUE == DPM_IsAPDOAdvertised(u8PortNum)))
