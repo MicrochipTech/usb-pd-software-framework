@@ -60,8 +60,7 @@ void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     {
         gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
-    }
-    
+    }    
     else
     {
         DPM_VBUSorVCONNOnOff_TimerCB ( u8PortNum, u8DummyVariable);
@@ -186,7 +185,7 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
     
 	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
 	{
-		u16CurrentInmA = gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA;
+		u16CurrentInmA = (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA);
         u16VoltageInmV = ((DPM_VBUS_ON == u8VbusOnorOff) ? TYPEC_VBUS_5V : TYPEC_VBUS_0V);
         /* Configure VBUS threshold as per the voltage value */
         TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
@@ -258,7 +257,6 @@ void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
     {
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, ePOWER_ROLE_FUNC, eGPIO_ASSERT);
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_POWER_ROLE_STATUS);
-
     }
     else
     {
@@ -1482,7 +1480,7 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
             break;
     }
 
-    /* Re-initiate PR_Swap on tPRSwapWait timer expiry */
+    /* Re-initiate the corresponding Swap on SwapWait timer expiry */
     if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, u8SwapInitiateType))
     {
         DPM_RegisterInternalEvent(u8PortNum, u8SwapInitiateType);

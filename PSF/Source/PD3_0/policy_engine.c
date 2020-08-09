@@ -148,7 +148,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
             PRL_UpdateSpecAndDeviceRoles (u8PortNum);
             
 			#if(TRUE == INCLUDE_PD_3_0)
-            /*Assign Idle state to PE if AMS isnot initiated on TX and message is received
+            /*Assign Idle state to PE if AMS is not initiated on TX and message is received
 				before that*/
             if ((TRUE == gasPRL[u8PortNum].u8TxStsWithCAISR) && (gasDPM[u8PortNum].u8InternalEvntInProgress))
             {
@@ -929,17 +929,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         
                         if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
                         {
-                            /* Move to ePE_SRC_READY/ePE_SNK_READY state */
-                            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                            {
-                                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
-                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;                            
-                            }
-                            else
-                            {
-                                gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;                            
-                            }                                                                              
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_REJECT_RCVD_SS;                            
                         }
                         else if (PE_CTRL_WAIT == (PRL_GET_MESSAGE_TYPE (u32Header)))
                         {
@@ -1093,7 +1083,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                                           
                         gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_EVALUATE_SWAP;
                         /* Set the timer Id to Max Concurrent Value*/
-                         gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+                        gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
 #else
                         
                         PE_SendNotSupportedOrRejectMsg(u8PortNum);

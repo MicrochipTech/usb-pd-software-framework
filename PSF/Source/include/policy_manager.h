@@ -570,7 +570,7 @@ Source/Sink Power delivery objects*/
 
 /***************************Internal Events Defines**********************************/
 #define DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
-#define DPM_INT_EVT_INITIATE_RENEGOTIATION   BIT(1)
+#define DPM_INT_EVT_INITIATE_RENEGOTIATION  BIT(1)
 #define DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
 #define DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
 #define DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
