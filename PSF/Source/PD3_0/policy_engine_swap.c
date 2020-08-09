@@ -573,7 +573,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     
                     /* Revert the port's power role to Source and invoke Type C Error Recovery, 
                        so that Type C SM would move to Unattached Source state after Error 
-                       recovery where the DrpLastAttachedState condition would pass and DRP 
+                       recovery where the u8DRPLastAttachedState condition would pass and DRP 
                        Offload would be enabled */
                     DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
                     
@@ -743,11 +743,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        flow */
                     gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
                     
-                    /* No need to revert the port role to Sink since gasTypeCcontrol[u8PortNum].u8DrpLastAttachedState 
+                    /* No need to revert the port role to Sink since gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState 
                        would be PD_ROLE_SOURCE. After Error recovery, Type C SM would enter 
                        Unattached Source state and DRP offload would be enabled there.
                        If role is updated as Sink, then Type C SM would move to Unattached 
-                       Sink after Error recovery where the DrpLastAttachedState condition would fail
+                       Sink after Error recovery where the u8DRPLastAttachedState condition would fail
                        and DRP Offload will not be enabled */
                     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                     
