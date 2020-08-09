@@ -1481,7 +1481,7 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
     }
 
     /* Re-initiate the corresponding Swap on SwapWait timer expiry */
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, u8SwapInitiateType))
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, (eRoleSwapMsgtype)u8SwapInitiateType))
     {
         DPM_RegisterInternalEvent(u8PortNum, u8SwapInitiateType);
     } 
