@@ -347,7 +347,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				/* set the fault count to zero */
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
 				
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Resetted ");
+                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted ");
 				
                 if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {			
@@ -688,23 +688,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 /************************DPM Internal Event Handling APIs *******************************/
 void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
 {
-    if ((DPM_INT_EVT_INITIATE_ALERT == u8EventType) || 
-                    (DPM_INT_EVT_INITIATE_GET_STATUS == u8EventType))
-    {
-        /* Current PD Specification should be Rev 3.0 */
-        if (PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
-        {
-            /* Alert and Get_Status Tx shall be supported only if PPS is enabled for the port */
-            if (TRUE == DPM_IsAPDOAdvertised(u8PortNum))
-            {
-                gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;                
-            }
-        }
-    }
-    else
-    {
-        gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;
-    }
+    gasDPM[u8PortNum].u8DPMInternalEvents |= u8EventType;
 }
 
 void DPM_InternalEventHandler(UINT8 u8PortNum)
@@ -817,24 +801,30 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         }
 #endif/*INCLUDE_PD_DR_SWAP*/
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-        else if ((DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents & DPM_INT_EVT_INITIATE_ALERT)) 
-                                && (gasDPM[u8PortNum].u8AlertType != SET_TO_ZERO))
+        else if (DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents & DPM_INT_EVT_INITIATE_ALERT))
         {     
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_ALERT);
 
-            /* Check for Port Power Role */
-            if (PD_ROLE_SOURCE == u8DPMPowerRole)
+            /* Process Alert transmission only if current PD Spec rev is 3.0, 
+               a PPS APDO is advertised and at least one of the bits must be 
+               set in TypeOfAlert field */
+            if ((PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) &&\
+                        (TRUE == DPM_IsAPDOAdvertised(u8PortNum)) &&\
+                        (gasDPM[u8PortNum].u8AlertType != SET_TO_ZERO))
             {
-                /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;
-                u8IsAMSInProgress = DPM_INT_EVT_INITIATE_ALERT;
+                if (PD_ROLE_SOURCE == u8DPMPowerRole)
+                {
+                    /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;
+                    u8IsAMSInProgress = DPM_INT_EVT_INITIATE_ALERT;
+                }
+                else
+                {
+                    /* Do nothing for sink as PPS sink not supported currently*/
+                }                
             }
-            else
-            {
-                /* Do nothing for sink as PPS sink not supported currently*/
-            }                
 
             /*start the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS to clear the status flag
               on timeout if there is no request for status*/
@@ -848,18 +838,23 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_STATUS);
 
-            /* Check for Port Power Role */
-            if (PD_ROLE_SOURCE == u8DPMPowerRole)
+            /* Process Alert transmission only if current PD Spec rev is 3.0, 
+               a PPS APDO is advertised */            
+            if ((PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) &&\
+                        (TRUE == DPM_IsAPDOAdvertised(u8PortNum)))
             {
-                /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;
-                u8IsAMSInProgress = DPM_INT_EVT_INITIATE_GET_STATUS;
+                if (PD_ROLE_SOURCE == u8DPMPowerRole)
+                {
+                    /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;
+                    u8IsAMSInProgress = DPM_INT_EVT_INITIATE_GET_STATUS;
+                }
+                else
+                {
+                    /*Do nothing for sink as PPS for sink not supported currently*/
+                }
             }
-            else
-            {
-                /*Do nothing for sink as PPS for sink not supported currently*/
-            }                
         } /* DPM_INT_EVT_INITIATE_GET_STATUS */
 #endif /*INCLUDE_PD_SOURCE_PPS*/
         else

@@ -1082,8 +1082,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     break;            
                 }
                 case ePE_VCS_TURN_OFF_VCONN_CHECK_SS:
-                {
-                
+                {                
                     if(!DPM_IsPortVCONNSource(u8PortNum))
                     {
                         /*Stop the VCONN_OFF timer*/
@@ -1110,8 +1109,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             switch (gasPolicyEngine[u8PortNum].ePESubState)
             {
                 case ePE_VCS_TURN_ON_VCONN_ENTRY_SS:
-                {
-                  
+                {                  
                     DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Entered the state\r\n");
                     
                     /*Turn ON VCONN*/

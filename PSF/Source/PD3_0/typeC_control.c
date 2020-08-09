@@ -530,7 +530,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                                       TypeC_SubStateChange_TimerCB, u8PortNum,\
                                                       TYPEC_ATTACHWAIT_SRC_CC_DEB_TIMEOUT_SS);
                    
-				    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHWAIT_SRC_IDLE_SS;
+				    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHWAIT_SRC_IDLE_SS;
                     
                     break;
                 }   
@@ -773,7 +773,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                                          TypeC_VCONNONError_TimerCB, u8PortNum,  
                                                          (UINT8)SET_TO_ZERO);
                             
-                            gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS;
+                            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS;
                             /* Hook to notify Type C state machine entry into idle sub-state */
                             MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                         }
@@ -792,7 +792,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                           /*Kill the VCONN ON timer since VCONN is turned ON*/
                           TypeC_KillTypeCTimer (u8PortNum); 
                           
-                          gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_SET_PRL_SS;                     
+                          gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_SET_PRL_SS;                     
                     }              
                     break;
                 }
@@ -1499,7 +1499,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         TypeC_SetCCPowerRole  (u8PortNum, TYPEC_ROLE_SOURCE, u8Data, TYPEC_ENABLE_CC1_CC2);
                         
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SRC_ENTRY_SS; 
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS; 
 
                         #if(TRUE == INCLUDE_PD_SOURCE)                        
                         /*Enable DC_DC EN on VBUS fault to reset the DC-DC controller*/
