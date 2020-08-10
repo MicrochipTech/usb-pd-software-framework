@@ -1032,29 +1032,26 @@ Description:
 	This event is notified when VCONN OCS fault is detected by UPD350. For this notification, PSF
 	expects a return value to decide whether to handle the fault occurred. When user returns TRUE
 	for VCONN power fault, Incase of explicit contract, if VCONN power fault count is less than
-	gasCfgStatusData.sPerPortData[PORT0].u8VCONNMaxFaultCnt, PSF DPM power fault manager handles
-    it by sending Hard Reset. If the count exceeds max fault count,VCONN is powered off until 
-    physical detach of port partner. Incase of implicit contract, PSF handles by entering 
-    TypeC Error Recovery. This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is 
-    defined as 1.
+	u8VCONNMaxFaultCnt, PSF DPM power fault manager handles it by sending Hard Reset. If the count 
+    exceeds max fault count,VCONN is powered off until physical detach of port partner. Incase of 
+    implicit contract, PSF handles by entering TypeC Error Recovery. This notification occurs only 
+    when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
     
     <b> eMCHP_PSF_VBUS_PWR_FAULT</b>: PSF notifies all VBUS power fault VBUS Over voltage, VBUS
 	under voltage, VBUS OCS via this notification. For this notification, PSF expects a return
 	value to decide whether to handle the fault occurred.When user returns TRUE for power fault,
-    Incase of explicit contract, if power fault count is less than 
-    gasCfgStatusData.sPerPortData[PORT0].u8VBUSMaxFaultCnt, PSF DPM power fault manager handles
-    it by sending Hard Reset. When the power fault count exceeds the max fault count,
-    CC termination on the port is removed until the physical detach of 	the port partner. 
-    Incase of implicit contract, PSF handles by entering TypeC Error Recovery. This notification
-    occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+    Incase of explicit contract, if power fault count is less than u8VBUSMaxFaultCnt, 
+    PSF DPM power fault manager handles it by sending Hard Reset. When the power fault count 
+    exceeds the max fault count, CC termination on the port is removed until the physical detach of
+  	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery. 
+    This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
  
     <b> eMCHP_PSF_PORT_POWERED_OFF</b>: This event is used by PSF to notify application when 
     the port has been powered off as a result of VBUS or VCONN fault count exceeding the 
-    values present in gasCfgStatusData.sPerPortData[PORT0].u8VBUSMaxFaultCnt or 
-    gasCfgStatusData.sPerPortData[PORT0].u8VCONNMaxFaultCnt variables respectively within 
-    gasCfgStatusData.sPerPortData[PORT0].u16PowerGoodTimerInms time period. When a port is
-    powered off, it stops sourcing/sinking power and waits for a detach. The port can be revived
-    only when the partner is detached and attached again. 
+    values present in u8VBUSMaxFaultCnt or u8VCONNMaxFaultCnt variables respectively within 
+    u16PowerGoodTimerInms time period. When a port is powered off, it stops sourcing/sinking 
+    power and waits for a detach. The port can be revived only when the partner is detached 
+    and attached again. 
 
     <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
     established with the Port partner.
