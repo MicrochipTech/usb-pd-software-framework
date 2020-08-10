@@ -2510,7 +2510,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
         /*This is done for easy handling*/
         if(TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState)
         {
-            gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS;
+            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS;
         }
         
         /*Clearing the VsinkDisconnect interrupt Status set*/
@@ -2684,26 +2684,26 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Sink is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");               
             
-            if ((TYPEC_ATTACHED_SRC == u8TypeCState) && 
-                    (TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS == u8TypeCSubState))
-            {                
-                /* This condition would be hit during Sink to Source PR_Swap */
-                u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;                                
-            }
-            else if(TYPEC_UNATTACHED_SRC == u8TypeCState)
+            if(TYPEC_UNATTACHED_SRC == u8TypeCState)
             {                                  
                 /*Setting the state for tCCDebounce*/
                 u8TypeCState = TYPEC_ATTACHWAIT_SRC; 
                 u8TypeCSubState = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;                                
             } 
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+            else if ((TYPEC_ATTACHED_SRC == u8TypeCState) && 
+                         (TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS == u8TypeCSubState))
+            {                
+                /* This condition would be hit during Sink to Source PR_Swap */
+                u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;                                
+            }        
+#endif 
             else 
             {
                 /* Do Nothing */
             }
-            break;
-            
-		}
-		
+            break;            
+		}		
 		
         /*Both Powered cable and sink is Present*/
 		case (TYPEC_PWD_CABLE_ATT_DEF ^ TYPEC_UFP_ATT_DEF):
