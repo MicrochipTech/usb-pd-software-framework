@@ -1303,7 +1303,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     else
                     {
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_ENTRY_SS;
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
                     }
                     break;                    
                 }
@@ -2885,7 +2885,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             /*Setting the state as TYPEC_ATTACHWAIT_SNK for Tcc Debounce and VBUS presence 
             check*/
             u8TypeCState = TYPEC_ATTACHWAIT_SNK;
-            u8TypeCSubState  = TYPEC_ATTACHWAIT_SNK_ENTRY_SS;
+            u8TypeCSubState = TYPEC_ATTACHWAIT_SNK_ENTRY_SS;
             break;
 		}
 
@@ -2920,8 +2920,15 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 else if ((TYPEC_ATTACHED_SNK == u8TypeCState) && \
                          (TYPEC_ATTACHED_SNK_RUN_SM_SS == u8TypeCSubState))
                 {
-                     /*Go to TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state for starting tPDDebounce*/
-                     u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
+                    /*During Sink to Source PR_Swap, this condition would be hit when PS_RDY
+                      is not received and PSSourceOf timer expires. At that point, both the partners 
+                      might have Rd in CC wire. As a result of which, CC debounce thresholds 
+                      will not match. This condition shall not be treated as a detach */
+                    if (FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum))
+                    {
+                        /* Go to TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state for starting tPDDebounce */
+                        u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
+                    }
                 }
                 /*This condition occurs if VCONN Discharge is enabled in Attached Sink State
                 or Source detach occurs after VBUS drops below VSinkdisconnect */ 

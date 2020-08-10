@@ -498,7 +498,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                          gasPolicyEngine[u8PortNum].ePESubState) || \
                        (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
-
                         if (ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
                             gasPolicyEngine[u8PortNum].ePESubState)
                         {
@@ -507,14 +506,11 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                             PE_KillPolicyEngineTimer (u8PortNum);
                             PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,\
                             ePE_SNK_EVALUATE_CAPABILITY,(ePolicySubState)SET_TO_ZERO);
-
                         }
                         else
                         {
                             gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_EVALUATE_CAPABILITY;
-
                         }
-
                     }
                     else
                     {
@@ -787,7 +783,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 
                          PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_WAIT_FOR_CAPABILITIES,\
                                                                    ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS);
-
                     }
                     else if ((ePE_SRC_SEND_SOFT_RESET_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) ||
                             (ePE_SRC_SEND_SOFT_RESET_GOODCRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState))
@@ -984,7 +979,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_READY,\
                                                                    ePE_SNK_READY_ENTRY_SS);
-
                     }
                     /*PS RDY received from VCONN Source partner*/
                     else if (ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS == \
@@ -1001,18 +995,17 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     else if (ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS == \
                                     gasPolicyEngine[u8PortNum].ePESubState)
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP: PS_RDY received from Original Sink\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP: PS_RDY received from Initial Sink\r\n");
                          /*Kill the PSSourceOn timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_PRS_SRC_SNK_WAIT_SOURCE_ON,\
-                                           ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS);                        
-                        
+                                           ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS);                                                
                     }
                     else if (ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS == \
                                     gasPolicyEngine[u8PortNum].ePESubState)
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP: PS_RDY received from Original Source\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP: PS_RDY received from Initial Source\r\n");
                         /*Kill the PSSourceOff timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);                        
 

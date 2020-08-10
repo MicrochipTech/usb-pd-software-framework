@@ -561,7 +561,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                                                             PE_SubStateChange_TimerCB,u8PortNum,  
                                                             (UINT8)ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS);
                     
-                    /* Assign an idle state to wait for timer expiry */
+                    /* Assign an idle state to wait for PS_RDY from Initial Sink */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS;                                                                                    
                     break; 
                 }
@@ -603,14 +603,15 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS:
                 {
                     /* Policy Engine would enter this sub-state when 
-                       PS_RDY is received from port partner within tPSSourceOn */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
+                       PS_RDY is received from port partner within tPSSourceOn */                    
                     
                     /* Move to Sink Startup state after vSafe5V is hit and Type C sink SM 
                        has reached the TYPEC_ATTACHED_SNK_RUN_SM_SS sub-state */
                     if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
                             (TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
+                        
                         /* Resetting the Protocol Layer would be taken care by the 
                         ePE_SNK_STARTUP state */
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
