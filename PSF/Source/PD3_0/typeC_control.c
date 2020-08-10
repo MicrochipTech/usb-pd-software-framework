@@ -2690,7 +2690,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 /* This condition would be hit during Sink to Source PR_Swap */
                 u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;                                
             }
-            else if(u8TypeCState != ((UINT8) TYPEC_ATTACHED_SRC))
+            else if(TYPEC_UNATTACHED_SRC == u8TypeCState)
             {                                  
                 /*Setting the state for tCCDebounce*/
                 u8TypeCState = TYPEC_ATTACHWAIT_SRC; 
