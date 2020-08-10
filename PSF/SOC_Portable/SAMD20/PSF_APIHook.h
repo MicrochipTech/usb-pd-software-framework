@@ -1115,12 +1115,17 @@ Description:
     This event is applicable only when PSF is operating as DRP.
    
     <b>eMCHP_PSF_DR_SWAP_COMPLETE</b>: This notification indicates that DR_SWAP
-    successfully completed and the data role is reversed.
+    reception or DR_SWAP initiation is successfully completed. User can know the 
+    current data role status through u32PortConnectStatus.
         
     <b>eMCHP_PSF_DR_SWAP_RCVD</b>: This occurs whenever there is a DR_SWAP message
     from port partner. User can modify u16SwapPolicy dynamically to Accept or 
     Reject DR_SWAP. Note for dynamic DR_SWAP initiation by PSF, client request 
     has to be raised apart from dynamic change of u16SwapPolicy configuration.
+    
+    <b> eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD </b>: This is posted by PSF when
+    Response Timer times out and there is no response from the port partner for 
+    the DR_SWAP initiated. 
     
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
@@ -1156,7 +1161,8 @@ eMCHP_PSF_PR_SWAP_RCVD,                // Power Role Swap Received from port par
 eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for Power Role Swap sent 
 eMCHP_PSF_DR_SWAP_COMPLETED,           // Data Role Swap completed
 eMCHP_PSF_DR_SWAP_RCVD,                // Data Role swap received from port partner
-eMCHP_PSF_BUSY                         // PSF is busy, cannot handle client request        
+eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for the DR_SWAP initiated        
+eMCHP_PSF_BUSY                         // PSF is busy, cannot handle client request     
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************

@@ -67,7 +67,7 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
    {
         case ePE_DRS_EVALUATE_SWAP:
         {
-            /* Inform DR_SWAP has been received notification*/
+            /* Inform DR_SWAP request from port partner has been received notification*/
             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_RCVD);
             /*Evaluate swap through DPM function*/
             if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap(u8PortNum, eDR_SWAP_RCVD))
@@ -186,6 +186,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                      * PE_SRC_READY/PE_SNK_READY state*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    /* Notify no response has been received for the DR_SWAP message sent*/
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD);
                     break; 
                 }
                 case ePE_DRS_SEND_SWAP_WAIT_RCVD_SS:
@@ -205,7 +207,9 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 {
                     /*SRC_READY/SNK_READY state is set*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
-                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS; 
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    /* Notify DR_SWAP is completed*/
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_COMPLETED);
                     break;
                 }
                 case ePE_DRS_SEND_SWAP_IDLE_SS:
