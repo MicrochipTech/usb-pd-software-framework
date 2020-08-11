@@ -352,8 +352,8 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 #if (TRUE == INCLUDE_PD_SOURCE_PPS) 
     UINT16 u16RDOOpVoltInmV = SET_TO_ZERO; 
 #endif           
-    /* Get the status of E-Cable presence and ACK status */
-    u8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) & \
+    /* Get the VCONN enabled status and ACK status of the port */
+    u8RaPresence = (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) & \
                     (~((gasPolicyEngine[u8PortNum].u8PEPortSts & \
                                             PE_CABLE_RESPOND_NAK) >> PE_CABLE_RESPOND_NAK_POS));
     

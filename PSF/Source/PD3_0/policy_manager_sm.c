@@ -230,7 +230,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				/* set the fault count to zero */
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
 				
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted ");
+                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted\r\n");
 				
                 if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {			
@@ -244,7 +244,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 }
 				/* Assign an idle state wait for detach*/
                 gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state");
+                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
                 
                 (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
             }/*end of if condition of VBUS max count exceed check*/
@@ -268,7 +268,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
     
     if (gasDPM[u8PortNum].u8PowerFaultISR)
     {
-        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM Fault Handling");
+        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM Fault Handling\r\n");
         /*If VCONN OCS is present , kill the VCONN power good timer*/
         if(gasDPM[u8PortNum].u8PowerFaultISR & DPM_POWER_FAULT_VCONN_OCS)
         {
@@ -284,7 +284,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             TimerID does not hold any valid timer IDs anymore*/
             gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 			
-            DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: VCONN Power Fault");
+            DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: VCONN Power Fault\r\n");
         } /*end of if condition of VCONN OCS check*/
         if(gasDPM[u8PortNum].u8PowerFaultISR & ~DPM_POWER_FAULT_VCONN_OCS)
         { 
@@ -325,7 +325,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             TimerID does not hold any valid timer IDs anymore*/
             gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 			
-            DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: VBUS Power Fault");
+            DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: VBUS Power Fault\r\n");
         } /*end of if condition of VBUS Fault check*/
         
         if(PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
@@ -347,7 +347,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				/* set the fault count to zero */
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
 				
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted ");
+                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted\r\n");
 				
                 if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {			
@@ -360,7 +360,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                     DPM_SetTypeCState(u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_IDLE_SS);
                 }
 
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state");
+                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
                 
                 gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_TYPEC_ERR_RECOVERY_FLAG_MASK);
                 
@@ -761,8 +761,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_SEND_SWAP;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_SWAP_ENTRY_SS;
                 u8IsAMSInProgress = DPM_INT_EVT_INITIATE_VCONN_SWAP;
-            }
-            
+            }            
         }
 #endif /*INCLUDE_VCONN_SWAP_SUPPORT*/
 #if (TRUE == INCLUDE_PD_PR_SWAP)

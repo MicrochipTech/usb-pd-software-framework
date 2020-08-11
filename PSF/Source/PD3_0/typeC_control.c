@@ -507,8 +507,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break; 
                     
                 default:
-                    break;
-                    
+                    break;                    
             } 
             break;                
         }  
@@ -623,36 +622,15 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         UINT8 u8Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                         /*Set the u8CCDebMatch and u8CCSrcSnkMatch variable accordingly as per Rp Value*/
                         TypeC_SetCCDebounceVariable (u8PortNum, u8Data);
-                               
-                        UINT8 u8CCEnablePin, u8CCCompCtrl; 
-                        /* It is always recommended to enable thresholds on the other pin when we (as UPD350) 
-                           supply VCONN, to monitor changes in VCONN voltage, because VCONN is visible only to 
-                           the VCONN supplier and the cable on the supply end and is not visible to the port partner. */                        
-                        if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)
-                        {
-                            u8CCEnablePin = TYPEC_ENABLE_CC1_CC2; 
-                            u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC1_CC2; 
-                        }
-                        else /* Not VCONN Source */
-                        {
-                            /* We are not VCONN Source, enable CC Debounce thresholds only for 
-                               the connected CC pin. */
-                            if (TYPEC_ORIENTATION_CC1 == TYPEC_GET_CC_ORIENTATION_STS(u8PortNum))
-                            {
-                                u8CCEnablePin = TYPEC_ENABLE_CC1;
-                                u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC1; 
-                            }
-                            else
-                            {
-                                u8CCEnablePin = TYPEC_ENABLE_CC2;
-                                u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC2; 
-                            }
-                        }
+                          
+                        /* When transitioning to Source, it is needed to detect the presence 
+                           of powered cable. So, irrespective of whether the port is VCONN 
+                           Source or not, enable CC Debounce thresholds on both the CC pins */
                         /*Reset the CC Debounce clear enable,CC Match Enable,CC Sample Enable register*/                                                                    
-                        TypeC_SetCCSampleEnable (u8PortNum, u8CCEnablePin);
+                        TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
                         
                         /* Turn on the CC Comparator */
-                        TypeC_ConfigCCComp (u8PortNum, u8CCCompCtrl);
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
                         
                         /* Wait for CC RD match valid interrupt */
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS;                    
@@ -949,7 +927,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #endif
                     /*Kill the VBUS ON timer since vSafe0V is reached*/
                     TypeC_KillTypeCTimer (u8PortNum);
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SRC_ENTRY_SS;
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;
                     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
                 }
             }
@@ -1298,7 +1276,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Clearing the VCONN ON Request mask if VCONN has turned ON*/
                         gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
                         
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_IDLE_SS;
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
                     }
                     else
                     {
@@ -1900,7 +1878,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         {
             u8IntStsISR &= ~TYPEC_VBUS_PRESENCE_MASK;
             UPD_RegisterReadISR (u8PortNum, TYPEC_VBUS_THR1, (UINT8 *)&u16Data, BYTE_LEN_2);
-             u16Data =(UINT16)((u16Data * TYPEC_VBUS_THRX_UNITS_MILLI_V)
+            u16Data =(UINT16)((u16Data * TYPEC_VBUS_THRX_UNITS_MILLI_V)
                               /gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor);
 
             if (u16Data <= gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV)
@@ -2082,7 +2060,6 @@ void TypeC_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8CCEnablePins)
                            BYTE_LEN_1);
         UPD_RegisterWrite (u8PortNum, TYPEC_CC1_SAMP_EN, &gasTypeCcontrol[u8PortNum].u8CCDebMatch,\
                            BYTE_LEN_1);
-
     }
     else
     {
@@ -2674,7 +2651,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 
                 /*Move to TYPEC_UNATTACHED_SRC state if current state is  TYPEC_ATTACHWAIT_SRC*/
                 u8TypeCState = TYPEC_UNATTACHED_SRC;
-                u8TypeCSubState  = TYPEC_UNATTACHED_SRC_ENTRY_SS;                             
+                u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;                             
             }
             else
             {
@@ -3069,8 +3046,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         
         /*Changing the CC Sampling value as per the Rp value set*/
         TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
-    }
-    
+    }    
 }
 
 UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
