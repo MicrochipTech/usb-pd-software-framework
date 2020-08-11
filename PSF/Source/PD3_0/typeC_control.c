@@ -2922,16 +2922,28 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 else if (TYPEC_ATTACHED_SNK == u8TypeCState)                         
                 {
                     u8TypeCState = TYPEC_UNATTACHED_SNK;
-                    u8TypeCSubState  = TYPEC_UNATTACHED_SNK_ENTRY_SS;
+                    u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
                 }
                 else
                 {
                     /* Do Nothing */
                 }
-            }
-             
+            }             
             break;
-        }
+        }   
+
+        case TYPEC_SNK_CCTHRES_VCONN_ON:
+        {
+            /* This condition occurs during a detach when the power role of the 
+               port is Sink and VCONN role is Source */
+            if ((TYPEC_ATTACHED_SNK == u8TypeCState) && \
+                         (TYPEC_ATTACHED_SNK_RUN_SM_SS == u8TypeCSubState))
+            {
+                /* Go to TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state for starting tPDDebounce */
+                u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
+            }            
+            break; 
+        } 
             		
 		default:
 		break;
