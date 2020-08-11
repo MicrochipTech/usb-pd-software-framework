@@ -350,9 +350,10 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
         }
     
 		#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-            UINT8 u8PioNum;
+            UINT8 u8PioNum = SET_TO_ZERO;
             /*When PIO override is disabled; disable EN_VBUS/EN_SINK based on the
              role on a power fault*/
+#if (TRUE == INCLUDE_PD_SOURCE)
             if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
                 u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
@@ -364,7 +365,10 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
                                             (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
             
             }
-            else if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            else
+#endif
+#if (TRUE == INCLUDE_PD_SINK)
+                if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {
                 u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
 
@@ -375,6 +379,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
                                             (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                
             }
             else
+#endif
             {
                 /*Execution should not hit here ideally*/
             }
