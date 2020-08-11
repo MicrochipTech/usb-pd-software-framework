@@ -1443,7 +1443,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
 
 /**************************************************************************************************
     Function:
-       void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+       void TypeC_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 
     Summary:
         This API is Timer call back for PowerGoodTimer.
@@ -1467,7 +1467,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+void TypeC_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
