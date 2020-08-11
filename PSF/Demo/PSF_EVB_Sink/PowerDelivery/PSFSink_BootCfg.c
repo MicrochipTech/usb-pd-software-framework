@@ -59,6 +59,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
+
+	UINT8 u8Length = SET_TO_ZERO;
+	
     pasCfgStatusData->u16ProducdID = CFG_PRODUCT_ID;
     pasCfgStatusData->u16VendorID = CFG_VENDOR_ID;
     pasCfgStatusData->u16ProductTypeVDO = CFG_PRODUCT_TYPE_VDO;
@@ -67,6 +70,13 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->u16IDHeaderVDO = CFG_ID_HEADER_VDO;
     pasCfgStatusData->u8HWVersion = CFG_HW_VERSION;
     pasCfgStatusData->u8SiVersion = CFG_SILICON_VERSION; 
+    pasCfgStatusData->u8ManfStringLength = CFG_MANUFACTURER_STR_LEN;
+
+    while(u8Length < pasCfgStatusData->u8ManfStringLength)
+    {
+        pasCfgStatusData->u8aManfString[u8Length] = CFG_MANUFACTURER_STR[u8Length];
+        u8Length++;
+    }
     
     pasCfgStatusData->sPerPortData[PORT0].u32CfgData =       
                 ((CFG_PORT_0_VCONN_OCS_ENABLE) | (CFG_PORT_0_ENABLE) | (CFG_PORT_0_RP_CURRENT_VALUE)| \

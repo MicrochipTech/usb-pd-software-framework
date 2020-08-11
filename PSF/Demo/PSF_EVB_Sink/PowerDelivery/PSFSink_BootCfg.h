@@ -34,7 +34,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define _PSFSINK_BOOTCFG_H
 
 /*********************************Common Configuration*****************************************/
-#define CFG_PRODUCT_ID              0x301CU
+#define CFG_PRODUCT_ID              0x0350U
 #define CFG_VENDOR_ID               0x0424U
 #define CFG_PRODUCT_TYPE_VDO        0x0000U
 #define CFG_PRODUCT_VDO             0x0000U  
@@ -42,6 +42,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_ID_HEADER_VDO           0x0000U
 #define CFG_HW_VERSION              0x00U
 #define CFG_SILICON_VERSION         0x00U
+
+/*Length of Manufacturer string should be within the range of 0 to 21.
+ Default length of Manufacturer string is 20*/
+#define CFG_MANUFACTURER_STR_LEN    20U
+
+/*Number of characters in Manufacturer string should be less than or equal to
+ the value in CFG_MANUFACTURER_STR_LEN. Default manufacturer string is 
+ "Microchip Technology" */
+#define CFG_MANUFACTURER_STR        "Microchip Technology"
+
 
 /***********************************Port Specific configuration***********************/    
 /*Configuration value for u32CfgData*/
