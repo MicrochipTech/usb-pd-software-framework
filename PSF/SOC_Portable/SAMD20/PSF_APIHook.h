@@ -1046,6 +1046,15 @@ Description:
   	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery. 
     This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
  
+    <b> eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT </b>: This event is notified when a port is recovered
+    from  VCONN power fault if the VCONN is stable for u16PowerGoodTimerInms without 
+    any further fault occurrence. PSF clears VCONN fault recorded with this notification.
+    
+    <b> eMCHP_PSF_RECOVERD_FRM_VBUS_PWR_FAULT </b>: This event is notified when a port
+    recovers from VBUS power fault when the VBUS is stable for u16PowerGoodTimerInms without
+    any further VBUS fault occurrence. PSF clears the VBUS fault count it recorded with
+    this notification.
+ 
     <b> eMCHP_PSF_PORT_POWERED_OFF</b>: This event is used by PSF to notify application when 
     the port has been powered off as a result of VBUS or VCONN fault count exceeding the 
     values present in u8VBUSMaxFaultCnt or u8VCONNMaxFaultCnt variables respectively within 
@@ -1144,7 +1153,9 @@ eMCHP_PSF_TYPEC_ERROR_RECOVERY,        // Entered Error recovery State
 eMCHP_PSF_UPDS_IN_IDLE,                // All the UPD350s are in Idle
 eMCHP_PSF_VCONN_PWR_FAULT,             // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,              // VBUS Power Fault has occurred
-eMCHP_PSF_PORT_POWERED_OFF,            // Port powered off since fault count exceeded maximum fault count        
+eMCHP_PSF_PORT_POWERED_OFF,            // Port powered off since fault count exceeded maximum fault count
+eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT,       // Port Recovered from VCONN power fault
+eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT,        // Port Recovered from VBUS Power fault 
 eMCHP_PSF_PD_CONTRACT_NEGOTIATED,      // PD Contract established with port partner
 eMCHP_PSF_SINK_CAPS_RCVD,              // Sink Caps received from Port Partner
 eMCHP_PSF_SINK_CAPS_NOT_RCVD,          // Sink Caps not received from Port Partner

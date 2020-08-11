@@ -1041,6 +1041,15 @@ Description:
   	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery. 
     This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
  
+    <b> eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT </b>: This event is notified when a port is recovered
+    from  VCONN power fault if the VCONN is stable for u16PowerGoodTimerInms without 
+    any further fault occurrence. PSF clears VCONN fault recorded with this notification.
+    
+    <b> eMCHP_PSF_RECOVERD_FRM_VBUS_PWR_FAULT </b>: This event is notified when a port
+    recovers from VBUS power fault when the VBUS is stable for u16PowerGoodTimerInms without
+    any further VBUS fault occurrence. PSF clears the VBUS fault count it recorded with
+    this notification.
+ 
     <b> eMCHP_PSF_PORT_POWERED_OFF</b>: This event is used by PSF to notify application when 
     the port has been powered off as a result of VBUS or VCONN fault count exceeding the 
     values present in u8VBUSMaxFaultCnt or u8VCONNMaxFaultCnt variables respectively within 
@@ -1132,29 +1141,34 @@ Remarks:
   ******************************************************************************************************/
 typedef enum MCHP_PSF_NOTIFICATION
 {    
-eMCHP_PSF_TYPEC_DETACH_EVENT = 1,   // Detach event has occurred
-eMCHP_PSF_TYPEC_CC1_ATTACH,         // Port partner attached at CC1 orientation
-eMCHP_PSF_TYPEC_CC2_ATTACH,         // Port partner attached at CC2 orientation
-eMCHP_PSF_TYPEC_ERROR_RECOVERY,     // Entered Error recovery State
-eMCHP_PSF_UPDS_IN_IDLE,             // All the UPD350s are in Idle
-eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
-eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
-eMCHP_PSF_PORT_POWERED_OFF,         // Port powered off since fault count exceeded maximum fault count        
-eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
-eMCHP_PSF_SINK_CAPS_RCVD,          // Sink Caps received from Port Partner
-eMCHP_PSF_SINK_CAPS_NOT_RCVD,      // Sink Caps not received from Port Partner
-eMCHP_PSF_CAPS_MISMATCH,            // Capability mismatch with Source Port Partner
-eMCHP_PSF_NEW_SRC_CAPS_RCVD,        // New source capability message is received from Source Partner
-eMCHP_PSF_SINK_ALERT_RCVD,          // Alert message received from Sink Partner         
-eMCHP_PSF_SINK_STATUS_RCVD,         // Sink Status received from Sink Partner
-eMCHP_PSF_SINK_STATUS_NOT_RCVD,     // Sink Status not received from Sink Partner
-eMCHP_PSF_PR_SWAP_COMPLETE,         // Power Role Swap completed
-eMCHP_PSF_PR_SWAP_RCVD,             // Power Role Swap Received from port partner
-eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD, // No response from port partner for Power Role Swap sent 
-eMCHP_PSF_DR_SWAP_COMPLETED,        // Data Role Swap completed
-eMCHP_PSF_DR_SWAP_RCVD,             // Data Role swap received from port partner
+eMCHP_PSF_TYPEC_DETACH_EVENT = 1,      // Detach event has occurred
+eMCHP_PSF_TYPEC_CC1_ATTACH,            // Port partner attached at CC1 orientation
+eMCHP_PSF_TYPEC_CC2_ATTACH,            // Port partner attached at CC2 orientation
+eMCHP_PSF_TYPEC_ERROR_RECOVERY,        // Entered Error recovery State
+eMCHP_PSF_UPDS_IN_IDLE,                // All the UPD350s are in Idle
+eMCHP_PSF_VCONN_PWR_FAULT,             // VCONN Power Fault has occurred
+eMCHP_PSF_VBUS_PWR_FAULT,              // VBUS Power Fault has occurred
+eMCHP_PSF_PORT_POWERED_OFF,            // Port powered off since fault count exceeded maximum fault count
+eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT,       // Port Recovered from VCONN power fault
+eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT,        // Port Recovered from VBUS Power fault 
+eMCHP_PSF_PD_CONTRACT_NEGOTIATED,      // PD Contract established with port partner
+eMCHP_PSF_SINK_CAPS_RCVD,              // Sink Caps received from Port Partner
+eMCHP_PSF_SINK_CAPS_NOT_RCVD,          // Sink Caps not received from Port Partner
+eMCHP_PSF_CAPS_MISMATCH,               // Capability mismatch with Source Port Partner
+eMCHP_PSF_NEW_SRC_CAPS_RCVD,           // New source capability message is received from Source Partner
+eMCHP_PSF_SINK_ALERT_RCVD,             // Alert message received from Sink Partner         
+eMCHP_PSF_SINK_STATUS_RCVD,            // Sink Status received from Sink Partner
+eMCHP_PSF_SINK_STATUS_NOT_RCVD,        // Sink Status not received from Sink Partner
+eMCHP_PSF_VCONN_SWAP_COMPLETE,         // VCONN Swap completed
+eMCHP_PSF_VCONN_SWAP_RCVD,             // VCONN Swap Received from port partner
+eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD, // No response from port partner for VCONN Swap sent 
+eMCHP_PSF_PR_SWAP_COMPLETE,            // Power Role Swap completed
+eMCHP_PSF_PR_SWAP_RCVD,                // Power Role Swap Received from port partner
+eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for Power Role Swap sent 
+eMCHP_PSF_DR_SWAP_COMPLETED,           // Data Role Swap completed
+eMCHP_PSF_DR_SWAP_RCVD,                // Data Role swap received from port partner
 eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for the DR_SWAP initiated        
-eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
+eMCHP_PSF_BUSY                         // PSF is busy, cannot handle client request     
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************
