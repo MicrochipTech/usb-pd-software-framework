@@ -1810,8 +1810,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             {
                 #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)     
                     /*When PIO override is disabled; EN_VBUS/EN_SINK is disabled by FW on Power fault*/
-                    UINT8 u8PioNum;
+                    UINT8 u8PioNum = SET_TO_ZERO;
                     UINT16 u16PIORegVal;
+#if (TRUE == INCLUDE_PD_SOURCE)
                     if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {
                         u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
@@ -1822,7 +1823,10 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                         UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
                             (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
                     }
-                    else if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                    else 
+#endif
+#if (TRUE == INCLUDE_PD_SINK)
+                        if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {
                         u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
 
@@ -1833,6 +1837,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                             (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                        
                     }
                     else
+#endif                        
                     {
                         /*Execution should not hit here ideally*/
                     }
@@ -1851,8 +1856,9 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP;
             #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                 /*When PIO override is disabled; EN_VBUS/EN_SINK is disabled by FW on Power fault*/
-                UINT8 u8PioNum;
+                UINT8 u8PioNum = SET_TO_ZERO;
                 UINT16 u16PIORegVal;
+#if (TRUE == INCLUDE_PD_SOURCE)                
                 if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {
 
@@ -1865,7 +1871,10 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                                             (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
                 
                 }
-                else if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                else 
+#endif                    
+#if (TRUE == INCLUDE_PD_SOURCE)                    
+                    if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {
                     u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
 
@@ -1876,6 +1885,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                                             (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                    
                 }
                 else
+#endif                    
                 {
                     /*Execution should not hit here ideally*/
                 }
