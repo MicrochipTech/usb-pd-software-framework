@@ -1873,7 +1873,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                 }
                 else 
 #endif                    
-#if (TRUE == INCLUDE_PD_SOURCE)                    
+#if (TRUE == INCLUDE_PD_SINK)                    
                     if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {
                     u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
