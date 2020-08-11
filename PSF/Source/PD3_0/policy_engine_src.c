@@ -157,9 +157,11 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     if((TYPEC_ATTACHED_SRC == u8TypeCState) && (TYPEC_ATTACHED_SRC_RUN_SM_SS == u8TypeCSubState))
                     {
-						/* If E-Cable attached with port partner, before sending the source capabilities message
-							Cable discovery identity message will be send to the cable to find the cable capabilities */
-                        if(FALSE == u8RaPresence)
+						/* If E-Cable attached with port partner and the port is sourcing VCONN, before sending the source capabilities message
+							Cable discovery identity message will be send to the cable to find the cable capabilities 
+                           Spec Ref: A VCONN Source that is also a Source can attempt to send a Discover Identity Command 
+                           using SOP? to a Cable Plug prior to the establishment of an Explicit Contract */
+                        if(FALSE == DPM_IsPortVCONNSource(u8PortNum))
                         { 
 							/* E-Cable not present, Port partner alone attached */
                             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_STARTUP-IDLE_SS: Device Attached\r\n");
@@ -1406,8 +1408,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;               
-            }
-            
+            }            
             else
             {
                 gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_PD_SPEC_REV_MASK);

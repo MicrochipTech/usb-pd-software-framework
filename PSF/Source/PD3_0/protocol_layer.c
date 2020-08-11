@@ -987,7 +987,7 @@ void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum)
 	gasPRL [u8PortNum].u8RxHRRcvdISR = FALSE;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 	
-	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_HR_COMPLETE: PRL is informed about HR complete");
+	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_HR_COMPLETE: PRL is informed about HR complete\r\n");
     
 	/*If Tx_EOP is enabled at the time of Auto mode response,For Good_CRC sent as auto 
      * response, Tx_EOP interrupt is fired. Thus, Disable the Tx interrupt*/
@@ -1050,7 +1050,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
             if ((PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader) == gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent)
 					&& PRL_IS_MSG_CHUNKED(u16ExtendedMsgHeader))
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_REQUEST_RCV: Chunk Request received");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_REQUEST_RCV: Chunk Request received\r\n");
 				
 			  	/* If Chunk number request received and ChunkNumber of next Chunk to be sent is equal,
 				PRL_TCH_SEND_RESPONSE_CHUNK_ST is assigned to send next chunk packet*/
@@ -1058,7 +1058,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
             }
             else
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TCH_ERROR: Request Chunk number mismatch");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TCH_ERROR: Request Chunk number mismatch\r\n");
 				
 			  	/* Spec Ref: TCH_Report_Error - Report Error to Policy Engine. 
 												Entered on condition 
@@ -1087,7 +1087,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
                /* if Chunk SM Chunk message is already in process & other message is received*/
                 if (gasChunkSM [u8PortNum].u8EnableChunkSM)
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected Chunk msg received");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected Chunk msg received\r\n");
                      
                     /* Unexpected message received*/
                     if ((PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST == gasChunkSM [u8PortNum].u8ChunkState)
@@ -1166,7 +1166,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
                 }
                 else
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RESPONSE_RCV: Chunk Response Received");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RESPONSE_RCV: Chunk Response Received\r\n");
 					
                     /* If the received Chunk response is not the last chunk response packet
 						PRL_RCH_SEND_CHUNK_REQUEST_ST is assigned to to request for next chunk*/
@@ -1178,7 +1178,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
             }
             else
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RECV_ERROR: Response Chunk number mismatch");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RECV_ERROR: Response Chunk number mismatch\r\n");
 			  	/* PRL_RCH_CHUNK_RECV_ERROR_ST is assigned to indicate PE*/
                 gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
             }
@@ -1198,7 +1198,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
                 || (PRL_RCH_SEND_CHUNK_REQUEST_ST == gasChunkSM [u8PortNum].u8ChunkState)
                 || (PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST == gasChunkSM [u8PortNum].u8ChunkState))
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg\r\n");
 			  	
                 /* Chunk SM is reset*/
                 PRL_ResetChunkSM (u8PortNum);
@@ -1208,7 +1208,7 @@ UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
             }
             else
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg\r\n");
 				/* Spec Ref: TCH_Message_Received - Clear Extended Message Buffer. Pass message to Chunked Rx*/
                 PRL_ResetChunkSM (u8PortNum);
             }
