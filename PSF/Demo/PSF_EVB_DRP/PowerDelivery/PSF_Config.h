@@ -605,20 +605,22 @@ Example:
 #define INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION            0
 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: PIO configurations
-// *****************************************************************************
-// *****************************************************************************
-/**************************************************************************************************
-Summary:
+/******************************************************************************************************
+  Section:
+     PIO configurations
+    
+    * *************************************************************************** *
+    * *************************************************************************** *
+    * *********************************************************************************************** *
+  Summary:
     UPD350 GPIO Output mode enum.
-Description:
-	eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes applicable for UPD350 GPIO
-    in output mode.
-Remarks:
-        None
-**************************************************************************************************/
+  Description:
+    eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes
+    applicable for UPD350 GPIO in output mode. This is applicable only for
+    EN_SINK and EN_VBUS unctionality.
+  Remarks:
+    None                                                                                               
+  ******************************************************************************************************/
 typedef enum
 {
     ePUSH_PULL_ACTIVE_HIGH       = 0x0CU,   // Active High output signal
@@ -1264,9 +1266,11 @@ typedef enum
     10      R            R         Power role Status
                                     * '1' Asserted if Source
                                     * '0' De-asserted if Sink
+									* Applicable only for DRP configuration									
     11      R            R         Data role Status
                                     * '1' Asserted if DFP
                                     * '0' De-asserted if UFP
+									* Applicable only for DRP configuration	
     31:12                          Reserved 
 	</table>
 	
@@ -1346,7 +1350,7 @@ typedef enum
 	</table> 	
 		
 	<b>e. u32ClientRequest</b>: 
-	u32ClientRequest variable defines the client request mask bits. It's size is 1 byte. Application 
+	u32ClientRequest variable defines the client request mask bits. It's size is 4 bytes. Application 
 	can make use of this variable to request PSF to handle the mentioned client requests. Except 
 	VBUS Power Fault Request, all the other requests cannot coexist i.e Only one 
 	client request could be handled by PSF at a given time. So, it is recommended that the 
@@ -1919,11 +1923,12 @@ typedef struct _GlobalCfgStatusData
     UINT8 u8MajorVersion;  
     UINT8 u8HWVersion;	   
     UINT8 u8SiVersion;     
-    UINT8 u8aManfString[8]; 
+    UINT8 u8aManfString[21];
+    UINT8 u8ManfStringLength;
     UINT8 u8PSFMajorVersion; 
     UINT8 u8PSFMinorVersion; 
     UINT8 u8PwrThrottleCfg;
-    UINT8 u8aReserved3;    
+    UINT8 u8aReserved3[3];    
     UINT16 u16ProducdID;	
     UINT16 u16VendorID;		
     UINT16 u16ProductTypeVDO; 
