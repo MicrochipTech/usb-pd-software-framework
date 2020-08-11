@@ -1374,21 +1374,7 @@ typedef enum
 									Once the request is processed by PSF, u32aNewPDO array and 
 									u8NewPDOCnt would be cleared and 
 									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted. 
-    1       R/W          R/W       Get Sink capabilities Request 
-                                    * '0' PSF has not received any request for getting the sink 
-									      capabilities.
-                                    * '1' PSF has received a request for getting the sink 
-									      capabilities. 
-									Once the request is processed by PSF, 
-									eMCHP_PSF_SINK_CAPS_RCVD or eMCHP_PSF_SINK_CAPS_NOT_RCVD
-									notification would be posted depending on the Sink partner's 
-									response to Get_Sink_Caps message. User can read the received 
-									sink capabilities from u32aPartnerPDO array. 
-    2       R/W          R/W       Get Sink capabilities Extended Request 
-                                    * '0' PSF has not received any request for getting the extended 
-										  sink capabilities.
-                                    * '1' PSF has received a request for getting the extended sink 
-									      capabilities.
+    2:1                            Reserved 
     3       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
                                     * Set this bit to request PSF to process externally detected
                                         over voltage VBUS fault.

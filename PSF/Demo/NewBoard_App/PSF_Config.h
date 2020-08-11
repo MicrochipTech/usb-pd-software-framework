@@ -209,7 +209,7 @@ Summary:
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
     feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
+    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -1371,17 +1371,7 @@ typedef enum
 									Once the request is processed by PSF, u32aNewPDO array and 
 									u8NewPDOCnt would be cleared and 
 									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted. 
-    1       R/W          R/W       Get Sink capabilities Request 
-                                    * '0' PSF has not received any request for getting the sink 
-									      capabilities.
-                                    * '1' PSF has received a request for getting the sink 
-									      capabilities. 
-									Once the request is processed by PSF, 
-									eMCHP_PSF_SINK_CAPS_RCVD or eMCHP_PSF_SINK_CAPS_NOT_RCVD
-									notification would be posted depending on the Sink partner's 
-									response to Get_Sink_Caps message. User can read the received 
-									sink capabilities from u32aPartnerPDO array. 
-    2       R/W          R/W       Reserved 
+    2:1                            Reserved 
     3       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
                                     * Set this bit to request PSF to process externally detected
                                         over voltage VBUS fault.
@@ -1962,7 +1952,7 @@ typedef struct _GlobalCfgStatusData
 	 Configuration and Status parameters of PSF including Type C, PD, PB, PT and PPS parameters.
 	 
 	 It is mandatory that the user has to initialize the configuration parameters for the PSF 
-	 stack to funtion properly. This can be done through MCHP_PSF_HOOK_BOOT_TIME_CONFIG which 
+	 stack to function properly. This can be done through MCHP_PSF_HOOK_BOOT_TIME_CONFIG which 
 	 initializes the parameters defined in gasCfgStatusData during compile time. For accessing 
 	 the configuration registers and reading the status registers at run time, an I2C slave
 	 interface shall be used by the user application. 																 												  																 																  
