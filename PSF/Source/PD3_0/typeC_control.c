@@ -3184,7 +3184,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
                 PDO voltage is attained. Hence started here.*/
             PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
             gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = PDTimer_Start (gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimerInms,\
-                                                          TypeC_PowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
+                                                          TypeC_VBUSPowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
         }
         
         /* Over voltage threshold is set in TypeC_ConfigureVBUSThr */
@@ -3327,13 +3327,16 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
 	
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 								   
-void TypeC_PowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
+void TypeC_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
 {
 	/* Set the timer Id to Max Concurrent Value*/
  	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	
 	/* Reset the fault Count*/
 	gasDPM[u8PortNum].u8VBUSPowerFaultCount = RESET_TO_ZERO;
+    
+    /*Notify that port is recovered from VBUS fault*/
+    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT);
 }
 #endif /*INCLUDE_POWER_FAULT_HANDLING endif*/
 

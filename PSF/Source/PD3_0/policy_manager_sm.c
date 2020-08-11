@@ -436,6 +436,9 @@ void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
  	gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;	
 	/* Resetting the VCONN fault Count*/
 	gasDPM[u8PortNum].u8VCONNPowerFaultCount = RESET_TO_ZERO;
+    
+    /*Notify that port is recovered form VCONN fault*/
+    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT);
 }
 
 void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType)
