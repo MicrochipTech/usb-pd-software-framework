@@ -1328,6 +1328,11 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
 #if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP))
     UINT16 u16SwapPolicy = gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy;
 #endif
+
+#if ((TRUE == INCLUDE_PD_PR_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP))
+    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    UINT8 u8CurrentDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
+#endif    
     
     switch (eRoleSwapMsg)
     {
@@ -1373,9 +1378,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         {     
             /*Evaluate whether received DR_SWAP message can be accepted or rejected
              based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE) && 
+            if (((PD_ROLE_DFP == u8CurrentDataRole) && 
                             (u16SwapPolicy & DPM_AUTO_DR_SWAP_ACCEPT_AS_DFP)) ||
-               ((PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE) && 
+               ((PD_ROLE_UFP == u8CurrentDataRole) && 
                             (u16SwapPolicy & DPM_AUTO_DR_SWAP_ACCEPT_AS_UFP)))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
@@ -1390,9 +1395,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         {
             /*Evaluate whether to initiate DR_SWAP message 
                 based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-               if (((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE) && 
+               if (((PD_ROLE_DFP == u8CurrentDataRole) && 
                                (u16SwapPolicy & DPM_AUTO_DR_SWAP_REQ_AS_DFP)) ||
-                  ((PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE) && 
+                  ((PD_ROLE_UFP == u8CurrentDataRole) && 
                                (u16SwapPolicy & DPM_AUTO_DR_SWAP_REQ_AS_UFP)))
                {
                    u8RetVal = DPM_REQUEST_SWAP;
@@ -1409,9 +1414,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         {
             /*Evaluate whether received PR_SWAP message can be accepted or rejected
              based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && 
+            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
                             (u16SwapPolicy & DPM_AUTO_PR_SWAP_ACCEPT_AS_SRC)) ||
-               ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && 
+               ((PD_ROLE_SINK == u8CurrentPwrRole) && 
                             (u16SwapPolicy & DPM_AUTO_PR_SWAP_ACCEPT_AS_SNK)))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
@@ -1427,9 +1432,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         {
             /*Evaluate whether to initiate PR_SWAP message 
             based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && 
+            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
                            (u16SwapPolicy & DPM_AUTO_PR_SWAP_REQ_AS_SRC)) ||
-              ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && 
+              ((PD_ROLE_SINK == u8CurrentPwrRole) && 
                            (u16SwapPolicy & DPM_AUTO_PR_SWAP_REQ_AS_SNK)))
             {
                 u8RetVal = DPM_REQUEST_SWAP;
