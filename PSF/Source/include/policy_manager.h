@@ -236,18 +236,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_IO_DATA_ROLE_STATUS                 BIT(11)
 
 /***************************u16SwapPolicy values*****************************/
-#define DPM_AUTO_DR_SWAP_REQ_AS_DFP          BIT(0)
-#define DPM_AUTO_DR_SWAP_REQ_AS_UFP          BIT(1)
-#define DPM_AUTO_DR_SWAP_ACCEPT_AS_DFP       BIT(2)
-#define DPM_AUTO_DR_SWAP_ACCEPT_AS_UFP       BIT(3)
-#define DPM_AUTO_PR_SWAP_REQ_AS_SRC          BIT(4)
-#define DPM_AUTO_PR_SWAP_REQ_AS_SNK          BIT(5)
-#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SRC       BIT(6)
-#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SNK       BIT(7)
-#define DPM_AUTO_VCONN_SWAP_REQ_AS_SRC       BIT(8)
-#define DPM_AUTO_VCONN_SWAP_REQ_AS_SNK       BIT(9)
-#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SRC    BIT(10)
-#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SNK    BIT(11)
+#define DPM_AUTO_DR_SWAP_REQ_AS_DFP                  BIT(0)
+#define DPM_AUTO_DR_SWAP_REQ_AS_UFP                  BIT(1)
+#define DPM_AUTO_DR_SWAP_ACCEPT_AS_DFP               BIT(2)
+#define DPM_AUTO_DR_SWAP_ACCEPT_AS_UFP               BIT(3)
+#define DPM_AUTO_PR_SWAP_REQ_AS_SRC                  BIT(4)
+#define DPM_AUTO_PR_SWAP_REQ_AS_SNK                  BIT(5)
+#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SRC               BIT(6)
+#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SNK               BIT(7)
+#define DPM_AUTO_VCONN_SWAP_REQ_AS_VCONN_SRC         BIT(8)
+#define DPM_AUTO_VCONN_SWAP_REQ_AS_NOT_VCONN_SRC     BIT(9)
+#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC      BIT(10)
+#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC  BIT(11)
 
 /*********************u8SinkConfigSel defines******************/
 #define DPM_SINK_CONFIG_SINK_MODE_SEL_MASK  (BIT(0) | BIT(1))
@@ -634,7 +634,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8RealTimeFlags;
   UINT8 u8StsClearTmrID;
 #endif
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
   UINT8 u8VCONNSwapWaitTmrID;      // VCONN_Swap Wait Timer ID
 #endif
 #if (TRUE == INCLUDE_PD_PR_SWAP)

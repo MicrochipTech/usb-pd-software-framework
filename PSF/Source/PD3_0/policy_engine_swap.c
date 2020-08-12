@@ -811,7 +811,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 }
 #endif /*INCLUDE_PD_PR_SWAP*/
 
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
 void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 {
 	/* Transmit Message Header */
@@ -827,14 +827,15 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 	UINT8 u8IsTransmit = FALSE;
     
     ePolicyState eTxDoneSt, eTxFailedSt;
-    ePolicySubState eTxDoneSS, eTxFailedSS;
+    ePolicySubState eTxDoneSS, eTxFailedSS,eTxHardRstSS;
     
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         eTxDoneSt = ePE_SRC_READY;
         eTxDoneSS = ePE_SRC_READY_END_AMS_SS;
         eTxFailedSt = ePE_SRC_SEND_SOFT_RESET;
-        eTxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS;        
+        eTxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS; 
+        eTxHardRstSS = ePE_SRC_HARD_RESET_ENTRY_SS;
     }
     else
     {
@@ -842,6 +843,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
         eTxDoneSS = ePE_SNK_READY_IDLE_SS;
         eTxFailedSt = ePE_SNK_SEND_SOFT_RESET;
         eTxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
+        eTxHardRstSS = ePE_SNK_HARD_RESET_SEND_SS;
     }
         
     switch(gasPolicyEngine[u8PortNum].ePEState)
@@ -885,7 +887,6 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     break; 
                 }
                 case ePE_VCS_SEND_SWAP_NO_RESPONSE_SS:
-                case ePE_VCS_SEND_SWAP_REJECT_RCVD_SS:
                 {                    
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
@@ -894,6 +895,14 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 
                     /* Post VCONN_SWAP_NO_RESP_RCVD notification*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD);
+                    break; 
+                }
+                case ePE_VCS_SEND_SWAP_REJECT_RCVD_SS:
+                {                    
+                    /* Response not received within tSenderResponse. Move to 
+                       ePE_SRC_READY/ePE_SNK_READY state */
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                     break; 
                 }
                 case ePE_VCS_SEND_SWAP_WAIT_RCVD_SS:
@@ -950,25 +959,32 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
         {
             /*Transition directly to next state as PSF accepts VCONN Swap always*/
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP: Entered the state\r\n");
-
-#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-            
-            /*Send Not Supported or Reject if Port partner requests VCONN Swap to supply the
-            VCONN when the u8VCONNGoodtoSupply is false */
-            if((!DPM_IsPortVCONNSource(u8PortNum)) && (!gasDPM[u8PortNum].u8VCONNGoodtoSupply))
+            if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_RCVD))
             {
-                PE_SendNotSupportedOrRejectMsg(u8PortNum);
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+
+                /*Send Not Supported or Reject if Port partner requests VCONN Swap to supply the
+                VCONN when the u8VCONNGoodtoSupply is false */
+                if((!DPM_IsPortVCONNSource(u8PortNum)) && (!gasDPM[u8PortNum].u8VCONNGoodtoSupply))
+                {
+                    PE_SendNotSupportedOrRejectMsg(u8PortNum);
+                }
+                else
+                {
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS;
+                }
+#else 
+                gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS;
+#endif
             }
             else
             {
-                gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS;
+                /* Use common state available for sending reject message */
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;                           
             }
-#else 
-            gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
-            gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS;
-#endif
-
             break;
         }
         case ePE_VCS_ACCEPT_SWAP:
@@ -1044,8 +1060,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                               PE_VCONNON_TIMEOUT_MS,\
                                                               PE_SSChngAndTimeoutValidate_TimerCB,\
-                                                              u8PortNum,\
-                                                              (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
+                                                              u8PortNum, eTxHardRstSS);
 
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS;
@@ -1097,6 +1112,9 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                         
                         gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                         gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                        
+                        /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
                     }
                     
                     break;                 
@@ -1181,7 +1199,9 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     u8IsTransmit = TRUE;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_IDLE_SS;
 
-                     break;
+                    /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
+                    break;
                 }
                 /*Wait here until the PS_RDY message is sent*/
                 case ePE_VCS_SEND_PS_RDY_IDLE_SS:
@@ -1208,5 +1228,5 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                             NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 
     }    
 }
-#endif /*INCLUDE_VCONN_SWAP_SUPPORT*/        
+#endif /*INCLUDE_PD_VCONN_SWAP*/        
         

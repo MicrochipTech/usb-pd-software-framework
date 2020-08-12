@@ -74,9 +74,9 @@ void DPM_Init(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8RealTimeFlags = SET_TO_ZERO;
     gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
 #endif
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
     gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
-#endif /*INCLUDE_VCONN_SWAP_SUPPORT*/
+#endif /*INCLUDE_PD_VCONN_SWAP*/
 
 #if (TRUE == INCLUDE_PD_PR_SWAP)
     gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
@@ -749,7 +749,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             }
             u8IsAMSInProgress = DPM_INT_EVT_INITIATE_RENEGOTIATION;
         }
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
         else if (DPM_INT_EVT_INITIATE_VCONN_SWAP == (gasDPM[u8PortNum].u8DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_VCONN_SWAP))
         {
@@ -763,7 +763,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 u8IsAMSInProgress = DPM_INT_EVT_INITIATE_VCONN_SWAP;
             }            
         }
-#endif /*INCLUDE_VCONN_SWAP_SUPPORT*/
+#endif /*INCLUDE_PD_VCONN_SWAP*/
 #if (TRUE == INCLUDE_PD_PR_SWAP)
         else if (DPM_INT_EVT_INITIATE_PR_SWAP == (gasDPM[u8PortNum].u8DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_PR_SWAP))

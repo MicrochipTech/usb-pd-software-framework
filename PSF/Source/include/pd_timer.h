@@ -80,6 +80,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 	#define PD_SYS_PPS_STATUS_TIMER              0
 #endif
 
+/*Maximum active concurrent timers for a port when VCONN_SWAP is enabled*/
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
+	#define PD_SYS_VCONNSWAP_WAIT_TIMER           1
+#else
+	#define PD_SYS_VCONNSWAP_WAIT_TIMER           0
+#endif
+
 /*Maximum active concurrent timers for a port when DR_SWAP is enabled*/
 #if (TRUE == INCLUDE_PD_DR_SWAP)
 	#define PD_SYS_DRSWAP_WAIT_TIMER              1
@@ -99,6 +106,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                                  PD_SYS_POWER_FAULT_TIMER + \
                                                  PD_SYS_PWR_MNGMNT_CTRL + \
                                                  PD_SYS_PPS_STATUS_TIMER + \
+                                                 PD_SYS_VCONNSWAP_WAIT_TIMER + \
                                                  PD_SYS_DRSWAP_WAIT_TIMER + \
                                                  PD_SYS_PRSWAP_WAIT_TIMER)
 

@@ -201,8 +201,8 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 	        /* Do Nothing */
 	    }
 
-        #if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
- //           PE_RunVCONNSwapStateMachine (u8PortNum);
+        #if (TRUE == INCLUDE_PD_VCONN_SWAP)
+            PE_RunVCONNSwapStateMachine (u8PortNum);
         #endif        
         #if (TRUE == INCLUDE_PD_PR_SWAP)
             PE_RunPRSwapStateMachine (u8PortNum);
@@ -795,7 +795,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 
                         /*TODO:Add PE_CheckRcvdMsg_n_TimeoutSynchronication API call*/
                     }
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
                     /* Accept message received for PR_Swap request */
                     else if ((ePE_VCS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_VCS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
@@ -889,7 +889,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS;
                         }
                     }
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
                     /* Reject or Wait message received for PR_Swap request */
                     else if ((ePE_VCS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_VCS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
@@ -1072,7 +1072,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                          (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
                     {
 
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
                                           
                         gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_EVALUATE_SWAP;
                         /* Set the timer Id to Max Concurrent Value*/

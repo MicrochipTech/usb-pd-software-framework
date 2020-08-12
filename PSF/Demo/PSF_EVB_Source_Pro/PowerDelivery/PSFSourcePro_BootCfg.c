@@ -149,6 +149,13 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPBPerPortData[PORT1].u8PortPriority = PORT1;
     #endif
 
+    /*Configure role swap policy for note type port*/
+    gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
+               
+    /*Configure role swap policy for dock type port*/
+    gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = CFG_PORT_1_ROLE_SWAP_POLICY;
+
+
 }
 
 

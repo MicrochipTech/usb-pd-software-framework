@@ -1220,7 +1220,7 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
     }        
 #endif
     /*Evaluate swap and register internal event*/
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
     if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
     {
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
@@ -1323,22 +1323,23 @@ UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum)
 /********************* Policy Manager APIs for Swap ********************/
 UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
 {
-    UINT8 u8RetVal = DPM_REJECT_SWAP; 
-            
-    UINT16  u16SwapPolicy = gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy;
-    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum),
-            u8CurrentDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
+    UINT8 u8RetVal = DPM_REJECT_SWAP;
+    
+#if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP))
+    UINT16 u16SwapPolicy = gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy;
+#endif
+    
     switch (eRoleSwapMsg)
     {
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
         case eVCONN_SWAP_RCVD: 
         {
             /*Evaluate whether received VCONN_SWAP message can be accepted or rejected
              based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
-                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SRC)) ||
-               ((PD_ROLE_SINK == u8CurrentPwrRole) && 
-                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_SNK)))
+            if (((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
+                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC)) ||
+               ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
+                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC)))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
             }
@@ -1353,10 +1354,10 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         {
             /*Evaluate whether to initiate VCONN_SWAP message 
             based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
-                           (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_SRC)) ||
-              ((PD_ROLE_SINK == u8CurrentPwrRole) && 
-                           (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_SNK)))
+            if (((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
+                           (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_VCONN_SRC)) ||
+              ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
+                           (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_NOT_VCONN_SRC)))
             {
                 u8RetVal = DPM_REQUEST_SWAP;
             }
@@ -1372,9 +1373,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         {     
             /*Evaluate whether received DR_SWAP message can be accepted or rejected
              based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_DFP == u8CurrentDataRole) && 
+            if (((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE) && 
                             (u16SwapPolicy & DPM_AUTO_DR_SWAP_ACCEPT_AS_DFP)) ||
-               ((PD_ROLE_UFP == u8CurrentDataRole) && 
+               ((PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE) && 
                             (u16SwapPolicy & DPM_AUTO_DR_SWAP_ACCEPT_AS_UFP)))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
@@ -1389,9 +1390,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         {
             /*Evaluate whether to initiate DR_SWAP message 
                 based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-               if (((PD_ROLE_DFP == u8CurrentDataRole) && 
+               if (((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE) && 
                                (u16SwapPolicy & DPM_AUTO_DR_SWAP_REQ_AS_DFP)) ||
-                  ((PD_ROLE_UFP == u8CurrentDataRole) && 
+                  ((PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE) && 
                                (u16SwapPolicy & DPM_AUTO_DR_SWAP_REQ_AS_UFP)))
                {
                    u8RetVal = DPM_REQUEST_SWAP;
@@ -1408,9 +1409,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         {
             /*Evaluate whether received PR_SWAP message can be accepted or rejected
              based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
+            if (((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && 
                             (u16SwapPolicy & DPM_AUTO_PR_SWAP_ACCEPT_AS_SRC)) ||
-               ((PD_ROLE_SINK == u8CurrentPwrRole) && 
+               ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && 
                             (u16SwapPolicy & DPM_AUTO_PR_SWAP_ACCEPT_AS_SNK)))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
@@ -1426,9 +1427,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         {
             /*Evaluate whether to initiate PR_SWAP message 
             based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
+            if (((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && 
                            (u16SwapPolicy & DPM_AUTO_PR_SWAP_REQ_AS_SRC)) ||
-              ((PD_ROLE_SINK == u8CurrentPwrRole) && 
+              ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && 
                            (u16SwapPolicy & DPM_AUTO_PR_SWAP_REQ_AS_SNK)))
             {
                 u8RetVal = DPM_REQUEST_SWAP;
@@ -1452,14 +1453,14 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
 {
     switch (u8SwapInitiateType)
     {
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
         case eVCONN_SWAP_INITIATE:
         {
             /* Set the timer Id to Max Concurrent Value*/
             gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
             break;
         }
-#endif /*INCLUDE_VCONN_SWAP_SUPPORT*/
+#endif /*INCLUDE_PD_VCONN_SWAP*/
 #if (TRUE == INCLUDE_PD_PR_SWAP)
         case ePR_SWAP_INITIATE:
         {
