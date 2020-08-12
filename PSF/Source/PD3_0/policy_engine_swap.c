@@ -1113,6 +1113,9 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                         gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                         gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                         
+                        /* Reset the discover identity counter to 0*/
+                        gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
+                        
                         /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
                         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
                     }
@@ -1198,6 +1201,9 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                                              eTxFailedSS);
                     u8IsTransmit = TRUE;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_IDLE_SS;
+                    
+                    /* Reset the discover identity counter to 0*/
+                    gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
 
                     /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);

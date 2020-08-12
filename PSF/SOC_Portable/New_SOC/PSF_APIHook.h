@@ -1103,6 +1103,20 @@ Description:
     when this notification is posted. This event is applicable only when PSF is operating as Source
     or the power role of the port is resolved as Source during DRP operation. 
  
+    <b> eMCHP_PSF_VCONN_SWAP_COMPLETE</b>: This notification will be posted when the VCONN Swap
+    is completed and the VCONN roles of the both the partners are changed successfully.
+    This event is applicable when VCONN Swap successfully changed for either VCONN initiate or
+    accept message.
+    
+    <b> eMCHP_PSF_VCONN_SWAP_RCVD</b>: This notification will be posted by PSF when a VCONN 
+    Swap message is received from port partner. Application can make use of this event to 
+    dynamically update the VCONN Swap Policy Configuration through u16SwapPolicy based on 
+    which the VCONNN Swap request would be accepted or rejected by PSF. 
+
+    <b> eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD </b>: This notification will be posted by PSF 
+    when a VCONN Swap message has been initiated by PSF and no response has been 
+    received from the port partner. 
+
     <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: This notification will be posted when the PR Swap
     is completed and the power roles of the both the partners are changed successfully.
     This event is applicable only when PSF is operating as DRP.
