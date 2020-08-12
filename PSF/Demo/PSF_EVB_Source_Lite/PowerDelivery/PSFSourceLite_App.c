@@ -147,6 +147,11 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break;            
         }
         
+        case eMCHP_PSF_BUSY:
+        {
+            break; 
+        }
+        
         default:
             break;
     }

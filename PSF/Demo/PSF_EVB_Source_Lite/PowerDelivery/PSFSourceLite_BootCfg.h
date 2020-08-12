@@ -1,5 +1,5 @@
 /***************************************************************************
-  Power Delivery Source Pro Configurable globals Header File
+  Power Delivery Source Lite Configurable globals Header File
 
   Company:
     Microchip Technology Inc.
