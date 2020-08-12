@@ -173,6 +173,21 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break; 
         }
         
+        case eMCHP_PSF_VCONN_SWAP_COMPLETE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD:
+        {
+            break; 
+        }
+        
         case eMCHP_PSF_PR_SWAP_COMPLETE:
         {
             break; 
@@ -184,6 +199,21 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         }
         
         case eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_DR_SWAP_COMPLETED:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_DR_SWAP_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD:
         {
             break; 
         }

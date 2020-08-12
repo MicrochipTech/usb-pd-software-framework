@@ -1,5 +1,5 @@
 /***************************************************************************
-Power Delivery Source Pro Application header file
+Power Delivery Sink Application header file
 
   Company:
     Microchip Technology Inc.
@@ -34,10 +34,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define _PSFSINK_APP_H
 
 /* Defines major and minor version of PSF Sink Application*/
-
-/*v1.04 release*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x05
+#define APP_REV_MINOR	0x06
 
 /* ************************************************************************** */
 /* ************************************************************************** */
