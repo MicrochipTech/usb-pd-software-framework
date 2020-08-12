@@ -1396,7 +1396,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     }
                     
-                    #if (INCLUDE_VCONN_SWAP_SUPPORT | INCLUDE_PD_SOURCE)
+                    #if (INCLUDE_PD_VCONN_SWAP | INCLUDE_PD_SOURCE)
                     /*Disable VCONN if the port sources the VCONN already or failed while trying to
                     source VCONN*/
                     if (((u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) \
@@ -1418,7 +1418,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                 }
                 
-                #if (INCLUDE_VCONN_SWAP_SUPPORT | INCLUDE_PD_SOURCE)
+                #if (INCLUDE_PD_VCONN_SWAP | INCLUDE_PD_SOURCE)
                 case TYPEC_ERROR_RECOVERY_WAIT_FOR_VCONN_OFF_SS:
                 {                   
                     if(!(u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
@@ -1543,7 +1543,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                          /*Setting the CC1 and CC2 line as Open Disconnect*/
                         TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);                        
                     }
-                    #if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
+                    #if (TRUE == INCLUDE_PD_VCONN_SWAP)
                     /*Disable VCONN if the port sources the VCONN already or failed while trying to
                     source VCONN*/
                     if (((u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) \
@@ -2509,7 +2509,6 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
         DEBUG_PRINT_PORT_STR(gasTypeCcontrol[u8PortNum].u8CC1MatchISR,"TYPEC: CC1 register\r\n");
         DEBUG_PRINT_PORT_STR(gasTypeCcontrol[u8PortNum].u8CC2MatchISR,"TYPEC: CC2 register\r\n");
                  
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
         if(gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_DISCHARGE_ON_MASK)
         {
             TypeC_VCONNDisOn_IntrHandler(u8PortNum);
@@ -2522,7 +2521,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
         {
             /* Do Nothing */
         }
-#endif
+
         if(gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_CCINT_STATUS_MASK)
         {
             switch (gasTypeCcontrol[u8PortNum].u8TypeCState)
@@ -2956,8 +2955,6 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
 #endif
 /*INCLUDE_PD_SINK*/
 
-#if (TRUE == INCLUDE_VCONN_SWAP_SUPPORT)
-
 void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
 {
     
@@ -2995,7 +2992,6 @@ void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2); 
 }
 
-#endif 
 /*******************************************************************************************/
 /*********************************TypeC Collision avoidance Support APIs**************************************/
 /*******************************************************************************************/

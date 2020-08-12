@@ -233,6 +233,33 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
 #define CFG_PORT_1_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0)
 
+/**************************Role Swap Policy defines*****************************/
+#define CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP             0 
+#define CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP             1
+#define CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP              0 
+#define CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP              1 
+#define CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP             1
+#define CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP             0
+#define CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP              1
+#define CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP              0
+#define CFG_PORT_0_VCONN_SWAP_REQ_AS_VCONN_SRC        0
+#define CFG_PORT_0_VCONN_SWAP_REQ_NOT_AS_VCONN_SRC    0
+#define CFG_PORT_0_VCONN_SWAP_ACCEPT_AS_VCONN_SRC     1
+#define CFG_PORT_0_VCONN_SWAP_ACCEPT_NOT_AS_VCONN_SRC 1
+
+
+#define CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP             1
+#define CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP             0
+#define CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP              1
+#define CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP              0
+#define CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP             0
+#define CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP             1
+#define CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP              0
+#define CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP              1
+#define CFG_PORT_1_VCONN_SWAP_REQ_AS_VCONN_SRC        0
+#define CFG_PORT_1_VCONN_SWAP_REQ_NOT_AS_VCONN_SRC    0
+#define CFG_PORT_1_VCONN_SWAP_ACCEPT_AS_VCONN_SRC     1
+#define CFG_PORT_1_VCONN_SWAP_ACCEPT_NOT_AS_VCONN_SRC 1
 
 /*****************Defines to form PDOs ****************************************/
 /* Macro used to form Fixed PDO 1 */
@@ -277,6 +304,27 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     (((minVolt) / 100U) << 8U) | \
     ((maxCurrent) / 50U)) 
 
+/***********************Defines to form role swap policy************************/
+#define CFG_PORT_0_ROLE_SWAP_POLICY  CFG_FORM_ROLE_SWAP_POLICY(CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP, \
+ CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP, CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP, CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP,\
+ CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP, CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP, CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP,\
+ CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP, CFG_PORT_0_VCONN_SWAP_REQ_AS_VCONN_SRC, CFG_PORT_0_VCONN_SWAP_REQ_NOT_AS_VCONN_SRC,\
+ CFG_PORT_0_VCONN_SWAP_ACCEPT_AS_VCONN_SRC, CFG_PORT_0_VCONN_SWAP_ACCEPT_NOT_AS_VCONN_SRC);
+
+#define CFG_PORT_1_ROLE_SWAP_POLICY CFG_FORM_ROLE_SWAP_POLICY(CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP, \
+ CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP, CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP, CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP,\
+ CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP, CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP, CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP,\
+ CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP, CFG_PORT_1_VCONN_SWAP_REQ_AS_VCONN_SRC, CFG_PORT_1_VCONN_SWAP_REQ_NOT_AS_VCONN_SRC,\
+ CFG_PORT_1_VCONN_SWAP_ACCEPT_AS_VCONN_SRC, CFG_PORT_1_VCONN_SWAP_ACCEPT_NOT_AS_VCONN_SRC);
+
+#define CFG_FORM_ROLE_SWAP_POLICY(AsDfp_Request_DRSwap, AsUfp_Request_DRSwap, \
+ AsDfp_Accept_DRSwap, AsUfp_Accept_DRSwap, AsSrc_Request_PRSwap, AsSnk_Request_PRSwap,\
+ AsSrc_Accept_PRSwap, AsSnk_Accept_PRSwap, AsVCONNSrc_Req_VCONNSwap, AsNotVCONNSrc_Req_VCONNSwap,\
+ AsVCONNSrc_Accept_VCONNSwap, AsNotVCONNSrc_Accept_VCONNSwap) ( (AsDfp_Request_DRSwap << 0) | \
+ (AsUfp_Request_DRSwap << 1) | (AsDfp_Accept_DRSwap << 2) | (AsUfp_Accept_DRSwap << 3) \
+ | (AsSrc_Request_PRSwap << 4) | (AsSnk_Request_PRSwap << 5) | (AsSrc_Accept_PRSwap << 6) \
+ | (AsSnk_Accept_PRSwap << 7) | (AsVCONNSrc_Req_VCONNSwap << 8) | (AsNotVCONNSrc_Req_VCONNSwap << 9)\
+ | (AsVCONNSrc_Accept_VCONNSwap << 10) | (AsNotVCONNSrc_Accept_VCONNSwap << 11))
 
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData); 
 

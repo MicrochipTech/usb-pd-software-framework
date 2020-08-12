@@ -128,7 +128,7 @@ Example:
 Summary:
     VCONN Support code inclusion.
 Description:
-    Setting the INCLUDE_VCONN_SWAP_SUPPORT as 1 enables PSF to include the VCONN Swap
+    Setting the INCLUDE_PD_VCONN_SWAP as 1 enables PSF to include the VCONN Swap
 	functionality at the compile time. User can set this define to 0 to reduce code size if none of
 	the PD enabled ports requires VCONN Swap functionality.
 Remarks:
@@ -136,11 +136,11 @@ Remarks:
     When INCLUDE_PD_SOURCE is defined as '1', define this macro as '1'.
 Example:
     <code>
-    #define INCLUDE_VCONN_SWAP_SUPPORT	1(Include VCONN Swap functionality in PSF)
-    #define INCLUDE_VCONN_SWAP_SUPPORT	0(Exclude VCONN Swap functionality from PSF)
+    #define INCLUDE_PD_VCONN_SWAP	1(Include VCONN Swap functionality in PSF)
+    #define INCLUDE_PD_VCONN_SWAP	0(Exclude VCONN Swap functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_VCONN_SWAP_SUPPORT  	1
+#define INCLUDE_PD_VCONN_SWAP  	1
 
 /**************************************************************************************************
 Summary:
@@ -1478,8 +1478,18 @@ typedef enum
     7       R/W          R/W       EN_AUTO_PR_SWAP_ACCEPT_AS_SINK
                                     * '0' Disable Auto Power Role Accept When Power Role is Sink
                                     * '1' Enable Auto Power Role Accept when Power Role is Sink 
-    8:11    R/W          R/W       TODO:J VCONN Swap Definition
-    
+    8       R/W          R/W       EN_AUTO_VCONN_SWAP_REQ_AS_VCONN_SRC
+                                    * '0' Disable Auto VCONN Swap Request When working as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Request When working as VCONN Source
+    9       R/W          R/W       EN_AUTO_VCONN_SWAP_REQ_AS_NOT_VCONN_SRC
+                                    * '0' Disable Auto VCONN Swap Request When not working as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Request When not working as VCONN Source
+    10      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC
+                                    * '0' Disable Auto VCONN Swap Accept When working as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Accept When working as VCONN Source
+    11      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC
+                                    * '0' Disable Auto VCONN Swap Accept When not working as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Accept When not working as VCONN Source 
     15:12  						   Reserved 									
 	</table> 
  
@@ -1907,11 +1917,12 @@ typedef struct _GlobalCfgStatusData
     UINT8 u8MajorVersion;  
     UINT8 u8HWVersion;	   
     UINT8 u8SiVersion;     
-    UINT8 u8aManfString[8]; 
+    UINT8 u8aManfString[21];
+    UINT8 u8ManfStringLength;
     UINT8 u8PSFMajorVersion; 
     UINT8 u8PSFMinorVersion; 
     UINT8 u8PwrThrottleCfg;
-    UINT8 u8aReserved3;    
+    UINT8 u8aReserved3[3];    
     UINT16 u16ProducdID;	
     UINT16 u16VendorID;		
     UINT16 u16ProductTypeVDO; 

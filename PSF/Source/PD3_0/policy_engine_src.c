@@ -1004,7 +1004,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                             /*This Timeout is implemented outside of the PD Specification to track 
                             VCONN Turn ON error*/
                             gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                             TYPEC_VCONNON_TIMEOUT_MS,
+                                                             PE_VCONNON_TIMEOUT_MS,
                                                              DPM_VCONNONError_TimerCB, u8PortNum,  
                                                              (UINT8)SET_TO_ZERO);
                         
