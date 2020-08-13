@@ -392,7 +392,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
   B6-0      - Maximum current in 50mA increment */
 /* Macro used to form PPS APDO */
 #define CFG_FORM_PPS_APDO(minVolt,maxVolt,maxCurrent,pwrLtd)\
-    (((0x3) << 30U) |\
+    (((0x3U) << 30U) |\
     ((pwrLtd) << 27U) | \
     (((maxVolt) / 100U) << 17U) | \
     (((minVolt) / 100U) << 8U) | \

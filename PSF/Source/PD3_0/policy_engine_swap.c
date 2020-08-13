@@ -1062,7 +1062,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                               PE_VCONNON_TIMEOUT_MS,\
                                                               PE_SSChngAndTimeoutValidate_TimerCB,\
-                                                              u8PortNum, eTxHardRstSS);
+                                                              u8PortNum, (UINT8)eTxHardRstSS);
 
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS;
@@ -1237,4 +1237,4 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
     }    
 }
 #endif /*INCLUDE_PD_VCONN_SWAP*/        
-        
+
