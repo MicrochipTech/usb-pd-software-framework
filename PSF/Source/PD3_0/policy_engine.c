@@ -1078,8 +1078,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         /* Set the timer Id to Max Concurrent Value*/
                         gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
 #else
-                        
-                        PE_SendNotSupportedOrRejectMsg(u8PortNum);
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;
 #endif
 
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                        

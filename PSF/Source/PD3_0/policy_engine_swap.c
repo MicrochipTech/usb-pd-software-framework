@@ -959,7 +959,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
         {
             /*Transition directly to next state as PSF accepts VCONN Swap always*/
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP: Entered the state\r\n");
-            if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_RCVD))
+            if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) &&
+                 (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_RCVD)))
             {
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 
@@ -967,7 +968,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 VCONN when the u8VCONNGoodtoSupply is false */
                 if((!DPM_IsPortVCONNSource(u8PortNum)) && (!gasDPM[u8PortNum].u8VCONNGoodtoSupply))
                 {
-                    PE_SendNotSupportedOrRejectMsg(u8PortNum);
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;
                 }
                 else
                 {
