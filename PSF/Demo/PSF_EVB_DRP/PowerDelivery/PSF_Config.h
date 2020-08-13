@@ -1351,7 +1351,7 @@ typedef enum
 	</table> 	
 		
 	<b>e. u32ClientRequest</b>: 
-	u32ClientRequest variable defines the client request mask bits. It's size is 4 bytes. Application 
+	u32ClientRequest variable defines the client request mask bits. It's size is 4 bytes. USER_APPLICATION 
 	can set the corresponding bit in this variable to request PSF to handle the client requests mentioned 
     in the table below. Except VBUS Power Fault Request, all the other requests cannot coexist i.e Only one
     client request could be handled by PSF at a given time. So, it is recommended that the application 
