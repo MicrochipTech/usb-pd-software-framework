@@ -1352,10 +1352,10 @@ typedef enum
 		
 	<b>e. u32ClientRequest</b>: 
 	u32ClientRequest variable defines the client request mask bits. It's size is 4 bytes. Application 
-	can make use of this variable to request PSF to handle the mentioned client requests. Except 
-	VBUS Power Fault Request, all the other requests cannot coexist i.e Only one 
-	client request could be handled by PSF at a given time. So, it is recommended that the 
-	application could raise a single request at a time i.e set only one of the bits in this variable.
+	can set the corresponding bit in this variable to request PSF to handle the client requests mentioned 
+    in the table below. Except VBUS Power Fault Request, all the other requests cannot coexist i.e Only one
+    client request could be handled by PSF at a given time. So, it is recommended that the application 
+    should raise a single request at a time i.e set only one of the bits in this variable.
 	
 	In case PSF is busy, it cannot handle any of the client requests. In this case, the 
 	u32ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
