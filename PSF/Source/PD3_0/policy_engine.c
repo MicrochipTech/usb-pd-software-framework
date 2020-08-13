@@ -89,7 +89,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
     /* Received Message Header */
     UINT32 u32Header;
     UINT8 u8RetVal;
-    
+
 #if(TRUE == INCLUDE_PD_DRP)
     if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) != PD_ROLE_DRP)
 #endif
@@ -98,13 +98,12 @@ void PE_RunStateMachine (UINT8 u8PortNum)
     #if (TRUE == INCLUDE_PD_3_0)
         PRL_RunChunkStateMachine (u8PortNum);
     #endif
-
+        
         MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT ();
-
         /*Check the HardReset Flag in DPMStatus variable if any hard reset is received*/
         /*State transition for Hard reset reception is done in foreground to avoid the policy
         state and sub-state corruption*/
-
+        
         if (gasPolicyEngine[u8PortNum].u8HardResetRcvdISR)
         {
             if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
@@ -131,8 +130,8 @@ void PE_RunStateMachine (UINT8 u8PortNum)
         if ((PRL_RET_MSG_RCVD & u8RetVal) || (PRL_RET_EXT_MSG_RCVD & u8RetVal))
         {
             /*Setting the Specification Revision as per section 6.2.1.1.5 from
-            PD Specification 3.0*/
-            if (DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum) > PRL_GET_PD_SPEC_REV (u32Header))
+             * PD Specification 3.0*/
+            if(DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum) > PRL_GET_PD_SPEC_REV (u32Header))
             {
             	gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
 	            gasDPM[u8PortNum].u16DPMStatus |= ((PRL_GET_PD_SPEC_REV (u32Header)) << \
@@ -147,10 +146,11 @@ void PE_RunStateMachine (UINT8 u8PortNum)
             /* Spec Rev is updated by PRL*/
             PRL_UpdateSpecAndDeviceRoles (u8PortNum);
             
-			#if(TRUE == INCLUDE_PD_3_0)
+            #if(TRUE == INCLUDE_PD_3_0)
             /*Assign Idle state to PE if AMS is not initiated on TX and message is received
-				before that*/
-            if ((TRUE == gasPRL[u8PortNum].u8TxStsWithCAISR) && (gasDPM[u8PortNum].u8InternalEvntInProgress))
+             * before that*/
+            if ((TRUE == gasPRL[u8PortNum].u8TxStsWithCAISR) && \
+                    (gasDPM[u8PortNum].u8InternalEvntInProgress))
             {
                 if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {
@@ -160,24 +160,21 @@ void PE_RunStateMachine (UINT8 u8PortNum)
                 else
                 {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;                            
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
                 }
-				MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+                MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
                 gasPRL[u8PortNum].u8TxStsWithCAISR = FALSE;
                 MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
                 
                 /*Restore the internal event that was in progress*/
-				gasDPM[u8PortNum].u8DPMInternalEvents |= \
-                        gasDPM[u8PortNum].u8InternalEvntInProgress;
+                gasDPM[u8PortNum].u8DPMInternalEvents |= gasDPM[u8PortNum].u8InternalEvntInProgress;
                 gasDPM[u8PortNum].u8InternalEvntInProgress = RESET_TO_ZERO;
-			}
+            }
             #endif /*INCLUDE_PD_3_0*/
             
-
             gasPolicyEngine[u8PortNum].u32MsgHeader = u32Header;
             PE_ReceiveMsgHandler (u8PortNum, u32Header);
         }
-
         /*Setting Timeout sub-state to invalid state*/
         gasPolicyEngine[u8PortNum].ePETimeoutSubState = ePE_INVALIDSUBSTATE;
         
@@ -186,30 +183,28 @@ void PE_RunStateMachine (UINT8 u8PortNum)
         #endif 
         if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
-	        #if (TRUE == INCLUDE_PD_SOURCE)
-	        PE_SrcRunStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
-	        #endif
+            #if (TRUE == INCLUDE_PD_SOURCE)
+            PE_SrcRunStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
+            #endif
         }
-	    else if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum))
-	    {
-	        #if (TRUE == INCLUDE_PD_SINK)
-	        PE_SnkRunStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
-	        #endif
-	    }
-	    else
-	    {
-	        /* Do Nothing */
-	    }
-
+        else if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum))
+        {
+            #if (TRUE == INCLUDE_PD_SINK)
+            PE_SnkRunStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);
+            #endif
+        }
+        else
+        {
+            /* Do Nothing */
+        }
         #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-            PE_RunVCONNSwapStateMachine (u8PortNum);
-        #endif        
+            PE_RunVCONNSwapStateMachine(u8PortNum);
+        #endif
         #if (TRUE == INCLUDE_PD_PR_SWAP)
             PE_RunPRSwapStateMachine (u8PortNum);
         #endif
-
-    	PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);        
-	}
+        PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);        
+    }
 }
 /***************************************************************************************/
 /*******************PE Support functions to decode and handle received messages**********************/
@@ -275,7 +270,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                 #endif    
             }
             else if(PE_CTRL_DR_SWAP == u8MsgType)
-			{
+            {
                 /*If INCLUDE_PD_DR_SWAP is true, default value PE_SUPPORTED_MSG is 
                  left as it is */
                 #if (TRUE != INCLUDE_PD_DR_SWAP)
@@ -309,13 +304,13 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             else
             {
                 /* Do Nothing */
-			}
-        }             
+            }
+        }
         else
         {
             /*Message type greater than Sink_Capabilities except Vendor_Defined 
-              and Alert(Source only) are not supported
-              Refer Table 6-6 Data Message Types of PD Specification */
+             * and Alert(Source only) are not supported
+             * Refer Table 6-6 Data Message Types of PD Specification */
             /* Alert is supported only for PPS Source */
             if (PE_DATA_ALERT == u8MsgType)
             {
@@ -332,27 +327,23 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
-
             else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
-                     (PE_DATA_SOURCE_CAP == u8MsgType))
+                    (PE_DATA_SOURCE_CAP == u8MsgType))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
-
             else if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
-                     ((PE_DATA_SINK_CAP == u8MsgType) || (PE_DATA_REQUEST == u8MsgType) || 
-                     (PE_DATA_ALERT == u8MsgType)))
+                    ((PE_DATA_SINK_CAP == u8MsgType) || (PE_DATA_REQUEST == u8MsgType) || \
+                    (PE_DATA_ALERT == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
-
             else
             {
                 /* Do Nothing */
             }
-		}
+        }
     }
-
     return u8RetVal;
 }
 
