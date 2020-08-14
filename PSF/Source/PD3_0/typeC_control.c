@@ -2664,9 +2664,6 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 		case TYPEC_UFP_ATT_DEF:
         case TYPEC_UFP_ATT_3A0:
 		{
-            /*Clearing the Powered cable presence in u16PortSts variable*/
-            gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
-            
             DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Sink is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");               
             
@@ -2675,6 +2672,9 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 /*Setting the state for tCCDebounce*/
                 u8TypeCState = TYPEC_ATTACHWAIT_SRC; 
                 u8TypeCSubState = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;                                
+
+                /*Clearing the Powered cable presence in u16PortSts variable*/
+                gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
             } 
 #if (TRUE == INCLUDE_PD_PR_SWAP)
             else if ((TYPEC_ATTACHED_SRC == u8TypeCState) && 
@@ -2682,6 +2682,8 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             {                
                 /* This condition would be hit during Sink to Source PR_Swap */
                 u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;                                
+                /*Clearing the Powered cable presence in u16PortSts variable*/
+                gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
             }        
 #endif 
             else 
