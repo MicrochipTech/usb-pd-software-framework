@@ -1256,11 +1256,13 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     /* Clear the RDO register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = RESET_TO_ZERO; 
     
-    /* Clear the ATTACHED, AS_SOURCE_PD_CONTRACT_GOOD and AS_SOURCE_RDO_ACCEPTED 
-    bits in Port Connection Status register */
+    /* Clear the bits that are not valid during detached state in 
+       Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
         ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS | \
-        DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS);
+        DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS | DPM_PORT_ORIENTATION_FLIPPED_STATUS | \
+        DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS | DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS |\
+        DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS | DPM_PORT_AS_SRC_RDO_REJECTED_STATUS);
                     
     /* Clear the Power related registers */
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = RESET_TO_ZERO; 
