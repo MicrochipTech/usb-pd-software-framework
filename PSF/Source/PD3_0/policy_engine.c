@@ -146,10 +146,9 @@ void PE_RunStateMachine (UINT8 u8PortNum)
             /* Spec Rev is updated by PRL*/
             PRL_UpdateSpecAndDeviceRoles (u8PortNum);
             
-            #if(TRUE == INCLUDE_PD_3_0)
             /*Assign Idle state to PE if AMS is not initiated on TX and message is received
              * before that*/
-            if ((TRUE == gasPRL[u8PortNum].u8TxStsWithCAISR) && \
+            if ((TRUE == gasPRL[u8PortNum].u8TxStsDPMSyncISR) && \
                     (gasDPM[u8PortNum].u8InternalEvntInProgress))
             {
                 if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
@@ -163,14 +162,13 @@ void PE_RunStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
                 }
                 MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-                gasPRL[u8PortNum].u8TxStsWithCAISR = FALSE;
+                gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
                 MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
                 
                 /*Restore the internal event that was in progress*/
                 gasDPM[u8PortNum].u8DPMInternalEvents |= gasDPM[u8PortNum].u8InternalEvntInProgress;
                 gasDPM[u8PortNum].u8InternalEvntInProgress = RESET_TO_ZERO;
             }
-            #endif /*INCLUDE_PD_3_0*/
             
             gasPolicyEngine[u8PortNum].u32MsgHeader = u32Header;
             PE_ReceiveMsgHandler (u8PortNum, u32Header);
