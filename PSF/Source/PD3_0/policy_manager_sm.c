@@ -53,10 +53,7 @@ void DPM_Init(UINT8 u8PortNum)
    
     /*Update PD spec revision in u16DPMStatus*/
     gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
-
-#if (TRUE ==  INCLUDE_PD_3_0)
     gasDPM[u8PortNum].u8InternalEvntInProgress = SET_TO_ZERO;
-#endif
     gasDPM[u8PortNum].u8DPMInternalEvents = SET_TO_ZERO;
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
@@ -867,18 +864,18 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
     }
     if (u8IsAMSInProgress)
     {
-        #if (TRUE == INCLUDE_PD_3_0)
 		gasDPM[u8PortNum].u8InternalEvntInProgress = u8IsAMSInProgress;
+        #if (TRUE == INCLUDE_PD_3_0)
         if (PD_ROLE_SOURCE == u8DPMPowerRole)
         {
             PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXNG);   
         }
-        
+        #endif
         /*Irrespective of the Role indicate DPM AMS is initiated with CA*/
         MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-        gasPRL[u8PortNum].u8TxStsWithCAISR = TRUE;
+        gasPRL[u8PortNum].u8TxStsDPMSyncISR = TRUE;
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
-        #endif  
+          
     }
 }
 
