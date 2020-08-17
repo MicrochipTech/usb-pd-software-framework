@@ -195,12 +195,12 @@ void PE_RunStateMachine (UINT8 u8PortNum)
         {
             /* Do Nothing */
         }
-        #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-            PE_RunVCONNSwapStateMachine(u8PortNum);
-        #endif
-        #if (TRUE == INCLUDE_PD_PR_SWAP)
-            PE_RunPRSwapStateMachine (u8PortNum);
-        #endif
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
+        PE_RunVCONNSwapStateMachine(u8PortNum);
+#endif
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+        PE_RunPRSwapStateMachine (u8PortNum);
+#endif
         PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);        
     }
 }
