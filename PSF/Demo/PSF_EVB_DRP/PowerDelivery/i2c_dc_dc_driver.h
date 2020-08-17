@@ -44,10 +44,6 @@
 /* Section: Included Files                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-#include <stdbool.h>
-#include <stddef.h>
-
-#include <generic_defs.h>
 #include "i2c_dc_dc_ung8198.h"
 
 /* SERCOM instance for I2C driver */

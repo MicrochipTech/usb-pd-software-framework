@@ -1050,7 +1050,7 @@ Description:
     from  VCONN power fault if the VCONN is stable for u16PowerGoodTimerInms without 
     any further fault occurrence. PSF clears VCONN fault recorded with this notification.
     
-    <b> eMCHP_PSF_RECOVERD_FRM_VBUS_PWR_FAULT </b>: This event is notified when a port
+    <b> eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT </b>: This event is notified when a port
     recovers from VBUS power fault when the VBUS is stable for u16PowerGoodTimerInms without
     any further VBUS fault occurrence. PSF clears the VBUS fault count it recorded with
     this notification.
