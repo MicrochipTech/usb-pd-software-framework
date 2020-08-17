@@ -305,14 +305,14 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             {
                 /*Asserts when attach happens at CC1*/                
                 UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
-                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);  
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
             }
             else
             {
                 /*De-assert when attach happens at CC2*/                
                 UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
-                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2); 
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
             }
             break;
@@ -376,9 +376,9 @@ void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData)
         /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
         /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
 
-        UINT32 u32DACCalculate = u16DACData * 0x3FF;
+        UINT32 u32DACCalculate = u16DACData * APP_DAC_MAX_STEP_COUNT;
 
-        u16DACData = (UINT16)(u32DACCalculate / 3300);
+        u16DACData = (UINT16)(u32DACCalculate / APP_DAC_VREF);
         DAC_DataWrite(u16DACData);
     }
 }
