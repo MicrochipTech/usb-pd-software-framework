@@ -34,8 +34,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _I2C_DC_DC_UNG8198_H_
 #define _I2C_DC_DC_UNG8198_H_
 
-#include "generic_defs.h"
-#include <PSF_Config.h>
+#include "definitions.h"                // SYS function prototypes
 
 // *****************************************************************************
 /* ************************************************************************** */
