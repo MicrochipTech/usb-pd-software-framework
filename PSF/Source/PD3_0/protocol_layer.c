@@ -1287,7 +1287,7 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
     {
         return;
     } 
-	if (u8Enable)
+	if (TYPEC_SINK_TXNG == u8Enable)
 	{
 	  	/* Spec Reference: PRL_Tx_Src_Source_Tx - Set Rp = SinkTxNG */
 		/* Rp = SinkTxNG 1.5A @ 5v is set */
@@ -1298,13 +1298,9 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 		gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = PDTimer_Start (PRL_SINKTX_TIMEOUT_MS,\
                                                         PRL_CASinkTxTimerOut_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
 		
-		
 		/* u8Txstate is set to PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST*/
 		PRL_ChangeTxState (u8PortNum, PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST);
-        
-		/*Inform DPM that CA is enabled*/
-        DPM_SET_CA_ENABLED_STS(u8PortNum);
-		
+        		
         DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: CONFIG_PRL_SINK_TX_TIMEOUT_MS is set\r\n");
 	}
 	else
@@ -1312,8 +1308,6 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 	  	/* Spec Reference: PRL_tx_Src_Sink_Tx - Set Rp = SinkTxOK */
 		/* Rp = SinkTxOk 3A @ 5v is set*/
 		TypeC_SetRpCollAvoidance(u8PortNum, TYPEC_SINK_TXOK);
-        /* Clear the CA status in DPM*/
-		DPM_CLEAR_CA_ENABLED_STS(u8PortNum);
 	}
 }
 
