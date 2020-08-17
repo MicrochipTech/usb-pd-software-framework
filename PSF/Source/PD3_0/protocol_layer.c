@@ -1283,8 +1283,8 @@ UINT32 PRL_IsAnyMsgPendinginPRL (UINT8 u8PortNum)
 
 void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 {
-    /*If the current spec role is not 3.0 return and default configured Rp value is not 3A*/
-    if((PD_SPEC_REVISION_3_0 != DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) &&\
+    /*If the current spec role is not 3.0 return or default configured Rp value is not 3A*/
+    if((PD_SPEC_REVISION_3_0 != DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) ||\
             (TYPEC_DFP_3A0_CURRENT != DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)))
     {
         return;

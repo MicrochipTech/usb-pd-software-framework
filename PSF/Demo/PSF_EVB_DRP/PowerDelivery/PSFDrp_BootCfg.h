@@ -227,13 +227,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SOURCE_PDO_3     CFG_FORM_FIXED_PDOx(15000U,3000U)   
 #define CFG_PORT_1_SOURCE_PDO_4     CFG_FORM_FIXED_PDOx(20000U,3000U)
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-#define CFG_PORT_1_SOURCE_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
-#else 
 #define CFG_PORT_1_SOURCE_PDO_5     CFG_FORM_PPS_APDO(CFG_PORT_1_SOURCE_APDO_5_MIN_VOLTAGE, \
                                                     CFG_PORT_1_SOURCE_APDO_5_MAX_VOLTAGE, \
                                                     CFG_PORT_1_SOURCE_APDO_5_MAX_CURRENT, \
                                                     CFG_PORT_1_SOURCE_APDO_5_PPS_PWR_LTD);            
-
+#else 
+#define CFG_PORT_1_SOURCE_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
 #endif 
 #define CFG_PORT_1_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
 #define CFG_PORT_1_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0)
