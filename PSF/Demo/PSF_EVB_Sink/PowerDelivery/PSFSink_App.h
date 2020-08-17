@@ -46,6 +46,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <PSF_APIHook.h>
 #include "psf_stdinc.h"
 
+/*Defines used by DAC*/
+#define APP_DAC_MAX_STEP_COUNT  0x3FF
+#define APP_DAC_VREF            3300
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions
