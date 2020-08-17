@@ -1442,7 +1442,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 					UINT32 *u32BISTObj = (UINT32 *)pu8DataBuf;
 
 					/* DATA OBJECT is checked for BIST carrier mode */
-                    if (u32BISTObj[INDEX_0]== PRL_BIST_CARRIER_MODE_OBJ)
+                    if (PRL_BIST_CARRIER_MODE_OBJ == u32BISTObj[INDEX_0])
                     {
                         /* BIST_CARRIER_MODE is configured*/
                         PRL_ConfigureBISTCarrierMode (u8PortNum, TRUE);

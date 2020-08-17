@@ -2591,12 +2591,14 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
 
         if(TRUE == (u8Data & TYPEC_DRP_ADVERTISING_STATE))
         {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"DRP attached as Sink\r\n");
             /*Set power and data role status as Sink/UFP*/
             DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SINK);
             DPM_UpdateDataRole(u8PortNum, PD_ROLE_UFP);
         }
         else
         {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"DRP attached as Source\r\n");
             /*Set power and data role status as Source/DFP*/
             DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
             DPM_UpdateDataRole(u8PortNum, PD_ROLE_DFP);

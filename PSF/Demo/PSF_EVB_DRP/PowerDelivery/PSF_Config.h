@@ -11,8 +11,8 @@
     PSF configuration header file
 
   Description:
-    This header file contains the configuration parameters of PSF stack to configure the 
-    Power delivery modules.
+    This header file contains the configuration parameters of PSF stack that are 
+    required to configure the Power delivery modules.
 *******************************************************************************/
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
@@ -62,8 +62,8 @@ Summary:
 Description:
     Setting the INCLUDE_PD_3_0 as 1, enables PSF to include USB Power delivery 3.0 specification
     features(collision avoidance and extended message support via chunking) along with PD 2.0 features
-	at the compile. User can set this define to 0 to reduce code size, if none of the PD enabled 
-	ports require PD 3.0 specific features.
+	at the compile time. Users can set this define to 0 to reduce code size if none of the PD 
+    enabled ports require PD 3.0 specific features.
 Remarks:
     Recommended default value is '1'.
 Example:
@@ -79,10 +79,10 @@ Summary:
     Source support code inclusion.
 Description:
     Setting the INCLUDE_PD_SOURCE as 1 enables PSF to include the USB PD Source functionality
-    at compile time. User can set this define to 0 to reduce code size if none of the PD 
+    at the compile time. Users can set this define to 0 to reduce code size if none of the PD 
     enabled ports in the system are configured for Source operation.
 Remarks: 
-    Recommended default value is '1' for Source Application.
+    Recommended default value is '1' for Source and DRP Applications.
 Example:
     <code>
     #define INCLUDE_PD_SOURCE	1(Include USB PD Source functionality in PSF)
@@ -96,10 +96,10 @@ Summary:
     Sink support code inclusion.
 Description:
     Setting the INCLUDE_PD_SINK as 1 enables PSF to include USB PD Sink functionality at the 
-	compile time. User can set this define to 0 to reduce code size if none of the PD enabled ports 
-	are configured for Sink operation.
+	compile time. Users can set this define to 0 to reduce code size if none of the PD 
+    enabled ports are configured for Sink operation.
 Remarks:
-    Recommended default value is '1' for Sink Application.
+    Recommended default value is '1' for Sink and DRP Applications.
 Example:
     <code>
     #define INCLUDE_PD_SINK	1(Include USB PD Sink functionality in PSF)
@@ -113,8 +113,8 @@ Summary:
     DRP support code inclusion.
 Description:
     Setting the INCLUDE_PD_DRP as 1 enables PSF to include USB PD DRP functionality at the 
-	compile time. User can set this define to 0 to reduce code size if none of the PD enabled ports 
-	are configured for DRP operation.
+	compile time. Users can set this define to 0 to reduce code size if none of the PD 
+    enabled ports are configured for DRP operation.
 Remarks:
     Recommended default value is '1' for DRP Application.
     For INCLUDE_PD_DRP to be 1, both INCLUDE_PD_SOURCE and INCLUDE_PD_SINK shall be set to 1.
@@ -128,11 +128,11 @@ Example:
 
 /**************************************************************************************************
 Summary:
-    VCONN Support code inclusion.
+    VCONN_Swap Support code inclusion.
 Description:
     Setting the INCLUDE_PD_VCONN_SWAP as 1 enables PSF to include the VCONN Swap
-	functionality at the compile time. User can set this define to 0 to reduce code size if none of
-	the PD enabled ports requires VCONN Swap functionality.
+	functionality at the compile time. Users can set this define to 0 to reduce code size if none of
+	the PD enabled ports require VCONN Swap functionality.
 Remarks:
     Recommended default value is 1. For Source Operation, it is mandatory to define this macro as '1'.
     When INCLUDE_PD_SOURCE is defined as '1', define this macro as '1'.
@@ -150,7 +150,7 @@ Summary:
 Description:
     Setting the INCLUDE_POWER_FAULT_HANDLING as 1 enables PSF to handle power faults (Source and 
 	Sink over voltage, Source OCS, Sink under voltage) as per Power Delivery specification Rev3.0 as
-	applicable. User can set this define to 0 to reduce code size if PSF based power fault handling
+	applicable. Users can set this define to 0 to reduce code size if PSF based power fault handling
 	is not required.
 Remarks:
     Recommended default value is 1.
@@ -169,10 +169,11 @@ Description:
     PIO override is UPD350 specific feature which changes the state of a PIO without software
     intervention. PSF uses this feature to disable EN_VBUS(in case of source operation) or  
 	EN_SINK(in case of sink operation) instantly on detection of a Power Fault Condition.
-	Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature. User can set this
-	define to 0 to reduce code size of PSF if PIO override based power faulting is not required.
+	Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature. Users can set this
+	define to 0 to reduce code size of PSF if PIO override based power fault handling 
+    is not required.
 Remarks:
-    To use this feature, EN_VBUS or EN_SINK and FAULT_IN Pin of the system should be UPD350 PIOs.
+    To use this feature, EN_VBUS or EN_SINK and FAULT_IN pins of the system should be UPD350 PIOs.
 	It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus INCLUDE_POWER_FAULT_HANDLING
 	should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define to be effective. 
 	Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS, EN_SINK and FAULT_IN.
@@ -193,7 +194,7 @@ Description:
     Setting the INCLUDE_POWER_MANAGEMENT_CTRL as 1 enables PSF to include the 
     functionality that puts the UPD350 into low power mode if UPD350 is inactive for 
     CONFIG_PORT_UPD_IDLE_TIMEOUT_MS time and PSF notifies the same via the call back
-    MCHP_PSF_NOTIFY_CALL_BACK. User can set this define to 0 to reduce code size of the PSF 
+    MCHP_PSF_NOTIFY_CALL_BACK. Users can set this define to 0 to reduce code size of the PSF 
     if low power mode operation of UPD350 is not required for the application.
 Remarks:
     Recommended default value is 1.
@@ -210,7 +211,7 @@ Summary:
     PD Firmware update code inclusion.
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
-    feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
+    feature as per USB Power Delivery FW Update Specification v1.0. Users can set this define 
     to 0 to reduce code size if the PSF application does not use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
@@ -228,11 +229,11 @@ Summary:
     Power Balancing support code inclusion.
 Description:
     Setting the INCLUDE_POWER_BALANCING as 1 enables PSF to include the PD 
-    Power Balancing functionality at compile time. User can set this define to 0
+    Power Balancing functionality at the compile time. Users can set this define to 0
     to reduce code size if none of the PD enabled Source ports in the system 
     require Power Balancing functionality.
 Remarks: 
-    Recommended default value is 1. For INCLUDE_POWER_BALANCING to be 1, 
+    Recommended default value is 1 for Source application. For INCLUDE_POWER_BALANCING to be 1, 
     INCLUDE_PD_SOURCE shall be set to 1. 
 Example:
     <code>
@@ -247,11 +248,11 @@ Summary:
     Power Throttling support code inclusion.
 Description:
     Setting the INCLUDE_POWER_THROTTLING as 1 enables PSF to include the 
-    Power Throttling(PT) feature at compile time. User can set this define to 0
+    Power Throttling(PT) feature at the compile time. Users can set this define to 0
     to reduce code size if none of the Source ports in the system 
     require PT functionality.
 Remarks: 
-    Recommended default value is 1. For INCLUDE_POWER_THROTTLING to be 1, 
+    Recommended default value is 1 for Source application. For INCLUDE_POWER_THROTTLING to be 1, 
     INCLUDE_PD_SOURCE shall be set to 1. 
 Example:
     <code>
@@ -263,14 +264,14 @@ Example:
 
 /**************************************************************************************************
 Summary:
-    PPS support code inclusion.
+    Source PPS support code inclusion.
 Description:
     Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Source Programmable 
-    Power Supply(PPS) feature at compile time. User can set this define to 0
+    Power Supply(PPS) feature at the compile time. Users can set this define to 0
     to reduce code size if none of the Source ports in the system 
     require PPS functionality.
 Remarks: 
-    Recommended default value is 1. For INCLUDE_PD_SOURCE_PPS to be 1, 
+    Recommended default value is 1 for Source application. For INCLUDE_PD_SOURCE_PPS to be 1, 
     INCLUDE_PD_SOURCE and INCLUDE_PD_3_0 shall be set to 1. 
 Example:
     <code>
@@ -285,11 +286,11 @@ Summary:
     DR_SWAP support code inclusion.
 Description:
     Setting the INCLUDE_PD_DR_SWAP as 1 enables PSF to include the Data Role 
-    swap (DR_SWAP) feature at compile time. User can set this define to 0
+    Swap (DR_SWAP) feature at the compile time. Users can set this define to 0
     to reduce code size if none of the ports in the system require DR_SWAP
     functionality.
 Remarks: 
-    Recommended default value is 1. User can configure it based on the
+    Recommended default value is 1. Users can configure it based on the
     application.
 Example:
     <code>
@@ -304,11 +305,11 @@ Summary:
     PR_SWAP support code inclusion.
 Description:
     Setting the INCLUDE_PD_PR_SWAP as 1 enables PSF to include the Power Role 
-    swap (PR_SWAP) feature at compile time. User can set this define to 0
-    to reduce the code size if none of the ports in the system require Power Role
-    Swap functionality.
+    Swap (PR_SWAP) feature at the compile time. PR_Swap is applicable only for the ports that
+    are configured for DRP operation. Users can set this define to 0 to reduce the code size
+    if none of the DRP ports in the system require Power Role Swap functionality.
 Remarks: 
-    Recommended default value is 1. For INCLUDE_PD_PR_SWAP to be 1, 
+    Recommended default value is 1 for DRP application. For INCLUDE_PD_PR_SWAP to be 1, 
     INCLUDE_PD_DRP shall be set to 1. 
 Example:
     <code>

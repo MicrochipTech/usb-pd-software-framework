@@ -641,7 +641,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8PRSwapWaitTmrID;         // PR_Swap Wait Timer ID
 #endif 
 #if (TRUE == INCLUDE_PD_DR_SWAP)
-  UINT8 u8DRSwapWaitTmrID;
+  UINT8 u8DRSwapWaitTmrID;         // DR_Swap Wait Timer ID  
 #endif
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
