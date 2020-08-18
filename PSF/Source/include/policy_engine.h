@@ -415,7 +415,6 @@ typedef enum {
     /*ePE_VCS_ACCEPT_SWAP*/
     ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS,
     ePE_VCS_ACCEPT_SWAP_IDLE_SS,
-    ePE_VCS_ACCEPT_SWAP_ACCEPT_SENT_SS,
     /*ePE_VCS_TURN_OFF_VCONN*/
     ePE_VCS_TURN_OFF_VCONN_ENTRY_SS,
     ePE_VCS_TURN_OFF_VCONN_CHECK_SS,
@@ -624,15 +623,15 @@ void PE_RunStateMachine(UINT8 u8PortNum);
         void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *u8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 
     Summary:
-        This API is called to run the Common state machine of policy engine which handles the
-        VCONN Swap, VDM messages regardless of the port's type
+        This API is called to run the Common state machine of policy engine that handles the
+        VDM messages regardless of the port's type
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-         This API is called to run the Common state machine of policy engine which handles the
-        VCONN Swap, VDM messages regardless of the port's type
+        This API is called to run the Common state machine of policy engine that handles the
+        VDM messages regardless of the port's type
 
     Conditions:
         None

@@ -233,12 +233,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /**************************Role Swap Policy defines*****************************/
 #define CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP             0 
-#define CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP             1
+#define CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP             0
 #define CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP              0 
-#define CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP              1 
-#define CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP             1
+#define CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP              0 
+#define CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP             0
 #define CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP             0
-#define CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP              1
+#define CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP              0
 #define CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP              0
 #define CFG_PORT_0_VCONN_SWAP_REQ_AS_VCONN_SRC        0
 #define CFG_PORT_0_VCONN_SWAP_REQ_NOT_AS_VCONN_SRC    0
@@ -246,14 +246,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_VCONN_SWAP_ACCEPT_NOT_AS_VCONN_SRC 1
 
 
-#define CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP             1
+#define CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP             0
 #define CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP             0
-#define CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP              1
+#define CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP              0
 #define CFG_PORT_1_AS_UFP_ACCEPT_DR_SWAP              0
 #define CFG_PORT_1_AS_SRC_REQUEST_PR_SWAP             0
-#define CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP             1
+#define CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP             0
 #define CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP              0
-#define CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP              1
+#define CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP              0
 #define CFG_PORT_1_VCONN_SWAP_REQ_AS_VCONN_SRC        0
 #define CFG_PORT_1_VCONN_SWAP_REQ_NOT_AS_VCONN_SRC    0
 #define CFG_PORT_1_VCONN_SWAP_ACCEPT_AS_VCONN_SRC     1
