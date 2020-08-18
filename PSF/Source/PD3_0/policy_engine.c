@@ -785,7 +785,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         /*TODO:Add PE_CheckRcvdMsg_n_TimeoutSynchronication API call*/
                     }
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-                    /* Accept message received for PR_Swap request */
+                    /* Accept message received for VCONN Swap request */
                     else if ((ePE_VCS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_VCS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
@@ -887,7 +887,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         }
                     }
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-                    /* Reject or Wait message received for PR_Swap request */
+                    /* Reject or Wait message received for VCONN Swap request */
                     else if ((ePE_VCS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_VCS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
@@ -977,6 +977,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_READY,\
                                                                    ePE_SNK_READY_ENTRY_SS);
                     }
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
                     /*PS RDY received from VCONN Source partner*/
                     else if (ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS == \
                              gasPolicyEngine[u8PortNum].ePESubState)
@@ -988,6 +989,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_VCS_TURN_OFF_VCONN,\
                                            ePE_VCS_TURN_OFF_VCONN_ENTRY_SS);
                     }
+#endif
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                     /* PS_RDY received from Power Role Swap partner */
                     else if (ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS == \
@@ -1063,8 +1065,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 case PE_CTRL_VCONN_SWAP:
                 {
 
-                    /*Accept the VCONN swap if current state is READY State or
-                    any VDM AMS is active*/
+                    /*Accept the VCONN swap if INCLUDE_PD_VCONN_SWAP is true and
+                     if current state is READY State or any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                          (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
