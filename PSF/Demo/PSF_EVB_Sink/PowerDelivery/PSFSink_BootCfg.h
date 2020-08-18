@@ -70,7 +70,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*VCONN OCS Enable - 0- Disbale, 1-Enable*/
 #define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
 
-/********************************PIO Specific configuraiton******************************/
+/********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 
 #define CFG_PORT_0_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW

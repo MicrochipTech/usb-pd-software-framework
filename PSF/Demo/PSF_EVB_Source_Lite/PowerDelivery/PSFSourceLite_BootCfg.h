@@ -74,7 +74,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
 #define CFG_PORT_1_VCONN_OCS_ENABLE     (1U << 9)  
 
-/********************************PIO Specific configuraiton******************************/
+/********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 #define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 
@@ -104,7 +104,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /**********************************Port 0****************************************/
 /*********************************************************************************/
 /*Port 0 PDO configuration*/
-#define CFG_PORT_0_DUAL_ROLE_POWER           1U 
+#define CFG_PORT_0_DUAL_ROLE_POWER           0U 
 #define CFG_PORT_0_DUAL_ROLE_DATA            0U
 #define CFG_PORT_0_SOURCE_NUM_OF_PDOS        4U
 #define CFG_PORT_0_SOURCE_USB_SUSP           0U
@@ -125,7 +125,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /********************************************************************************/
 /**********************************Port 1****************************************/
 /*********************************************************************************/
-#define CFG_PORT_1_DUAL_ROLE_POWER           1U 
+#define CFG_PORT_1_DUAL_ROLE_POWER           0U 
 #define CFG_PORT_1_DUAL_ROLE_DATA            0U
 #define CFG_PORT_1_SOURCE_NUM_OF_PDOS        4U
 #define CFG_PORT_1_SOURCE_USB_SUSP           0U
