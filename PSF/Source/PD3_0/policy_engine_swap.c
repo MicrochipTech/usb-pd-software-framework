@@ -925,7 +925,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     {
                         gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_REJ_STS_AS_NOT_VCONNSRC;
                     }
-					DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_REJECT_RCVD_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_REJECT_RCVD_SS\r\n");
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
