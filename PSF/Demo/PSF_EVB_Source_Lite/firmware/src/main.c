@@ -45,7 +45,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
-#include "psf_stdinc.h"                 // PSF include file
 
 // *****************************************************************************
 // *****************************************************************************
@@ -69,10 +68,6 @@ int main ( void )
 		/*PSF stack Run*/
 		MchpPSF_RUN();        
     }
-
-    /* Execution should not come here during normal operation */
-
-    return ( EXIT_FAILURE );
 }
 
 
