@@ -1214,7 +1214,10 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 /*********************************DPM PD negotiation API**************************************/
 void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 {
+    
+#if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
     UINT16 u16DPMStatus = gasDPM[u8PortNum].u16DPMStatus;
+#endif  
 #if (TRUE == INCLUDE_PD_SOURCE)
     /*On negotiation, initiate Get Sink caps if Get Sink is not initiated already
      and Partner PDO is null; In case of PB enabled, Get Sink caps is initiated 
@@ -1357,7 +1360,9 @@ UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum)
 UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
 {
     UINT8 u8RetVal = DPM_REJECT_SWAP;
+#if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
     UINT16 u16SwapPolicy = gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy;
+#endif
     
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
     UINT8 u8IsVCONNSource = DPM_IsPortVCONNSource(u8PortNum); 
@@ -1383,6 +1388,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
              is source */
             if ((((PD_ROLE_SOURCE == u8CurrentPwrRole) && u8IsPWRCable) || 
                   (PD_ROLE_SINK == u8CurrentPwrRole))&&
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+                ((DPM_IsPortVCONNSource(u8PortNum)) || (gasDPM[u8PortNum].u8VCONNGoodtoSupply)) &&
+#endif 
                 (((TRUE == u8IsVCONNSource) && 
                             (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC)) ||
                 ((FALSE == u8IsVCONNSource) && 
