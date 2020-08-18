@@ -1350,11 +1350,13 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
         case eVCONN_SWAP_RCVD: 
         {
             /*Evaluate whether received VCONN_SWAP message can be accepted or rejected
-             based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
+             based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration.
+             Also the Swap shall be accepted only if powered cable is present */
+            if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) &&
+                (((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
                             (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC)) ||
-               ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
-                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC)))
+                ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
+                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC))))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
             }
