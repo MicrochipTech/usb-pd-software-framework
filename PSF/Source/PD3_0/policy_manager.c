@@ -1214,9 +1214,10 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 /*********************************DPM PD negotiation API**************************************/
 void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 {
+    UINT16 u16DPMStatus = gasDPM[u8PortNum].u16DPMStatus;
 #if (TRUE == INCLUDE_PD_SOURCE)
     /*On negotiation, initiate Get Sink caps if Get Sink is not initiated already
-     and Partner PDO is null; In case of PB enabled, Get Sink caps is initiated 
+     and Partner PDO is null; In case of PB enabled, Get Sink caps is initiatd 
      by PB layer*/
     if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]) &&\
           (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&\
@@ -1227,23 +1228,43 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #endif
     /*Evaluate swap and register internal event*/
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
+    /*Initiate VCONN Swap only if the swap is not already initiated and rejected*/
+    if (!(((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
+                            (u16DPMStatus& DPM_VCONN_SWAP_REJ_STS_AS_VCONNSRC)) ||
+               ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
+                            (u16DPMStatus & DPM_VCONN_SWAP_REJ_STS_AS_NOT_VCONNSRC))))
     {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
+        if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
+        {
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
+        }
     }
 #endif
 #if (TRUE == INCLUDE_PD_DR_SWAP)
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
+    /*Initiate DR Swap only if the swap is not already initiated and rejected*/
+    if (!(((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && \
+                            (u16DPMStatus& DPM_DR_SWAP_REJ_STS_AS_DFP)) ||\
+               ((PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && \
+                            (u16DPMStatus & DPM_DR_SWAP_REJ_STS_AS_UFP))))
     {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
+        if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
+        {
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
+        }
     }
 #endif /*INCLUDE_PD_DR_SWAP*/
     
 #if (TRUE == INCLUDE_PD_PR_SWAP)
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
+    if (!(((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && \
+                            (u16DPMStatus& DPM_PR_SWAP_REJ_STS_AS_SRC)) ||\
+               ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && \
+                            (u16DPMStatus & DPM_PR_SWAP_REJ_STS_AS_SNK))))
     {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
-    } 
+        if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
+        {
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
+        }
+    }
 #endif /*INCLUDE_PD_PR_SWAP*/
 }
 
@@ -1309,6 +1330,8 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
                                             & DPM_INT_EVT_INITIATE_ALERT);
     gasDPM[u8PortNum].u8InternalEvntInProgress = SET_TO_ZERO;
     
+    
+    gasDPM[u8PortNum].u16DPMStatus &= ~DPM_SWAP_REJECT_STS_MASK;
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
