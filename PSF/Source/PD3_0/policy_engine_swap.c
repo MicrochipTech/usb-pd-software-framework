@@ -978,26 +978,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP: Entered the state\r\n");
             if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_RCVD))
             {
-#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-
-                /*Send Reject if Port partner requests VCONN Swap to supply the
-                VCONN when the u8VCONNGoodtoSupply is false */
-                if((!DPM_IsPortVCONNSource(u8PortNum)) && (!gasDPM[u8PortNum].u8VCONNGoodtoSupply))
-                {
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;
-                }
-                else
-                {
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS;
-                    
-                    break; 
-                }
-#else 
                 gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS;
-#endif
             }
             else
             {
