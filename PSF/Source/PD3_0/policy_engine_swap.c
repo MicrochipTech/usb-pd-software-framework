@@ -63,6 +63,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
         eTxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
     }
     
+    UINT8 u8CurrentDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
+    
    switch(gasPolicyEngine[u8PortNum].ePEState)
    {
         case ePE_DRS_EVALUATE_SWAP:
@@ -121,7 +123,6 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
         }
         case ePE_DRS_DFP_UFP_ROLE_CHANGE:
         {
-            UINT8 u8CurrentDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
             /*Change the present role*/
             if (PD_ROLE_DFP == u8CurrentDataRole)
             {
@@ -205,6 +206,14 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 }
                 case ePE_DRS_SEND_SWAP_REJECT_RCVD_SS:
                 {
+                    if (PD_ROLE_DFP == u8CurrentDataRole)
+                    {
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_DR_SWAP_REJ_STS_AS_DFP;
+                    }
+                    else if (PD_ROLE_UFP == u8CurrentDataRole)
+                    {
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_DR_SWAP_REJ_STS_AS_UFP;
+                    }
                     /*SRC_READY/SNK_READY state is set*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
@@ -326,6 +335,14 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SEND_SWAP_REJECT_RCVD_SS:
                 {
+                    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                    {
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_REJ_STS_AS_SRC;
+                    }
+                    else
+                    {
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_REJ_STS_AS_SNK;
+                    }
                     /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
@@ -899,8 +916,16 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     break; 
                 }
                 case ePE_VCS_SEND_SWAP_REJECT_RCVD_SS:
-                { 
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_REJECT_RCVD_SS\r\n");
+                {
+                    if (TRUE == DPM_IsPortVCONNSource(u8PortNum))
+                    {
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_REJ_STS_AS_VCONNSRC;
+                    }
+                    else
+                    {
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_REJ_STS_AS_NOT_VCONNSRC;
+                    }
+					DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_REJECT_RCVD_SS\r\n");
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
