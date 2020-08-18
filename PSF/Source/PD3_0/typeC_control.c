@@ -2187,7 +2187,7 @@ void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum)
 {   
     /*Assigning the structure variables to local variables to reduce the code size as
     accessing the structure members takes lot of code*/
-    UINT8 u8PortSts =  gasTypeCcontrol[u8PortNum].u8PortSts;
+    UINT8 u8PortSts = gasTypeCcontrol[u8PortNum].u8PortSts;
     
     UINT8 u8CCSrcSnkMatch = gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch;
     
@@ -2367,7 +2367,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
             gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
             gasTypeCcontrol[u8PortNum].u8PortSts |= TYPEC_VCONN2_ON_REQ;
 
-            /*Enable VCONN FET in CC1*/
+            /*Enable VCONN FET in CC2*/
             UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1, TYPEC_VCONN2_ENABLE);
         }
         
@@ -2412,7 +2412,7 @@ void TypeC_VCONNOn_IntrHandler(UINT8 u8PortNum)
     {
         /*VCONN Enabled in CC1 and Sink Attached in CC2*/
         if((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN1_ON_REQ) && \
-            (gasTypeCcontrol[u8PortNum].u8CC1MatchISR == SET_TO_ZERO) && 
+            (SET_TO_ZERO == gasTypeCcontrol[u8PortNum].u8CC1MatchISR) && 
               (gasTypeCcontrol[u8PortNum].u8CC2MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch))
         {            
             /*Setting the u8IntStsISR variable that CC1 is the VCONN source*/
@@ -2436,7 +2436,17 @@ void TypeC_VCONNOn_IntrHandler(UINT8 u8PortNum)
         }            
     }
     else
-    {    /*VCONN Enabled in CC1 and Source Attached in CC2*/
+    {   
+        /* During a Sink initiated VCONN Swap, Sink port which is presently not 
+           the VCONN Source would drive the VCONN and wait for VCONN ON interrupt. 
+           Before the VCONN Swap message reaches the Source port, Source port will set 
+           the Rp value to SINK_TX_NG (1.5A@5V) for the Sink to not initiate 
+           any AMS. During this scenario, both Rp change interrupt and VCONN ON interrupt 
+           triggers at the same time. So, decode the current Rp value before handling 
+           VCONN ON Interrupt */
+        TypeC_DecodeCCSourceRpValue(u8PortNum);
+        
+        /*VCONN Enabled in CC1 and Source Attached in CC2*/ 
         if((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN1_ON_REQ) && \
             (TYPEC_SNK_CCTHRES_VCONN_ON == gasTypeCcontrol[u8PortNum].u8CC1MatchISR) &&
             ((gasTypeCcontrol[u8PortNum].u8CC2MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)))
