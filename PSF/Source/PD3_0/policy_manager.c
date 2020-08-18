@@ -1217,7 +1217,7 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
     UINT16 u16DPMStatus = gasDPM[u8PortNum].u16DPMStatus;
 #if (TRUE == INCLUDE_PD_SOURCE)
     /*On negotiation, initiate Get Sink caps if Get Sink is not initiated already
-     and Partner PDO is null; In case of PB enabled, Get Sink caps is initiatd 
+     and Partner PDO is null; In case of PB enabled, Get Sink caps is initiated 
      by PB layer*/
     if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]) &&\
           (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&\
