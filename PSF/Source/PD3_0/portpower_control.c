@@ -143,8 +143,6 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
 
 void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
 {
-#if (TRUE == INCLUDE_PD_SOURCE)
-    
     if (TRUE == u8EnaDisDCDCEn)
     {
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDC_DC_EN_FUNC, eGPIO_ASSERT);
@@ -157,8 +155,6 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
          
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_DC_DC_STATUS);
     }
-    
-#endif
 }
 /***********************************************************************************************/
 #if (TRUE == INCLUDE_PD_SINK)
