@@ -335,6 +335,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SEND_SWAP_REJECT_RCVD_SS:
                 {
+                    /* Set Reject Rcvd status so that PR_Swap will not be 
+                       re-initiated once it is rejected */
                     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {
                         gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_REJ_STS_AS_SRC;
