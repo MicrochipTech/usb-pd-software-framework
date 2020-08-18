@@ -887,7 +887,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     break; 
                 }
                 case ePE_VCS_SEND_SWAP_NO_RESPONSE_SS:
-                {                    
+                { 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_NO_RESPONSE_SS\r\n");
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -898,17 +899,22 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     break; 
                 }
                 case ePE_VCS_SEND_SWAP_REJECT_RCVD_SS:
-                {                    
+                { 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_REJECT_RCVD_SS\r\n");
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                   
+                    /* Post VCONN_Swap complete notification as VCONN_Swap is rejected by partner */
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE); 
                     break; 
                 }
                 case ePE_VCS_SEND_SWAP_WAIT_RCVD_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_WAIT_RCVD_SS\r\n");
                     /* Policy Engine would enter this sub-state on reception of 
-                       Wait response from the port partner. Start PR Swap Wait timer
+                       Wait response from the port partner. Start VCONN Swap Wait timer
                        and move to ePE_SRC_READY or ePE_SNK_READY state. On PR_Swap
                        wait timer expiry, re-initiate PR_Swap transmission if not 
                        done by the port partner */
@@ -921,26 +927,6 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                                  
                     break; 
-                }
-                case ePE_VCS_SEND_SWAP_ACCEPT_RCVD_SS:
-                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-ACCEPT_RCVD_SS: Entered the SubState \r\n");
-
-                    /*Check whether the Port is currently sourcing VCONN and
-                    transition accordingly*/
-                    if (DPM_IsPortVCONNSource(u8PortNum))
-                    {
-                         gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_WAIT_FOR_VCONN;
-                         gasPolicyEngine[u8PortNum].ePESubState = \
-                           ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS;
-                    }
-                    else
-                    {                      
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_TURN_ON_VCONN;                        
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_ON_VCONN_ENTRY_SS;
-                        
-                    }
-                    break;
                 }
                 case ePE_VCS_SEND_SWAP_IDLE_SS:
                 {
@@ -957,14 +943,17 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
         
         case ePE_VCS_EVALUATE_SWAP:
         {
-            /*Transition directly to next state as PSF accepts VCONN Swap always*/
+            /* Post VCONN_Swap received notification as VCONN_Swap is received by partner */
+            (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_RCVD);             
+            
+            /*Evaluate whether received VCONN_SWAP message can be accepted or rejected
+             based swap policy configuration*/
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP: Entered the state\r\n");
-            if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) &&
-                 (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_RCVD)))
+            if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_RCVD))
             {
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 
-                /*Send Not Supported or Reject if Port partner requests VCONN Swap to supply the
+                /*Send Reject if Port partner requests VCONN Swap to supply the
                 VCONN when the u8VCONNGoodtoSupply is false */
                 if((!DPM_IsPortVCONNSource(u8PortNum)) && (!gasDPM[u8PortNum].u8VCONNGoodtoSupply))
                 {
@@ -975,6 +964,10 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS;
+                    
+                    /* Post VCONN_Swap received notification as VCONN_Swap is received by partner */
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_RCVD); 
+                    break; 
                 }
 #else 
                 gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
@@ -1057,8 +1050,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     reset state*/
 
                     /*Start the VCONN timer*/
-                    /*Set the timer callback to transition to ePE_SRC_HARD_RESET state
-                     * ePE_SRC_HARD_RESET_ENTRY_SS sub state if timeout happens*/
+                    /*Set the timer callback to transition to HARD_RESET state
+                     if timeout happens*/
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                               PE_VCONNON_TIMEOUT_MS,\
                                                               PE_SSChngAndTimeoutValidate_TimerCB,\
@@ -1120,6 +1113,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                         
                         /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
                         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"eMCHP_PSF_VCONN_SWAP_COMPLETE\r\n");
                     }
                     
                     break;                 
@@ -1164,7 +1158,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 }
                 
                 case ePE_VCS_TURN_ON_VCONN_CHECK_SS:
-                {                 
+                {  
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_TURN_ON_VCONN_CHECK_SS\r\n");
                     if(DPM_IsPortVCONNSource(u8PortNum))
                     {                          
                         PE_KillPolicyEngineTimer (u8PortNum);
@@ -1197,8 +1192,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 
                     /*Set the transmitter callback to transition to source soft reset state if
                      message transmission fails*/
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (eTxDoneSt,\
-                                             eTxDoneSS,\
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (ePE_VCS_SEND_PS_RDY,\
+                                             ePE_VCS_SEND_PS_RDY_SENT_SS,\
                                              eTxFailedSt,\
                                              eTxFailedSS);
                     u8IsTransmit = TRUE;
@@ -1214,6 +1209,18 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 /*Wait here until the PS_RDY message is sent*/
                 case ePE_VCS_SEND_PS_RDY_IDLE_SS:
                 {
+                    break;
+                }
+                case ePE_VCS_SEND_PS_RDY_SENT_SS:
+                {
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    
+                    /* Reset the discover identity counter to 0*/
+                    gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
+
+                    /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
                     break;
                 }
                 default:

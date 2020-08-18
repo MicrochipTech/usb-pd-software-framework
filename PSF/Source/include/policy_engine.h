@@ -407,7 +407,6 @@ typedef enum {
     ePE_VCS_SEND_SWAP_MSG_DONE_SS,
     ePE_VCS_SEND_SWAP_NO_RESPONSE_SS,
     ePE_VCS_SEND_SWAP_IDLE_SS,
-    ePE_VCS_SEND_SWAP_ACCEPT_RCVD_SS,
     ePE_VCS_SEND_SWAP_REJECT_RCVD_SS,
     ePE_VCS_SEND_SWAP_WAIT_RCVD_SS,
     /*PE_VCS_WAIT_FOR_VCONN*/
@@ -426,6 +425,7 @@ typedef enum {
     /*ePE_VCS_SEND_PS_RDY*/
     ePE_VCS_SEND_PS_RDY_ENTRY_SS,
     ePE_VCS_SEND_PS_RDY_IDLE_SS,
+    ePE_VCS_SEND_PS_RDY_SENT_SS,
     
     //---------------------DR_SWAP sub states---------------------------------//
     /*ePE_DRS_ACCEPT_SWAP*/        
