@@ -2444,7 +2444,9 @@ void TypeC_VCONNOn_IntrHandler(UINT8 u8PortNum)
            any AMS. During this scenario, both Rp change interrupt and VCONN ON interrupt 
            triggers at the same time. So, decode the current Rp value before handling 
            VCONN ON Interrupt */
+        #if (TRUE == INCLUDE_PD_SINK)
         TypeC_DecodeCCSourceRpValue(u8PortNum);
+        #endif 
         
         /*VCONN Enabled in CC1 and Source Attached in CC2*/ 
         if((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN1_ON_REQ) && \
