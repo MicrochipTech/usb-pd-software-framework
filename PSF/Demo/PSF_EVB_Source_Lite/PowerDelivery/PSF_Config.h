@@ -1101,7 +1101,7 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		  for Sink operation. 
-	u8aReserved1					1								 Reserved					 
+	u8Reserved1					    1								 Reserved					 
 	u8aReserved2[2]					2								 Reserved
 	u8Reserved3    					1								 Reserved
  	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
@@ -1544,7 +1544,7 @@ typedef struct _PortCfgStatus
     UINT8 u8VCONNMaxFaultCnt;
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;
-    UINT8 u8aReserved1;
+    UINT8 u8Reserved1;
 #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
