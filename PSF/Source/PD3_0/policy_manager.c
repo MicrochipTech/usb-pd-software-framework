@@ -1389,7 +1389,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
             if ((((PD_ROLE_SOURCE == u8CurrentPwrRole) && u8IsPWRCable) || 
                   (PD_ROLE_SINK == u8CurrentPwrRole))&&
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-                ((DPM_IsPortVCONNSource(u8PortNum)) || (gasDPM[u8PortNum].u8VCONNGoodtoSupply)) &&
+                ((TRUE == u8IsVCONNSource) || (gasDPM[u8PortNum].u8VCONNGoodtoSupply)) &&
 #endif 
                 (((TRUE == u8IsVCONNSource) && 
                             (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC)) ||
