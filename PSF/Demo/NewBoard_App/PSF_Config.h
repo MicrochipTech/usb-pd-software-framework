@@ -132,7 +132,7 @@ Description:
 	functionality at the compile time. Users can set this define to 0 to reduce code size if none of
 	the PD enabled ports require VCONN Swap functionality.
 Remarks:
-    Recommended default value is 1. For Source Operation, it is mandatory to define this macro as '1'.
+    Recommended default value is 1. For Source and DRP Operation, it is mandatory to define this macro as '1'.
     When INCLUDE_PD_SOURCE is defined as '1', define this macro as '1'.
 Example:
     <code>
@@ -1489,6 +1489,8 @@ typedef enum
     10      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC
                                     * '0' Disable Auto VCONN Swap Accept When working as VCONN Source
                                     * '1' Enable Auto VCONN Swap Accept When working as VCONN Source
+                                    Note: This bit shall be set to 1 always to comply with the PD spec for 
+                                     VCONN Swap request
     11      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC
                                     * '0' Disable Auto VCONN Swap Accept When not working as VCONN Source
                                     * '1' Enable Auto VCONN Swap Accept When not working as VCONN Source 
