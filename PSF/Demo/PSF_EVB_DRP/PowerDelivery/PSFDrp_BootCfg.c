@@ -159,7 +159,7 @@ static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u16DAC_I_MinOutVoltInmV = \
             CFG_PORT_0_SINK_DAC_I_MIN_OP_VOLTAGE;
     pasCfgStatusData->sPerPortData[PORT0].u8DAC_I_Direction = \
-            CFG_PORT_0_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
+            CFG_PORT_0_SINK_DAC_I_DIR;
 }
 
 static void CFG_Port_1_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)

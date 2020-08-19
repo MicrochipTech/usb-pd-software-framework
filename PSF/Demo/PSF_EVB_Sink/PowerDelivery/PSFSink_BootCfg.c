@@ -133,7 +133,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u16DAC_I_MinOutVoltInmV = \
             CFG_PORT_0_SINK_DAC_I_MIN_OP_VOLTAGE;
     pasCfgStatusData->sPerPortData[PORT0].u8DAC_I_Direction = \
-            CFG_PORT_0_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT;
+            CFG_PORT_0_SINK_DAC_I_DIR;
 			
     /*Configure role swap policy for note type port*/
     gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
