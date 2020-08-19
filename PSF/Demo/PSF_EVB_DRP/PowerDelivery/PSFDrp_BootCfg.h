@@ -294,7 +294,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_SINK_DAC_I_MAX_OP_VOLTAGE             2500U
 #define CFG_PORT_0_SINK_DAC_I_MIN_OP_VOLTAGE             0U
 #define CFG_PORT_0_SINK_DAC_I_CUR_INDICATION_MAX         5000U
-#define CFG_PORT_0_SINK_DAC_I_DIR_HIGH_AMP_MAX_VOLT      0U
+/*Configuration value for u8DAC_I_Direction*/
+/*0 - High amperage = Max Voltage, 1- High amperage = Min Voltage*/
+#define CFG_PORT_0_SINK_DAC_I_DIR      0U
 
 /**************************Role Swap Policy defines*****************************/
 #define CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP             0 
