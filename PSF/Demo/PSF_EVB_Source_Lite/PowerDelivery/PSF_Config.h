@@ -1101,7 +1101,6 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		  for Sink operation. 
-	u16Reserved1    				2								 Reserved					 
 	u8aReserved1					1								 Reserved					 
 	u8aReserved2[2]					2								 Reserved
 	u8Reserved3    					1								 Reserved
@@ -1850,8 +1849,7 @@ typedef struct _PPSPortCfgStatus
     u8aReserved3				     1 								 Reserved 	
     u8aReserved6				     1 								 Reserved 	
     u8aReserved7[3]				     3								 Reserved 
-    u8aReserved8[3]				     3 								 Reserved 
-    u16Reserved2 				     2 								 Reserved 																
+    u8aReserved8[3]				     3 								 Reserved 																
  	u8ReservedPadBytes[16]	         16	                              * Reserved bytes included
                                                                          based on configuration macro 
                                                                          INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
