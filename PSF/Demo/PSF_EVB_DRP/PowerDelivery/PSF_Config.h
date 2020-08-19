@@ -1102,7 +1102,6 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		  for Sink operation. 
-	u16Reserved1    				2								 Reserved					 
 	u8aReserved1					1								 Reserved					 
 	u8aReserved2[2]					2								 Reserved
 	u8Reserved3    					1								 Reserved
