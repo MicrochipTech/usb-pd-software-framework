@@ -351,32 +351,29 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
     
 		#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
             UINT8 u8PioNum = SET_TO_ZERO;
+            UINT8 u8CurPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
             /*When PIO override is disabled; disable EN_VBUS/EN_SINK based on the
              role on a power fault*/
-#if (TRUE == INCLUDE_PD_SOURCE)
-            if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-            {
-                u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
-
-                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
             
-            }
-            else
+            if(PD_ROLE_DRP != u8CurPowerRole)
+            {
+#if (TRUE == INCLUDE_PD_SOURCE)
+                if(PD_ROLE_SOURCE == u8CurPowerRole)
+                {
+                    u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
+                }
+                else
 #endif
 #if (TRUE == INCLUDE_PD_SINK)
-                if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-            {
-                u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
-
+                {
+                    u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+                }
+                
                 UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
                                         (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
                 u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
                 UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                
+                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);  
             }
             else
 #endif
