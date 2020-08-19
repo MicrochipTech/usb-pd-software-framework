@@ -1045,7 +1045,7 @@ Description:
     from  VCONN power fault if the VCONN is stable for u16PowerGoodTimerInms without 
     any further fault occurrence. PSF clears VCONN fault recorded with this notification.
     
-    <b> eMCHP_PSF_RECOVERD_FRM_VBUS_PWR_FAULT </b>: This event is notified when a port
+    <b> eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT </b>: This event is notified when a port
     recovers from VBUS power fault when the VBUS is stable for u16PowerGoodTimerInms without
     any further VBUS fault occurrence. PSF clears the VBUS fault count it recorded with
     this notification.
@@ -1105,8 +1105,6 @@ Description:
  
     <b> eMCHP_PSF_VCONN_SWAP_COMPLETE</b>: This notification will be posted when the VCONN Swap
     is completed and the VCONN roles of the both the partners are changed successfully.
-    This event is applicable when VCONN Swap successfully changed for either VCONN initiate or
-    accept message.
     
     <b> eMCHP_PSF_VCONN_SWAP_RCVD</b>: This notification will be posted by PSF when a VCONN 
     Swap message is received from port partner. Application can make use of this event to 

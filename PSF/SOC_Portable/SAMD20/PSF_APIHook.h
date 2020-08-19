@@ -1110,8 +1110,6 @@ Description:
  
     <b> eMCHP_PSF_VCONN_SWAP_COMPLETE</b>: This notification will be posted when the VCONN Swap
     is completed and the VCONN roles of the both the partners are changed successfully.
-    This event is applicable when VCONN Swap successfully changed for either VCONN initiate or
-    accept message.
     
     <b> eMCHP_PSF_VCONN_SWAP_RCVD</b>: This notification will be posted by PSF when a VCONN 
     Swap message is received from port partner. Application can make use of this event to 
