@@ -73,7 +73,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_VBUS_OFF_TIMER_MS                 MILLISECONDS_TO_TICKS(650)
 
 /*  TYPEC_VCONNON_TIMEOUT_MS defines the tVCONNON specified in the USB-Type C Specification. 
-    Default value of TYPEC_VCONNON_TIMEOUT_MS is set as 2 milliseconds.*/
+    Default value of TYPEC_VCONNON_TIMEOUT_MS is set as 10 milliseconds.*/
 #define TYPEC_VCONNON_TIMEOUT_MS			    MILLISECONDS_TO_TICKS(10)
 
 /*  TYPEC_VCONNOFF_TIMEOUT_MS defines the tVCONNOFF specified in the USB-Type C Specification. 
