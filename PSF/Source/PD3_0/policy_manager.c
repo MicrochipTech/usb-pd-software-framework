@@ -1274,6 +1274,18 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 /*********************************DPM TypeC Detach API**************************************/
 void DPM_OnTypeCDetach(UINT8 u8PortNum)
 {
+    #if ((TRUE == INCLUDE_PD_DR_SWAP) && (FALSE == INCLUDE_PD_DRP))
+    
+    /*If DR_SWAP is enabled and DRP is disabled restore the Data Role*/
+
+    /*Assigning DPM_GET_CONFIGURED_POWER_ROLE in place data roles because,
+     during init, power and data roles will be tied together and they have same values.
+     PD_ROLE_SOURCE - PD_ROLE_DFP - Value is 1
+     PD_ROLE_SINK - PD_ROLE_UFP - Value is 0
+     PD_ROLE_DRP - PD_ROLE_TOGGLING - Value is 2*/
+    
+    DPM_UpdateDataRole(u8PortNum, DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum));
+    #endif
     /* Clear the DPM variables whose data is no more valid after a Type C detach */
     gasDPM[u8PortNum].u8NegotiatedPDOIndex = RESET_TO_ZERO;
     gasDPM[u8PortNum].u32NegotiatedPDO = RESET_TO_ZERO;
