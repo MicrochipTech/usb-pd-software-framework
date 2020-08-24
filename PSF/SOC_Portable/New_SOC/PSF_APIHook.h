@@ -1059,6 +1059,10 @@ Description:
 
     <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
     established with the Port partner.
+    
+    <b> eMCHP_PSF_PE_SRC_DISABLED</b>: This event is posted when Source policy
+    engine enters PE_SRC_DISABLED indicating Power Delivery capable port partner 
+    is not present and only Implicit contract is established with Sink port partner.
    
     <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
     Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
@@ -1162,7 +1166,8 @@ eMCHP_PSF_VCONN_PWR_FAULT,             // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,              // VBUS Power Fault has occurred
 eMCHP_PSF_PORT_POWERED_OFF,            // Port powered off since fault count exceeded maximum fault count
 eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT,       // Port Recovered from VCONN power fault
-eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT,        // Port Recovered from VBUS Power fault 
+eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT,        // Port Recovered from VBUS Power fault
+eMCHP_PSF_PE_SRC_DISABLED,              // Only Type C device is present, Partner doesnot support PD
 eMCHP_PSF_PD_CONTRACT_NEGOTIATED,      // PD Contract established with port partner
 eMCHP_PSF_SINK_CAPS_RCVD,              // Sink Caps received from Port Partner
 eMCHP_PSF_SINK_CAPS_NOT_RCVD,          // Sink Caps not received from Port Partner
