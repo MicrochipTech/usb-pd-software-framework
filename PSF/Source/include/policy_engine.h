@@ -1035,7 +1035,7 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum);
 void PE_SendSoftResetMsg (UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
-        void PE_SendHardResetMsg (UINT8 u8PortNum);
+        void PE_SendHardReset (UINT8 u8PortNum);
 
     Summary:
         This API is called to send the Hard reset signal from the policy engine state machine for a port
@@ -1059,7 +1059,7 @@ void PE_SendSoftResetMsg (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PE_SendHardResetMsg (UINT8 u8PortNum);
+void PE_SendHardReset (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

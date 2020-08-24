@@ -110,7 +110,7 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     else
     {
         gasDPM[u8PortNum].u8VCONNErrCounter++;    
-        PE_SendHardResetMsg(u8PortNum);    
+        PE_SendHardReset(u8PortNum);    
     }    
 }
 /****************************** DPM APIs Accessing Type C Port Control Module*********************/

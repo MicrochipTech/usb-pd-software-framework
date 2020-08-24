@@ -400,7 +400,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount++;            
             }
 			/* Send Hard reset*/
-            PE_SendHardResetMsg(u8PortNum);
+            PE_SendHardReset(u8PortNum);
 			
 			/* Set Wait for HardReset Complete bit*/
             gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_HR_COMPLETE_WAIT_MASK;
