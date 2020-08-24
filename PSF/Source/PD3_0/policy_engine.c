@@ -420,7 +420,7 @@ void PE_HandleUnExpectedMsg (UINT8 u8PortNum)
     if ((ePE_SRC_TRANSITION_SUPPLY == gasPolicyEngine[u8PortNum].ePEState) || \
       (ePE_SNK_TRANSITION_SINK == gasPolicyEngine[u8PortNum].ePEState))
     {
-        PE_SendHardResetMsg (u8PortNum);
+        PE_SendHardReset (u8PortNum);
     }
     /*Send soft reset if  Current State is not power transitioned*/
     else
@@ -1048,7 +1048,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         /*Go to "ePE_SNK_GIVE_SINK_CAP" state if GET_SINK_CAP message is received*/
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_GIVE_SINK_CAP;
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_GIVE_SINK_CAP_ENTRY_SS;
-
                     }
                     else
                     {
@@ -1106,7 +1105,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         /*Go to "ePE_SNK_SOFT_RESET" state if SOFT_RESET message is received*/
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_SOFT_RESET;
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_SOFT_RESET_SEND_ACCEPT_SS;
-
                     }
                     break;
                 }
@@ -1261,7 +1259,7 @@ void PE_SendNotSupportedOrRejectMsg (UINT8 u8PortNum)
     }
 }
 
-void PE_SendHardResetMsg (UINT8 u8PortNum)
+void PE_SendHardReset (UINT8 u8PortNum)
 {
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {

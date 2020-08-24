@@ -1230,7 +1230,7 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PRL_ProtocolspecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType);
+        void PRL_ProtocolSpecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType);
 
     Summary:
         This API is to reset message ID counter of Tx & Rx SOP type specifically.
@@ -1261,7 +1261,7 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
         This API should be called by Policy engine on receiving Soft Reset for specific SOP type.
 
 **************************************************************************************************/
-void PRL_ProtocolspecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType);
+void PRL_ProtocolSpecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType);
 
 /**************************************************************************************************
     Function:

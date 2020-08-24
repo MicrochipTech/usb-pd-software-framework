@@ -564,7 +564,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     PE_KillPolicyEngineTimer (u8PortNum);
                     
                     /*Reset the UPD Protocol Layer for the received soft reset message*/
-                    PRL_ProtocolspecificSOPReset(u8PortNum, PRL_SOP_TYPE);
+                    PRL_ProtocolSpecificSOPReset(u8PortNum, PRL_SOP_TYPE);
 
                     /*Set the PD message transmitter API to Send Accept Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
@@ -613,7 +613,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     PE_KillPolicyEngineTimer (u8PortNum);
 
                     /*Reset the UPD Protocol Layer*/
-                    PRL_ProtocolspecificSOPReset(u8PortNum, PRL_SOP_TYPE);
+                    PRL_ProtocolSpecificSOPReset(u8PortNum, PRL_SOP_TYPE);
 
                     /*Set the PD message transmitter  API to Send SoftReset message*/
                     u8TransmitSOP = PRL_SOP_TYPE;

@@ -964,7 +964,7 @@ void PRL_TxRxMsgID_Reset(UINT8 u8PortNum, UINT8 u8SOPType)
 
 /******************************************************************************************************/
 
-void PRL_ProtocolspecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType)
+void PRL_ProtocolSpecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType)
 {
   	/* Spec Ref: PRL_Rx_Layer_Reset_for_Receive - Entered on condition Soft Reset Message received from PHY */
 	PRL_TxRxMsgID_Reset (u8PortNum, u8SOPType);
