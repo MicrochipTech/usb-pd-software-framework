@@ -209,7 +209,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         else
                         {
                             gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_DISABLED;
-                            MCHP_PSF_NOTIFY_CALL_BACK (u8PortNum, eMCHP_PSF_PD_PE_DISABLED);
+                            MCHP_PSF_NOTIFY_CALL_BACK (u8PortNum, eMCHP_PSF_PE_SRC_DISABLED);
                         }
                     }                 
                     else
@@ -695,7 +695,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                        (gasPolicyEngine[u8PortNum].u8PEPortSts & PE_NO_RESPONSE_TIMEDOUT)))
                     {
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_DISABLED;
-                        MCHP_PSF_NOTIFY_CALL_BACK (u8PortNum, eMCHP_PSF_PD_PE_DISABLED);
+                        MCHP_PSF_NOTIFY_CALL_BACK (u8PortNum, eMCHP_PSF_PE_SRC_DISABLED);
                     }
                     
                     else
