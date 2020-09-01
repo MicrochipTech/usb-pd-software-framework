@@ -620,7 +620,15 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
     /* Check for VBUS Fault Handling request. Policy Engine Idle check 
        is not needed for this has fault has to be handled with highest priority*/
-    if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    if (DPM_CLIENT_REQ_PORT_DISABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {
+        DPM_EnablePort(u8PortNum, FALSE);
+    }
+    else if (DPM_CLIENT_REQ_PORT_ENABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {
+        DPM_EnablePort(u8PortNum, TRUE);
+    }
+    else if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
         /* Clear the client request since it is accepted */
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
