@@ -982,7 +982,7 @@ void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum)
 
 /******************************************************************************************************/
 
-void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum)
+void PRL_OnHardResetComplete (UINT8 u8PortNum)
 {
     
     /* gasPRL [u8PortNum].u8RxHRRcvdISR is cleared as Hard Reset is processed*/
@@ -1001,9 +1001,7 @@ void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum)
     /* Bug UP301-48 fix - when HR is received from port partner, EN_RCV bit is cleared. 
 		Hence, after HR completion it is re-enabled */
     UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_A, (PRL_RX_CTL_A_EN_RCV | PRL_RX_CTL_A_EN_SMBUS_MODE) );
-	
-	
-    
+		    
 }
 
 /******************************************************************************************************/
@@ -1821,7 +1819,7 @@ void PRL_ChangeTxState(UINT8 u8PortNum, UINT8 u8TxStateISR)
 void PRL_ProtocolReset(UINT8 u8PortNum)
 {
     /*Reset the UPD Protocol Layer for all SOPs*/
-     PRL_ProtocolResetAllSOPs (u8PortNum);
+    PRL_ProtocolResetAllSOPs (u8PortNum);
      
     /* Disable the Tx interrupt*/
 	UPD_RegWriteByte (u8PortNum, PRL_TX_IRQ_EN, CLR_VAL);
@@ -1831,6 +1829,5 @@ void PRL_ProtocolReset(UINT8 u8PortNum)
     
     /* Reset the PHY layer*/
     PRL_PHYLayerReset (u8PortNum);
-    
-    
+        
 }

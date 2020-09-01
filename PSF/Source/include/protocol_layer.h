@@ -1324,7 +1324,7 @@ void PRL_PHYLayerReset (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum);
+        void PRL_OnHardResetComplete (UINT8 u8PortNum);
 
     Summary:
         This API is for the Policy Engine to inform the Protocol Layer on processing Hard Reset.
@@ -1339,7 +1339,7 @@ void PRL_PHYLayerReset (UINT8 u8PortNum);
         None.
 
     Input:
-        u8PortNum	- Port number of the device.
+        u8PortNum - Port number of the device.
 						Value passed will be less than CONFIG_PD_PORT_COUNT.
 
     Return:
@@ -1349,7 +1349,7 @@ void PRL_PHYLayerReset (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum);
+void PRL_OnHardResetComplete (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

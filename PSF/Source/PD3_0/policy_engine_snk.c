@@ -33,7 +33,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #if (TRUE == INCLUDE_PD_SINK)
 
-void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
+void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
 {
     UINT8 u8TypeCState = TYPEC_INVALID_STATE;
     UINT8 u8TypeCSubState = TYPEC_INVALID_SUBSTATE;
@@ -232,8 +232,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     message transmission fails*/
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_SELECT_CAPABILITY,\
                                              ePE_SNK_SELECT_CAPABILITY_REQ_SENT_SS,\
-                                             ePE_SNK_SEND_SOFT_RESET,\
-                                             ePE_SNK_SEND_SOFT_RESET_ENTRY_SS );
+                                             ePE_SEND_SOFT_RESET,\
+                                             ePE_SEND_SOFT_RESET_SOP_SS );
                     u8IsTransmit = TRUE;
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_SELECT_CAPABILITY_SEND_REQ_IDLE_SS;
@@ -386,7 +386,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                      /*The transmitter callback is set to transition to Startup state 
                       * if message transmission fails*/
                     
-                    /* API to send Hardreset is called*/
+                    /* API to send HardReset is called*/
                     PRL_SendCableorHardReset(u8PortNum, PRL_SEND_HARD_RESET,\
                                              NULL, 0x00);
                     
@@ -479,7 +479,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     if(TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
                     {  						
                         /*Inform Protocol Layer about Hard Reset Complete */
-                        PRL_HRorCRCompltIndicationFromPE(u8PortNum);
+                        PRL_OnHardResetComplete(u8PortNum);
                         
                         /*Clearing the Hard Reset IN Progress status bit since Hard Reset 
                         is complete after the vSafe0V transition*/
@@ -526,8 +526,8 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Set the transmitter callback to transition to Soft reset state if
                     message transmission fails*/
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_READY,\
-                                             ePE_SNK_READY_IDLE_SS,ePE_SNK_SEND_SOFT_RESET,\
-                                             ePE_SNK_SEND_SOFT_RESET_ENTRY_SS);
+                                             ePE_SNK_READY_IDLE_SS,ePE_SEND_SOFT_RESET,\
+                                             ePE_SEND_SOFT_RESET_SOP_SS);
                     u8IsTransmit = TRUE;
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_GIVE_SINK_CAP_IDLE_SS;
@@ -538,7 +538,7 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here until the Sink capability message is sent*/
                 case ePE_SNK_GIVE_SINK_CAP_IDLE_SS:
                 { 
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;  
                 }
@@ -549,131 +549,10 @@ void PE_SnkRunStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             }
             break;
         }    
-        
-        /*This State is entered if soft reset is received from the port partner*/
-        case ePE_SNK_SOFT_RESET:
-        {
-            switch (gasPolicyEngine[u8PortNum].ePESubState)
-            {
-                case ePE_SNK_SOFT_RESET_SEND_ACCEPT_SS:
-                {
-                                   
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SOFT_RESET: Entered the state\r\n");
-                    
-                    /*Kill the Policy engine active timer since soft reset is received*/
-                    PE_KillPolicyEngineTimer (u8PortNum);
-                    
-                    /*Reset the UPD Protocol Layer for the received soft reset message*/
-                    PRL_ProtocolSpecificSOPReset(u8PortNum, PRL_SOP_TYPE);
-
-                    /*Set the PD message transmitter API to Send Accept Message*/
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u16TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_ACCEPT,\
-                                                                 PE_OBJECT_COUNT_0,\
-                                                                 PE_NON_EXTENDED_MSG);
-                    
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
-                    
-                    /*Set the transmitter callback to transition to hard reset state if
-                    message transmission fails*/
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_WAIT_FOR_CAPABILITIES,\
-                                             ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS,\
-                                             ePE_SNK_HARD_RESET, \
-                                             ePE_SNK_HARD_RESET_SEND_SS);
-                    u8IsTransmit = TRUE;
-                    
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_SOFT_RESET_WAIT_SS;
-                    break;
-                }
-                /*Wait here until the accept message for the received soft reset is sent*/
-                case ePE_SNK_SOFT_RESET_WAIT_SS:
-                {
-                    /* Hook to notify PE state machine entry into idle substate */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);               
-                    break;
-                }
-                default:
-                {
-                    break;
-                }
-            }
-            break;        
-        }
-        /*This State is entered to send soft reset message to the port partner*/
-        case ePE_SNK_SEND_SOFT_RESET:
-        {
-            switch (gasPolicyEngine[u8PortNum].ePESubState)
-            {
-                case ePE_SNK_SEND_SOFT_RESET_ENTRY_SS:
-                {
-
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SEND_SOFT_RESET: Entered the state\r\n");
-                    
-                     /*Kill the Policy engine active timer since soft reset is received*/
-                    PE_KillPolicyEngineTimer (u8PortNum);
-
-                    /*Reset the UPD Protocol Layer*/
-                    PRL_ProtocolSpecificSOPReset(u8PortNum, PRL_SOP_TYPE);
-
-                    /*Set the PD message transmitter  API to Send SoftReset message*/
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u16TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET,\
-                                                                  PE_OBJECT_COUNT_0, \
-                                                                  PE_NON_EXTENDED_MSG);
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
-                    
-                    /*Set the transmitter callback to transition to hard reset state if
-                    message transmission fails*/
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SNK_SEND_SOFT_RESET,\
-                                             ePE_SNK_SEND_SOFT_RESET_SENT_SS,\
-                                             ePE_SNK_HARD_RESET, ePE_SNK_HARD_RESET_SEND_SS);
-                    u8IsTransmit = TRUE;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_SEND_SOFT_RESET_SEND_IDLE_SS;
-                    break;
-                }
-                /*Wait here until the Soft reset message is sent*/               
-                case ePE_SNK_SEND_SOFT_RESET_SEND_IDLE_SS:
-                {  
-                    /* Hook to notify PE state machine entry into idle substate */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
-                    break;
-                }
-                /*This Substate is entered once GoodCrc for the Soft reset message is received*/      
-                case ePE_SNK_SEND_SOFT_RESET_SENT_SS:
-                {
-                  
-                    /*Start the Sender response timer for the soft reset message being sent*/
-                    /*Set the timer callback to transition to ePE_SNK_HARD_RESET state
-                     * and ePE_SNK_HARD_RESET_SEND_SS sub state if timeout happens*/
-                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start(
-                                                              PE_SENDERRESPONSE_TIMEOUT_MS,\
-                                                              PE_SSChngAndTimeoutValidate_TimerCB,\
-                                                              u8PortNum,\
-                                                              (UINT8) ePE_SNK_HARD_RESET_SEND_SS);
-                    
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_SEND_SOFT_RESET_WAIT_FOR_ACCEPT_SS;
-                    break;
-
-                }
-                /*Wait here for the accept message from source for the soft reset sent*/   
-                case ePE_SNK_SEND_SOFT_RESET_WAIT_FOR_ACCEPT_SS:
-                {
-                    /* Hook to notify PE state machine entry into idle substate */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
-                    break;
-                }
-                default:
-                {
-                    break;
-                }                  
-            }
-            break;
-        }
         default:
         {
             break;
         }
-
      }  
 
     /*Send PD message if the variable "u8IsTransmit" is set as true inside the state machine*/

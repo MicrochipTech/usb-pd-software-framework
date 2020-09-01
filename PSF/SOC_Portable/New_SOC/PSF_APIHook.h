@@ -1089,21 +1089,21 @@ Description:
   
     <b> eMCHP_PSF_SINK_ALERT_RCVD</b>: This event is used by PSF to notify application when PD
 	Alert message has been received from Sink Partner. Application can read the alert
-    data by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlert.
+    data by accessing gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert.
     This event is applicable only when PSF is operating as Source or the power role of the port 
     is resolved as Source during DRP operation.   
  
     <b> eMCHP_PSF_SINK_STATUS_RCVD</b>: This event is used by PSF to notify application when 
     Sink Status has been received from Port Partner in response to the Get_Status
     message initiated by PSF. Application can read the Sink Status by accessing 
-    gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6]
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6]
     This event is applicable only when PSF is operating as Source or the power role of the port is
     resolved as Source during DRP operation. 
  
     <b> eMCHP_PSF_SINK_STATUS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink Status has not been received from Port Partner within tSenderResponseTimer
     as a response to the Get_Status message initiated by PSF.
-    gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
     when this notification is posted. This event is applicable only when PSF is operating as Source
     or the power role of the port is resolved as Source during DRP operation. 
  
