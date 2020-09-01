@@ -263,9 +263,6 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-GOODCRC_RECEIVED_SS\r\n");
                     
-                    /* Update Advertised PDO registers */
-                    DPM_UpdateAdvertisedPDOParam(u8PortNum); 
-                                           
                     /* Reset CapsCounter and HardReset Counter to 0 */
                     gasPolicyEngine[u8PortNum].u8CapsCounter = RESET_TO_ZERO;
                     gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;
@@ -309,6 +306,9 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             /* Set PD Status as Connected as ePE_SRC_SEND_CAP_GOODCRC_RCVD_SS state 
              may be skipped sometime when Request from partner arises quickly after Good_CRC*/
             gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PDCONNECTED_STS_MASK;
+            
+           /* Update Advertised PDO registers */
+            DPM_UpdateAdvertisedPDOParam(u8PortNum); 
 
 			/* Validate the received Request message by passing the received message to DPM */
             if(DPM_VALID_REQUEST == DPM_ValidateRequest(u8PortNum, (UINT16)u32Header, pu8DataBuf))
