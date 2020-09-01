@@ -1489,16 +1489,16 @@ typedef enum
     10      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC
                                     * '0' Disable Auto VCONN Swap Accept When working as VCONN Source
                                     * '1' Enable Auto VCONN Swap Accept When working as VCONN Source
-                                    Note: This bit shall be set to 1 always to comply with the PD spec for 
-                                     VCONN Swap request
+                                    * Note: This bit shall be set to 1 always to comply with the PD spec for 
+                                      VCONN Swap request									
     11      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC
                                     * '0' Disable Auto VCONN Swap Accept When not working as VCONN Source
                                     * '1' Enable Auto VCONN Swap Accept When not working as VCONN Source 
     15:12  						   Reserved 									
 	</table> 
- 
-  Remarks:
-    None                                                                                                                                
+									
+   Remarks:
+     None                                                                                                                             
   ***************************************************************************************************************************************/
 
 typedef struct _PortCfgStatus
