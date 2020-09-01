@@ -554,6 +554,8 @@ Source/Sink Power delivery objects*/
 #define DPM_CLEAR_ALL_CLIENT_REQ                 0x00 
 
 #define DPM_CLIENT_REQ_RENEGOTIATE               BIT(0)
+#define DPM_CLIENT_REQ_PORT_DISABLE              BIT(1)
+#define DPM_CLIENT_REQ_PORT_ENABLE               BIT(2)
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(3)
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(4)
 #define DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT      BIT(5)
