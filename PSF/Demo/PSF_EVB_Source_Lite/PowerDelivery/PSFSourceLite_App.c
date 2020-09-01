@@ -62,7 +62,7 @@ void App_SetMCUIdle()
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
-    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE");
+    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE\r\n");
     
 	/*If there is any pending interrupt it will not go to sleep*/
     SCB->SCR |=  (SCB_SCR_SLEEPDEEP_Msk )| (SCB_SCR_SEVONPEND_Msk);
@@ -148,6 +148,20 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         }
         
         case eMCHP_PSF_BUSY:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_COMPLETE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_RCVD:
+        {
+            break; 
+        }
+        case eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD:
         {
             break; 
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
-  PD Policy Engine swap Source file
+  PD Swap Policy Engine Source file
 
   Company:
     Microchip Technology Inc.
@@ -8,7 +8,7 @@
     policy_engine_swap.c
 
   Description:
-    This file contains the function definitions for Swap Policy Engine.
+    This file contains the function definitions for Swap Policy Engine State Machine.
  *******************************************************************************/
 /*******************************************************************************
 Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
@@ -45,24 +45,20 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
 	/* Transmit Flag */
 	UINT8 u8IsTransmit = FALSE;
     
-    ePolicyState eTxDoneSt, eTxFailedSt;
-    ePolicySubState eTxDoneSS, eTxFailedSS;
-    
+    ePolicyState eTxDoneSt;
+    ePolicySubState eTxDoneSS;
+        
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         eTxDoneSt = ePE_SRC_READY;
         eTxDoneSS = ePE_SRC_READY_END_AMS_SS;
-        eTxFailedSt = ePE_SRC_SEND_SOFT_RESET;
-        eTxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS;        
     }
     else
     {
         eTxDoneSt = ePE_SNK_READY;
         eTxDoneSS = ePE_SNK_READY_IDLE_SS;
-        eTxFailedSt = ePE_SNK_SEND_SOFT_RESET;
-        eTxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
-    }
-    
+    }        
+
     UINT8 u8CurrentDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
     
    switch(gasPolicyEngine[u8PortNum].ePEState)
@@ -102,7 +98,7 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                      Power role*/
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_DRS_DFP_UFP_ROLE_CHANGE , \
                                                 NULL, \
-                                               eTxFailedSt, eTxFailedSS);
+                                               ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
 
                     u8IsTransmit = TRUE;        
                     /*Wait in a idle state to get a Good_CRC response for Accept*/
@@ -160,7 +156,7 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_DRS_SEND_SWAP , \
                                                 ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS, \
-                                               eTxFailedSt, eTxFailedSS);
+                                               ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
 
                     u8IsTransmit = TRUE;
                     
@@ -263,24 +259,23 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 	/* Transmit Flag */
 	UINT8 u8IsTransmit = FALSE;
     
-    ePolicyState eTxDoneSt, eTxFailedSt;
-    ePolicySubState eTxDoneSS, eTxFailedSS;
+    /* Current Power Role */
+    UINT8 u8CurrPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum); 
     
-    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+    ePolicyState eTxDoneSt;
+    ePolicySubState eTxDoneSS;
+    
+    if (PD_ROLE_SOURCE == u8CurrPwrRole)
     {
         eTxDoneSt = ePE_SRC_READY;
         eTxDoneSS = ePE_SRC_READY_END_AMS_SS;
-        eTxFailedSt = ePE_SRC_SEND_SOFT_RESET;
-        eTxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS;        
     }
     else
     {
         eTxDoneSt = ePE_SNK_READY;
         eTxDoneSS = ePE_SNK_READY_IDLE_SS;
-        eTxFailedSt = ePE_SNK_SEND_SOFT_RESET;
-        eTxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
-    }
-        
+    }          
+    
     switch(gasPolicyEngine[u8PortNum].ePEState)
     {
         case ePE_PRS_SEND_SWAP:
@@ -296,7 +291,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SEND_SWAP, \
                                                 ePE_PRS_SEND_SWAP_MSG_DONE_SS, \
-                                                eTxFailedSt, eTxFailedSS);
+                                                ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
 
                     u8IsTransmit = TRUE;                                        
                              
@@ -337,7 +332,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 {
                     /* Set Reject Rcvd status so that PR_Swap will not be 
                        re-initiated once it is rejected */
-                    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                    if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
                         gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_REJ_STS_AS_SRC;
                     }
@@ -418,7 +413,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
       
                     /* Move to Transition to Off state based on the current power role */
-                    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                    if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
                         eTxDoneSt = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF;
                         eTxDoneSS = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS;
@@ -430,7 +425,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     }
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                eTxDoneSS, eTxFailedSt, eTxFailedSS);
+                                                eTxDoneSS, ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
 
                     u8IsTransmit = TRUE;
                     
@@ -845,26 +840,22 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 	/* Transmit Flag */
 	UINT8 u8IsTransmit = FALSE;
     
-    ePolicyState eTxDoneSt, eTxFailedSt;
-    ePolicySubState eTxDoneSS, eTxFailedSS,eTxHardRstSS;
+    ePolicyState eTxDoneSt;
+    ePolicySubState eTxDoneSS,eTxHardRstSS;
     
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         eTxDoneSt = ePE_SRC_READY;
         eTxDoneSS = ePE_SRC_READY_END_AMS_SS;
-        eTxFailedSt = ePE_SRC_SEND_SOFT_RESET;
-        eTxFailedSS = ePE_SRC_SEND_SOFT_RESET_SOP_SS; 
         eTxHardRstSS = ePE_SRC_HARD_RESET_ENTRY_SS;
     }
     else
     {
         eTxDoneSt = ePE_SNK_READY;
         eTxDoneSS = ePE_SNK_READY_IDLE_SS;
-        eTxFailedSt = ePE_SNK_SEND_SOFT_RESET;
-        eTxFailedSS = ePE_SNK_SEND_SOFT_RESET_ENTRY_SS;
         eTxHardRstSS = ePE_SNK_HARD_RESET_SEND_SS;
-    }
-        
+    } 
+    
     switch(gasPolicyEngine[u8PortNum].ePEState)
     {
         case ePE_VCS_SEND_SWAP:
@@ -880,7 +871,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VCS_SEND_SWAP, \
                                                 ePE_VCS_SEND_SWAP_MSG_DONE_SS, \
-                                                eTxFailedSt, eTxFailedSS);
+                                                ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
 
                     u8IsTransmit = TRUE;                                        
                              
@@ -1014,7 +1005,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     }
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                eTxDoneSS, eTxFailedSt, eTxFailedSS);
+                                                eTxDoneSS, ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_IDLE_SS;
                     u8IsTransmit = TRUE;
@@ -1190,8 +1181,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                      message transmission fails*/
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (ePE_VCS_SEND_PS_RDY,\
                                              ePE_VCS_SEND_PS_RDY_SENT_SS,\
-                                             eTxFailedSt,\
-                                             eTxFailedSS);
+                                             ePE_SEND_SOFT_RESET,\
+                                             ePE_SEND_SOFT_RESET_SOP_SS);
                     u8IsTransmit = TRUE;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_IDLE_SS;
                     

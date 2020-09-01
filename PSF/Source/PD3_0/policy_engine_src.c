@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /********************************************************************/
 /****************Source Policy Engine State Machine******************/
 /********************************************************************/
-void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
+void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
 {
     /* Receive VDM Header */
     UINT32 u32VDMHeader = SET_TO_ZERO;
@@ -160,7 +160,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 						/* If E-Cable attached with port partner and the port is sourcing VCONN, before sending the source capabilities message
 							Cable discovery identity message will be send to the cable to find the cable capabilities 
                            Spec Ref: A VCONN Source that is also a Source can attempt to send a Discover Identity Command 
-                           using SOP? to a Cable Plug prior to the establishment of an Explicit Contract */
+                           using SOP' to a Cable Plug prior to the establishment of an Explicit Contract */
                         if(FALSE == DPM_IsPortVCONNSource(u8PortNum))
                         { 
 							/* E-Cable not present, Port partner alone attached */
@@ -231,7 +231,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                              Send Soft reset since PD connected presently*/
                             u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
                                                         ePE_SRC_SEND_CAP_GOODCRC_RCVD_SS, \
-                                                          ePE_SRC_SEND_SOFT_RESET, ePE_SRC_SEND_SOFT_RESET_SOP_SS);                                                  
+                                                          ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);                                                  
                           
                         }
                         else
@@ -495,8 +495,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     if((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT))
                     {
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
-                                                    ePE_SRC_READY_ENTRY_SS, ePE_SRC_SEND_SOFT_RESET, \
-                                                    ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                                                    ePE_SRC_READY_ENTRY_SS, ePE_SEND_SOFT_RESET, \
+                                                    ePE_SEND_SOFT_RESET_SOP_SS);
                     }
                     
 					/* If Explicit Contract is not initiated, Send the reject message and set the
@@ -505,8 +505,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     {
 						/* Change the state to PE_SRC_WAIT_NEW_CAPABILITIES to wait for capabilities change */
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_WAIT_NEW_CAPABILITIES, \
-                                                    NULL, ePE_SRC_SEND_SOFT_RESET, \
-                                                    ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                                                    NULL, ePE_SEND_SOFT_RESET, \
+                                                    ePE_SEND_SOFT_RESET_SOP_SS);
                     }
                     
 					/* Send Reject message for Requested Invalid Capability */
@@ -558,8 +558,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 #endif
 					
 					/* Set the PD contract as Explicit Contract */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_EXPLICIT_CONTRACT;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_EXPLICIT_CONTRACT;                    
 					
                     /* Update the Port Connection Status register : As Source, 
                        USB PD connection established, Power request has been made, 
@@ -579,44 +578,28 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DPM_EnablePowerFaultDetection(u8PortNum);
                     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
-                    /* Start the SourcePPSCommTimer in case the current explicit 
-                       contract is for a PPS APDO */
+                    /* Start the SourcePPSCommTimer in case the current explicit contract 
+                       is for a PPS APDO. Send Hard Reset when SourcePPSCommTimer expires*/
                     if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
                     {
                         gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                                   (PE_SOURCE_PPS_COMM_TIMEOUT_MS),
-                                                                  PE_SubStateChange_TimerCB,u8PortNum,  
-                                                                  (UINT8) ePE_SRC_READY_PPS_COMM_TIMEOUT_SS);
-                        /* Hook to notify PE state machine entry into idle substate */
+                                                                  PE_SSChngAndTimeoutValidate_TimerCB,u8PortNum,  
+                                                                  (UINT8) ePE_SRC_HARD_RESET_ENTRY_SS);
+                        /* Hook to notify PE state machine entry into idle sub-state */
                         MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     }                    
 #endif                     
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+                    
                     /* Notify that PD contract is established*/    
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                            
                     break;
                 }
-
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
-                
-                case ePE_SRC_READY_PPS_COMM_TIMEOUT_SS: 
-                {
-                    /* PE would never enter this state when the current explicit
-                       contract is for a Fixed PDO */
-                    /* In case of PPS contract, Send Hard Reset when 
-                       SourcePPSCommTimer Expires */
-                    if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
-                    {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;                    
-                    }
-                    break;
-                }
-#endif 
-           
                 case ePE_SRC_READY_END_AMS_SS:
                 {
-                    /*This Substate shall be assigned if the AMS is started by PSF*/
+                    /*This Sub-state shall be assigned if the AMS is started by PSF*/
 #if (TRUE == INCLUDE_PD_3_0)
 					/* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */
                     PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
@@ -627,7 +610,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
@@ -677,7 +660,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_DISCOVERY_IDLE_SS:
                 { 
                     /* Wait for Timeout */
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;  
                 }
@@ -754,7 +737,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_HARD_RESET_IDLE_SS:
                 {
                     /* Wait for PSHardResetTimer to times out */
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;  
                 }
@@ -803,7 +786,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_HARD_RESET_RECEIVED_IDLE_SS:
                 {
                     /* Wait for PSHardResetTimer */
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
@@ -988,7 +971,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif
                         /* Inform Protocol Layer about Hard Reset Complete */
-                        PRL_HRorCRCompltIndicationFromPE(u8PortNum);
+                        PRL_OnHardResetComplete(u8PortNum);
 						
 						/* Enable Power fault thresholds for TYPEC_VBUS_5V*/
                         TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA, TYPEC_CONFIG_PWR_FAULT_THR);
@@ -1007,7 +990,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                             /*This Timeout is implemented outside of the PD Specification to track 
                             VCONN Turn ON error*/
                             gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                             PE_VCONNON_TIMEOUT_MS,
+                                                             TYPEC_VCONNON_TIMEOUT_MS,
                                                              DPM_VCONNONError_TimerCB, u8PortNum,  
                                                              (UINT8)SET_TO_ZERO);
                         
@@ -1070,7 +1053,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;                 
                         
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS, \
-                                                    ePE_SRC_SEND_SOFT_RESET, ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                                                    ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
                                                 
                     u8IsTransmit = TRUE;                                             
                    
@@ -1129,7 +1112,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_GET_SINK_CAP_IDLE_SS: 
                 { 
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break; 
                 }   
@@ -1141,155 +1124,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
            }
            break;
         } 
-            
-        /************* PE_SRC_SEND_SOFT_RESET ******************/
-        case ePE_SRC_SEND_SOFT_RESET:
-        {
-            switch(gasPolicyEngine[u8PortNum].ePESubState)
-            {
-                case ePE_SRC_SEND_SOFT_RESET_SOP_SS:
-                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_SEND_SOFT_RESET-SOP_SS\r\n");
-                    
-                    /* If RDO reject message is not sent, PE moves to this state. 
-                       Hence, clearing the status variable in this state */
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                        ~(DPM_PORT_AS_SRC_RDO_REJECTED_STATUS);
-                    
-                    /* Kill Policy Engine Timer */
-                    PE_KillPolicyEngineTimer (u8PortNum);
-                    
-					/* Reset the Protocol Layer for SOP type message */
-                    PRL_ProtocolSpecificSOPReset(u8PortNum, (UINT8) PRL_SOP_TYPE);
-                    
-					/* Send SoftReset message */
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
-																	PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-                    u32pTransmitDataObj = NULL;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_SOFT_RESET, \
-                                                    ePE_SRC_SEND_SOFT_RESET_GOODCRC_RCVD_SS, \
-                                                    ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
-                    u8IsTransmit = TRUE;
-                    
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOFT_RESET_IDLE_SS;
-                    
-                    break;  
-                }
-                
-                case ePE_SRC_SEND_SOFT_RESET_SOP_P_SS:
-                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_SOFT_RESET-ENTRY_SS\r\n");
-					
-                    /* Kill Policy Engine Timer */
-                    PE_KillPolicyEngineTimer (u8PortNum);
-                    
-					/* Reset the Protocol Layer for SOP_P type message */
-                    PRL_ProtocolSpecificSOPReset(u8PortNum, PRL_SOP_P_TYPE);
 
-                    /* Send Soft Reset Message */
-                    u8TransmitSOP = PRL_SOP_P_TYPE;
-                    u32TransmitHeader = PRL_FormNonSOPTypeMsgHeader(u8PortNum, PE_CTRL_SOFT_RESET, \
-																	PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-                    u32pTransmitDataObj = NULL;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_SOFT_RESET, \
-                                                    ePE_SRC_SEND_SOFT_RESET_GOODCRC_RCVD_SS, \
-                                                    ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
-                    u8IsTransmit = TRUE;
-                    
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOFT_RESET_IDLE_SS;
-                    
-                    break;  
-                }
-                
-                case ePE_SRC_SEND_SOFT_RESET_IDLE_SS:
-                {
-                    /* Hook to notify PE state machine entry into idle substate */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
-                    break;  
-                }
-                
-                case ePE_SRC_SEND_SOFT_RESET_GOODCRC_RCVD_SS:
-                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_SOFT_RESET-GOODCRC_RECEIVED_SS\r\n");
-                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
-                                                            PE_SubStateChange_TimerCB,u8PortNum,  
-                                                            (UINT8)ePE_SRC_SEND_SOFT_RESET_NO_RESPONSE_SS);
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOFT_RESET_IDLE_SS;
-                    break;  
-                }
-                
-                case ePE_SRC_SEND_SOFT_RESET_NO_RESPONSE_SS:
-                {
-					/* Sender Response timer timed out */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_SOFT_RESET-SENDER_RESPONSE_TIMEDOUT\r\n");
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS; 
-                    break;
-                }
-                
-                default:
-                {
-                    break;
-                }
-              
-            }
-            break;  
-        }
-        
-		/************** PE_SRC_SOFT_RESET ***************/
-        case ePE_SRC_SOFT_RESET:
-        {
-            switch(gasPolicyEngine[u8PortNum].ePESubState)
-            {
-                case ePE_SRC_SOFT_RESET_ENTRY_SS:
-                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_SOFT_RESET-ENTRY_SS\r\n");
-                    
-                    /* Kill Policy Engine Timer */
-                    PE_KillPolicyEngineTimer (u8PortNum);
-                    
-					/* Reset Protocol Layer */
-                    PRL_ProtocolResetAllSOPs(u8PortNum);
-                    
-                    /* Send Accept message */
-                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
-                                            PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
-
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmitDataObj = NULL;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
-
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
-                                                ePE_SRC_SEND_CAP_ENTRY_SS, \
-                                                ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
-
-                    u8IsTransmit = TRUE;
-                    
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SOFT_RESET_IDLE_SS;
-                    
-                    break;  
-                }
-                
-                case ePE_SRC_SOFT_RESET_IDLE_SS:
-                {
-                    /* Hook to notify PE state machine entry into idle substate */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
-                    break;
-                }
-                
-                default:
-                {
-                    break;
-                }
-              
-            }
-            break;  
-        }
-        
 		/************* PE_SRC_DISABLED ***************/
         case ePE_SRC_DISABLED:
         {
@@ -1299,8 +1134,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         
 		/*************** PE_SRC_VDM_IDENTITY_REQUEST *****************/
         case ePE_SRC_VDM_IDENTITY_REQUEST:
-        {
-            
+        {            
             switch(gasPolicyEngine[u8PortNum].ePESubState)
             {
                 case ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS:
@@ -1386,8 +1220,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
-            }
-            
+            }            
             else
             {
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_NAKED;
@@ -1458,7 +1291,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;                 
                         
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS, \
-                                                    ePE_SRC_SEND_SOFT_RESET, ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                                                    ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
                                                 
                     u8IsTransmit = TRUE;                                             
                    
@@ -1550,8 +1383,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
-                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
-                                ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                                ePE_SRC_READY_END_AMS_SS, ePE_SEND_SOFT_RESET, \
+                                ePE_SEND_SOFT_RESET_SOP_SS);
                     
                     u8IsTransmit = TRUE;
                     
@@ -1563,7 +1396,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_SEND_SOURCE_ALERT_IDLE_SS:
                 {
                     /* Idle state to wait for message transmit completion */
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break; 
                 }
@@ -1600,8 +1433,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
-                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
-                                ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                                ePE_SRC_READY_END_AMS_SS, ePE_SEND_SOFT_RESET, \
+                                ePE_SEND_SOFT_RESET_SOP_SS);
                     
                     u8IsTransmit = TRUE;
                     
@@ -1649,8 +1482,8 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
-                                ePE_SRC_READY_END_AMS_SS, ePE_SRC_SEND_SOFT_RESET, \
-                                ePE_SRC_SEND_SOFT_RESET_SOP_SS);
+                                ePE_SRC_READY_END_AMS_SS, ePE_SEND_SOFT_RESET, \
+                                ePE_SEND_SOFT_RESET_SOP_SS);
                     
                     u8IsTransmit = TRUE;
                     

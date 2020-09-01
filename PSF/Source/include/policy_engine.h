@@ -223,7 +223,6 @@ typedef enum {
 	ePE_SRC_READY,
 	ePE_SRC_DISABLED,
 	ePE_SRC_CAPABILITY_RESPONSE,
-    ePE_SRC_SEND_SOFT_RESET,
 	ePE_SRC_HARD_RESET,
 	ePE_SRC_HARD_RESET_RECEIVED,
 	ePE_SRC_TRANSITION_TO_DEFAULT,
@@ -249,8 +248,6 @@ typedef enum {
 	ePE_SNK_HARD_RESET,
 	ePE_SNK_TRANSITION_TO_DEFAULT,
 	ePE_SNK_GIVE_SINK_CAP,
-	ePE_SNK_SOFT_RESET,
-	ePE_SNK_SEND_SOFT_RESET,
 	ePE_SNK_GIVE_SOURCE_CAP,
 	/*VCONN Swap related States*/
     ePE_VCS_SEND_SWAP,
@@ -278,6 +275,8 @@ typedef enum {
     ePE_PRS_SNK_SRC_ASSERT_RP,
     ePE_PRS_SNK_SRC_SOURCE_ON,
     //-------------------------Common States------------------------------//
+    ePE_SOFT_RESET,
+    ePE_SEND_SOFT_RESET,
     ePE_SEND_NOT_SUPPORTED,
     ePE_SEND_REJECT,
 	ePE_BIST_MODE,
@@ -309,7 +308,6 @@ typedef enum {
     ePE_SRC_TRANSITION_SUPPLY_DRIVE_POWER_SS,
 	/* ePE_SRC_READY */
     ePE_SRC_READY_ENTRY_SS,
-    ePE_SRC_READY_PPS_COMM_TIMEOUT_SS, 
     ePE_SRC_READY_END_AMS_SS,
     ePE_SRC_READY_IDLE_SS,
 	/* ePE_SRC_DISABLED */
@@ -339,16 +337,6 @@ typedef enum {
     ePE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS,
     ePE_SRC_GET_SINK_CAP_NO_RESPONSE_SS,
     ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS, 
-	/* ePE_SRC_SOFT_RESET */
-    ePE_SRC_SOFT_RESET_ENTRY_SS,
-    ePE_SRC_SOFT_RESET_IDLE_SS,
-	/* ePE_SRC_SEND_SOFT_RESET */
-    ePE_SRC_SEND_SOFT_RESET_SOP_SS,
-    ePE_SRC_SEND_SOFT_RESET_SOP_P_SS,
-    ePE_SRC_SEND_SOFT_RESET_SOP_PP_SS,
-    ePE_SRC_SEND_SOFT_RESET_IDLE_SS,
-    ePE_SRC_SEND_SOFT_RESET_NO_RESPONSE_SS,
-    ePE_SRC_SEND_SOFT_RESET_GOODCRC_RCVD_SS,
 	/* ePE_SRC_VDM_IDENTITY_REQUEST */
     ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS,
     ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS,
@@ -384,14 +372,6 @@ typedef enum {
     /*ePE_SNK_READY*/
     ePE_SNK_READY_ENTRY_SS,
     ePE_SNK_READY_IDLE_SS,
-    /*ePE_SNK_SOFT_RESET*/
-    ePE_SNK_SOFT_RESET_SEND_ACCEPT_SS,
-    ePE_SNK_SOFT_RESET_WAIT_SS,
-    /*ePE_SNK_SEND_SOFT_RESET*/
-    ePE_SNK_SEND_SOFT_RESET_ENTRY_SS,
-    ePE_SNK_SEND_SOFT_RESET_SEND_IDLE_SS,
-    ePE_SNK_SEND_SOFT_RESET_SENT_SS,
-    ePE_SNK_SEND_SOFT_RESET_WAIT_FOR_ACCEPT_SS,
     /*ePE_SNK_HARD_RESET*/
     ePE_SNK_HARD_RESET_SEND_SS,
     /*ePE_SNK_TRANSITION_TO_DEFAULT*/
@@ -465,6 +445,14 @@ typedef enum {
     ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS,
 	ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS,
     //--------------------Common States-------------------------------------------------//
+    /* ePE_SOFT_RESET */        
+    ePE_SOFT_RESET_ENTRY_SS, 
+    ePE_SOFT_RESET_IDLE_SS,
+    /* ePE_SEND_SOFT_RESET */
+    ePE_SEND_SOFT_RESET_SOP_SS,
+    ePE_SEND_SOFT_RESET_SOP_P_SS,
+    ePE_SEND_SOFT_RESET_IDLE_SS,
+    ePE_SEND_SOFT_RESET_MSG_DONE_SS,            
     /*ePE_SEND_NOT_SUPPORTED*/
     ePE_SEND_NOT_SUPPORTED_ENTRY_SS,
     ePE_SEND_NOT_SUPPORTED_IDLE_SS,
@@ -1063,7 +1051,7 @@ void PE_SendHardReset (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 
     Summary:
         This API is called to run the policy engine source state machine. 
@@ -1091,7 +1079,7 @@ void PE_SendHardReset (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
         void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
@@ -1124,7 +1112,7 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
 /**************************************************************************************************
     Function:
-        void PE_SnkRunStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunSnkStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
 
     Summary:
         This API is called to run the policy engine sink state machine.
@@ -1150,7 +1138,7 @@ void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
     Remarks:
         None.
 **************************************************************************************************/
-void PE_SnkRunStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunSnkStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
         UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
@@ -1183,13 +1171,13 @@ UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        This API is called to run the Power Role Swap Policy Engine State Machine. . 
+        This API is called to run the Power Role Swap Policy Engine State Machine.
         
     Conditions:
         None
 
     Input:
-        u8PortNum  - Port Number.
+        u8PortNum - Port Number.
 
     Return:
         None.
@@ -1211,13 +1199,13 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        This API is called to run the DR Swap Policy Engine State Machine. . 
+        This API is called to run the DR Swap Policy Engine State Machine.
         
     Conditions:
         None
 
     Input:
-        u8PortNum  - Port Number.
+        u8PortNum - Port Number.
 
     Return:
         None.
@@ -1239,13 +1227,13 @@ void PE_RunDRSwapStateMachine (UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        This API is called to run the VCONN Swap Policy Engine State Machine. . 
+        This API is called to run the VCONN Swap Policy Engine State Machine.
         
     Conditions:
         None
 
     Input:
-        u8PortNum  - Port Number.
+        u8PortNum - Port Number.
 
     Return:
         None.
