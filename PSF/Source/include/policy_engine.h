@@ -174,6 +174,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_GET_PD_CONTRACT(u8PortNum)	(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PDCONTRACT_MASK)		
 
 /*--------------VDM related macros--------------------*/
+/*VDM Command Types found in VDM Header message */
+#define PE_VDM_REQ				    0
 #define PE_VDM_ACK                  1
 #define PE_VDM_NAK                  2
 #define PE_VDM_BUSY                 3
@@ -186,18 +188,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_VDM_OBJ_POS_MASK             0x700
 #define PE_VDM_SVID_MASK                0xFFFF0000
 
-#define PE_SRC_VDM_HEADER_HIGH_VER      0xFF00A001
-#define PE_SRC_VDM_HEADER_LOW_VER       0xFF008001
+#define PE_VDM_HEADER_HIGH_VER      0xFF00A001
+#define PE_VDM_HEADER_LOW_VER       0xFF008001
 
 #define PE_GET_VDM_CMD(VDM_HEADER)              (VDM_HEADER & PE_VDM_COMMAND_MASK)
 #define PE_GET_VDM_CMD_TYPE(VDM_HEADER)         ((VDM_HEADER & PE_VDM_COMMAND_TYPE_MASK) >> PE_VDM_COMMAND_TYPE_POS)
 #define PE_VDM_NAK_COMMAND_TYPE                 (2 << PE_VDM_COMMAND_TYPE_POS )
-
-/*VDM Command Types found in VDM Header message */
-#define PE_GET_VDM_CMD_TYPE_REQ				0
-#define PE_GET_VDM_CMD_TYPE_ACK				1
-#define PE_GET_VDM_CMD_TYPE_NAK				2
-#define PE_GET_VDM_CMD_TYPE_BUSY			3
 
 /* Capability max current check */
 #define PE_MAX_CURR_MASK        0x1FF
@@ -259,6 +255,9 @@ typedef enum {
     ePE_VCS_SEND_PS_RDY,
     //---------------------------VDM states---------------------------------------//
     ePE_VDM_GET_IDENTITY,
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST, 
+    ePE_INIT_PORT_VDM_IDENTITY_ACKED,         
+    ePE_INIT_PORT_VDM_IDENTITY_NAKED,
     //--------------------------DR_SWAP States-----------------------------------//
     ePE_DRS_EVALUATE_SWAP,
     ePE_DRS_ACCEPT_SWAP,
@@ -444,6 +443,13 @@ typedef enum {
     ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS,
     ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS,
 	ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS,
+    //--------------------VDM Sub States-------------------------------------------------//            
+    /* ePE_INIT_PORT_VDM_IDENTITY_REQUEST */ 
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_ENTRY_SS, 
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS,
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_RESP_RCVD_SS,  
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS,            
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_IDLE_SS,
     //--------------------Common States-------------------------------------------------//
     /* ePE_SOFT_RESET */        
     ePE_SOFT_RESET_ENTRY_SS, 
@@ -940,18 +946,18 @@ void PE_SendNotSupportedOrRejectMsg(UINT8 u8PortNum);
 void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8TxDoneSubState, UINT8 u8TxFailedState, UINT8 u8TxFailedSubState);
 /**************************************************************************************************
     Function:
-        void PE_FindVDMStateActiveFlag(UINT8 u8PortNum);
+        void PE_SetVDMActiveFlag(UINT8 u8PortNum);
 
     Summary:
-        This API is called to find out whether the current active policy engine state is a VDM state
-        for a given port
+        This API is called to set the VDM Active Flag based on the current 
+        policy engine state for a given port
        
     Devices Supported:
         UPD350 REV A
 
     Description:
-        This API is called to find out whether the current active policy engine state is a VDM state
-        for a given port
+        This API is called to set the VDM Active Flag based on the current 
+        policy engine state for a given port
 
     Conditions:
         None
@@ -966,7 +972,7 @@ void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8Tx
         None.
 
 **************************************************************************************************/
-void PE_FindVDMStateActiveFlag(UINT8 u8PortNum);
+void PE_SetVDMActiveFlag(UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
         void PE_KillPolicyEngineTimer (UINT8 u8PortNum);
@@ -1242,6 +1248,36 @@ void PE_RunDRSwapStateMachine (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-
 void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header);
+
+    Summary:
+        Vendor Defined Message Policy Engine State Machine. 
+       
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is called to run the VDM Policy Engine State Machine.
+        
+    Conditions:
+        None
+
+    Input:
+        u8PortNum - Port Number.
+        pu8DataBuf - Pointer to the 8 bit buffer of received PD message object
+        u32Header - Header of the received PD message
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header); 
+
 #endif /*_POLICY_ENGINE_H_*/

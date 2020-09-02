@@ -218,6 +218,21 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break; 
         }
         
+        case eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_PARTNER_IDENTITY_NAKED:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD:
+        {
+            break; 
+        }
+        
         case eMCHP_PSF_BUSY:
         {
             break; 

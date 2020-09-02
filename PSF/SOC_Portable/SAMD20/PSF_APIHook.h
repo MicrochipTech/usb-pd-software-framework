@@ -1152,6 +1152,19 @@ Description:
     Response Timer times out and there is no response from the port partner for 
     the DR_SWAP initiated. 
     
+    <b> eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED </b>: This event is used by PSF to notify the 
+    application when the Partner Identity has been received from Port Partner in response to the 
+    VDM:Discover Identity request initiated by PSF. Application can read the partner identity by 
+    accessing the gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[7]
+ 
+    <b> eMCHP_PSF_PARTNER_IDENTITY_NAKED </b>: This event is used by PSF to notify the 
+    application when NAK response is received from port partner for VDM:Discover Identity message 
+    initiated by PSF. 
+  
+    <b> eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD </b>: This event is used by PSF to notify the
+    application when the VDM Response Timer has timed out and there is no response from the 
+    port partner for the VDM:Discover Identity request initiated. 
+  
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
     Renegotiation, etc., which were raised by the application through 
@@ -1190,6 +1203,9 @@ eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for Powe
 eMCHP_PSF_DR_SWAP_COMPLETED,           // Data Role Swap completed
 eMCHP_PSF_DR_SWAP_RCVD,                // Data Role swap received from port partner
 eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for the DR_SWAP initiated        
+eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED, // ACK received from port partner for Discover Identity initiated
+eMCHP_PSF_PARTNER_IDENTITY_NAKED,      // NAK received from port partner for Discover Identity initiated
+eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD,   // No response from port partner for Discover Identity initiated     
 eMCHP_PSF_BUSY                         // PSF is busy, cannot handle client request     
 } eMCHP_PSF_NOTIFICATION;
 

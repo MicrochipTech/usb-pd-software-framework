@@ -318,6 +318,23 @@ Example:
 **************************************************************************************************/
 #define INCLUDE_PD_PR_SWAP      0
 
+/**************************************************************************************************
+Summary:
+    Vendor Defined Message support code inclusion.
+Description:
+    Setting the INCLUDE_PD_VDM as 1 enables PSF to include the Structured Vendor Defined 
+    Message(VDM) feature at the compile time. Users can set this define to 0 to reduce the code size
+    if none of the ports in the system require Structured VDM support.
+Remarks: 
+    Recommended default value is 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_VDM	1(Include Structured VDM support in PSF)
+    #define INCLUDE_PD_VDM	0(Exclude Structured VDM support from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_VDM             0
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Power Delivery IDs
@@ -711,6 +728,16 @@ typedef enum
 																		specified in mA
                                                                       * This array is common for 
 																	    Source and Sink.
+    u32aPartnerIdentity[7]          28        R            R         * Partner Identity array 
+                                                                        holding upto 7 Vendor 
+                                                                        Defined Objects where 
+                                                                        Index 0 corresponds to VDM
+                                                                        Header, Index 1 being ID 
+                                                                        Header VDO, Index 2 being
+                                                                        Cert Stat VDO, Index 3 
+                                                                        being Product VDO and 
+                                                                        indices 4-7 correspond to 
+                                                                        0-3 Product Type VDO(s)
     u32RDO                          4         R            R         * Complete raw RDO Data as
 																		sent to the port partner 
 																		when acting as Sink and 
@@ -1509,7 +1536,10 @@ typedef struct _PortCfgStatus
     UINT32 u32aSinkPDO[7];          
     UINT32 u32aNewPDO[7];		    
     UINT32 u32aAdvertisedPDO[7];	
-    UINT32 u32aPartnerPDO[7];       
+    UINT32 u32aPartnerPDO[7];     
+#if (TRUE == INCLUDE_PD_VDM)
+    UINT32 u32aPartnerIdentity[7]; 
+#endif 
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
     UINT32 u32PortStatusChange;

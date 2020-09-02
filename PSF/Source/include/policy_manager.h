@@ -133,7 +133,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CURR_POWER_ROLE_MASK                (BIT(0)|BIT(1))
 #define DPM_CURR_DATA_ROLE_MASK                 (BIT(2)|BIT(3))
 #define DPM_CURR_PD_SPEC_REV_MASK               (BIT(4)|BIT(5))
-#define DPM_VDM_STATE_ACTIVE_MASK                BIT(6)
+#define DPM_VDM_AMS_ACTIVE_MASK                  BIT(6)
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK    (BIT(8) | BIT(7))
 #define DPM_VCONN_SWAP_REJ_STS_AS_VCONNSRC      (BIT(9))
 #define DPM_VCONN_SWAP_REJ_STS_AS_NOT_VCONNSRC  (BIT(10))
@@ -570,13 +570,14 @@ Source/Sink Power delivery objects*/
                                                             |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
 
 /***************************Internal Events Defines**********************************/
-#define DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
-#define DPM_INT_EVT_INITIATE_RENEGOTIATION  BIT(1)
-#define DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
-#define DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
-#define DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
-#define DPM_INT_EVT_INITIATE_ALERT          BIT(5)
-#define DPM_INT_EVT_INITIATE_GET_STATUS     BIT(6)
+#define DPM_INT_EVT_INITIATE_GET_SINK_CAPS          BIT(0)
+#define DPM_INT_EVT_INITIATE_RENEGOTIATION          BIT(1)
+#define DPM_INT_EVT_INITIATE_VCONN_SWAP             BIT(2)
+#define DPM_INT_EVT_INITIATE_PR_SWAP                BIT(3)
+#define DPM_INT_EVT_INITIATE_DR_SWAP                BIT(4)
+#define DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY   BIT(5)
+#define DPM_INT_EVT_INITIATE_ALERT                  BIT(6)
+#define DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
 /**********************************************************************************/                                   
 // *****************************************************************************
 // *****************************************************************************
@@ -594,7 +595,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT16 u16DPMStatus;                 //Bit 1:0 - Status of Port Role <p />
                                         //Bit 3:2 - Status of Data Role <p />
                                         //Bit 5:4 - Status of PD Spec Revision <p />
-                                        //Bit 6 - Status of Vconn Swap support
+                                        //Bit 6 - VDM Active Status
                                         //Bits 8:7 - Type of current Explicit Contract 
                                         //      00 - Fixed  
                                         //      01 - Variable
@@ -644,6 +645,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #if (TRUE == INCLUDE_PD_DR_SWAP)
   UINT8 u8DRSwapWaitTmrID;         // DR_Swap Wait Timer ID  
 #endif
+#if (TRUE == INCLUDE_PD_VDM)
+  UINT8 u8VDMBusyTmrID;            // VDM Busy Timer ID 
+#endif 
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
 // *****************************************************************************
@@ -1710,6 +1714,25 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType);
         None. 
 **************************************************************************************************/
 UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+    Summary:
+        Timer callback for PE_VDM_BUSY_TIMEOUT_MS timeout
+    Description:
+        API to re-initiate the respective VDM command on Busy timeout
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8DummyVariable - Dummy Variable
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 #endif /*_POLICY_MANAGER_H_*/
 
