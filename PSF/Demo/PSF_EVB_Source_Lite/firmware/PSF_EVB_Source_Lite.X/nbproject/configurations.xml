@@ -216,6 +216,7 @@
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_engine_swap.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_engine_vdm.c</itemPath>
         </logicalFolder>
         <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
           <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.c</itemPath>

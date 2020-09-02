@@ -1307,11 +1307,14 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
 
-    /*Clear Partner PDO and Advertised PDO registers */
+    /*Clear Partner PDO, Advertised PDO and Partner Identity registers */
     for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
         gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;
+        #if (TRUE == INCLUDE_PD_VDM)
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[u8Index] = RESET_TO_ZERO;
+        #endif
     }
     gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = RESET_TO_ZERO; 
@@ -1561,3 +1564,16 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
 
 /************************************************************************************************************************/
 
+/********************* Policy Manager APIs for VDM ********************/
+#if (TRUE == INCLUDE_PD_VDM)
+
+void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+{
+    /* Set the timer Id to Max Concurrent Value*/
+    gasDPM[u8PortNum].u8VDMBusyTmrID = MAX_CONCURRENT_TIMERS;
+
+    /* Re-initiate the corresponding VDM command on Busy Timer expiry */
+    DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY);
+}
+
+#endif 

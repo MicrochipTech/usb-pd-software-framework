@@ -55,7 +55,7 @@ void DPM_Init(UINT8 u8PortNum)
     gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
     gasDPM[u8PortNum].u8InternalEvntInProgress = SET_TO_ZERO;
     gasDPM[u8PortNum].u8DPMInternalEvents = SET_TO_ZERO;
-#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+    #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 	gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
 	gasDPM[u8PortNum].u8VBUSPowerFaultCount = RESET_TO_ZERO;
@@ -64,23 +64,30 @@ void DPM_Init(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8VCONNGoodtoSupply = TRUE;
     gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
     gasDPM[u8PortNum].u8VCONNPowerFaultCount = SET_TO_ZERO;
-#endif
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
+    #endif
+
+    #if (TRUE == INCLUDE_PD_SOURCE_PPS)
     gasDPM[u8PortNum].u8AlertType = SET_TO_ZERO;
     gasDPM[u8PortNum].u8StatusEventFlags = SET_TO_ZERO;;
     gasDPM[u8PortNum].u8RealTimeFlags = SET_TO_ZERO;
     gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
-#endif
-#if (TRUE == INCLUDE_PD_VCONN_SWAP)
-    gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
-#endif /*INCLUDE_PD_VCONN_SWAP*/
+    #endif
 
-#if (TRUE == INCLUDE_PD_PR_SWAP)
+    #if (TRUE == INCLUDE_PD_VCONN_SWAP)
+    gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+    #endif /*INCLUDE_PD_VCONN_SWAP*/
+
+    #if (TRUE == INCLUDE_PD_PR_SWAP)
     gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
-#endif 
-#if (TRUE == INCLUDE_PD_DR_SWAP)
+    #endif 
+    
+    #if (TRUE == INCLUDE_PD_DR_SWAP)
     gasDPM[u8PortNum].u8DRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
-#endif
+    #endif
+    
+    #if (TRUE == INCLUDE_PD_VDM)
+    gasDPM[u8PortNum].u8VDMBusyTmrID = MAX_CONCURRENT_TIMERS;
+    #endif 
 }
 /********************************************************************************************/
 
@@ -807,6 +814,19 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             }
         }
 #endif/*INCLUDE_PD_DR_SWAP*/
+#if (TRUE == INCLUDE_PD_VDM)
+        else if (DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY == (gasDPM[u8PortNum].u8DPMInternalEvents &\
+                                                    DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY))
+        {
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u8DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY);
+            
+            /* Move the Policy Engine to ePE_INIT_PORT_VDM_IDENTITY_REQUEST state */
+            gasPolicyEngine[u8PortNum].ePEState = ePE_INIT_PORT_VDM_IDENTITY_REQUEST; 
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_INIT_PORT_VDM_IDENTITY_REQUEST_ENTRY_SS;
+            u8IsAMSInProgress = DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY;            
+        }
+#endif /* INCLUDE_PD_VDM */
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
         else if (DPM_INT_EVT_INITIATE_ALERT == (gasDPM[u8PortNum].u8DPMInternalEvents & DPM_INT_EVT_INITIATE_ALERT))
         {     
@@ -867,8 +887,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         else
         {
             /* Do Nothing */
-        }
-          
+        }          
     }
     if (u8IsAMSInProgress)
     {

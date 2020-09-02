@@ -177,7 +177,10 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
     gasDPM[u8PortNum].u8DRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
     #endif
 
-
+    #if (TRUE == INCLUDE_PD_VDM)
+    gasDPM[u8PortNum].u8VDMBusyTmrID = MAX_CONCURRENT_TIMERS;
+    #endif 
+    
     /*Setting the PD Software timers of a given port number to "Non Active"  state will disable 
     the PDTimer ISR Handler from calling the callback function*/
     for (UINT8 u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)

@@ -122,7 +122,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT ();
 
         /*Check the current policy engine states and set the VDM state active flag accordingly*/
-        PE_FindVDMStateActiveFlag (u8PortNum);
+        PE_SetVDMActiveFlag (u8PortNum);
 
 	    u8RetVal = PRL_ReceiveMsg (u8PortNum, &u8SOPType, &u32Header, u8aDataBuf, NULL);
 
@@ -201,7 +201,10 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 #endif
 #if (TRUE == INCLUDE_PD_PR_SWAP)
         PE_RunPRSwapStateMachine (u8PortNum);
-#endif
+#endif        
+#if (TRUE == INCLUDE_PD_VDM)
+        PE_RunVDMStateMachine (u8PortNum, u8aDataBuf, u32Header);
+#endif 
         PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);        
     }
 }
@@ -486,7 +489,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     if ((ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
                          gasPolicyEngine[u8PortNum].ePESubState)|| (ePE_SNK_READY_IDLE_SS == \
                          gasPolicyEngine[u8PortNum].ePESubState) || \
-                       (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
+                       (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         if (ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
                             gasPolicyEngine[u8PortNum].ePESubState)
@@ -511,8 +514,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 
                 case PE_DATA_REQUEST:
                 {
-                    if ((ePE_SRC_SEND_CAPABILITIES == gasPolicyEngine[u8PortNum].ePEState) ||
-                       (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState))
+                    if ((ePE_SRC_SEND_CAPABILITIES == gasPolicyEngine[u8PortNum].ePEState) || \
+                       (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                       (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         /* Kill SenderResponse timer only in ePE_SRC_SEND_CAPABILITIES 
                            Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
@@ -561,10 +565,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     /*Also discard the current VDM AMS to handle the new VDM message*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
 						(ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
+                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
-
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_GET_IDENTITY;
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_GET_IDENTITY;                       
                         
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                        
                         /* Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
@@ -580,9 +583,19 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     else if (ePE_SRC_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState)
                     {
                         PE_KillPolicyEngineTimer (u8PortNum);
-                        PE_HandleRcvdMsgAndTimeoutEvents( u8PortNum, ePE_SRC_VDM_IDENTITY_ACKED,(ePolicySubState)SET_TO_ZERO);
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_SRC_VDM_IDENTITY_ACKED,(ePolicySubState)SET_TO_ZERO);
                     }
-                    else
+#if (TRUE == INCLUDE_PD_VDM)
+                    else if ((ePE_INIT_PORT_VDM_IDENTITY_REQUEST_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
+                             (ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState))
+                    {                        
+                        /* Kill VDM Response timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_INIT_PORT_VDM_IDENTITY_REQUEST,\
+                                                ePE_INIT_PORT_VDM_IDENTITY_REQUEST_RESP_RCVD_SS);
+                    }
+#endif
+                    else 
                     {
                         /* Do Nothing */
                     }
@@ -684,7 +697,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                 case PE_DATA_ALERT: 
                 {
-                    if (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState)
+                    if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                            (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         /* Kill SourcePPSCommTimer if the current explicit contract 
                            is for a PPS APDO*/
@@ -1014,7 +1028,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 }
                 case PE_CTRL_GET_SOURCE_CAP:
                 {
-                    if (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState)
+                    if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_SOURCE_CAP: Get Source Cap Received\r\n");
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
@@ -1041,7 +1056,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 {
                     /*Discard VDM AMS and handle the PD message here*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                      (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
+                      (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         /*Go to "ePE_SNK_GIVE_SINK_CAP" state if GET_SINK_CAP message is received*/
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_GIVE_SINK_CAP;
@@ -1061,7 +1076,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                      if current state is READY State or any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
+                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
 
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
@@ -1101,7 +1116,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 /* Get Status message received */
                 case PE_CTRL_GET_STATUS:
                 {
-                    if (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState)
+                    if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                            (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_STATUS: Get Status Received\r\n");
                         
@@ -1129,7 +1145,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 /* Get PPS Status message received */
                 case PE_CTRL_GET_PPS_STATUS:
                 {
-                    if (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState)
+                    if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                            (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_PPS_STATUS: Get PPS Status Received\r\n");
                         
@@ -1155,7 +1172,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 {
                     /*DR_SWAP message is valid only if the PE state is SRC_READY or SNK_READY*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState))
+                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         /*Kill the u8DRSwapWaitTmrID timer*/
                         PDTimer_Kill(gasDPM[u8PortNum].u8DRSwapWaitTmrID);
@@ -1186,7 +1204,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_STATE_ACTIVE_MASK))
+                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP Received from Partner \r\n");
                         /*Kill the tPRSwapWait timer*/
@@ -1525,30 +1543,21 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             break;
         }
 
+        /* Responder Structured VDM Discover Identity */
         case ePE_VDM_GET_IDENTITY:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_RESP_VDM_GET_IDENTITY: Entered the state\r\n");
-
+            
             /*Convert the u8DataBuf into 32 bit header for easy handling*/
             UINT32 *u32RecvdVDMHeader = (UINT32 *)pu8DataBuf;
 
-            if (PE_GET_VDM_CMD_TYPE_REQ == PE_GET_VDM_CMD_TYPE (*u32RecvdVDMHeader))
+            if (PE_VDM_REQ == PE_GET_VDM_CMD_TYPE (*u32RecvdVDMHeader))
             {
                 /*Send NACK message for any received VDM message if PD Spec revision is 2.0*/
                 if (PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV (u8PortNum))
-                {                  
-                    if(PD_ROLE_SOURCE == (DPM_GET_CURRENT_POWER_ROLE(u8PortNum)))
-                    {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
-                    
-                    }
-                    else
-                    {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
-                    
-                    }
+                {
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                    
                 }
                  /*Send "Not Supported" message for any received VDM message if PD Spec revision is 3.0*/
                 else
@@ -1559,6 +1568,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             }              
             break;
         }
+
 		case ePE_BIST_MODE:
 		{
             switch (gasPolicyEngine[u8PortNum].ePESubState)
@@ -1810,18 +1820,19 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum)
 /********************************************************************************/
 /*****************VDM Support function*******************************************/
 /********************************************************************************/
-void PE_FindVDMStateActiveFlag (UINT8 u8PortNum)
+void PE_SetVDMActiveFlag (UINT8 u8PortNum)
 {
     switch (gasPolicyEngine[u8PortNum].ePEState)
     {
         case ePE_VDM_GET_IDENTITY:
+        case ePE_INIT_PORT_VDM_IDENTITY_REQUEST:
         {
-            gasDPM[u8PortNum].u16DPMStatus |= DPM_VDM_STATE_ACTIVE_MASK;
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_VDM_AMS_ACTIVE_MASK;
             break;
         }
         default:
         {
-           gasDPM[u8PortNum].u16DPMStatus &= ~DPM_VDM_STATE_ACTIVE_MASK;
+           gasDPM[u8PortNum].u16DPMStatus &= ~DPM_VDM_AMS_ACTIVE_MASK;
            break;
         }
     }
