@@ -334,7 +334,7 @@ Example:
     #define INCLUDE_PD_VDM	0(Exclude Structured VDM support from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_VDM             0
+#define INCLUDE_PD_VDM             1
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1414,9 +1414,19 @@ typedef enum
                                     * Set this bit to inform PSF that externally detected 
                                         over current VBUS power fault condition is exited or 
                                         Constant Voltage mode is entered by external DC-DC controller.
-
-				  
-	31:6  						   Reserved 									
+    6       R/W          R/W       Get Partner Identity Request      
+                                    * '0' PSF has not received any Get Partner Identity request.
+                                    * '1' PSF has received a Get Partner Identity request. 									 
+                                    *  eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED notification will 
+                                        will be posted for an ACK response, 
+                                        eMCHP_PSF_PARTNER_IDENTITY_NAKED will be posted for a 
+                                        NAK response and eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD
+                                        will be posted when no response is received.
+                                    *  Application can read the partner identity by 
+                                        accessing the u32aPartnerIdentity[7] register
+                                    *  This request is supported only when INCLUDE_PD_VDM is 
+                                        defined as '1'. 
+	31:7  						   Reserved 									
 	</table> 								
  
 	<b>f. u16PortIntrMask</b>: 

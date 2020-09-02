@@ -1825,7 +1825,6 @@ void PE_SetVDMActiveFlag (UINT8 u8PortNum)
     switch (gasPolicyEngine[u8PortNum].ePEState)
     {
         case ePE_VDM_GET_IDENTITY:
-        case ePE_INIT_PORT_VDM_IDENTITY_REQUEST:
         {
             gasDPM[u8PortNum].u16DPMStatus |= DPM_VDM_AMS_ACTIVE_MASK;
             break;

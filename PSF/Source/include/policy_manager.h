@@ -559,15 +559,7 @@ Source/Sink Power delivery objects*/
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(3)
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(4)
 #define DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT      BIT(5)
-
-/* Macros to raise a client request to DPM */
-#define DPM_SET_RENEGOTIATE_REQ(u8PortNum)     (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
-                                                            |= DPM_CLIENT_REQ_RENEGOTIATE)
-#define DPM_SET_VBUS_FAULT_OV_REQ(u8PortNum)    (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
-                                                            |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV)
-
-#define DPM_SET_VBUS_FAULT_OCS_REQ(u8PortNum)   (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest \
-                                                            |= DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
+#define DPM_CLIENT_REQ_GET_PARTNER_IDENTITY      BIT(6)
 
 /***************************Internal Events Defines**********************************/
 #define DPM_INT_EVT_INITIATE_GET_SINK_CAPS          BIT(0)
