@@ -605,9 +605,20 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             /* Clear the request since the request is accepted and going to be handled */
             gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_RENEGOTIATE);                
-            /* Raise to DPM for renegotiation */
+            /* Request DPM for renegotiation */
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
         } /*DPM_CLIENT_REQ_RENEGOTIATE*/
+#if (TRUE == INCLUDE_PD_VDM)
+        else if (DPM_CLIENT_REQ_GET_PARTNER_IDENTITY & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+        {
+            /* Clear the request since the request is accepted and going to be handled */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_GET_PARTNER_IDENTITY);
+            
+            /* Request DPM for initiating Get Partner Identity */
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY);            
+        }  /* DPM_CLIENT_REQ_GET_PARTNER_IDENTITY */
+#endif 
         else
         {
             /* Do Nothing */

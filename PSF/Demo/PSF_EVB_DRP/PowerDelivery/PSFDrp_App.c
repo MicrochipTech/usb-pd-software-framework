@@ -220,6 +220,8 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         
         case eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED:
         {
+            /* Status information received from Sink is available in 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[7] */            
             break;
         }
         
@@ -229,7 +231,7 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         }
         
         case eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD:
-        {
+        {            
             break; 
         }
         
