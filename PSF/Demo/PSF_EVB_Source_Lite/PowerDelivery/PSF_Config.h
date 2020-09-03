@@ -728,6 +728,16 @@ typedef enum
 																		specified in mA
                                                                       * This array is common for 
 																	    Source and Sink.
+    u32aCableIdentity[7]            28        R            R         * Cable Identity array 
+                                                                        holding the Vendor 
+                                                                        Defined Objects where 
+                                                                        Index 0 corresponds to VDM
+                                                                        Header, Index 1 being ID 
+                                                                        Header VDO, Index 2 being
+                                                                        Cert Stat VDO, Index 3 
+                                                                        being Product VDO and 
+                                                                        indices 4 corresponds to 
+                                                                        Product Type VDO
     u32aPartnerIdentity[7]          28        R            R         * Partner Identity array 
                                                                         holding upto 7 Vendor 
                                                                         Defined Objects where 
@@ -1546,7 +1556,8 @@ typedef struct _PortCfgStatus
     UINT32 u32aSinkPDO[7];          
     UINT32 u32aNewPDO[7];		    
     UINT32 u32aAdvertisedPDO[7];	
-    UINT32 u32aPartnerPDO[7];     
+    UINT32 u32aPartnerPDO[7];  
+    UINT32 u32aCableIdentity[7];
 #if (TRUE == INCLUDE_PD_VDM)
     UINT32 u32aPartnerIdentity[7]; 
 #endif 
