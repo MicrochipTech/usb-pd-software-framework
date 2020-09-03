@@ -140,7 +140,7 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
             gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
 
             /* Inform DR_SWAP completion notification*/
-            (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_COMPLETED);
+            (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_COMPLETE);
             
             break;
         }
@@ -214,7 +214,7 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                     /* Notify DR_SWAP is completed*/
-                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_COMPLETED);
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_COMPLETE);
                     break;
                 }
                 case ePE_DRS_SEND_SWAP_IDLE_SS:

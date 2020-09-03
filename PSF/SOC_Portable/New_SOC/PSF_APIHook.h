@@ -1067,7 +1067,7 @@ Description:
     <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
     Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
     message initiated by PSF. Application can read the Sink Capabilities by accessing 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[7]. This event is applicable 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO array. This event is applicable 
     only when PSF is operating as Source or the power role of the port is resolved as 
     Source during DRP operation.  
     
@@ -1096,7 +1096,7 @@ Description:
     <b> eMCHP_PSF_SINK_STATUS_RCVD</b>: This event is used by PSF to notify application when 
     Sink Status has been received from Port Partner in response to the Get_Status
     message initiated by PSF. Application can read the Sink Status by accessing 
-    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6]
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus array.
     This event is applicable only when PSF is operating as Source or the power role of the port is
     resolved as Source during DRP operation. 
  
@@ -1147,13 +1147,26 @@ Description:
     Response Timer times out and there is no response from the port partner for 
     the DR_SWAP initiated. 
     
+    <b> eMCHP_PSF_CABLE_IDENTITY_DISCOVERED </b>: This event is used by PSF to notify the 
+    application when the Cable Identity has been received from Cable in response to the 
+    VDM:Discover Identity request initiated by PSF. Application can read the cable identity by 
+    accessing the gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity array.
+    This event is applicable only when the port is operating as both VBUS Source and
+    VCONN Source.
+  
+    <b> eMCHP_PSF_CABLE_IDENTITY_NAKED </b>: This event is used by PSF to notify the 
+    application when NAK or no response is received from cable for VDM:Discover Identity request 
+    initiated by PSF. 
+    This event is applicable only when the port is operating as both VBUS Source and
+    VCONN Source. 
+ 
     <b> eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED </b>: This event is used by PSF to notify the 
     application when the Partner Identity has been received from Port Partner in response to the 
     VDM:Discover Identity request initiated by PSF. Application can read the partner identity by 
-    accessing the gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[7]
+    accessing the gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity array.
  
     <b> eMCHP_PSF_PARTNER_IDENTITY_NAKED </b>: This event is used by PSF to notify the 
-    application when NAK response is received from port partner for VDM:Discover Identity message 
+    application when NAK response is received from port partner for VDM:Discover Identity request 
     initiated by PSF. 
   
     <b> eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD </b>: This event is used by PSF to notify the
@@ -1163,7 +1176,7 @@ Description:
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
     Renegotiation, etc., which were raised by the application through 
-    u32ClientRequest variable in sPerPortDatastructure. On receiving this notification, 
+    u32ClientRequest variable in sPerPortData structure. On receiving this notification, 
     the application can re-initiate the request.
 Remarks:
     None                                                                                               
@@ -1180,7 +1193,7 @@ eMCHP_PSF_VBUS_PWR_FAULT,              // VBUS Power Fault has occurred
 eMCHP_PSF_PORT_POWERED_OFF,            // Port powered off since fault count exceeded maximum fault count
 eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT,       // Port Recovered from VCONN power fault
 eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT,        // Port Recovered from VBUS Power fault
-eMCHP_PSF_PE_SRC_DISABLED,              // Only Type C device is present, Partner doesnot support PD
+eMCHP_PSF_PE_SRC_DISABLED,              // Only Type C device is present, Partner does not support PD
 eMCHP_PSF_PD_CONTRACT_NEGOTIATED,      // PD Contract established with port partner
 eMCHP_PSF_SINK_CAPS_RCVD,              // Sink Caps received from Port Partner
 eMCHP_PSF_SINK_CAPS_NOT_RCVD,          // Sink Caps not received from Port Partner
@@ -1195,12 +1208,14 @@ eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD, // No response from port partner for VCON
 eMCHP_PSF_PR_SWAP_COMPLETE,            // Power Role Swap completed
 eMCHP_PSF_PR_SWAP_RCVD,                // Power Role Swap Received from port partner
 eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for Power Role Swap sent 
-eMCHP_PSF_DR_SWAP_COMPLETED,           // Data Role Swap completed
+eMCHP_PSF_DR_SWAP_COMPLETE,            // Data Role Swap completed
 eMCHP_PSF_DR_SWAP_RCVD,                // Data Role swap received from port partner
 eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for the DR_SWAP initiated        
-eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED, // ACK received from port partner for Discover Identity initiated
-eMCHP_PSF_PARTNER_IDENTITY_NAKED,      // NAK received from port partner for Discover Identity initiated
-eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD,   // No response from port partner for Discover Identity initiated     
+eMCHP_PSF_CABLE_IDENTITY_DISCOVERED,   // ACK received from cable for Discover Identity sent to SOP'        
+eMCHP_PSF_CABLE_IDENTITY_NAKED,        // NAK received from cable for Discover Identity sent to SOP'
+eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED, // ACK received from partner for Discover Identity sent to SOP
+eMCHP_PSF_PARTNER_IDENTITY_NAKED,      // NAK received from partner for Discover Identity sent to SOP
+eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD,   // No response from partner for Discover Identity sent to SOP     
 eMCHP_PSF_BUSY                         // PSF is busy, cannot handle client request     
 } eMCHP_PSF_NOTIFICATION;
 
