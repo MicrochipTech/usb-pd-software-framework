@@ -1178,6 +1178,15 @@ Description:
     Renegotiation, etc., which were raised by the application through 
     u32ClientRequest variable in sPerPortData structure. On receiving this notification, 
     the application can re-initiate the request.
+    
+    <b> eMCHP_PSF_IDLE</b>: This event is used by PSF to indicate that PSF is idle,
+    Client request can be initiated by the User Application. In case Port partner 
+    sends a message in mean time, PSF will send eMCHP_PSF_BUSY notification indicating
+    PSF is not idle. User application has to retry the client request again once
+    eMCHP_PSF_IDLE is posted.
+ 
+ `  <b>eMCHP_PSF_PORT_DISABLED</b>:
+    <b>eMCHP_PSF_PORT_ENABLED</b>: 
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1187,7 +1196,7 @@ eMCHP_PSF_TYPEC_DETACH_EVENT = 1,      // Detach event has occurred
 eMCHP_PSF_TYPEC_CC1_ATTACH,            // Port partner attached at CC1 orientation
 eMCHP_PSF_TYPEC_CC2_ATTACH,            // Port partner attached at CC2 orientation
 eMCHP_PSF_TYPEC_ERROR_RECOVERY,        // Entered Error recovery State
-eMCHP_PSF_UPDS_IN_IDLE,                // All the UPD350s are in Idle
+eMCHP_PSF_UPDS_IN_IDLE,                // All the UPD350s are Idle and in low power mode
 eMCHP_PSF_VCONN_PWR_FAULT,             // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,              // VBUS Power Fault has occurred
 eMCHP_PSF_PORT_POWERED_OFF,            // Port powered off since fault count exceeded maximum fault count
@@ -1216,7 +1225,10 @@ eMCHP_PSF_CABLE_IDENTITY_NAKED,        // NAK received from cable for Discover I
 eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED, // ACK received from partner for Discover Identity sent to SOP
 eMCHP_PSF_PARTNER_IDENTITY_NAKED,      // NAK received from partner for Discover Identity sent to SOP
 eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD,   // No response from partner for Discover Identity sent to SOP     
-eMCHP_PSF_BUSY                         // PSF is busy, cannot handle client request     
+eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
+eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
+eMCHP_PSF_BUSY,                        // PSF is busy, cannot handle client request
+eMCHP_PSF_IDLE                         // PSF is idle, Application can raise any client request   
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************

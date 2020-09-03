@@ -73,7 +73,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
     else
     {
         eTxDoneSt = ePE_SNK_READY;
-        eTxDoneSS = ePE_SNK_READY_IDLE_SS;
+        eTxDoneSS = ePE_SNK_READY_AMS_END_SS;
     }          
     
     switch(gasPolicyEngine[u8PortNum].ePEState)

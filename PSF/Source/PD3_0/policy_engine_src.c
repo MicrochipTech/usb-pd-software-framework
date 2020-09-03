@@ -608,6 +608,12 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     {
                         gasDPM[u8PortNum].u8InternalEvntInProgress = RESET_TO_ZERO;
                     }
+                    else
+                    {
+                        /* Hook to notify PSF is IDLE */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eMCHP_PSF_IDLE);
+                    
+                    }
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
                     /* Hook to notify PE state machine entry into idle sub-state */

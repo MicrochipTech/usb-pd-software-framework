@@ -56,7 +56,7 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
     else
     {
         eTxDoneSt = ePE_SNK_READY;
-        eTxDoneSS = ePE_SNK_READY_IDLE_SS;
+        eTxDoneSS = ePE_SNK_READY_AMS_END_SS;
     }        
 
     UINT8 u8CurrentDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
@@ -273,7 +273,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
     else
     {
         eTxDoneSt = ePE_SNK_READY;
-        eTxDoneSS = ePE_SNK_READY_IDLE_SS;
+        eTxDoneSS = ePE_SNK_READY_AMS_END_SS;
     }          
     
     switch(gasPolicyEngine[u8PortNum].ePEState)
@@ -852,7 +852,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
     else
     {
         eTxDoneSt = ePE_SNK_READY;
-        eTxDoneSS = ePE_SNK_READY_IDLE_SS;
+        eTxDoneSS = ePE_SNK_READY_AMS_END_SS;
         eTxHardRstSS = ePE_SNK_HARD_RESET_SEND_SS;
     } 
     
