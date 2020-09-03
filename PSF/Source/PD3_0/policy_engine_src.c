@@ -1219,6 +1219,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
+                
+                /* Post eMCHP_PSF_CABLE_IDENTITY_DISCOVERED notification */
+                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CABLE_IDENTITY_DISCOVERED);
             }            
             else
             {
@@ -1243,6 +1246,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;               
+                
+                /* Post eMCHP_PSF_CABLE_IDENTITY_NAKED notification */
+                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CABLE_IDENTITY_NAKED);
             }            
             else
             {

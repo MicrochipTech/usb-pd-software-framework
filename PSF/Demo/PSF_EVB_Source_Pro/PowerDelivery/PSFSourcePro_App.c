@@ -145,12 +145,14 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         
         case eMCHP_PSF_SINK_CAPS_RCVD:
         {
+            /* Sink Capabilities received from partner is available in 
+               gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO array */            
             break;            
         }
         
         case eMCHP_PSF_SINK_ALERT_RCVD: 
         {
-            /* Alert information received from Sink is available in 
+            /* Alert Data Object received from Sink is available in 
              gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert */
             break; 
         }
@@ -163,7 +165,7 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         case eMCHP_PSF_SINK_STATUS_RCVD:
         {
             /* Status information received from Sink is available in 
-            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6] */
+            gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus array */
             break; 
         }
 
@@ -176,9 +178,22 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         {
             break; 
         }
+        
         case eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD:
         {
             break; 
+        }
+        
+        case eMCHP_PSF_CABLE_IDENTITY_DISCOVERED:
+        {
+            /* Cable identity received from Cable is available in 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity array */                        
+            break; 
+        }
+        
+        case eMCHP_PSF_CABLE_IDENTITY_NAKED:
+        {
+            break;
         }
         
         case eMCHP_PSF_BUSY:
