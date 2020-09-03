@@ -159,7 +159,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
                 else
                 {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_AMS_END_SS;
                 }
                 MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
                 gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
@@ -487,7 +487,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 {
                     /*Discard the VDM AMS and process the source capability message received*/
                     if ((ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
-                         gasPolicyEngine[u8PortNum].ePESubState)|| (ePE_SNK_READY_IDLE_SS == \
+                         gasPolicyEngine[u8PortNum].ePESubState)|| (ePE_SNK_READY_AMS_END_SS == \
                          gasPolicyEngine[u8PortNum].ePESubState) || \
                        (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
@@ -744,7 +744,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                     }
-                    else if (ePE_SNK_READY_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState)
+                    else if (ePE_SNK_READY_AMS_END_SS == gasPolicyEngine[u8PortNum].ePESubState)
                     {
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
@@ -869,7 +869,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                                                u8PortNum,(UINT8) ePE_SNK_SELECT_CAPABILITY);
 
                                 gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
+                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_AMS_END_SS;
 
                             }
                             else if (PE_CTRL_REJECT == PRL_GET_MESSAGE_TYPE(u32Header))
@@ -878,7 +878,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
                                             DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS;
                                 gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
+                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_AMS_END_SS;
                             }
                             else
                             {
@@ -1309,7 +1309,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
     else
     {
         eTxDoneSt = ePE_SNK_READY;
-        eTxDoneSS = ePE_SNK_READY_IDLE_SS;     
+        eTxDoneSS = ePE_SNK_READY_AMS_END_SS;     
         eTxHardRstSS = ePE_SNK_HARD_RESET_SEND_SS; 
     }
 #if (FALSE != INCLUDE_PDFU)
@@ -1668,7 +1668,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 if (PD_ROLE_SINK == u8CurrentPowerRole)
                 {
                     eState  = ePE_SNK_READY;
-                    eSubState = ePE_SNK_READY_IDLE_SS;     
+                    eSubState = ePE_SNK_READY_AMS_END_SS;     
                 }
                 else
                 { }
