@@ -293,11 +293,17 @@ void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
 /**************************************************************************************************/
 /*********************************DPM VDM Cable APIs**************************************/
 /**************************************************************************************************/
-UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
+UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
 {
     UINT32 u32ProductTypeVDO;
     UINT8 u8RetVal = FALSE;
     UINT8 u8CurVal;
+    
+    /* Store the received VDM response in u32aCableIdentity array.
+    If the response is NAK or BUSY, the response will contain
+    only 1 Data Object which is the VDM Header */
+    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity, u32DataBuf,
+                 (PRL_GET_OBJECT_COUNT(u16Header) * BYTE_LEN_4));                                                   
     
     /* Get the CMD type from received VDM */
     u8RetVal = DPM_VDM_GET_CMD_TYPE(u32DataBuf[DPM_VDM_HEADER_POS]);
@@ -333,7 +339,7 @@ UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
         
         /* Received message is ACK */
         u8RetVal = PE_VDM_ACK;
-    }
+    }    
     
     return u8RetVal;
 }
@@ -1307,11 +1313,12 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
 
-    /*Clear Partner PDO, Advertised PDO and Partner Identity registers */
+    /*Clear Partner PDO, Advertised PDO, Cable Identity and Partner Identity registers */
     for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
         gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity[u8Index] = RESET_TO_ZERO;
         #if (TRUE == INCLUDE_PD_VDM)
         gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[u8Index] = RESET_TO_ZERO;
         #endif

@@ -837,7 +837,7 @@ void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole);
 
 /**************************************************************************************************
     Function:
-        DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
+        DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
     Summary:
         This API is used to store the capabilities received from the E-Marked cable.
     Devices Supported:
@@ -856,7 +856,7 @@ void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole);
     Remarks:
         None
 **************************************************************************************************/
-UINT8 DPM_StoreVDMECableData(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
+UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
 
 /**************************************************************************************************
     Function:

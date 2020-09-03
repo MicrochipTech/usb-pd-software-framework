@@ -1218,7 +1218,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             
 			/* VDM ACK received from cable */
 			/* Pass the cable data to the DPM */
-            if( PE_VDM_ACK == DPM_StoreVDMECableData(u8PortNum, u8SOPType, (UINT16) u32Header, (UINT32*) pu8DataBuf))
+            if (PE_VDM_ACK == DPM_StoreCableIdentity(u8PortNum, u8SOPType, (UINT16) u32Header, (UINT32*) pu8DataBuf))
             {
                 gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_PD_SPEC_REV_MASK);
                 gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
