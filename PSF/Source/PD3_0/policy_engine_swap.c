@@ -1066,8 +1066,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             {
               
                 case ePE_VCS_TURN_OFF_VCONN_ENTRY_SS:
-                {
-                  
+                {                  
                     DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Entered the state\r\n");
 
                     /*Turn off VCONN since PS RDY message is received from VCONN Source partner*/

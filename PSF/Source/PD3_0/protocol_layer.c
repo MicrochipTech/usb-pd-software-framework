@@ -664,7 +664,7 @@ void PRL_EnableRx (UINT8 u8PortNum, UINT8 u8Enable)
 /******************************************************************************************************/
 
 
-UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, UINT8 *pu8DataBuffer, PRLRxCallback pfnRxCallback)
+UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8 *pu8SOPType, UINT32 *pu32Header, UINT8 *pu8DataBuffer, PRLRxCallback pfnRxCallback)
 {
     UINT16 u16DataSize, u8Return;
  
@@ -682,7 +682,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
         /* RxPacket is copied from global buffer */
         
         *pu8SOPType = gasPRLRecvBuff[u8PortNum].u8SOPtype;
-        *pu32Header =  gasPRLRecvBuff[u8PortNum].u16Header;
+        *pu32Header = gasPRLRecvBuff[u8PortNum].u16Header;
 		
 		/* if pu8DataBuffer is not NULL*/
         if (pu8DataBuffer != NULL)

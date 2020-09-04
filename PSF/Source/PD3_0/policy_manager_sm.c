@@ -820,8 +820,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_SEND_SWAP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
-                    u8IsAMSInProgress = DPM_INT_EVT_INITIATE_DR_SWAP;
-                
+                    u8IsAMSInProgress = DPM_INT_EVT_INITIATE_DR_SWAP;                
             }
         }
 #endif/*INCLUDE_PD_DR_SWAP*/
@@ -912,8 +911,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         /*Irrespective of the Role indicate DPM AMS is initiated with CA*/
         MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
         gasPRL[u8PortNum].u8TxStsDPMSyncISR = TRUE;
-        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
-          
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();           
     }
 }
 
