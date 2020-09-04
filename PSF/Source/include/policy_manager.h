@@ -727,7 +727,7 @@ void DPM_RunStateMachine (UINT8 u8PortNum);
     Conditions:
         None.
     Input:
-        u8PortNum     - Port Number for power to be driven
+        u8PortNum - Port Number for power to be driven
     Return:
         None
     Remarks:
@@ -1297,7 +1297,7 @@ void DPM_ResetNewPDOParameters(UINT8 u8PortNum);
     Description:
         This API sets the advertised PDO count, updates the registers and sets/clears  
         the REDUCED_SOURCE_CAPABILITIES bit in Port Connection Status 
-        after comparing the advertised PDOs with Fixed PDOs.       . 
+        after comparing the advertised PDOs with Fixed and New PDOs.       . 
     Conditions:
         None
     Input:
@@ -1316,7 +1316,7 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum);
     Summary:
         Notifies client of the PD Events from stack. 
     Description:
-        Application layer can call this API for DPM to send notifications of 
+        This API can be called for the DPM to send notifications of 
         PD events detected by PSF stack which includes Type C Attach/Detach,
         PD Contract negotiated, etc., 
     Conditions:

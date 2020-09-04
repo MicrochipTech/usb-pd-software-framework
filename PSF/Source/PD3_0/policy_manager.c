@@ -1361,9 +1361,9 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8DPMInternalEvents = (gasDPM[u8PortNum].u8DPMInternalEvents\
                                             & DPM_INT_EVT_INITIATE_ALERT);
     gasDPM[u8PortNum].u8InternalEvntInProgress = SET_TO_ZERO;
-    
-    
+        
     gasDPM[u8PortNum].u16DPMStatus &= ~DPM_SWAP_REJECT_STS_MASK;
+    
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
