@@ -1190,8 +1190,9 @@ Description:
     PSF is not idle. User application has to retry the client request again once
     eMCHP_PSF_IDLE is posted.
  
- `  <b>eMCHP_PSF_PORT_DISABLED</b>:
-    <b>eMCHP_PSF_PORT_ENABLED</b>: 
+ `  <b> eMCHP_PSF_PORT_DISABLED</b>:
+ 
+    <b> eMCHP_PSF_PORT_ENABLED</b>: 
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
