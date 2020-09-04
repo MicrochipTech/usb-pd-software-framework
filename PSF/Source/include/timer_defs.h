@@ -1,5 +1,5 @@
 /*******************************************************************************
-  Type C and Policy Engine Timer Configuration file
+  Timer Configuration file
 
   Company:
     Microchip Technology Inc.
@@ -8,8 +8,8 @@
     timer_defs.h
 
   Description:
-    This header file contains the definitions of the timers used in Type C and 
-    Policy Engine state machine. 
+    This header file contains the definitions of the timers used by Type C,
+    Policy Engine, Protocol Layer, DPM and Power Management Control.
 *******************************************************************************/
 
 /*******************************************************************************
@@ -219,6 +219,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
   is not sent to the partner within the time defined in the 
   DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS, the status shall be cleared.*/
 #define DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS    MILLISECONDS_TO_TICKS(19000)
+
+// *****************************************************************************
+// Section: UPD Idle Timeout configuration
+// *****************************************************************************
+ /* UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is put to low power mode by   
+    the power management control if there is no activity or interrupt in UPD350. */
+#define UPD_IDLE_TIMEOUT_MS                     MILLISECONDS_TO_TICKS(15000)
 
 #endif /* _TIMER_DEFS_H */
 

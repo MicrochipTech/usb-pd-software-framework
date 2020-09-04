@@ -192,7 +192,7 @@ Summary:
 Description:
     Setting the INCLUDE_POWER_MANAGEMENT_CTRL as 1 enables PSF to include the 
     functionality that puts the UPD350 into low power mode if UPD350 is inactive for 
-    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS time and PSF notifies the same via the call back
+    15 seconds time and PSF notifies the same via the call back
     MCHP_PSF_NOTIFY_CALL_BACK. Users can set this define to 0 to reduce code size of the PSF 
     if low power mode operation of UPD350 is not required for the application.
 Remarks:
@@ -429,23 +429,6 @@ Note:
 
   **************************************************************************/
  #define CONFIG_DEFINE_UPD350_HW_INTF_SEL    CONFIG_UPD350_SPI     
-
-/**************************************************************************************************
-Summary:
-    UPD350 Idle Timeout value in milliseconds.
-Description :
-    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is put to low power mode by   
-    the power management control if there is no activity or interrupt in UPD350.
-Remarks :
-    It shall be expressed in MILLISECONDS_TO_TICKS define.
-    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS is valid only if INCLUDE_POWER_MANAGEMENT_CTRL set as 1.
-    By default, this define is set to to 15seconds.
-Example :
-    <code>
-     #define CONFIG_PORT_UPD_IDLE_TIMEOUT_MS	  MILLISECONDS_TO_TICKS(15000) (Timeout is 15 seconds)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_UPD_IDLE_TIMEOUT_MS 	MILLISECONDS_TO_TICKS(15000)
 
 /**************************************************************************
 Summary:

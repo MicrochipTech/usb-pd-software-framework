@@ -1017,11 +1017,11 @@ Description:
     the port has entered Type C Error Recovery state.
   
     <b>eMCHP_PSF_UPDS_IN_IDLE: </b>This event is posted by Power management control. PSF runs an
-	algorithm backend for Power management control. If there is no activity in UPD350 for 
-	CONFIG_PORT_UPD_IDLE_TIMEOUT_MS corresponding UPD350 is put to low power mode. When all the
-	UPD350 present in the system enters low mode, eMCHP_PSF_UPDS_IN_IDLE is posted. User can put 
-	SoC in low power mode as required on this notification. This notification occurs only when
-    INCLUDE_POWER_MANAGEMENT_CTRL is defined as 1.
+	algorithm backend for Power management control. The Idle timeout value maintained by PSF is 
+    15 seconds. If there is no activity in UPD350 for 15 seconds, corresponding UPD350 is put to 
+    low power mode. When all the UPD350s present in the system enter low power mode, 
+    eMCHP_PSF_UPDS_IN_IDLE is posted. Users can put the SoC in low power mode as required on this
+    notification. This notification occurs only when INCLUDE_POWER_MANAGEMENT_CTRL is defined as 1.
     
     <b> eMCHP_PSF_VCONN_PWR_FAULT:</b> UPD350 has VCONN comparators to detect VCONN OCS faults. 
 	This event is notified when VCONN OCS fault is detected by UPD350. For this notification, PSF
