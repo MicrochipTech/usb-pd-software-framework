@@ -813,7 +813,7 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
     Description:
         This API starts the  port Idle timer with the value specified in
-        CONFIG_PORT_UPD_IDLE_TIMEOUT_MS
+        UPD_IDLE_TIMEOUT_MS
 
     Conditions:
         confined to INCLUDE_POWER_MANAGEMENT_CTRL define.

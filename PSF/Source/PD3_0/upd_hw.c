@@ -526,14 +526,13 @@ void PD_StartIdleTimer(UINT8 u8PortNum)
                 
     /*if UPD350 is active; Restart UPD IDLE Timer*/
     if (UPD_STATE_ACTIVE == gau8ISRPortState[u8PortNum])
-    {
-        
+    {        
         PDTimer_Kill (gau8PortIdleTimerID[u8PortNum]);
         
         gau8PortIdleTimerID[u8PortNum] = MAX_CONCURRENT_TIMERS;
         
         gau8PortIdleTimerID[u8PortNum] = PDTimer_Start(\
-                    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS,\
+                    UPD_IDLE_TIMEOUT_MS,\
                     UPD_SetIdleCB,\
                     u8PortNum, \
                     (UINT8)SET_TO_ZERO);
@@ -575,7 +574,7 @@ void UPD_PwrManagementInit(UINT8 u8PortNum)
 
     /*Start idle timer */
     gau8PortIdleTimerID[u8PortNum] = PDTimer_Start(\
-                                        CONFIG_PORT_UPD_IDLE_TIMEOUT_MS,\
+                                        UPD_IDLE_TIMEOUT_MS,\
                                         UPD_SetIdleCB,\
                                         u8PortNum, \
                                         (UINT8)SET_TO_ZERO);
