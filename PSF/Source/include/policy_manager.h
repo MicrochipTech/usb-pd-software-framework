@@ -584,29 +584,30 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT16 u16SinkOperatingCurrInmA;    //Operating current
   UINT16 u16PrevVBUSVoltageInmV;      // Previous VBUS Voltage in terms of mV
   UINT16 u16ExpectedVBUSVoltageInmV;  // Expected VBUS Voltage in terms of mV
-  UINT16 u16DPMStatus;                 //Bit 1:0 - Status of Port Role <p />
-                                        //Bit 3:2 - Status of Data Role <p />
-                                        //Bit 5:4 - Status of PD Spec Revision <p />
+  UINT16 u16DPMStatus;                 //Bits 1:0 - Status of Port Role <p />
+                                        //Bits 3:2 - Status of Data Role <p />
+                                        //Bits 5:4 - Status of PD Spec Revision <p />
                                         //Bit 6 - VDM Active Status
                                         //Bits 8:7 - Type of current Explicit Contract 
                                         //      00 - Fixed  
                                         //      01 - Variable
                                         //      10 - Battery
                                         //      11 - Programmable
-                                        // Bit9:10 - VCONN Reject status
-                                        // Bits 11: 12 - PR Swap Reject Status
-                                        // Bits 12:13 - DR Swap Reject Status
-  UINT8 u8DPMInternalEvents;        //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
-                                    //DPM_INT_EVT_INITIATE_RENEGOTIATION    BIT(1)
-                                    //DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
-                                    //DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
-                                    //DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
-                                    //DPM_INT_EVT_INITIATE_ALERT          BIT(5)
-                                    //DPM_INT_EVT_INITIATE_GET_STATUS     BIT(6)
-  UINT8 u8DPMConfigData;   //Bit 0 - Default Port Role <p />
-                            //Bit 1 - Default Data Role <p />
-                            //Bit 3:2 - Default PD Spec Revision <p />
-                            //Bit 4 - New PDO Enable <p /> 
+                                        // Bits 10:9 - VCONN Reject status
+                                        // Bits 12:11 - PR Swap Reject Status
+                                        // Bits 14:13 - DR Swap Reject Status                                        
+  UINT8 u8DPMInternalEvents;        //DPM_INT_EVT_INITIATE_GET_SINK_CAPS          BIT(0)
+                                    //DPM_INT_EVT_INITIATE_RENEGOTIATION          BIT(1)
+                                    //DPM_INT_EVT_INITIATE_VCONN_SWAP             BIT(2)
+                                    //DPM_INT_EVT_INITIATE_PR_SWAP                BIT(3)
+                                    //DPM_INT_EVT_INITIATE_DR_SWAP                BIT(4)
+                                    //DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY   BIT(5)
+                                    //DPM_INT_EVT_INITIATE_ALERT                  BIT(6)
+                                    //DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
+  UINT8 u8DPMConfigData;    //Bit  0 - Default Port Role <p />
+                            //Bit  1 - Default Data Role <p />
+                            //Bits 3:2 - Default PD Spec Revision <p />
+                            //Bit  4 - New PDO Enable <p />                             
 
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
@@ -1040,28 +1041,6 @@ UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum);
     None
 **************************************************************************************************/
 void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
-
-/**************************************************************************************************
-    Function:
-        UINT8 DPM_FindSrcSinkCapsMatch(UINT32 u32In_SrcPDO, UINT32 u32In_SinkPDO);
-    Summary:
-        Device Policy Manager compares a given source PDO and a sink PDO and returns the match
-    Devices Supported:
-        UPD350 REV A
-    Description:
-        This Function is used to find the match between the single source and sink PDO
-    Conditions:
-        None.
-    Input:
-
-        u32In_SrcPDO  -  Given Source PDO
-        u32In_SinkPDO  - Given Sink PDO
-    Return:
-        UINT8
-    Remarks:
-        None
-**************************************************************************************************/
-UINT8 DPM_FindSrcSinkCapsMatch(UINT32 u32In_SrcPDO, UINT32 u32In_SinkPDO);
 
 /**************************************************************************************************
     Function:
@@ -1709,7 +1688,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg);
 
 /**************************************************************************************************
     Function:
-        void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+        void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     Summary:
         Timer callback for PE_VDM_BUSY_TIMEOUT_MS timeout
     Description:
@@ -1725,6 +1704,27 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg);
         None. 
 **************************************************************************************************/
 void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+
+/**************************************************************************************************
+    Function:
+        void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev)
+    Summary:
+        This API is used to set the negotiated PD Spec Rev value in 
+        gasDPM[u8PortNum].u16DPMStatus variable.
+    Description:
+        This API is used to assign negotiated PD Spec Rev value in 
+        gasDPM[u8PortNum].u16DPMStatus variable.
+    Conditions:
+        None.
+    Input:
+        u8PortNum   - Port Number for power and data roles need to be assigned
+        u8PDSpecRev - PD Spec Rev to be updated for the port                      
+    Return:
+        None
+    Remarks:
+        None
+**************************************************************************************************/
+void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev); 
 
 #endif /*_POLICY_MANAGER_H_*/
 

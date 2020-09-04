@@ -133,15 +133,11 @@ void PE_RunStateMachine (UINT8 u8PortNum)
              * PD Specification 3.0*/
             if(DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum) > PRL_GET_PD_SPEC_REV (u32Header))
             {
-            	gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
-	            gasDPM[u8PortNum].u16DPMStatus |= ((PRL_GET_PD_SPEC_REV (u32Header)) << \
-                                               DPM_CURR_PD_SPEC_REV_POS);
+                DPM_UpdatePDSpecRev (u8PortNum, PRL_GET_PD_SPEC_REV (u32Header));
             }
             else
             {
-            	gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
-            	gasDPM[u8PortNum].u16DPMStatus |= ((DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum)) << \
-                              	                 DPM_CURR_PD_SPEC_REV_POS);
+                DPM_UpdatePDSpecRev (u8PortNum, DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum));
             }
             /* Spec Rev is updated by PRL*/
             PRL_UpdateSpecAndDeviceRoles (u8PortNum);
@@ -1288,9 +1284,6 @@ void PE_SendSoftResetMsg (UINT8 u8PortNum)
 /***************************************************************************************/
 void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
 {
-
-    /*Initialize the transmit message type as SOP since only SOP message is transmitted in
-    this state machine*/
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
     UINT32 u32TransmitHeader = SET_TO_ZERO;
     UINT32 *u32pTransmitDataObj = SET_TO_ZERO;

@@ -240,8 +240,8 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 #endif
 }
 /*******************************************************************************/
-/***********DPM APIs to set power and data roles in status variables************/
-/*********************************************************************************/
+/****DPM APIs to set power,data roles and PD Spec Rev in status variables*******/
+/*******************************************************************************/
 void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
 {
     /*Set power role in gasDPM[u8PortNum].u16DPMStatus variable*/
@@ -290,6 +290,13 @@ void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
     }
 #endif
 }
+
+void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev)
+{
+    gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+	gasDPM[u8PortNum].u16DPMStatus |= (u8PDSpecRev << DPM_CURR_PD_SPEC_REV_POS);    
+}
+
 /**************************************************************************************************/
 /*********************************DPM VDM Cable APIs**************************************/
 /**************************************************************************************************/
@@ -1388,7 +1395,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
     
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
     UINT8 u8IsVCONNSource = DPM_IsPortVCONNSource(u8PortNum); 
-    UINT8 u8IsPWRCable = gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK;
+    UINT8 u8IsRaCable = gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK;
 #endif
 
 #if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
@@ -1408,7 +1415,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
              based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration.
              Also the Swap shall be accepted only if powered cable is present and Port role
              is source */
-            if ((((PD_ROLE_SOURCE == u8CurrentPwrRole) && u8IsPWRCable) || 
+            if ((((PD_ROLE_SOURCE == u8CurrentPwrRole) && u8IsRaCable) || 
                   (PD_ROLE_SINK == u8CurrentPwrRole))&&
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
                 ((TRUE == u8IsVCONNSource) || (gasDPM[u8PortNum].u8VCONNGoodtoSupply)) &&
@@ -1433,7 +1440,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
             based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration
             Also the Swap shall be accepted only if powered cable is present and Port role
             is source */
-            if ((((PD_ROLE_SOURCE == u8CurrentPwrRole) && u8IsPWRCable) || 
+            if ((((PD_ROLE_SOURCE == u8CurrentPwrRole) && u8IsRaCable) || 
                   (PD_ROLE_SINK == u8CurrentPwrRole))&&
                 (((TRUE == u8IsVCONNSource) && 
                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_VCONN_SRC)) ||

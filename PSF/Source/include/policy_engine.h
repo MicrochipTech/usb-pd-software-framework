@@ -549,11 +549,12 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                             // Bit 2 - PD Valid contract <p />
                                             // Bit 3 - AMS Type <p />
                                             // Bit 4 - NoResponse timer timeout status <p />
-                                            // Bit 5 - NAK received status from E-Cable
-                                            // Bit 6 - HardReset Progress flag
+                                            // Bit 5 - NAK received status from E-Cable <p />
+                                            // Bit 6 - HardReset In Progress Flag <p />
+                                            // Bit 7 - PR Swap In Progress Flag <p />
 	UINT8 u8PETimerID;                      // Policy Engine Timer ID
 	UINT8 u8PENoResponseTimerID;            // NoResponse Timer ID
-    UINT8 u8HardResetRcvdISR;              // Hard Reset received status
+    UINT8 u8HardResetRcvdISR;               // Hard Reset received status
 }MCHP_PSF_STRUCT_PACKED_END POLICY_ENGINE_STATUS;
 
 // *****************************************************************************
