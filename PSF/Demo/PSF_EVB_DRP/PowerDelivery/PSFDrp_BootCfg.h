@@ -98,7 +98,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /***********************************Port Specific configuration***********************/    
 /*Configuration value for u32CfgData*/
-/*Power Role values 0 - Sink, 1- Source, 2- DRP*/
+/*Power Role values 0 - Sink, 1 - Source, 2 - DRP*/
 #define CFG_PORT_0_POWER_ROLE                2
 #define CFG_PORT_1_POWER_ROLE                2
 

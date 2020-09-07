@@ -1173,7 +1173,6 @@ void DPM_UpdateNewPDOFrmSrcPwr(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
         /* Load the New PDO registers with the new PDO values */
         gasCfgStatusData.sPerPortData[u8PortNum].u32aNewPDO[u8Index] = \
                     (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[u8Index] & ~(DPM_PDO_CURRENT_MASK)) | u16CurrentIn10mA;  
-
     }
 }
 
@@ -1370,17 +1369,14 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 /*********************************DPM TypeC Detach API**************************************/
 void DPM_OnTypeCDetach(UINT8 u8PortNum)
 {
-    #if ((TRUE == INCLUDE_PD_DR_SWAP) && (FALSE == INCLUDE_PD_DRP))
+    #if (TRUE == INCLUDE_PD_DR_SWAP)
     
-    /*If DR_SWAP is enabled and DRP is disabled restore the Data Role*/
-
-    /*Assigning DPM_GET_CONFIGURED_POWER_ROLE in place data roles because,
-     during init, power and data roles will be tied together and they have same values.
-     PD_ROLE_SOURCE - PD_ROLE_DFP - Value is 1
-     PD_ROLE_SINK - PD_ROLE_UFP - Value is 0
-     PD_ROLE_DRP - PD_ROLE_TOGGLING - Value is 2*/
-    
-    DPM_UpdateDataRole(u8PortNum, DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum));
+    /* If the port is configured as either Source/DFP or Sink/UFP with 
+       DR_SWAP enabled restore the Data Role on detach */
+    if (DPM_GET_DEFAULT_DATA_ROLE(u8PortNum) != PD_ROLE_TOGGLING)
+    {
+        DPM_UpdateDataRole(u8PortNum, DPM_GET_DEFAULT_DATA_ROLE(u8PortNum));
+    }
     #endif
     /* Clear the DPM variables whose data is no more valid after a Type C detach */
     gasDPM[u8PortNum].u8NegotiatedPDOIndex = RESET_TO_ZERO;
@@ -1478,7 +1474,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
     
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
     UINT8 u8IsVCONNSource = DPM_IsPortVCONNSource(u8PortNum); 
-    UINT8 u8IsRaCable = gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK;
+    UINT8 u8IsRaCable = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK);
 #endif
 
 #if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
