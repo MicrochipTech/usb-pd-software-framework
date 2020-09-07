@@ -355,9 +355,9 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 
                 case ePE_SNK_READY_AMS_END_SS:
                 {
-                    if (gasDPM[u8PortNum].u8InternalEvntInProgress)
+                    if (gasDPM[u8PortNum].u16InternalEvntInProgress)
                     {
-                        gasDPM[u8PortNum].u8InternalEvntInProgress = RESET_TO_ZERO;
+                        gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;
                     }
                     else
                     {

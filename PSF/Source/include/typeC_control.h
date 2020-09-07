@@ -194,6 +194,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_LFSR_EN                   BIT(1)
 #define TYPEC_DRP_DONE                  BIT(2)
 #define TYPEC_DRP_PD_VAL_TRIMMED_RD     BIT(4)
+#define TYPEC_DRP_PD_VAL_OPEN_DIS       (BIT(4) | BIT(5))
+#define TYPEC_DRP_RP_VAL_MASK           (BIT(2)|BIT(3))
 #define TYPEC_DRP_PD_VAL_MASK           (BIT(6)|BIT(5)|BIT(4))
 
 /*Bit definitions of PWR_INT_STS register*/
@@ -514,7 +516,10 @@ TypeC_SetRpCollAvoidance API*/
     
 /*Defines for TYPEC_DISABLED state's sub-states in TYPE C SM*/
 #define TYPEC_DISABLED_ENTRY_SS                         0
-#define TYPEC_DISABLED_IDLE_SS                          1 
+#define TYPEC_DISABLED_WAIT_FOR_VCONN_OFF_SS            1
+#define TYPEC_DISABLED_WAIT_FOR_VBUS_OFF_SS             2
+#define TYPEC_DISABLED_IDLE_SS                          3 
+#define TYPEC_DISABLED_TIMEOUT_SS                       4
 /*************************************************************/
 
 /*Defines for setting Rp value of source*/

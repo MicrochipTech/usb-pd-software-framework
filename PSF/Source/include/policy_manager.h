@@ -570,6 +570,8 @@ Source/Sink Power delivery objects*/
 #define DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY   BIT(5)
 #define DPM_INT_EVT_INITIATE_ALERT                  BIT(6)
 #define DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
+#define DPM_INT_EVT_PORT_DISABLE            		BIT(8)
+#define DPM_INT_EVT_PORT_ENABLE             		BIT(9)
 /**********************************************************************************/                                   
 // *****************************************************************************
 // *****************************************************************************
@@ -596,7 +598,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bits 10:9 - VCONN Reject status
                                         // Bits 12:11 - PR Swap Reject Status
                                         // Bits 14:13 - DR Swap Reject Status                                        
-  UINT8 u8DPMInternalEvents;        //DPM_INT_EVT_INITIATE_GET_SINK_CAPS          BIT(0)
+  UINT16 u16DPMInternalEvents;      //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
                                     //DPM_INT_EVT_INITIATE_RENEGOTIATION          BIT(1)
                                     //DPM_INT_EVT_INITIATE_VCONN_SWAP             BIT(2)
                                     //DPM_INT_EVT_INITIATE_PR_SWAP                BIT(3)
@@ -611,7 +613,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
-  UINT8 u8InternalEvntInProgress; //carries internal event that is currently in progress  
+  UINT16 u16InternalEvntInProgress; //carries internal event that is currently in progress  
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
       UINT8 u8PowerFaultISR;          //Power fault ISR flag
 	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
@@ -1431,7 +1433,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType)
+        void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT16 u16EventType)
     Summary:
         This API to register an internal events to DPM layer
     Description:
@@ -1441,13 +1443,13 @@ void DPM_InternalEventHandler(UINT8 u8PortNum);
         None.
     Input:
         u8PortNum - Port number.
-        u8EventType - Internal Event Type to be registered.
+        u16EventType - Internal Event Type to be registered.
     Return:
         None. 
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT8 u8EventType);
+void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT16 u16EventType);
 
 /**************************************************************************************************
     Function:

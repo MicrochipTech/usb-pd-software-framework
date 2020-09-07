@@ -569,7 +569,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                        TODO: <DPM_Policy> Take care of this while implementing DPM Client request
                        functionality */                    
                     if ((TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum)) && 
-                             (DPM_INT_EVT_INITIATE_RENEGOTIATION == (gasDPM[u8PortNum].u8InternalEvntInProgress & DPM_INT_EVT_INITIATE_RENEGOTIATION)))
+                             (DPM_INT_EVT_INITIATE_RENEGOTIATION == (gasDPM[u8PortNum].u16InternalEvntInProgress & DPM_INT_EVT_INITIATE_RENEGOTIATION)))
                     {                                                
                         DPM_ResetNewPDOParameters(u8PortNum);
                     }                    
@@ -603,9 +603,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					/* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */
                     PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
 #endif
-                    if (gasDPM[u8PortNum].u8InternalEvntInProgress)
+                    if (gasDPM[u8PortNum].u16InternalEvntInProgress)
                     {
-                        gasDPM[u8PortNum].u8InternalEvntInProgress = RESET_TO_ZERO;
+                        gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;
                     }
                     else
                     {
