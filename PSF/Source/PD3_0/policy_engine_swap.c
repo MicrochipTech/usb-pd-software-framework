@@ -1001,7 +1001,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     else
                     {
                         eTxDoneSt = ePE_VCS_TURN_ON_VCONN;
-                        eTxDoneSS = ePE_VCS_TURN_ON_VCONN_ENTRY_SS;
+                        eTxDoneSS = (ePolicySubState)SET_TO_ZERO;
                     }
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
@@ -1044,7 +1044,6 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                                                               PE_SSChngAndTimeoutValidate_TimerCB,\
                                                               u8PortNum, (UINT8)eTxHardRstSS);
 
-
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS;
                     break;
                 }
@@ -1061,108 +1060,59 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
         }
 
         case ePE_VCS_TURN_OFF_VCONN:
-        {          
-            switch (gasPolicyEngine[u8PortNum].ePESubState)
-            {
-              
-                case ePE_VCS_TURN_OFF_VCONN_ENTRY_SS:
-                {                  
-                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Entered the state\r\n");
+        {             
+            DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Entered the state\r\n");
 
-                    /*Turn off VCONN since PS RDY message is received from VCONN Source partner*/
-                    DPM_VCONNOnOff(u8PortNum,DPM_VCONN_OFF);            
+            /*Turn off VCONN since PS RDY message is received from VCONN Source partner*/
+            DPM_VCONNOnOff (u8PortNum, DPM_VCONN_OFF);            
                     
-                    /*Start the VCONN_OFF timer*/
-                    /*This Timeout is implemented outside of the PD Specification to track 
-                    VCONN Turn OFF error*/
-                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
-                                                              PE_VCONNOFF_TIMEOUT_MS,\
-                                                              DPM_VBUSorVCONNOnOff_TimerCB,\
-                                                              u8PortNum,\
-                                                              (UINT8)SET_TO_ZERO);
+            /*Start the VCONN_OFF timer*/
+            /*This Timeout is implemented outside of the PD Specification to track 
+            VCONN Turn OFF error. VCONN OFF Timer is implemented as DPM 
+            timer, so that Policy Engine will not be blocked until VCONN 
+            discharge is completed and hence any AMS received during the VCONN 
+            discharge will be processed */
+            gasDPM[u8PortNum].u8VCONNOffTmrID = PDTimer_Start (\
+                                                      PE_VCONNOFF_TIMEOUT_MS,\
+                                                      DPM_VBUSorVCONNOnOff_TimerCB,\
+                                                      u8PortNum,\
+                                                      (UINT8)SET_TO_ZERO);                    
+                        
+            /* Reset the discover identity counter to 0*/
+            gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
                     
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_OFF_VCONN_CHECK_SS;
-                    break;            
-                }
-                case ePE_VCS_TURN_OFF_VCONN_CHECK_SS:
-                {                
-                    if(!DPM_IsPortVCONNSource(u8PortNum))
-                    {
-                        /*Stop the VCONN_OFF timer*/
-                        PE_KillPolicyEngineTimer (u8PortNum);
-                        
-                        gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-                        gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
-                        
-                        /* Reset the discover identity counter to 0*/
-                        gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
-                        
-                        /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
-                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"eMCHP_PSF_VCONN_SWAP_COMPLETE\r\n");
-                    }
+            /* Move to Ready state */
+            gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+            gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                     
-                    break;                 
-                }
-                
-                default:
-                {
-                    break;
-                }
-            }
-             break;
+            /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
+            (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
+            break;
         }
 
         case ePE_VCS_TURN_ON_VCONN:
-        {
-          
-            switch (gasPolicyEngine[u8PortNum].ePESubState)
-            {
-                case ePE_VCS_TURN_ON_VCONN_ENTRY_SS:
-                {                  
-                    DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Entered the state\r\n");
+        {                  
+            DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Entered the state\r\n");
                     
-                    /*Turn ON VCONN*/
-                    DPM_VCONNOnOff (u8PortNum,DPM_VCONN_ON);
+            /* Turn ON VCONN */
+            DPM_VCONNOnOff (u8PortNum, DPM_VCONN_ON);
                     
-                    /*Port Partner maintains the tVCONNSourceOn timer, So setting the VCONN_ON_self
-                    timer greater than tVCONNSourceOn to send Hard reset in case of VCONN ON
-                    failure*/
-                    /*Start the VCONN_ON_self timer*/
-                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
-                                                              PE_VCONNON_SELF_TIMEOUT_MS,\
-                                                              DPM_VCONNONError_TimerCB,\
-                                                              u8PortNum,\
-                                                              (UINT8)SET_TO_ZERO);
+            /*Port Partner maintains the tVCONNSourceOn timer, So setting the VCONN_ON_self
+            timer greater than tVCONNSourceOn to send Hard reset in case of VCONN ON
+            failure*/
+            /*Start the VCONN_ON_self timer*/
+            gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
+                                                      PE_VCONNON_SELF_TIMEOUT_MS,\
+                                                      DPM_VCONNONError_TimerCB,\
+                                                      u8PortNum,\
+                                                      (UINT8)SET_TO_ZERO);
                     
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_TURN_ON_VCONN_CHECK_SS;
-                    /* Hook to notify PE state machine entry into idle substate */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
-                    
-                    break;
-                  
-                }
-                
-                case ePE_VCS_TURN_ON_VCONN_CHECK_SS:
-                {  
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_TURN_ON_VCONN_CHECK_SS\r\n");
-                    if(DPM_IsPortVCONNSource(u8PortNum))
-                    {                          
-                        PE_KillPolicyEngineTimer (u8PortNum);
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_SEND_PS_RDY;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_ENTRY_SS;                                       
-                    }                    
-                    break;                                        
-                }
-                
-                default:
-                {
-                    break;
-                }
-              
-            }       
-            break;
+            gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_SEND_PS_RDY;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_ENTRY_SS;                                       
 
+            /* Hook to notify PE state machine entry into idle sub-state */
+            MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                    
+            break;                                  
         }
 
         case ePE_VCS_SEND_PS_RDY:
@@ -1171,20 +1121,27 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_VCS_SEND_PS_RDY_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_PS_RDY-ENTRY_SS: Entered the SubState \r\n");
-                    /*Send PS_RDY message*/
-                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY,\
+                    /* Send PD_RDY if VCONN is turned on */
+                    if(DPM_IsPortVCONNSource(u8PortNum))
+                    {
+                        /* Kill the VCONN On Self Timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_PS_RDY-ENTRY_SS: Entered the SubState \r\n");
+            
+                        /*Send PS_RDY message*/
+                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY,\
                                                                    PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
-                    /*Set the transmitter callback to transition to source soft reset state if
-                     message transmission fails*/
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (ePE_VCS_SEND_PS_RDY,\
-                                             ePE_VCS_SEND_PS_RDY_SENT_SS,\
+                        /* Set the transmitter callback to transition to source soft reset state if
+                           message transmission fails*/
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (ePE_VCS_SEND_PS_RDY,\
+                                             ePE_VCS_SEND_PS_RDY_MSG_DONE_SS,\
                                              ePE_SEND_SOFT_RESET,\
                                              ePE_SEND_SOFT_RESET_SOP_SS);
-                    u8IsTransmit = TRUE;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_IDLE_SS;
-                    
+                        
+                        u8IsTransmit = TRUE;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_IDLE_SS;                        
+                    }                    
                     break;
                 }
                 /*Wait here until the PS_RDY message is sent*/
@@ -1192,7 +1149,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 {
                     break;
                 }
-                case ePE_VCS_SEND_PS_RDY_SENT_SS:
+                case ePE_VCS_SEND_PS_RDY_MSG_DONE_SS:
                 {
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;

@@ -2470,18 +2470,22 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
 /*********************************Type C modules Interrupt Functions**************************************/
 /**********************************************************************************************/ 
 void TypeC_VCONNDisOn_IntrHandler(UINT8 u8PortNum)
-{
-          
+{          
     /*Clearing the CC interrupt status in u8IntStsISR variable at the start of this function to 
     make this ISR safe as after TypeC_ResetVCONNDISSettings function call,
     Interrupt will immediately be fired*/  
     gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_CCINT_STATUS_MASK;
     
-    /*Setting the VCONN source bit in u8IntStsISR variable as VCONN disabled */
+    /*Clearing the VCONN source bit in u8IntStsISR variable as VCONN is disabled */
     gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_VCONN_SOURCE_MASK;
     
     /* Clearing VCONN_STATUS bit in Port Connection Status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_VCONN_STATUS);
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_VCONN_ENABLE_STATUS);
+
+    /*Kill the VCONN Off timer which would have been started during VCONN Swap */
+    PDTimer_Kill(gasDPM[u8PortNum].u8VCONNOffTmrID);
+    /* Set the timer Id to Max Concurrent Value*/
+    gasDPM[u8PortNum].u8VCONNOffTmrID = MAX_CONCURRENT_TIMERS;
 
     /*VCONN discharge complete can occur while the sink is still attached or detached for source port*/
     /*VCONN discharge complete can occur while the source is still attached or detached for sink port*/
@@ -2570,7 +2574,7 @@ void TypeC_VCONNOn_IntrHandler(UINT8 u8PortNum)
          gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_CCINT_STATUS_MASK;
          
          /* Setting the Port Connect Status to indicate VCONN is enabled */
-         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_VCONN_STATUS;    
+         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_VCONN_ENABLE_STATUS;    
     }
 }
 

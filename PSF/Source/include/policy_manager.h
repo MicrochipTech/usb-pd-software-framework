@@ -203,7 +203,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_POWER_ROLE_STATUS_SINK                       (0 << DPM_PORT_POWER_ROLE_STATUS_POS)
 #define DPM_PORT_POWER_ROLE_STATUS_SOURCE                     (1 << DPM_PORT_POWER_ROLE_STATUS_POS)
 #define DPM_PORT_POWER_ROLE_STATUS_DRP                        (2 << DPM_PORT_POWER_ROLE_STATUS_POS)
-#define DPM_PORT_VCONN_STATUS                                 BIT(6)
+#define DPM_PORT_VCONN_ENABLE_STATUS                          BIT(6)
 #define DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS        BIT(7)
 #define DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS              BIT(8)
 #define DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS               BIT(9)
@@ -633,6 +633,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #endif
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
   UINT8 u8VCONNSwapWaitTmrID;      // VCONN_Swap Wait Timer ID
+  UINT8 u8VCONNOffTmrID;           // VCONN Off Timer ID 
 #endif
 #if (TRUE == INCLUDE_PD_PR_SWAP)
   UINT8 u8PRSwapWaitTmrID;         // PR_Swap Wait Timer ID

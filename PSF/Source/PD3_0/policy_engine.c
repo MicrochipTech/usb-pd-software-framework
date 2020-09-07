@@ -803,7 +803,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         else
                         {                      
                             PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_VCS_TURN_ON_VCONN, 
-                                ePE_VCS_TURN_ON_VCONN_ENTRY_SS);
+                                    (ePolicySubState)SET_TO_ZERO);
                         }
                     }
 #endif 
@@ -986,11 +986,11 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                              gasPolicyEngine[u8PortNum].ePESubState)
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"VCONN_SWAP: PS_RDY received \r\n");
-                        /*Kill the timer VCONNON timer*/
+                        /*Kill the VCONNON timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
 
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_VCS_TURN_OFF_VCONN,\
-                                           ePE_VCS_TURN_OFF_VCONN_ENTRY_SS);
+                                           (ePolicySubState)SET_TO_ZERO);
                     }
 #endif
 #if (TRUE == INCLUDE_PD_PR_SWAP)

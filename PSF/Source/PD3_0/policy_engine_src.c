@@ -461,14 +461,13 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 
                         u8IsTransmit = TRUE;
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_IDLE_SS;
-                    }
-                    
+                    }                    
                     break;  
                 }
                     
                 case ePE_SRC_TRANSITION_SUPPLY_IDLE_SS:
                 {
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY); 
                     break;  
                 }

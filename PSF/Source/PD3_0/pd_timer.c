@@ -167,6 +167,7 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
 
     #if (TRUE == INCLUDE_PD_VCONN_SWAP)
     gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+    gasDPM[u8PortNum].u8VCONNOffTmrID = MAX_CONCURRENT_TIMERS;
     #endif /*INCLUDE_PD_VCONN_SWAP*/
 
     #if (TRUE == INCLUDE_PD_PR_SWAP)
