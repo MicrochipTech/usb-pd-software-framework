@@ -82,9 +82,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Maximum active concurrent timers for a port when VCONN_SWAP is enabled*/
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-	#define PD_SYS_VCONNSWAP_WAIT_TIMER           1
+	#define PD_SYS_VCONNSWAP_TIMER           2
 #else
-	#define PD_SYS_VCONNSWAP_WAIT_TIMER           0
+	#define PD_SYS_VCONNSWAP_TIMER           0
 #endif
 
 /*Maximum active concurrent timers for a port when DR_SWAP is enabled*/
@@ -100,15 +100,23 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #else
 	#define PD_SYS_PRSWAP_WAIT_TIMER              0
 #endif
+
+/*Maximum active concurrent timers for a port when VDM is enabled*/
+#if (TRUE == INCLUDE_PD_VDM)
+    #define PD_SYS_VDM_BUSY_TIMER                  1 
+#else 
+    #define PD_SYS_VDM_BUSY_TIMER                  0
+#endif 
 /***********************************************************************************/
 /*Maximum concurrent timer per port*/
 #define MAX_CONCURRENT_TIMERS_PER_PORT           (PD_SYS_MAX_CONCURRENT_TIMERS + \
                                                  PD_SYS_POWER_FAULT_TIMER + \
                                                  PD_SYS_PWR_MNGMNT_CTRL + \
                                                  PD_SYS_PPS_STATUS_TIMER + \
-                                                 PD_SYS_VCONNSWAP_WAIT_TIMER + \
+                                                 PD_SYS_VCONNSWAP_TIMER + \
                                                  PD_SYS_DRSWAP_WAIT_TIMER + \
-                                                 PD_SYS_PRSWAP_WAIT_TIMER)
+                                                 PD_SYS_PRSWAP_WAIT_TIMER + \
+                                                 PD_SYS_VDM_BUSY_TIMER)
 
 /* This variable of size MAX_CONCURRENT_TIMERS is the software timer which stores the timeout value, timer state,
  call back function and arguments to be passed to call back function*/

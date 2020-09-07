@@ -395,16 +395,10 @@ typedef enum {
     /*ePE_VCS_ACCEPT_SWAP*/
     ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS,
     ePE_VCS_ACCEPT_SWAP_IDLE_SS,
-    /*ePE_VCS_TURN_OFF_VCONN*/
-    ePE_VCS_TURN_OFF_VCONN_ENTRY_SS,
-    ePE_VCS_TURN_OFF_VCONN_CHECK_SS,
-    /*ePE_VCS_TURN_ON_VCONN*/
-    ePE_VCS_TURN_ON_VCONN_ENTRY_SS,
-    ePE_VCS_TURN_ON_VCONN_CHECK_SS,
     /*ePE_VCS_SEND_PS_RDY*/
     ePE_VCS_SEND_PS_RDY_ENTRY_SS,
     ePE_VCS_SEND_PS_RDY_IDLE_SS,
-    ePE_VCS_SEND_PS_RDY_SENT_SS,
+    ePE_VCS_SEND_PS_RDY_MSG_DONE_SS,
     
     //---------------------DR_SWAP sub states---------------------------------//
     /*ePE_DRS_ACCEPT_SWAP*/        
