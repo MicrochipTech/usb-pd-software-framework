@@ -145,7 +145,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
             /*Assign Idle state to PE if AMS is not initiated on TX and message is received
              * before that*/
             if ((TRUE == gasPRL[u8PortNum].u8TxStsDPMSyncISR) && \
-                    (gasDPM[u8PortNum].u8InternalEvntInProgress))
+                    (gasDPM[u8PortNum].u16InternalEvntInProgress))
             {
                 if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {
@@ -162,8 +162,8 @@ void PE_RunStateMachine (UINT8 u8PortNum)
                 MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
                 
                 /*Restore the internal event that was in progress*/
-                gasDPM[u8PortNum].u8DPMInternalEvents |= gasDPM[u8PortNum].u8InternalEvntInProgress;
-                gasDPM[u8PortNum].u8InternalEvntInProgress = RESET_TO_ZERO;
+                gasDPM[u8PortNum].u16DPMInternalEvents |= gasDPM[u8PortNum].u16InternalEvntInProgress;
+                gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;
             }
             
             gasPolicyEngine[u8PortNum].u32MsgHeader = u32Header;
