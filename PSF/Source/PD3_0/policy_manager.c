@@ -1186,25 +1186,21 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 {
     if (FALSE == u8Enable)
     {
-        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM_EnablePort Start Disable\r\n"); 
         /* Disable the port by changing Type C states to 
            TYPEC_DISABLED and TYPEC_DISABLED_ENTRY_SS */
         DPM_SetTypeCState(u8PortNum, TYPEC_DISABLED, TYPEC_DISABLED_ENTRY_SS);
+        
         /* Change Policy Engine state and sub-state to invalid state */
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
-        
-        /* Kill all the timers*/
-        PDTimer_KillPortTimers (u8PortNum);
+
+        DPM_OnTypeCDetach(u8PortNum);
     }
     else
     {
         if ((TYPEC_DISABLED == gasTypeCcontrol[u8PortNum].u8TypeCState) && \
                 (TYPEC_DISABLED_TIMEOUT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
         {
-            /* Enable the port by changing Type C states to 
-               TYPEC_UNATTACHED_SRC in case of Source and TYPEC_UNATTACHED_SNK
-               in case of Sink */
             if (PD_ROLE_SOURCE == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
             {
                 /*Setting the CC1 and CC2 line as Rp 3A*/
@@ -1212,7 +1208,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
                 
                 /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
-                gasTypeCcontrol[u8PortNum].u8PortSts  |= (3 << TYPEC_CURR_RPVAL_POS);
+                gasTypeCcontrol[u8PortNum].u8PortSts  |= (TYPEC_ROLE_SOURCE_30 << TYPEC_CURR_RPVAL_POS);
             
                 DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SRC, TYPEC_UNATTACHED_SRC_ENTRY_SS);  
                                 
@@ -1224,78 +1220,53 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
                 /*Enable PIO override enable*/
                 UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
                 #endif
-
-                /*Setting the CC Debounce register to detect both the sink and powered cable on CC1 and CC2*/
-                TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
-    
-                /*Setting CC Comparator ON*/
-                TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);   
-                /*Setting VBUS Comparator ON*/
-                TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);   
-                
-                /*Setting Initial Source Policy Engine State as Startup State*/
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;                
             }
             else if (PD_ROLE_SINK == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
-            {                
+            {
                 /*Setting the CC1 and CC2 line as Open Disconnect*/
                 TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);                        
                         
                 DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SNK, TYPEC_UNATTACHED_SNK_ENTRY_SS);
                 
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+                    
+	            /* u16SinkOperatingCurrInmA current will be set to 0mA during initialization of DPM*/
+	            /* Enable threshold to detect 5V*/
+	            TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
+	                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
+            
+				#if (TRUE == INCLUDE_PD_SINK)
+	            /*Disable the Sink circuitry to stop sinking the power from source*/
+	            PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+	            #endif
+
                 /*Setting CC Comparator ON*/
                 TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);   
-                /*Setting VBUS Comparator ON*/
-                TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);   
-                
-                /*Setting Initial Sink Policy Engine State as Startup State*/
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;        
+                    
+	            /*Enabling the VBUS discharge functionality for VBUS to go to Vsafe0V*/                  
+	            PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);
+            
             }
             else /*Power role is DRP*/
             {
 #if (TRUE == INCLUDE_PD_DRP)
+
                 TypeC_InitDRPPort(u8PortNum);
-                                /*Setting Initial Source Policy Engine State as Startup State*/
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
-                
-                /*FW programs DRP Pull-Down Value (DRP_PD_VAL) in DRP Control Register. 
-                  This value will be advertised when DRP advertises Sink capabilities.*/
-                UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_PD_VAL_MASK);
-                UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_PD_VAL_TRIMMED_RD);   
-
-                  /*FW programs DRP Current Advertisement (DRP_CUR_ADV) in DRP Control Register. This value
-                  will be advertised when DRP advertises Source capabilities.*/
-                UINT8 u8ConfiguredRpVal = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
-
-                UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, (u8ConfiguredRpVal << TYPEC_DRP_RP_POS));
-
-                /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
-                gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
-                gasTypeCcontrol[u8PortNum].u8PortSts |= (u8ConfiguredRpVal << TYPEC_CURR_RPVAL_POS);
-    
+                      
                 /*Set power and data role status*/
                 DPM_UpdatePowerRole(u8PortNum, PD_ROLE_DRP);
                 DPM_UpdateDataRole(u8PortNum, PD_ROLE_TOGGLING);
-                        
-                DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SRC, TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS);
-                
-                /*Setting Initial Source Policy Engine State as Startup State*/
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
-                
-                /*Enabling TYPEC_DRP_DONE interrupt in CC_INT_EN register */   
-                UPD_RegByteSetBit (u8PortNum,  TYPEC_CC_INT_EN, (UINT8)TYPEC_DRP_DONE);	
 #endif
             }
+            
+            PE_InitPort(u8PortNum);
         }
         else
         {
             /* Do nothing since the port shall only be enabled if it was 
             previously in the disabled state */ 
         }
+
     }
 }
 
