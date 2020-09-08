@@ -596,19 +596,27 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     {
         return;
     }
-    
-
 
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
     /* Check for VBUS Fault Handling request. Policy Engine Idle check 
        is not needed for this has fault has to be handled with highest priority*/
     if (DPM_CLIENT_REQ_PORT_DISABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
-        DPM_EnablePort(u8PortNum, FALSE);
+        /* Clear the client request since it is accepted */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                    ~(DPM_CLIENT_REQ_PORT_DISABLE);
+        
+        /* Request DPM to disable port */
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_PORT_DISABLE);
     }
     else if (DPM_CLIENT_REQ_PORT_ENABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
-        DPM_EnablePort(u8PortNum, TRUE);
+                /* Clear the client request since it is accepted */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                    ~(DPM_CLIENT_REQ_PORT_ENABLE);
+        
+        /* Request DPM to enable port */
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_PORT_ENABLE);
     }
     else if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
@@ -669,7 +677,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         #endif
     }
     /* Check if Policy Engine is Idle and no internal event pending*/
-    if((TRUE == PE_IsPolicyEngineIdle(u8PortNum)) && (!gasDPM[u8PortNum].u16DPMInternalEvents))
+    else if((TRUE == PE_IsPolicyEngineIdle(u8PortNum)) && (!gasDPM[u8PortNum].u16DPMInternalEvents))
     {            
         /* Check for renegotiation request */
         if (DPM_CLIENT_REQ_RENEGOTIATE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
@@ -720,30 +728,30 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
     UINT16 u16IsAMSInProgress = FALSE, u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     
-        if(DPM_INT_EVT_PORT_DISABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
-                                                    DPM_INT_EVT_PORT_DISABLE))
-        {
-            /*Clear the Internal event since it is processed*/
-            gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_PORT_DISABLE);
-                    
-            DPM_EnablePort(u8PortNum, FALSE);
-        }
-        else if(DPM_INT_EVT_PORT_ENABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
-                                                    DPM_INT_EVT_PORT_ENABLE))
-        {
-            /*Clear the Internal event since it is processed*/
-            gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_PORT_ENABLE);
-                    
-            DPM_EnablePort(u8PortNum, TRUE);
-        }
+    if(DPM_INT_EVT_PORT_DISABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
+                                                DPM_INT_EVT_PORT_DISABLE))
+    {
+        /*Clear the Internal event since it is processed*/
+        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_PORT_DISABLE);
+
+        DPM_EnablePort(u8PortNum, FALSE);
+    }
+    else if(DPM_INT_EVT_PORT_ENABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
+                                                DPM_INT_EVT_PORT_ENABLE))
+    {
+        /*Clear the Internal event since it is processed*/
+        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_PORT_ENABLE);
+
+        DPM_EnablePort(u8PortNum, TRUE);
+    }
             
 #if (TRUE == INCLUDE_PD_3_0)
     /* Process internal events only when the Policy Engine is in PS_RDY state*/
-    if ((gasDPM[u8PortNum].u16DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)) &&\
+    else if ((gasDPM[u8PortNum].u16DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)) &&\
             PRL_IsAMSInitiatable(u8PortNum))
     {
 #else
-    if ((gasDPM[u8PortNum].u16DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)))
+    else if ((gasDPM[u8PortNum].u16DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)))
     {      
 #endif   
         /*If condition is ordered based on the internal event priority*/
