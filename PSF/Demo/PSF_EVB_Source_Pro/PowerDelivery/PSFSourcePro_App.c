@@ -138,6 +138,11 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break; 
         }
         
+        case eMCHP_PSF_PE_SRC_DISABLED:
+        {
+            break; 
+        }
+        
         case eMCHP_PSF_SINK_CAPS_NOT_RCVD: 
         {
             break; 
@@ -194,6 +199,11 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         case eMCHP_PSF_CABLE_IDENTITY_NAKED:
         {
             break;
+        }
+        
+        case eMCHP_PSF_IDLE:
+        {
+            break; 
         }
         
         case eMCHP_PSF_BUSY:
