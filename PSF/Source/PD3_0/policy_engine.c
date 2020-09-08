@@ -356,7 +356,8 @@ UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header)
     if (PE_UNSUPPORTED_MSG == u8ChkMsgSupport)
     {
         if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) ||
-           (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState))
+           (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || 
+           (ePE_INIT_PORT_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState))
         {
             PE_SendNotSupportedOrRejectMsg(u8PortNum);
             u8RetVal = PE_MSG_HANDLED;
