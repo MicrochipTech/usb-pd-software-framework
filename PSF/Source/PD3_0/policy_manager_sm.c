@@ -698,7 +698,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     }
     else
     {
-        /* Since Policy Engine is not Idle i.e not in PE_SRC_READY state,
+        /* Since Policy Engine is not Idle i.e not in PE_SRC_READY/PE_SNK_READY state,
            DPM cannot handle any of the Client Requests. So, clear the 
            flag and send Busy notification, so that the application can 
            re-initiate the request on receiving the Busy notification */

@@ -362,12 +362,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     else
                     {
                         /* Hook to notify PSF is IDLE */
-                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eMCHP_PSF_IDLE);
-                    
+                        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_IDLE);                    
                     }
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
                     
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }

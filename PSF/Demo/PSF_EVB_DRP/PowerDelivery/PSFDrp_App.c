@@ -110,33 +110,45 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             u8RetVal = TRUE;
             break;
         }
+        
         case eMCHP_PSF_PORT_POWERED_OFF:
         {
             break;
         }
+        
         case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
         {
             break; 
         }
+        
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             break;
         }
+        
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
             break;
         }
+        
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
             break;
         }
+        
         case eMCHP_PSF_CAPS_MISMATCH:
         {
             break;
         }
+        
         case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
         {
             break;
+        }
+        
+        case eMCHP_PSF_PE_SRC_DISABLED:
+        {
+            break; 
         }
         
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
@@ -247,6 +259,11 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         case eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD:
         {            
             break; 
+        }
+        
+        case eMCHP_PSF_IDLE:
+        {
+            break;
         }
         
         case eMCHP_PSF_BUSY:
