@@ -212,7 +212,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             }
-            #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
+            #if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)  
             else if (PORT1 == u8PortNum)
             {
                 PORT_PinWrite(PORT_PIN_PA15, TRUE);
@@ -248,7 +248,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 SPI_SS_0_Set();
                 SPI_SS_0_OutputEnable();                
             }
-            #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
+            #if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)  
             else if(PORT1 == u8PortNum)
             {
                 SPI_SS_1_Set();
@@ -355,7 +355,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     /*PORT_PIN_PA10*/
                     SPI_SS_0_Clear();
                 }
-                #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
+                #if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)  
                 else if(PORT1 == u8PortNum)
                 {
                     /*PORT_PIN_PA01*/
@@ -374,7 +374,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     SPI_SS_0_Set();
                 }
-                #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
+                #if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)  
                 else if(PORT1 == u8PortNum)
                 {
                     SPI_SS_1_Set();
