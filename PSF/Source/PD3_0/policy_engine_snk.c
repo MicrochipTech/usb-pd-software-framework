@@ -355,6 +355,19 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 
                 case ePE_SNK_READY_AMS_END_SS:
                 {
+#if (TRUE == INCLUDE_PD_VDM)
+                    /* Post not received notification if VDM:Disc Identity was initiated 
+                       previously and no response has been received */
+                    if (gasPolicyEngine[u8PortNum].u8PERuntimeConfig & PE_DISCOVER_ID_INITIATED)
+                    {
+                        gasPolicyEngine[u8PortNum].u8PERuntimeConfig &= ~(PE_DISCOVER_ID_INITIATED);
+                        if (SET_TO_ZERO == DPM_VDM_GET_CMD_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[INDEX_0]))
+                        {
+                            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD);                                                         
+                        }
+                    }
+#endif
+                    
                     if (gasDPM[u8PortNum].u16InternalEvntInProgress)
                     {
                         gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;
@@ -388,8 +401,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
            switch (gasPolicyEngine[u8PortNum].ePESubState)
            {           
                case ePE_SNK_HARD_RESET_SEND_SS:
-               { 
-                    
+               {                     
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_HARD_RESET_SEND_SS: Entered the state\r\n");
 
                     /*Kill All the Active timers of policy engine for the port*/

@@ -115,6 +115,11 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
 					/* GoodCRC received for VDM Identity request sent to SOP */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS\r\n");
                     
+                    /* Set the Discover Identity initiated Flag. This would be useful in cases 
+                       where response for the VDM request is not received from the partner 
+                       and not received notification will be sent based on this flag */
+                    gasPolicyEngine[u8PortNum].u8PERuntimeConfig |= PE_DISCOVER_ID_INITIATED; 
+                    
 					/* Start the VDMResponse timer, if timed out set the PE sub-state to 
 					   ePE_INIT_PORT_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
@@ -148,7 +153,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     }
                     else /* PE_VDM_REQ */
                     {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_GET_IDENTITY;
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_GET_IDENTITY;                        
                     }
                     break; 
                 }

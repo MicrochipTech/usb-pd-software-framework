@@ -56,6 +56,8 @@ void PE_InitPort (UINT8 u8PortNum)
     gasPolicyEngine[u8PortNum].u32MsgHeader = SET_TO_ZERO;
     gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = SET_TO_ZERO;
 
+    gasPolicyEngine[u8PortNum].u8PERuntimeConfig = SET_TO_ZERO; 
+    
     if (PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
     {
         /*Setting the CapsCounter to 0 */

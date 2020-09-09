@@ -1411,6 +1411,8 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
         
     gasDPM[u8PortNum].u16DPMStatus &= ~DPM_SWAP_REJECT_STS_MASK;
     
+    gasPolicyEngine[u8PortNum].u8PERuntimeConfig = SET_TO_ZERO; 
+    
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
