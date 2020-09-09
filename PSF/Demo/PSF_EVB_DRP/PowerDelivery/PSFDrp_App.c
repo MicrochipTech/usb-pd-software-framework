@@ -295,6 +295,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             }
+#if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2)          
             else if (PORT1 == u8PortNum)
             {
                 PORT_PinWrite(PORT_PIN_PA15, TRUE);
@@ -302,6 +303,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA15);
             }
+#endif
             else
             {
                 /* Do Nothing */
@@ -318,6 +320,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA02, SAMD20_I2CDCDCAlertCallback, PORT0);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA02);
             }
+            #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
             else if (PORT1 == u8PortNum)
             {
                 PORT_PinWrite(PORT_PIN_PA03, TRUE);
@@ -325,6 +328,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA03, SAMD20_I2CDCDCAlertCallback, PORT1);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA03);
             }
+            #endif
             else
             {
                 /* Do Nothing */
@@ -348,11 +352,13 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 SPI_SS_0_Set();
                 SPI_SS_0_OutputEnable();
             }
+            #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
             else if(PORT1 == u8PortNum)
             {
                 SPI_SS_1_Set();
                 SPI_SS_1_OutputEnable();
             }
+            #endif
             else
             {
                 /* Do Nothing */
@@ -375,6 +381,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 DC_DC_EN_0_Clear();
                 DC_DC_EN_0_OutputEnable();
             }
+            #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
             else if(PORT1 == u8PortNum)
             {
                 /*DC_DC_EN will be cleared initially. 
@@ -382,6 +389,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 DC_DC_EN_1_Clear();
                 DC_DC_EN_1_OutputEnable();
             }
+            #endif
             else
             {
                 /* Do Nothing */
@@ -447,11 +455,13 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 POWER_ROLE_0_Clear();
                 POWER_ROLE_0_OutputEnable();  
             }
+            #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
             else if (PORT1 == u8PortNum)
             {
                 POWER_ROLE_1_Clear();
                 POWER_ROLE_1_OutputEnable(); 
             }
+            #endif  
             else
             {
                 /*Do nothing*/
@@ -465,11 +475,13 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 DATA_ROLE_0_Clear();
                 DATA_ROLE_0_OutputEnable();  
             }
+            #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
             else if (PORT1 == u8PortNum)
             {
                 DATA_ROLE_1_Clear();
                 DATA_ROLE_1_OutputEnable(); 
             }
+            #endif
             else
             {
                 /*Do nothing*/
@@ -534,11 +546,13 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     /*PORT_PIN_PA10*/
                     SPI_SS_0_Clear();
                 }
+                #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
                 else if(PORT1 == u8PortNum)
                 {
                     /*PORT_PIN_PA01*/
                     SPI_SS_1_Clear();
                 } 
+                #endif
                 else
                 {
                     /* Do Nothing */
@@ -551,10 +565,12 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     SPI_SS_0_Set();
                 }
+                #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
                 else if(PORT1 == u8PortNum)
                 {
                     SPI_SS_1_Set();
                 }
+                #endif
                 else
                 {
                     /* Do Nothing */
@@ -582,10 +598,12 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     DC_DC_EN_0_Set();
                 }
+                #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
                 else if(PORT1 == u8PortNum)
                 {
                     DC_DC_EN_1_Set();
                 }
+                #endif
                 else
                 {
                     /* Do Nothing */
@@ -597,10 +615,12 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     DC_DC_EN_0_Clear();
                 }
+                #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
                 else if(PORT1 == u8PortNum)
                 {
                     DC_DC_EN_1_Clear();
                 }
+                #endif
                 else
                 {
                     /* Do Nothing */
@@ -694,6 +714,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     POWER_ROLE_0_Clear();
                 }
             }
+            #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
             else if (PORT1 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
@@ -705,6 +726,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     POWER_ROLE_1_Clear();
                 }            
             }
+            #endif
             else
             {
                 /*Do nothing*/
@@ -724,6 +746,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     DATA_ROLE_0_Clear();
                 }
             }
+            #if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
             else if (PORT1 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
@@ -735,6 +758,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     DATA_ROLE_1_Clear();
                 }            
             }
+            #endif
             else
             {
                 /*Do nothing*/
