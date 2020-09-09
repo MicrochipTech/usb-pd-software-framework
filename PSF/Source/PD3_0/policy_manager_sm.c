@@ -597,7 +597,6 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         return;
     }
 
-#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
     /* Check for Port enable/disable and VBUS Fault Handling requests. Policy Engine Idle check 
        is not needed for these requests and they have to be handled with highest priority*/
     if (DPM_CLIENT_REQ_PORT_DISABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
@@ -618,6 +617,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         /* Request DPM to enable port */
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_PORT_ENABLE);
     }
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
     else if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
         /* Clear the client request since it is accepted */
@@ -676,6 +676,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         }
         #endif
     }
+#endif /*INCLUDE_POWER_FAULT_HANDLING*/
+    
     /* Check if Policy Engine is Idle and no internal event pending*/
     else if((TRUE == PE_IsPolicyEngineIdle(u8PortNum)) && (!gasDPM[u8PortNum].u16DPMInternalEvents))
     {            
@@ -714,8 +716,6 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         
        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_BUSY); 
     } /*else part of PE engine idle check*/
-
-#endif         
 }
 
 /************************DPM Internal Event Handling APIs *******************************/
