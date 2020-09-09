@@ -33,7 +33,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSFDRP_APP_H
 #define _PSFDRP_APP_H
 
-/* Defines major and minor version of PSF Source Pro Application*/
+/* Defines major and minor version of PSF DRP Application*/
 #define APP_REV_MAJOR	0x01
 #define APP_REV_MINOR	0x07
 

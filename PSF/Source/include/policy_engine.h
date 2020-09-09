@@ -209,6 +209,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES 4
 #define PE_PPS_STATUS_DATA_OBJ_CNT             2 
 
+/*--------------Run Time Config--------------------*/
+#define PE_DISCOVER_ID_INITIATED               BIT(0)
+
 typedef enum {
     /* Source Policy Engine Main State */ 
 	ePE_SRC_STARTUP,
@@ -549,6 +552,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 	UINT8 u8PETimerID;                      // Policy Engine Timer ID
 	UINT8 u8PENoResponseTimerID;            // NoResponse Timer ID
     UINT8 u8HardResetRcvdISR;               // Hard Reset received status
+    UINT8 u8PERuntimeConfig;                // Bit 0 - SOP VDM:Disc Identity initiated
 }MCHP_PSF_STRUCT_PACKED_END POLICY_ENGINE_STATUS;
 
 // *****************************************************************************
