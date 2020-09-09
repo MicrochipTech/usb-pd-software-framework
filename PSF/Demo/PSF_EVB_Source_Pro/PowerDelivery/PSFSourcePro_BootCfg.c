@@ -120,7 +120,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
 
 /*Port 1 Per Port Configuration*/      
-#if (CONFIG_PD_PORT_COUNT == PORT_COUNT_2) 
+#if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)  
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
                 ((CFG_PORT_1_VCONN_OCS_ENABLE) | (CFG_PORT_1_ENABLE) | (CFG_PORT_1_RP_CURRENT_VALUE)| \
                 (CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_1_POWER_ROLE));
