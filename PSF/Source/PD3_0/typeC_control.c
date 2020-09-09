@@ -1008,7 +1008,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     if(TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     { 
-                        /*Enabling the VBUS discharge functionality for VBUS to go to Vsafe0V*/                  
+                        /*Disabling the VBUS discharge functionality for VBUS has reached Vsafe0V*/                  
                         PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
             
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
