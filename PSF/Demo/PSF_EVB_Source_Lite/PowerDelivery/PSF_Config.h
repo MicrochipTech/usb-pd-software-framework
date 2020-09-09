@@ -1376,7 +1376,7 @@ typedef enum
     client request could be handled by PSF at a given time. So, it is recommended that the application 
     should raise a single request at a time i.e set only one of the bits in this variable.
 	
-	In case PSF is busy, it cannot handle any of the client requests. In this case, the 
+	Except a few client requests, others cannot be handled when PSF is busy. In this case, the 
 	u32ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
 	PSF, so that the application initiate the request again by setting the respective bit in this 
 	variable. If the request is accepted and processed, a response notification would be posted by 
@@ -1385,7 +1385,31 @@ typedef enum
     Bit     R/W Config   R/W Run   \Description
              time         time      
     ------  -----------  --------  --------------------
-    0       R/W          R/W       Renegotiation Request 
+    0       R/W          R/W       Port Disable Request 
+                                    * Set this bit to request PSF to disable a port.
+                                    * This client request will be processed by PSF 
+                                       irrespective of whether it is idle.
+                                    * Once a port is disabled successfully, 
+                                       eMCHP_PSF_PORT_DISABLED notification will be posted
+                                       by PSF to user application.
+    1       R/W          R/W       Port Enable Request 
+                                    * Set this bit to request PSF to enable a port.
+                                    * This client request will be processed by PSF 
+                                       irrespective of whether it is idle.
+                                     * Once a port is disabled successfully, 
+                                       eMCHP_PSF_PORT_ENABLED notification will be posted
+                                       by PSF to user application.
+    2       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
+                                    * Set this bit to request PSF to process externally detected
+                                        over voltage VBUS fault.
+    3                               * Set this bit to request PSF to process externally detected
+                                        over current VBUS power fault or to inform PSF that Current
+                                        Limit mode is entered by external DC-DC controller.  
+    4       R/W          R/W       Handle VBUS Power Fault Over current exit Request 
+                                    * Set this bit to inform PSF that externally detected 
+                                        over current VBUS power fault condition is exited or 
+                                        Constant Voltage mode is entered by external DC-DC controller.
+    5       R/W          R/W       Renegotiation Request 
                                     * '0' PSF has not received any renegotiation request.
                                     * '1' PSF has received a renegotiation request. 
 									Before initiating the request, user has to fill the Source 
@@ -1393,20 +1417,9 @@ typedef enum
 									u8NewPDOCnt. 
 									Once the request is processed by PSF, u32aNewPDO array and 
 									u8NewPDOCnt would be cleared and 
-									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted. 
-    2:1                            Reserved 
-    3       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
-                                    * Set this bit to request PSF to process externally detected
-                                        over voltage VBUS fault.
-    4       R/W          R/W       Handle VBUS Power Fault Over current Request 
-                                    * Set this bit to request PSF to process externally detected
-                                        over current VBUS power fault or to inform PSF that Current
-                                        Limit mode is entered by external DC-DC controller.  
-    5       R/W          R/W       Handle VBUS Power Fault Over current exit Request 
-                                    * Set this bit to inform PSF that externally detected 
-                                        over current VBUS power fault condition is exited or 
-                                        Constant Voltage mode is entered by external DC-DC controller.
-    6       R/W          R/W       Get Partner Identity Request      
+									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted.
+    9:6                             Reserved.
+    10       R/W          R/W      Get Partner Identity Request      
                                     * '0' PSF has not received any Get Partner Identity request.
                                     * '1' PSF has received a Get Partner Identity request. 									 
                                     *  eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED notification will 
@@ -1418,7 +1431,7 @@ typedef enum
                                         accessing the u32aPartnerIdentity[7] register
                                     *  This request is supported only when INCLUDE_PD_VDM is 
                                         defined as '1'. 
-	31:7  						   Reserved 									
+	31:11  						   Reserved 									
 	</table> 								
  
 	<b>f. u16PortIntrMask</b>: 
