@@ -598,8 +598,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     }
 
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-    /* Check for VBUS Fault Handling request. Policy Engine Idle check 
-       is not needed for this has fault has to be handled with highest priority*/
+    /* Check for Port enable/disable and VBUS Fault Handling requests. Policy Engine Idle check 
+       is not needed for these requests and they have to be handled with highest priority*/
     if (DPM_CLIENT_REQ_PORT_DISABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
         /* Clear the client request since it is accepted */
@@ -611,7 +611,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     }
     else if (DPM_CLIENT_REQ_PORT_ENABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
-                /* Clear the client request since it is accepted */
+        /* Clear the client request since it is accepted */
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                     ~(DPM_CLIENT_REQ_PORT_ENABLE);
         
@@ -728,6 +728,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
     UINT16 u16IsAMSInProgress = FALSE, u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     
+    /*Process port disable/enable internal events irrespective of whether PSF is idle*/
     if(DPM_INT_EVT_PORT_DISABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                 DPM_INT_EVT_PORT_DISABLE))
     {
