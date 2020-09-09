@@ -124,6 +124,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PORT2       2
 #define PORT3       3
 
+#define PORT_COUNT_1    1
+#define PORT_COUNT_2    2
 /**********************************************************************************************/
 
 #endif /*GENERIC_DEFS_H*/
