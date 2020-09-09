@@ -1184,6 +1184,8 @@ void DPM_UpdateNewPDOFrmSrcPwr(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
 /********************* DPM API for Port Enable/Disable ******************/
 void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 {
+    UINT8 u8ConfiguredRpVal;
+    
     if (FALSE == u8Enable)
     {
         /* Disable the port by changing Type C states to 
@@ -1194,6 +1196,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
 
+        /*Clear internal and external parameters just like a detach event*/
         DPM_OnTypeCDetach(u8PortNum);
     }
     else
@@ -1203,15 +1206,15 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
         {
             if (PD_ROLE_SOURCE == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
             {
-                /*Setting the CC1 and CC2 line as Rp 3A*/
-                TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_30, TYPEC_ENABLE_CC1_CC2);
+                u8ConfiguredRpVal = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
+                
+                /*Setting the CC1 and CC2 line as user given Rp value*/
+                TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, u8ConfiguredRpVal, TYPEC_ENABLE_CC1_CC2);
                 
                 /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
-                gasTypeCcontrol[u8PortNum].u8PortSts  |= (TYPEC_ROLE_SOURCE_30 << TYPEC_CURR_RPVAL_POS);
+                gasTypeCcontrol[u8PortNum].u8PortSts  |= (u8ConfiguredRpVal << TYPEC_CURR_RPVAL_POS);
             
-                DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SRC, TYPEC_UNATTACHED_SRC_ENTRY_SS);  
-                                
 #if(TRUE == INCLUDE_PD_SOURCE)                           
                 /*Enable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                 PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
@@ -1220,18 +1223,17 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
                 /*Enable PIO override enable*/
                 UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
                 #endif
+
+                DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SRC, TYPEC_UNATTACHED_SRC_ENTRY_SS);  
+
             }
             else if (PD_ROLE_SINK == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
             {
-                /*Setting the CC1 and CC2 line as Open Disconnect*/
+                /*Setting the CC1 and CC2 line as sink Rd*/
                 TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);                        
-                        
-                DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SNK, TYPEC_UNATTACHED_SNK_ENTRY_SS);
                 
                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                     
-	            /* u16SinkOperatingCurrInmA current will be set to 0mA during initialization of DPM*/
-	            /* Enable threshold to detect 5V*/
 	            TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
 	                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
             
@@ -1245,7 +1247,8 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
                     
 	            /*Enabling the VBUS discharge functionality for VBUS to go to Vsafe0V*/                  
 	            PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);
-            
+                
+                DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SNK, TYPEC_UNATTACHED_SNK_ENTRY_SS);
             }
             else /*Power role is DRP*/
             {
@@ -1259,6 +1262,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 #endif
             }
             
+            /*Clear Policy Engine internal variables*/
             PE_InitPort(u8PortNum);
         }
         else

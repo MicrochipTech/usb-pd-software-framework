@@ -169,6 +169,8 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     /*Clearing BLK_PD_MSG again. Done in cronus*/
     UPD_RegByteClearBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
     
+    /* Notify external DPM of DRP Port enabled event through a user defined call back*/
+    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_ENABLED);
 }
 #endif
 /**************************************************************************************/
@@ -484,6 +486,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;                    
                     }
                    
+                    /* Notify external DPM of Port enabled event through a user defined call back*/
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_ENABLED);
+                    
                     /* Notify external DPM of Type C Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
                     
@@ -989,6 +994,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #endif
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK_ENTRY_SS\r\n");
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_WAIT_FOR_VSAFE0V_SS;
+                    
+                    /* Notify external DPM of Port enabled event through a user defined call back*/
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_ENABLED);
                     
                     /*Notify external DPM of Type Detach event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_DETACH_EVENT);
@@ -1614,11 +1622,17 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
                 /*Device waits in this sub-state until the tErrorRecovery software timer expires*/
                 case TYPEC_DISABLED_IDLE_SS:
-                case TYPEC_DISABLED_TIMEOUT_SS:    
                     /* Hook to notify Type C state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break;
-
+                case TYPEC_DISABLED_TIMEOUT_SS:    
+                    
+                    /* Notify external DPM of Port disabled event through a user defined call back*/
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_DISABLED);
+                    
+                    /* Hook to notify Type C state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
+                    break;
                 default:
                 {
                     break; 

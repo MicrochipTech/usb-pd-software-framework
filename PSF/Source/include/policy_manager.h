@@ -553,12 +553,12 @@ Source/Sink Power delivery objects*/
 #define DPM_NO_CLIENT_REQ_PENDING                0x00 
 #define DPM_CLEAR_ALL_CLIENT_REQ                 0x00 
 
-#define DPM_CLIENT_REQ_RENEGOTIATE               BIT(0)
-#define DPM_CLIENT_REQ_PORT_DISABLE              BIT(1)
-#define DPM_CLIENT_REQ_PORT_ENABLE               BIT(2)
-#define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(3)
-#define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(4)
-#define DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT      BIT(5)
+#define DPM_CLIENT_REQ_PORT_DISABLE              BIT(0)
+#define DPM_CLIENT_REQ_PORT_ENABLE               BIT(1)
+#define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(2)
+#define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(3)
+#define DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT      BIT(4)
+#define DPM_CLIENT_REQ_RENEGOTIATE               BIT(5)
 #define DPM_CLIENT_REQ_GET_PARTNER_IDENTITY      BIT(6)
 
 /***************************Internal Events Defines**********************************/
@@ -606,6 +606,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                     //DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY   BIT(5)
                                     //DPM_INT_EVT_INITIATE_ALERT                  BIT(6)
                                     //DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
+                                    //DPM_INT_EVT_PORT_DISABLE                    BIT(8)
+                                    //DPM_INT_EVT_PORT_ENABLE                     BIT(9)
+
   UINT8 u8DPMConfigData;    //Bit  0 - Default Port Role <p />
                             //Bit  1 - Default Data Role <p />
                             //Bits 3:2 - Default PD Spec Revision <p />

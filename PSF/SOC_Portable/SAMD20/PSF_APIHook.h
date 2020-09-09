@@ -1178,6 +1178,19 @@ Description:
     application when the VDM Response Timer has timed out and there is no response from the 
     port partner for the VDM:Discover Identity request initiated. 
   
+    <b> eMCHP_PSF_PORT_DISABLED</b>: This event is used by PSF to notify the application 
+    that a port has been disabled as a result of port disable client request (BIT[0] in 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is disabled,
+    any connection to the port is prevented by removing all terminations from the CC pins. 
+    A disabled port will continue to be in disabled state even after the port partner is
+    physically detached and attached. The port can only be revived by a client request to 
+    enable the port (BIT[1] in gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). 
+
+    <b> eMCHP_PSF_PORT_ENABLED</b>: This event is used by PSF to notify the application 
+    that a port has been enabled as a result of port enable client request (BIT[1] in 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is enabled,
+    Type-C attach and PD negotiation sequence happens again.
+ 
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
     Renegotiation, etc., which were raised by the application through 
@@ -1190,9 +1203,6 @@ Description:
     PSF is not idle. User application has to retry the client request again once
     eMCHP_PSF_IDLE is posted.
  
- `  <b> eMCHP_PSF_PORT_DISABLED</b>:
- 
-    <b> eMCHP_PSF_PORT_ENABLED</b>: 
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
