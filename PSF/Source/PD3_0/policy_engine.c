@@ -271,17 +271,28 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             }
             else if(PE_CTRL_DR_SWAP == u8MsgType)
             {
-                /*If INCLUDE_PD_DR_SWAP is true, default value PE_SUPPORTED_MSG is 
-                 left as it is */
+                /* DR Swap will be supported only when Dual Role Data(DRD)
+                   capability is enabled */
                 #if (TRUE != INCLUDE_PD_DR_SWAP)
                     u8RetVal = PE_UNSUPPORTED_MSG;
+                #else 
+                    if (FALSE == DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0]))
+                    {
+                        u8RetVal = PE_UNSUPPORTED_MSG;
+                    }
                 #endif
             }
             else if (PE_CTRL_PR_SWAP == u8MsgType)
             {
+                 /* PR Swap will be supported only when Dual Role Power(DRP)
+                    capability is enabled */                
                 #if (FALSE == INCLUDE_PD_PR_SWAP)
-                /* PR_Swap will be supported only when INCLUDE_PD_PR_SWAP is set to 1*/
                     u8RetVal = PE_UNSUPPORTED_MSG; 
+                #else 
+                    if (FALSE == DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0]))
+                    {
+                        u8RetVal = PE_UNSUPPORTED_MSG;
+                    }
                 #endif 
             }
             else if((u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
