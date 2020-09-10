@@ -347,10 +347,6 @@ void TypeC_InitPort (UINT8 u8PortNum)
     }
     else
     {
-        /* u16SinkOperatingCurrInmA current will be set to 0mA during initialization of DPM*/
-        /* Enable threshold to detect 5V*/
-        TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
-                gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
         #if (TRUE == INCLUDE_PD_SINK)
         /*Disable the Sink circuitry to stop sinking the power from source*/
         PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
@@ -426,7 +422,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     PRL_EnableRx (u8PortNum, FALSE);
                      
 					/*Reset the VBUS threshold for 5V detection*/
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
+                        gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
 
                     UINT8 u8RpValue = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                                         
@@ -800,7 +797,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     PRL_EnableRx(u8PortNum, TRUE);                  
 
                     /* Enable Power Threshold for TYPEC_VBUS_5V */
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,\
+                        (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
                      
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_RUN_SM_SS;
                        
@@ -960,6 +958,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_UNATTACHED_SNK_ENTRY_SS: 
                 {
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+                    
+                    /* Configure VBUS threshold to detect 5V*/
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
+                            gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR); 
+                        
                     PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
          
@@ -1609,13 +1612,24 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Setting VBUS Comparator OFF once the VBUS line goes off to 0V*/
                         TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
                         
-                        /*Wait for TYPEC_ERRORRECOVERY_TIMEOUT_MS time as specified in Spec*/
-                        gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start ( \
+                        /*Setting CC Comparator OFF*/
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+                    
+                        if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                        {
+                            /*Wait for TYPEC_ERRORRECOVERY_TIMEOUT_MS time as specified in Spec*/
+                            gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start ( \
                                   (TYPEC_ERRORRECOVERY_TIMEOUT_MS),\
                                   TypeC_SubStateChange_TimerCB, u8PortNum,\
                                   TYPEC_DISABLED_TIMEOUT_SS);
+
+                            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_IDLE_SS;
+                        }
+                        else
+                        {
+                            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_TIMEOUT_SS;
+                        }
                         
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_IDLE_SS;
                     }
                     break;
                 }

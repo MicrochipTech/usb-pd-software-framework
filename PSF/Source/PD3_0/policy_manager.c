@@ -1204,6 +1204,12 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
         if ((TYPEC_DISABLED == gasTypeCcontrol[u8PortNum].u8TypeCState) && \
                 (TYPEC_DISABLED_TIMEOUT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
         {
+            /*Reset protocol layer*/
+            PRL_Init(u8PortNum);
+             
+            /*Clear Policy Engine internal variables*/
+            PE_InitPort(u8PortNum);
+            
             if (PD_ROLE_SOURCE == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
             {
                 u8ConfiguredRpVal = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
@@ -1244,7 +1250,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 
                 /*Setting CC Comparator ON*/
                 TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);   
-                    
+    
 	            /*Enabling the VBUS discharge functionality for VBUS to go to Vsafe0V*/                  
 	            PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);
                 
@@ -1262,8 +1268,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 #endif
             }
             
-            /*Clear Policy Engine internal variables*/
-            PE_InitPort(u8PortNum);
+
         }
         else
         {
