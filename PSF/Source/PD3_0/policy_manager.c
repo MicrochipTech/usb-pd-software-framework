@@ -1195,9 +1195,6 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
         /* Change Policy Engine state and sub-state to invalid state */
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
-
-        /*Clear internal and external parameters just like a detach event*/
-        DPM_OnTypeCDetach(u8PortNum);
     }
     else
     {
@@ -1365,7 +1362,10 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
         ~(DPM_PORT_ATTACHED_STATUS | DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS | \
         DPM_PORT_AS_SRC_RDO_ACCEPTED_STATUS | DPM_PORT_ORIENTATION_FLIPPED_STATUS | \
         DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS | DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS |\
-        DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS | DPM_PORT_AS_SRC_RDO_REJECTED_STATUS);
+        DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS | DPM_PORT_AS_SRC_RDO_REJECTED_STATUS| \
+        DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS | DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS| \
+        DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS | DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS| \
+        DPM_PORT_RP_VAL_DETECT_MASK_STATUS);
                     
     /* Clear the Power related registers */
     gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = RESET_TO_ZERO; 
@@ -1421,6 +1421,15 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
+    
+    /* Disable Orientation LED */
+    MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
+
+    #if (TRUE == INCLUDE_PD_SINK)
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
+            ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
+    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
+    #endif
 }
 
 /********************* DPM API to check if PPS APDO is advertised ********************/

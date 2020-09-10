@@ -489,15 +489,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         {
             /* Process Type C Detach Event */
             DPM_OnTypeCDetach(u8PortNum); 
-            
-            /* Disable Orientation LED */
-            MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
-            
-            #if (TRUE == INCLUDE_PD_SINK)
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
-                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
-            #endif
             break;
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
@@ -575,6 +566,11 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             }
             #endif
             break; 
+        }
+        case eMCHP_PSF_PORT_DISABLED:
+        {
+            DPM_OnTypeCDetach(u8PortNum);
+            break;
         }
         default:
             break;
