@@ -138,12 +138,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
 #define CFG_UNDER_VOLTAGE_FACTOR		  85U
-#define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5U
-#define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2U
+#define CFG_FAULT_IN_OCS_DEBOUNCE_MS      5U
+#define CFG_VCONN_OCS_DEBOUNCE_IN_MS      2U
 #define CFG_MAX_VBUS_POWER_FAULT_COUNT	  3U
 #define CFG_MAX_VCONN_FAULT_COUNT		  3U
 #define CFG_POWER_GOOD_TIMER_MS			  10000U
-#define CFG_MAX_PORT_CURRENT_IN_10mA       300U 
+#define CFG_MAX_PORT_CURRENT_IN_10mA      300U 
 
 /*********************************************************************************/
 /*********************************PDO Configuration ******************************/
