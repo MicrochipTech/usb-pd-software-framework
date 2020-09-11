@@ -615,15 +615,16 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
                                             
 #endif 
-                    
-                    if (gasDPM[u8PortNum].u16InternalEvntInProgress)
-                    {
-                        gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;                        
-                    }
-                    else
+                    gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;                        
+
+                    if(SET_TO_ZERO == gasDPM[u8PortNum].u16DPMInternalEvents)
                     {
                         /* Hook to notify PSF is IDLE */
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_IDLE);                    
+                    }
+                    else
+                    {
+                        /*Do nothing*/
                     }
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
