@@ -1179,11 +1179,13 @@ typedef enum
 									* '0' Unflipped - Port Partner attached in CC1 pin 
 									* '1' Flipped - Port Partner attached in CC2 pin 
 	3:2     R            R         Data Role 
-									* '0' UFP 
-									* '1' DFP 
+									* '00' UFP 
+									* '01' DFP 
+                                    * '10' Toggling 
 	5:4     R            R         Power Role 
-									* '0' Sink 
-									* '1' Source 
+									* '00' Sink 
+									* '01' Source 
+                                    * '10' DRP 
 	6       R            R         VCONN Status  
 									* '0' Disabled 
 									* '1' Enabled 
