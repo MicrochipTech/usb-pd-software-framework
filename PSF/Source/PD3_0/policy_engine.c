@@ -1081,7 +1081,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
 
                 case PE_CTRL_VCONN_SWAP:
                 {
-
                     /*Accept the VCONN swap if INCLUDE_PD_VCONN_SWAP is true and
                      if current state is READY State or any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
@@ -1241,6 +1240,37 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     break;                    
                 }
 #endif 
+                case PE_CTRL_NOT_SUPPORTED:
+                {
+                    if ((ePE_SRC_GET_SINK_STATUS == gasPolicyEngine[u8PortNum].ePEState) || 
+                    (ePE_VCS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState) || 
+                    (ePE_PRS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState) || 
+                    (ePE_DRS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState) || 
+                    (ePE_INIT_PORT_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState))                     
+                    {
+                        /* Kill the Sender Response Timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                        {
+                            PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SRC_READY,\
+                                                                   ePE_SRC_READY_END_AMS_SS);                             
+                        }
+                        else
+                        {
+                            PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_READY,\
+                                                                   ePE_SNK_READY_AMS_END_SS);                             
+                        }                                            
+                    }
+                    else
+                    {
+                        if ((gasPolicyEngine[u8PortNum].ePEState != ePE_SRC_READY) && 
+                            (gasPolicyEngine[u8PortNum].ePEState != ePE_SNK_READY))
+                        {
+                            PE_HandleUnExpectedMsg (u8PortNum);
+                        }
+                    }
+                    break; 
+                }
                 default:
                 {
                     break;
