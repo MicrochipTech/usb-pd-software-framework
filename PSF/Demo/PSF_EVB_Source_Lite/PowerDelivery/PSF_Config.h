@@ -1178,73 +1178,75 @@ typedef enum
 	1       R            R         Orientation 
 									* '0' Unflipped - Port Partner attached in CC1 pin 
 									* '1' Flipped - Port Partner attached in CC2 pin 
-	2       R            R         Data Role 
-									* '0' UFP 
-									* '1' DFP 
-	3       R            R         Power Role 
-									* '0' Sink 
-									* '1' Source 
-	4       R            R         VCONN Status  
+	3:2     R            R         Data Role 
+									* '00' UFP 
+									* '01' DFP 
+                                    * '10' Toggling 
+	5:4     R            R         Power Role 
+									* '00' Sink 
+									* '01' Source 
+                                    * '10' DRP 
+	6       R            R         VCONN Status  
 									* '0' Disabled 
 									* '1' Enabled 
-	5       R            R         Cable Reduced Source Capabilities 
+	7       R            R         Cable Reduced Source Capabilities 
 									* '0' Attached USB-C cable supports the locally-defined Source 
 									    PDOs
 									* '1' Attached USB-C cable does not support the locally defined 
 									    Source PDOs	
-	6       R            R         Reduced Source Capabilities
+	8       R            R         Reduced Source Capabilities
 									* '0' The advertised PDOs are equivalent to the default 
 									     configured values 
 									* '1' The advertised PDOs have been reduced from default 
 									     configured values
-	7       R            R         Source Capability Mismatch 
+	9       R            R         Source Capability Mismatch 
 									* '0' De-asserted by  Source port when there is capability 
 									     mismatch with sink partner 
 									* '1' Asserted by Source port when sink port indicates 
 									     capability mismatch in RDO
-	8       R            R         As Source PD Contract Good 
+	10      R            R         As Source PD Contract Good 
 									* '0' As Source: USB-C Connection Only (No Request Made Yet)
 									* '1' As Source; USB PD connection established, Power request 
 									      has been made, accepted and PS_RDY message sent. 
 								    * This bit will always remain 0 when acting as sink.	
-	9       R            R         As Source RDO Accepted
+	11      R            R         As Source RDO Accepted
 									* '0' As Source: No RDO Accept message has been sent to last 
 									      Request made by attached Sink or no Request has yet been 
 										  made during connection. 
 									* '1' As Source: RDO Accept message has been sent to last 
 									      Request made by attached Sink
 								    * This bit will always remain 0 when acting as sink		  
-	10      R            R         As Source RDO Rejected  
+	12      R            R         As Source RDO Rejected  
 									* '0' As source; No RDO reject message has been sent to last 
 											request made by attached Sink or no Request has yet been 
 											made during connection 
 									* '1' As Source: RDO Reject message has been sent to last 
 									        Request made by attached Sink
 									* This bit will always remain 0 when acting as Sink 		
-	11      R            R         As Sink Last Request Accept 
+	13      R            R         As Sink Last Request Accept 
 									* '0' As Sink: Last RDO Request was not Accepted or no request 
 									      has yet been made. 
 									* '1' As Sink: Last RDO Request was Accepted
 									* This bit will always remain 0 when acting as a source.
-	12      R            R         As Sink Last Request Reject 
+	14      R            R         As Sink Last Request Reject 
 									* '0' As Sink: Last RDO Request was not Rejected or no request 
 									   has yet been made. 
 									* '1' As Sink: Last RDO Request was Rejected
 									* This bit will always remain 0 when acting as a source.
-	13      R            R         As Sink Last Request PS_RDY 
+	15      R            R         As Sink Last Request PS_RDY 
 									* '0' As Sink: PS_RDY not yet received for last RDO request  
 									* '1' As Sink: PS_RDY received for last RDO request
 									* This bit will always remain 0 when acting as a source.
-	14      R            R         Sink Capability Mismatch  
+	16      R            R         Sink Capability Mismatch  
 									* '0' De-asserted by the Sink Port when there is no capability 
 										mismatch 
 									* '1' Asserted by Sink Port when no Source capability was found
-	16:15   R            R         Rp Value detected by Sink 
+	18:17   R            R         Rp Value detected by Sink 
 									* '00' Disabled 
 									* '01' USB Power 
 								    * '10' 1.5A 
 									* '11' 3.0A 
-	31:17	 			           Reserved 				
+	31:19	 			           Reserved 				
 	</table>
 
 	<b>c. u32PortIOStatus</b>: 
