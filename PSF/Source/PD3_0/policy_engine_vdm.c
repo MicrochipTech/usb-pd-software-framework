@@ -164,8 +164,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                        based on the current power role */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                      
-                    
-                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD); 
+                                        
                     break; 
                 }
                 case ePE_INIT_PORT_VDM_IDENTITY_REQUEST_IDLE_SS:
