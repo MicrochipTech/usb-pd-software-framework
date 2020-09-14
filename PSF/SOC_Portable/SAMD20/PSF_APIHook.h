@@ -1018,9 +1018,13 @@ Description:
     <b>eMCHP_PSF_TYPEC_CC2_ATTACH:</b> This event is posted by PSF Type C state machine when port
 	partner Type C attach is detected in CC2 pin.
     
-    <b>eMCHP_PSF_TYPEC_ERROR_RECOVERY:</b> This event is posted by PSF Type C state machine when 
-    the port has entered Type C Error Recovery state.
-  
+    <b>eMCHP_PSF_TYPEC_ERROR_RECOVERY:</b> PSF notifies Type-C Error Recovery condition 
+	via this notification. For this notification, PSF expects a return
+	value to decide whether to handle Error Recovery. When user application returns TRUE, PSF enters
+    Type-C Error Recovery state. The user application may also return FALSE, in which case, the
+    user application will itself handle Error Recovery condition by raising a Port disable client request 
+   (BIT(0) of gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable).
+
     <b>eMCHP_PSF_UPDS_IN_IDLE: </b>This event is posted by Power management control. PSF runs an
 	algorithm backend for Power management control. The Idle timeout value maintained by PSF is 
     15 seconds. If there is no activity in UPD350 for 15 seconds, corresponding UPD350 is put to 
@@ -1211,7 +1215,7 @@ typedef enum MCHP_PSF_NOTIFICATION
 eMCHP_PSF_TYPEC_DETACH_EVENT = 1,      // Detach event has occurred
 eMCHP_PSF_TYPEC_CC1_ATTACH,            // Port partner attached at CC1 orientation
 eMCHP_PSF_TYPEC_CC2_ATTACH,            // Port partner attached at CC2 orientation
-eMCHP_PSF_TYPEC_ERROR_RECOVERY,        // Entered Error recovery State
+eMCHP_PSF_TYPEC_ERROR_RECOVERY,        // Error recovery condition will be triggered if user application returns TRUE
 eMCHP_PSF_UPDS_IN_IDLE,                // All the UPD350s are Idle and in low power mode
 eMCHP_PSF_VCONN_PWR_FAULT,             // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,              // VBUS Power Fault has occurred

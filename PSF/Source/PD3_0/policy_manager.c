@@ -35,25 +35,34 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*************************************VBUS & VCONN on/off Timer APIS*********************************/
 void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
-    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
-   
-    gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-    gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
-    
-    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-    gasDPM[u8PortNum].u8VCONNOffTmrID = MAX_CONCURRENT_TIMERS;
-    
-    #if (TRUE == INCLUDE_PD_PR_SWAP)
-    /* Clear the PR_Swap In Progress Flag during PSSourceOff Timer expiry.
-       This scenario would get hit only when PS_RDY is not received from the 
-       Original Source during Sink to Source PR_Swap
-       Note: During normal scenarios other than PR_swap, value of u8DummyVariable
-       would be registered as 0 */
-    if (DPM_CLR_PR_SWAP_IN_PROGRESS_MASK == u8DummyVariable)
+    if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
     {
-        gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+        DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+   
+        gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+
+        gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
+        gasDPM[u8PortNum].u8VCONNOffTmrID = MAX_CONCURRENT_TIMERS;
+
+        #if (TRUE == INCLUDE_PD_PR_SWAP)
+        /* Clear the PR_Swap In Progress Flag during PSSourceOff Timer expiry.
+           This scenario would get hit only when PS_RDY is not received from the 
+           Original Source during Sink to Source PR_Swap
+           Note: During normal scenarios other than PR_swap, value of u8DummyVariable
+           would be registered as 0 */
+        if (DPM_CLR_PR_SWAP_IN_PROGRESS_MASK == u8DummyVariable)
+        {
+            gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+        }
+        #endif 
     }
-    #endif 
+    else
+    {
+        /*Do nothing. If User application returns FALSE for 
+        eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+        the user application will raise a Port disable client request*/
+    }
 }
 void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {

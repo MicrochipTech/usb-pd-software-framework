@@ -335,41 +335,50 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         
         if(PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
         {
-			/* Set it to Type C Error Recovery */
-            DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
-            
-            gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_TYPEC_ERR_RECOVERY_FLAG_MASK;
-						
-            /*Increment the fault count*/
-            gasDPM[u8PortNum].u8VBUSPowerFaultCount++;
-            
-            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= \
-                    gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt)
+            if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
             {
-				/* kill all the timers*/
-                PDTimer_KillPortTimers (u8PortNum);
-				
-				/* set the fault count to zero */
-                gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
-				
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted\r\n");
-				
-                if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                {			
-					/* Assign an idle state wait for detach*/
-                    DPM_SetTypeCState(u8PortNum, TYPEC_ATTACHED_SRC, TYPEC_ATTACHED_SRC_IDLE_SS);
-                }
-                else
-                { 
-					/* Assign an idle state wait for detach*/
-                    DPM_SetTypeCState(u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_IDLE_SS);
-                }
+                /* Set it to Type C Error Recovery */
+                DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
 
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
-                
-                gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_TYPEC_ERR_RECOVERY_FLAG_MASK);
-                
-                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
+                gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_TYPEC_ERR_RECOVERY_FLAG_MASK;
+            
+                /*Increment the fault count*/
+                gasDPM[u8PortNum].u8VBUSPowerFaultCount++;
+
+                if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= \
+                        gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt)
+                {
+                    /* kill all the timers*/
+                    PDTimer_KillPortTimers (u8PortNum);
+
+                    /* set the fault count to zero */
+                    gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
+
+                    DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted\r\n");
+
+                    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                    {			
+                        /* Assign an idle state wait for detach*/
+                        DPM_SetTypeCState(u8PortNum, TYPEC_ATTACHED_SRC, TYPEC_ATTACHED_SRC_IDLE_SS);
+                    }
+                    else
+                    { 
+                        /* Assign an idle state wait for detach*/
+                        DPM_SetTypeCState(u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_IDLE_SS);
+                    }
+
+                    DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
+
+                    gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_TYPEC_ERR_RECOVERY_FLAG_MASK);
+
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
+                }
+            }
+            else
+            {
+                /*Do nothing. If User application returns FALSE for 
+                eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                the user application will raise a Port disable client request*/
             }
         } /*end of if condition that checks implicit contract*/
         else

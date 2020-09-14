@@ -201,7 +201,16 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 						/* If PD Connected change the Type-C state to TYPEC_ERROR_RECOVERY state */
                         if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PDCONNECTED_STS_MASK)
                         {
-                            DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                            if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                            {
+                                DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                            }
+                            else
+                            {
+                                /*Do nothing. If User application returns FALSE for 
+                                eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                                the user application will raise a Port disable client request*/
+                            }
                         }
                         
 						/* If PD not connected change the PE state to ePE_SRC_DISABLED */
