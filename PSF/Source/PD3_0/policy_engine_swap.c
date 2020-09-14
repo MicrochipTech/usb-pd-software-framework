@@ -597,7 +597,16 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        Offload would be enabled */
                     DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
                     
-                    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                    if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                    {
+                        DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                    }
+                    else
+                    {
+                        /*Do nothing. If User application returns FALSE for 
+                        eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                        the user application will raise a Port disable client request*/
+                    }
                     
                     gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
@@ -770,8 +779,16 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        If role is updated as Sink, then Type C SM would move to Unattached 
                        Sink after Error recovery where the u8DRPLastAttachedState condition would fail
                        and DRP Offload will not be enabled */
-                    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
-                    
+                    if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                    {
+                        DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                    }
+                    else
+                    {
+                        /*Do nothing. If User application returns FALSE for 
+                        eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                        the user application will raise a Port disable client request*/
+                    }
                     gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
                     

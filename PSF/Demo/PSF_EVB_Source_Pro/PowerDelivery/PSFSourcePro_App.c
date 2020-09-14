@@ -130,6 +130,8 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         }
         case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
         {
+            /*Returning TRUE to enable PSF to handle Error Recovery*/
+            u8RetVal = TRUE;
             break; 
         }
         
