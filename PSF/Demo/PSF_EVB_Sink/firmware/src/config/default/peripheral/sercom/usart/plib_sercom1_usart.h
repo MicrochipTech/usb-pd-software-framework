@@ -79,11 +79,19 @@ bool SERCOM1_USART_TransmitComplete( void );
 
 void SERCOM1_USART_WriteByte( int data );
 
+bool SERCOM1_USART_Read( void *buffer, const size_t size );
+
+bool SERCOM1_USART_ReceiverIsReady( void );
+
+int SERCOM1_USART_ReadByte( void );
 
 USART_ERROR SERCOM1_USART_ErrorGet( void );
 
 uint32_t SERCOM1_USART_FrequencyGet( void );
 
+void PCTSetBaud(uint32_t baud);
+
+int SERCOM1_USART_ReturnBaud( void );
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
 

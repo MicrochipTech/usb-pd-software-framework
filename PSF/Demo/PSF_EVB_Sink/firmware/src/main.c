@@ -46,7 +46,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 #include "psf_stdinc.h"                 // PSF include file
-
+#include "psf_control_terminal.h"
+#include "psf_adc.h"
 // *****************************************************************************
 // *****************************************************************************
 // Section: Main Entry Point
@@ -55,19 +56,22 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 int main ( void )
 {
+   
     /* Initialize all modules */
     SYS_Initialize ( NULL );
-
+    MchpPSF_PCTInit();
 	/*PSF init called*/
-	(void)MchpPSF_Init();
-
+	//(void)MchpPSF_Init();
+    
+    PSF_monitorandwait();
+    PSF_ADC();
     while ( true )
     {
         /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
-		
-		/*PSF stack Run*/
-		MchpPSF_RUN();        
+        MchpPSF_PCTRUN(false);
+        /*PSF stack Run*/
+        //MchpPSF_RUN();        
     }
 }
 
