@@ -175,7 +175,12 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;
                             gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_CABLE_CURR_3A_UNIT;
                         }
-                    }                    
+                    } 
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle substate */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    }
                     break;
                 }
                 
@@ -637,13 +642,13 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
-                    /* Hook to notify PE state machine entry into idle sub-state */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+
                     break;
                 }
                 case ePE_SRC_READY_IDLE_SS:
                 {
-                    /*Idle State*/
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
                 
@@ -859,8 +864,6 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                               (UINT8)SET_TO_ZERO);
                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_OFF_SS;
-                    /* Hook to notify PE state machine entry into idle sub-state */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                 
                     break;  
                 }
@@ -880,8 +883,6 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                                   DPM_VBUSorVCONNOnOff_TimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO);
-                        /* Hook to notify PE state machine entry into idle sub-state */
-                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                         
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
                         u32PDODebug = SET_TO_ZERO;
@@ -890,25 +891,35 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS;
                      
                     }
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    }
                     break;  
                 }
                 
                 case ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS:
                 {                    
-                     if(!DPM_IsPortVCONNSource(u8PortNum))
-                     {                       
-                        /*Stop the VCONN_OFF timer*/
-                        PE_KillPolicyEngineTimer (u8PortNum);
-                        
-                        /* Start tSRCRecovery timer, if timed-out set the PE sub-state to
-                        ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS*/
-                        gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            (PE_SRCRECOVER_TIMEOUT_MS),
-                                                            PE_SubStateChange_TimerCB,u8PortNum,  
-                                                            (UINT8) ePE_SRC_TRANSITION_TO_DEFAULT_SRCRECOVER_TIMEOUT_SS);
+                    if(!DPM_IsPortVCONNSource(u8PortNum))
+                    {                       
+                       /*Stop the VCONN_OFF timer*/
+                       PE_KillPolicyEngineTimer (u8PortNum);
 
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_IDLE_SS;                    
-                     }
+                       /* Start tSRCRecovery timer, if timed-out set the PE sub-state to
+                       ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS*/
+                       gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                           (PE_SRCRECOVER_TIMEOUT_MS),
+                                                           PE_SubStateChange_TimerCB,u8PortNum,  
+                                                           (UINT8) ePE_SRC_TRANSITION_TO_DEFAULT_SRCRECOVER_TIMEOUT_SS);
+
+                       gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_IDLE_SS;                    
+                    }
+                    else
+                    {
+                       /* Hook to notify PE state machine entry into idle sub-state */
+                       MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    }
                     
                     break;            
                 }
@@ -1021,14 +1032,18 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                              (UINT8)SET_TO_ZERO);
                         
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_ON_SS;
-                            /* Hook to notify PE state machine entry into idle sub-state */
-                            MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+
                         }
                         else
                         {
                              gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_EXIT_SS;                         
                         }
                         
+                    }
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY); 
                     }
                     break;
                 }
@@ -1039,7 +1054,12 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     {                          
                         PE_KillPolicyEngineTimer (u8PortNum);                        
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_EXIT_SS;                                                          
-                    }                    
+                    } 
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY); 
+                    }
                     break;                  
                 }
                 case ePE_SRC_TRANSITION_TO_DEFAULT_EXIT_SS:
@@ -1091,7 +1111,6 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS: 
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS\r\n"); 
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_IDLE_SS; 
                     
                     /* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT sub state if timeout happens */
@@ -1099,9 +1118,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChange_TimerCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_GET_SINK_CAP_NO_RESPONSE_SS); 
-                    /* Hook to notify PE state machine entry into idle substate */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
-                    
+
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_IDLE_SS; 
+
                     break; 
                 }
                   
@@ -1155,6 +1174,8 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         case ePE_SRC_DISABLED:
         {
             /* Port Disabled */
+            /* Hook to notify PE state machine entry into idle state */
+            MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY); 
             break;  
         }
         
