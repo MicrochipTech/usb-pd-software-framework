@@ -1019,11 +1019,11 @@ Description:
 	partner Type C attach is detected in CC2 pin.
     
     <b>eMCHP_PSF_TYPEC_ERROR_RECOVERY:</b> PSF notifies Type-C Error Recovery condition 
-	via this notification. For this notification, PSF expects a return
-	value to decide whether to handle Error Recovery. When user application returns TRUE, PSF enters
-    Type-C Error Recovery state. The user application may also return FALSE, in which case, the
-    user application will itself handle Error Recovery condition by raising a Port disable client request 
-   (BIT(0) of gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable).
+	via this notification. For this notification, PSF expects a return value to decide whether
+    to handle Error Recovery. When user application returns TRUE, PSF enters Type-C Error Recovery
+    state and resolves the error condition. The user application may also return FALSE, in which case,
+    the user application will itself handle Error Recovery condition by raising a Port disable client
+    request (BIT(0) of gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable).
 
     <b>eMCHP_PSF_UPDS_IN_IDLE: </b>This event is posted by Power management control. PSF runs an
 	algorithm backend for Power management control. The Idle timeout value maintained by PSF is 
