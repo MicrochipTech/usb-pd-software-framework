@@ -129,16 +129,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum)\
 (gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & (DPM_CFG_NEGOTIATE_USING_NEW_PDOS_STATUS))
 
-/*Define to check whether New Source PDOs are present*/
-#define DPM_IS_NEW_SOURCE_PDOS_PRESENT(u8PortNum) \
-((SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO[INDEX_0]) &&\
-(SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u8NewSourcePDOCnt))
-
-/*Define to check whether New Sink PDOs are present*/
-#define DPM_IS_NEW_SINK_PDOS_PRESENT(u8PortNum) \
-((SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO[INDEX_0]) &&\
-(SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u8NewSinkPDOCnt))
-
 /*Define to set that ew PDOs should be used for negotiation*/
 #define DPM_SET_CONFIGURED_NEW_PDO_STATUS(u8PortNum)\
 (gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS_STATUS)
@@ -160,14 +150,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_DR_SWAP_REJ_STS_AS_DFP              (BIT(13))
 #define DPM_DR_SWAP_REJ_STS_AS_UFP              (BIT(14))
 #define DPM_SWAP_REJECT_STS_MASK                0x7E00
-#define DPM_FIRST_PD_NEG_CMPLT                  (BIT(15))
 /*Bit position for u16DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
 #define DPM_CURR_DATA_ROLE_POS             2
 #define DPM_CURR_PD_SPEC_REV_POS           4
 #define DPM_VDM_STATE_ACTIVE_POS           6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7
-#define DPM_DPM_FIRST_PD_NEG_CMPLT_POS      15
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u16DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_SINK
@@ -188,13 +176,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum) \
     ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> \
     DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
-#define DPM_GET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)  \
-((gasDPM[u8PortNum].u16DPMStatus & DPM_FIRST_PD_NEG_CMPLT) >> \
-    DPM_DPM_FIRST_PD_NEG_CMPLT_POS)
-
-/*Define to set data in u16DPMStatus*/
-#define DPM_SET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)  \
-(gasDPM[u8PortNum].u16DPMStatus |=  DPM_FIRST_PD_NEG_CMPLT)
 /**************************************************************************************************/
 
 /*******************************************************************************/
@@ -622,7 +603,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bits 10:9 - VCONN Reject status
                                         // Bits 12:11 - PR Swap Reject Status
                                         // Bits 14:13 - DR Swap Reject Status 
-                                        // Bit 15 - First PD negotiation completed
   UINT16 u16DPMInternalEvents;      //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
                                     //DPM_INT_EVT_INITIATE_RENEGOTIATION          BIT(1)
                                     //DPM_INT_EVT_INITIATE_VCONN_SWAP             BIT(2)

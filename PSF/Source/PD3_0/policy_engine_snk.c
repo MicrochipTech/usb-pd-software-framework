@@ -383,8 +383,6 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         /*Do nothing*/
                     }
                     
-                    DPM_SET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum);
-                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
                     
                     /* Hook to notify PE state machine entry into idle sub-state */
