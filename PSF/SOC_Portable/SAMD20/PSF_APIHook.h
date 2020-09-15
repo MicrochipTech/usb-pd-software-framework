@@ -1215,7 +1215,7 @@ typedef enum MCHP_PSF_NOTIFICATION
 eMCHP_PSF_TYPEC_DETACH_EVENT = 1,      // Detach event has occurred
 eMCHP_PSF_TYPEC_CC1_ATTACH,            // Port partner attached at CC1 orientation
 eMCHP_PSF_TYPEC_CC2_ATTACH,            // Port partner attached at CC2 orientation
-eMCHP_PSF_TYPEC_ERROR_RECOVERY,        // Error recovery condition will be triggered if user application returns TRUE
+eMCHP_PSF_TYPEC_ERROR_RECOVERY,        // Error recovery condition has occurred and it will be handled by PSF if user application returns TRUE
 eMCHP_PSF_UPDS_IN_IDLE,                // All the UPD350s are Idle and in low power mode
 eMCHP_PSF_VCONN_PWR_FAULT,             // VCONN Power Fault has occurred
 eMCHP_PSF_VBUS_PWR_FAULT,              // VBUS Power Fault has occurred

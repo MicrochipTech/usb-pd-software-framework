@@ -3470,11 +3470,18 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     }
     else
     {
-         gasDPM[u8PortNum].u8VCONNErrCounter++;
-    
-        /* Set it to Type C Error Recovery */
-        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ERROR_RECOVERY;
-        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ERROR_RECOVERY_ENTRY_SS;
+        gasDPM[u8PortNum].u8VCONNErrCounter++;
+        if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+        {
+            /* Set it to Type C Error Recovery */
+            DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+        }
+        else
+        {
+            /*Do nothing. If User application returns FALSE for 
+            eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+            the user application will raise a Port disable client request*/
+        }
     }
     
     gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
