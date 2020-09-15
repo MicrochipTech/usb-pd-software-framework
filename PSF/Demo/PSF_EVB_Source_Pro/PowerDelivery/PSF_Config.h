@@ -690,7 +690,7 @@ typedef enum
                                                                       * This array should be used 
 																	    only when the port is 
 																		configured as Sink.
-    u32aNewPDO[7]                   28        R/W          R/W       * New Source Capabilities array 
+    u32aNewSourcePDO[7]                   28        R/W          R/W       * New Source Capabilities array 
                                                                         holding maximum of 7 Data 
                                                                         Objects including Fixed 
                                                                         PDOs and PPS APDOs.
@@ -702,7 +702,7 @@ typedef enum
 																		advertised to Port Partner. 
                                                                       * During run time, this array 
 																	    holds the value of current
-                                                                        u32aNewPDO[7] if Bit 0 of 
+                                                                        u32aNewSourcePDO[7] if Bit 0 of 
 																		u32ClientRequest is enabled 
 																		else holds the value of 
 																		current u32aSourcePDO[7]
@@ -883,7 +883,7 @@ typedef enum
                                                                       * This variable is applicable 
 																	    only when the port is
                                                                         configured as Sink.
-    u8NewPDOCnt                     1         R/W          R/W       * Number of New PDOs Supported.
+    u8NewSourcePDOCnt                     1         R/W          R/W       * Number of New PDOs Supported.
                                                                       * This variable is common for 
 																	    both Source and Sink. It is
 																		valid only when Bit 0 of 
@@ -1164,7 +1164,21 @@ typedef enum
     9       RW           R         VCONN OCS Enable
                                     * '0' Disable
                                     * '1' Enable
-    32:10                          Reserved
+    10      RW           R         Use New PDOs for negotiation
+                                    * '0' Default PDOs provided in
+                                     gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
+                                     or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO
+                                     will be used depending on the current power role for 
+                                     power negotiation.                                 
+                                    * '1' New PDOs provided in 
+                                     gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
+                                     or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO
+                                     will be used depending on the current power role for 
+                                     power negotiation except for the first time (For the first negotiation,
+                                     gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
+                                     or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO
+                                     will be used depending on the power role.)    
+    32:11                          Reserved
     </table>
 	
 	<b>b. u32PortConnectStatus</b>: 
@@ -1415,11 +1429,10 @@ typedef enum
     5       R/W          R/W       Renegotiation Request 
                                     * '0' PSF has not received any renegotiation request.
                                     * '1' PSF has received a renegotiation request. 
-									Before initiating the request, user has to fill the Source 
-									capabilities in u32aNewPDO array and the PDO count in 
-									u8NewPDOCnt. 
-									Once the request is processed by PSF, u32aNewPDO array and 
-									u8NewPDOCnt would be cleared and 
+									Before initiating the request, user has to ensure that the Source 
+									capabilities in u32aNewSourcePDO array and the PDO count in 
+									u8NewSourcePDOCnt are filled.
+									Once the request is processed by PSF, 
 									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted.
     9:6                             Reserved.
     10       R/W          R/W      Get Partner Identity Request      
@@ -1553,7 +1566,8 @@ typedef struct _PortCfgStatus
     UINT32 u32CfgData;				
     UINT32 u32aSourcePDO[7];		
     UINT32 u32aSinkPDO[7];          
-    UINT32 u32aNewPDO[7];		    
+    UINT32 u32aNewSourcePDO[7];	
+    UINT32 u32aNewSinkPDO[7]; 
     UINT32 u32aAdvertisedPDO[7];	
     UINT32 u32aPartnerPDO[7];  
     UINT32 u32aCableIdentity[7];
@@ -1583,7 +1597,8 @@ typedef struct _PortCfgStatus
     #endif
     UINT8 u8SourcePDOCnt;			
     UINT8 u8SinkPDOCnt;             
-    UINT8 u8NewPDOCnt;              
+    UINT8 u8NewSourcePDOCnt;   
+    UINT8 u8NewSinkPDOCnt;
     UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerPDOCnt;                    
     UINT8 u8SinkConfigSel;         

@@ -1429,11 +1429,10 @@ typedef enum
     5       R/W          R/W       Renegotiation Request 
                                     * '0' PSF has not received any renegotiation request.
                                     * '1' PSF has received a renegotiation request. 
-									Before initiating the request, user has to fill the Source 
+									Before initiating the request, user has to ensure that the Source 
 									capabilities in u32aNewSourcePDO array and the PDO count in 
-									u8NewSourcePDOCnt. 
-									Once the request is processed by PSF, u32aNewSourcePDO array and 
-									u8NewSourcePDOCnt would be cleared and 
+									u8NewSourcePDOCnt are filled.
+									Once the request is processed by PSF, 
 									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted.
     9:6                             Reserved.
     10       R/W          R/W      Get Partner Identity Request      
