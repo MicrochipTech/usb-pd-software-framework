@@ -589,20 +589,20 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
     }
 #endif 
     
-	/* Get the source PDO count */
-    if (TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum))
+    if ((DPM_GET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)) && (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))\
+        && DPM_IS_NEW_SOURCE_PDOS_PRESENT(u8PortNum))
     {
         *u8pSrcPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewSourcePDOCnt;
    
-        u32pSrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO[INDEX_0];                        
+        u32pSrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO[INDEX_0]; 
     }
     else
     {
         *u8pSrcPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SourcePDOCnt;
    
-        u32pSrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[INDEX_0];        
+        u32pSrcCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO[INDEX_0];   
     }
-
+    
     /* E-Cable present */
     if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK)
     {
@@ -628,18 +628,6 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
     {
         DPM_ChangeCapabilities (u8PortNum, pu32DataObj, &u32pSrcCap[INDEX_0],*u8pSrcPDOCnt);  
     }     
-}
-
-void DPM_ResetNewPDOParameters(UINT8 u8PortNum)
-{
-    DPM_DISABLE_NEW_PDO(u8PortNum);
-    
-    gasCfgStatusData.sPerPortData[u8PortNum].u8NewSourcePDOCnt = RESET_TO_ZERO; 
-        
-    for (UINT8 u8PDOIndex = INDEX_0; u8PDOIndex < DPM_MAX_PDO_CNT; u8PDOIndex++)
-    {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO[u8PDOIndex] = RESET_TO_ZERO; 
-    }    
 }
 
 /**********************************************************************************/
@@ -833,7 +821,8 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     
     if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
-        if (TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum))
+        if ((DPM_GET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)) && (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))\
+        && DPM_IS_NEW_SOURCE_PDOS_PRESENT(u8PortNum))
         {
             /* Update Advertised PDO Count */
             u8AdvertisedPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewSourcePDOCnt;
@@ -875,16 +864,8 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     }
     else /*PD_ROLE_SINK*/
     {
-        if (FALSE == DPM_GET_NEW_PDO_STATUS(u8PortNum))
-        {
-            /* Update Advertised PDO Count */
-            u8AdvertisedPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
-
-            /* Update Advertised PDO Registers with Default Sink PDOs if NewPDOSlct is not enabled. */
-            (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, DPM_4BYTES_FOR_EACH_PDO_OF(u8AdvertisedPDOCnt));
-        }
-        else
+        if ((DPM_GET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)) && (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))\
+        && DPM_IS_NEW_SINK_PDOS_PRESENT(u8PortNum))
         {
              /* Update Advertised PDO Count */
             u8AdvertisedPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewSinkPDOCnt;
@@ -893,6 +874,16 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
             (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
                 gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO, DPM_4BYTES_FOR_EACH_PDO_OF(u8AdvertisedPDOCnt));              
         }
+        else
+        {   /* Update Advertised PDO Count */
+            u8AdvertisedPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+
+            /* Update Advertised PDO Registers with Default Sink PDOs if NewPDOSlct is not enabled. */
+            (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
+                gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, DPM_4BYTES_FOR_EACH_PDO_OF(u8AdvertisedPDOCnt));
+        }
+        
+            
         
         /*Update Advertised PDO count*/
         gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = u8AdvertisedPDOCnt;
