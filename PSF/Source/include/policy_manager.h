@@ -1398,7 +1398,7 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType);
         This API is used to form the PDOs as per power wattage value given.   
 
     Description:
-        This API updates the u32aNewPDO[7] array by calculating the current 
+        This API updates the u32aNewSourcePDO[7] array by calculating the current 
         value using power value that is given as input to this API and voltage
         value derived from u32aSourcePDO[7] array
 

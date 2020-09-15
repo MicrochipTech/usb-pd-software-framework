@@ -798,7 +798,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             }
             else
             {
-                /* TBD for Sink*/
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_EVALUATE_CAPABILITY;
             }
             u16IsAMSInProgress = DPM_INT_EVT_INITIATE_RENEGOTIATION;
         }

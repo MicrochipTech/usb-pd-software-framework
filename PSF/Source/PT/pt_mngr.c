@@ -143,7 +143,7 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
     }
     
     /* Enable New PDO select so that New Source capabilities would be 
-       sent from u32aNewPDO[7] array */
+       sent from u32aNewSourcePDO[7] array */
     DPM_ENABLE_NEW_PDO(u8PortNum);
     
     DPM_UpdateNewPDOFrmSrcPwr(u8PortNum, u16PowerIn250mW);
