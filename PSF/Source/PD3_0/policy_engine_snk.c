@@ -197,7 +197,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         & PE_PDCONTRACT_MASK ))
                 {
                      gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_AMS_END_SS;
+                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
                 }
                  /*Transition to sink wait for capabilities state if not in PD contract*/
                 else
@@ -334,7 +334,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 					
                     /*Setting the explicit contract as True*/
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= (PE_EXPLICIT_CONTRACT);
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_AMS_END_SS;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
                     
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)                    
                     u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
@@ -356,7 +356,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     break;
                 }
                 
-                case ePE_SNK_READY_AMS_END_SS:
+                case ePE_SNK_READY_END_AMS_SS:
                 {
 #if (TRUE == INCLUDE_PD_VDM)
                     /* Post not received notification if VDM:Disc Identity was initiated 
@@ -382,6 +382,8 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     {
                         /*Do nothing*/
                     }
+                    
+                    DPM_SET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum);
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
                     
@@ -560,7 +562,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Set the transmitter callback to transition to Soft reset state if
                     message transmission fails*/
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_READY,\
-                                             ePE_SNK_READY_AMS_END_SS,ePE_SEND_SOFT_RESET,\
+                                             ePE_SNK_READY_END_AMS_SS,ePE_SEND_SOFT_RESET,\
                                              ePE_SEND_SOFT_RESET_SOP_SS);
                     u8IsTransmit = TRUE;
                     

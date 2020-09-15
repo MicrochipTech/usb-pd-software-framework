@@ -378,7 +378,7 @@ void PE_FwUpdtTxDoneCallBack(
     }
     else
     {
-        if ((UINT8)ePE_SNK_READY_AMS_END_SS == u8TxDoneSubState)
+        if ((UINT8)ePE_SNK_READY_END_AMS_SS == u8TxDoneSubState)
             PE_FwUpdtInitialize();
     }
 
@@ -770,13 +770,13 @@ void PE_FwUpdtResetToEnumState(
     if (PD_ROLE_SINK == u8CurrentPowerRole)
     {
         eState  = ePE_SNK_READY;
-        eSubState = ePE_SNK_READY_AMS_END_SS;     
+        eSubState = ePE_SNK_READY_END_AMS_SS;     
         //PE_FWUP_SET_CURRENT_STATE(u8PortNum, ePE_SNK_READY);
-        //PE_FWUP_CHANGE_SUBSTATE(u8PortNum, ePE_SNK_READY_AMS_END_SS);
+        //PE_FWUP_CHANGE_SUBSTATE(u8PortNum, ePE_SNK_READY_END_AMS_SS);
         gsPdfuInfo.u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_READY,
-                                                                   ePE_SNK_READY_AMS_END_SS,
+                                                                   ePE_SNK_READY_END_AMS_SS,
                                                                    ePE_SNK_READY,
-                                                                   ePE_SNK_READY_AMS_END_SS);
+                                                                   ePE_SNK_READY_END_AMS_SS);
     }
     else
     { }
