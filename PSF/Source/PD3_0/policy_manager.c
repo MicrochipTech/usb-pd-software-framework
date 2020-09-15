@@ -589,8 +589,7 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
     }
 #endif 
     
-    if ((DPM_GET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)) && (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))\
-        && DPM_IS_NEW_SOURCE_PDOS_PRESENT(u8PortNum))
+    if (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
     {
         *u8pSrcPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewSourcePDOCnt;
    
@@ -821,8 +820,7 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     
     if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
-        if ((DPM_GET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)) && (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))\
-        && DPM_IS_NEW_SOURCE_PDOS_PRESENT(u8PortNum))
+        if (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
         {
             /* Update Advertised PDO Count */
             u8AdvertisedPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewSourcePDOCnt;
@@ -864,8 +862,7 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     }
     else /*PD_ROLE_SINK*/
     {
-        if ((DPM_GET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)) && (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))\
-        && DPM_IS_NEW_SINK_PDOS_PRESENT(u8PortNum))
+        if (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
         {
              /* Update Advertised PDO Count */
             u8AdvertisedPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewSinkPDOCnt;

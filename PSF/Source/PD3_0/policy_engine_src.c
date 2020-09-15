@@ -632,8 +632,6 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         /*Do nothing*/
                     }
                     
-                    DPM_SET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum);
-                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
 
                     break;
