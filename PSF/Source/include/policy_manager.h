@@ -81,14 +81,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CFG_PORT_ENDIS_MASK             (BIT(5))
 
 /*Bit Pos for gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData */
-#define DPM_CFG_POWER_ROLE_POS              0
-#define DPM_CFG_DUAL_ROLE_DATA_POS          2
-#define DPM_CFG_RPVAL_POS                   3
-#define DPM_CFG_PORT_ENDIS_POS              5
-#define DPM_CFG_VCONN_OCS_EN_POS            9
+#define DPM_CFG_POWER_ROLE_POS                  0
+#define DPM_CFG_DUAL_ROLE_DATA_POS              2
+#define DPM_CFG_RPVAL_POS                       3
+#define DPM_CFG_PORT_ENDIS_POS                  5
+#define DPM_CFG_VCONN_OCS_EN_POS                9
+#define DPM_CFG_NEGOTIATE_USING_NEW_PDOS_POS    10
 /*Enable defines for gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData */
-#define DPM_CFG_PORT_ENABLE                 (1 << DPM_CFG_PORT_ENDIS_POS)
-#define DPM_CFG_VCONN_OCS_ENABLE            (1 << DPM_CFG_VCONN_OCS_EN_POS)
+#define DPM_CFG_PORT_ENABLE                     (1 << DPM_CFG_PORT_ENDIS_POS)
+#define DPM_CFG_VCONN_OCS_ENABLE                (1 << DPM_CFG_VCONN_OCS_EN_POS)
+#define DPM_CFG_NEGOTIATE_USING_NEW_PDOS_STATUS (1 << DPM_CFG_NEGOTIATE_USING_NEW_PDOS_POS)
 
 /*Defines for getting default values configured to a port from 
  gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/
@@ -124,6 +126,21 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     DPM_CFG_VCONN_OCS_ENABLE - BIT(9) in case of enable or 0x00 in case of disable*/
 #define DPM_GET_CONFIGURED_VCONN_OCS_EN(u8PortNum)\
 (gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & (DPM_CFG_VCONN_OCS_ENABLE))
+
+/*Define to Get whether New PDOs or default PDOs should be used for negotiation*/
+#define DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum)\
+(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & (DPM_CFG_NEGOTIATE_USING_NEW_PDOS_STATUS))
+
+/*Define to check whether New Source PDOs are present*/
+#define DPM_IS_NEW_SOURCE_PDOS_PRESENT(u8PortNum) \
+((SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO[INDEX_0]) &&\
+(SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u8NewSourcePDOCnt))
+
+/*Define to check whether New Sink PDOs are present*/
+#define DPM_IS_NEW_SINK_PDOS_PRESENT(u8PortNum) \
+((SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO[INDEX_0]) &&\
+(SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u8NewSinkPDOCnt))
+
 /*************************************************************************************************/
 
 /**************************************************************************************************/
@@ -142,12 +159,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_DR_SWAP_REJ_STS_AS_DFP              (BIT(13))
 #define DPM_DR_SWAP_REJ_STS_AS_UFP              (BIT(14))
 #define DPM_SWAP_REJECT_STS_MASK                0x7E00
+#define DPM_FIRST_PD_NEG_CMPLT                  (BIT(15))
 /*Bit position for u16DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
 #define DPM_CURR_DATA_ROLE_POS             2
 #define DPM_CURR_PD_SPEC_REV_POS           4
 #define DPM_VDM_STATE_ACTIVE_POS           6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7
+#define DPM_DPM_FIRST_PD_NEG_CMPLT_POS      15
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u16DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_SINK
@@ -168,7 +187,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum) \
     ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> \
     DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
+#define DPM_GET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)  \
+((gasDPM[u8PortNum].u16DPMStatus & DPM_FIRST_PD_NEG_CMPLT) >> \
+    DPM_DPM_FIRST_PD_NEG_CMPLT_POS)
 
+/*Define to set data in u16DPMStatus*/
+#define DPM_SET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum)  \
+(gasDPM[u8PortNum].u16DPMStatus |=  DPM_FIRST_PD_NEG_CMPLT)
 /**************************************************************************************************/
 
 /*******************************************************************************/
@@ -598,7 +623,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         //      11 - Programmable
                                         // Bits 10:9 - VCONN Reject status
                                         // Bits 12:11 - PR Swap Reject Status
-                                        // Bits 14:13 - DR Swap Reject Status                                        
+                                        // Bits 14:13 - DR Swap Reject Status 
+                                        // Bit 15 - First PD negotiation completed
   UINT16 u16DPMInternalEvents;      //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
                                     //DPM_INT_EVT_INITIATE_RENEGOTIATION          BIT(1)
                                     //DPM_INT_EVT_INITIATE_VCONN_SWAP             BIT(2)
@@ -610,11 +636,10 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                     //DPM_INT_EVT_PORT_DISABLE                    BIT(8)
                                     //DPM_INT_EVT_PORT_ENABLE                     BIT(9)
 
-  UINT8 u8DPMConfigData;    //Bit  0 - Default Port Role <p />
-                            //Bit  1 - Default Data Role <p />
-                            //Bits 3:2 - Default PD Spec Revision <p />
-                            //Bit  4 - New PDO Enable <p />                             
-
+  UINT8 u8DPMConfigData;    //Bit  1:0 - Default Port Power Role
+                            //Bit  3:2 - Default Port Data Role
+                            //Bits 5:4 - Default PD Spec Revision
+                            //Bit 6 - New PDO enable
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
   UINT16 u16InternalEvntInProgress; //carries internal event that is currently in progress  
@@ -1275,26 +1300,6 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void DPM_ClientRequestHandler(UINT8 u8PortNum); 
-
-/**************************************************************************************************
-    Function:
-        void DPM_ResetNewPDOParameters(UINT8 u8PortNum);
-    Summary:
-        Resets the New PDO parameters once New PDOs are advertised. 
-    Description:
-        This API clears the New PDO Select flag, New PDO Count and all the New
-        PDO registers. 
-    Conditions:
-        None
-    Input:
-        u8PortNum - Port number of the device.Value passed will be less than CONFIG_PD_PORT_COUNT. 
-    Return:
-        None.  
-    Remarks:
-        None.
-**************************************************************************************************/
-
-void DPM_ResetNewPDOParameters(UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:

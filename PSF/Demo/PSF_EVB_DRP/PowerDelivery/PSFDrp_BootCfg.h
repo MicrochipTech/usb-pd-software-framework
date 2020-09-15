@@ -99,8 +99,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /***********************************Port Specific configuration***********************/    
 /*Configuration value for u32CfgData*/
 /*Power Role values 0 - Sink, 1 - Source, 2 - DRP*/
-#define CFG_PORT_0_POWER_ROLE                2
-#define CFG_PORT_1_POWER_ROLE                2
+#define CFG_PORT_0_POWER_ROLE                0
+#define CFG_PORT_1_POWER_ROLE                1
 
 /*Data Role supported values 0-Dual Role Data Not supported, 1- Dual Role Date Supported */
 #define CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT    (1U << 2)
@@ -117,6 +117,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*VCONN OCS Enable - 0-Disable, 1-Enable*/
 #define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
 #define CFG_PORT_1_VCONN_OCS_ENABLE     (1U << 9)  
+
+/*Use New PDOs for power negotiation - 0- Use default PDOs; 1- Use New PDOs*/
+#define CFG_PORT_0_NEGOTIATE_USING_NEW_PDOS    (1U << 10)
+#define CFG_PORT_1_NEGOTIATE_USING_NEW_PDOS    (1U << 10)
 
 /********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
@@ -194,6 +198,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_SINK_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
 #define CFG_PORT_0_SINK_PDO_7     CFG_FORM_FIXED_PDOx(0,0) 
 
+#define CFG_PORT_NEW_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
+                                    CFG_PORT_0_DUAL_ROLE_DATA, \
+                                    CFG_PORT_0_SINK_USB_COMM, \
+                                    CFG_PORT_0_SINK_UNCONSTRAINED_PWR, \
+                                    CFG_PORT_0_SINK_HIGHER_CAPABILITY, \
+                                    CFG_PORT_0_DUAL_ROLE_POWER);
+#define CFG_PORT_NEW_SINK_PDO_2     CFG_FORM_FIXED_PDOx(7000U,3000U)    
+#define CFG_PORT_NEW_SINK_PDO_3     CFG_FORM_FIXED_PDOx(9000U,3000U)   
+#define CFG_PORT_NEW_SINK_PDO_4     CFG_FORM_FIXED_PDOx(15000U,3000U)
+#define CFG_PORT_NEW_SINK_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
+#define CFG_PORT_NEW_SINK_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
+#define CFG_PORT_NEW_SINK_PDO_7     CFG_FORM_FIXED_PDOx(0,0) 
 
 /********************************************************************************/
 /**********************************Port 1****************************************/

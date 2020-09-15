@@ -578,15 +578,6 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                                         DPM_PORT_AS_SRC_PD_CONTRACT_GOOD_STATUS; 
   
-                    /* Reset New PDO Parameters if renegotiation was initiated by DPM
-                       TODO: <DPM_Policy> Take care of this while implementing DPM Client request
-                       functionality */                    
-                    if ((TRUE == DPM_GET_NEW_PDO_STATUS(u8PortNum)) && 
-                             (DPM_INT_EVT_INITIATE_RENEGOTIATION == (gasDPM[u8PortNum].u16InternalEvntInProgress & DPM_INT_EVT_INITIATE_RENEGOTIATION)))
-                    {                                                
-                        DPM_ResetNewPDOParameters(u8PortNum);
-                    }                    
-                    
                     DPM_EnablePowerFaultDetection(u8PortNum);
                     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                    
@@ -640,7 +631,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     {
                         /*Do nothing*/
                     }
-
+                    
+                    DPM_SET_FIRST_PD_NEG_CMPLT_STATUS(u8PortNum);
+                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
 
                     break;

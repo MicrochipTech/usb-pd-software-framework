@@ -204,7 +204,7 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL         1
+#define INCLUDE_POWER_MANAGEMENT_CTRL         0
 
 /**************************************************************************
 Summary:
@@ -455,7 +455,7 @@ Example:
 Note:
     None.
 **************************************************************************/
-#define CONFIG_HOOK_DEBUG_MSG      0                 
+#define CONFIG_HOOK_DEBUG_MSG      1                 
 
 
 // *****************************************************************************
@@ -1164,7 +1164,21 @@ typedef enum
     9       RW           R         VCONN OCS Enable
                                     * '0' Disable
                                     * '1' Enable
-    32:10                          Reserved
+    10      RW           R         Use New PDOs for negotiation
+                                    * '0' Default PDOs provided in
+                                     gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
+                                     or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO
+                                     will be used depending on the current power role for 
+                                     power negotiation.                                 
+                                    * '1' New PDOs provided in 
+                                     gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
+                                     or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO
+                                     will be used depending on the current power role for 
+                                     power negotiation except for the first time (For the first negotiation,
+                                     gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
+                                     or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO
+                                     will be used depending on the power role.)    
+    32:11                          Reserved
     </table>
 	
 	<b>b. u32PortConnectStatus</b>: 
