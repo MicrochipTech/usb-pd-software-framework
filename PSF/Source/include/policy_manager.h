@@ -44,13 +44,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_DEFAULT_POWER_ROLE_MASK          (BIT(0)|BIT(1))
 #define DPM_DEFAULT_DATA_ROLE_MASK           (BIT(2)|BIT(3))
 #define DPM_DEFAULT_PD_SPEC_REV_MASK         (BIT(4)|BIT(5))
-#define DPM_NEW_PDO_ENABLE_MASK               BIT(6)
 
 /*Bit position for u8DPMConfigData variable*/
 #define DPM_DEFAULT_POWER_ROLE_POS           0
 #define DPM_DEFAULT_DATA_ROLE_POS            2
 #define DPM_DEFAULT_PD_SPEC_REV_POS          4
-#define DPM_NEW_PDO_ENABLE_POS               6 
 
 /*Defines for getting default values configured to a port from gasDPM[u8PortNum].u8DPMConfigData*/
 /*DPM_GET_DEFAULT_POWER_ROLE(u8PortNum) will return one of the following values
@@ -141,6 +139,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 ((SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO[INDEX_0]) &&\
 (SET_TO_ZERO != gasCfgStatusData.sPerPortData[u8PortNum].u8NewSinkPDOCnt))
 
+/*Define to set that ew PDOs should be used for negotiation*/
+#define DPM_SET_CONFIGURED_NEW_PDO_STATUS(u8PortNum)\
+(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS_STATUS)
 /*************************************************************************************************/
 
 /**************************************************************************************************/
@@ -571,9 +572,6 @@ Source/Sink Power delivery objects*/
 #define DPM_HR_COMPLETE_WAIT_MASK             (1 << DPM_HR_COMPLETE_WAIT_POS)
 #define DPM_TYPEC_ERR_RECOVERY_FLAG_MASK      (1 << DPM_TYPEC_ERR_RECOVERY_FLAG_POS)
  
-/****************** New PDO Enable/Disable Defines ************/
-#define DPM_ENABLE_NEW_PDO(u8PortNum)     (gasDPM[u8PortNum].u8DPMConfigData |= DPM_NEW_PDO_ENABLE_MASK)
-#define DPM_DISABLE_NEW_PDO(u8PortNum)    (gasDPM[u8PortNum].u8DPMConfigData &= ~(DPM_NEW_PDO_ENABLE_MASK))
 /************************ Client Request Defines ******************************/
 #define DPM_NO_CLIENT_REQ_PENDING                0x00 
 #define DPM_CLEAR_ALL_CLIENT_REQ                 0x00 
@@ -639,7 +637,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8DPMConfigData;    //Bit  1:0 - Default Port Power Role
                             //Bit  3:2 - Default Port Data Role
                             //Bits 5:4 - Default PD Spec Revision
-                            //Bit 6 - New PDO enable
   UINT8 u8VCONNErrCounter;
   UINT8 u8NegotiatedPDOIndex;
   UINT16 u16InternalEvntInProgress; //carries internal event that is currently in progress  
