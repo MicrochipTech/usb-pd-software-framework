@@ -61,7 +61,7 @@ int main ( void )
     SYS_Initialize ( NULL );
     MchpPSF_PCTInit();
 	/*PSF init called*/
-	//(void)MchpPSF_Init();
+	(void)MchpPSF_Init();
     
     PSF_monitorandwait();
     PSF_ADC();
