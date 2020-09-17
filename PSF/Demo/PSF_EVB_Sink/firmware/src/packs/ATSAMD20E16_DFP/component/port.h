@@ -1,7 +1,7 @@
 /**
  * \brief Component description for PORT
  *
- * Copyright (c) 2019 Microchip Technology Inc. and its subsidiaries.
+ * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software and any derivatives
  * exclusively with Microchip products. It is your responsibility to comply with third party license
@@ -20,7 +20,7 @@
  *
  */
 
-/* file generated from device description version 2019-03-25T22:24:54Z */
+/* file generated from device description version 2019-11-25T06:48:59Z */
 #ifndef _SAMD20_PORT_COMPONENT_H_
 #define _SAMD20_PORT_COMPONENT_H_
 
@@ -249,12 +249,12 @@ typedef struct
   __I   uint8_t                        Reserved2[0x20];
 } port_group_registers_t;
 
-#define GROUP_NUMBER _U_(2)
+#define PORT_GROUP_NUMBER _U_(2)
 
 /** \brief PORT register API structure */
 typedef struct
 {  /* Port Module */
-        port_group_registers_t         GROUP[GROUP_NUMBER]; /**< Offset: 0x00  */
+        port_group_registers_t         GROUP[PORT_GROUP_NUMBER]; /**< Offset: 0x00  */
 } port_registers_t;
 
 

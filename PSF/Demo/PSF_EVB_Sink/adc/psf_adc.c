@@ -1,19 +1,17 @@
 /*******************************************************************************
-  Main Source File
+ User Interface File
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    main.c
+    psf_adc.c
 
   Summary:
-    This file contains the "main" function for a project.
+    This file interacts with user through the terminal.
 
   Description:
-    This file contains the "main" function for a project.  The
-    "main" function calls the "SYS_Initialize" function to initialize the state
-    machines of all modules in the system
+    This file is based on UART functionality which interacts with user through the terminal.
  *******************************************************************************/
 /*******************************************************************************
 Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
@@ -40,43 +38,57 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
-
 #include <stddef.h>                     // Defines NULL
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
+#include <string.h>
+#include <math.h>
 #include "definitions.h"                // SYS function prototypes
 #include "psf_stdinc.h"                 // PSF include file
-#include "psf_control_terminal.h"
-#include "psf_adc.h"
-// *****************************************************************************
-// *****************************************************************************
-// Section: Main Entry Point
-// *****************************************************************************
-// *****************************************************************************
+#define   ADC_VREF         (2500U)            //2500mV (2.5V) 
 
-int main ( void )
+void PSF_ADC()
 {
-   
-    /* Initialize all modules */
-    SYS_Initialize ( NULL );
-    //MchpPSF_PCTInit();
-	/*PSF init called*/
-	(void)MchpPSF_Init();
-    //MchpPSF_PCTInit();
-   // PSF_monitorandwait();
-   // PSF_ADC();
-    while ( true )
+    UINT16 adc_count;
+    UINT32 input_voltage;
+     while (true)
     {
-        /* Maintain state machines of all polled MPLAB Harmony modules. */
-        SYS_Tasks ( );
-       // MchpPSF_PCTRUN(false);
-        /*PSF stack Run*/
-        MchpPSF_RUN();        
+        /*Start ADC Conversion*/
+        ADC_ConversionStart();
+
+
+        /*Wait till ADC Conversion is available*/
+        while(!ADC_ConversionStatusGet())
+        {
+
+        }        
+        /*Read the ADC Result*/
+        adc_count=ADC_ConversionResultGet();
+        input_voltage=adc_count*ADC_VREF/4095U;
+        if(input_voltage==420)
+        {
+            
+        }
+        else if(input_voltage==830)
+        {
+            
+        }
+         else if(input_voltage==1250)
+        {
+            
+        }
+         else if(input_voltage==1660)
+        {
+            
+        }
+         else if(input_voltage==2080)
+        {
+            
+        }
+         else if(input_voltage==2500)
+        {
+            
+        }
+       
     }
 }
-
-
-/*******************************************************************************
- End of File
-*/
-

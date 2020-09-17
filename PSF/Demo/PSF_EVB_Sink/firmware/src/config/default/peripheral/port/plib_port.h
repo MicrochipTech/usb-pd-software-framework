@@ -65,15 +65,15 @@
 // *****************************************************************************
 // *****************************************************************************
 
-
-/*** Macros for UPD350_RESET pin ***/
-#define UPD350_RESET_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 0)
-#define UPD350_RESET_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 0)
-#define UPD350_RESET_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 0)
-#define UPD350_RESET_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 0)) & 0x01)
-#define UPD350_RESET_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 0)
-#define UPD350_RESET_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 0)
-#define UPD350_RESET_PIN                  PORT_PIN_PA00
+  
+/*** Macros for RESET_N_COM pin ***/
+#define RESET_N_COM_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 0)
+#define RESET_N_COM_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 0)
+#define RESET_N_COM_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 0)
+#define RESET_N_COM_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 0)) & 0x01)
+#define RESET_N_COM_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 0)
+#define RESET_N_COM_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 0)
+#define RESET_N_COM_PIN                  PORT_PIN_PA00
 
 /*** Macros for SNK_1_5A_IND pin ***/
 #define SNK_1_5A_IND_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 1)
@@ -83,15 +83,6 @@
 #define SNK_1_5A_IND_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 1)
 #define SNK_1_5A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 1)
 #define SNK_1_5A_IND_PIN                  PORT_PIN_PA01
-
-/*** Macros for SNK_CAP_MISMATCH pin ***/
-#define SNK_CAP_MISMATCH_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 4)
-#define SNK_CAP_MISMATCH_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 4)
-#define SNK_CAP_MISMATCH_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 4)
-#define SNK_CAP_MISMATCH_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 4)) & 0x01)
-#define SNK_CAP_MISMATCH_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 4)
-#define SNK_CAP_MISMATCH_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 4)
-#define SNK_CAP_MISMATCH_PIN                  PORT_PIN_PA04
 
 /*** Macros for SPI_SS_0 pin ***/
 #define SPI_SS_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 10)
@@ -110,6 +101,15 @@
 #define SNK_3A_IND_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 15)
 #define SNK_3A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 15)
 #define SNK_3A_IND_PIN                  PORT_PIN_PA15
+
+/*** Macros for CAP_MISMATCH pin ***/
+#define CAP_MISMATCH_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 23)
+#define CAP_MISMATCH_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 23)
+#define CAP_MISMATCH_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 23)
+#define CAP_MISMATCH_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 23)) & 0x01)
+#define CAP_MISMATCH_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 23)
+#define CAP_MISMATCH_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 23)
+#define CAP_MISMATCH_PIN                  PORT_PIN_PA23
 
 
 
@@ -936,7 +936,7 @@ void PORT_GroupOutputEnable(PORT_GROUP group, uint32_t mask);
 
 static inline void PORT_PinWrite(PORT_PIN pin, bool value)
 {
-    PORT_GroupWrite(PORT_BASE_ADDRESS + (0x80 * (pin>>5)), (uint32_t)(0x1) << (pin & 0x1f), (uint32_t)(value) << (pin & 0x1f));
+    PORT_GroupWrite((PORT_GROUP)(PORT_BASE_ADDRESS + (0x80 * (pin>>5))), (uint32_t)(0x1) << (pin & 0x1f), (uint32_t)(value) << (pin & 0x1f));
 }
 
 // *****************************************************************************
@@ -960,7 +960,7 @@ static inline void PORT_PinWrite(PORT_PIN pin, bool value)
 
 bool PORT_PinRead(PORT_PIN pin)
 {
-    return (bool)((PORT_GroupRead(PORT_BASE_ADDRESS + (0x80 * (pin>>5))) >> (pin & 0x1F)) & 0x1);
+    return (bool)((PORT_GroupRead((PORT_GROUP)(PORT_BASE_ADDRESS + (0x80 * (pin>>5)))) >> (pin & 0x1F)) & 0x1);
 }
 
 // *****************************************************************************
@@ -982,7 +982,7 @@ bool PORT_PinRead(PORT_PIN pin)
 
 bool PORT_PinLatchRead(PORT_PIN pin)
 {
-    return (bool)((PORT_GroupLatchRead(PORT_BASE_ADDRESS + (0x80 * (pin>>5))) >> (pin & 0x1F)) & 0x1);
+    return (bool)((PORT_GroupLatchRead((PORT_GROUP)(PORT_BASE_ADDRESS + (0x80 * (pin>>5)))) >> (pin & 0x1F)) & 0x1);
 }
 
 // *****************************************************************************
@@ -1001,7 +1001,7 @@ bool PORT_PinLatchRead(PORT_PIN pin)
 
 void PORT_PinToggle(PORT_PIN pin)
 {
-    PORT_GroupToggle(PORT_BASE_ADDRESS + (0x80 * (pin>>5)), 0x1 << (pin & 0x1F));
+    PORT_GroupToggle((PORT_GROUP)(PORT_BASE_ADDRESS + (0x80 * (pin>>5))), 0x1 << (pin & 0x1F));
 }
 
 // *****************************************************************************
@@ -1020,7 +1020,7 @@ void PORT_PinToggle(PORT_PIN pin)
 
 void PORT_PinSet(PORT_PIN pin)
 {
-    PORT_GroupSet(PORT_BASE_ADDRESS + (0x80 * (pin>>5)), 0x1 << (pin & 0x1F));
+    PORT_GroupSet((PORT_GROUP)(PORT_BASE_ADDRESS + (0x80 * (pin>>5))), 0x1 << (pin & 0x1F));
 }
 
 // *****************************************************************************
@@ -1039,7 +1039,7 @@ void PORT_PinSet(PORT_PIN pin)
 
 void PORT_PinClear(PORT_PIN pin)
 {
-    PORT_GroupClear(PORT_BASE_ADDRESS + (0x80 * (pin>>5)), 0x1 << (pin & 0x1F));
+    PORT_GroupClear((PORT_GROUP)(PORT_BASE_ADDRESS + (0x80 * (pin>>5))), 0x1 << (pin & 0x1F));
 }
 
 // *****************************************************************************
@@ -1059,7 +1059,7 @@ void PORT_PinClear(PORT_PIN pin)
 
 void PORT_PinInputEnable(PORT_PIN pin)
 {
-    PORT_GroupInputEnable(PORT_BASE_ADDRESS + (0x80 * (pin>>5)), 0x1 << (pin & 0x1F));
+    PORT_GroupInputEnable((PORT_GROUP)(PORT_BASE_ADDRESS + (0x80 * (pin>>5))), 0x1 << (pin & 0x1F));
 }
 
 // *****************************************************************************
@@ -1079,7 +1079,7 @@ void PORT_PinInputEnable(PORT_PIN pin)
 
 void PORT_PinOutputEnable(PORT_PIN pin)
 {
-    PORT_GroupOutputEnable(PORT_BASE_ADDRESS + (0x80 * (pin>>5)), 0x1 << (pin & 0x1F));
+    PORT_GroupOutputEnable((PORT_GROUP)(PORT_BASE_ADDRESS + (0x80 * (pin>>5))), 0x1 << (pin & 0x1F));
 }
 
 // DOM-IGNORE-BEGIN

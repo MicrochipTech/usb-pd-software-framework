@@ -179,9 +179,9 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eVBUS_DIS_FUNC:
         {            
-            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
-            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);
             break; 
         }
         case eORIENTATION_FUNC:
@@ -192,8 +192,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eSNK_CAPS_MISMATCH_FUNC:
         {
-            SNK_CAP_MISMATCH_Clear();
-            SNK_CAP_MISMATCH_OutputEnable();            
+            CAP_MISMATCH_Clear();
+            CAP_MISMATCH_OutputEnable();            
             break;
         }
         case eSNK_1_5A_IND_FUNC:
@@ -240,7 +240,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             {
                 /*UPD350 Reset is active low signal*/
                 /* Pull down is driven to reset the UPD350*/
-                PORT_PinWrite(UPD350_RESET_PIN, FALSE);
+                PORT_PinWrite(RESET_N_COM_PIN, FALSE);
                 
                 /* Reset pin shall be held low for a minimum reset assertion
                    time of UPD350. We wait for ~800us */
@@ -253,7 +253,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             }
             else
             {
-                PORT_PinWrite(UPD350_RESET_PIN, TRUE);
+                PORT_PinWrite(RESET_N_COM_PIN, TRUE);
             }
             break;
         }
@@ -311,11 +311,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                SNK_CAP_MISMATCH_Set();
+                CAP_MISMATCH_Set();
             }
             else
             {
-                SNK_CAP_MISMATCH_Clear();
+                CAP_MISMATCH_Clear();
             }
             break;
         }
