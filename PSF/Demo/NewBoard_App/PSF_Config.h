@@ -692,7 +692,7 @@ typedef enum
                                                                         holding maximum of 7 Data 
                                                                         Objects including Fixed 
                                                                         PDOs and PPS APDOs.
-                                                                      * This array should be used 
+                                                                      * This array is applicable 
 																	    only when the port acts 
 																		as Source.
     u32aNewSinkPDO[7]               28        R/W          R/W       * New Sink Capabilities array 
@@ -700,9 +700,9 @@ typedef enum
 																		Sink PDOs where voltage is 
 																		specified in mV and Current
 																		is specified in mA.
-                                                                      * This array should be used 
+                                                                      * This array is applicable 
 																	    only when the port is 
-																		configured as Sink.															
+																		acts as Sink.															
     u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
 																		advertised to Port Partner. 
                                                                       * During run time, when the port
@@ -1136,9 +1136,8 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		  for Sink operation. 
-	u8Reserved1					    1								 Reserved					 
-	u8aReserved2[2]					2								 Reserved
-	u8Reserved3    					1								 Reserved
+	u8aReserved1[2]					2								 Reserved
+	u8Reserved2   					1								 Reserved
  	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
                                                                          based on configuration macro 
                                                                          INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
@@ -1647,17 +1646,16 @@ typedef struct _PortCfgStatus
     UINT8 u8VCONNMaxFaultCnt;
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;
-    UINT8 u8Reserved1;
 #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
-    UINT8 u8aReserved2[2];
+    UINT8 u8aReserved1[2];
 #endif
 #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction; 
-    UINT8 u8Reserved3;    
+    UINT8 u8Reserved2;    
 #endif
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
     UINT8 u8ReservedPortPadBytes[32];

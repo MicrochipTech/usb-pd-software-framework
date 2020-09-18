@@ -783,32 +783,6 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         else if (DPM_INT_EVT_INITIATE_RENEGOTIATION == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_RENEGOTIATION))
         {
-            if(u8PortNum == PORT0)
-            {
-//                /*Assigning PDOs*/
-//                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;
-//
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[INDEX_0] = CFG_PORT_NEW_SINK_PDO_1;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[INDEX_1] = CFG_PORT_NEW_SINK_PDO_2;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[INDEX_2] = CFG_PORT_NEW_SINK_PDO_3;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[INDEX_3] = CFG_PORT_NEW_SINK_PDO_4;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[INDEX_4] = CFG_PORT_NEW_SINK_PDO_5;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[INDEX_5] = CFG_PORT_NEW_SINK_PDO_6;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[INDEX_6] = CFG_PORT_NEW_SINK_PDO_7;
-            }
-            else if(u8PortNum == PORT1)
-            {
-//                /*Assigning PDOs*/
-//                gasCfgStatusData.sPerPortData[PORT0].u8NewSourcePDOCnt = 4;
-//
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSourcePDO[INDEX_0] = CFG_PORT_NEW_SOURCE_PDO_1;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSourcePDO[INDEX_1] = CFG_PORT_NEW_SOURCE_PDO_2;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSourcePDO[INDEX_2] = CFG_PORT_NEW_SOURCE_PDO_3;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSourcePDO[INDEX_3] = CFG_PORT_NEW_SOURCE_PDO_4;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSourcePDO[INDEX_4] = CFG_PORT_NEW_SOURCE_PDO_5;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSourcePDO[INDEX_5] = CFG_PORT_NEW_SOURCE_PDO_6;
-//                gasCfgStatusData.sPerPortData[PORT0].u32aNewSourcePDO[INDEX_6] = CFG_PORT_NEW_SOURCE_PDO_7;
-            }
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_RENEGOTIATION);
 

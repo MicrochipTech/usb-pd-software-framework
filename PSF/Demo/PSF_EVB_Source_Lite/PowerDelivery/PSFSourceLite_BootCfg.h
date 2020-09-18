@@ -74,6 +74,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
 #define CFG_PORT_1_VCONN_OCS_ENABLE     (1U << 9)  
 
+/*Use New PDOs for power negotiation - 0- Use default PDOs; 1- Use New PDOs*/
+#define CFG_PORT_0_NEGOTIATE_USING_NEW_PDOS    (0U << 10)
+#define CFG_PORT_1_NEGOTIATE_USING_NEW_PDOS    (0U << 10)
+
 /********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 #define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5

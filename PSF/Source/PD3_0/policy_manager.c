@@ -820,6 +820,7 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     
     if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
+#if(TRUE == INCLUDE_PD_SOURCE)
         if (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
         {
             /* Update Advertised PDO Count */
@@ -858,10 +859,13 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
             /* The advertised PDOs have been reduced from default configured values */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                                 DPM_PORT_SRC_CAPABILITIES_REDUCED_STATUS;                 
-        }    
+        } 
+#endif
     }
     else /*PD_ROLE_SINK*/
     {
+#if(TRUE == INCLUDE_PD_SINK)
+
         if (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
         {
              /* Update Advertised PDO Count */
@@ -880,10 +884,9 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
                 gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, DPM_4BYTES_FOR_EACH_PDO_OF(u8AdvertisedPDOCnt));
         }
         
-            
-        
         /*Update Advertised PDO count*/
         gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = u8AdvertisedPDOCnt;
+#endif
     }
 
 }

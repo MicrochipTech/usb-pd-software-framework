@@ -99,8 +99,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /***********************************Port Specific configuration***********************/    
 /*Configuration value for u32CfgData*/
 /*Power Role values 0 - Sink, 1 - Source, 2 - DRP*/
-#define CFG_PORT_0_POWER_ROLE                0
-#define CFG_PORT_1_POWER_ROLE                1
+#define CFG_PORT_0_POWER_ROLE                2
+#define CFG_PORT_1_POWER_ROLE                2
 
 /*Data Role supported values 0-Dual Role Data Not supported, 1- Dual Role Date Supported */
 #define CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT    (1U << 2)
@@ -198,19 +198,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_SINK_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
 #define CFG_PORT_0_SINK_PDO_7     CFG_FORM_FIXED_PDOx(0,0) 
 
-#define CFG_PORT_NEW_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
-                                    CFG_PORT_0_DUAL_ROLE_DATA, \
-                                    CFG_PORT_0_SINK_USB_COMM, \
-                                    CFG_PORT_0_SINK_UNCONSTRAINED_PWR, \
-                                    CFG_PORT_0_SINK_HIGHER_CAPABILITY, \
-                                    CFG_PORT_0_DUAL_ROLE_POWER);
-#define CFG_PORT_NEW_SINK_PDO_2     CFG_FORM_FIXED_PDOx(7000U,3000U)    
-#define CFG_PORT_NEW_SINK_PDO_3     CFG_FORM_FIXED_PDOx(9000U,3000U)   
-#define CFG_PORT_NEW_SINK_PDO_4     CFG_FORM_FIXED_PDOx(15000U,3000U)
-#define CFG_PORT_NEW_SINK_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
-#define CFG_PORT_NEW_SINK_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
-#define CFG_PORT_NEW_SINK_PDO_7     CFG_FORM_FIXED_PDOx(0,0) 
-
 /********************************************************************************/
 /**********************************Port 1****************************************/
 /*********************************************************************************/
@@ -252,19 +239,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #endif 
 #define CFG_PORT_1_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
 #define CFG_PORT_1_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0)
-
-#define CFG_PORT_NEW_SOURCE_PDO_1     CFG_FORM_SOURCE_FIXED_PDO1(5000U, 3000U, \
-                                    CFG_PORT_1_DUAL_ROLE_DATA, \
-                                    CFG_PORT_1_SOURCE_USB_COMM, \
-                                    CFG_PORT_1_SOURCE_USB_SUSP,  \
-                                    CFG_PORT_1_SOURCE_UNCONSTARINED_PWR, \
-                                    CFG_PORT_1_DUAL_ROLE_POWER);
-#define CFG_PORT_NEW_SOURCE_PDO_2     CFG_FORM_FIXED_PDOx(7000U,3000U)    
-#define CFG_PORT_NEW_SOURCE_PDO_3     CFG_FORM_FIXED_PDOx(9000U,3000U)   
-#define CFG_PORT_NEW_SOURCE_PDO_4     CFG_FORM_FIXED_PDOx(15000U,3000U)
-#define CFG_PORT_NEW_SOURCE_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
-#define CFG_PORT_NEW_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
-#define CFG_PORT_NEW_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0)
 
 /*Port - 1 Dock Sink PDO configuration*/
 #define CFG_PORT_1_SINK_NUM_OF_PDOS          1U
