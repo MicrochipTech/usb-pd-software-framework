@@ -75,3 +75,13 @@ PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/nbproject/Ma
 PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/nbproject/Makefile-local-default.mk
 PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/nbproject/Makefile-variables.mk
 PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/nbproject/Package-default.bash
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/build/
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/dist/default/production/
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/Makefile-default.mk
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/Makefile-genesis.properties
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/Makefile-impl.mk
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/Makefile-local-default.mk
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/Makefile-variables.mk
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/Package-default.bash
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/private/configurations.xml
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/private/private.xml
