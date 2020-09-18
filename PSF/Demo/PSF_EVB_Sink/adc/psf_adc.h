@@ -10,7 +10,14 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-void PSF_ADC();
+void PSF_ADCRun();
+typedef enum
+{
+    INITIALIZE,
+    WAIT,
+    PROCESS,
+            
+}State;
 #ifdef	__cplusplus
 }
 #endif

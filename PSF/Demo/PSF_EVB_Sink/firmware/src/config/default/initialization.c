@@ -133,7 +133,7 @@ void SYS_Initialize ( void* data )
     // DAC_Initialize is done as part of PSF Hook
     //DAC_Initialize();
 
-
+    ADC_Initialize();
 
 
 

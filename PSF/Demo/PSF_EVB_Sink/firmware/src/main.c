@@ -59,19 +59,24 @@ int main ( void )
    
     /* Initialize all modules */
     SYS_Initialize ( NULL );
-    //MchpPSF_PCTInit();
+    
 	/*PSF init called*/
 	(void)MchpPSF_Init();
-    //MchpPSF_PCTInit();
-   // PSF_monitorandwait();
-   // PSF_ADC();
+    
+    /*PCT init called*/
+    MchpPSF_PCTInit();
+    
+    /*Always monitor ?SPACE BAR? for Enter or exit PCT*/
+    PSF_monitorandwait();
+    
     while ( true )
     {
         /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
-       // MchpPSF_PCTRUN(false);
+        PSF_ADCRun();
+        MchpPSF_PCTRUN(false);
         /*PSF stack Run*/
-        MchpPSF_RUN();        
+       // MchpPSF_RUN();        
     }
 }
 

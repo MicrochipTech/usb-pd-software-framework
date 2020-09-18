@@ -45,50 +45,88 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <math.h>
 #include "definitions.h"                // SYS function prototypes
 #include "psf_stdinc.h"                 // PSF include file
+#include "psf_adc.h"
+#include "psf_control_terminal.h"
 #define   ADC_VREF         (2500U)            //2500mV (2.5V) 
-
-void PSF_ADC()
+void PSF_ADCRun()
 {
-    UINT16 adc_count;
-    UINT32 input_voltage;
-     while (true)
+    static UINT8 u8PrevPos=7;/*By default PDO's are available at position 7*/
+    UINT8 u8CurrentPos=0;
+    UINT16 u16adc_count;
+    UINT32 u32input_voltage;
+    char *VConvert;
+    static State u8State = INITIALIZE;
+    
+    switch(u8State)
     {
-        /*Start ADC Conversion*/
-        ADC_ConversionStart();
+        case INITIALIZE:
+        {
+            ADC_Enable();
+            ADC_ConversionStart();
+            u8State=WAIT;
+            break;
+        }
+            
+        case WAIT:
+        {
+            if(!ADC_ConversionStatusGet())
+            {
+                u8State=WAIT;
+            }
+            else
+            {
+                u8State=PROCESS;
+                
+            }
+            break;
+        }
+        case PROCESS:
+        {
+            /*Read the ADC Result*/
+            u16adc_count=ADC_ConversionResultGet();
+            u32input_voltage=u16adc_count*ADC_VREF/4095U;
 
-
-        /*Wait till ADC Conversion is available*/
-        while(!ADC_ConversionStatusGet())
-        {
-
-        }        
-        /*Read the ADC Result*/
-        adc_count=ADC_ConversionResultGet();
-        input_voltage=adc_count*ADC_VREF/4095U;
-        if(input_voltage==420)
-        {
+            if(u32input_voltage<420)
+            {
+                u8CurrentPos=1;
+            }
+            else if(u32input_voltage<830)
+            {
+                u8CurrentPos=2;
+            }
+             else if(u32input_voltage<1250)
+            {
+                u8CurrentPos=3;
+            }
+             else if(u32input_voltage<1660)
+            {
+                u8CurrentPos=4;
+            }
+             else if(u32input_voltage<2080)
+            {
+                u8CurrentPos=5;
+            }
+             else if(u32input_voltage<2500)
+            {
+                u8CurrentPos=6;
+            }
+            else if(u32input_voltage==0)
+            {
+                u8CurrentPos=7;   
+                 
+            }
+            if(u8CurrentPos!=u8PrevPos)
+            {
+                u8PrevPos=u8CurrentPos;
+                /*modify the pdo list as per the new position*/
+            }
+            UINT8 StrPrint[]="Voltage";
+            VConvert=HextoAscii(u32input_voltage,sizeof(u32input_voltage));
             
+            PCTWrite(StrPrint,(UINT8*)&VConvert[0],sizeof(VConvert),sizeof(StrPrint));
+            //SERCOM1_USART_Write(&A[0],sizeof(A));
+            u8State=INITIALIZE;
+            break;
         }
-        else if(input_voltage==830)
-        {
-            
-        }
-         else if(input_voltage==1250)
-        {
-            
-        }
-         else if(input_voltage==1660)
-        {
-            
-        }
-         else if(input_voltage==2080)
-        {
-            
-        }
-         else if(input_voltage==2500)
-        {
-            
-        }
-       
     }
 }
