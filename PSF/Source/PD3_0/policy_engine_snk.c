@@ -287,9 +287,6 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 {                    
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK: Entered the state\r\n");
                     
-                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA = \
-                                gasCfgStatusData.sPerPortData[u8PortNum].u16SnkMinOperatingCurInmA;
-
                     /* Requested current controlling */
                     PWRCTRL_ConfigSinkHW(u8PortNum, \
                             DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO),\
