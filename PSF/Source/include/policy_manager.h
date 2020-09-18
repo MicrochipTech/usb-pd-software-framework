@@ -88,7 +88,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Enable defines for gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData */
 #define DPM_CFG_PORT_ENABLE                     (1 << DPM_CFG_PORT_ENDIS_POS)
 #define DPM_CFG_VCONN_OCS_ENABLE                (1 << DPM_CFG_VCONN_OCS_EN_POS)
-#define DPM_CFG_NEGOTIATE_USING_NEW_PDOS_STATUS (1 << DPM_CFG_NEGOTIATE_USING_NEW_PDOS_POS)
+#define DPM_CFG_NEGOTIATE_USING_NEW_PDOS    (1 << DPM_CFG_NEGOTIATE_USING_NEW_PDOS_POS)
 
 /*Defines for getting default values configured to a port from 
  gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/
@@ -127,11 +127,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Define to Get whether New PDOs or default PDOs should be used for negotiation*/
 #define DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum)\
-(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & (DPM_CFG_NEGOTIATE_USING_NEW_PDOS_STATUS))
+(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & (DPM_CFG_NEGOTIATE_USING_NEW_PDOS))
 
 /*Define to set that ew PDOs should be used for negotiation*/
 #define DPM_SET_CONFIGURED_NEW_PDO_STATUS(u8PortNum)\
-(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS_STATUS)
+(gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS)
 /*************************************************************************************************/
 
 /**************************************************************************************************/
@@ -1284,9 +1284,9 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
     Summary:
         Updates the Advertised PDO registers and status bits once PDOs are advertised. 
     Description:
-        This API sets the advertised PDO count, updates the registers and sets/clears  
-        the REDUCED_SOURCE_CAPABILITIES bit in Port Connection Status 
-        after comparing the advertised PDOs with Fixed and New PDOs.       . 
+        This API sets the advertised PDO count and updates the advertised PDO registers.
+        If the port acts as source, it and sets/clears  the REDUCED_SOURCE_CAPABILITIES bit
+        in Port Connection Status after comparing the advertised PDOs with Fixed and New PDOs.       . 
     Conditions:
         None
     Input:
