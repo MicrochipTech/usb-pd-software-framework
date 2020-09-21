@@ -1610,6 +1610,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Setting VBUS Comparator OFF once the VBUS line goes off to 0V*/
                         TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
                         
+                        /*Disable the VBUS discharge functionality since VBUS has reached Vsafe0V*/                  
+                        PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
+                
                         /*Setting CC Comparator OFF*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
