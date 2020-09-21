@@ -693,6 +693,35 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             /* Request DPM for renegotiation */
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
         } /*DPM_CLIENT_REQ_RENEGOTIATE*/
+        /* Check for DPM_CLIENT_REQ_VCONN_SWAP request */
+        if (DPM_CLIENT_REQ_VCONN_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+        {
+            /* Clear the request since the request is accepted and going to be handled */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_VCONN_SWAP);                
+            /* Request DPM for VCONN swap */
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
+        } /*DPM_CLIENT_REQ_VCONN_SWAP*/
+        /* Check for DPM_CLIENT_REQ_PR_SWAP request */
+        if (DPM_CLIENT_REQ_PR_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+        {   
+            /* Clear the request since the request is accepted and going to be handled */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_PR_SWAP);                
+            /* Request DPM for PR swap */
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
+        } /*DPM_CLIENT_REQ_PR_SWAP*/
+                /* Check for DPM_CLIENT_REQ_DR_SWAP request */
+        if (DPM_CLIENT_REQ_DR_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+        {
+            
+            /* Clear the request since the request is accepted and going to be handled */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_DR_SWAP);                
+            /* Request DPM for DR swap */
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
+        } /*DPM_CLIENT_REQ_DR_SWAP*/
+        
 #if (TRUE == INCLUDE_PD_VDM)
         else if (DPM_CLIENT_REQ_GET_PARTNER_IDENTITY & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
         {
