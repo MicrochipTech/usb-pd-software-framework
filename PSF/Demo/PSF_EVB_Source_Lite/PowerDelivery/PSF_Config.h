@@ -702,7 +702,7 @@ typedef enum
 																		specified in mV and Current
 																		is specified in mA.
                                                                       * This array is applicable 
-																	    only when the port is 
+																	    only when the port 
 																		acts as Sink.															
     u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
 																		advertised to Port Partner. 
@@ -1194,11 +1194,11 @@ typedef enum
 									to happen with new PDOs, the user must ensure that new PDOs
 									(gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
 									or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO arrays)
-									are written depending on the current power role and then set this bit.
+									are configured depending on the current power role and then set this bit.
 									Then, further power negotiations will happen based on new PDOs. 
 									After power negotiation with new PDOs, if user wants further PD negotiations
 									to happen with default PDOs (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
-                                    or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO), he can clear this bit.
+                                    or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO), this bit can be cleared.
     32:11                          Reserved
     </table>
 	
@@ -1416,9 +1416,9 @@ typedef enum
 	
 	Except a few client requests, others cannot be handled when PSF is busy. In this case, the 
 	u32ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
-	PSF, so that the application initiate the request again by setting the respective bit in this 
-	variable. If the request is accepted and processed, a response notification would be posted by 
-	PSF as mentioned in the below table.
+	PSF, so that the application needs to wait until eMCHP_PSF_IDLE notification is received and then initiate
+	the request again by setting the respective bit in this variable. If the request is accepted and processed,
+	a response notification would be posted by PSF as mentioned in the below table.
 	<table> 
     Bit     R/W Config   R/W Run   \Description
              time         time      
@@ -1464,12 +1464,17 @@ typedef enum
                                     variable needs to be set by the user application.
                                     To renegotiate with new PDOs, user application must ensure that
                                     new PDOs (gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
-                                    or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO) are written
+                                    or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO) are configured
                                     and BIT(10) in gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable
-                                    is cleared. Then BIT(5) in gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest
+                                    is set. Then BIT(5) in gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest
                                     variable needs to be set by the user application. 
+									This client request cannot be handled by PSF when is busy. User application 
+									needs to wait for eMCHP_PSF_IDLE notification and then initiate this request.
 									Once the request is processed by PSF, 
 									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted.
+									Note: This client request is not applicable when Power Balancing or
+									Power Throttling is enabled. Therefore, user application should not trigger 
+									this client request when Power Balancing or Power Throttling is enabled.
     9:6                             Reserved.
     10       R/W          R/W      Get Partner Identity Request      
                                     * '0' PSF has not received any Get Partner Identity request.
