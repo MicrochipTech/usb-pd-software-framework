@@ -157,7 +157,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
                 else
                 {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
                 }
                 MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
                 gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
