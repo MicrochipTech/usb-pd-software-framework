@@ -129,7 +129,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum)\
 (gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & (DPM_CFG_NEGOTIATE_USING_NEW_PDOS))
 
-/*Define to set that ew PDOs should be used for negotiation*/
+/*Define to set whether new PDOs should be used for negotiation*/
 #define DPM_SET_CONFIGURED_NEW_PDO_STATUS(u8PortNum)\
 (gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS)
 /*************************************************************************************************/
