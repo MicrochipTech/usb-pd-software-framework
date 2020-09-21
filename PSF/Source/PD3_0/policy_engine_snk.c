@@ -355,6 +355,9 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 
                 case ePE_SNK_READY_END_AMS_SS:
                 {
+                    /*On PD negotiation complete and sink is in ready state, inform DPM to initiate internal events*/
+                    DPM_OnPDNegotiationCmplt(u8PortNum);
+            
 #if (TRUE == INCLUDE_PD_VDM)
                     /* Post not received notification if VDM:Disc Identity was initiated 
                        previously and no response has been received */

@@ -602,6 +602,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 }
                 case ePE_SRC_READY_END_AMS_SS:
                 {
+                    /*On PD negotiation complete and source is in ready state, inform DPM to initiate internal events*/
+                    DPM_OnPDNegotiationCmplt(u8PortNum);
+            
                     /*This Sub-state shall be assigned if the AMS is started by PSF*/
 #if (TRUE == INCLUDE_PD_3_0)
 					/* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */

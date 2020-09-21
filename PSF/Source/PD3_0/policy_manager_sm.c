@@ -541,8 +541,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED:
         {
-            /*On PD negotiation complete, inform DPM to initiate internal events*/
-            DPM_OnPDNegotiationCmplt(u8PortNum);
             break;
         }
         case eMCHP_PSF_SINK_ALERT_RCVD:
