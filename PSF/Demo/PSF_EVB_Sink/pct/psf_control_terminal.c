@@ -732,6 +732,10 @@ void PCTGetProcessCommands(UINT8 u8array[], UINT8 u8Length)
     {    
         PCTPrintMemory(u8array,u8Length);
     }
+    else
+    {
+        PCTInvalidCommandMsg();
+    }
        
 }
 
@@ -756,6 +760,11 @@ void PCTSetProcessCommands(UINT8 u8array[], UINT8 u8Length)
     {    
         PCTSetPDO(u8array,u8Length);
     }
+    else
+    {
+        PCTInvalidCommandMsg();
+    }
+    
      
 }
 
@@ -795,9 +804,25 @@ void PCTCommandhandler(UINT8 u8array[], UINT8 u8Length)
     }
     else
     {
-        UINT8 StrPrint[]="> invalid command! Type help to know more\n\n\r";
-        SERCOM1_USART_Write(&StrPrint[0],sizeof(StrPrint)); 
+        PCTInvalidCommandMsg();
     }
+}
+void PCTInvalidCommandMsg()
+{
+    UINT8 StrPrint[]="> invalid command! Type help to know more\n\n\r";
+    SERCOM1_USART_Write(&StrPrint[0],sizeof(StrPrint)); 
+}
+void PCTSpaceBARMsg(bool lock)
+{
+  UINT8 StrPrint[]="> Hit SPACE BAR to unlock\n\n\r";
+  UINT8 StrPrintUnlock[]="> Unlocked..\n\n\r";
+  if(lock)
+  {
+    SERCOM1_USART_Write(&StrPrint[0],sizeof(StrPrint));
+  }else
+  {
+      SERCOM1_USART_Write(&StrPrintUnlock[0],sizeof(StrPrintUnlock));
+  }
 }
 /* 
 Function: MchpPSF_PCTRUN 
@@ -808,7 +833,7 @@ This function reads the input from the terminal and starts the PCT and space key
 void MchpPSF_PCTRUN(bool bBlocking)
 {
     UINT8 u8array[LENGTH];    
-    UINT8 u8Length = 0;
+    static UINT8 u8Length = 0;
     UINT8 u8ReadByte;
     static STATE state = INIT;
     
@@ -854,13 +879,14 @@ void MchpPSF_PCTRUN(bool bBlocking)
                         state =READ_PROCESS;
                         u8array[u8Length]=u8ReadByte;
                         break;
-                    }
-                    if(u8ReadByte==' ' &&(u8array[u8Length]==' '))
+                    }else if(u8ReadByte==' ' &&(u8array[u8Length-1]==' '))
                     {
-                        continue;
+                       //nothing to do if again one more space
+                    }else
+                    {
+                        u8array[u8Length]=u8ReadByte;
+                        u8Length++;
                     }
-                    u8array[u8Length]=u8ReadByte;
-                    u8Length++;
                 }
                 state = READ_CONTINUE;
             break;
@@ -869,13 +895,13 @@ void MchpPSF_PCTRUN(bool bBlocking)
                 if(u8array[u8Length] =='?')
                 {
                     PCTPrintCommands();
-                    u8Length=0;
                 }
                 else
                 {
-                    PCTCommandhandler(u8array, u8Length);
-                    u8Length=0;
+                    PCTCommandhandler(u8array, u8Length);  
                 }
+                
+                u8Length=0;
                 state = INIT;
 
             break; 
@@ -891,8 +917,9 @@ void MchpPSF_PCTRUN(bool bBlocking)
                 }
                 else
                 {
-                    bBlocking=true;
+                    bBlocking=true; 
                 }
+                PCTSpaceBARMsg(bBlocking);
                 
                 state = INIT;
             break;

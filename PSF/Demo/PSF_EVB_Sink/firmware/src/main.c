@@ -60,11 +60,12 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
     
-	/*PSF init called*/
-	(void)MchpPSF_Init();
-    
     /*PCT init called*/
     MchpPSF_PCTInit();
+    
+	/*PSF init called*/
+//	(void)MchpPSF_Init();
+    
     
     /*Always monitor ?SPACE BAR? for Enter or exit PCT*/
     PSF_monitorandwait();
@@ -76,7 +77,7 @@ int main ( void )
         //PSF_ADCRun();
         MchpPSF_PCTRUN(false);
         /*PSF stack Run*/
-        MchpPSF_RUN();        
+     //   MchpPSF_RUN();        
     }
 }
 

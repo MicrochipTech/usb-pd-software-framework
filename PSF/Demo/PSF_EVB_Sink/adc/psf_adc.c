@@ -48,6 +48,49 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include "psf_adc.h"
 #include "psf_control_terminal.h"
 #define   ADC_VREF         (2500U)            //2500mV (2.5V) 
+
+
+#define ADC_P0_CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 2400U, \
+                                    CFG_PORT_0_DUAL_ROLE_DATA, \
+                                    CFG_PORT_0_SINK_USB_COMM, \
+                                    CFG_PORT_0_SINK_UNCONSTRAINED_PWR, \
+                                    CFG_PORT_0_SINK_HIGHER_CAPABILITY, \
+                                    CFG_PORT_0_DUAL_ROLE_POWER);
+
+
+#define ADC_P1_CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 2400U, \
+                                    CFG_PORT_0_DUAL_ROLE_DATA, \
+                                    CFG_PORT_0_SINK_USB_COMM, \
+                                    CFG_PORT_0_SINK_UNCONSTRAINED_PWR, \
+                                    CFG_PORT_0_SINK_HIGHER_CURRENT_CAPABILITY.\
+                                      CFG_PORT_0_DUAL_ROLE_POWER);
+
+
+#define ADC_P2_CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 2400U, \
+                                    CFG_PORT_0_DUAL_ROLE_DATA, \
+                                    CFG_PORT_0_SINK_USB_COMM, \
+                                    CFG_PORT_0_SINK_UNCONSTRAINED_PWR, \
+                                    CFG_PORT_0_SINK_HIGHER_CAPABILITY, \
+                                    CFG_PORT_0_DUAL_ROLE_POWER);
+
+#define ADC_P2_CFG_PORT_0_SINK_PDO_2     CFG_FORM_FIXED_PDOx(9000U,3000U) 
+
+
+
+
+#define ADC_P3_CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 2400U, \
+                                    CFG_PORT_0_DUAL_ROLE_DATA, \
+                                    CFG_PORT_0_SINK_USB_COMM, \
+                                    CFG_PORT_0_SINK_UNCONSTRAINED_PWR, \
+                                    CFG_PORT_0_SINK_HIGHER_CURRENT_CAPABILITY, \
+                                    CFG_PORT_0_DUAL_ROLE_POWER);
+
+#define ADC_P3_CFG_PORT_0_SINK_PDO_2     CFG_FORM_FIXED_PDOx(9000U,3000U) 
+
+
+
+
+
 void PSF_ADCRun()
 {
     static UINT8 u8PrevPos=7;/*By default PDO's are available at position 7*/
@@ -56,6 +99,7 @@ void PSF_ADCRun()
     UINT32 u32input_voltage;
     char *VConvert;
     static State u8State = INITIALIZE;
+    UINT8 StrPrint[]="Voltage";
     
     switch(u8State)
     {
@@ -89,18 +133,24 @@ void PSF_ADCRun()
             if(u32input_voltage<420)
             {
                 u8CurrentPos=1;
+                //newpdo[0] //5,3
             }
             else if(u32input_voltage<830)
             {
                 u8CurrentPos=2;
+                //newpdo[0] 5,3 9,3
             }
              else if(u32input_voltage<1250)
             {
                 u8CurrentPos=3;
+                //newpdo[0]
+                //newpdo[1]] 5,3 15,3
             }
              else if(u32input_voltage<1660)
             {
                 u8CurrentPos=4;
+                 //newpdo[0] - default
+                //newpdo[1]]
             }
              else if(u32input_voltage<2080)
             {
@@ -119,8 +169,9 @@ void PSF_ADCRun()
             {
                 u8PrevPos=u8CurrentPos;
                 /*modify the pdo list as per the new position*/
+                
             }
-            UINT8 StrPrint[]="Voltage";
+            
             VConvert=HextoAscii(u32input_voltage,sizeof(u32input_voltage));
             
             PCTWrite(StrPrint,(UINT8*)&VConvert[0],sizeof(VConvert),sizeof(StrPrint));
