@@ -11,8 +11,8 @@
     PSF configuration header file
 
   Description:
-    This header file contains the configuration parameters of PSF stack to configure the 
-    Power delivery modules.
+    This header file contains the configuration parameters of PSF stack that are 
+    required to configure the Power delivery modules.
 *******************************************************************************/
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
@@ -60,8 +60,8 @@ Summary:
 Description:
     Setting the INCLUDE_PD_3_0 as 1, enables PSF to include USB Power delivery 3.0 specification
     features(collision avoidance and extended message support via chunking) along with PD 2.0 features
-	at the compile. User can set this define to 0 to reduce code size, if none of the PD enabled 
-	ports require PD 3.0 specific features.
+	at the compile time. Users can set this define to 0 to reduce code size if none of the PD 
+    enabled ports require PD 3.0 specific features.
 Remarks:
     Recommended default value is '1'.
 Example:
@@ -77,10 +77,10 @@ Summary:
     Source support code inclusion.
 Description:
     Setting the INCLUDE_PD_SOURCE as 1 enables PSF to include the USB PD Source functionality
-    at compile time. User can set this define to 0 to reduce code size if none of the PD 
+    at the compile time. Users can set this define to 0 to reduce code size if none of the PD 
     enabled ports in the system are configured for Source operation.
 Remarks: 
-    Recommended default value is '1' for Source Application.
+    Recommended default value is '1' for Source and DRP Applications.
 Example:
     <code>
     #define INCLUDE_PD_SOURCE	1(Include USB PD Source functionality in PSF)
@@ -94,35 +94,53 @@ Summary:
     Sink support code inclusion.
 Description:
     Setting the INCLUDE_PD_SINK as 1 enables PSF to include USB PD Sink functionality at the 
-	compile time. User can set this define to 0 to reduce code size if none of the PD enabled ports 
-	are configured for Sink operation.
+	compile time. Users can set this define to 0 to reduce code size if none of the PD 
+    enabled ports are configured for Sink operation.
 Remarks:
-    Recommended default value is '1' for Sink Application.
+    Recommended default value is '1' for Sink and DRP Applications.
 Example:
     <code>
     #define INCLUDE_PD_SINK	1(Include USB PD Sink functionality in PSF)
     #define INCLUDE_PD_SINK	0(Exclude USB PD Sink functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_SINK    	1	
+#define INCLUDE_PD_SINK    		1
 
 /**************************************************************************************************
 Summary:
-    VCONN Support code inclusion.
+    DRP support code inclusion.
 Description:
-    Setting the INCLUDE_VCONN_SWAP_SUPPORT as 1 enables PSF to include the VCONN Swap
-	functionality at the compile time. User can set this define to 0 to reduce code size if none of
-	the PD enabled ports requires VCONN Swap functionality.
+    Setting the INCLUDE_PD_DRP as 1 enables PSF to include USB PD DRP functionality at the 
+	compile time. Users can set this define to 0 to reduce code size if none of the PD 
+    enabled ports are configured for DRP operation.
 Remarks:
-    Recommended default value is 1. For Source Operation, it is mandatory to define this macro as '1'.
+    Recommended default value is '1' for DRP Application.
+    For INCLUDE_PD_DRP to be 1, both INCLUDE_PD_SOURCE and INCLUDE_PD_SINK shall be set to 1.
+Example:
+    <code>
+    #define INCLUDE_PD_DRP	1(Include USB PD DRP functionality in PSF)
+    #define INCLUDE_PD_DRP	0(Exclude USB PD DRP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_DRP    		0
+
+/**************************************************************************************************
+Summary:
+    VCONN_Swap Support code inclusion.
+Description:
+    Setting the INCLUDE_PD_VCONN_SWAP as 1 enables PSF to include the VCONN Swap
+	functionality at the compile time. Users can set this define to 0 to reduce code size if none of
+	the PD enabled ports require VCONN Swap functionality.
+Remarks:
+    Recommended default value is 1. For Source and DRP Operation, it is mandatory to define this macro as '1'.
     When INCLUDE_PD_SOURCE is defined as '1', define this macro as '1'.
 Example:
     <code>
-    #define INCLUDE_VCONN_SWAP_SUPPORT	1(Include VCONN Swap functionality in PSF)
-    #define INCLUDE_VCONN_SWAP_SUPPORT	0(Exclude VCONN Swap functionality from PSF)
+    #define INCLUDE_PD_VCONN_SWAP	1(Include VCONN Swap functionality in PSF)
+    #define INCLUDE_PD_VCONN_SWAP	0(Exclude VCONN Swap functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_VCONN_SWAP_SUPPORT  	1
+#define INCLUDE_PD_VCONN_SWAP  	1
 
 /**************************************************************************************************
 Summary:
@@ -130,7 +148,7 @@ Summary:
 Description:
     Setting the INCLUDE_POWER_FAULT_HANDLING as 1 enables PSF to handle power faults (Source and 
 	Sink over voltage, Source OCS, Sink under voltage) as per Power Delivery specification Rev3.0 as
-	applicable. User can set this define to 0 to reduce code size if PSF based power fault handling
+	applicable. Users can set this define to 0 to reduce code size if PSF based power fault handling
 	is not required.
 Remarks:
     Recommended default value is 1.
@@ -149,10 +167,11 @@ Description:
     PIO override is UPD350 specific feature which changes the state of a PIO without software
     intervention. PSF uses this feature to disable EN_VBUS(in case of source operation) or  
 	EN_SINK(in case of sink operation) instantly on detection of a Power Fault Condition.
-	Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature. User can set this
-	define to 0 to reduce code size of PSF if PIO override based power faulting is not required.
+	Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature. Users can set this
+	define to 0 to reduce code size of PSF if PIO override based power fault handling 
+    is not required.
 Remarks:
-    To use this feature, EN_VBUS or EN_SINK and FAULT_IN Pin of the system should be UPD350 PIOs.
+    To use this feature, EN_VBUS or EN_SINK and FAULT_IN pins of the system should be UPD350 PIOs.
 	It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus INCLUDE_POWER_FAULT_HANDLING
 	should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define to be effective. 
 	Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS, EN_SINK and FAULT_IN.
@@ -172,8 +191,8 @@ Summary:
 Description:
     Setting the INCLUDE_POWER_MANAGEMENT_CTRL as 1 enables PSF to include the 
     functionality that puts the UPD350 into low power mode if UPD350 is inactive for 
-    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS time and PSF notifies the same via the call back
-    MCHP_PSF_NOTIFY_CALL_BACK. User can set this define to 0 to reduce code size of the PSF 
+    15 seconds time and PSF notifies the same via the call back
+    MCHP_PSF_NOTIFY_CALL_BACK. Users can set this define to 0 to reduce code size of the PSF 
     if low power mode operation of UPD350 is not required for the application.
 Remarks:
     Recommended default value is 1.
@@ -190,8 +209,8 @@ Summary:
     PD Firmware update code inclusion.
 Description:
     Setting the INCLUDE_PDFU as 1 includes the state machine code for PD Firmware Update 
-    feature as per USB Power Delivery FW Update Specification v1.0. User can set this define 
-    to 0 to reduce code size if the PSF application doesnot use Firmware update feature. 
+    feature as per USB Power Delivery FW Update Specification v1.0. Users can set this define 
+    to 0 to reduce code size if the PSF application does not use Firmware update feature. 
 Remarks:
     Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
     INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
@@ -208,11 +227,11 @@ Summary:
     Power Balancing support code inclusion.
 Description:
     Setting the INCLUDE_POWER_BALANCING as 1 enables PSF to include the PD 
-    Power Balancing functionality at compile time. User can set this define to 0
+    Power Balancing functionality at the compile time. Users can set this define to 0
     to reduce code size if none of the PD enabled Source ports in the system 
     require Power Balancing functionality.
 Remarks: 
-    Recommended default value is 1. For INCLUDE_POWER_BALANCING to be 1, 
+    Recommended default value is 1 for Source application. For INCLUDE_POWER_BALANCING to be 1, 
     INCLUDE_PD_SOURCE shall be set to 1. 
 Example:
     <code>
@@ -227,11 +246,11 @@ Summary:
     Power Throttling support code inclusion.
 Description:
     Setting the INCLUDE_POWER_THROTTLING as 1 enables PSF to include the 
-    Power Throttling(PT) feature at compile time. User can set this define to 0
+    Power Throttling(PT) feature at the compile time. Users can set this define to 0
     to reduce code size if none of the Source ports in the system 
     require PT functionality.
 Remarks: 
-    Recommended default value is 1. For INCLUDE_POWER_THROTTLING to be 1, 
+    Recommended default value is 1 for Source application. For INCLUDE_POWER_THROTTLING to be 1, 
     INCLUDE_PD_SOURCE shall be set to 1. 
 Example:
     <code>
@@ -243,14 +262,14 @@ Example:
 
 /**************************************************************************************************
 Summary:
-    PPS support code inclusion.
+    Source PPS support code inclusion.
 Description:
     Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Source Programmable 
-    Power Supply(PPS) feature at compile time. User can set this define to 0
+    Power Supply(PPS) feature at the compile time. Users can set this define to 0
     to reduce code size if none of the Source ports in the system 
     require PPS functionality.
 Remarks: 
-    Recommended default value is 1. For INCLUDE_PD_SOURCE_PPS to be 1, 
+    Recommended default value is 1 for Source application. For INCLUDE_PD_SOURCE_PPS to be 1, 
     INCLUDE_PD_SOURCE and INCLUDE_PD_3_0 shall be set to 1. 
 Example:
     <code>
@@ -259,6 +278,61 @@ Example:
     </code>
 **************************************************************************************************/
 #define INCLUDE_PD_SOURCE_PPS           0
+
+/**************************************************************************************************
+Summary:
+    DR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_DR_SWAP as 1 enables PSF to include the Data Role 
+    Swap (DR_SWAP) feature at the compile time. Users can set this define to 0
+    to reduce code size if none of the ports in the system require DR_SWAP
+    functionality.
+Remarks: 
+    Recommended default value is 1. Users can configure it based on the
+    application.
+Example:
+    <code>
+    #define INCLUDE_PD_DR_SWAP	1(Include DR_SWAP functionality in PSF)
+    #define INCLUDE_PD_DR_SWAP	0(Exclude DR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_DR_SWAP           0
+
+/**************************************************************************************************
+Summary:
+    PR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_PR_SWAP as 1 enables PSF to include the Power Role 
+    Swap (PR_SWAP) feature at the compile time. PR_Swap is applicable only for the ports that
+    are configured for DRP operation. Users can set this define to 0 to reduce the code size
+    if none of the DRP ports in the system require Power Role Swap functionality.
+Remarks: 
+    Recommended default value is 1 for DRP application. For INCLUDE_PD_PR_SWAP to be 1, 
+    INCLUDE_PD_DRP shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_PR_SWAP	1(Include PR_SWAP functionality in PSF)
+    #define INCLUDE_PD_PR_SWAP	0(Exclude PR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_PR_SWAP      0
+
+/**************************************************************************************************
+Summary:
+    Vendor Defined Message support code inclusion.
+Description:
+    Setting the INCLUDE_PD_VDM as 1 enables PSF to include the Structured Vendor Defined 
+    Message(VDM) feature at the compile time. Users can set this define to 0 to reduce the code size
+    if none of the ports in the system require Structured VDM support.
+Remarks: 
+    Recommended default value is 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_VDM	1(Include Structured VDM support in PSF)
+    #define INCLUDE_PD_VDM	0(Exclude Structured VDM support from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_VDM             0
 
 // *****************************************************************************
 // *****************************************************************************
@@ -355,23 +429,6 @@ Note:
   **************************************************************************/
  #define CONFIG_DEFINE_UPD350_HW_INTF_SEL    CONFIG_UPD350_SPI     
 
-/**************************************************************************************************
-Summary:
-    UPD350 Idle Timeout value in milliseconds.
-Description :
-    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is put to low power mode by   
-    the power management control if there is no activity or interrupt in UPD350.
-Remarks :
-    It shall be expressed in MILLISECONDS_TO_TICKS define.
-    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS is valid only if INCLUDE_POWER_MANAGEMENT_CTRL set as 1.
-    By default, this define is set to to 15seconds.
-Example :
-    <code>
-     #define CONFIG_PORT_UPD_IDLE_TIMEOUT_MS	  MILLISECONDS_TO_TICKS(15000) (Timeout is 15 seconds)
-    </code>
-**************************************************************************************************/
-#define CONFIG_PORT_UPD_IDLE_TIMEOUT_MS 	MILLISECONDS_TO_TICKS(15000)
-
 /**************************************************************************
 Summary:
     Print status messages from PSF stack through UART interface
@@ -396,7 +453,7 @@ Example:
 Note:
     None.
 **************************************************************************/
-#define CONFIG_HOOK_DEBUG_MSG      1                 
+#define CONFIG_HOOK_DEBUG_MSG      1                
 
 
 // *****************************************************************************
@@ -631,28 +688,63 @@ typedef enum
                                                                       * This array should be used 
 																	    only when the port is 
 																		configured as Sink.
-    u32aNewPDO[7]                   28        R/W          R/W       * New Source Capabilities array 
+    u32aNewSourcePDO[7]             28        R/W          R/W       * New Source Capabilities array 
                                                                         holding maximum of 7 Data 
                                                                         Objects including Fixed 
                                                                         PDOs and PPS APDOs.
-                                                                      * This array is common for 
-																	    Source and Sink. It is 
-																		valid only when Bit 0 of  
-																		u32ClientRequest is set to 1.
+                                                                      * This array is applicable 
+																	    only when the port acts 
+																		as Source.
+    u32aNewSinkPDO[7]               28        R/W          R/W       * New Sink Capabilities array 
+                                                                        holding maximum of 7 fixed 
+																		Sink PDOs where voltage is 
+																		specified in mV and Current
+																		is specified in mA.
+                                                                      * This array is applicable 
+																	    only when the port 
+																		acts as Sink.															
     u32aAdvertisedPDO[7]            28        R            R         * Upto 7 PDOs that are 
 																		advertised to Port Partner. 
-                                                                      * During run time, this array 
+                                                                      * During run time, when the port
+                                                                        acts as source, this array 
 																	    holds the value of current
-                                                                        u32aNewPDO[7] if Bit 0 of 
-																		u32ClientRequest is enabled 
+                                                                        u32aNewSourcePDO[7] if Bit 10 of 
+																		u32CfgData is enabled 
 																		else holds the value of 
-																		current u32aSourcePDO[7]
+																		current u32aSourcePDO[7].
+                                                                      * During run time, when the port
+                                                                        acts as sink, this array 
+																	    holds the value of current
+                                                                        u32aNewSinkPDO[7] if Bit 10 of 
+																		u32CfgData is enabled 
+																		else holds the value of 
+																		current u32aSinkPDO[7].
     u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Partner PDOs 
 																		where Voltage is specified 
 																		in mV and Current is 
 																		specified in mA
                                                                       * This array is common for 
 																	    Source and Sink.
+    u32aCableIdentity[7]            28        R            R         * Cable Identity array 
+                                                                        holding the Vendor 
+                                                                        Defined Objects where 
+                                                                        Index 0 corresponds to VDM
+                                                                        Header, Index 1 being ID 
+                                                                        Header VDO, Index 2 being
+                                                                        Cert Stat VDO, Index 3 
+                                                                        being Product VDO and 
+                                                                        indices 4 corresponds to 
+                                                                        Product Type VDO
+    u32aPartnerIdentity[7]          28        R            R         * Partner Identity array 
+                                                                        holding upto 7 Vendor 
+                                                                        Defined Objects where 
+                                                                        Index 0 corresponds to VDM
+                                                                        Header, Index 1 being ID 
+                                                                        Header VDO, Index 2 being
+                                                                        Cert Stat VDO, Index 3 
+                                                                        being Product VDO and 
+                                                                        indices 4-7 correspond to 
+                                                                        0-3 Product Type VDO(s)
     u32RDO                          4         R            R         * Complete raw RDO Data as
 																		sent to the port partner 
 																		when acting as Sink and 
@@ -804,11 +896,12 @@ typedef enum
                                                                       * This variable is applicable 
 																	    only when the port is
                                                                         configured as Sink.
-    u8NewPDOCnt                     1         R/W          R/W       * Number of New PDOs Supported.
-                                                                      * This variable is common for 
-																	    both Source and Sink. It is
-																		valid only when Bit 0 of 
-																		u32ClientRequest is set to 1.
+    u8NewSourcePDOCnt               1         R/W          R/W       * Number of New Source PDOs Supported.
+                                                                      * This variable is applicable  
+																	    only when the port acts as Source.
+    u8NewSinkPDOCnt                 1         R/W          R/W       * Number of New Sink PDOs Supported.
+                                                                      * This variable is applicable  
+																	    only when the port acts as Sink.																		
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
     u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
@@ -1043,10 +1136,8 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		  for Sink operation. 
-	u16Reserved1    				2								 Reserved					 
-	u8aReserved1					1								 Reserved					 
-	u8aReserved2[2]					2								 Reserved
-	u8Reserved3    					1								 Reserved
+	u8aReserved1[2]					2								 Reserved
+	u8Reserved2   					1								 Reserved
  	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
                                                                          based on configuration macro 
                                                                          INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
@@ -1063,9 +1154,13 @@ typedef enum
     Bit     R/W Config   R/W Run   \Description
              time         time      
     ------  -----------  --------  --------------------
-    2:0     RW           R         Port Power Role
-                                    * '000' Sink
-                                    * '001' Source 
+    1:0     RW           R         Port Power Role
+                                    * '00' Sink
+                                    * '01' Source 
+                                    * '10' DRP
+    2       RW           R         Dual Role Data Capability
+                                    * '0' No Dual Role Data
+                                    * '1' Dual Role Data supported
     4:3     RW           R         Rp Selection
                                     * '00' Disabled
                                     * '01' USB Power
@@ -1082,7 +1177,28 @@ typedef enum
     9       RW           R         VCONN OCS Enable
                                     * '0' Disable
                                     * '1' Enable
-    32:10                          Reserved
+    10      RW           R         Use New PDOs for negotiation
+                                    * '0' Default PDOs provided in
+									  gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
+									  or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO
+                                      will be used depending on the current power role for 
+                                      power negotiation.                                 
+                                    * '1' New PDOs provided in 
+                                      gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
+                                      or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO
+                                      will be used depending on the current power role for 
+                                      power negotiation.                                  
+                                    The first PD negotiation will take place with default PDOs. 
+									After the first power negotiation, if user wants PD negotiation
+									to happen with new PDOs, the user must ensure that new PDOs
+									(gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
+									or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO arrays)
+									are configured depending on the current power role and then set this bit.
+									Then, further power negotiations will happen based on new PDOs. 
+									After power negotiation with new PDOs, if user wants further PD negotiations
+									to happen with default PDOs (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
+                                    or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO), this bit can be cleared.
+    32:11                          Reserved
     </table>
 	
 	<b>b. u32PortConnectStatus</b>: 
@@ -1097,73 +1213,75 @@ typedef enum
 	1       R            R         Orientation 
 									* '0' Unflipped - Port Partner attached in CC1 pin 
 									* '1' Flipped - Port Partner attached in CC2 pin 
-	2       R            R         Data Role 
-									* '0' UFP 
-									* '1' DFP 
-	3       R            R         Power Role 
-									* '0' Sink 
-									* '1' Source 
-	4       R            R         VCONN Status  
+	3:2     R            R         Data Role 
+									* '00' UFP 
+									* '01' DFP 
+                                    * '10' Toggling 
+	5:4     R            R         Power Role 
+									* '00' Sink 
+									* '01' Source 
+                                    * '10' DRP 
+	6       R            R         VCONN Status  
 									* '0' Disabled 
 									* '1' Enabled 
-	5       R            R         Cable Reduced Source Capabilities 
+	7       R            R         Cable Reduced Source Capabilities 
 									* '0' Attached USB-C cable supports the locally-defined Source 
 									    PDOs
 									* '1' Attached USB-C cable does not support the locally defined 
 									    Source PDOs	
-	6       R            R         Reduced Source Capabilities
+	8       R            R         Reduced Source Capabilities
 									* '0' The advertised PDOs are equivalent to the default 
 									     configured values 
 									* '1' The advertised PDOs have been reduced from default 
 									     configured values
-	7       R            R         Source Capability Mismatch 
+	9       R            R         Source Capability Mismatch 
 									* '0' De-asserted by  Source port when there is capability 
 									     mismatch with sink partner 
 									* '1' Asserted by Source port when sink port indicates 
 									     capability mismatch in RDO
-	8       R            R         As Source PD Contract Good 
+	10      R            R         As Source PD Contract Good 
 									* '0' As Source: USB-C Connection Only (No Request Made Yet)
 									* '1' As Source; USB PD connection established, Power request 
 									      has been made, accepted and PS_RDY message sent. 
 								    * This bit will always remain 0 when acting as sink.	
-	9       R            R         As Source RDO Accepted
+	11      R            R         As Source RDO Accepted
 									* '0' As Source: No RDO Accept message has been sent to last 
 									      Request made by attached Sink or no Request has yet been 
 										  made during connection. 
 									* '1' As Source: RDO Accept message has been sent to last 
 									      Request made by attached Sink
 								    * This bit will always remain 0 when acting as sink		  
-	10      R            R         As Source RDO Rejected  
+	12      R            R         As Source RDO Rejected  
 									* '0' As source; No RDO reject message has been sent to last 
 											request made by attached Sink or no Request has yet been 
 											made during connection 
 									* '1' As Source: RDO Reject message has been sent to last 
 									        Request made by attached Sink
 									* This bit will always remain 0 when acting as Sink 		
-	11      R            R         As Sink Last Request Accept 
+	13      R            R         As Sink Last Request Accept 
 									* '0' As Sink: Last RDO Request was not Accepted or no request 
 									      has yet been made. 
 									* '1' As Sink: Last RDO Request was Accepted
 									* This bit will always remain 0 when acting as a source.
-	12      R            R         As Sink Last Request Reject 
+	14      R            R         As Sink Last Request Reject 
 									* '0' As Sink: Last RDO Request was not Rejected or no request 
 									   has yet been made. 
 									* '1' As Sink: Last RDO Request was Rejected
 									* This bit will always remain 0 when acting as a source.
-	13      R            R         As Sink Last Request PS_RDY 
+	15      R            R         As Sink Last Request PS_RDY 
 									* '0' As Sink: PS_RDY not yet received for last RDO request  
 									* '1' As Sink: PS_RDY received for last RDO request
 									* This bit will always remain 0 when acting as a source.
-	14      R            R         Sink Capability Mismatch  
+	16      R            R         Sink Capability Mismatch  
 									* '0' De-asserted by the Sink Port when there is no capability 
 										mismatch 
 									* '1' Asserted by Sink Port when no Source capability was found
-	16:15   R            R         Rp Value detected by Sink 
+	18:17   R            R         Rp Value detected by Sink 
 									* '00' Disabled 
 									* '01' USB Power 
 								    * '10' 1.5A 
 									* '11' 3.0A 
-	31:17	 			           Reserved 				
+	31:19	 			           Reserved 				
 	</table>
 
 	<b>c. u32PortIOStatus</b>: 
@@ -1199,13 +1317,18 @@ typedef enum
     8       R            R         3.0_IND Status  
                                     * '1' Asserted 
                                     * '0' De-asserted
-    9       R            R         PS_RDY Received 
+    9       R            R         Capability Mismatch Status
                                     * '1' Asserted 
                                     * '0' De-asserted
-    10      R            R         Capability Mismatch  
-                                    * '1' Asserted 
-                                    * '0' De-asserted
-    31:11                          Reserved 
+    10      R            R         Power role Status
+                                    * '1' Asserted if Source
+                                    * '0' De-asserted if Sink
+									* Applicable only for DRP configuration									
+    11      R            R         Data role Status
+                                    * '1' Asserted if DFP
+                                    * '0' De-asserted if UFP
+									* Applicable only for DRP configuration	
+    31:12                          Reserved 
 	</table>
 	
 	<b>d. u32PortStatusChange</b>: 
@@ -1284,55 +1407,87 @@ typedef enum
 	</table> 	
 		
 	<b>e. u32ClientRequest</b>: 
-	u32ClientRequest variable defines the client request mask bits. It's size is 4 bytes. Application 
-	can make use of this variable to request PSF to handle the mentioned client requests. Except 
-	VBUS Power Fault Request, all the other requests cannot coexist i.e Only one 
-	client request could be handled by PSF at a given time. So, it is recommended that the 
-	application could raise a single request at a time i.e set only one of the bits in this variable.
+	u32ClientRequest variable defines the client request mask bits. It's size is 4 bytes. USER_APPLICATION 
+	can set the corresponding bit in this variable to request PSF to handle the client requests mentioned 
+    in the table below. Except VBUS Power Fault Request, all the other requests cannot coexist i.e Only one
+    client request could be handled by PSF at a given time. So, it is recommended that the application 
+    should raise a single request at a time i.e set only one of the bits in this variable.
 	
-	In case PSF is busy, it cannot handle any of the client requests. In this case, the 
+	Except a few client requests, others cannot be handled when PSF is busy. In this case, the 
 	u32ClientRequest variable would be cleared and eMCHP_PSF_BUSY notification would be posted by 
-	PSF, so that the application initiate the request again by setting the respective bit in this 
-	variable. If the request is accepted and processed, a response notification would be posted by 
-	PSF as mentioned in the below table.
+	PSF, so that the application needs to wait until eMCHP_PSF_IDLE notification is received and then initiate
+	the request again by setting the respective bit in this variable. If the request is accepted and processed,
+	a response notification would be posted by PSF as mentioned in the below table.
 	<table> 
     Bit     R/W Config   R/W Run   \Description
              time         time      
     ------  -----------  --------  --------------------
-    0       R/W          R/W       Renegotiation Request 
-                                    * '0' PSF has not received any renegotiation request.
-                                    * '1' PSF has received a renegotiation request. 
-									Before initiating the request, user has to fill the Source 
-									capabilities in u32aNewPDO array and the PDO count in 
-									u8NewPDOCnt. 
-									Once the request is processed by PSF, u32aNewPDO array and 
-									u8NewPDOCnt would be cleared and 
-									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted. 
-    1       R/W          R/W       Get Sink capabilities Request 
-                                    * '0' PSF has not received any request for getting the sink 
-									      capabilities.
-                                    * '1' PSF has received a request for getting the sink 
-									      capabilities. 
-									Once the request is processed by PSF, 
-									eMCHP_PSF_SINK_CAPS_RCVD or eMCHP_PSF_SINK_CAPS_NOT_RCVD
-									notification would be posted depending on the Sink partner's 
-									response to Get_Sink_Caps message. User can read the received 
-									sink capabilities from u32aPartnerPDO array. 
-    2       R/W          R/W       Reserved 
-    3       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
+    0       R/W          R/W       Port Disable Request 
+                                    * Set this bit to request PSF to disable a port.
+                                    * This client request will be processed by PSF 
+                                       irrespective of whether it is idle.
+                                    * Once a port is disabled successfully, 
+                                       eMCHP_PSF_PORT_DISABLED notification will be posted
+                                       by PSF to user application.
+    1       R/W          R/W       Port Enable Request 
+                                    * Set this bit to request PSF to enable a port.
+                                    * This client request will be processed by PSF 
+                                       irrespective of whether it is idle.
+                                     * Once a port is disabled successfully, 
+                                       eMCHP_PSF_PORT_ENABLED notification will be posted
+                                       by PSF to user application.
+    2       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
                                     * Set this bit to request PSF to process externally detected
                                         over voltage VBUS fault.
-    4       R/W          R/W       Handle VBUS Power Fault Over current Request 
-                                    * Set this bit to request PSF to process externally detected
+    3                               * Set this bit to request PSF to process externally detected
                                         over current VBUS power fault or to inform PSF that Current
                                         Limit mode is entered by external DC-DC controller.  
-    5       R/W          R/W       Handle VBUS Power Fault Over current exit Request 
+    4       R/W          R/W       Handle VBUS Power Fault Over current exit Request 
                                     * Set this bit to inform PSF that externally detected 
                                         over current VBUS power fault condition is exited or 
                                         Constant Voltage mode is entered by external DC-DC controller.
-
-				  
-	31:6  						   Reserved 									
+    5       R/W          R/W       Renegotiation Request 
+                                    * '0' PSF has not received any renegotiation request.
+                                    * '1' PSF has received a renegotiation request. 
+                                    User application may request PSF to renegotiate 
+                                    based on default PDOs
+                                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
+                                    or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO)
+                                    or new PDOs 
+                                    (gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
+                                    or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO).
+                                    To renegotiate with default PDOs, user application must ensure that
+                                    BIT(10) in gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData 
+                                    variable is cleared and then BIT(5) in 
+                                    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest
+                                    variable needs to be set by the user application.
+                                    To renegotiate with new PDOs, user application must ensure that
+                                    new PDOs (gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
+                                    or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO) are configured
+                                    and BIT(10) in gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable
+                                    is set. Then BIT(5) in gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest
+                                    variable needs to be set by the user application. 
+									This client request cannot be handled by PSF when is busy. User application 
+									needs to wait for eMCHP_PSF_IDLE notification and then initiate this request.
+									Once the request is processed by PSF, 
+									eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification would be posted.
+									Note: This client request is not applicable when Power Balancing or
+									Power Throttling is enabled. Therefore, user application should not trigger 
+									this client request when Power Balancing or Power Throttling is enabled.
+    9:6                             Reserved.
+    10       R/W          R/W      Get Partner Identity Request      
+                                    * '0' PSF has not received any Get Partner Identity request.
+                                    * '1' PSF has received a Get Partner Identity request. 									 
+                                    *  eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED notification will 
+                                        will be posted for an ACK response, 
+                                        eMCHP_PSF_PARTNER_IDENTITY_NAKED will be posted for a 
+                                        NAK response and eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD
+                                        will be posted when no response is received.
+                                    *  Application can read the partner identity by 
+                                        accessing the u32aPartnerIdentity[7] register
+                                    *  This request is supported only when INCLUDE_PD_VDM is 
+                                        defined as '1'. 
+	31:11  						   Reserved 									
 	</table> 								
  
 	<b>f. u16PortIntrMask</b>: 
@@ -1392,9 +1547,58 @@ typedef enum
                                     * '1' Enable. 
 								    This bit is applicable only for source operation. 			
     15:1	                       Reserved 
- 
-  Remarks:
-    None                                                                                                                                
+    </table>
+    
+    <b>h. u16SwapPolicy</b>: 
+	u16SwapPolicy defines the policy of a port whether to accept, request or reject Power Role Swap,
+    Data Role Swap and VCONN Swap based on its power and data roles.
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R/W          R/W       EN_AUTO_DR_SWAP_REQUEST_AS_DFP
+                                    * '0' Disable Auto Data Role Request When Data Role is DFP
+                                    * '1' Enable Auto Data Role Request when Data Role is DFP 
+    1       R/W          R/W       EN_AUTO_DR_SWAP_REQUEST_AS_UFP
+                                    * '0' Disable Auto Data Role Request When Data Role is UFP
+                                    * '1' Enable Auto Data Role Request when Data Role is UFP
+    2       R/W          R/W       EN_AUTO_DR_SWAP_ACCEPT_AS_DFP
+                                    * '0' Disable Auto Data Role Accept When Data Role is DFP
+                                    * '1' Enable Auto Data Role Accept when Data Role is DFP 
+    3       R/W          R/W       EN_AUTO_DR_SWAP_ACCEPT_AS_UFP
+                                    * '0' Disable Auto Data Role Accept When Data Role is UFP
+                                    * '1' Enable Auto Data Role Accept when Data Role is UFP
+    4       R/W          R/W       EN_AUTO_PR_SWAP_REQUEST_AS_SOURCE
+                                    * '0' Disable Auto Power Role Request When Power Role is Source
+                                    * '1' Enable Auto Power Role Request when Power Role is Source
+    5       R/W          R/W       EN_AUTO_PR_SWAP_REQUEST_AS_SINK
+                                    * '0' Disable Auto Power Role Request When Power Role is Sink
+                                    * '1' Enable Auto Power Role Request when Power Role is Sink
+    6       R/W          R/W       EN_AUTO_PR_SWAP_ACCEPT_AS_SOURCE
+                                    * '0' Disable Auto Power Role Accept When Power Role is Source
+                                    * '1' Enable Auto Power Role Accept when Power Role is Source
+    7       R/W          R/W       EN_AUTO_PR_SWAP_ACCEPT_AS_SINK
+                                    * '0' Disable Auto Power Role Accept When Power Role is Sink
+                                    * '1' Enable Auto Power Role Accept when Power Role is Sink 
+    8       R/W          R/W       EN_AUTO_VCONN_SWAP_REQ_AS_VCONN_SRC
+                                    * '0' Disable Auto VCONN Swap Request When working as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Request When working as VCONN Source
+    9       R/W          R/W       EN_AUTO_VCONN_SWAP_REQ_AS_NOT_VCONN_SRC
+                                    * '0' Disable Auto VCONN Swap Request When not working as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Request When not working as VCONN Source
+    10      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC
+                                    * '0' Disable Auto VCONN Swap Accept When working as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Accept When working as VCONN Source
+                                    * Note: This bit shall be set to 1 always to comply with the PD spec for 
+                                      VCONN Swap request									
+    11      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC
+                                    * '0' Disable Auto VCONN Swap Accept When not working as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Accept When not working as VCONN Source 
+    15:12  						   Reserved 									
+	</table> 
+									
+   Remarks:
+     None                                                                                                                             
   ***************************************************************************************************************************************/
 
 typedef struct _PortCfgStatus
@@ -1402,9 +1606,14 @@ typedef struct _PortCfgStatus
     UINT32 u32CfgData;				
     UINT32 u32aSourcePDO[7];		
     UINT32 u32aSinkPDO[7];          
-    UINT32 u32aNewPDO[7];		    
+    UINT32 u32aNewSourcePDO[7];	
+    UINT32 u32aNewSinkPDO[7]; 
     UINT32 u32aAdvertisedPDO[7];	
-    UINT32 u32aPartnerPDO[7];       
+    UINT32 u32aPartnerPDO[7];  
+    UINT32 u32aCableIdentity[7];
+#if (TRUE == INCLUDE_PD_VDM)
+    UINT32 u32aPartnerIdentity[7]; 
+#endif 
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
     UINT32 u32PortStatusChange;
@@ -1417,7 +1626,7 @@ typedef struct _PortCfgStatus
     UINT16 u16PortIntrMask;
     UINT16 u16PowerGoodTimerInms;
     UINT16 u16FeatureSelect; 
-    UINT16 u16Reserved1; 
+    UINT16 u16SwapPolicy; 
 	#if (TRUE == INCLUDE_PD_SINK)
     UINT16 u16aMinPDOPreferredCurInmA[7]; 
     UINT16 u16SnkMaxOperatingCurInmA; 
@@ -1428,7 +1637,8 @@ typedef struct _PortCfgStatus
     #endif
     UINT8 u8SourcePDOCnt;			
     UINT8 u8SinkPDOCnt;             
-    UINT8 u8NewPDOCnt;              
+    UINT8 u8NewSourcePDOCnt;   
+    UINT8 u8NewSinkPDOCnt;
     UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerPDOCnt;                    
     UINT8 u8SinkConfigSel;         
@@ -1441,17 +1651,16 @@ typedef struct _PortCfgStatus
     UINT8 u8VCONNMaxFaultCnt;
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;
-    UINT8 u8aReserved1;
 #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
-    UINT8 u8aReserved2[2];
+    UINT8 u8aReserved1[2];
 #endif
 #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction; 
-    UINT8 u8Reserved3;    
+    UINT8 u8Reserved2;    
 #endif
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
     UINT8 u8ReservedPortPadBytes[32];
@@ -1746,8 +1955,7 @@ typedef struct _PPSPortCfgStatus
     u8aReserved3				     1 								 Reserved 	
     u8aReserved6				     1 								 Reserved 	
     u8aReserved7[3]				     3								 Reserved 
-    u8aReserved8[3]				     3 								 Reserved 
-    u16Reserved2 				     2 								 Reserved 																
+    u8aReserved8[3]				     3 								 Reserved 																
  	u8ReservedPadBytes[16]	         16	                              * Reserved bytes included
                                                                          based on configuration macro 
                                                                          INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
@@ -1817,11 +2025,12 @@ typedef struct _GlobalCfgStatusData
     UINT8 u8MajorVersion;  
     UINT8 u8HWVersion;	   
     UINT8 u8SiVersion;     
-    UINT8 u8aManfString[8]; 
+    UINT8 u8aManfString[21];
+    UINT8 u8ManfStringLength;
     UINT8 u8PSFMajorVersion; 
     UINT8 u8PSFMinorVersion; 
     UINT8 u8PwrThrottleCfg;
-    UINT8 u8aReserved3;    
+    UINT8 u8aReserved3[3];    
     UINT16 u16ProducdID;	
     UINT16 u16VendorID;		
     UINT16 u16ProductTypeVDO; 
@@ -1862,7 +2071,7 @@ typedef struct _GlobalCfgStatusData
 	 Configuration and Status parameters of PSF including Type C, PD, PB, PT and PPS parameters.
 	 
 	 It is mandatory that the user has to initialize the configuration parameters for the PSF 
-	 stack to funtion properly. This can be done through MCHP_PSF_HOOK_BOOT_TIME_CONFIG which 
+	 stack to function properly. This can be done through MCHP_PSF_HOOK_BOOT_TIME_CONFIG which 
 	 initializes the parameters defined in gasCfgStatusData during compile time. For accessing 
 	 the configuration registers and reading the status registers at run time, an I2C slave
 	 interface shall be used by the user application. 																 												  																 																  

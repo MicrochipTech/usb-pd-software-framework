@@ -96,17 +96,17 @@ void ADC_Initialize( void )
         | ADC_CALIB_BIAS_CAL((((*(uint64_t*)(OTP4_ADDR + 4)) & ADC_BIASCAL_Msk) >> ADC_BIASCAL_POS));
 
     /* Sampling length */
-    ADC_REGS->ADC_SAMPCTRL = ADC_SAMPCTRL_SAMPLEN(3U);
+    ADC_REGS->ADC_SAMPCTRL = ADC_SAMPCTRL_SAMPLEN(7U);
 
     /* reference */
     ADC_REGS->ADC_REFCTRL = ADC_REFCTRL_REFSEL_INTVCC1;
 
     /* positive and negative input pins */
-    ADC_REGS->ADC_INPUTCTRL = (uint32_t) ADC_POSINPUT_PIN0 | (uint32_t) ADC_NEGINPUT_GND \
+    ADC_REGS->ADC_INPUTCTRL = (uint32_t) ADC_POSINPUT_PIN4 | (uint32_t) ADC_NEGINPUT_GND \
         | ADC_INPUTCTRL_INPUTSCAN(0) | ADC_INPUTCTRL_INPUTOFFSET(0) | ADC_INPUTCTRL_GAIN_1X;
 
     /* Prescaler, Resolution & Operation Mode */
-    ADC_REGS->ADC_CTRLB = ADC_CTRLB_PRESCALER_DIV8 | ADC_CTRLB_RESSEL_12BIT | ADC_CTRLB_FREERUN_Msk;
+    ADC_REGS->ADC_CTRLB = ADC_CTRLB_PRESCALER_DIV32 | ADC_CTRLB_RESSEL_12BIT ;
 
 
     /* Clear all interrupt flags */

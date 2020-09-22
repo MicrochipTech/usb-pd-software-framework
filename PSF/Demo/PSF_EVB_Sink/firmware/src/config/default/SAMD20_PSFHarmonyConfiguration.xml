@@ -3,10 +3,30 @@
   <Components>
     <UniqueComponent dnOrder="0" id="adc">
       <Symbols dnOrder="0">
-        <Comment dnOrder="0" id="ADC_SAMPCTRL_SAMPLEN_TIME">
+        <Combo dnOrder="0" id="ADC_CONV_TRIGGER">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="SW Trigger"/>
+          </Values>
+        </Combo>
+        <KeyValueSet dnOrder="1" id="ADC_CTRLB_PRESCALER">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="3"/>
+          </Values>
+        </KeyValueSet>
+        <KeyValueSet dnOrder="2" id="ADC_INPUTCTRL_MUXPOS">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="4"/>
+          </Values>
+        </KeyValueSet>
+        <Integer dnOrder="3" id="ADC_SAMPCTRL_SAMPLEN">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="8"/>
+          </Values>
+        </Integer>
+        <Comment dnOrder="4" id="ADC_SAMPCTRL_SAMPLEN_TIME">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="text">
-              <Value dnOrder="0">****&amp;#160;Conversion&amp;#160;Time&amp;#160;is&amp;#160;2.66666666667&amp;#160;uS&amp;#160;****</Value>
+              <Value dnOrder="0">****&amp;#160;Conversion&amp;#160;Time&amp;#160;is&amp;#160;13.3333333333&amp;#160;uS&amp;#160;****</Value>
             </String>
           </Attributes>
         </Comment>
@@ -1756,7 +1776,7 @@
         <Comment dnOrder="6" id="TC_COMPARE_PERIOD_COMMENT">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="text">
-              <Value dnOrder="0">****&amp;#160;Compare&amp;#160;Period&amp;#160;is&amp;#160;128.0&amp;#160;us&amp;#160;****</Value>
+              <Value dnOrder="0">****&amp;#160;Compare&amp;#160;Period&amp;#160;is&amp;#160;512.0&amp;#160;us&amp;#160;****</Value>
             </String>
           </Attributes>
         </Comment>
@@ -1767,18 +1787,18 @@
         </KeyValueSet>
         <KeyValueSet dnOrder="8" id="TC_CTRLA_PRESCALER">
           <Values dnOrder="0">
-            <User dnOrder="0" value="6"/>
+            <User dnOrder="0" value="7"/>
           </Values>
         </KeyValueSet>
         <Integer dnOrder="9" id="TC_FREQUENCY">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="tc0" value="187500"/>
+            <Dynamic dnOrder="0" id="tc0" value="46875"/>
           </Values>
         </Integer>
         <Comment dnOrder="10" id="TC_Resolution">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="text">
-              <Value dnOrder="0">****Timer&amp;#160;resolution&amp;#160;is&amp;#160;5333.33333333&amp;#160;nS****</Value>
+              <Value dnOrder="0">****Timer&amp;#160;resolution&amp;#160;is&amp;#160;21333.3333333&amp;#160;nS****</Value>
             </String>
           </Attributes>
         </Comment>
@@ -1794,13 +1814,13 @@
         </Boolean>
         <Long dnOrder="13" id="TC_TIMER_PERIOD">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="tc0" value="187"/>
+            <Dynamic dnOrder="0" id="tc0" value="46"/>
           </Values>
         </Long>
         <Float dnOrder="14" id="TC_TIMER_TIME_MS">
           <Attributes dnOrder="0">
             <Float dnOrder="0" id="max">
-              <Value dnOrder="0">1.36</Value>
+              <Value dnOrder="0">5.44</Value>
             </Float>
           </Attributes>
         </Float>
@@ -1818,8 +1838,7 @@
     </UniqueComponent>
   </Components>
   <UserData>
-    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
-    <ComponentGraph dnOrder="1" id="__ROOTVIEW">
+    <ComponentGraph dnOrder="0" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="adc" x="190" y="160"/>
         <ElementPosition dnOrder="1" id="cmsis" x="430" y="60"/>
@@ -1833,5 +1852,6 @@
         <ElementPosition dnOrder="9" id="tc0" x="370" y="102"/>
       </ElementPositions>
     </ComponentGraph>
+    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="1"/>
   </UserData>
 </Configuration>

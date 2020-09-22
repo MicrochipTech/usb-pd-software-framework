@@ -44,10 +44,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Power Role */
 #define PD_ROLE_SINK            0
 #define PD_ROLE_SOURCE          1
+#define PD_ROLE_DRP             2
 
 /* Data role */
-#define PD_ROLE_UFP    0
-#define PD_ROLE_DFP    1
+#define PD_ROLE_UFP             0
+#define PD_ROLE_DFP             1
+#define PD_ROLE_TOGGLING        2
 
 /***************************************************
           Port supported Spec Revision
@@ -116,15 +118,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 **************************************************************************************************/
 #define PE_N_BUSY_COUNT                 7
 
-/*Default Power role and PD spec assignment based on the includes at compile time*/
-#if (TRUE == INCLUDE_PD_SOURCE)
-    /*Current PD ROLE*/
-    #define CONFIG_PD_DEFAULT_ROLE  PD_ROLE_SOURCE
-#else
-	/*Current PD ROLE*/
-    #define CONFIG_PD_DEFAULT_ROLE  PD_ROLE_SINK
-#endif
-
 #if (TRUE == INCLUDE_PD_3_0)
 	/*Current Spec Role*/
 	#define CONFIG_PD_DEFAULT_SPEC_REV  PD_SPEC_REVISION_3_0
@@ -167,6 +160,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_HARDRESET_PROGRESS_MASK     BIT(6)
 #define PE_HARDRESET_PROGRESS_POS      6
 
+#define PE_PR_SWAP_IN_PROGRESS_MASK    BIT(7)
+#define PE_PR_SWAP_IN_PROGRESS_POS     7 
+
 #define PE_HARDRESET_INPROGRESS    1
 #define PE_HARDRESET_NOTPROGRESS   0
 
@@ -175,9 +171,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_IMPLICIT_CONTRACT        0
 
 /* Define to get PD contract */
-#define PE_GET_PD_CONTRACT(u8PortNum)	(gasPolicy_Engine[u8PortNum].u8PEPortSts & PE_PDCONTRACT_MASK)		
+#define PE_GET_PD_CONTRACT(u8PortNum)	(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PDCONTRACT_MASK)		
 
 /*--------------VDM related macros--------------------*/
+/*VDM Command Types found in VDM Header message */
+#define PE_VDM_REQ				    0
 #define PE_VDM_ACK                  1
 #define PE_VDM_NAK                  2
 #define PE_VDM_BUSY                 3
@@ -190,18 +188,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_VDM_OBJ_POS_MASK             0x700
 #define PE_VDM_SVID_MASK                0xFFFF0000
 
-#define PE_SRC_VDM_HEADER_HIGH_VER      0xFF00A001
-#define PE_SRC_VDM_HEADER_LOW_VER       0xFF008001
+#define PE_VDM_HEADER_HIGH_VER      0xFF00A001
+#define PE_VDM_HEADER_LOW_VER       0xFF008001
 
 #define PE_GET_VDM_CMD(VDM_HEADER)              (VDM_HEADER & PE_VDM_COMMAND_MASK)
 #define PE_GET_VDM_CMD_TYPE(VDM_HEADER)         ((VDM_HEADER & PE_VDM_COMMAND_TYPE_MASK) >> PE_VDM_COMMAND_TYPE_POS)
 #define PE_VDM_NAK_COMMAND_TYPE                 (2 << PE_VDM_COMMAND_TYPE_POS )
-
-/*VDM Command Types found in VDM Header message */
-#define PE_GET_VDM_CMD_TYPE_REQ				0
-#define PE_GET_VDM_CMD_TYPE_ACK				1
-#define PE_GET_VDM_CMD_TYPE_NAK				2
-#define PE_GET_VDM_CMD_TYPE_BUSY			3
 
 /* Capability max current check */
 #define PE_MAX_CURR_MASK        0x1FF
@@ -217,6 +209,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES 4
 #define PE_PPS_STATUS_DATA_OBJ_CNT             2 
 
+/*--------------Run Time Config--------------------*/
+#define PE_DISCOVER_ID_INITIATED               BIT(0)
+
 typedef enum {
     /* Source Policy Engine Main State */ 
 	ePE_SRC_STARTUP,
@@ -227,7 +222,6 @@ typedef enum {
 	ePE_SRC_READY,
 	ePE_SRC_DISABLED,
 	ePE_SRC_CAPABILITY_RESPONSE,
-    ePE_SRC_SEND_SOFT_RESET,
 	ePE_SRC_HARD_RESET,
 	ePE_SRC_HARD_RESET_RECEIVED,
 	ePE_SRC_TRANSITION_TO_DEFAULT,
@@ -253,10 +247,9 @@ typedef enum {
 	ePE_SNK_HARD_RESET,
 	ePE_SNK_TRANSITION_TO_DEFAULT,
 	ePE_SNK_GIVE_SINK_CAP,
-	ePE_SNK_SOFT_RESET,
-	ePE_SNK_SEND_SOFT_RESET,
 	ePE_SNK_GIVE_SOURCE_CAP,
 	/*VCONN Swap related States*/
+    ePE_VCS_SEND_SWAP,
     ePE_VCS_EVALUATE_SWAP,
     ePE_VCS_ACCEPT_SWAP,
     ePE_VCS_WAIT_FOR_VCONN,
@@ -265,7 +258,27 @@ typedef enum {
     ePE_VCS_SEND_PS_RDY,
     //---------------------------VDM states---------------------------------------//
     ePE_VDM_GET_IDENTITY,
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST, 
+    ePE_INIT_PORT_VDM_IDENTITY_ACKED,         
+    ePE_INIT_PORT_VDM_IDENTITY_NAKED,
+    //--------------------------DR_SWAP States-----------------------------------//
+    ePE_DRS_EVALUATE_SWAP,
+    ePE_DRS_ACCEPT_SWAP,
+    ePE_DRS_DFP_UFP_ROLE_CHANGE,
+    ePE_DRS_SEND_SWAP,
+    //---------------------------PR_Swap States-----------------------------------// 
+    ePE_PRS_SEND_SWAP, 
+    ePE_PRS_EVALUATE_SWAP,
+    ePE_PRS_ACCEPT_SWAP,
+    ePE_PRS_SRC_SNK_TRANSITION_TO_OFF, 
+    ePE_PRS_SRC_SNK_ASSERT_RD, 
+    ePE_PRS_SRC_SNK_WAIT_SOURCE_ON, 
+    ePE_PRS_SNK_SRC_TRANSITION_TO_OFF,
+    ePE_PRS_SNK_SRC_ASSERT_RP,
+    ePE_PRS_SNK_SRC_SOURCE_ON,
     //-------------------------Common States------------------------------//
+    ePE_SOFT_RESET,
+    ePE_SEND_SOFT_RESET,
     ePE_SEND_NOT_SUPPORTED,
     ePE_SEND_REJECT,
 	ePE_BIST_MODE,
@@ -281,7 +294,7 @@ typedef enum {
 	/* ePE_SRC_SEND_CAPABILITIES */
     ePE_SRC_SEND_CAP_ENTRY_SS,
     ePE_SRC_SEND_CAP_IDLE_SS,
-    ePE_SRC_SEND_CAP_GOODCRC_RECEIVED_SS,
+    ePE_SRC_SEND_CAP_GOODCRC_RCVD_SS,
 	/* ePE_SRC_DISCOVERY */
     ePE_SRC_DISCOVERY_ENTRY_SS,
     ePE_SRC_DISCOVERY_IDLE_SS,
@@ -293,12 +306,12 @@ typedef enum {
     ePE_SRC_TRANSITION_SUPPLY_ENTRY_SS,
     ePE_SRC_TRANSITION_SUPPLY_EXIT_SS,
     ePE_SRC_TRANSITION_SUPPLY_IDLE_SS,
-    ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RECEIVED_SS,
-    ePE_SRC_TRANSITION_SUPPLY_POWER_ON_SS,
+    ePE_SRC_TRANSITION_SUPPLY_GOODCRC_RCVD_SS,
+    ePE_SRC_TRANSITION_SUPPLY_DRIVE_POWER_SS,
 	/* ePE_SRC_READY */
     ePE_SRC_READY_ENTRY_SS,
-    ePE_SRC_READY_PPS_COMM_TIMER_EXPIRED_SS, 
     ePE_SRC_READY_END_AMS_SS,
+    ePE_SRC_READY_IDLE_SS,
 	/* ePE_SRC_DISABLED */
     ePE_SRC_DISABLED_ENTRY_SS,
     ePE_SRC_DISABLED_IDLE_SS,
@@ -312,40 +325,30 @@ typedef enum {
     ePE_SRC_HARD_RESET_RECEIVED_EXIT_SS,
 	/* ePE_SRC_TRANSITION_TO_DEFAULT */
     ePE_SRC_TRANSITION_TO_DEFAULT_ENTRY_SS,
-    ePE_SRC_TRANSITION_TO_DEFAULT_VSAFE0V_SS,
-    ePE_SRC_TRANSITION_TO_DEFAULT_CHECK_VCONNOFF_SS,
+    ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_OFF_SS,
+    ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS,
     ePE_SRC_TRANSITION_TO_DEFAULT_IDLE_SS,
     ePE_SRC_TRANSITION_TO_DEFAULT_SRCRECOVER_TIMEOUT_SS,
     ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS,
-    ePE_SRC_TRANSITION_TO_DEFAULT_VBUS_CHECK_SS,
-    ePE_SRC_TRANSITION_TO_DEFAULT_VCONNON_CHECK_SS,
+    ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_ON_SS,
+    ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_ON_SS,
     ePE_SRC_TRANSITION_TO_DEFAULT_EXIT_SS,
 	/* ePE_SRC_GET_SINK_CAP */
     ePE_SRC_GET_SINK_CAP_ENTRY_SS,
     ePE_SRC_GET_SINK_CAP_IDLE_SS,
-    ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS,
-    ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT_SS,
-    ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS, 
-	/* ePE_SRC_SOFT_RESET */
-    ePE_SRC_SOFT_RESET_ENTRY_SS,
-    ePE_SRC_SOFT_RESET_IDLE_SS,
-	/* ePE_SRC_SEND_SOFT_RESET */
-    ePE_SRC_SEND_SOFT_RESET_SOP_SS,
-    ePE_SRC_SEND_SOFT_RESET_SOP_P_SS,
-    ePE_SRC_SEND_SOFT_RESET_SOP_DP_SS,
-    ePE_SRC_SEND_SOFT_RESET_IDLE_SS,
-    ePE_SRC_SEND_SOFT_RESET_SENDER_RESPONSE_TIMEDOUT,
-    ePE_SRC_SEND_SOFT_RESET_GOODCRC_RECEIVED_SS,
+    ePE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS,
+    ePE_SRC_GET_SINK_CAP_NO_RESPONSE_SS,
+    ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS, 
 	/* ePE_SRC_VDM_IDENTITY_REQUEST */
     ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS,
     ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS,
-    ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_SS,
-    ePE_SRC_VDM_IDENTITY_REQUEST_SENDER_RESPONSE_TIMEOUT,
+    ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_RCVD_SS,
+    ePE_SRC_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS,
     /* ePE_SRC_GET_SINK_STATUS */
     ePE_SRC_GET_SINK_STATUS_ENTRY_SS, 
-    ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS,
-    ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS, 
-    ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS,
+    ePE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS,
+    ePE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS, 
+    ePE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS,
     ePE_SRC_GET_SINK_STATUS_IDLE_SS,
     /* ePE_SRC_SEND_SOURCE_ALERT */
     ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS,
@@ -370,43 +373,90 @@ typedef enum {
     ePE_SNK_TRANSITION_SINK_WAIT_FOR_PSRDY_SS,
     /*ePE_SNK_READY*/
     ePE_SNK_READY_ENTRY_SS,
+    ePE_SNK_READY_END_AMS_SS,
     ePE_SNK_READY_IDLE_SS,
-    /*ePE_SNK_SOFT_RESET*/
-    ePE_SNK_SOFT_RESET_SEND_ACCEPT_SS,
-    ePE_SNK_SOFT_RESET_WAIT_SS,
-    /*ePE_SNK_SEND_SOFT_RESET*/
-    ePE_SNK_SEND_SOFT_RESET_ENTRY_SS,
-    ePE_SNK_SEND_SOFT_RESET_SEND_IDLE_SS,
-    ePE_SNK_SEND_SOFT_RESET_SENT_SS,
-    ePE_SNK_SEND_SOFT_RESET_WAIT_FOR_ACCEPT_SS,
     /*ePE_SNK_HARD_RESET*/
     ePE_SNK_HARD_RESET_SEND_SS,
     /*ePE_SNK_TRANSITION_TO_DEFAULT*/
     ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS,
-    ePE_SNK_TRANSITION_TO_DEFAULT_VCONNOFF_CHECK_SS,
+    ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS,
     ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS,
     ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS,
     /*ePE_SNK_GIVE_SINK_CAP*/
     ePE_SNK_GIVE_SINK_CAP_ENTRY_SS,
     ePE_SNK_GIVE_SINK_CAP_IDLE_SS,
     //----------------------------VCONN SWAP Sub states-------------------------------//
+    ePE_VCS_SEND_SWAP_ENTRY_SS,
+    ePE_VCS_SEND_SWAP_MSG_DONE_SS,
+    ePE_VCS_SEND_SWAP_NO_RESPONSE_SS,
+    ePE_VCS_SEND_SWAP_IDLE_SS,
+    ePE_VCS_SEND_SWAP_REJECT_RCVD_SS,
+    ePE_VCS_SEND_SWAP_WAIT_RCVD_SS,
     /*PE_VCS_WAIT_FOR_VCONN*/
     ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS,
     ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS,
     /*ePE_VCS_ACCEPT_SWAP*/
     ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS,
     ePE_VCS_ACCEPT_SWAP_IDLE_SS,
-    ePE_VCS_ACCEPT_SWAP_ACCEPT_SENT_SS,
-    /*ePE_VCS_TURN_OFF_VCONN*/
-    ePE_VCS_TURN_OFF_VCONN_ENTRY_SS,
-    ePE_VCS_TURN_OFF_VCONN_CHECK_SS,
-    /*ePE_VCS_TURN_ON_VCONN*/
-    ePE_VCS_TURN_ON_VCONN_ENTRY_SS,
-    ePE_VCS_TURN_ON_VCONN_CHECK_SS,
     /*ePE_VCS_SEND_PS_RDY*/
     ePE_VCS_SEND_PS_RDY_ENTRY_SS,
     ePE_VCS_SEND_PS_RDY_IDLE_SS,
+    ePE_VCS_SEND_PS_RDY_MSG_DONE_SS,
+    
+    //---------------------DR_SWAP sub states---------------------------------//
+    /*ePE_DRS_ACCEPT_SWAP*/        
+    ePE_DRS_ACCEPT_SWAP_SEND_ACCEPT_SS,
+    ePE_DRS_ACCEPT_SWAP_IDLE_SS,
+    /*ePE_DRS_SEND_SWAP*/
+    ePE_DRS_SEND_SWAP_ENTRY_SS,
+    ePE_DRS_SEND_SWAP_IDLE_SS,
+    ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS,
+    ePE_DRS_SEND_SWAP_NO_RESPONSE_SS,
+    ePE_DRS_SEND_SWAP_WAIT_RCVD_SS,
+    ePE_DRS_SEND_SWAP_REJECT_RCVD_SS,
+            
+    //--------------------PR_Swap specific Sub-States---------------------------//
+    ePE_PRS_SEND_SWAP_ENTRY_SS,
+    ePE_PRS_SEND_SWAP_MSG_DONE_SS,
+    ePE_PRS_SEND_SWAP_NO_RESPONSE_SS,
+    ePE_PRS_SEND_SWAP_IDLE_SS,
+    ePE_PRS_SEND_SWAP_REJECT_RCVD_SS,
+    ePE_PRS_SEND_SWAP_WAIT_RCVD_SS, 
+    ePE_PRS_ACCEPT_SWAP_ENTRY_SS,
+    ePE_PRS_ACCEPT_SWAP_IDLE_SS, 
+    ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS,
+    ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_PWROFF_SS,
+    ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS,
+    ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_IDLE_SS,
+    ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS,
+    ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS,
+    ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS,
+    ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS,
+    ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS,
+    ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS,
+    ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS,
+    ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS,
+    ePE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS,
+    ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS,
+    ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS,
+    ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS,
+	ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS,
+    //--------------------VDM Sub States-------------------------------------------------//            
+    /* ePE_INIT_PORT_VDM_IDENTITY_REQUEST */ 
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_ENTRY_SS, 
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS,
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_RESP_RCVD_SS,  
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS,            
+    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_IDLE_SS,
     //--------------------Common States-------------------------------------------------//
+    /* ePE_SOFT_RESET */        
+    ePE_SOFT_RESET_ENTRY_SS, 
+    ePE_SOFT_RESET_IDLE_SS,
+    /* ePE_SEND_SOFT_RESET */
+    ePE_SEND_SOFT_RESET_SOP_SS,
+    ePE_SEND_SOFT_RESET_SOP_P_SS,
+    ePE_SEND_SOFT_RESET_IDLE_SS,
+    ePE_SEND_SOFT_RESET_MSG_DONE_SS,            
     /*ePE_SEND_NOT_SUPPORTED*/
     ePE_SEND_NOT_SUPPORTED_ENTRY_SS,
     ePE_SEND_NOT_SUPPORTED_IDLE_SS,
@@ -449,6 +499,7 @@ typedef enum {
 #define	PE_CTRL_FR_SWAP                  19
 #define	PE_CTRL_GET_PPS_STATUS           20
 #define	PE_CTRL_GET_COUNTRY_CODES        21
+#define PE_CTRL_GET_SINK_CAP_EXTENDED    22 
 
 /*Macros for Data message type */
 #define PE_DATA_SOURCE_CAP          1
@@ -473,7 +524,6 @@ typedef enum {
 #define PE_NON_EXTENDED_MSG          0
 #define PE_EXTENDED_MSG              0x01u
 
-
 /***************************************************************************************/
 // *****************************************************************************
 // *****************************************************************************
@@ -496,12 +546,14 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                             // Bit 2 - PD Valid contract <p />
                                             // Bit 3 - AMS Type <p />
                                             // Bit 4 - NoResponse timer timeout status <p />
-                                            // Bit 5 - NAK received status from E-Cable
-                                            // Bit 6 - HardReset Progress flag
+                                            // Bit 5 - NAK received status from E-Cable <p />
+                                            // Bit 6 - HardReset In Progress Flag <p />
+                                            // Bit 7 - PR Swap In Progress Flag <p />
 	UINT8 u8PETimerID;                      // Policy Engine Timer ID
 	UINT8 u8PENoResponseTimerID;            // NoResponse Timer ID
-    UINT8  u8HardResetRecvdISR;             // Hard Reset received status
-}MCHP_PSF_STRUCT_PACKED_END PolicyEngine_Status;
+    UINT8 u8HardResetRcvdISR;               // Hard Reset received status
+    UINT8 u8PERuntimeConfig;                // Bit 0 - SOP VDM:Disc Identity initiated
+}MCHP_PSF_STRUCT_PACKED_END POLICY_ENGINE_STATUS;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -522,7 +574,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
          This API initializes the policy engine variables for a given port based on port's type
 
     Conditions:
-        This API is called inside the PD Stack initialisation API call .
+        This API is called inside the PD Stack initialization API call .
 
     Input:
         u8PortNum - Port Number.
@@ -565,15 +617,15 @@ void PE_RunStateMachine(UINT8 u8PortNum);
         void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *u8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 
     Summary:
-        This API is called to run the Common state machine of policy engine which handles the
-        VCONN Swap, VDM messages regardless of the port's type
+        This API is called to run the Common state machine of policy engine that handles the
+        VDM messages regardless of the port's type
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-         This API is called to run the Common state machine of policy engine which handles the
-        VCONN Swap, VDM messages regardless of the port's type
+        This API is called to run the Common state machine of policy engine that handles the
+        VDM messages regardless of the port's type
 
     Conditions:
         None
@@ -597,14 +649,14 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
     Summary:
         This API is called to process the received PD message and do the state transition in 
-        policy engine state machine dependning on the current policy engine state and substate
+        policy engine state machine depending on the current policy engine state and substate
 
     Devices Supported:
         UPD350 REV A
 
     Description:
         This API is called to process the received PD message and do the state transition in 
-        policy engine state machine dependning on the current policy engine state and substate
+        policy engine state machine depending on the current policy engine state and substate
 
     Conditions:
         None
@@ -646,7 +698,7 @@ void PE_ReceiveMsgHandler(UINT8 u8PortNum, UINT32 u32Header);
         PE_MSG_HANDLED - Returns this value if the received message is already handled inside the API
         PE_PROCESS_MSG - Returns this value if the received message is to be handled by the 
         PE_ReceiveMsgHandler API
-        PE_PROCESS_EXTDMSG - Retunr this value if the received message is extended message and to be 
+        PE_PROCESS_EXTDMSG - Return this value if the received message is extended message and to be 
         handled by the PE_ReceiveHandler API
 
     Remarks:
@@ -753,7 +805,7 @@ UINT8 PE_IsMsgUnsupported(UINT8 u8PortNum, UINT16 u16Header);
 
     Description:
          This API is called inside the timer module once the software timer times out to change the
-       policy engine substate to a given value        
+       policy engine sub-state to a given value        
 
     Conditions:
         None
@@ -776,21 +828,21 @@ void PE_StateChange_TimerCB(UINT8 u8PortNum, UINT8 u8PEState);
 
     Summary:
        This API is called inside the timer module once the software timer times out to change the
-       policy engine substate to a given value
+       policy engine sub-state to a given value
 
     Devices Supported:
         UPD350 REV A
 
     Description:
         This API is called inside the timer module once the software timer times out to change the
-       policy engine substate to a given value
+       policy engine sub-state to a given value
         
     Conditions:
         None
 
     Input:
         u8PortNum     - Port Number.
-        u8PESubState  - Policy engine Substate to change after timeout
+        u8PESubState  - Policy engine Sub-state to change after timeout
 
     Return:
         None.
@@ -802,7 +854,7 @@ void PE_StateChange_TimerCB(UINT8 u8PortNum, UINT8 u8PEState);
 void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
 /**************************************************************************************************
     Function:
-        void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState);
+        void PE_SSChngAndTimeoutValidate_TimerCB(UINT8 u8PortNum, UINT8 u8PESubState);
 
     Summary:
         This API is set as a timer callback by the policy engine when the PE expects a 
@@ -820,7 +872,7 @@ void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
 
     Input:
         u8PortNum     - Port Number.
-        u8PESubState  -Policy engine Substate to change after timeout
+        u8PESubState  -Policy engine Sub-state to change after timeout
 
     Return:
         None.
@@ -829,7 +881,7 @@ void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
         None.
 
 **************************************************************************************************/
-void PE_SubStateChangeAndTimeoutValidateCB(UINT8 u8PortNum, UINT8 u8PESubState);
+void PE_SSChngAndTimeoutValidate_TimerCB(UINT8 u8PortNum, UINT8 u8PESubState);
 /**************************************************************************************************
     Function:
         void PE_SendNotSupportedOrRejectMsg(UINT8 u8PortNum);
@@ -894,18 +946,18 @@ void PE_SendNotSupportedOrRejectMsg(UINT8 u8PortNum);
 void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8TxDoneSubState, UINT8 u8TxFailedState, UINT8 u8TxFailedSubState);
 /**************************************************************************************************
     Function:
-        void PE_FindVDMStateActiveFlag(UINT8 u8PortNum);
+        void PE_SetVDMActiveFlag(UINT8 u8PortNum);
 
     Summary:
-        This API is called to find out whether the current active policy engine state is a VDM state
-        for a given port
+        This API is called to set the VDM Active Flag based on the current 
+        policy engine state for a given port
        
     Devices Supported:
         UPD350 REV A
 
     Description:
-        This API is called to find out whether the current active policy engine state is a VDM state
-        for a given port
+        This API is called to set the VDM Active Flag based on the current 
+        policy engine state for a given port
 
     Conditions:
         None
@@ -920,7 +972,7 @@ void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8Tx
         None.
 
 **************************************************************************************************/
-void PE_FindVDMStateActiveFlag(UINT8 u8PortNum);
+void PE_SetVDMActiveFlag(UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
         void PE_KillPolicyEngineTimer (UINT8 u8PortNum);
@@ -977,7 +1029,7 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum);
 void PE_SendSoftResetMsg (UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
-        void PE_SendHardResetMsg (UINT8 u8PortNum);
+        void PE_SendHardReset (UINT8 u8PortNum);
 
     Summary:
         This API is called to send the Hard reset signal from the policy engine state machine for a port
@@ -1001,37 +1053,11 @@ void PE_SendSoftResetMsg (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PE_SendHardResetMsg (UINT8 u8PortNum);
+void PE_SendHardReset (UINT8 u8PortNum);
+
 /**************************************************************************************************
     Function:
-        void PE_SetHardResetReceiveFlag(UINT8 u8PortNum);
-
-    Summary:
-        This API is called by the protocol layer upon reception of Hard reset signal for a port
-       
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-         This API is called by the protocol layer upon reception of Hard reset signal for a port
-        
-    Conditions:
-        None
-
-    Input:
-        u8PortNum - Port Number.
-
-    Return:
-        None.
-
-    Remarks:
-        None.
-
-**************************************************************************************************/
-void PE_SetHardResetReceiveFlag(UINT8 u8PortNum);
-/**************************************************************************************************
-    Function:
-        void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 
     Summary:
         This API is called to run the policy engine source state machine. 
@@ -1059,10 +1085,10 @@ void PE_SetHardResetReceiveFlag(UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
-        void PE_NoResponseTimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
+        void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
 
     Summary:
         This API is given as the timer call back API when starting the NoResponse timer from 
@@ -1089,10 +1115,10 @@ void PE_SrcRunStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         None.
 
 **************************************************************************************************/
-void PE_NoResponseTimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
+void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
 /**************************************************************************************************
     Function:
-        void PE_SnkRunStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunSnkStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
 
     Summary:
         This API is called to run the policy engine sink state machine.
@@ -1118,7 +1144,7 @@ void PE_NoResponseTimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
     Remarks:
         None.
 **************************************************************************************************/
-void PE_SnkRunStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunSnkStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
         UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
@@ -1139,4 +1165,119 @@ void PE_SnkRunStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,
         None.
 **************************************************************************************************/
 UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
+
+    Summary:
+        PR_Swap Policy Engine State Machine. 
+       
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is called to run the Power Role Swap Policy Engine State Machine.
+        
+    Conditions:
+        None
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void PE_RunDRSwapStateMachine (UINT8 u8PortNum);
+
+    Summary:
+        DR_SWAP Policy Engine State Machine. 
+       
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is called to run the DR Swap Policy Engine State Machine.
+        
+    Conditions:
+        None
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void PE_RunDRSwapStateMachine (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum);
+
+    Summary:
+        VCONN_SWAP Policy Engine State Machine. 
+       
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is called to run the VCONN Swap Policy Engine State Machine.
+        
+    Conditions:
+        None
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header);
+
+    Summary:
+        Vendor Defined Message Policy Engine State Machine. 
+       
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is called to run the VDM Policy Engine State Machine.
+        
+    Conditions:
+        None
+
+    Input:
+        u8PortNum - Port Number.
+        pu8DataBuf - Pointer to the 8 bit buffer of received PD message object
+        u32Header - Header of the received PD message
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header); 
+
 #endif /*_POLICY_ENGINE_H_*/

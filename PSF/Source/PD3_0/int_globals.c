@@ -11,7 +11,7 @@
     File contains definitions of globals used internally within the PSF stack
 *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -60,7 +60,7 @@ PRL_RECVBUFF gasPRLRecvBuff [CONFIG_PD_PORT_COUNT];
 /***************************************************************************************/
     
 /*Policy Engine globals*/
-PolicyEngine_Status gasPolicy_Engine[CONFIG_PD_PORT_COUNT];
+POLICY_ENGINE_STATUS gasPolicyEngine[CONFIG_PD_PORT_COUNT];
 
 /*Policy manager globals*/
 DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
@@ -79,7 +79,7 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 
 /*PDFU globals*/
 #if (FALSE != INCLUDE_PDFU)    
-    UINT8 gu8PDFUResBuffer[260] = {0};
+    UINT8 gu8PDFUResBuffer[PRL_MAX_EXTN_MSG_LEN_IN_BYTES] = {SET_TO_ZERO};
 #endif
 
 /**************************************************************************************************/
@@ -100,7 +100,7 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 /********************Power Throttling globals************************************/
 #if (TRUE == INCLUDE_POWER_THROTTLING)
     /* Power Throttling Port Parameters */
-    PT_PORT_PARAM gasPTPortParam[CONFIG_PD_PORT_COUNT];  
+    UINT8 gau8PTPrevBank[CONFIG_PD_PORT_COUNT];  
 #endif 
 /**************************************************************************************************/  
     

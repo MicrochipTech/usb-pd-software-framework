@@ -47,7 +47,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPDINTR_INT_STS         	UPD_SYSTEM_CSR_BASE_ADDR + 0x10
 #define UPDINTR_INT_EN				UPD_SYSTEM_CSR_BASE_ADDR + 0x14
 
-/* Bit defintion of UPDINTR_INT_STS register */
+/* Bit definition of UPDINTR_INT_STS register */
 
 #define UPDINTR_GP_TIMER_INT            BIT (14)
 #define UPDINTR_RDY_INT                 BIT (12)
