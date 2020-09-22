@@ -42,14 +42,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <stddef.h>                     // Defines NULL
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
-#include <string.h>
-#include <math.h>
 #include "definitions.h"                // SYS function prototypes
 #include "psf_stdinc.h"                 // PSF include file
 #include "psf_control_terminal.h"
 #include "ProjectVersion.h"
 #include "PSF_Config.h"
 #include "PSFSink_BootCfg.h"
+#include "string.h"
 #define LENGTH 40
 
 extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData; 
@@ -146,7 +145,7 @@ void PCTPrintBaudRate(UINT8 u8array[],UINT8 u8Length)
     
     char *u8BaudRateConvert;
     
-    UINT8 u8StrBaud[]="Baud Rate=";   
+    UINT8 u8StrBaud[]="> Baud Rate=";   
     
     /*Gets the BaudRate from firmware*/
     u32BaudRate=SERCOM1_USART_ReturnBaud();
@@ -154,6 +153,7 @@ void PCTPrintBaudRate(UINT8 u8array[],UINT8 u8Length)
     u8BaudRateConvert=HextoAscii(u32BaudRate,sizeof(u32BaudRate));
   
     PCTWrite(u8StrBaud,(UINT8*)&u8BaudRateConvert[0],sizeof(u8BaudRateConvert),sizeof(u8StrBaud));
+    
 }
 /* 
 Function: PCTPrintBaudRate 
@@ -182,6 +182,7 @@ void PCTPrintVersion(UINT8 u8array[],UINT8 u8Length)
     u32FirmwareVersionConvert=HextoAscii(u32FirmwareVersion,sizeof(u32FirmwareVersion));
     
     PCTWrite(u8StrPSFVersion,(UINT8*)&u32FirmwareVersionConvert[0],sizeof(u32FirmwareVersionConvert),sizeof(u8StrPSFVersion));
+    
 }
 /* 
 Function: PCTPrintPDO 
@@ -196,7 +197,7 @@ void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
     UINT32 u32PDOVoltage1,u32PDOVoltage2,u32PDOVoltage3,u32PDOVoltage4,u32PDOVoltage5,u32PDOVoltage6,u32PDOVoltage7;
     UINT32 u32PDOCurrent1,u32PDOCurrent2,u32PDOCurrent3,u32PDOCurrent4,u32PDOCurrent5,u32PDOCurrent6,u32PDOCurrent7;
     
-    UINT8 StrVoltage1[]="Voltage1=";
+    UINT8 StrVoltage1[]="\n\n\r> Voltage1=";
     
     u32PDOVoltage1=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0]);
     
@@ -212,7 +213,7 @@ void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
     
     PCTWrite(StrCurrent1,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent1));
     
-    UINT8 StrVoltage2[]="\n\n\rVoltage2=";
+    UINT8 StrVoltage2[]="\n\n\r> Voltage2=";
     
     u32PDOVoltage2=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1]);
     
@@ -228,7 +229,7 @@ void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
     
     PCTWrite(StrCurrent2,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent2));
 
-    UINT8 StrVoltage3[]="\n\n\rVoltage3=";
+    UINT8 StrVoltage3[]="\n\n\r> Voltage3=";
     
     u32PDOVoltage3=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2]);
     
@@ -244,7 +245,7 @@ void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
     
     PCTWrite(StrCurrent3,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent3));
 
-    UINT8 StrVoltage4[]="\n\n\rVoltage4=";
+    UINT8 StrVoltage4[]="\n\n\r> Voltage4=";
     
     u32PDOVoltage4=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3]);
     
@@ -260,7 +261,7 @@ void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
     
     PCTWrite(StrCurrent4,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent4));
 
-    UINT8 StrVoltage5[]="\n\n\rVoltage5=";
+    UINT8 StrVoltage5[]="\n\n\r> Voltage5=";
     
     u32PDOVoltage5=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[4]);
     
@@ -276,7 +277,7 @@ void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
     
     PCTWrite(StrCurrent5,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent5));
 
-    UINT8 StrVoltage6[]="\n\n\rVoltage6=";
+    UINT8 StrVoltage6[]="\n\n\r> Voltage6=";
     
     u32PDOVoltage6=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[5]);
     
@@ -292,7 +293,7 @@ void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
     
     PCTWrite(StrCurrent6,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent6));
     
-    UINT8 StrVoltage7[]="\n\n\rVoltage7=";
+    UINT8 StrVoltage7[]="\n\n\r> Voltage7=";
     
     u32PDOVoltage7=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[6]);
     
@@ -479,80 +480,12 @@ void PCTPrintStatusData(UINT8 u8array[],UINT8 u8Length)
         u32CfgDataConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u32CfgData,sizeof(gasCfgStatusData.sPerPortData[PORT0].u32CfgData));
         
         PCTWrite(StrCfgData,(UINT8*)&u32CfgDataConvert[0],sizeof(u32CfgDataConvert),sizeof(StrCfgData));
+        
+        PCTPrintPDO(u8array,u8Length);
  
         u16PowerGoodTimerInmsConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16PowerGoodTimerInms,4);
         
-        PCTWrite(StrPowerGoodTimerInms,(UINT8*)&u16PowerGoodTimerInmsConvert[0],sizeof(u16PowerGoodTimerInmsConvert),sizeof(StrPowerGoodTimerInms)); 
-        
-        u16SnkMaxOperatingCurInmAConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16SnkMaxOperatingCurInmA,4);
-        
-        PCTWrite(StrSnkMaxOperatingCurInmA,(UINT8*)&u16SnkMaxOperatingCurInmAConvert[0],sizeof(u16SnkMaxOperatingCurInmAConvert),sizeof(StrSnkMaxOperatingCurInmA));
-       
-        u16SnkMinOperatingCurInmAConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16SnkMinOperatingCurInmA,4);
-        
-        PCTWrite(StrSnkMinOperatingCurInmA,(UINT8*)&u16SnkMinOperatingCurInmAConvert[0],sizeof(u16SnkMinOperatingCurInmAConvert),sizeof(StrSnkMinOperatingCurInmA));
-     
-        u16DAC_I_CurrentInd_MaxInAConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16DAC_I_CurrentInd_MaxInA,4);
-        
-        PCTWrite(StrDAC_I_CurrentInd_MaxInA,(UINT8*)&u16DAC_I_CurrentInd_MaxInAConvert[0],sizeof(u16DAC_I_CurrentInd_MaxInAConvert),sizeof(StrDAC_I_CurrentInd_MaxInA));
-      
-        u16DAC_I_MaxOutVoltInmVConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16DAC_I_MaxOutVoltInmV,4);
-        
-        PCTWrite(StrDAC_I_MaxOutVoltInmV,(UINT8*)&u16DAC_I_MaxOutVoltInmVConvert[0],sizeof(u16DAC_I_MaxOutVoltInmVConvert),sizeof(StrDAC_I_MaxOutVoltInmV));
-  
-        u16DAC_I_MinOutVoltInmVConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16DAC_I_MinOutVoltInmV,4);
-        
-        PCTWrite(StrDAC_I_MinOutVoltInmV,(UINT8*)&u16DAC_I_MinOutVoltInmVConvert[0],sizeof(u16DAC_I_MinOutVoltInmVConvert),sizeof(StrDAC_I_MinOutVoltInmV));
-       
-        u8OVThresholdPercentageConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8OVThresholdPercentage,4);
-        
-        PCTWrite(StrOVThresholdPercentage,(UINT8*)&u8OVThresholdPercentageConvert[0],sizeof(u8OVThresholdPercentageConvert),sizeof(StrOVThresholdPercentage));
-   
-        u8FaultInDebounceInmsConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8FaultInDebounceInms,4);
-        
-        PCTWrite(StrFaultInDebounceInms,(UINT8*)&u8FaultInDebounceInmsConvert[0],sizeof(u8FaultInDebounceInmsConvert),sizeof(StrFaultInDebounceInms));
-        
-        u8UVThresholdPercentageConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8UVThresholdPercentage,4);
-        
-        PCTWrite(StrUVThresholdPercentage,(UINT8*)&u8UVThresholdPercentageConvert[0],sizeof(u8UVThresholdPercentageConvert),sizeof(StrUVThresholdPercentage));
-       
-        u8VCONNOCSDebounceInmsConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8VCONNOCSDebounceInms,4);
-        
-        PCTWrite(StrVCONNOCSDebounceInms,(UINT8*)&u8VCONNOCSDebounceInmsConvert[0],sizeof(u8VCONNOCSDebounceInmsConvert),sizeof(StrVCONNOCSDebounceInms));
-   
-        u8VCONNMaxFaultCntConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8VCONNMaxFaultCnt,4);
-        
-        PCTWrite(StrVCONNMaxFaultCnt,(UINT8*)&u8VCONNMaxFaultCntConvert[0],sizeof(u8VCONNMaxFaultCntConvert),sizeof(StrVCONNMaxFaultCnt));
-      
-        u8Pio_FAULT_INConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8Pio_FAULT_IN,4);
-        
-        PCTWrite(StrPio_FAULT_IN,(UINT8*)&u8Pio_FAULT_INConvert[0],sizeof(u8Pio_FAULT_INConvert),sizeof(StrPio_FAULT_IN));
-      
-        u8Mode_FAULT_INConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8Mode_FAULT_IN,4);
-        
-        PCTWrite(StrMode_FAULT_IN,(UINT8*)&u8Mode_FAULT_INConvert[0],sizeof(u8Mode_FAULT_INConvert),sizeof(StrMode_FAULT_IN));
-      
-        u8VBUSMaxFaultCntConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8VBUSMaxFaultCnt,4);
-        
-        PCTWrite(StrVBUSMaxFaultCnt,(UINT8*)&u8VBUSMaxFaultCntConvert[0],sizeof(u8VBUSMaxFaultCntConvert),sizeof(StrVBUSMaxFaultCnt));
-      
-        u8Pio_EN_SINKConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8Pio_EN_SINK,4);
-        
-        PCTWrite(StrPio_EN_SINK,(UINT8*)&u8Pio_EN_SINKConvert[0],sizeof(u8Pio_EN_SINKConvert),sizeof(StrPio_EN_SINK));
-          
-        u8Mode_EN_SINKConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8Mode_EN_SINK,4);
-        
-        PCTWrite(StrMode_EN_SINK,(UINT8*)&u8Mode_EN_SINKConvert[0],sizeof(u8Mode_EN_SINKConvert),sizeof(StrMode_EN_SINK));
-        
-        PCTPrintPDO(u8array,u8Length);
-        
-        u8SinkPDOCntConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt,4);
-        
-        PCTWrite(StrSinkPDOCnt,(UINT8*)&u8SinkPDOCntConvert[0],sizeof(u8SinkPDOCntConvert),sizeof(StrSinkPDOCnt));
-        
-        u8DAC_I_DirectionConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8DAC_I_Direction,7);
-        
-        PCTWrite(StrDAC_I_Direction,(UINT8*)&u8DAC_I_DirectionConvert[0],sizeof(u8DAC_I_DirectionConvert),sizeof(StrDAC_I_Direction));
+         PCTWrite(StrPowerGoodTimerInms,(UINT8*)&u16PowerGoodTimerInmsConvert[0],sizeof(u16PowerGoodTimerInmsConvert),sizeof(StrPowerGoodTimerInms)); 
         
         u16aMinPDOPreferredCurInmA1Convert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[0],4);
         
@@ -582,13 +515,82 @@ void PCTPrintStatusData(UINT8 u8array[],UINT8 u8Length)
         
         PCTWrite(StraMinPDOPreferredCurInmA7,(UINT8*)&u16aMinPDOPreferredCurInmA7Convert[0],sizeof(u16aMinPDOPreferredCurInmA7Convert),sizeof(StraMinPDOPreferredCurInmA7));
         
+        u16SnkMaxOperatingCurInmAConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16SnkMaxOperatingCurInmA,4);
+        
+        PCTWrite(StrSnkMaxOperatingCurInmA,(UINT8*)&u16SnkMaxOperatingCurInmAConvert[0],sizeof(u16SnkMaxOperatingCurInmAConvert),sizeof(StrSnkMaxOperatingCurInmA));
+       
+        u16SnkMinOperatingCurInmAConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16SnkMinOperatingCurInmA,4);
+        
+        PCTWrite(StrSnkMinOperatingCurInmA,(UINT8*)&u16SnkMinOperatingCurInmAConvert[0],sizeof(u16SnkMinOperatingCurInmAConvert),sizeof(StrSnkMinOperatingCurInmA));
+     
+        u16DAC_I_MaxOutVoltInmVConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16DAC_I_MaxOutVoltInmV,4);
+        
+        PCTWrite(StrDAC_I_MaxOutVoltInmV,(UINT8*)&u16DAC_I_MaxOutVoltInmVConvert[0],sizeof(u16DAC_I_MaxOutVoltInmVConvert),sizeof(StrDAC_I_MaxOutVoltInmV));
+  
+        u16DAC_I_MinOutVoltInmVConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16DAC_I_MinOutVoltInmV,4);
+        
+        PCTWrite(StrDAC_I_MinOutVoltInmV,(UINT8*)&u16DAC_I_MinOutVoltInmVConvert[0],sizeof(u16DAC_I_MinOutVoltInmVConvert),sizeof(StrDAC_I_MinOutVoltInmV));
+        
+        u16DAC_I_CurrentInd_MaxInAConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u16DAC_I_CurrentInd_MaxInA,4);
+        
+        PCTWrite(StrDAC_I_CurrentInd_MaxInA,(UINT8*)&u16DAC_I_CurrentInd_MaxInAConvert[0],sizeof(u16DAC_I_CurrentInd_MaxInAConvert),sizeof(StrDAC_I_CurrentInd_MaxInA));
+        
+        u8SinkPDOCntConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt,4);
+        
+        PCTWrite(StrSinkPDOCnt,(UINT8*)&u8SinkPDOCntConvert[0],sizeof(u8SinkPDOCntConvert),sizeof(StrSinkPDOCnt));
+        
         u8SinkConfigSelConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel,4);
         
         PCTWrite(StrSinkConfigSel,(UINT8*)&u8SinkConfigSelConvert[0],sizeof(u8SinkConfigSelConvert),sizeof(StrSinkConfigSel));
         
+        u8FaultInDebounceInmsConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8FaultInDebounceInms,4);
+        
+        PCTWrite(StrFaultInDebounceInms,(UINT8*)&u8FaultInDebounceInmsConvert[0],sizeof(u8FaultInDebounceInmsConvert),sizeof(StrFaultInDebounceInms));
+        
         u8OCSThresholdPercentageConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8OCSThresholdPercentage,4);
         
         PCTWrite(StrOCSThresholdPercentage,(UINT8*)&u8OCSThresholdPercentageConvert[0],sizeof(u8OCSThresholdPercentageConvert),sizeof(StrOCSThresholdPercentage));
+        
+        u8OVThresholdPercentageConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8OVThresholdPercentage,4);
+        
+        PCTWrite(StrOVThresholdPercentage,(UINT8*)&u8OVThresholdPercentageConvert[0],sizeof(u8OVThresholdPercentageConvert),sizeof(StrOVThresholdPercentage));
+   
+        u8UVThresholdPercentageConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8UVThresholdPercentage,4);
+        
+        PCTWrite(StrUVThresholdPercentage,(UINT8*)&u8UVThresholdPercentageConvert[0],sizeof(u8UVThresholdPercentageConvert),sizeof(StrUVThresholdPercentage));
+       
+        u8VCONNOCSDebounceInmsConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8VCONNOCSDebounceInms,4);
+        
+        PCTWrite(StrVCONNOCSDebounceInms,(UINT8*)&u8VCONNOCSDebounceInmsConvert[0],sizeof(u8VCONNOCSDebounceInmsConvert),sizeof(StrVCONNOCSDebounceInms));
+   
+        u8VBUSMaxFaultCntConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8VBUSMaxFaultCnt,4);
+        
+        PCTWrite(StrVBUSMaxFaultCnt,(UINT8*)&u8VBUSMaxFaultCntConvert[0],sizeof(u8VBUSMaxFaultCntConvert),sizeof(StrVBUSMaxFaultCnt));
+      
+        u8VCONNMaxFaultCntConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8VCONNMaxFaultCnt,4);
+        
+        PCTWrite(StrVCONNMaxFaultCnt,(UINT8*)&u8VCONNMaxFaultCntConvert[0],sizeof(u8VCONNMaxFaultCntConvert),sizeof(StrVCONNMaxFaultCnt));
+      
+        u8Pio_FAULT_INConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8Pio_FAULT_IN,4);
+        
+        PCTWrite(StrPio_FAULT_IN,(UINT8*)&u8Pio_FAULT_INConvert[0],sizeof(u8Pio_FAULT_INConvert),sizeof(StrPio_FAULT_IN));
+      
+        u8Mode_FAULT_INConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8Mode_FAULT_IN,4);
+        
+        PCTWrite(StrMode_FAULT_IN,(UINT8*)&u8Mode_FAULT_INConvert[0],sizeof(u8Mode_FAULT_INConvert),sizeof(StrMode_FAULT_IN));
+      
+        u8Pio_EN_SINKConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8Pio_EN_SINK,4);
+        
+        PCTWrite(StrPio_EN_SINK,(UINT8*)&u8Pio_EN_SINKConvert[0],sizeof(u8Pio_EN_SINKConvert),sizeof(StrPio_EN_SINK));
+          
+        u8Mode_EN_SINKConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8Mode_EN_SINK,4);
+        
+        PCTWrite(StrMode_EN_SINK,(UINT8*)&u8Mode_EN_SINKConvert[0],sizeof(u8Mode_EN_SINKConvert),sizeof(StrMode_EN_SINK));
+        
+        u8DAC_I_DirectionConvert=HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u8DAC_I_Direction,7);
+        
+        PCTWrite(StrDAC_I_Direction,(UINT8*)&u8DAC_I_DirectionConvert[0],sizeof(u8DAC_I_DirectionConvert),sizeof(StrDAC_I_Direction));
+       
     }
     
 }
@@ -729,13 +731,6 @@ void PCTSetMemory(UINT8 u8array[],UINT8 u8length)
 
 void PCTSetPDO(UINT8 u8array[],UINT8 u8length)
 {
-//    gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_1;
-//    gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2] = CFG_PORT_0_SINK_PDO_2;
-//    gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3] = CFG_PORT_0_SINK_PDO_3;
-//    gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[4] = CFG_PORT_0_SINK_PDO_4;
-//    gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[5] = CFG_PORT_0_SINK_PDO_5;
-//    gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[6] = CFG_PORT_0_SINK_PDO_6;
-//    gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[7] = CFG_PORT_0_SINK_PDO_7;
     UINT32 u32PDOPosition,u32PDOValue;
     UINT8 u8Length=0,u8ByteValStart2=0,u8ByteValStart=0;
     while((u8array[8+u8Length])!=0x5d)
@@ -756,30 +751,15 @@ void PCTSetPDO(UINT8 u8array[],UINT8 u8length)
     }
     u32PDOValue =ASCIIHexStringtoInteger(&u8array[u8ByteValStart2],u8Length);
     u32PDOValue=u32PDOValue*1000;
-    if(u32PDOPosition==2)
-    {        
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[7]=gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[6];
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[6]=gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[5];
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[5]=gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[4];
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[4]=gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3];
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3]=gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2];
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2]=CFG_FORM_FIXED_PDOx(u32PDOValue,3000U);
-    }
-    else if(u32PDOPosition==3)
+    gasCfgStatusData.sPerPortData[PORT0].u32aNewPDO[]=u32PDOValue;
+    for(UINT8 INDEX=SET_TO_ZERO;INDEX<DPM_MAX_PDO_CNT;INDEX++)
     {
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3]=CFG_FORM_FIXED_PDOx(u32PDOValue,3000U);
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[4]=CFG_FORM_FIXED_PDOx(15000U,3000U);
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[5]=CFG_FORM_FIXED_PDOx(20000U,3000U);
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[6]=CFG_FORM_FIXED_PDOx(20000U,3000U);
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[7]=CFG_FORM_FIXED_PDOx(20000U,3000U);
+        if(gasCfgStatusData.sPerPortData[PORT0].u32aNewPDO[]!=gasCfgStatusData.sPerPortData[PORT0].u32aAdvertisedPDO[INDEX])
+        {
+            //put the new pdo into advertised pdo in ascending order
+        }
     }
-    else if(u32PDOPosition==4)
-    {
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[4]=CFG_FORM_FIXED_PDOx(u32PDOValue,3000U);
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[5]=CFG_FORM_FIXED_PDOx(20000U,3000U);
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[6]=CFG_FORM_FIXED_PDOx(20000U,3000U);
-        gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[7]=CFG_FORM_FIXED_PDOx(20000U,3000U);
-    }
+
     
 }
 
@@ -797,23 +777,23 @@ void PCTGetProcessCommands(UINT8 u8array[], UINT8 u8Length)
     {    
         PCTPrintCurrentValues(u8array,u8Length);
     }
-    if(0== memcmp(u8array,chGetBaudHelper,5))
+    else if(0== memcmp(u8array,chGetBaudHelper,5))
     {    
         PCTPrintBaudRate(u8array,u8Length);
     }
-    if(0== memcmp(u8array,chGetVersionHelper,5))
+    else if(0== memcmp(u8array,chGetVersionHelper,5))
     {    
         PCTPrintVersion(u8array,u8Length);
     }
-    if(0== memcmp(u8array,chGetPDOHelper,5))
+    else if(0== memcmp(u8array,chGetPDOHelper,5))
     {    
         PCTPrintPDO(u8array,u8Length);
     }
-    if(0== memcmp(u8array,chGetStatusRegHelper,7))
+    else if(0== memcmp(u8array,chGetStatusRegHelper,7))
     {    
         PCTPrintStatusData(u8array,u8Length);
     }
-    if(0== memcmp(u8array,chGetMemhelper,5))
+    else if(0== memcmp(u8array,chGetMemhelper,5))
     {    
         PCTPrintMemory(u8array,u8Length);
     }
@@ -833,11 +813,11 @@ void PCTSetProcessCommands(UINT8 u8array[], UINT8 u8Length)
     {    
         PCTSetBaudRate(u8array,u8Length);
     }
-    if(0== memcmp(u8array,chSetMemHelper,5))
+    else if(0== memcmp(u8array,chSetMemHelper,5))
     {    
         PCTSetMemory(u8array,u8Length);
     }
-    if(0== memcmp(u8array,chSetPDOHelper,5))
+    else if(0== memcmp(u8array,chSetPDOHelper,5))
     {    
         PCTSetPDO(u8array,u8Length);
     }
@@ -902,6 +882,7 @@ void MchpPSF_PCTRUN(bool bBlocking)
         {
             case INIT:
                 /*checks if UART receiver is ready */
+                memset(u8array,0,LENGTH);
                 if(true == SERCOM1_USART_ReceiverIsReady())
                 {
                     /*Read the input*/
@@ -911,7 +892,6 @@ void MchpPSF_PCTRUN(bool bBlocking)
                     {
                         /*checks for '?' input*/
                         state = READ_PROCESS;
-
                     }
 
                     else if(u8array[u8Length]==0x20)
@@ -955,11 +935,9 @@ void MchpPSF_PCTRUN(bool bBlocking)
                 {
                     PCTPrintCommands();
                     u8Length=0;
-
                 }
                 else
                 {
-                  
                     PCTCommandhandler(u8array, u8Length);
                     u8Length=0;
                 }

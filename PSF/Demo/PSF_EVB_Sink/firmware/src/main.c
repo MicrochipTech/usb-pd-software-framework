@@ -73,10 +73,10 @@ int main ( void )
     {
         /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
-        PSF_ADCRun();
+        //PSF_ADCRun();
         MchpPSF_PCTRUN(false);
         /*PSF stack Run*/
-       // MchpPSF_RUN();        
+        MchpPSF_RUN();        
     }
 }
 

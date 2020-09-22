@@ -121,7 +121,7 @@ void SYS_Initialize ( void* data )
 
     CLOCK_Initialize();
     // SERCOM1 UART is initialized as part of PSF
-    SERCOM1_USART_Initialize();
+    //SERCOM1_USART_Initialize();
 
 	//SPI initialisation is done as part of MchpPSF_Init by PSF stack
     //SERCOM0_SPI_Initialize();

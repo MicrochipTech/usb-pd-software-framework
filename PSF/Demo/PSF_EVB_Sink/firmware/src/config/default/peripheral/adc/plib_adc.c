@@ -96,7 +96,7 @@ void ADC_Initialize( void )
         | ADC_CALIB_BIAS_CAL((((*(uint64_t*)(OTP4_ADDR + 4)) & ADC_BIASCAL_Msk) >> ADC_BIASCAL_POS));
 
     /* Sampling length */
-    ADC_REGS->ADC_SAMPCTRL = ADC_SAMPCTRL_SAMPLEN(3U);
+    ADC_REGS->ADC_SAMPCTRL = ADC_SAMPCTRL_SAMPLEN(7U);
 
     /* reference */
     ADC_REGS->ADC_REFCTRL = ADC_REFCTRL_REFSEL_INTVCC1;
