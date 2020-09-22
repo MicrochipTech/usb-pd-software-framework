@@ -1018,95 +1018,237 @@ Description:
     <b>eMCHP_PSF_TYPEC_CC2_ATTACH:</b> This event is posted by PSF Type C state machine when port
 	partner Type C attach is detected in CC2 pin.
     
-    <b>eMCHP_PSF_TYPEC_ERROR_RECOVERY:</b> This event is posted by PSF Type C state machine when 
-    the port has entered Type C Error Recovery state.
-  
+    <b>eMCHP_PSF_TYPEC_ERROR_RECOVERY:</b> PSF notifies Type-C Error Recovery condition 
+	via this notification. For this notification, PSF expects a return value to decide whether
+    to handle Error Recovery. When user application returns TRUE, PSF enters Type-C Error Recovery
+    state and resolves the error condition. The user application may also return FALSE, in which case,
+    the user application will itself handle Error Recovery condition by raising a Port disable client
+    request (BIT(0) of gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable).
+
     <b>eMCHP_PSF_UPDS_IN_IDLE: </b>This event is posted by Power management control. PSF runs an
-	algorithm backend for Power management control. If there is no activity in UPD350 for 
-	CONFIG_PORT_UPD_IDLE_TIMEOUT_MS corresponding UPD350 is put to low power mode. When all the
-	UPD350 present in the system enters low mode, eMCHP_PSF_UPDS_IN_IDLE is posted. User can put 
-	SOC in low power mode as required on this notification. This notification occurs only when
-    INCLUDE_POWER_MANAGEMENT_CTRL defined as 1.
+	algorithm backend for Power management control. The Idle timeout value maintained by PSF is 
+    15 seconds. If there is no activity in UPD350 for 15 seconds, corresponding UPD350 is put to 
+    low power mode. When all the UPD350s present in the system enter low power mode, 
+    eMCHP_PSF_UPDS_IN_IDLE is posted. Users can put the SoC in low power mode as required on this
+    notification. This notification occurs only when INCLUDE_POWER_MANAGEMENT_CTRL is defined as 1.
     
     <b> eMCHP_PSF_VCONN_PWR_FAULT:</b> UPD350 has VCONN comparators to detect VCONN OCS faults. 
 	This event is notified when VCONN OCS fault is detected by UPD350. For this notification, PSF
 	expects a return value to decide whether to handle the fault occurred. When user returns TRUE
 	for VCONN power fault, Incase of explicit contract, if VCONN power fault count is less than
-	CONFIG_MAX_VCONN_POWER_FAULT_COUNT, PSF DPM power fault manager handles it by sending Hard Reset.
-	If the count exceeds max fault count,VCONN is powered off until physical detach of port partner.
-	Incase of implicit contract, PSF handles by entering TypeC Error Recovery. This notification
-	occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+	u8VCONNMaxFaultCnt, PSF DPM power fault manager handles it by sending Hard Reset. If the count 
+    exceeds max fault count,VCONN is powered off until physical detach of port partner. Incase of 
+    implicit contract, PSF handles by entering TypeC Error Recovery. This notification occurs only 
+    when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
     
     <b> eMCHP_PSF_VBUS_PWR_FAULT</b>: PSF notifies all VBUS power fault VBUS Over voltage, VBUS
 	under voltage, VBUS OCS via this notification. For this notification, PSF expects a return
 	value to decide whether to handle the fault occurred.When user returns TRUE for power fault,
-    Incase of explicit contract, if power fault count is less than CONFIG_MAX_VBUS_POWER_FAULT_COUNT,
-	PSF DPM power fault manager handles it by sending Hard Reset. When the power fault count 
-	exceeds the max fault count,CC termination on the port is removed until the physical detach of
-	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery.
-	This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+    Incase of explicit contract, if power fault count is less than u8VBUSMaxFaultCnt, 
+    PSF DPM power fault manager handles it by sending Hard Reset. When the power fault count 
+    exceeds the max fault count, CC termination on the port is removed until the physical detach of
+  	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery. 
+    This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
  
+    <b> eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT </b>: This event is notified when a port is recovered
+    from  VCONN power fault if the VCONN is stable for u16PowerGoodTimerInms without 
+    any further fault occurrence. PSF clears VCONN fault recorded with this notification.
+    
+    <b> eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT </b>: This event is notified when a port
+    recovers from VBUS power fault when the VBUS is stable for u16PowerGoodTimerInms without
+    any further VBUS fault occurrence. PSF clears the VBUS fault count it recorded with
+    this notification.
+ 
+    <b> eMCHP_PSF_PORT_POWERED_OFF</b>: This event is used by PSF to notify application when 
+    the port has been powered off as a result of VBUS or VCONN fault count exceeding the 
+    values present in u8VBUSMaxFaultCnt or u8VCONNMaxFaultCnt variables respectively within 
+    u16PowerGoodTimerInms time period. When a port is powered off, it stops sourcing/sinking 
+    power and waits for a detach. The port can be revived only when the partner is detached 
+    and attached again. 
+
     <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
     established with the Port partner.
+    
+    <b> eMCHP_PSF_PE_SRC_DISABLED</b>: This event is posted when Source policy
+    engine enters PE_SRC_DISABLED indicating Power Delivery capable port partner 
+    is not present and only Implicit contract is established with Sink port partner.
    
     <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
     Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
-    message initiated by PSF on request from the application through u32ClientRequest variable 
-    in sPerPortDatastructure. Application can read the sink capabilities by accessing 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[7].
+    message initiated by PSF. Application can read the Sink Capabilities by accessing 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO array. This event is applicable 
+    only when PSF is operating as Source or the power role of the port is resolved as 
+    Source during DRP operation.  
     
     <b> eMCHP_PSF_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink capabilities has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Sink_Caps message initiated by PSF on request from application
-    through u32ClientRequest variable in sPerPortDatastructure.
+    as a response to the Get_Sink_Caps message initiated by PSF. This event is applicable 
+    only when PSF is operating as Source or the power role of the port is resolved as 
+    Source during DRP operation. 
     
     <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
-    mismatch with Source partner PDOs in a PD negotiation.
+    mismatch with Source partner PDOs in a PD negotiation. This event is applicable 
+    only when PSF is operating as Sink or the power role of the port is resolved as 
+    Sink during DRP operation. 
     
     <b> eMCHP_PSF_NEW_SRC_CAPS_RCVD</b>: It is notified by PSF when new source capability
-    message is received from the Source Partner.
+    message is received from the Source Partner. This event is applicable 
+    only when PSF is operating as Sink or the power role of the port is resolved as 
+    Sink during DRP operation. 
   
     <b> eMCHP_PSF_SINK_ALERT_RCVD</b>: This event is used by PSF to notify application when PD
 	Alert message has been received from Sink Partner. Application can read the alert
-    information by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlert.
+    data by accessing gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert.
+    This event is applicable only when PSF is operating as Source or the power role of the port 
+    is resolved as Source during DRP operation.   
  
     <b> eMCHP_PSF_SINK_STATUS_RCVD</b>: This event is used by PSF to notify application when 
     Sink Status has been received from Port Partner in response to the Get_Status
-    message initiated by PSF on request from the application. Application can read the 
-    Sink Status by accessing gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6]
-    
+    message initiated by PSF. Application can read the Sink Status by accessing 
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus array.
+    This event is applicable only when PSF is operating as Source or the power role of the port is
+    resolved as Source during DRP operation. 
+ 
     <b> eMCHP_PSF_SINK_STATUS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink Status has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Status message initiated by PSF on request from application.
-    gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
-    when this notification is posted. 
+    as a response to the Get_Status message initiated by PSF.
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
+    when this notification is posted. This event is applicable only when PSF is operating as Source
+    or the power role of the port is resolved as Source during DRP operation. 
+ 
+    <b> eMCHP_PSF_VCONN_SWAP_COMPLETE</b>: This notification will be posted when the VCONN Swap
+    is completed and the VCONN roles of the both the partners are changed successfully.
+    
+    <b> eMCHP_PSF_VCONN_SWAP_RCVD</b>: This notification will be posted by PSF when a VCONN 
+    Swap message is received from port partner. Application can make use of this event to 
+    dynamically update the VCONN Swap Policy Configuration through u16SwapPolicy based on 
+    which the VCONNN Swap request would be accepted or rejected by PSF. 
+
+    <b> eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD </b>: This notification will be posted by PSF 
+    when a VCONN Swap message has been initiated by PSF and no response has been 
+    received from the port partner. 
+
+    <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: This notification will be posted when the PR Swap
+    is completed and the power roles of the both the partners are changed successfully.
+    This event is applicable only when PSF is operating as DRP.
+    
+    <b> eMCHP_PSF_PR_SWAP_RCVD</b>: This notification will be posted by PSF when a Power 
+    Role Swap message is received from port partner. Application can make use of this event to 
+    dynamically update the Power Role Swap Policy Configuration through u16SwapPolicy based on 
+    which the Power Role Swap request would be accepted or rejected by PSF. 
+    This event is applicable only when PSF is operating as DRP.
+  
+    <b> eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD </b>: This notification will be posted by PSF 
+    when a Power Role Swap message has been initiated by PSF and no response has been 
+    received from the port partner. 
+    This event is applicable only when PSF is operating as DRP.
+   
+    <b>eMCHP_PSF_DR_SWAP_COMPLETE</b>: This notification indicates that DR_SWAP
+    reception or DR_SWAP initiation is successfully completed. User can know the 
+    current data role status through u32PortConnectStatus.
+        
+    <b>eMCHP_PSF_DR_SWAP_RCVD</b>: This occurs whenever there is a DR_SWAP message
+    from port partner. User can modify u16SwapPolicy dynamically to Accept or 
+    Reject DR_SWAP. Note for dynamic DR_SWAP initiation by PSF, client request 
+    has to be raised apart from dynamic change of u16SwapPolicy configuration.
+    
+    <b> eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD </b>: This is posted by PSF when
+    Response Timer times out and there is no response from the port partner for 
+    the DR_SWAP initiated. 
+    
+    <b> eMCHP_PSF_CABLE_IDENTITY_DISCOVERED </b>: This event is used by PSF to notify the 
+    application when the Cable Identity has been received from Cable in response to the 
+    VDM:Discover Identity request initiated by PSF. Application can read the cable identity by 
+    accessing the gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity array.
+    This event is applicable only when the port is operating as both VBUS Source and
+    VCONN Source.
+  
+    <b> eMCHP_PSF_CABLE_IDENTITY_NAKED </b>: This event is used by PSF to notify the 
+    application when NAK or no response is received from cable for VDM:Discover Identity request 
+    initiated by PSF. 
+    This event is applicable only when the port is operating as both VBUS Source and
+    VCONN Source. 
+ 
+    <b> eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED </b>: This event is used by PSF to notify the 
+    application when the Partner Identity has been received from Port Partner in response to the 
+    VDM:Discover Identity request initiated by PSF. Application can read the partner identity by 
+    accessing the gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity array.
+ 
+    <b> eMCHP_PSF_PARTNER_IDENTITY_NAKED </b>: This event is used by PSF to notify the 
+    application when NAK response is received from port partner for VDM:Discover Identity request 
+    initiated by PSF. 
+  
+    <b> eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD </b>: This event is used by PSF to notify the
+    application when the VDM Response Timer has timed out and there is no response from the 
+    port partner for the VDM:Discover Identity request initiated. 
+  
+    <b> eMCHP_PSF_PORT_DISABLED</b>: This event is used by PSF to notify the application 
+    that a port has been disabled as a result of port disable client request (BIT[0] in 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is disabled,
+    any connection to the port is prevented by removing all terminations from the CC pins. 
+    A disabled port will continue to be in disabled state even after the port partner is
+    physically detached and attached. The port can only be revived by a client request to 
+    enable the port (BIT[1] in gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). 
+
+    <b> eMCHP_PSF_PORT_ENABLED</b>: This event is used by PSF to notify the application 
+    that a port has been enabled as a result of port enable client request (BIT[1] in 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is enabled,
+    Type-C attach and PD negotiation sequence happens again.
  
     <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
     Busy due to which it cannot process any of the client requests, say 
-    Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
-    application through u32ClientRequest variable in sPerPortDatastructure. On 
-    receiving this notification, the application can re-initiate the request.
+    Renegotiation, etc., which were raised by the application through 
+    u32ClientRequest variable in sPerPortData structure. On receiving this notification, 
+    the application can re-initiate the request.
+    
+    <b> eMCHP_PSF_IDLE</b>: This event is used by PSF to indicate that PSF is idle,
+    Client request can be initiated by the User Application. In case Port partner 
+    sends a message in mean time, PSF will send eMCHP_PSF_BUSY notification indicating
+    PSF is not idle. User application has to retry the client request again once
+    eMCHP_PSF_IDLE is posted.
+ 
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
 typedef enum MCHP_PSF_NOTIFICATION
 {    
-eMCHP_PSF_TYPEC_DETACH_EVENT = 1,   // Detach event has occurred
-eMCHP_PSF_TYPEC_CC1_ATTACH,         // Port partner attached at CC1 orientation
-eMCHP_PSF_TYPEC_CC2_ATTACH,         // Port partner attached at CC2 orientation
-eMCHP_PSF_TYPEC_ERROR_RECOVERY,     // Entered Error recovery State
-eMCHP_PSF_UPDS_IN_IDLE,             // All the UPD350s are in Idle
-eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
-eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
-eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
-eMCHP_PSF_SINK_CAPS_RCVD,          // Sink Caps received from Port Partner
-eMCHP_PSF_SINK_CAPS_NOT_RCVD,      // Sink Caps not received from Port Partner
-eMCHP_PSF_CAPS_MISMATCH,            // Capability mismatch with Source Port Partner
-eMCHP_PSF_NEW_SRC_CAPS_RCVD,        // New source capability message is received from Source Partner
-eMCHP_PSF_SINK_ALERT_RCVD,          // Alert message received from Sink Partner         
-eMCHP_PSF_SINK_STATUS_RCVD,         // Sink Status received from Sink Partner
-eMCHP_PSF_SINK_STATUS_NOT_RCVD,     // Sink Status not received from Sink Partner
-eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
+eMCHP_PSF_TYPEC_DETACH_EVENT = 1,      // Detach event has occurred
+eMCHP_PSF_TYPEC_CC1_ATTACH,            // Port partner attached at CC1 orientation
+eMCHP_PSF_TYPEC_CC2_ATTACH,            // Port partner attached at CC2 orientation
+eMCHP_PSF_TYPEC_ERROR_RECOVERY,        // Error recovery condition has occurred and it will be handled by PSF if user application returns TRUE
+eMCHP_PSF_UPDS_IN_IDLE,                // All the UPD350s are Idle and in low power mode
+eMCHP_PSF_VCONN_PWR_FAULT,             // VCONN Power Fault has occurred
+eMCHP_PSF_VBUS_PWR_FAULT,              // VBUS Power Fault has occurred
+eMCHP_PSF_PORT_POWERED_OFF,            // Port powered off since fault count exceeded maximum fault count
+eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT,       // Port Recovered from VCONN power fault
+eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT,        // Port Recovered from VBUS Power fault
+eMCHP_PSF_PE_SRC_DISABLED,              // Only Type C device is present, Partner does not support PD
+eMCHP_PSF_PD_CONTRACT_NEGOTIATED,      // PD Contract established with port partner
+eMCHP_PSF_SINK_CAPS_RCVD,              // Sink Caps received from Port Partner
+eMCHP_PSF_SINK_CAPS_NOT_RCVD,          // Sink Caps not received from Port Partner
+eMCHP_PSF_CAPS_MISMATCH,               // Capability mismatch with Source Port Partner
+eMCHP_PSF_NEW_SRC_CAPS_RCVD,           // New source capability message is received from Source Partner
+eMCHP_PSF_SINK_ALERT_RCVD,             // Alert message received from Sink Partner         
+eMCHP_PSF_SINK_STATUS_RCVD,            // Sink Status received from Sink Partner
+eMCHP_PSF_SINK_STATUS_NOT_RCVD,        // Sink Status not received from Sink Partner
+eMCHP_PSF_VCONN_SWAP_COMPLETE,         // VCONN Swap completed
+eMCHP_PSF_VCONN_SWAP_RCVD,             // VCONN Swap Received from port partner
+eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD, // No response from port partner for VCONN Swap sent 
+eMCHP_PSF_PR_SWAP_COMPLETE,            // Power Role Swap completed
+eMCHP_PSF_PR_SWAP_RCVD,                // Power Role Swap Received from port partner
+eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for Power Role Swap sent 
+eMCHP_PSF_DR_SWAP_COMPLETE,            // Data Role Swap completed
+eMCHP_PSF_DR_SWAP_RCVD,                // Data Role swap received from port partner
+eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for the DR_SWAP initiated        
+eMCHP_PSF_CABLE_IDENTITY_DISCOVERED,   // ACK received from cable for Discover Identity sent to SOP'        
+eMCHP_PSF_CABLE_IDENTITY_NAKED,        // NAK received from cable for Discover Identity sent to SOP'
+eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED, // ACK received from partner for Discover Identity sent to SOP
+eMCHP_PSF_PARTNER_IDENTITY_NAKED,      // NAK received from partner for Discover Identity sent to SOP
+eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD,   // No response from partner for Discover Identity sent to SOP     
+eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
+eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
+eMCHP_PSF_BUSY,                        // PSF is busy, cannot handle client request
+eMCHP_PSF_IDLE                         // PSF is idle, Application can raise any client request   
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************
@@ -1163,7 +1305,7 @@ Remarks:
     eMCHP_PSF_GPIO_FUNCTIONALITY enum defines the various GPIO
     functionality Pins that are used in PSF.
     <table>
-    Funtionality              \Input/Output   \Description
+    Functionality             \Input/Output   \Description
     ------------------------  --------------  -----------------------------------------------------------------
     eUPD350_ALERT_FUNC        \Input          * PSF requires a GPIO specific to each port of UPD350 for
                                                  interrupt detection via UPD350's IRQ_N lines.
@@ -1259,6 +1401,22 @@ Remarks:
 												 is user specific.
                                                * This is applicable only for sink functionality and it is
                                                  not mandatory,depends on user application.
+    ePOWER_ROLE_FUNC          \Output         * Power role indicator functionality is to indicate whether the current 
+                                                 power role of a port is source or sink. PSF will request the application
+                                                 to assert this pin when the current power role is source. PSF will
+                                                 request the application to de-assert the pin when the current power role
+                                                 is sink or when the port partner is detached. The state of GPIO during
+                                                 Init, Assert and De-assert of this functionality is user specific.
+                                               * This is applicable only for DRP functionality and it is
+                                                 not mandatory, depends on user application.
+    eDATA_ROLE_FUNC           \Output         * Data role indicator functionality is to indicate that the current 
+                                                 data role is Host/Hub DFP. PSF will request the application to assert the pin
+												 when current data role is DFP. PSF will request the application
+												 to de-assert the pin when the current data role is UFP or when the port
+                                                 partner is detached. The state of GPIO during Init, Assert and De-assert
+                                                 of this functionality is user specific.
+                                               * This is applicable only for DRP functionality and it is
+                                                 not mandatory, depends on user application.
     </table>
   Remarks:
     None                                                                                                       
@@ -1274,7 +1432,9 @@ typedef enum eMCHP_PSF_GPIO_Functionality
     eORIENTATION_FUNC,             
     eSNK_CAPS_MISMATCH_FUNC,       
     eSNK_1_5A_IND_FUNC,            
-    eSNK_3A_IND_FUNC               
+    eSNK_3A_IND_FUNC,
+    ePOWER_ROLE_FUNC,
+    eDATA_ROLE_FUNC            
 } eMCHP_PSF_GPIO_FUNCTIONALITY;
 
 /**************************************************************************************************
@@ -1492,8 +1652,8 @@ Conditions:
     It is applicable only for Sink operation.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u16voltage -  Enable Sink HW Circuitry if the u16voltage is not Vsafe0V to drain power.
-                    Disable sink HW circuitry if the u16voltage is VSafe0V.
+    u16voltage -  Enable Sink HW Circuitry if the u16voltage is not vSafe0V to drain power.
+                    Disable sink HW circuitry if the u16voltage is vSafe0V.
                     Configure the HW to requested u16voltage in mV.
     u16Current -  Configure the HW for the requested current passed in terms of mA.
 Return:
@@ -1530,7 +1690,7 @@ Remarks:
 // *****************************************************************************
 /*******************************************************************************
 Function:
-    MCHP_PSF_HOOK_DRIVE_DAC_I()
+    MCHP_PSF_HOOK_DRIVE_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
 Summary:
     Indicates the implicit/explicit current capability of attached source partner.
 Description:
@@ -1566,13 +1726,16 @@ Description:
 Conditions:
     SoC should support a DAC. And the DAC should be initialized under 
     MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
+Input:
+    u8PortNum   - Port number for which DAC_I needs to be driven
+    u16DACData  - Analog voltage to be driven on DAC_I pin
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)   SAMD20_Drive_DAC_I(u16DACData)
-        void SAMD20_Drive_DAC_I(UINT16 u16DACData);
-        void SAMD20_Drive_DAC_I(UINT16 u16DACData)
+        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)   HW_Drive_DAC_I(u8PortNum, u16DACData)
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData);
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
         {
             //Implement user specific application to output volatge provided under 
             //u16DACData argument in DAC's output pin
@@ -1582,7 +1745,7 @@ Remarks:
     This hook is applicable only if INCLUDE_PD_SINK macro is 1. Definition of this
     hook is not mandatory.
 *******************************************************************************/ 
-#define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)  SAMD20_Drive_DAC_I(u16DACData)
+#define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)  App_DriveDAC_I(u8PortNum, u16DACData)
 
 /*******************************************************************************
 Function:
@@ -1623,7 +1786,7 @@ Remarks:
     This hook is called when PSF needs to know about the current drawn from
     external DC_DC controller. The function should be defined with return
     type UINT32 and UINT8 type as input parameter. If the DC_DC controller
-    doesnot have feature to get output current, return 0xFFFFFFFF to denote
+    does not have feature to get output current, return 0xFFFFFFFF to denote
     the feature is not supported.
   Conditions:
     \Output Current shall be returned in terms of mA.

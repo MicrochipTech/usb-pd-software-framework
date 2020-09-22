@@ -4,12 +4,12 @@ Microchip's USB Power Delivery Software Framework (PSF) is a light weight USB Po
 
 PSF provides a range of configuration options for your custom PD design and is portable to many MCUs. PSF is constantly evolving as we seek to add PD functionality and improvements to it in a planned fashion. A summary of the planned phases and the supported features are as follows:
 
-| Development Phase 	| Planned Features 	| Status 	| Support Added in 	|
+| Development Phase 	| Planned Features 	| Status 	| Latest Release 	|
 |:-----------------:	|-------------------------------------------------------------------------------------------------------------------------------------------	|-------------	|----------------------------------	|
-| I 	| Multi-Port PD Source Only, VCONN sourcing, Fault Handling 	| **Completed** 	| [PSF_STACK_V1.00](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.00) (Stable) 	|
-| II 	| I2C Mode DC-DC control, PD Balancing, PD Throttling,  Automotive source-only PPS support, PD policy management support from  external SOC 	| *In-Progress* 	| [PSF_STACK_V1.05](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.05) (Bugfix for Beta Release) 	|
-| III 	| PD sink support, Multiple Sink PDO selection algorithms, Custom Sink PDO  selection algorithm, PD sink policy management from external SOC  	| *In-Progress* 	| [PSF_STACK_V1.05](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.05)  (Bugfix for Alpha Release) 	|  	|
-| IV 	| Dual Role Power (DRP) and Dual Role Data (DRD) support,  DRP/DRD policy management from external SOC 	|  *In-Progress* 	|  	|
+| I 	| Multi-Port PD Source Only, VCONN sourcing, Fault Handling 	| **Completed** 	| [PSF_STACK_V1.06](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.06) (Stable) 	|
+| II 	| I2C Mode DC-DC control, PD Balancing, PD Throttling,  Automotive source-only PPS support, PD policy management support from  external SOC 	| *In-Progress* 	| [PSF_STACK_V1.06](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.06) (Bugfix for Beta Release) 	|
+| III 	| PD sink support, Multiple Sink PDO selection algorithms, Custom Sink PDO  selection algorithm, PD sink policy management from external SOC  	| *In-Progress* 	| [PSF_STACK_V1.06](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.06)  (Bugfix for Alpha Release) 	|  	|
+| IV 	| Dual Role Power (DRP) and Dual Role Data (DRD) support,  DRP/DRD policy management from external SOC 	|  *In-Progress* 	|  [PSF_STACK_V1.06](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.06)  (Alpha Release)  	|
 | V 	| Alternate modes support, Alternate mode policy management  from external SOC 	| Planned 	|  	|
 | VI 	| PD charge through device support, Fast role swap 	| Planned 	|  	|
 
@@ -48,7 +48,8 @@ We recommend using the pre-configured application example projects under the [De
 
 * [PSF Source Lite](PSF/Demo/PSF_EVB_Source_Lite): A two port PD source only application example that uses GPIO mode DC-DC control. Can support up to four PD ports
 * [PSF Source Pro](PSF/Demo/PSF_EVB_Source_Pro): A two-port PD source application example using I2C mode DC-DC control. Supports advanced PD features like PD Power Balancing.
-* [PSF Sink](PSF/Demo/PSF_EVB_Sink): A PD sink application example that supports two sink PDO selection algorithms. Mode A enables selction of the highest wattage at highest voltage supported by the port partner. Mode B enables selection of highest wattage at lowest voltage supported by the port partner.
+* [PSF Sink](PSF/Demo/PSF_EVB_Sink): A PD sink application example that supports two sink PDO selection algorithms. Mode A enables selection of the highest wattage at highest voltage supported by the port partner. Mode B enables selection of highest wattage at lowest voltage supported by the port partner.
+* [PSF DRP](PSF/Demo/PSF_EVB_DRP): A PD dual role application example that supports two different types of DRP ports. Port 1 is configured as a notebook/laptop type port which can source 5V/3A and sink up to 20V/3A. Port 2 is configured as a dock type port which can source up to 20V/3A and sink 5V/0A. Both ports support power and data role swaps.
 
 Please refer the readme file of your chosen application example for instructions on running the example project. We will be updating this space as more features get added to PSF.
 
