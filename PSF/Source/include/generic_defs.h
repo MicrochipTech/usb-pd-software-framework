@@ -11,7 +11,7 @@
     This file contains generic defines used in the stack.
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -74,6 +74,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define INDEX_3                                 3
 #define INDEX_4                                 4
 #define INDEX_5                                 5
+#define INDEX_6                                 6
 
 /********************************************************************************************/
 /*Low Byte and High byte from a UINT16*/
@@ -123,6 +124,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PORT2       2
 #define PORT3       3
 
+#define PORT_COUNT_1    1
+#define PORT_COUNT_2    2
 /**********************************************************************************************/
 
 #endif /*GENERIC_DEFS_H*/

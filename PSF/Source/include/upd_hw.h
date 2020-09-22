@@ -12,7 +12,7 @@
     for GPIO, Register access, PIO override
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -225,6 +225,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_PORT_DISABLED        0x00
 #define UPD_PORT_ENABLED         0x01
 
+/* Default UPD VBUS Threshold value */
+#define UPD_VBUS_THRS_DEFAULT    222 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Routines
@@ -631,7 +633,7 @@ void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8C
 		UPD350 REV A
 
 	Description:
-		This API is to set or reset the debounce corresponidng debounce type for the PIO number passed.
+		This API is to set or reset the debounce corresponding debounce type for the PIO number passed.
 		
 	Precondition:
 		None.
@@ -811,7 +813,7 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
     Description:
         This API starts the  port Idle timer with the value specified in
-        CONFIG_PORT_UPD_IDLE_TIMEOUT_MS
+        UPD_IDLE_TIMEOUT_MS
 
     Conditions:
         confined to INCLUDE_POWER_MANAGEMENT_CTRL define.
@@ -1053,4 +1055,33 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum);
 **************************************************************************************************/
 void UPD_ResetThroughGPIO(void);
 
+/**************************************************************************************************
+    Function:
+        void UPD_RegDump(UINT8 u8PortNum)
+
+    Summary:
+        Provides a dump of UPD350 registers.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is to output various register values of UPD350 through 
+        debug interface.
+
+    Conditions:
+        CONFIG_HOOK_DEBUG_MSG should be set for the register dump to be output 
+        via debug interface.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_RegDump(UINT8 u8PortNum);
 #endif /*_UPD_HW_H_*/

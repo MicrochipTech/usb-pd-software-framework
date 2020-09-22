@@ -62,7 +62,7 @@ void App_SetMCUIdle()
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
-    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE");
+    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE\r\n");
     
 	/*If there is any pending interrupt it will not go to sleep*/
     SCB->SCR |=  (SCB_SCR_SLEEPDEEP_Msk )| (SCB_SCR_SEVONPEND_Msk);
@@ -111,23 +111,32 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             u8RetVal = TRUE;
             break;
         }
+           
+        case eMCHP_PSF_PORT_POWERED_OFF:
+        {
+            break;
+        }
         
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             break;
         }
+        
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
             break;
         }
+        
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
             break;
         }
+        
         case eMCHP_PSF_CAPS_MISMATCH:
         {
             break;
         }
+        
         case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
         {
             break;
@@ -139,6 +148,44 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         }
        
         case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
+        {
+			/*Returning TRUE to enable PSF to handle Error Recovery*/
+            u8RetVal = TRUE;
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_COMPLETE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD:
+        {
+            break; 
+        }        
+        
+        
+        case eMCHP_PSF_PORT_DISABLED:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_PORT_ENABLED:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_IDLE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_BUSY:
         {
             break; 
         }
@@ -295,14 +342,14 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             {
                 /*Asserts when attach happens at CC1*/                
                 UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
-                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);  
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
             }
             else
             {
                 /*De-assert when attach happens at CC2*/                
                 UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
-                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2); 
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
             }
             break;
@@ -357,6 +404,22 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum)
     return TRUE; 
 }
 
+#if (TRUE == INCLUDE_PD_SINK)
+void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData)
+{
+    if(PORT0 == u8PortNum)
+    {
+        /*SAMD20 internally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
+        /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
+        /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
+
+        UINT32 u32DACCalculate = u16DACData * APP_DAC_MAX_STEP_COUNT;
+
+        u16DACData = (UINT16)(u32DACCalculate / APP_DAC_VREF);
+        DAC_DataWrite(u16DACData);
+    }
+}
+#endif
 /* *****************************************************************************
  End of File
  */

@@ -122,8 +122,8 @@ void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset,
     UINT8 u8Writebuffer [UPD_I2C_MAX_BYTE_WRITE];
     UINT8 u8WriteBufLen = 2;
     
-    u8Writebuffer[0] = HIBYTE (u16RegOffset);
-    u8Writebuffer[1] = LOBYTE (u16RegOffset);
+    u8Writebuffer[INDEX_0] = HIBYTE (u16RegOffset);
+    u8Writebuffer[INDEX_1] = LOBYTE (u16RegOffset);
     
     for (; u8WriteBufLen < (u8WriteDataLen+2); u8WriteBufLen++)
     {
@@ -143,10 +143,10 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
   
     UINT8 u8Command [UPD_SPI_READ_CMD_LEN];
     
-	u8Command[0] = UPD_SPI_READ_OPCODE;
-	u8Command[1] = HIBYTE (u16RegOffset);
-	u8Command[2] = LOBYTE (u16RegOffset);
-	u8Command[3] = UPD_SPI_DUMMY_BYTE;
+	u8Command[INDEX_0] = UPD_SPI_READ_OPCODE;
+	u8Command[INDEX_1] = HIBYTE (u16RegOffset);
+	u8Command[INDEX_2] = LOBYTE (u16RegOffset);
+	u8Command[INDEX_3] = UPD_SPI_DUMMY_BYTE;
     
     /*Enable SPI Select for communication*/
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_ASSERT);
@@ -160,8 +160,8 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
 
     UINT8 u8Command [UPD_I2C_REG_CMD_LEN];
     
-    u8Command[0] = HIBYTE (u16RegOffset);
-    u8Command[1] = LOBYTE (u16RegOffset);
+    u8Command[INDEX_0] = HIBYTE (u16RegOffset);
+    u8Command[INDEX_1] = LOBYTE (u16RegOffset);
     
     (void)MCHP_PSF_HOOK_UPD_READ (u8PortNum, u8Command, (UINT8)sizeof(u8Command), pu8ReadData, u8Readlen);
     
@@ -332,7 +332,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
  	/* Read the interrupt status*/
 	UPD_RegisterReadISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntSts, BYTE_LEN_2);
 	
-    #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
 	if ((BIT(gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN)) & u16PIOIntSts)
 	{	
         UINT16 u16PIORegVal;
@@ -349,23 +349,40 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
         }
     
-		#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-            UINT8 u8VBUSEn;
+#if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+            UINT8 u8PioNum = SET_TO_ZERO;
+            UINT8 u8CurPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
             /*When PIO override is disabled; disable EN_VBUS/EN_SINK based on the
              role on a power fault*/
-            #if (TRUE==INCLUDE_PD_SOURCE)
-            u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
-            #else
-            u8VBUSEn = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
-            #endif
-			UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
-									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-			u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
-			UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8VBUSEn),\
-										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-		#endif
+            
+            if(PD_ROLE_DRP != u8CurPowerRole)
+            {
+#if (TRUE == INCLUDE_PD_SOURCE)
+                if(PD_ROLE_SOURCE == u8CurPowerRole)
+                {
+                    u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
+                }
+                else
+#endif
+                {
+#if (TRUE == INCLUDE_PD_SINK)
+                    u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+#endif
+                }
+  
+                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+                u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
+                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
+                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);  
+            }
+            else
+            {
+                /*Execution should not hit here ideally*/
+            }
+#endif /*(FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)*/
 	}
-	#endif
+#endif /*INCLUDE_POWER_FAULT_HANDLING*/
 	
 	/* clear the interrupt status */
 	UPD_RegisterWriteISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntSts, BYTE_LEN_2);
@@ -379,52 +396,62 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
 	/* Override 0 - Overvoltage Threshold*/
     /* Override 1 - UnderVoltage Threshold */
   	/* Override 2 - Fault Low*/
-	UINT8 u8PIONum;
+    UINT16 u16PIOPos;
     
-    #if (TRUE == INCLUDE_PD_SOURCE)
-	/* Get the PIO number for EN_VBUS */
-	u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
-    #else
-    u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
-    #endif
+#if (TRUE == INCLUDE_PD_DRP)   
+    UINT8 u8PIOEnVBUS;
+    UINT8 u8PIOEnSink;
+    u8PIOEnVBUS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
+    u8PIOEnSink = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+    u16PIOPos = (BIT(u8PIOEnVBUS) | BIT(u8PIOEnSink));
+#elif (TRUE == INCLUDE_PD_SOURCE)
+    UINT8 u8PIOEnVBUS;
+    u8PIOEnVBUS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
+    u16PIOPos = BIT(u8PIOEnVBUS);
+#else
+    UINT8 u8PIOEnSink;
+    u8PIOEnSink = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
+    u16PIOPos = BIT(u8PIOEnSink);
+#endif
 
     /*Setting Monitoring bit as '1' checks whether voltage exceeds the configured source 
         selection VBUS threshold value or the source selection PIO goes high */
     /* Setting Monitoring bit as '0' checks whether voltage falls below the source 
             selection VBUS threshold value or the source selection PIO goes low */
-	/* Enable monitoring for Override 0 - Overvoltage alone */
-	UPD_RegWriteByte (u8PortNum, UPD_PIO_MON_VAL, UPD_PIO_OVR_0 );
-	
-	/* PIO override output is set as low */
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, 0x0);
-	
-	/* Configure the Source for override 0 as OverVoltage Threshold 2*/
-	UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR0_SRC_SEL, \
-	  (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS2_THR_MATCH));
-    
-    /* Configure the Source for override 1 as undervoltage*/
-    UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR1_SRC_SEL, \
-	  (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS3_THR_MATCH));
-	
-	/* Configure the Source for override 2 as Fault_IN/PRT_CTL pin low from Load switch */
-	UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR2_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN);
-	
-	/* EN_VBUS is configured as override Pin in output mode */
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, BIT(u8PIONum));
-    
-    /* Override 0*/
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR0_OUT_EN, BIT(u8PIONum));
-    
-    /* Override 1*/
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR1_OUT_EN, BIT(u8PIONum));
+    /* Enable monitoring for Override 0 - Overvoltage alone */
+    UPD_RegWriteByte (u8PortNum, UPD_PIO_MON_VAL, UPD_PIO_OVR_0);
 
-	/* Override 2*/
-	UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR2_OUT_EN, BIT(u8PIONum));
-    
+    /* PIO override output is set as low */
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO);
+
+    /* Configure the Source for override 0 as OverVoltage Threshold 2*/
+    UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR0_SRC_SEL, \
+      (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS2_THR_MATCH));
+
+    /* Configure the Source for override 1 as under-voltage*/
+    UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR1_SRC_SEL, \
+      (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS3_THR_MATCH));
+
+    /* Configure the Source for override 2 as Fault_IN/PRT_CTL pin low from Load switch */
+    UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR2_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN);
+
+    /* EN_VBUS is configured as override Pin in output mode */
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, u16PIOPos);
+
+    /* Override 0*/
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR0_OUT_EN, u16PIOPos);
+
+    /* Override 1*/
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR1_OUT_EN, u16PIOPos);
+
+    /* Override 2*/
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR2_OUT_EN, u16PIOPos);
+
     /* Enable the override for FAULT_IN*/
     /* Under voltage and overvoltage override is enabled after configuring the
         threshold*/
     UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
+
 }
 #endif
 
@@ -436,19 +463,19 @@ UINT8 UPD_CheckUPDsActive()
 {
     UINT8 u8IsAllUPDsActive = FALSE;
     
-    for (UINT8 u8PortNo = SET_TO_ZERO; u8PortNo < CONFIG_PD_PORT_COUNT; u8PortNo++)
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
 		/*Ignore if port is disabled, so consider only for enabled ports*/
-		if (((gasCfgStatusData.sPerPortData[u8PortNo].u32CfgData \
-            & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
+		if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
 		{
 			/*UPD_STATE_ACTIVE will be set frequently by respective Alert ISR.
 			  It means that the appropriate port is active, so skip MCU IDLE*/
-			if ((gau8ISRPortState[u8PortNo] == UPD_STATE_ACTIVE) ||
+			if ((UPD_STATE_ACTIVE == gau8ISRPortState[u8PortNum]) ||
 			/*Verify any other IDLE timer is running for all other ports.
 			if its running, then lets handle in that timer expire event, so skip MCU
 			IDLE for now*/
-             (((gau8PortIdleTimerID[u8PortNo]< MAX_CONCURRENT_TIMERS) && (gasPDTimers[gau8PortIdleTimerID[u8PortNo]].u8TimerSt_PortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
+             (((gau8PortIdleTimerID[u8PortNum]< MAX_CONCURRENT_TIMERS) && \
+             (gasPDTimers[gau8PortIdleTimerID[u8PortNum]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
 
 			{
 				u8IsAllUPDsActive = TRUE;
@@ -479,13 +506,13 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	UPD_RegByteClearBit (u8PortNum, UPD_CLK_CTL , \
             (UPD_RING_OSC_ENABLE | UPD_48MHZ_OSC_ENABLE | UPD_SYS_CLK_ENABLE) );
     
-    DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set Port Idle");
+    DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set Port Idle\r\n");
 	
 	//Put MCU into IDLE
 
 	if (FALSE == UPD_CheckUPDsActive())
 	{
-        DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE\r\n");
                 
 		gu8SetMCUidle = UPD_MCU_IDLE;
 	}
@@ -498,15 +525,14 @@ void PD_StartIdleTimer(UINT8 u8PortNum)
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
                 
     /*if UPD350 is active; Restart UPD IDLE Timer*/
-    if (gau8ISRPortState[u8PortNum] == UPD_STATE_ACTIVE)
-    {
-        
+    if (UPD_STATE_ACTIVE == gau8ISRPortState[u8PortNum])
+    {        
         PDTimer_Kill (gau8PortIdleTimerID[u8PortNum]);
         
         gau8PortIdleTimerID[u8PortNum] = MAX_CONCURRENT_TIMERS;
         
         gau8PortIdleTimerID[u8PortNum] = PDTimer_Start(\
-                    CONFIG_PORT_UPD_IDLE_TIMEOUT_MS,\
+                    UPD_IDLE_TIMEOUT_MS,\
                     UPD_SetIdleCB,\
                     u8PortNum, \
                     (UINT8)SET_TO_ZERO);
@@ -548,7 +574,7 @@ void UPD_PwrManagementInit(UINT8 u8PortNum)
 
     /*Start idle timer */
     gau8PortIdleTimerID[u8PortNum] = PDTimer_Start(\
-                                        CONFIG_PORT_UPD_IDLE_TIMEOUT_MS,\
+                                        UPD_IDLE_TIMEOUT_MS,\
                                         UPD_SetIdleCB,\
                                         u8PortNum, \
                                         (UINT8)SET_TO_ZERO);
@@ -572,7 +598,7 @@ void UPD_ResetThroughGPIO()
 
 void UPD_CheckAndDisablePorts (void)
 {
-    UINT8 u8ReadData[4];
+    UINT8 u8ReadData[BYTE_LEN_4];
     
     /*variable to hold the timer id*/
     UINT8 u8TimerID;
@@ -585,49 +611,45 @@ void UPD_CheckAndDisablePorts (void)
     {
         /*Check if timer is Active, if Timer expired, come out of this loop */
         
-        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-            & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             /*Start 10ms timer*/
-            u8TimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(10), NULL, \
+            u8TimerID = PDTimer_Start (MILLISECONDS_TO_TICKS(BYTE_LEN_10), NULL, \
                                         (UINT8)SET_TO_ZERO, (UINT8)SET_TO_ZERO);
             
-            while ((gasPDTimers[u8TimerID].u8TimerSt_PortNum & PDTIMER_STATE) != PDTIMER_EXPIRED)
+            while ((gasPDTimers[u8TimerID].u8TimerStPortNum & PDTIMER_STATE) != PDTIMER_EXPIRED)
             {
 #if (CONFIG_UPD350_SPI == CONFIG_DEFINE_UPD350_HW_INTF_SEL)            
                 /*Read SPI_TEST register*/
-                UPD_RegisterRead(u8PortNum, (UINT16)UPD_SPI_TEST, u8ReadData, 4);
+                UPD_RegisterRead(u8PortNum, (UINT16)UPD_SPI_TEST, u8ReadData, BYTE_LEN_4);
                     
                 /*Check the SPI_TEST register value is 0x02*/
-                if (u8ReadData[INDEX_0] == UPD_SPI_TEST_VAL)
+                if (UPD_SPI_TEST_VAL == u8ReadData[INDEX_0])
                 {
 #endif
                     /*Read VID & PID register*/
-                    UPD_RegisterRead(u8PortNum, (UINT16)UPD_VID, u8ReadData, 4);          
+                    UPD_RegisterRead(u8PortNum, (UINT16)UPD_VID, u8ReadData, BYTE_LEN_4);          
              
                     /*Verify the default values*/
-                    if((u8ReadData[INDEX_0] == UPD_VID_LSB) && (u8ReadData[INDEX_1] == UPD_VID_MSB) && \
-                      (u8ReadData[INDEX_2] == UPD_PID_LSB) && (u8ReadData[INDEX_3] == UPD_PID_MSB)) 
+                    if((UPD_VID_LSB == u8ReadData[INDEX_0]) && (UPD_VID_MSB == u8ReadData[INDEX_1]) && \
+                      (UPD_PID_LSB == u8ReadData[INDEX_2]) && (UPD_PID_MSB == u8ReadData[INDEX_3])) 
                     {  
                         /*Value read from this port is right, so enable the ports, Set SPI 
                            Communication is active for this port*/
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= \
-                                (UPD_PORT_ENABLED << TYPEC_PORT_ENDIS_POS);
+                        DPM_ENABLE_CONFIGURED_PORT_EN(u8PortNum);
                         break;
                     }
                     else
                     {
                         /* If the VID and PID doesn't match, Disable the ports */
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
-                                ~(TYPEC_PORT_ENDIS_MASK);
+                        DPM_DISABLE_CONFIGURED_PORT_EN(u8PortNum);
                         
                     }
 #if (CONFIG_UPD350_SPI == CONFIG_DEFINE_UPD350_HW_INTF_SEL)            
                 } /*end of UPD_SPI_TEST_VAL check if*/
                 else
                 {
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
-                            ~(TYPEC_PORT_ENDIS_MASK);
+                    DPM_DISABLE_CONFIGURED_PORT_EN(u8PortNum);
                 }   /*end of UPD_SPI_TEST_VAL check if else*/
 #endif            
             } /* end of while*/
@@ -639,8 +661,7 @@ void UPD_CheckAndDisablePorts (void)
     /* Work around - If port-0 as source and port-1 as sink interrupt issued continuously */
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
-        if (UPD_PORT_DISABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
-            >> TYPEC_PORT_ENDIS_POS))
+        if (UPD_PORT_DISABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData = SET_TO_ZERO;
         }
@@ -655,18 +676,126 @@ void UPD_FindVBusCorrectionFactor(void)
       
     for(UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
-            >> TYPEC_PORT_ENDIS_POS) == UPD_PORT_ENABLED)
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             /* Read VBUS threshold register value from OTP */    
             u16VBUSTHR3 = UPD_RegReadWord (u8PortNum, TYPEC_VBUS_THR3);
             
             gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor = \
-                                    (float)((float)u16VBUSTHR3/(float)222);
+                                    (float)((float)u16VBUSTHR3/(float)UPD_VBUS_THRS_DEFAULT);
         }
     }
         
 }
 /********************************************************************************************/
 
+#if(TRUE == CONFIG_HOOK_DEBUG_MSG)
+/********************************************************************************************/
+void UPD_RegDump(UINT8 u8PortNum)
+{
+    UINT8 u8Data = SET_TO_ZERO;
+    
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_HW_CTL_LOW);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_HW_CTL_LOW - ", u8Data, BYTE_LEN_1, "\r\n");
 
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_HW_CTL_HIGH);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_HW_CTL_HIGH - ", u8Data, BYTE_LEN_1, "\r\n");
+  
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_INT_STS);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_INT_STS - ", u8Data, BYTE_LEN_1, "\r\n");
+    
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_CHG_STS);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_CHG_STS - ", u8Data, BYTE_LEN_1, "\r\n");
+ 
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_CHG_STS);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_HW_CTL_LOW - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_MATCH);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_MATCH - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_MATCH);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC2_MATCH - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_INT_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_INT_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+ 
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_MATCH_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_MATCH_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC2_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_MATCH_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+    
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_PWR_INT_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_PWR_INT_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_MATCH_DEB);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_MATCH_DEB - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VCONN_DEB);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VCONN_DEB - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_DBCLR_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_DBCLR_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC2_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_DBCLR_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC1_SAMP_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC1_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+    
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC2_SAMP_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC2_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_SAMP_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_CTL1_LOW);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_CTL1_LOW - ", u8Data, BYTE_LEN_1, "\r\n");
+        
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_CC_CTL1_HIGH);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_CC_CTL1_HIGH - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_CTL2);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_CTL2 - ", u8Data, BYTE_LEN_1, "\r\n");
+    
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_CTL1);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_CTL1 - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_DEB);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_VBUS_DEB - ", u8Data, BYTE_LEN_1, "\r\n");
+ 
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CTL_LOW);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CTL_LOW - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CTL_HIGH);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CTL_HIGH - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CC_SNK_MATCH_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CC_SNK_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CC_SNK_DBCLR_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CC_SNK_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+ 
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CC_SRC_MATCH_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CC_SRC_MATCH_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+    
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_CC_SRC_DBCLR_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_CC_SRC_DBCLR_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_SNK_SAMP_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_SNK_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_SRC_SAMP_EN);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_SRC_SAMP_EN - ", u8Data, BYTE_LEN_1, "\r\n");
+    
+    u8Data = UPD_RegReadByte (u8PortNum, TYPEC_DRP_DUTY_CYC);
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_DUTY_CYC - ", u8Data, BYTE_LEN_1, "\r\n");
+}
+/********************************************************************************************/
+#endif

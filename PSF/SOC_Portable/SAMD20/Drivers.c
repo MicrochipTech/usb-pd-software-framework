@@ -14,7 +14,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2019-2020 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2019-2020] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -193,26 +193,6 @@ int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
     
 	return 0;
 }
-
-/*****************************************************************************/
-/*****************************************************************************/
-/*********************************Sink APIs*****************************/
-/*****************************************************************************/
-#if (TRUE == INCLUDE_PD_SINK)
-
-void SAMD20_Drive_DAC_I(UINT16 u16DACData)
-{
-    /*SAMD20 internally divides u16DACData by 0x3FF. Hence multiplying with 0x3FF*/
-    /*SAMD20 internally multiplies u16DACData by 3.3V. Hence, dividing by 3.3V*/
-    /*Dividing by 1000 to convert voltage u16DACData in mV to Volt.*/
-
-    UINT32 u32DACCalculate = u16DACData * 0x3FF;
-
-    u16DACData = (UINT16)(u32DACCalculate / 3300);
-    DAC_DataWrite(u16DACData);
-    
-}
-#endif
 
 /*****************************************************************************/
 /*****************************************************************************/

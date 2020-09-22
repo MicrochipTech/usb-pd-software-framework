@@ -11,7 +11,7 @@
     This file contains globals and related functions used within the PSF stack 
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -74,7 +74,7 @@ extern PRL_RECVBUFF gasPRLRecvBuff [CONFIG_PD_PORT_COUNT];
 #endif 
    
 /*Policy Engine globals*/
-extern PolicyEngine_Status gasPolicy_Engine[CONFIG_PD_PORT_COUNT];
+extern POLICY_ENGINE_STATUS gasPolicyEngine[CONFIG_PD_PORT_COUNT];
 
 /*Policy manager globals*/
 extern DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
@@ -92,7 +92,7 @@ extern DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 
 /*PDFU globals*/
 #if (FALSE != INCLUDE_PDFU)    
-    extern UINT8 gu8PDFUResBuffer[260];
+    extern UINT8 gu8PDFUResBuffer[PRL_MAX_EXTN_MSG_LEN_IN_BYTES];
 #endif
     
 /********************Power Balancing globals************************************/
@@ -111,7 +111,7 @@ extern DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 /********************Power Throttling globals************************************/
 #if (TRUE == INCLUDE_POWER_THROTTLING)
     /* Power Throttling Port Parameters */
-    extern PT_PORT_PARAM gasPTPortParam[CONFIG_PD_PORT_COUNT];  
+    extern UINT8 gau8PTPrevBank[CONFIG_PD_PORT_COUNT];  
 #endif  
 /**************************************************************************************************/  
 

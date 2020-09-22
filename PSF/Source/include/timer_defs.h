@@ -1,5 +1,5 @@
 /*******************************************************************************
-  Type C and Policy Engine Timer Configuration file
+  Timer Configuration file
 
   Company:
     Microchip Technology Inc.
@@ -8,12 +8,12 @@
     timer_defs.h
 
   Description:
-    This header file contains the definitions of the timers used in Type C and 
-    Policy Engine state machine. 
+    This header file contains the definitions of the timers used by Type C,
+    Policy Engine, Protocol Layer, DPM and Power Management Control.
 *******************************************************************************/
 
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -178,15 +178,54 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    is set as 13 seconds. */
 #define PE_SOURCE_PPS_COMM_TIMEOUT_MS           MILLISECONDS_TO_TICKS(13000)
 
+/* PE_VCONN_SWAP_WAIT_TIMEOUT_MS defines the tVCONNSwapWait specified in the 
+   PD Specification. Default value of PE_VCONN_SWAP_WAIT_TIMEOUT_MS is 
+   set as 100 milliseconds. */
+#define PE_VCONN_SWAP_WAIT_TIMEOUT_MS           MILLISECONDS_TO_TICKS(100)
 
+/* PE_PR_SWAP_WAIT_TIMEOUT_MS defines the tPRSwapWait specified in the 
+   PD Specification. Default value of PE_PR_SWAP_WAIT_TIMEOUT_MS is 
+   set as 100 milliseconds. */
+#define PE_PR_SWAP_WAIT_TIMEOUT_MS              MILLISECONDS_TO_TICKS(100)
+
+/* PE_DR_SWAP_WAIT_TIMEOUT_MS defines the tDRSwapWait specified in the 
+   PD Specification. Default value of this macro is set to 100ms */
+#define PE_DR_SWAP_WAIT_TIMEOUT_MS              MILLISECONDS_TO_TICKS(100)
+
+/* PE_PS_SOURCE_ON_TIMEOUT_MS defines the tPSSourceOn specified in the 
+   PD Specification. Default value of PE_PS_SOURCE_ON_TIMEOUT_MS is 
+   set as 420 milliseconds. */
+#define PE_PS_SOURCE_ON_TIMEOUT_MS              MILLISECONDS_TO_TICKS(420)
+
+/* PE_PS_SOURCE_OFF_TIMEOUT_MS defines the tPSSourceOff specified in the 
+   USB PD Specification. Default value of PE_PS_SOURCE_OFF_TIMEOUT_MS is 
+   set as 800 milliseconds. */
+#define PE_PS_SOURCE_OFF_TIMEOUT_MS             MILLISECONDS_TO_TICKS(800)
+
+/* PE_SWAP_SOURCE_START_TIMEOUT_MS defines the tSwapSourceStart specified in the 
+   USB PD Specification. Default value of PE_SWAP_SOURCE_START_TIMEOUT_MS is 
+   set as 20 milliseconds. */
+#define PE_SWAP_SOURCE_START_TIMEOUT_MS         MILLISECONDS_TO_TICKS(20)
+
+/* PE_VDM_BUSY_TIMEOUT_MS defines the tVDMBusy specified in the 
+   USB PD Specification. Default value of PE_VDM_BUSY_TIMEOUT_MS is 
+   set as 50 milliseconds. */
+#define PE_VDM_BUSY_TIMEOUT_MS                  MILLISECONDS_TO_TICKS(50)
 // *****************************************************************************
 // Section: DPM Timeout configuration
 // *****************************************************************************
-/*Status Fault Persistence Timer -the port shall start a status fault persistence
+/*Status Fault Persistence Timer - the port shall start a status fault persistence
   timer on the occurrence of the one of the Fault status types. If the status
   is not sent to the partner within the time defined in the 
   DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS, the status shall be cleared.*/
 #define DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS    MILLISECONDS_TO_TICKS(19000)
+
+// *****************************************************************************
+// Section: UPD Idle Timeout configuration
+// *****************************************************************************
+ /* UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is put to low power mode by   
+    the power management control if there is no activity or interrupt in UPD350. */
+#define UPD_IDLE_TIMEOUT_MS                     MILLISECONDS_TO_TICKS(15000)
 
 #endif /* _TIMER_DEFS_H */
 

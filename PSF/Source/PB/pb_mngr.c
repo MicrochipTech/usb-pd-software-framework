@@ -11,7 +11,7 @@
    This file contains the function for Power Balancing State machine. 
 *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -34,7 +34,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #if (TRUE == INCLUDE_POWER_BALANCING)
 
-
 UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
 {
     UINT32 u32SourcePDO            = SET_TO_ZERO; 
@@ -53,11 +52,11 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
             gasPBIntPortParam[u8PortNum].u8AttachSeqNo = gu8AttachSeq++;
             
             /* Update the PDOs in New PDO registers */
-            DPM_UpdatePDO(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
+            DPM_UpdateNewPDOFrmSrcPwr(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
                     
             /* Enable New PDO for the DPM to advertise New PDOs since the 
                first negotiation cannot be treated as a client request. */
-            DPM_ENABLE_NEW_PDO(u8PortNum);
+            DPM_SET_CONFIGURED_NEW_PDO_STATUS(u8PortNum);
                     
             gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW = \
                                 gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW;   
@@ -352,36 +351,6 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
             }
             break;  
             
-        case eMCHP_PSF_BUSY:
-            
-            /*If the DPM Busy notification is received that means the request was 
-             rejected. There are only 2 client request as of now.
-             1. Get Sink Caps
-             2. Renegotiation*/
-            
-            if (TRUE == (gasPBIntPortParam[u8PortNum].u8PBPortStatusMask & PB_PORT_STATUS_ATTACH))
-            {
-                if (ePB_GET_SINKCAPS_SENT_SS == gasPBIntPortParam[u8PortNum].eRenegSubState)
-                {
-                    /*Re initiate Sink Caps*/
-                    PB_InitiateGetSinkCapsWrapper (u8PortNum);
-                }
-                else if ((ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS == gasPBIntPortParam[u8PortNum].eRenegSubState) ||\
-                        (ePB_SECOND_RENEGOTIATION_IN_PROGRESS_SS == gasPBIntPortParam[u8PortNum].eRenegSubState))
-                {            
-                    /*Initiate renegotiation with the required power again*/ 
-                    PB_InitiateNegotiationWrapper (u8PortNum, gasPBIntPortParam[u8PortNum].u16RequiredPrtPwrIn250mW); 
-                    
-                    PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE, \
-                            gasPBIntPortParam[u8PortNum].eRenegSubState);                    
-                }
-                else
-                {
-                    /* Do Nothing */
-                }
-            }
-            break; 
-        
         default : 
             break; 
     }
