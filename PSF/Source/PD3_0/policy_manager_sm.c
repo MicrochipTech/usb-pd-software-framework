@@ -604,6 +604,11 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
        is not needed for these requests and they have to be handled with highest priority*/
     if (DPM_CLIENT_REQ_PORT_DISABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
+        
+#if(TRUE == INCLUDE_PD_DRP)
+        /*Disable DRP offload as soon as port disable client request is triggered.*/
+        UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+#endif
         /* Clear the client request since it is accepted */
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                     ~(DPM_CLIENT_REQ_PORT_DISABLE);
