@@ -2128,8 +2128,9 @@ void TypeC_DRPSetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent)
                        BYTE_LEN_1);    
 }
 #endif /*INCLUDE_PD_DRP*/
+
 void TypeC_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8CCEnablePins)
-{
+{   
     if (u8CCEnablePins & TYPEC_ENABLE_CC1)
     {
         /*Setting the CC1_DBCLR_EN, CC1_SAMP_EN to enable debouncing for specific CC thresholds*/
@@ -2139,15 +2140,6 @@ void TypeC_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8CCEnablePins)
                            BYTE_LEN_1);
         UPD_RegisterWrite (u8PortNum, TYPEC_CC1_SAMP_EN, &gasTypeCcontrol[u8PortNum].u8CCDebMatch,\
                            BYTE_LEN_1);
-    }
-    else
-    {
-        UPD_RegisterWrite (u8PortNum, TYPEC_CC1_DBCLR_EN, SET_TO_ZERO,\
-                           BYTE_LEN_1);   
-        UPD_RegisterWrite (u8PortNum, TYPEC_CC1_MATCH_EN, SET_TO_ZERO,\
-                           BYTE_LEN_1);
-        UPD_RegisterWrite (u8PortNum, TYPEC_CC1_SAMP_EN, SET_TO_ZERO,\
-                           BYTE_LEN_1);        
     }
     
     if (u8CCEnablePins & TYPEC_ENABLE_CC2)
@@ -2160,15 +2152,6 @@ void TypeC_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8CCEnablePins)
         UPD_RegisterWrite (u8PortNum, TYPEC_CC2_SAMP_EN, &gasTypeCcontrol[u8PortNum].u8CCDebMatch,\
                            BYTE_LEN_1);
     }    
-    else
-    {
-        UPD_RegisterWrite (u8PortNum, TYPEC_CC2_DBCLR_EN, SET_TO_ZERO,\
-                           BYTE_LEN_1);
-        UPD_RegisterWrite (u8PortNum, TYPEC_CC2_MATCH_EN, SET_TO_ZERO,\
-                           BYTE_LEN_1);
-        UPD_RegisterWrite (u8PortNum, TYPEC_CC2_SAMP_EN, SET_TO_ZERO,\
-                           BYTE_LEN_1);        
-    }
 }
 
 void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin)
