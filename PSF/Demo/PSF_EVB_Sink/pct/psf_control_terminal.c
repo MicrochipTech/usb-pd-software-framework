@@ -192,124 +192,38 @@ This function writes PDO values onto the terminal.
 */
 void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
 {
-    char *u32aSinkPDOCurrentConvert;
-    char *u32aSinkPDOVolatgeConvert;
-    UINT32 u32PDOVoltage1,u32PDOVoltage2,u32PDOVoltage3,u32PDOVoltage4,u32PDOVoltage5,u32PDOVoltage6,u32PDOVoltage7;
-    UINT32 u32PDOCurrent1,u32PDOCurrent2,u32PDOCurrent3,u32PDOCurrent4,u32PDOCurrent5,u32PDOCurrent6,u32PDOCurrent7;
+    char *pu8PrintString;
+    UINT32 *pu32PDOList;
+    UINT32 u32Data;
+    UINT32 u8Index;
+    UINT8 u8aStrVoltage1[]="\rVoltage=";
+    UINT8 u8aStrCurrent[]="\rCurrent=";
     
-    UINT8 StrVoltage1[]="\n\n\r> Voltage1=";
+    //If it is already advertised then get it from advertised list or default
+    if(gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt)
+    {
+        pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aAdvertisedPDO;
+    }else
+    {
+         pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO;
+    }
     
-    u32PDOVoltage1=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0]);
-    
-    u32aSinkPDOVolatgeConvert=HextoAscii(u32PDOVoltage1,sizeof(u32PDOVoltage1));
-    
-    PCTWrite(StrVoltage1,(UINT8*)&u32aSinkPDOVolatgeConvert[0],sizeof(u32aSinkPDOVolatgeConvert),sizeof(StrVoltage1));
-    
-    UINT8 StrCurrent1[]="Current1=";
-    
-    u32PDOCurrent1=DPM_GET_PDO_CURRENT(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0]);
-    
-    u32aSinkPDOCurrentConvert=HextoAscii(u32PDOCurrent1,sizeof(u32PDOCurrent1));
-    
-    PCTWrite(StrCurrent1,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent1));
-    
-    UINT8 StrVoltage2[]="\n\n\r> Voltage2=";
-    
-    u32PDOVoltage2=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1]);
-    
-    u32aSinkPDOVolatgeConvert=HextoAscii(u32PDOVoltage2,sizeof(u32PDOVoltage2));
-    
-    PCTWrite(StrVoltage2,(UINT8*)&u32aSinkPDOVolatgeConvert[0],sizeof(u32aSinkPDOVolatgeConvert),sizeof(StrVoltage2));
-    
-    UINT8 StrCurrent2[]="Current2=";
-    
-    u32PDOCurrent2=DPM_GET_PDO_CURRENT(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1]);
-    
-    u32aSinkPDOCurrentConvert=HextoAscii(u32PDOCurrent2,sizeof(u32PDOCurrent2));
-    
-    PCTWrite(StrCurrent2,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent2));
-
-    UINT8 StrVoltage3[]="\n\n\r> Voltage3=";
-    
-    u32PDOVoltage3=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2]);
-    
-    u32aSinkPDOVolatgeConvert=HextoAscii(u32PDOVoltage3,sizeof(u32PDOVoltage3));
-    
-    PCTWrite(StrVoltage3,(UINT8*)&u32aSinkPDOVolatgeConvert[0],sizeof(u32aSinkPDOVolatgeConvert),sizeof(StrVoltage3));
-    
-    UINT8 StrCurrent3[]="Current3=";
-    
-    u32PDOCurrent3=DPM_GET_PDO_CURRENT(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2]);
-    
-    u32aSinkPDOCurrentConvert=HextoAscii(u32PDOCurrent3,sizeof(u32PDOCurrent3));
-    
-    PCTWrite(StrCurrent3,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent3));
-
-    UINT8 StrVoltage4[]="\n\n\r> Voltage4=";
-    
-    u32PDOVoltage4=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3]);
-    
-    u32aSinkPDOVolatgeConvert=HextoAscii(u32PDOVoltage4,sizeof(u32PDOVoltage4));
-    
-    PCTWrite(StrVoltage4,(UINT8*)&u32aSinkPDOVolatgeConvert[0],sizeof(u32aSinkPDOVolatgeConvert),sizeof(StrVoltage4));
-    
-    UINT8 StrCurrent4[]="Current4=";
-    
-    u32PDOCurrent4=DPM_GET_PDO_CURRENT(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3]);
-    
-    u32aSinkPDOCurrentConvert=HextoAscii(u32PDOCurrent4,sizeof(u32PDOCurrent4));
-    
-    PCTWrite(StrCurrent4,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent4));
-
-    UINT8 StrVoltage5[]="\n\n\r> Voltage5=";
-    
-    u32PDOVoltage5=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[4]);
-    
-    u32aSinkPDOVolatgeConvert=HextoAscii(u32PDOVoltage5,sizeof(u32PDOVoltage5));
-    
-    PCTWrite(StrVoltage5,(UINT8*)&u32aSinkPDOVolatgeConvert[0],sizeof(u32aSinkPDOVolatgeConvert),sizeof(StrVoltage5));
-    
-    UINT8 StrCurrent5[]="Current5=";
-    
-    u32PDOCurrent5=DPM_GET_PDO_CURRENT(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[4]);
-    
-    u32aSinkPDOCurrentConvert=HextoAscii(u32PDOCurrent5,sizeof(u32PDOCurrent5));
-    
-    PCTWrite(StrCurrent5,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent5));
-
-    UINT8 StrVoltage6[]="\n\n\r> Voltage6=";
-    
-    u32PDOVoltage6=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[5]);
-    
-    u32aSinkPDOVolatgeConvert=HextoAscii(u32PDOVoltage6,sizeof(u32PDOVoltage6));
-    
-    PCTWrite(StrVoltage5,(UINT8*)&u32aSinkPDOVolatgeConvert[0],sizeof(u32aSinkPDOVolatgeConvert),sizeof(StrVoltage6));
-    
-    UINT8 StrCurrent6[]="Current6=";
-    
-    u32PDOCurrent6=DPM_GET_PDO_CURRENT(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[5]);
-    
-    u32aSinkPDOCurrentConvert=HextoAscii(u32PDOCurrent6,sizeof(u32PDOCurrent6));
-    
-    PCTWrite(StrCurrent6,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent6));
-    
-    UINT8 StrVoltage7[]="\n\n\r> Voltage7=";
-    
-    u32PDOVoltage7=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[6]);
-    
-    u32aSinkPDOVolatgeConvert=HextoAscii(u32PDOVoltage7,sizeof(u32PDOVoltage7));
-    
-    PCTWrite(StrVoltage7,(UINT8*)&u32aSinkPDOVolatgeConvert[0],sizeof(u32aSinkPDOVolatgeConvert),sizeof(StrVoltage7));
-    
-    UINT8 StrCurrent7[]="Current7=";
-    
-    u32PDOCurrent7=DPM_GET_PDO_CURRENT(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[6]);
-    
-    u32aSinkPDOCurrentConvert=HextoAscii(u32PDOCurrent7,sizeof(u32PDOCurrent7));
-    
-    PCTWrite(StrCurrent7,(UINT8*)&u32aSinkPDOCurrentConvert[0],sizeof(u32aSinkPDOCurrentConvert),sizeof(StrCurrent7));
- 
-}
+    for(u8Index= SET_TO_ZERO; u8Index <DPM_MAX_PDO_CNT; u8Index++)
+    {
+        pu8PrintString=HextoAscii(u8Index,sizeof(u8Index));
+        PCTWrite((UINT8*)"\n\r PDO -", (UINT8*)pu8PrintString, sizeof(pu8PrintString), 11);
+        
+        //Get the voltage form PDO list
+        u32Data=DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(pu32PDOList[u8Index]);
+        pu8PrintString=HextoAscii(u32Data,sizeof(u32Data));
+        PCTWrite(u8aStrVoltage1,(UINT8*)pu8PrintString,sizeof(pu8PrintString),sizeof(u8aStrVoltage1));
+        
+        //Get the voltage form PDO list
+        u32Data=DPM_GET_PDO_CURRENT(pu32PDOList[u8Index]);
+        pu8PrintString=HextoAscii(u32Data,sizeof(u32Data));
+        PCTWrite(u8aStrCurrent,(UINT8*)pu8PrintString,sizeof(pu8PrintString),sizeof(u8aStrCurrent));
+    }
+ }
 
 /* 
 Function: PCTPrintStatusData 
@@ -732,7 +646,7 @@ void PCTSetMemory(UINT8 u8array[],UINT8 u8length)
 void PCTSetPDO(UINT8 u8array[],UINT8 u8length)
 {
     UINT32 u32PDOPosition,u32PDOValue;
-    UINT8 u8Length=0,u8ByteValStart2=0,u8ByteValStart=0;
+    UINT8 u8Length=0,u8ByteValStart2=0,u8ByteValStart=0, u8Index;
     while((u8array[8+u8Length])!=0x5d)
     {
         
@@ -740,6 +654,13 @@ void PCTSetPDO(UINT8 u8array[],UINT8 u8length)
     }
      
     u32PDOPosition =ASCIIHexStringtoInteger(&u8array[8],u8Length);
+    
+    //Max PDO size allocated is 7
+    if(u32PDOPosition > 7) 
+    {
+     //#TODO: Add error message
+      return;
+    }
     u8ByteValStart2=0x0A+u8Length;
     u8ByteValStart=0x0A+u8Length;
     u8Length=0;
@@ -751,15 +672,29 @@ void PCTSetPDO(UINT8 u8array[],UINT8 u8length)
     }
     u32PDOValue =ASCIIHexStringtoInteger(&u8array[u8ByteValStart2],u8Length);
     u32PDOValue=u32PDOValue*1000;
-    gasCfgStatusData.sPerPortData[PORT0].u32aNewPDO[]=u32PDOValue;
-    for(UINT8 INDEX=SET_TO_ZERO;INDEX<DPM_MAX_PDO_CNT;INDEX++)
+    
+    for(u8Index= SET_TO_ZERO;u8Index< gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt; u8Index++)
     {
-        if(gasCfgStatusData.sPerPortData[PORT0].u32aNewPDO[]!=gasCfgStatusData.sPerPortData[PORT0].u32aAdvertisedPDO[INDEX])
-        {
-            //put the new pdo into advertised pdo in ascending order
-        }
+        gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[u8Index] = gasCfgStatusData.sPerPortData[PORT0].u32aAdvertisedPDO[u8Index];
     }
-
+    
+    gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[u32PDOPosition]=u32PDOValue;
+    
+    gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt;
+    if(gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[u32PDOPosition]!=gasCfgStatusData.sPerPortData[PORT0].u32aAdvertisedPDO[u32PDOPosition])
+    {
+        /* User application may request PSF to renegotiate 
+        based on default PDOs gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO) 
+        or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO).
+       
+        To renegotiate with new PDOs, user application must ensure that
+        new PDOs (gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO) are configured
+        and BIT(10) in gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable
+        is set. Then BIT(5) in gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest
+        variable needs to be set by the user application. */
+        gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest =  1<<5;
+        gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= 1<<10;
+    }
     
 }
 

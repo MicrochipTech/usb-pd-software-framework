@@ -323,11 +323,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8);
             }
             else
             {
-                UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
             }
             break;
         }            

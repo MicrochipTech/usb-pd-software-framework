@@ -71,17 +71,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
 
 /********************************PIO Specific configuration******************************/
-#define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
-
+#define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO9
 #define CFG_PORT_0_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
 
 #define CFG_PORT_0_UPD_EN_SNK                eUPD_PIO6
 #define CFG_PORT_0_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 
-#define CFG_PORT_UPD_FAULT_IN_PIO_NO       eUPD_PIO9
-#define CFG_PORT_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
-#define CFG_PORT_UPD_EN_SNK                eUPD_PIO6
-#define CFG_PORT_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
 #define CFG_UNDER_VOLTAGE_FACTOR		  85U
@@ -110,7 +105,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define CFG_PORT_0_SINK_PDO_1_VOLTAGE        5000U
 #define CFG_PORT_0_SINK_PDO_1_CURRENT        3000U 
-#define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
+#define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 2400U, \
                                     CFG_PORT_0_DUAL_ROLE_DATA, \
                                     CFG_PORT_0_SINK_USB_COMM, \
                                     CFG_PORT_0_SINK_UNCONSTRAINED_PWR, \
