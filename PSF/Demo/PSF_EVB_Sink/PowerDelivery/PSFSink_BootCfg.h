@@ -94,7 +94,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /********************************************************************************/
 /**********************************Port 0****************************************/
 /*********************************************************************************/
-#define CFG_PORT_0_DUAL_ROLE_POWER           0U 
+#define CFG_PORT_0_DUAL_ROLE_POWER           0U
 #define CFG_PORT_0_DUAL_ROLE_DATA            0U
 
 /*Port 0 PDO configuration for Sink*/
@@ -105,15 +105,15 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define CFG_PORT_0_SINK_PDO_1_VOLTAGE        5000U
 #define CFG_PORT_0_SINK_PDO_1_CURRENT        3000U 
-#define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 2400U, \
+#define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
                                     CFG_PORT_0_DUAL_ROLE_DATA, \
                                     CFG_PORT_0_SINK_USB_COMM, \
                                     CFG_PORT_0_SINK_UNCONSTRAINED_PWR, \
                                     CFG_PORT_0_SINK_HIGHER_CAPABILITY, \
                                     CFG_PORT_0_DUAL_ROLE_POWER);
 #define CFG_PORT_0_SINK_PDO_2     CFG_FORM_FIXED_PDOx(9000U,3000U)    
-#define CFG_PORT_0_SINK_PDO_3     CFG_FORM_FIXED_PDOx(15000u,3000U)   
-#define CFG_PORT_0_SINK_PDO_4     CFG_FORM_FIXED_PDOx(20000,3000U)
+#define CFG_PORT_0_SINK_PDO_3     CFG_FORM_FIXED_PDOx(15000U,3000U)   
+#define CFG_PORT_0_SINK_PDO_4     CFG_FORM_FIXED_PDOx(20000U,3000U)
 #define CFG_PORT_0_SINK_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
 #define CFG_PORT_0_SINK_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
 #define CFG_PORT_0_SINK_PDO_7     CFG_FORM_FIXED_PDOx(0,0) 

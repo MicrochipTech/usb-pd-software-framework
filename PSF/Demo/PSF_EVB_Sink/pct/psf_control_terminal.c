@@ -77,7 +77,7 @@ int PCTReadByte(void)
 /* Function writes when '?' is the input */
 void PCTPrintCommands()
 {   
-    UINT8 StrPrint[]="?\n\n\r> get * - Displays the list of all the parameters and their current values\n\n\r> exit - Exit from the PSF Control Terminal and continue to run the sample application\n\n\r> "
+    UINT8 StrPrint[]="?\n\n\r> exit - Exit from the PSF Control Terminal and continue to run the sample application\n\n\r> "
             "get version - Gets the current version\n\n\r> get br - Gets the existing baud rate\n\n\r> get pdo - Gets the sink power details\n\n\r> "
             "get sr[GlobalCfgStatusData] - Gets the config status data\n\n\r> get sr[gasCfgStatusData] - Gets the gas config status\n\n\r> get sr[PortCfgStatus] - Gets the port Config Status\n\n\r> "
             "get mem[memory_address][length] -  Reads the memory at the given location\n\n\r> set br[value] - Sets the baud rate to the given value\n\n\r> set mem[memory_address][byte value] - Writes memory to SAMD20\n\n\r> "
@@ -101,6 +101,7 @@ void PCTWrite(UINT8 u8String[],UINT8 u8Value[],UINT8 u8Size,UINT8 u8StrSize)
         SERCOM1_USART_WriteByte(u8Value[i]);
         i--;
     }
+    SERCOM1_USART_WriteByte(0x0d);
 }
 
 char* HextoAscii(UINT32 u32HexVal,UINT8 u8Length)
@@ -199,7 +200,7 @@ void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
     UINT8 u8aStrVoltage1[]="\rVoltage=";
     UINT8 u8aStrCurrent[]="\rCurrent=";
     
-    //If it is already advertised then get it from advertised list or default
+    //If it is already advertised then get it from advertised list else get it from default
     if(gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt)
     {
         pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aAdvertisedPDO;
@@ -218,7 +219,7 @@ void PCTPrintPDO(UINT8 u8array[],UINT8 u8Length)
         pu8PrintString=HextoAscii(u32Data,sizeof(u32Data));
         PCTWrite(u8aStrVoltage1,(UINT8*)pu8PrintString,sizeof(pu8PrintString),sizeof(u8aStrVoltage1));
         
-        //Get the voltage form PDO list
+        //Get the current form PDO list
         u32Data=DPM_GET_PDO_CURRENT(pu32PDOList[u8Index]);
         pu8PrintString=HextoAscii(u32Data,sizeof(u32Data));
         PCTWrite(u8aStrCurrent,(UINT8*)pu8PrintString,sizeof(pu8PrintString),sizeof(u8aStrCurrent));
@@ -238,8 +239,8 @@ void PCTPrintStatusData(UINT8 u8array[],UINT8 u8Length)
     UINT8 chPortHelper[]="get sr[p";
     if(0==memcmp(u8array,chGlobalHelper,8))    
     {
-        char *u8MinorVersionConvert,*u8MajorVersionConvert,*u8HWVersionConvert,*u8SiVersionConvert,*u8PSFMajorVersionConvert,*u8PSFMinorVersionConvert;
-        char *u8PwrThrottleCfgConvert,*u16ProducdIDConvert,*u16VendorIDConvert,*u16ProductTypeVDOConvert,*u16ProductVDOConvert,*u16CertStatVDOConvert,*u16IDHeaderVDOConvert;
+        char *pu8MinorVersionConvert,*pu8MajorVersionConvert,*pu8HWVersionConvert,*pu8SiVersionConvert,*pu8PSFMajorVersionConvert,*pu8PSFMinorVersionConvert;
+        char *pu8PwrThrottleCfgConvert,*pu8ProducdIDConvert,*pu8VendorIDConvert,*pu8ProductTypeVDOConvert,*pu8ProductVDOConvert,*pu8CertStatVDOConvert,*pu8IDHeaderVDOConvert;
         
         UINT8 StrMinorVersion[]=">\n\n\rUINT8 u8MinorVersion=";
         
@@ -269,60 +270,60 @@ void PCTPrintStatusData(UINT8 u8array[],UINT8 u8Length)
         UINT8 StrIDHeaderVDO[]="\n\n\rUINT16 u16IDHeaderVDO";
         
       
-        u8MinorVersionConvert=HextoAscii(gasCfgStatusData.u8MinorVersion,4);
+        pu8MinorVersionConvert=HextoAscii(gasCfgStatusData.u8MinorVersion,4);
         
-        PCTWrite(StrMinorVersion,(UINT8*)&u8MinorVersionConvert[0],sizeof(u8MinorVersionConvert),sizeof(StrMinorVersion));
+        PCTWrite(StrMinorVersion,(UINT8*)&pu8MinorVersionConvert[0],sizeof(pu8MinorVersionConvert),sizeof(StrMinorVersion));
       
         
-        u8MajorVersionConvert=HextoAscii(gasCfgStatusData.u8MajorVersion,4);
+        pu8MajorVersionConvert=HextoAscii(gasCfgStatusData.u8MajorVersion,4);
         
-        PCTWrite(StrMajorVersion,(UINT8*)&u8MajorVersionConvert[0],sizeof(u8MajorVersionConvert),sizeof(StrMajorVersion));
+        PCTWrite(StrMajorVersion,(UINT8*)&pu8MajorVersionConvert[0],sizeof(pu8MajorVersionConvert),sizeof(StrMajorVersion));
         
-        u8HWVersionConvert=HextoAscii(gasCfgStatusData.u8HWVersion,4);
+        pu8HWVersionConvert=HextoAscii(gasCfgStatusData.u8HWVersion,4);
         
-        PCTWrite(StrHWVersion,(UINT8*)&u8HWVersionConvert[0],sizeof(u8HWVersionConvert),sizeof(StrHWVersion));
+        PCTWrite(StrHWVersion,(UINT8*)&pu8HWVersionConvert[0],sizeof(pu8HWVersionConvert),sizeof(StrHWVersion));
         
-        u8SiVersionConvert=HextoAscii(gasCfgStatusData.u8SiVersion,4);
+        pu8SiVersionConvert=HextoAscii(gasCfgStatusData.u8SiVersion,4);
         
-        PCTWrite(StrSiVersion,(UINT8*)&u8SiVersionConvert[0],sizeof(u8SiVersionConvert),sizeof(StrSiVersion));
+        PCTWrite(StrSiVersion,(UINT8*)&pu8SiVersionConvert[0],sizeof(pu8SiVersionConvert),sizeof(StrSiVersion));
        // gasCfgStatusData.u8aManfString[8];
         
-        u8PSFMajorVersionConvert=HextoAscii(gasCfgStatusData.u8PSFMajorVersion,4);
+        pu8PSFMajorVersionConvert=HextoAscii(gasCfgStatusData.u8PSFMajorVersion,4);
         
-        PCTWrite(StrPSFMajorVersion,(UINT8*)&u8PSFMajorVersionConvert[0],sizeof(u8PSFMajorVersionConvert),sizeof(StrPSFMajorVersion));
+        PCTWrite(StrPSFMajorVersion,(UINT8*)&pu8PSFMajorVersionConvert[0],sizeof(pu8PSFMajorVersionConvert),sizeof(StrPSFMajorVersion));
         
-        u8PSFMinorVersionConvert=HextoAscii(gasCfgStatusData.u8PSFMinorVersion,4);
+        pu8PSFMinorVersionConvert=HextoAscii(gasCfgStatusData.u8PSFMinorVersion,4);
         
-        PCTWrite(StrPSFMinorVersion,(UINT8*)&u8PSFMinorVersionConvert[0],sizeof(u8PSFMinorVersionConvert),sizeof(StrPSFMinorVersion));
+        PCTWrite(StrPSFMinorVersion,(UINT8*)&pu8PSFMinorVersionConvert[0],sizeof(pu8PSFMinorVersionConvert),sizeof(StrPSFMinorVersion));
         
-        u8PwrThrottleCfgConvert=HextoAscii(gasCfgStatusData.u8PwrThrottleCfg,4);
+        pu8PwrThrottleCfgConvert=HextoAscii(gasCfgStatusData.u8PwrThrottleCfg,4);
         
-        PCTWrite(StrPwrThrottleCfg,(UINT8*)&u8PwrThrottleCfgConvert[0],sizeof(u8PwrThrottleCfgConvert),sizeof(StrPwrThrottleCfg));
+        PCTWrite(StrPwrThrottleCfg,(UINT8*)&pu8PwrThrottleCfgConvert[0],sizeof(pu8PwrThrottleCfgConvert),sizeof(StrPwrThrottleCfg));
       //  gasCfgStatusData.u8aReserved3;
         
-        u16ProducdIDConvert=HextoAscii(gasCfgStatusData.u16ProducdID,4);
+        pu8ProducdIDConvert=HextoAscii(gasCfgStatusData.u16ProducdID,4);
         
-        PCTWrite(StrProducdID,(UINT8*)&u16ProducdIDConvert[0],sizeof(u16ProducdIDConvert),sizeof(StrProducdID));
+        PCTWrite(StrProducdID,(UINT8*)&pu8ProducdIDConvert[0],sizeof(pu8ProducdIDConvert),sizeof(StrProducdID));
         
-        u16VendorIDConvert=HextoAscii(gasCfgStatusData.u16VendorID,4);
+        pu8VendorIDConvert=HextoAscii(gasCfgStatusData.u16VendorID,4);
         
-        PCTWrite(StrVendorID,(UINT8*)&u16VendorIDConvert[0],sizeof(u16VendorIDConvert),sizeof(StrVendorID));
+        PCTWrite(StrVendorID,(UINT8*)&pu8VendorIDConvert[0],sizeof(pu8VendorIDConvert),sizeof(StrVendorID));
         
-        u16ProductTypeVDOConvert=HextoAscii(gasCfgStatusData.u16ProductTypeVDO,4);
+        pu8ProductTypeVDOConvert=HextoAscii(gasCfgStatusData.u16ProductTypeVDO,4);
         
-        PCTWrite(StrProductTypeVDO,(UINT8*)&u16ProductTypeVDOConvert[0],sizeof(u16ProductTypeVDOConvert),sizeof(StrProductTypeVDO));
+        PCTWrite(StrProductTypeVDO,(UINT8*)&pu8ProductTypeVDOConvert[0],sizeof(pu8ProductTypeVDOConvert),sizeof(StrProductTypeVDO));
         
-        u16ProductVDOConvert=HextoAscii(gasCfgStatusData.u16ProductVDO,4);
+        pu8ProductVDOConvert=HextoAscii(gasCfgStatusData.u16ProductVDO,4);
         
-        PCTWrite(StrProductVDO,(UINT8*)&u16ProductVDOConvert[0],sizeof(u16ProductVDOConvert),sizeof(StrProductVDO));
+        PCTWrite(StrProductVDO,(UINT8*)&pu8ProductVDOConvert[0],sizeof(pu8ProductVDOConvert),sizeof(StrProductVDO));
         
-        u16CertStatVDOConvert=HextoAscii(gasCfgStatusData.u16CertStatVDO,4);
+        pu8CertStatVDOConvert=HextoAscii(gasCfgStatusData.u16CertStatVDO,4);
         
-        PCTWrite(StrCertStatVDO,(UINT8*)&u16CertStatVDOConvert[0],sizeof(u16CertStatVDOConvert),sizeof(StrCertStatVDO));
+        PCTWrite(StrCertStatVDO,(UINT8*)&pu8CertStatVDOConvert[0],sizeof(pu8CertStatVDOConvert),sizeof(StrCertStatVDO));
         
-        u16IDHeaderVDOConvert=HextoAscii(gasCfgStatusData.u16IDHeaderVDO,4);
+        pu8IDHeaderVDOConvert=HextoAscii(gasCfgStatusData.u16IDHeaderVDO,4);
         
-        PCTWrite(StrIDHeaderVDO,(UINT8*)&u16IDHeaderVDOConvert[0],sizeof(u16IDHeaderVDOConvert),sizeof(StrIDHeaderVDO));
+        PCTWrite(StrIDHeaderVDO,(UINT8*)&pu8IDHeaderVDOConvert[0],sizeof(pu8IDHeaderVDOConvert),sizeof(StrIDHeaderVDO));
         
     }
     else if(0==memcmp(u8array,chPortHelper,8))
@@ -576,19 +577,6 @@ void PCTPrintMemory(UINT8 u8array[],UINT8 u8length)
             }
      }
 }
-/* 
-Function: PCTPrintMemory 
-
-This Function writes all current values of all the parameters onto the terminal.
-
-*/
-void PCTPrintCurrentValues(UINT8 u8array[],UINT8 u8Length)
-{
-    PCTPrintBaudRate(u8array,u8Length);
-    PCTPrintVersion(u8array,u8Length);
-    PCTPrintPDO(u8array,u8Length);
-    PCTPrintStatusData(u8array,u8Length);
-}
 void PCTSetBaudRate(UINT8 u8array[],UINT8 u8length)
 {
     UINT32 u32BaudRate;
@@ -692,27 +680,26 @@ void PCTSetPDO(UINT8 u8array[],UINT8 u8length)
         and BIT(10) in gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable
         is set. Then BIT(5) in gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest
         variable needs to be set by the user application. */
-        gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest =  1<<5;
-        gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= 1<<10;
+        gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |=  DPM_CLIENT_REQ_RENEGOTIATE;
+        gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CLIENT_REQ_GET_PARTNER_IDENTITY;
     }
     
 }
 
-
+void PCTInvalidCommandMsg()
+{
+    UINT8 StrPrint[]="> invalid command! Type help to know more\n\n\r";
+    SERCOM1_USART_Write(&StrPrint[0],sizeof(StrPrint)); 
+}
 /*This function processes Get commands*/
 void PCTGetProcessCommands(UINT8 u8array[], UINT8 u8Length)
 {    
-    char chGetHelper[]="get *";
     char chGetBaudHelper[]="get b";
     char chGetVersionHelper[]="get v";
     char chGetPDOHelper[]="get p";
     char chGetStatusRegHelper[]="get sr[";
     char chGetMemhelper[]="get m";
-    if(0== memcmp(u8array,chGetHelper,5))
-    {    
-        PCTPrintCurrentValues(u8array,u8Length);
-    }
-    else if(0== memcmp(u8array,chGetBaudHelper,5))
+    if(0== memcmp(u8array,chGetBaudHelper,5))
     {    
         PCTPrintBaudRate(u8array,u8Length);
     }
@@ -773,6 +760,7 @@ void PCTExitProcessCommands(UINT8 u8array[], UINT8 u8Length)
     UINT8 StrPrint[]="> exit\n\n\r> exiting PSF Control Terminal\n\n\r";
     SERCOM1_USART_Write(&StrPrint[0],sizeof(StrPrint)); 
 }
+
 void PCTCommandhandler(UINT8 u8array[], UINT8 u8Length)
 {
     
@@ -807,22 +795,19 @@ void PCTCommandhandler(UINT8 u8array[], UINT8 u8Length)
         PCTInvalidCommandMsg();
     }
 }
-void PCTInvalidCommandMsg()
-{
-    UINT8 StrPrint[]="> invalid command! Type help to know more\n\n\r";
-    SERCOM1_USART_Write(&StrPrint[0],sizeof(StrPrint)); 
-}
+
 void PCTSpaceBARMsg(bool lock)
 {
-  UINT8 StrPrint[]="> Hit SPACE BAR to unlock\n\n\r";
-  UINT8 StrPrintUnlock[]="> Unlocked..\n\n\r";
-  if(lock)
-  {
-    SERCOM1_USART_Write(&StrPrint[0],sizeof(StrPrint));
-  }else
-  {
-      SERCOM1_USART_Write(&StrPrintUnlock[0],sizeof(StrPrintUnlock));
-  }
+    UINT8 StrPrint[]="> Hit SPACE BAR to unlock\n\n\r";
+    UINT8 StrPrintUnlock[]="> Unlocked..\n\n\r";
+    if(lock)
+    {
+        SERCOM1_USART_Write(&StrPrint[0],sizeof(StrPrint));
+    }
+    else
+    {
+        SERCOM1_USART_Write(&StrPrintUnlock[0],sizeof(StrPrintUnlock));
+    }
 }
 /* 
 Function: MchpPSF_PCTRUN 
@@ -832,7 +817,7 @@ This function reads the input from the terminal and starts the PCT and space key
 */
 void MchpPSF_PCTRUN(bool bBlocking)
 {
-    UINT8 u8array[LENGTH];    
+    static UINT8 u8array[LENGTH];    
     static UINT8 u8Length = 0;
     UINT8 u8ReadByte;
     static STATE state = INIT;

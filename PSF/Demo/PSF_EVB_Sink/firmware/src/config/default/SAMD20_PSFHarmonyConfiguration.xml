@@ -1776,7 +1776,7 @@
         <Comment dnOrder="6" id="TC_COMPARE_PERIOD_COMMENT">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="text">
-              <Value dnOrder="0">****&amp;#160;Compare&amp;#160;Period&amp;#160;is&amp;#160;512.0&amp;#160;us&amp;#160;****</Value>
+              <Value dnOrder="0">****&amp;#160;Compare&amp;#160;Period&amp;#160;is&amp;#160;128.0&amp;#160;us&amp;#160;****</Value>
             </String>
           </Attributes>
         </Comment>
@@ -1787,18 +1787,18 @@
         </KeyValueSet>
         <KeyValueSet dnOrder="8" id="TC_CTRLA_PRESCALER">
           <Values dnOrder="0">
-            <User dnOrder="0" value="7"/>
+            <User dnOrder="0" value="6"/>
           </Values>
         </KeyValueSet>
         <Integer dnOrder="9" id="TC_FREQUENCY">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="tc0" value="46875"/>
+            <Dynamic dnOrder="0" id="tc0" value="187500"/>
           </Values>
         </Integer>
         <Comment dnOrder="10" id="TC_Resolution">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="text">
-              <Value dnOrder="0">****Timer&amp;#160;resolution&amp;#160;is&amp;#160;21333.3333333&amp;#160;nS****</Value>
+              <Value dnOrder="0">****Timer&amp;#160;resolution&amp;#160;is&amp;#160;5333.33333333&amp;#160;nS****</Value>
             </String>
           </Attributes>
         </Comment>
@@ -1814,13 +1814,13 @@
         </Boolean>
         <Long dnOrder="13" id="TC_TIMER_PERIOD">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="tc0" value="46"/>
+            <Dynamic dnOrder="0" id="tc0" value="187"/>
           </Values>
         </Long>
         <Float dnOrder="14" id="TC_TIMER_TIME_MS">
           <Attributes dnOrder="0">
             <Float dnOrder="0" id="max">
-              <Value dnOrder="0">5.44</Value>
+              <Value dnOrder="0">1.36</Value>
             </Float>
           </Attributes>
         </Float>
