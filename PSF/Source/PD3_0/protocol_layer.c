@@ -287,6 +287,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	UINT8 u8MsgId, u8PktLen, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = SET_TO_ZERO;
     /* PD3_Auto_Decode and RX_SOP_ENABLE_SOP are enabled by default */
     UINT8 u8RxCtlBRegVal = (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP); 
+    UINT8 u8HwnRetryCount = SET_TO_ZERO; 
             
     #if (TRUE == INCLUDE_PD_3_0)
     UINT16 u16MsgDataIndex;
@@ -371,6 +372,20 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
     }
 	/* Update the RX_CTL_B PD MAC register */
     UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, u8RxCtlBRegVal);
+    
+    /* Set the Hardware retry count as 0 for VDMs */
+    if (PE_DATA_VENDOR_DEFINED != PRL_GET_MESSAGE_TYPE(u32Header))
+    {
+        if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
+        {
+            u8HwnRetryCount = PRL_HW_RETRY_CNT_2_0;
+        }
+        else
+        {
+            u8HwnRetryCount = PRL_HW_RETRY_CNT_3_0;
+        }
+    }
+    PRL_UpdateHWRetryCount(u8PortNum, u8HwnRetryCount);
     
 	/* Depending on the Packet type; MessageID is updated in the Pkt Header and 
 		PD_MAC Reg is updated for Pkt type */
@@ -1831,3 +1846,15 @@ void PRL_ProtocolReset(UINT8 u8PortNum)
     PRL_PHYLayerReset (u8PortNum);
         
 }
+
+/******************************************************************************************************/
+
+void PRL_UpdateHWRetryCount(UINT8 u8PortNum, UINT8 u8HwnRetryCnt)
+{
+    UINT8 u8TxParamC = UPD_RegReadByte (u8PortNum, PRL_TX_PARAM_C); 
+    u8TxParamC &= ~PRL_TX_PARAM_C_N_RETRY_CNT_FIELD_MASK;
+    u8TxParamC |= (u8HwnRetryCnt << PRL_TX_PARAM_C_N_RETRY_CNT_BIT_POS);
+    UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_C, u8TxParamC); 
+}
+
+/******************************************************************************************************/
