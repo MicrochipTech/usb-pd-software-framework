@@ -3087,8 +3087,7 @@ void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
 /*******************************************************************************************/
 /*Change the Rp Value only for the CC pin in which source is connected*/
 void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
-{
-    
+{    
     /*Setting the CC Comparator OFF*/
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);  
   
@@ -3123,33 +3122,29 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
     are attached*/   
     /*Sink Attached in CC1 since VCONN is enabled in CC2*/
     if (TYPEC_VCONN_SOURCE_CC2 == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
-    {      
-        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1);
-        
+    {                     
         /*Changing the CC Sampling value as per the Rp value set*/
         TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1);
+        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1);
     }
     /*Sink Attached in CC2 since VCONN is enabled in CC1*/
     else if(TYPEC_VCONN_SOURCE_CC1 == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
-    {        
-        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC2);
-        
+    {                        
         /*Changing the CC Sampling value as per the Rp value set*/
-        TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC2);    
+        TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC2);
+        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC2);
     }
     /*Enabling the CC Sampling in both the CC pins if only sink is attached*/
     else
-    {
-        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
-        
+    {                
         /*Changing the CC Sampling value as per the Rp value set*/
         TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
+        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
     }    
 }
 
 UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
-{
-     
+{     
      DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Check Rp Value API called from PRL\r\n");
      
      /*Return TYPEC_SINK_TXNG if the current Rp Value set by source is TYPEC_SINK_TXNG 1.5A Rp*/
@@ -3164,11 +3159,10 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
      {
         /*Clear the Collision avoidance Status variable*/
         gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_COLLISION_AVOIDANCE_ACT;
-        u8RpStatus = TYPEC_SINK_TXOK;       
-     
+        u8RpStatus = TYPEC_SINK_TXOK;            
      }     
+     
      return u8RpStatus;
- 
 }
 /*******************************************************************************************/
 /*********************************TypeC VBUS Comparator Support Functions**************************************/
