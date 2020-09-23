@@ -3088,7 +3088,9 @@ void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
 /*Change the Rp Value only for the CC pin in which source is connected*/
 void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
 {    
-    /*Setting the CC Comparator OFF*/
+    UINT8 u8CCEnablePin, u8CCCompCtrl; 
+    
+    /* Setting the CC Comparator OFF */
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);  
   
     /*Rp value as 1.5A@5V */
@@ -3123,24 +3125,27 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
     /*Sink Attached in CC1 since VCONN is enabled in CC2*/
     if (TYPEC_VCONN_SOURCE_CC2 == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
     {                     
-        /*Changing the CC Sampling value as per the Rp value set*/
-        TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1);
-        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1);
+        u8CCEnablePin = TYPEC_ENABLE_CC1; 
+        u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC1; 
     }
     /*Sink Attached in CC2 since VCONN is enabled in CC1*/
     else if(TYPEC_VCONN_SOURCE_CC1 == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
     {                        
-        /*Changing the CC Sampling value as per the Rp value set*/
-        TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC2);
-        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC2);
+        u8CCEnablePin = TYPEC_ENABLE_CC2; 
+        u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC2;         
     }
     /*Enabling the CC Sampling in both the CC pins if only sink is attached*/
     else
-    {                
-        /*Changing the CC Sampling value as per the Rp value set*/
-        TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
-        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
-    }    
+    {                        
+        u8CCEnablePin = TYPEC_ENABLE_CC1_CC2;
+        u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC1_CC2;         
+    }
+
+    /* Changing the CC Sampling value as per the Rp value set */
+    TypeC_SetCCSampleEnable (u8PortNum, u8CCEnablePin);
+    
+    /* Setting the CC Comparator ON */
+    TypeC_ConfigCCComp (u8PortNum, u8CCCompCtrl);    
 }
 
 UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)

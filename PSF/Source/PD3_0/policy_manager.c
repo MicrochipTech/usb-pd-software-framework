@@ -1267,7 +1267,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
                 
                 /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
-                gasTypeCcontrol[u8PortNum].u8PortSts  |= (u8ConfiguredRpVal << TYPEC_CURR_RPVAL_POS);
+                gasTypeCcontrol[u8PortNum].u8PortSts |= (u8ConfiguredRpVal << TYPEC_CURR_RPVAL_POS);
             
 #if(TRUE == INCLUDE_PD_SOURCE)                           
                 /*Enable DC_DC EN on VBUS fault to reset the DC-DC controller*/
