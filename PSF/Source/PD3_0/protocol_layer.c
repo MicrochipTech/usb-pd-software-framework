@@ -783,7 +783,7 @@ void PRL_HandleISR (UINT8 u8PortNum)
 		/* Update the PD_MAC state */
 		if (PRL_TX_IRQ_TX_DONE & u8IntrStatus)
 		{
-			gasPRL [u8PortNum].u8TxStateISR =  PRL_TX_DONE_ST;
+			gasPRL [u8PortNum].u8TxStateISR = PRL_TX_DONE_ST;
             if (gasPRL[u8PortNum].u8TxStsDPMSyncISR)
             {
                 gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
@@ -793,17 +793,17 @@ void PRL_HandleISR (UINT8 u8PortNum)
 		/* PD_MAC state variable is updated depending Tx interrupt received */
 		if (PRL_TX_IRQ_TX_FAILED & u8IntrStatus)
 		{
-			gasPRL [u8PortNum].u8TxStateISR =  PRL_TX_FAILED_ST;
+			gasPRL [u8PortNum].u8TxStateISR = PRL_TX_FAILED_ST;
 		}
 		
 		if (PRL_TX_IRQ_TX_ABORTED & u8IntrStatus)
 		{
-			gasPRL [u8PortNum].u8TxStateISR =  PRL_TX_ABORTED_ST;
+			gasPRL [u8PortNum].u8TxStateISR = PRL_TX_ABORTED_ST;
 		}
 		
 		if (PRL_TX_IRQ_TX_EOP & u8IntrStatus)
 		{
-			gasPRL [u8PortNum].u8TxStateISR =  PRL_TX_EOP_ST;
+			gasPRL [u8PortNum].u8TxStateISR = PRL_TX_EOP_ST;
 		}
 		
 		/* Spec Ref: PRL_Tx_Message_Sent & PRL_Tx_Transmission_Error - Increment the MessageIDCounter.

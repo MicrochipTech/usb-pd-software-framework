@@ -1275,7 +1275,13 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             /* VDM NAK received */
 			/* If DiscoverIdentityCounter reaches nDiscoverIdentityCount change the PE state to	
 				PE_SRC_SEND_CAPABILITIES */
-            if(gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter > PE_N_DISCOVER_IDENTITY_COUNT)
+            if(gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter < PE_N_DISCOVER_IDENTITY_COUNT)
+            {
+                DPM_UpdatePDSpecRev (u8PortNum, PD_SPEC_REVISION_2_0);
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_REQUEST;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;                                
+            }       
+            else
             {
                 DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
                 gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_CABLE_RESPOND_NAK;
@@ -1284,13 +1290,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;               
                 
                 /* Post eMCHP_PSF_CABLE_IDENTITY_NAKED notification */
-                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CABLE_IDENTITY_NAKED);
-            }            
-            else
-            {
-                DPM_UpdatePDSpecRev (u8PortNum, PD_SPEC_REVISION_2_0);
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_REQUEST;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;
+                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CABLE_IDENTITY_NAKED);                
             }
                         
             break;  
