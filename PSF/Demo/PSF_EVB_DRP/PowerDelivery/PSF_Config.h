@@ -1219,10 +1219,12 @@ typedef enum
 									* '00' UFP 
 									* '01' DFP 
                                     * '10' Toggling 
+                                    * '11' Reserved
 	5:4     R            R         Power Role 
 									* '00' Sink 
 									* '01' Source 
                                     * '10' DRP 
+                                    * '11' Reserved
 	6       R            R         VCONN Status  
 									* '0' Disabled 
 									* '1' Enabled 
@@ -1283,7 +1285,11 @@ typedef enum
 									* '01' USB Power 
 								    * '10' 1.5A 
 									* '11' 3.0A 
-	31:19	 			           Reserved 				
+    20:19   R            R         Current Negotiated PD Specification Revision									
+									* '01' PD2.0 
+                                    * '10' PD3.0   
+                                    * '00' & '11' - Reserved 
+	31:21	 			           Reserved 				
 	</table>
 
 	<b>c. u32PortIOStatus</b>: 

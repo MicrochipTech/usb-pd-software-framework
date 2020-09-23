@@ -254,7 +254,7 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 /*******************************************************************************/
 void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
 {
-    /*Set power role in gasDPM[u8PortNum].u16DPMStatus variable*/
+    /*Set Port Power Role in gasDPM[u8PortNum].u16DPMStatus variable*/
     gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_POWER_ROLE_MASK);
     gasDPM[u8PortNum].u16DPMStatus |= (u8NewPowerRole << DPM_CURR_POWER_ROLE_POS);
     
@@ -279,7 +279,7 @@ void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
 
 void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
 {
-    /*Set data role in gasDPM[u8PortNum].u16DPMStatus variable*/
+    /*Set Port Data Role in gasDPM[u8PortNum].u16DPMStatus variable*/
     gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_DATA_ROLE_MASK); 
     gasDPM[u8PortNum].u16DPMStatus |= (u8NewDataRole << DPM_CURR_DATA_ROLE_POS);
     
@@ -303,8 +303,13 @@ void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
 
 void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev)
 {
+    /* Set PD Spec Rev in gasDPM[u8PortNum].u16DPMStatus variable */
     gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
 	gasDPM[u8PortNum].u16DPMStatus |= (u8PDSpecRev << DPM_CURR_PD_SPEC_REV_POS);    
+    
+    /* Set PD Spec Rev in Port Connection Status register */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_PD_SPEC_REV_STATUS_MASK);
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8PDSpecRev << DPM_PORT_PD_SPEC_REV_STATUS_POS);    
 }
 
 /**************************************************************************************************/
