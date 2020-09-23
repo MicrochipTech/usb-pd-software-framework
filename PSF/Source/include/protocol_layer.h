@@ -1814,4 +1814,33 @@ void PRL_KillCAorChunkSMTimer (UINT8 u8PortNum);
 **************************************************************************************************/
 void PRL_ProtocolReset(UINT8 u8PortNum);
 
+/**************************************************************************************************
+    Function:
+        void PRL_UpdateHWRetryCount(UINT8 u8PortNum, UINT8 u8HwnRetryCnt); 
+
+    Summary:
+        This API sets the hardware retry count in PRL_TX_PARAM_C register
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+		This API sets the hardware retry count in PRL_TX_PARAM_C register
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        u8HwnRetryCnt - Value of HW Retry count to be set 
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void PRL_UpdateHWRetryCount(UINT8 u8PortNum, UINT8 u8HwnRetryCnt); 
+
 #endif /*_PROTOCOL_LAYER_H_*/
