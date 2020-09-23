@@ -6,11 +6,11 @@ PSF provides a range of configuration options for your custom PD design and is p
 
 | Development Phase 	| Planned Features 	| Status 	| Latest Release 	|
 |:-----------------:	|-------------------------------------------------------------------------------------------------------------------------------------------	|-------------	|----------------------------------	|
-| I 	| Multi-Port PD Source Only, VCONN sourcing, Fault Handling 	| **Completed** 	| [PSF_STACK_V1.06](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.06) (Stable) 	|
-| II 	| I2C Mode DC-DC control, PD Balancing, PD Throttling,  Automotive source-only PPS support, PD policy management support from  external SOC 	| *In-Progress* 	| [PSF_STACK_V1.06](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.06) (Bugfix for Beta Release) 	|
-| III 	| PD sink support, Multiple Sink PDO selection algorithms, Custom Sink PDO  selection algorithm, PD sink policy management from external SOC  	| *In-Progress* 	| [PSF_STACK_V1.06](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.06)  (Bugfix for Alpha Release) 	|  	|
-| IV 	| Dual Role Power (DRP) and Dual Role Data (DRD) support,  DRP/DRD policy management from external SOC 	|  *In-Progress* 	|  [PSF_STACK_V1.06](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.06)  (Alpha Release)  	|
-| V 	| Alternate modes support, Alternate mode policy management  from external SOC 	| Planned 	|  	|
+| I 	| Multi-Port PD Source Only, VCONN sourcing, Fault Handling 	| **Completed** 	| [PSF_STACK_V1.07](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.07) (Stable) 	|
+| II 	| I2C Mode DC-DC control, PD Balancing, PD Throttling,  Automotive source-only PPS support, PD policy management support from  external SOC 	| **Completed**  	| [PSF_STACK_V1.07](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.07) (Stable) 	|
+| III 	| PD sink support, Multiple Sink PDO selection algorithms, Custom Sink PDO  selection algorithm, PD sink policy management from external SOC  	| **Completed**  	| [PSF_STACK_V1.07](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.07)  (Stable) 	|  	|
+| IV 	| Dual Role Power (DRP) and Dual Role Data (DRD) support,  DRP/DRD policy management from external SOC 	|  *In-Progress* 	|  [PSF_STACK_V1.07](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.07)  (Bug fix for Alpha Release)  	|
+| V 	| Alternate modes support, Alternate mode policy management  from external SOC 	| *In-Progress* 	|  	|
 | VI 	| PD charge through device support, Fast role swap 	| Planned 	|  	|
 
 Each development phase will add functionality to the existing feature set. Refer the [Software Release Notes](Software%20Release%20Notes.pdf) for more information about a specific release version.
