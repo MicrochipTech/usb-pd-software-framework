@@ -217,8 +217,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS              BIT(16)
 #define DPM_PORT_RP_VAL_DETECT_DEFAULT_USB_STATUS             BIT(17)
 #define DPM_PORT_RP_VAL_DETECT_1_5A_STATUS                    BIT(18)
-#define DPM_PORT_RP_VAL_DETECT_3A_STATUS                     (BIT(17)|BIT(18))
-#define DPM_PORT_RP_VAL_DETECT_MASK_STATUS                   (BIT(17)|BIT(18))
+#define DPM_PORT_RP_VAL_DETECT_3A_STATUS                      (BIT(17)|BIT(18))
+#define DPM_PORT_RP_VAL_DETECT_MASK_STATUS                    (BIT(17)|BIT(18))                         
+#define DPM_PORT_PD_SPEC_REV_STATUS_POS                       19
+#define DPM_PORT_PD_SPEC_REV_STATUS_MASK                      ((BIT(0)|BIT(1)) << DPM_PORT_PD_SPEC_REV_STATUS_POS)
 
 /* *************************Port IO Status parameters *****************************
  * gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus *********************** */
@@ -1693,14 +1695,16 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
         void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev)
     Summary:
         This API is used to set the negotiated PD Spec Rev value in 
-        gasDPM[u8PortNum].u16DPMStatus variable.
+        gasDPM[u8PortNum].u16DPMStatus variable and 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus.
     Description:
         This API is used to assign negotiated PD Spec Rev value in 
-        gasDPM[u8PortNum].u16DPMStatus variable.
+        gasDPM[u8PortNum].u16DPMStatus variable and 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus. 
     Conditions:
         None.
     Input:
-        u8PortNum   - Port Number for power and data roles need to be assigned
+        u8PortNum   - Port Number for which PD Spec Rev need to be assigned
         u8PDSpecRev - PD Spec Rev to be updated for the port                      
     Return:
         None
