@@ -389,16 +389,16 @@ void TypeC_InitPort (UINT8 u8PortNum)
 	UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_MATCH_EN, (UINT8*)&u16Data, BYTE_LEN_1);
 	UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_DBCLR_EN,	(UINT8*)&u16Data, BYTE_LEN_1);
     
-        /*Setting VBUS Comparator ON*/
-        TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
+    /*Setting VBUS Comparator ON*/
+    TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
 
 #if(TRUE == INCLUDE_PD_DRP)
-        /*Disable DRP offload.*/
-        UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+    /*Disable DRP offload.*/
+    UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
 #endif
 
-        /*Setting CC Comparator ON*/
-        TypeC_ConfigCCComp (u8PortNum,TYPEC_CC_COMP_CTL_CC1_CC2);
+    /*Setting CC Comparator ON*/
+    TypeC_ConfigCCComp (u8PortNum,TYPEC_CC_COMP_CTL_CC1_CC2);
     
     /*Setting the Power Module as per the port role*/
     if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum)== PD_ROLE_SOURCE)
