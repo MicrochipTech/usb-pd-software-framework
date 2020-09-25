@@ -412,8 +412,8 @@ Source/Sink Power delivery objects*/
 #define DPM_CABLE_CURR_3A                1
 #define DPM_CABLE_CURR_5A                2
 
-#define DPM_CABLE_CURR_3A_UNIT           300
-#define DPM_CABLE_CURR_5A_UNIT           500
+#define DPM_CABLE_CURR_3A_UNIT           3000
+#define DPM_CABLE_CURR_5A_UNIT           5000
 
 #define DPM_VDM_HEADER_POS              0
 #define DPM_VMD_PRODUCT_TYPE_VDO_POS    4
@@ -584,7 +584,7 @@ Source/Sink Power delivery objects*/
 typedef struct MCHP_PSF_STRUCT_PACKED_START
 {
   UINT32 u32NegotiatedPDO;            //NegotiatedPDO
-  UINT16 u16SrcMaxSupportedCurrIn10mA;   // Maximum current supported by Source port 
+  UINT16 u16SrcMaxSupportedCurrInmA;   // Maximum current supported by Source port 
   UINT16 u16SinkOperatingCurrInmA;    //Operating current
   UINT16 u16PrevVBUSVoltageInmV;      // Previous VBUS Voltage in terms of mV
   UINT16 u16ExpectedVBUSVoltageInmV;  // Expected VBUS Voltage in terms of mV

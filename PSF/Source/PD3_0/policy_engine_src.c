@@ -173,7 +173,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_STARTUP-IDLE_SS: E-Cable and Device Attached\r\n");
                             gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_REQUEST;
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;
-                            gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA = DPM_CABLE_CURR_3A_UNIT;
+                            gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_3A_UNIT;
                         }
                     } 
                     else
@@ -1002,7 +1002,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         PRL_OnHardResetComplete(u8PortNum);
 						
 						/* Enable Power fault thresholds for TYPEC_VBUS_5V*/
-                        TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, (gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA * DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
+                        TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA, TYPEC_CONFIG_PWR_FAULT_THR);
                         
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)   
                         

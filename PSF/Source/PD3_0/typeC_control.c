@@ -482,7 +482,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                      
 					/*Reset the VBUS threshold for 5V detection*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                        (gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA * DPM_10mA), TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                        (gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA * DPM_10mA), TYPEC_CONFIG_NON_PWR_FAULT_THR);
 
                     UINT8 u8RpValue = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                                         
@@ -711,8 +711,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                                          "SRC State\r\n");
 
                     /* Assign Source supported current based on the Rp value*/
-                    UINT16 u16SrcCurrentInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
-                    gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA = (u16SrcCurrentInmA / DPM_10mA);
+                    gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
                     
                     /*Drive VBus for vSafe5V*/
                     DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
@@ -861,7 +860,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
                     /* Enable Power Threshold for TYPEC_VBUS_5V */
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,\
-                        (gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA * DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
+                        (gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA * DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
                      
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_RUN_SM_SS;
                        
