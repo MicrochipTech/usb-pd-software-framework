@@ -1172,7 +1172,7 @@
         </String>
         <String dnOrder="224" id="PORT_GROUP_0_PMUX11">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="core" value="0x10"/>
+            <Dynamic dnOrder="0" id="core" value="0x0"/>
           </Values>
         </String>
         <String dnOrder="225" id="PORT_GROUP_0_PMUX14">
@@ -1723,12 +1723,12 @@
         </Integer>
         <Integer dnOrder="2" id="USART_BAUD_RATE">
           <Values dnOrder="0">
-            <User dnOrder="0" value="115200"/>
+            <User dnOrder="0" value="19200"/>
           </Values>
         </Integer>
         <Integer dnOrder="3" id="USART_BAUD_VALUE">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="sercom1" value="63019"/>
+            <Dynamic dnOrder="0" id="sercom1" value="65116"/>
           </Values>
         </Integer>
         <Boolean dnOrder="4" id="USART_INTERRUPT_MODE">
