@@ -501,8 +501,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                 {
                     /*Discard the VDM AMS and process the source capability message received*/
                     if ((ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
-                         gasPolicyEngine[u8PortNum].ePESubState)|| (ePE_SNK_READY_END_AMS_SS == \
-                         gasPolicyEngine[u8PortNum].ePESubState) || \
+                         gasPolicyEngine[u8PortNum].ePESubState)|| (ePE_SNK_READY == \
+                         gasPolicyEngine[u8PortNum].ePEState) || \
                        (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
                     {
                         if (ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \

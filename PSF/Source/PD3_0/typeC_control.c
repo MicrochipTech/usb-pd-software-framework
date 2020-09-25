@@ -3271,9 +3271,11 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
     UINT8 u8IsSourcePort = ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) ? TRUE : FALSE);
     /* Used to check if the current contract is a PPS contract */
     UINT8 u8IsPPSContract = (((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) &&
-            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))) ? TRUE : FALSE);
-    
-    
+            (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))) ? TRUE : FALSE);    
+    UINT8 u8SampleEn = SET_TO_ZERO;
+    float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor; 
+
+    /* Get the Previous VBUS voltage based on the type of contract established */
     if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) 
     {
         u16PrevVoltInmV = gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
@@ -3282,10 +3284,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
     {
         u16PrevVoltInmV = DPM_GetVBUSVoltage(u8PortNum);
     }
-           
-	UINT8 u8SampleEn = SET_TO_ZERO;
-    float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor; 
-    
+               
     /* Set the voltage value that is expected in VBUS once power is driven.
        TypeC_HandleISR() would need this value to check if the same voltage 
        for which threshold was configured is driven in VBUS.
@@ -3299,10 +3298,18 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current
     {
         gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV = u16Voltage; 
     }
-        
+    
+    /* Clear the VBUS Presence mask bits except for vSafe0V before 
+       configuring the VBUS threshold */    
+    if (u16Voltage)
+    {
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_VBUS_PRESENCE_MASK; 
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
+    }    
+    
 	/*Setting the VBUS Comparator OFF*/
 	TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
-
 	
 	/* **************************Power Fault threshold configuration**************************/
 	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
