@@ -66,7 +66,7 @@ int main ( void )
 	/*PSF init called*/
 	(void)MchpPSF_Init();
   
-    /*Always monitor ?SPACE BAR? for Enter or exit PCT*/
+    /*Always monitor SPACE BAR for Enter or exit PCT*/
     PSF_monitorandwait();
     
     while ( true )

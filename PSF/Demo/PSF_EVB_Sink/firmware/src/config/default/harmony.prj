@@ -23,7 +23,7 @@
           <LogicalPath dnOrder="3">config/default/</LogicalPath>
           <PhysicalPath dnOrder="4">/</PhysicalPath>
           <GeneratedChecksum dnOrder="5">381DFE268B6B6E6A16207D2C89850828</GeneratedChecksum>
-          <UserChecksum dnOrder="6">2D471A4EE924757189FF363D399625D1</UserChecksum>
+          <UserChecksum dnOrder="6">900BEFCF1F3D7788B2AAB7F7BB045D02</UserChecksum>
         </File>
         <File dnOrder="2">
           <Type dnOrder="0">SOURCE</Type>
@@ -41,7 +41,7 @@
           <LogicalPath dnOrder="3">config/default/</LogicalPath>
           <PhysicalPath dnOrder="4">/</PhysicalPath>
           <GeneratedChecksum dnOrder="5">328F1E09E0DD9BEE901C4562A3E5180A</GeneratedChecksum>
-          <UserChecksum dnOrder="6">0D061464696B9E5D276A90A352736879</UserChecksum>
+          <UserChecksum dnOrder="6">328F1E09E0DD9BEE901C4562A3E5180A</UserChecksum>
         </File>
         <File dnOrder="4">
           <Type dnOrder="0">SOURCE</Type>
@@ -112,8 +112,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">DD9EB86D3B77D06B6FA490A58405A3BA</GeneratedChecksum>
-          <UserChecksum dnOrder="6">DD9EB86D3B77D06B6FA490A58405A3BA</UserChecksum>
+          <GeneratedChecksum dnOrder="5">54066F27D65BB9E1664FC4688543351A</GeneratedChecksum>
+          <UserChecksum dnOrder="6">54066F27D65BB9E1664FC4688543351A</UserChecksum>
         </File>
         <File dnOrder="12">
           <Type dnOrder="0">SOURCE</Type>
@@ -130,8 +130,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/sercom/usart/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">5FD14C5A20895943644A6E7FCAF14CF6</GeneratedChecksum>
-          <UserChecksum dnOrder="6">BA5CB6C12E4EDE4EF33BE6965D24B343</UserChecksum>
+          <GeneratedChecksum dnOrder="5">94BB55D206DF311B954D39CFA0A46296</GeneratedChecksum>
+          <UserChecksum dnOrder="6">94BB55D206DF311B954D39CFA0A46296</UserChecksum>
         </File>
         <File dnOrder="14">
           <Type dnOrder="0">SOURCE</Type>
@@ -139,8 +139,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/default/peripheral/tc/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/tc/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">4123CF9F0CB1FDADB7AD261262E1ED5B</GeneratedChecksum>
-          <UserChecksum dnOrder="6">4123CF9F0CB1FDADB7AD261262E1ED5B</UserChecksum>
+          <GeneratedChecksum dnOrder="5">BE561A8EE994EAC49CAA71CF5E785A5C</GeneratedChecksum>
+          <UserChecksum dnOrder="6">BE561A8EE994EAC49CAA71CF5E785A5C</UserChecksum>
         </File>
         <File dnOrder="15">
           <Type dnOrder="0">SOURCE</Type>
@@ -401,7 +401,7 @@
           <LogicalPath dnOrder="3">config/default/peripheral/eic/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/eic/</PhysicalPath>
           <GeneratedChecksum dnOrder="5">EE886B31B28CC1EFCB099D73D16076C2</GeneratedChecksum>
-          <UserChecksum dnOrder="6">605047EE214CDA4C5A7B2333A78E3ECD</UserChecksum>
+          <UserChecksum dnOrder="6">EE886B31B28CC1EFCB099D73D16076C2</UserChecksum>
         </File>
         <File dnOrder="44">
           <Type dnOrder="0">HEADER</Type>
@@ -446,7 +446,7 @@
           <LogicalPath dnOrder="3">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/sercom/usart/</PhysicalPath>
           <GeneratedChecksum dnOrder="5">127ECE005B419F0CF0880C698761314A</GeneratedChecksum>
-          <UserChecksum dnOrder="6">FDA369ABD84452A5C3E4B35AC08DEAC2</UserChecksum>
+          <UserChecksum dnOrder="6">127ECE005B419F0CF0880C698761314A</UserChecksum>
         </File>
         <File dnOrder="49">
           <Type dnOrder="0">HEADER</Type>

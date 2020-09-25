@@ -89,9 +89,6 @@ USART_ERROR SERCOM1_USART_ErrorGet( void );
 
 uint32_t SERCOM1_USART_FrequencyGet( void );
 
-void PCTSetBaud(uint32_t baud);
-
-int SERCOM1_USART_ReturnBaud( void );
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
 

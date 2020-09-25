@@ -102,6 +102,14 @@
 
 
 
+// *****************************************************************************
+// *****************************************************************************
+// Section: Local initialization functions
+// *****************************************************************************
+// *****************************************************************************
+
+
+
 /*******************************************************************************
   Function:
     void SYS_Initialize ( void *data )
@@ -114,26 +122,31 @@
 
 void SYS_Initialize ( void* data )
 {
-    NVMCTRL_Initialize( );
+    NVMCTRL_REGS->NVMCTRL_CTRLB = NVMCTRL_CTRLB_RWS(3);
 
   
     PORT_Initialize();
 
     CLOCK_Initialize();
-    // SERCOM1 UART is initialized as part of PSF
-    //SERCOM1_USART_Initialize();
+
+
+
+
+    NVMCTRL_Initialize( );
+
+    SERCOM1_USART_Initialize();
 
 	//SPI initialisation is done as part of MchpPSF_Init by PSF stack
     //SERCOM0_SPI_Initialize();
 
-    EIC_Initialize();
-	// TC0 initialisation is done as part of MchpPSF_Init by PSF stack
-    //TC0_TimerInitialize();
-	
-    // DAC_Initialize is done as part of PSF Hook
-    //DAC_Initialize();
-
     ADC_Initialize();
+    EIC_Initialize();
+	
+    //TC0_TimerInitialize();
+
+    DAC_Initialize();
+
+
 
 
 

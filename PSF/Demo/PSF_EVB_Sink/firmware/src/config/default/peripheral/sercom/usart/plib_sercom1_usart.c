@@ -57,8 +57,8 @@
 // *****************************************************************************
 
 
-/* SERCOM1 USART baud value for 19200 Hz baud rate */
-#define SERCOM1_USART_INT_BAUD_VALUE            (65116U)
+/* SERCOM1 USART baud value for 115200 Hz baud rate */
+#define SERCOM1_USART_INT_BAUD_VALUE            (63019U)
 
 
 // *****************************************************************************
@@ -308,65 +308,4 @@ int SERCOM1_USART_ReadByte( void )
 {
     return SERCOM1_REGS->USART_INT.SERCOM_DATA;
 }
-int SERCOM1_USART_ReturnBaud( void )
-{
-    uint32_t baudValue;
-    baudValue=SERCOM1_REGS->USART_INT.SERCOM_BAUD ;
-    return baudValue;
-}
-void PCTSetBaud(uint32_t baud)
-{
-    SERCOM1_REGS->USART_INT.SERCOM_BAUD = SERCOM_USART_INT_BAUD_BAUD(baud);
-    USART_SERIAL_SETUP *serialSetup=0;
-    uint32_t clkFrequency=0;
-    uint32_t baudValue = 0;
 
-    if((serialSetup != NULL) & (serialSetup->baudRate != 0))
-    {
-        if(clkFrequency == 0)
-        {
-            clkFrequency = SERCOM1_USART_FrequencyGet();
-        }
-
-        if(clkFrequency >= (16 * serialSetup->baudRate))
-        {
-            baudValue = 65536 - ((uint64_t)65536 * 16 * serialSetup->baudRate) / clkFrequency;
-        }
-
-        if(baudValue != 0)
-        {
-            /* Disable the USART before configurations */
-            SERCOM1_REGS->USART_INT.SERCOM_CTRLA &= ~SERCOM_USART_INT_CTRLA_ENABLE_Msk;
-
-            /* Wait for sync */
-            while((SERCOM1_REGS->USART_INT.SERCOM_STATUS & SERCOM_USART_INT_STATUS_SYNCBUSY_Msk) & SERCOM_USART_INT_STATUS_SYNCBUSY_Msk);
-
-            /* Configure Baud Rate */
-            SERCOM1_REGS->USART_INT.SERCOM_BAUD = SERCOM_USART_INT_BAUD_BAUD(baudValue);
-
-            /* Configure Parity Options */
-            if(serialSetup->parity == USART_PARITY_NONE)
-            {
-                SERCOM1_REGS->USART_INT.SERCOM_CTRLA |= SERCOM_USART_INT_CTRLA_FORM(0x0) ;
-
-                SERCOM1_REGS->USART_INT.SERCOM_CTRLB |= (uint32_t) serialSetup->dataWidth | (uint32_t) serialSetup->stopBits;
-            }
-            else
-            {
-                SERCOM1_REGS->USART_INT.SERCOM_CTRLA |= SERCOM_USART_INT_CTRLA_FORM(0x1) ;
-
-                SERCOM1_REGS->USART_INT.SERCOM_CTRLB |= (uint32_t) serialSetup->dataWidth | (uint32_t) serialSetup->parity | (uint32_t) serialSetup->stopBits;
-            }
-
-            /* Wait for sync */
-            while((SERCOM1_REGS->USART_INT.SERCOM_STATUS & SERCOM_USART_INT_STATUS_SYNCBUSY_Msk) & SERCOM_USART_INT_STATUS_SYNCBUSY_Msk);
-
-            /* Enable the USART after the configurations */
-            SERCOM1_REGS->USART_INT.SERCOM_CTRLA |= SERCOM_USART_INT_CTRLA_ENABLE_Msk;
-
-            /* Wait for sync */
-            while((SERCOM1_REGS->USART_INT.SERCOM_STATUS & SERCOM_USART_INT_STATUS_SYNCBUSY_Msk) & SERCOM_USART_INT_STATUS_SYNCBUSY_Msk);
-
-        }
-    }
-}
