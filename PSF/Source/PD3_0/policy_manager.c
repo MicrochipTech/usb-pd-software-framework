@@ -194,9 +194,23 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 	UINT16 u16CurrentInmA, u16VoltageInmV;
     
 	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-	{
-		u16CurrentInmA = (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA);
-        u16VoltageInmV = ((DPM_VBUS_ON == u8VbusOnorOff) ? TYPEC_VBUS_5V : TYPEC_VBUS_0V);
+	{		
+        if (DPM_VBUS_ON == u8VbusOnorOff)
+        {
+            u16CurrentInmA = (gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA * DPM_10mA);
+            u16VoltageInmV = TYPEC_VBUS_5V;
+        }
+        else
+        {
+            u16CurrentInmA = DPM_0mA; 
+            u16VoltageInmV = TYPEC_VBUS_0V; 
+        }
+        
+        /* Update power related status registers */
+        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = u16CurrentInmA; 
+        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = u16VoltageInmV; 
+        gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = ((u16CurrentInmA * u16VoltageInmV) / DPM_250mW); 
+        
         /* Configure VBUS threshold as per the voltage value */
         TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
         /* Drive the VBUS as per the voltage value */
@@ -346,12 +360,12 @@ UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
         /* Setting E-Cable Max Current Value */
         if(DPM_CABLE_CURR_3A == u8CurVal)
         {
-            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_CABLE_CURR_3A_UNIT;
+            gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA = DPM_CABLE_CURR_3A_UNIT;
         }
         
         else if(DPM_CABLE_CURR_5A == u8CurVal)
         {
-            gasDPM[u8PortNum].u16MaxCurrSupportedin10mA = DPM_CABLE_CURR_5A_UNIT;
+            gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA = DPM_CABLE_CURR_5A_UNIT;
         }
         
         else
@@ -449,7 +463,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     u8RetVal = (u16SinkReqCurrVal > u16SrcPDOCurrVal) ? DPM_INVALID_REQUEST : (((u8SinkReqObjPos<= FALSE) || \
                (u8SinkReqObjPos> gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt))) ? \
                 DPM_INVALID_REQUEST : (FALSE == u8RaPresence) ? DPM_VALID_REQUEST : \
-                (u16SinkReqCurrVal > gasDPM[u8PortNum].u16MaxCurrSupportedin10mA) ? \
+                (u16SinkReqCurrVal > gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA) ? \
                 DPM_INVALID_REQUEST : DPM_VALID_REQUEST;   
    
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)     
@@ -611,7 +625,7 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
     if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK)
     {
         /* If E-Cable max current is 5A, pass the capabilities without change */
-        if(DPM_CABLE_CURR_5A_UNIT == gasDPM[u8PortNum].u16MaxCurrSupportedin10mA)
+        if(DPM_CABLE_CURR_5A_UNIT == gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA)
         {
             /* The attached USB-C cable supports the locally-defined Source PDOs */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
@@ -625,8 +639,7 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
         else
         {
             DPM_ChangeCapabilities (u8PortNum, &pu32DataObj[INDEX_0], &u32pSrcCap[INDEX_0], *u8pSrcPDOCnt);
-        }
-          
+        }          
     }   
     else
     {
@@ -1319,9 +1332,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
                 DPM_UpdatePowerRole(u8PortNum, PD_ROLE_DRP);
                 DPM_UpdateDataRole(u8PortNum, PD_ROLE_TOGGLING);
 #endif
-            }
-            
-
+            }            
         }
         else
         {
@@ -1423,11 +1434,6 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
         DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS | DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS| \
         DPM_PORT_RP_VAL_DETECT_MASK_STATUS);
                     
-    /* Clear the Power related registers */
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = RESET_TO_ZERO; 
-    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = RESET_TO_ZERO; 
-    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = RESET_TO_ZERO; 
-
     /*Clear Partner PDO, Advertised PDO, Cable Identity and Partner Identity registers */
     for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
     {

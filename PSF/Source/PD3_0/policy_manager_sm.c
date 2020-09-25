@@ -496,6 +496,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     {
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"***************TYPEC DETACH***********\r\n");
             /* Process Type C Detach Event */
             DPM_OnTypeCDetach(u8PortNum); 
             break;
