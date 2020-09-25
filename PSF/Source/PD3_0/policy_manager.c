@@ -197,7 +197,7 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 	{		
         if (DPM_VBUS_ON == u8VbusOnorOff)
         {
-            u16CurrentInmA = (gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA * DPM_10mA);
+            u16CurrentInmA = gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA;
             u16VoltageInmV = TYPEC_VBUS_5V;
         }
         else
@@ -360,12 +360,12 @@ UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
         /* Setting E-Cable Max Current Value */
         if(DPM_CABLE_CURR_3A == u8CurVal)
         {
-            gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA = DPM_CABLE_CURR_3A_UNIT;
+            gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_3A_UNIT;
         }
         
         else if(DPM_CABLE_CURR_5A == u8CurVal)
         {
-            gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA = DPM_CABLE_CURR_5A_UNIT;
+            gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_5A_UNIT;
         }
         
         else
@@ -390,8 +390,8 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 {
     UINT8 u8RetVal = FALSE;
     UINT8 u8SinkReqObjPos= SET_TO_ZERO;
-    UINT16 u16SinkReqCurrVal = SET_TO_ZERO;
-    UINT16 u16SrcPDOCurrVal = SET_TO_ZERO;
+    UINT16 u16SinkReqCurrInmA = SET_TO_ZERO;
+    UINT16 u16SrcPDOCurrInmA = SET_TO_ZERO;
     UINT8 u8RaPresence = SET_TO_ZERO;
     UINT32 u32PDO = SET_TO_ZERO; 
     UINT32 u32RDO = SET_TO_ZERO; 
@@ -404,7 +404,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
                                             PE_CABLE_RESPOND_NAK) >> PE_CABLE_RESPOND_NAK_POS));
     
     /* Get the Requested PDO object position from received buffer */
-    u8SinkReqObjPos= ((u8DataBuf[INDEX_3]) & PE_REQUEST_OBJ_MASK) >> PE_REQUEST_OBJ_POS;
+    u8SinkReqObjPos = ((u8DataBuf[INDEX_3]) & PE_REQUEST_OBJ_MASK) >> PE_REQUEST_OBJ_POS;
     
     /* Get the PDO/APDO from Advertised PDO Array */
     u32PDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8SinkReqObjPos-1]; 
@@ -416,20 +416,20 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
     {
         /* Get the Requested current value */
-        u16SinkReqCurrVal = (UINT16)((u32RDO & PE_REQUEST_OPR_CUR_MASK) >> PE_REQUEST_OPR_CUR_START_POS);
+        u16SinkReqCurrInmA = (UINT16)(((u32RDO & PE_REQUEST_OPR_CUR_MASK) >> PE_REQUEST_OPR_CUR_START_POS) * DPM_PDO_CURRENT_UNIT);
         
         /* Get the current value of Requested Source PDO */
-        u16SrcPDOCurrVal = (u32PDO & PE_REQUEST_MAX_CUR_MASK);       
+        u16SrcPDOCurrInmA = ((u32PDO & PE_REQUEST_MAX_CUR_MASK) * DPM_PDO_CURRENT_UNIT);       
     }
     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)    
     else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
     {     
         /* Get the Requested current value */ 
-        u16SinkReqCurrVal = DPM_GET_PROG_RDO_OPR_CURRENT(u32RDO); 
+        u16SinkReqCurrInmA = DPM_GET_PROG_RDO_OPR_CURRENT_IN_mA(u32RDO); 
                 
         /* Get the current value of Requested Source PDO */
-        u16SrcPDOCurrVal = DPM_GET_APDO_MAX_CURRENT(u32PDO); 
+        u16SrcPDOCurrInmA = DPM_GET_APDO_MAX_CURRENT_IN_mA(u32PDO); 
          
         /* Get the RDO Output Voltage */
         u16RDOOpVoltInmV = DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV(u32RDO);        
@@ -460,10 +460,10 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     
     /* If Requested Max current is greater current value of Requested Source PDO or
         Requested object position is invalid, received request is invalid request */ 
-    u8RetVal = (u16SinkReqCurrVal > u16SrcPDOCurrVal) ? DPM_INVALID_REQUEST : (((u8SinkReqObjPos<= FALSE) || \
-               (u8SinkReqObjPos> gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt))) ? \
+    u8RetVal = (u16SinkReqCurrInmA > u16SrcPDOCurrInmA) ? DPM_INVALID_REQUEST : (((u8SinkReqObjPos <= FALSE) || \
+               (u8SinkReqObjPos > gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt))) ? \
                 DPM_INVALID_REQUEST : (FALSE == u8RaPresence) ? DPM_VALID_REQUEST : \
-                (u16SinkReqCurrVal > gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA) ? \
+                (u16SinkReqCurrInmA > gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA) ? \
                 DPM_INVALID_REQUEST : DPM_VALID_REQUEST;   
    
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)     
@@ -507,7 +507,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
             
             /* Update Negotiated current in terms of mA */            
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = \
-                            (u16SrcPDOCurrVal * DPM_PDO_CURRENT_UNIT); 
+                            (u16SrcPDOCurrInmA * DPM_PDO_CURRENT_UNIT); 
             
             /* Update Negotiated voltage in terms of mV */            
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = \
@@ -554,10 +554,10 @@ UINT32 DPM_CurrentCutDown (UINT8 u8PortNum, UINT32 u32PDO)
     /* If PDO max current greater than E-Cable supported current, reset the current value */
     if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
     {
-        if((u32PDO & PE_MAX_CURR_MASK) > DPM_CABLE_CURR_3A_UNIT)
+        if((u32PDO & PE_MAX_CURR_MASK) > (DPM_CABLE_CURR_3A_UNIT / DPM_10mA))
         {
             u32PDO &= ~PE_MAX_CURR_MASK;
-            u32PDO |= DPM_CABLE_CURR_3A_UNIT;
+            u32PDO |= (DPM_CABLE_CURR_3A_UNIT / DPM_10mA);
             /* Source PDO Current value reduced due to cable limitation */   
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                                         DPM_PORT_CABLE_REDUCED_SRC_CAPABILITIES_STATUS;        
@@ -625,7 +625,7 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
     if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK)
     {
         /* If E-Cable max current is 5A, pass the capabilities without change */
-        if(DPM_CABLE_CURR_5A_UNIT == gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA)
+        if(DPM_CABLE_CURR_5A_UNIT == gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA)
         {
             /* The attached USB-C cable supports the locally-defined Source PDOs */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
