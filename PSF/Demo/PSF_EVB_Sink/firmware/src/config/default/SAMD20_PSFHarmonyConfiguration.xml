@@ -1723,12 +1723,12 @@
         </Integer>
         <Integer dnOrder="2" id="USART_BAUD_RATE">
           <Values dnOrder="0">
-            <User dnOrder="0" value="19200"/>
+            <User dnOrder="0" value="115200"/>
           </Values>
         </Integer>
         <Integer dnOrder="3" id="USART_BAUD_VALUE">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="sercom1" value="65116"/>
+            <Dynamic dnOrder="0" id="sercom1" value="63019"/>
           </Values>
         </Integer>
         <Boolean dnOrder="4" id="USART_INTERRUPT_MODE">
@@ -1863,7 +1863,8 @@
     </UniqueComponent>
   </Components>
   <UserData>
-    <ComponentGraph dnOrder="0" id="__ROOTVIEW">
+    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
+    <ComponentGraph dnOrder="1" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="adc" x="190" y="160"/>
         <ElementPosition dnOrder="1" id="cmsis" x="430" y="60"/>
@@ -1877,6 +1878,5 @@
         <ElementPosition dnOrder="9" id="tc0" x="370" y="102"/>
       </ElementPositions>
     </ComponentGraph>
-    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="1"/>
   </UserData>
 </Configuration>

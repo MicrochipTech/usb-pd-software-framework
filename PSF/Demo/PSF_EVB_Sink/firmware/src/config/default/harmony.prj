@@ -130,8 +130,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/sercom/usart/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">5FD14C5A20895943644A6E7FCAF14CF6</GeneratedChecksum>
-          <UserChecksum dnOrder="6">5FD14C5A20895943644A6E7FCAF14CF6</UserChecksum>
+          <GeneratedChecksum dnOrder="5">94BB55D206DF311B954D39CFA0A46296</GeneratedChecksum>
+          <UserChecksum dnOrder="6">94BB55D206DF311B954D39CFA0A46296</UserChecksum>
         </File>
         <File dnOrder="14">
           <Type dnOrder="0">SOURCE</Type>
