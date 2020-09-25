@@ -330,8 +330,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                    	DPM_EnablePowerFaultDetection(u8PortNum);
 					
                     /*Setting the explicit contract as True*/
-                    gasPolicyEngine[u8PortNum].u8PEPortSts |= (PE_EXPLICIT_CONTRACT);
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
+                    gasPolicyEngine[u8PortNum].u8PEPortSts |= (PE_EXPLICIT_CONTRACT);                    
                     
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)                    
                     u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
@@ -340,12 +339,13 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Set EN_SINK*/
                     PWRCTRL_ConfigEnSink(u8PortNum, TRUE);
 
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
+                    
                     /*Notify that contract is established*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
-                    
-                    
-                    if ((DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS & \
-                            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus))
+                                        
+                    if (DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS & \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus)
                     {
                         /* Notify the capability mismatch*/
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MISMATCH);
