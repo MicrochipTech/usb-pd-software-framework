@@ -215,6 +215,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS                BIT(14)
 #define DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS                BIT(15)
 #define DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS              BIT(16)
+#define DPM_PORT_RP_VAL_DETECT_STATUS_POS                     17
 #define DPM_PORT_RP_VAL_DETECT_DEFAULT_USB_STATUS             BIT(17)
 #define DPM_PORT_RP_VAL_DETECT_1_5A_STATUS                    BIT(18)
 #define DPM_PORT_RP_VAL_DETECT_3A_STATUS                      (BIT(17)|BIT(18))
@@ -583,7 +584,7 @@ Source/Sink Power delivery objects*/
 typedef struct MCHP_PSF_STRUCT_PACKED_START
 {
   UINT32 u32NegotiatedPDO;            //NegotiatedPDO
-  UINT16 u16MaxCurrSupportedin10mA;   //Maximum current supported by E-Cable in 10mA
+  UINT16 u16SrcMaxSupportedCurrIn10mA;   // Maximum current supported by Source port 
   UINT16 u16SinkOperatingCurrInmA;    //Operating current
   UINT16 u16PrevVBUSVoltageInmV;      // Previous VBUS Voltage in terms of mV
   UINT16 u16ExpectedVBUSVoltageInmV;  // Expected VBUS Voltage in terms of mV

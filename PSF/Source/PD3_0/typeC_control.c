@@ -118,6 +118,9 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_DBCLR_EN,	(UINT8*)&u16Data, BYTE_LEN_1);
 	UPD_RegWriteByte (u8PortNum, TYPEC_VBUS_SAMP_EN, u16Data);
     
+    /*Clear Rp value in u8PortSts*/
+    gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+
     if(FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
     {
         /*FW programs DRP Pull-Down Value (DRP_PD_VAL) in DRP Control Register. 
@@ -132,7 +135,6 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
         UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, (u16Data << TYPEC_DRP_RP_POS));
 
         /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
-        gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
         gasTypeCcontrol[u8PortNum].u8PortSts |= (u16Data << TYPEC_CURR_RPVAL_POS);
     }
     else
@@ -142,10 +144,7 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
         UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_PD_VAL_OPEN_DIS);   
 
         /*Clear DRP_RP value to disable it*/
-        UPD_RegByteClearBit (u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_RP_VAL_MASK);
-        
-        /*Clear Rp value in u8PortSts*/
-        gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+        UPD_RegByteClearBit (u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_RP_VAL_MASK);        
     }
     
     /*FW sets the LFSR Enable (LFSR_EN) in DRP Control Register to enable the LFSR generation.
@@ -287,6 +286,9 @@ void TypeC_InitPort (UINT8 u8PortNum)
             /*Setting Port Role as DFP in TYPEC_CC_HW_CTL register*/
             TypeC_SetCCDeviceRole (u8PortNum,PD_ROLE_DFP);
             
+            /* Clear TypeC Current Rp Val bits in u8PortSts*/
+            gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+            
             if(FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
     		{      
 	            /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and 
@@ -297,23 +299,19 @@ void TypeC_InitPort (UINT8 u8PortNum)
 	            TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, (UINT8) u16Data, TYPEC_ENABLE_CC1_CC2);
             
 	            /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
-	            gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
-	            gasTypeCcontrol[u8PortNum].u8PortSts  |= (u16Data << TYPEC_CURR_RPVAL_POS);
+	            gasTypeCcontrol[u8PortNum].u8PortSts |= (u16Data << TYPEC_CURR_RPVAL_POS);
             
 	            /*Setting the Initial State and Sub state for Source*/
 	            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
-	            gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS;  
+	            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS;  
 			}
 			else
 			{
 				/*Setting the CC1 and CC2 line as Open Disconnect*/
-            	TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2); 
-       
-            	/* Clear TypeC Current Rp Val bits in u8PortSts*/
-            	gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+            	TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);        
 				
 				gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
-        		gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_DISABLED_ENTRY_SS; 
+        		gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS; 
         
         		/* Change Policy Engine state and sub-state to invalid state */
         		gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
@@ -484,7 +482,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                      
 					/*Reset the VBUS threshold for 5V detection*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                        gasDPM[u8PortNum].u16MaxCurrSupportedin10mA * DPM_10mA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                        (gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA * DPM_10mA), TYPEC_CONFIG_NON_PWR_FAULT_THR);
 
                     UINT8 u8RpValue = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                                         
@@ -711,7 +709,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC: Entered ATTACHED"\
                                          "SRC State\r\n");
-                   
+
+                    /* Assign Source supported current based on the Rp value*/
+                    UINT16 u16SrcCurrentInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
+                    gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA = (u16SrcCurrentInmA / DPM_10mA);
+                    
                     /*Drive VBus for vSafe5V*/
                     DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
                     
@@ -859,7 +861,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
                     /* Enable Power Threshold for TYPEC_VBUS_5V */
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,\
-                        (gasDPM[u8PortNum].u16MaxCurrSupportedin10mA*DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
+                        (gasDPM[u8PortNum].u16SrcMaxSupportedCurrIn10mA * DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
                      
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_RUN_SM_SS;
                        
@@ -3154,6 +3156,9 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
     /* Setting the CC Comparator OFF */
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);  
   
+    /* Clearing the Rp value in u8PortSts */
+    gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
+    
     /*Rp value as 1.5A@5V */
     if(TYPEC_SINK_TXNG == u8RpValue)
     {
@@ -3161,7 +3166,6 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = (TYPEC_CC_THRES5_MATCH);
         
         /*Setting the current Rp value as TYPEC_RP_CURRENT_15 in u8PortSts variable*/
-        gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
         gasTypeCcontrol[u8PortNum].u8PortSts |= (TYPEC_RP_CURRENT_15 << TYPEC_CURR_RPVAL_POS);
         
         /*Setting the Rp Value as SinkTxNG*/
@@ -3174,7 +3178,6 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = (TYPEC_CC_THRES6_MATCH);
         
         /*Setting the current Rp value as TYPEC_RP_CURRENT_30 in u8PortSts variable*/
-        gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
         gasTypeCcontrol[u8PortNum].u8PortSts |= (TYPEC_RP_CURRENT_30 << TYPEC_CURR_RPVAL_POS);
         
         /*Setting the Rp Value as SinkTxOk*/
@@ -3217,7 +3220,7 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
      UINT8 u8RpStatus = TYPEC_SINK_TXNG;
     
     /*Setting the collision avoidance active bit in u8PortSts variable*/
-     gasTypeCcontrol[u8PortNum].u8PortSts  |= (TYPEC_COLLISION_AVOIDANCE_ACT);
+     gasTypeCcontrol[u8PortNum].u8PortSts |= (TYPEC_COLLISION_AVOIDANCE_ACT);
     
      /*Return True if the current Rp Value set by source is TYPEC_SINK_TXOK*/
      if(TYPEC_RP_CURRENT_30 == ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
@@ -3555,22 +3558,18 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum)
 UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
 {
     UINT16 u16ReturnVal;
+    UINT8 u8RpVal = ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS);
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     UINT32 u32PDODebug = SET_TO_ZERO;
 #endif
 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
-              ~DPM_PORT_RP_VAL_DETECT_MASK_STATUS; 
-
-    switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
+    switch(u8RpVal)
     {
         case TYPEC_DFP_DEFAULT_CURRENT:
         {
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
             u32PDODebug = DPM_DEBUG_PDO_5V_9MA;
 #endif
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
-                    DPM_PORT_RP_VAL_DETECT_DEFAULT_USB_STATUS;
             u16ReturnVal = DPM_900mA;
             break;  
         }
@@ -3579,8 +3578,6 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
             u32PDODebug = DPM_DEBUG_PDO_5V_1P5A;
 #endif
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
-                    DPM_PORT_RP_VAL_DETECT_1_5A_STATUS;
             u16ReturnVal = DPM_1500mA;
             break;  
         }
@@ -3589,8 +3586,6 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)                          
             u32PDODebug = DPM_DEBUG_PDO_5V_3A;
 #endif                            
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
-                    DPM_PORT_RP_VAL_DETECT_3A_STATUS;
             u16ReturnVal = DPM_3000mA;
             break;  
         }
@@ -3605,5 +3600,14 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
 #endif                    
   
+    /* Set the Sink Rp val status in u32PortConnectStatus */
+    if (PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+    {       
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= \
+                            ~DPM_PORT_RP_VAL_DETECT_MASK_STATUS; 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
+                        (u8RpVal << DPM_PORT_RP_VAL_DETECT_STATUS_POS);    
+    }
+   
     return u16ReturnVal;
 }
