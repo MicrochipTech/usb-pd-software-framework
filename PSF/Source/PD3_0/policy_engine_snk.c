@@ -444,8 +444,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
            switch (gasPolicyEngine[u8PortNum].ePESubState)
            {                  
                case ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS:
-               {
-            
+               {            
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_TO_DEFAULT: Entered the state\r\n");
                     
                     /*Setting the Hard Reset IN progress bit to avoid VBUS discharge
@@ -468,13 +467,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         /* Hook to notify PE state machine entry into idle substate */
                         MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS;
-                    
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS;                    
                     }
                     else
                     {
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS;
-                    
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS;                    
                     }
                                        
                     break;                    
@@ -487,8 +484,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         /*Stop the VCONN_OFF timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
                     
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS;
-                    
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS;                    
                     }
                     
                     break;                 
@@ -542,13 +538,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
                     /*Request Device policy manager for Sink Capability Message*/
                     /*If the Port does not have sink capability, Send Reject/Not Supported message*/
-                    DPM_GetSinkCapabilities(u8PortNum, &u8SinkPDOCnt, u32DataObj);
-                    
+                    DPM_GetSinkCapabilities(u8PortNum, &u8SinkPDOCnt, u32DataObj);                    
                     
                     u16Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SINK_CAP,\
                                                          u8SinkPDOCnt, PE_NON_EXTENDED_MSG);
                 
-
                     /*Set the PD message transmitter  API to Send Sink Capability Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
                     u16TransmitHeader = u16Header;

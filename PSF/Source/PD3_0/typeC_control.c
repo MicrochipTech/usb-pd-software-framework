@@ -482,7 +482,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                      
 					/*Reset the VBUS threshold for 5V detection*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                        (gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA * DPM_10mA), TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                        gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
 
                     UINT8 u8RpValue = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                                         
@@ -572,8 +572,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             } 
             break;                
         }  
-            
-        
+                    
         case TYPEC_ATTACHWAIT_SRC:
         {          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
@@ -860,7 +859,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
                     /* Enable Power Threshold for TYPEC_VBUS_5V */
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,\
-                        (gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA * DPM_10mA), TYPEC_CONFIG_PWR_FAULT_THR);
+                        gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA, TYPEC_CONFIG_PWR_FAULT_THR);
                      
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_RUN_SM_SS;
                        
@@ -3266,7 +3265,7 @@ void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum,UINT8 u8ConfigVal)
     }while((u8Data & TYPEC_VBUS_DB_ACTIVE)  == u8DesiredDBState);
 }
 /**************************************************************/
-void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage,UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
+void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current, UINT8 u8PowerFaultThrConfig)
 {
   	UINT16 u16PrevVoltInmV = SET_TO_ZERO;
     /* Used to check if the port is Source port */
