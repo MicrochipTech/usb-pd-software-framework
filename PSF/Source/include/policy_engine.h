@@ -147,24 +147,19 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_REQUEST_CAP_MISMATCH_MASK   (1 << PE_REQUEST_CAP_MISMATCH_POS)
 
 
-/*-------------- Port Status -----------------*/
+/*-------------- Policy Engine Port Status -----------------*/
 #define PE_PDCONTRACT_MASK             BIT(0)
 #define PE_PDCONNECTED_STS_MASK        BIT(1)
-#define PE_VALID_PDCONTRACT            BIT(2)
-#define PE_AMS_TYPE                    BIT(3)
-#define PE_NO_RESPONSE_TIMEDOUT        BIT(4)
-#define PE_CABLE_RESPOND_NAK           BIT(5)
+#define PE_NO_RESPONSE_TIMEDOUT        BIT(2)
 
-#define PE_CABLE_RESPOND_NAK_POS       5
+#define PE_CABLE_RESPOND_NAK           BIT(3)
+#define PE_CABLE_RESPOND_NAK_POS       3
 
-#define PE_HARDRESET_PROGRESS_MASK     BIT(6)
-#define PE_HARDRESET_PROGRESS_POS      6
+#define PE_HARDRESET_PROGRESS_MASK     BIT(4)
+#define PE_HARDRESET_PROGRESS_POS      4
 
-#define PE_PR_SWAP_IN_PROGRESS_MASK    BIT(7)
-#define PE_PR_SWAP_IN_PROGRESS_POS     7 
-
-#define PE_HARDRESET_INPROGRESS    1
-#define PE_HARDRESET_NOTPROGRESS   0
+#define PE_PR_SWAP_IN_PROGRESS_MASK    BIT(5)
+#define PE_PR_SWAP_IN_PROGRESS_POS     5
 
 /*Mask used for getting the present contract type from u8PEPortSts variable*/ 
 #define PE_EXPLICIT_CONTRACT        1
@@ -543,12 +538,10 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 	UINT8 u8DiscoverIdentityCounter;        // DiscoverIdentityCounter
 	UINT8 u8PEPortSts;                      // Bit 0 - PD Contract <p />
                                             // Bit 1 - PD connected status <p />
-                                            // Bit 2 - PD Valid contract <p />
-                                            // Bit 3 - AMS Type <p />
-                                            // Bit 4 - NoResponse timer timeout status <p />
-                                            // Bit 5 - NAK received status from E-Cable <p />
-                                            // Bit 6 - HardReset In Progress Flag <p />
-                                            // Bit 7 - PR Swap In Progress Flag <p />
+                                            // Bit 2 - NoResponse timer timeout status <p />
+                                            // Bit 3 - NAK received status from E-Cable <p />
+                                            // Bit 4 - HardReset In Progress Flag <p />
+                                            // Bit 5 - PR Swap In Progress Flag <p />
 	UINT8 u8PETimerID;                      // Policy Engine Timer ID
 	UINT8 u8PENoResponseTimerID;            // NoResponse Timer ID
     UINT8 u8HardResetRcvdISR;               // Hard Reset received status

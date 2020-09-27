@@ -446,10 +446,6 @@ Source/Sink Power delivery objects*/
 #define DPM_VBUS_ON              1
 #define DPM_VBUS_OFF             0
 
-/**** Macros for PDOIndex Port Power Handling for Typec Vsafe0V and Vsafe5V****/
-#define DPM_VSAFE0V_PDO_INDEX   0
-#define DPM_VSAFE5V_PDO_INDEX_1 1
-
 /*******************DPM_ReturnPowerStatus possible return values macros*********/
 /*Source Power limited due to cable supported current*/
 #define DPM_PWRSTS_SRCPWR_LTD_CABLE_CURR           BIT(1)

@@ -364,46 +364,29 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
 
 UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header)
 {
-    UINT8 u8RetVal = FALSE;
+    UINT8 u8RetVal = PE_PROCESS_MSG;
 
     /*Check whether the message is supported by the policy engine*/
     /*Message header is passed without the extender header bytes*/
-    UINT8 u8ChkMsgSupport = PE_IsMsgUnsupported (u8PortNum, PRL_GET_MSG_HEADER(u32Header));
+    UINT8 u8PEMsgSupport = PE_IsMsgUnsupported (u8PortNum, PRL_GET_MSG_HEADER(u32Header));
 
-    if (PE_UNSUPPORTED_MSG == u8ChkMsgSupport)
+    if (PE_UNSUPPORTED_MSG == u8PEMsgSupport)
     {
+        /* Unsupported message received in ready state or when an 
+           interruptible AMS is in progress */
         if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) ||
            (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || 
            (ePE_INIT_PORT_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState))
         {
-            PE_SendNotSupportedOrRejectMsg(u8PortNum);
-            u8RetVal = PE_MSG_HANDLED;
+            PE_SendNotSupportedOrRejectMsg(u8PortNum);            
         }
         else
         {
-            /*AMS Type is interruptible*/
-            if ((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_AMS_TYPE))
-            {
-                u8RetVal = PE_PROCESS_MSG;
-            }
-            /*AMS Type is Non interruptible*/
-            else
-            {
-                PE_HandleUnExpectedMsg (u8PortNum);
-            }
+            /* Unsupported message received during Non interruptible AMS */
+            PE_HandleUnExpectedMsg (u8PortNum);            
         }
-    }
-    else if(PE_SUPPORTED_MSG == u8ChkMsgSupport)
-    {
-        u8RetVal = PE_PROCESS_MSG;
-    }
-    else if(PE_SUPPORTED_EXTDMSG == u8ChkMsgSupport)
-    {
-        u8RetVal = PE_PROCESS_MSG;
-    }
-    else
-    {
-        /* Do Nothing */
+        /* Update the return value as the unsupported message is handled */
+        u8RetVal = PE_MSG_HANDLED;
     }
 
     return u8RetVal;
