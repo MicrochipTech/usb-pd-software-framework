@@ -361,13 +361,11 @@ UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
         if(DPM_CABLE_CURR_3A == u8CurVal)
         {
             gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_3A_UNIT;
-        }
-        
+        }        
         else if(DPM_CABLE_CURR_5A == u8CurVal)
         {
             gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_5A_UNIT;
-        }
-        
+        }        
         else
         {
            /* Do nothing */ 
