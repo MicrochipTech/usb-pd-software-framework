@@ -197,7 +197,13 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 	{		
         if (DPM_VBUS_ON == u8VbusOnorOff)
         {
-            u16CurrentInmA = gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA;
+            /* This API with DPM_VBUS_ON argument will be called from 
+               i.  Type C Attached Src state
+               ii. PE Transition to default state(after a Hard Reset)
+               During both these scenarios, the port will not be in an 
+               explicit contract. Therefore, set the current limit based 
+               on the Rp value configured by the user */
+            u16CurrentInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
             u16VoltageInmV = TYPEC_VBUS_5V;
         }
         else
@@ -504,8 +510,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
             gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
             
             /* Update Negotiated current in terms of mA */            
-            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = \
-                            (u16SrcPDOCurrInmA * DPM_PDO_CURRENT_UNIT); 
+            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = u16SrcPDOCurrInmA;
             
             /* Update Negotiated voltage in terms of mV */            
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = \

@@ -492,8 +492,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Check whether the current Rp value is same as the default Rp value*/
                     if(((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
                         >> TYPEC_CURR_RPVAL_POS)!= u8RpValue)
-                    {   
-                        
+                    {                           
                         /*Setting the user given Rp value since it is changed by collision 
                         avoidance*/
                         TypeC_SetCCDefaultRpValue (u8PortNum);
@@ -708,9 +707,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC: Entered ATTACHED"\
                                          "SRC State\r\n");
-
-                    /* Assign Source supported current based on the Rp value*/
-                    gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
                     
                     /*Drive VBus for vSafe5V*/
                     DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_ON);
@@ -857,10 +853,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Enabling PRL Rx */
                     PRL_EnableRx(u8PortNum, TRUE);                  
 
-                    /* Enable Power Threshold for TYPEC_VBUS_5V */
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,\
-                        gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA, TYPEC_CONFIG_PWR_FAULT_THR);
-                     
+                    /* Enable Power Fault Threshold for TYPEC_VBUS_5V */
+                    DPM_EnablePowerFaultDetection(u8PortNum);
+                    
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_RUN_SM_SS;
                        
                     break;                  

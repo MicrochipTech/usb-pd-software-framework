@@ -1001,8 +1001,8 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         /* Inform Protocol Layer about Hard Reset Complete */
                         PRL_OnHardResetComplete(u8PortNum);
 						
-						/* Enable Power fault thresholds for TYPEC_VBUS_5V*/
-                        TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA, TYPEC_CONFIG_PWR_FAULT_THR);
+                        /* Enable Power fault thresholds for TYPEC_VBUS_5V*/
+                        DPM_EnablePowerFaultDetection(u8PortNum);
                         
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)   
                         
