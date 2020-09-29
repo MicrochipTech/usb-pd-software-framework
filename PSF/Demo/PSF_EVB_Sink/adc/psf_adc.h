@@ -10,16 +10,15 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-    
-extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData; 
-void PSF_ADCRun();
+ 
+void PSF_ADCRun(void);
 typedef enum
 {
-    INITIALIZE,
-    WAIT,
-    PROCESS,
+    eADC_INIT,
+    eADC_WAIT_FOR_CONVERSION,
+    eADC_SET_NEW_PDO
             
-}State;
+}ADC_RUN_STATE;
 #ifdef	__cplusplus
 }
 #endif

@@ -8,28 +8,40 @@
 #ifndef PSF_CONTROL_TERMINAL_H
 #define	PSF_CONTROL_TERMINAL_H
 #define DEMO_VERSION                  0x0100U /* version 1.00 */
-#ifdef	__cplusplus
-extern "C" {
-#endif
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus // Provide C++ Compatibility
 
-void MchpPSF_PCTInit();
-void PSF_Control_terminal();
-void PSF_monitorandwait();
-void MchpPSF_PCTRUN(bool);
-char* HextoAscii(UINT32 u32HexVal,UINT8 Length);
-void PCTWrite(UINT8 var[],UINT8 value[],UINT8 size,UINT8 StrSize);
+	extern "C" {
+
+#endif
+        
 typedef enum
 {
-    INIT,
-    READ_CONTINUE,
-    READ_PROCESS,
-    HALT,   
-    TOGGLE_BLOCK,
+    ePCT_UNLOCK, //PCT waits for the command from the user and PCT runs until it gets unlocked by space bar
+    ePCT_LOCK
+            
+}PCT_LOCK_STATE;
+
+void MchpPSF_PCTInit(void);
+void PSF_monitorandwait(void);
+void MchpPSF_PCTRUN(PCT_LOCK_STATE);
+UINT8* HextoAscii(UINT32 u32HexVal,UINT8 Length);
+void PCTWrite(const UINT8 *u8aPrintString,const UINT8 *u8aValue,UINT8 u8Size,UINT8 u8StrSize);
+
+typedef enum
+{
+    eINIT,
+    eREAD_CONTINUE,
+    eREAD_PROCESS,
+    eHALT,   
+    eTOGGLE_BLOCK
             
 }STATE;
 
 #ifdef	__cplusplus
-}
+
+    }
+    
 #endif
 
 #endif	/* PSF_CONTROL_TERMINAL_H */

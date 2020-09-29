@@ -42,7 +42,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 
 #include <stddef.h>                     // Defines NULL
-#include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 #include "psf_stdinc.h"                 // PSF include file
@@ -69,13 +68,14 @@ int main ( void )
     /*Always monitor SPACE BAR for Enter or exit PCT*/
     PSF_monitorandwait();
     
-    while ( true )
+    while (TRUE)
     {
         /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
         /*ADC Run called*/
         PSF_ADCRun();
-        MchpPSF_PCTRUN(false);
+        /*PCT  monitors during the debug trace*/
+        MchpPSF_PCTRUN(ePCT_UNLOCK);
         /*PSF stack Run*/
         MchpPSF_RUN();        
     }
