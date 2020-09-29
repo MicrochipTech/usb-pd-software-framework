@@ -1701,6 +1701,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Notify external DPM of Port disabled event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_DISABLED);
                     
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_DONE_SS;
+                    break;
+                    
+                case TYPEC_DISABLED_DONE_SS:   
                     /* Hook to notify Type C state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
                     break;

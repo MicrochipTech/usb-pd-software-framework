@@ -520,6 +520,7 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_DISABLED_WAIT_FOR_VBUS_OFF_SS             2
 #define TYPEC_DISABLED_IDLE_SS                          3 
 #define TYPEC_DISABLED_TIMEOUT_SS                       4
+#define TYPEC_DISABLED_DONE_SS                          5
 /*************************************************************/
 
 /*Defines for setting Rp value of source*/

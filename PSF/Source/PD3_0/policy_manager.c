@@ -1271,7 +1271,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
     else
     {
         if ((TYPEC_DISABLED == gasTypeCcontrol[u8PortNum].u8TypeCState) && \
-                (TYPEC_DISABLED_TIMEOUT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                (TYPEC_DISABLED_DONE_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
         {
             /*Reset protocol layer*/
             PRL_Init(u8PortNum);
