@@ -1117,7 +1117,10 @@ Description:
     or the power role of the port is resolved as Source during DRP operation. 
  
     <b> eMCHP_PSF_VCONN_SWAP_COMPLETE</b>: This notification will be posted when the VCONN Swap
-    is completed and the VCONN roles of the both the partners are changed successfully.
+    is completed and the VCONN roles of the both the partners are changed successfully. This 
+    notification will also be posted when the VCONN Swap initiated by either of the partners
+    is rejected by the other. Users can know the current status of VCONN
+    through u32PortConnectStatus.
     
     <b> eMCHP_PSF_VCONN_SWAP_RCVD</b>: This notification will be posted by PSF when a VCONN 
     Swap message is received from port partner. Application can make use of this event to 
@@ -1130,7 +1133,9 @@ Description:
 
     <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: This notification will be posted when the PR Swap
     is completed and the power roles of the both the partners are changed successfully.
-    This event is applicable only when PSF is operating as DRP.
+    This notification will also be posted when the PR_Swap initiated by either of the 
+    partners is rejected by the other. Users can know the current power role status 
+    through u32PortConnectStatus. This event is applicable only when PSF is operating as DRP.
     
     <b> eMCHP_PSF_PR_SWAP_RCVD</b>: This notification will be posted by PSF when a Power 
     Role Swap message is received from port partner. Application can make use of this event to 
@@ -1143,9 +1148,11 @@ Description:
     received from the port partner. 
     This event is applicable only when PSF is operating as DRP.
    
-    <b>eMCHP_PSF_DR_SWAP_COMPLETE</b>: This notification indicates that DR_SWAP
-    reception or DR_SWAP initiation is successfully completed. User can know the 
-    current data role status through u32PortConnectStatus.
+    <b>eMCHP_PSF_DR_SWAP_COMPLETE</b>: This notification will be posted when the DR Swap
+    is completed and the data roles of the both the partners are changed successfully.
+    This notification will also be posted when the DR_Swap initiated by either of the 
+    partners is rejected by the other. Users can know the current data role status 
+    through u32PortConnectStatus.
         
     <b>eMCHP_PSF_DR_SWAP_RCVD</b>: This occurs whenever there is a DR_SWAP message
     from port partner. User can modify u16SwapPolicy dynamically to Accept or 
