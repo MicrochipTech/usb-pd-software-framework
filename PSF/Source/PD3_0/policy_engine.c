@@ -1562,7 +1562,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     if (gasDPM[u8PortNum].eDPMNotification)
                     {
                         (void) DPM_NotifyClient(u8PortNum, gasDPM[u8PortNum].eDPMNotification);
-                        gasDPM[u8PortNum].eDPMNotification = RESET_TO_ZERO; 
+                        gasDPM[u8PortNum].eDPMNotification = (eMCHP_PSF_NOTIFICATION) RESET_TO_ZERO; 
                     }                      
                     break; 
                 }
