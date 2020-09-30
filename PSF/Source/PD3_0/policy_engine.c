@@ -1544,13 +1544,27 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
                     /*Set the transmitter callback to transition to source soft reset state if
                     message transmission fails*/
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (eTxDoneSt, \
-                                                eTxDoneSS, ePE_SEND_SOFT_RESET,\
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (ePE_SEND_REJECT, \
+                                                ePE_SEND_REJECT_MSG_DONE_SS, ePE_SEND_SOFT_RESET,\
                                                 ePE_SEND_SOFT_RESET_SOP_SS);
                     u8IsTransmit = TRUE;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_IDLE_SS;
 
                     break;
+                }
+                case ePE_SEND_REJECT_MSG_DONE_SS:
+                {
+                    /* Move to ePE_SRC_READY/ePE_SNK_READY state */
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    
+                    /* Post the pending notification */
+                    if (gasDPM[u8PortNum].eDPMNotification)
+                    {
+                        (void) DPM_NotifyClient(u8PortNum, gasDPM[u8PortNum].eDPMNotification);
+                        gasDPM[u8PortNum].eDPMNotification = RESET_TO_ZERO; 
+                    }                      
+                    break; 
                 }
                 /*Wait here until the message is sent*/
                 case ePE_SEND_REJECT_IDLE_SS:

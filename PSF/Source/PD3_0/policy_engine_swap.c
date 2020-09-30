@@ -74,7 +74,9 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_ACCEPT_SWAP_SEND_ACCEPT_SS;           
             }
             else
-            {
+            {                
+                /* Update the DPM notification that needs to be sent after reject is sent */
+                gasDPM[u8PortNum].eDPMNotification = eMCHP_PSF_DR_SWAP_COMPLETE; 
                 /* Reject is sent through common PE state machine*/
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT; 
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;                         
@@ -394,6 +396,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             }
             else
             {
+                /* Update the DPM notification that needs to be sent after reject is sent */
+                gasDPM[u8PortNum].eDPMNotification = eMCHP_PSF_PR_SWAP_COMPLETE; 
                 /* Use common state available for sending reject message */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT; 
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;                           
@@ -991,6 +995,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             }
             else
             {
+                /* Update the DPM notification that needs to be sent after reject is sent */
+                gasDPM[u8PortNum].eDPMNotification = eMCHP_PSF_VCONN_SWAP_COMPLETE; 
                 /* Use common state available for sending reject message */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT; 
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;                           

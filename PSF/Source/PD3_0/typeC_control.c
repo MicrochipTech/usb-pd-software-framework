@@ -152,7 +152,7 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_LFSR_EN);
 
     /*Enabling TYPEC_DRP_DONE interrupt in CC_INT_EN register */   
-    UPD_RegByteSetBit (u8PortNum,  TYPEC_CC_INT_EN, (UINT8)TYPEC_DRP_DONE);	
+    UPD_RegByteSetBit (u8PortNum, TYPEC_CC_INT_EN, (UINT8)TYPEC_DRP_DONE);	
     
     /*Enable the VBUS interrupt (VBUS_MATCH_VLD interrupt) and VCONN OCS interrupt*/
     UPD_RegByteSetBit (u8PortNum, TYPEC_PWR_INT_EN,\
@@ -482,16 +482,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                      
 					/*Reset the VBUS threshold for 5V detection*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                        gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-
-                    UINT8 u8RpValue = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
+                        gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);                   
                                         
 					/*Power down the CC comparator*/
                     TypeC_ConfigCCComp(u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
                     /*Check whether the current Rp value is same as the default Rp value*/
                     if(((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
-                        >> TYPEC_CURR_RPVAL_POS)!= u8RpValue)
+                        >> TYPEC_CURR_RPVAL_POS) != DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum))
                     {                           
                         /*Setting the user given Rp value since it is changed by collision 
                         avoidance*/

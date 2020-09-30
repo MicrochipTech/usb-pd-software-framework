@@ -558,12 +558,13 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         {            
             /*Clear Partner PDO registers so that Get Sink Caps event would be 
               triggered once an explicit contract is established.
-              Note: eMCHP_PSF_PR_SWAP_COMPLETE would be posted when 
+              Note: eMCHP_PSF_PR_SWAP_COMPLETE will be posted when 
               1. Source to Sink PR_Swap is complete
               2. Sink to Source PR_Swap is complete 
               3. PR_Swap initiated by PSF is rejected by the partner
-              Clearing of Partner PDOs should not happen during 3rd scenario and hence the if 
-              condition */
+              4. PR_Swap initiated by the partner is rejected by PSF
+              Clearing of Partner PDOs should not happen during 3rd and 4th
+              scenarios and hence the if condition */
             #if (TRUE == INCLUDE_PD_PR_SWAP)
             if ((ePE_SRC_STARTUP == gasPolicyEngine[u8PortNum].ePEState) || 
                     (ePE_SNK_STARTUP == gasPolicyEngine[u8PortNum].ePEState))
