@@ -128,27 +128,23 @@ void SYS_Initialize ( void* data )
     PORT_Initialize();
 
     CLOCK_Initialize();
-
-
-
-
+    
     NVMCTRL_Initialize( );
+    
+    //UART is initialized either in PSF or in PCT
+    //SERCOM1_USART_Initialize();
 
-    SERCOM1_USART_Initialize();
-
-	//SPI initialisation is done as part of MchpPSF_Init by PSF stack
+	//SPI initialization is done as part of MchpPSF_Init by PSF stack
     //SERCOM0_SPI_Initialize();
 
     ADC_Initialize();
+    
     EIC_Initialize();
-	
+    
+	//UART is initialized either in PSF or in PCT
     //TC0_TimerInitialize();
 
     DAC_Initialize();
-
-
-
-
 
     NVIC_Initialize();
 

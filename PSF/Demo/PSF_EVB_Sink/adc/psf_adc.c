@@ -86,6 +86,8 @@ void PSF_ADCRun()
 			u32input_voltage = u16adc_count * ADC_VREF / 4095U;
 
 			if (u32input_voltage < 1100U) {
+                memset(gasCfgStatusData.sPerPortData
+				    [PORT0].u32aNewSinkPDO,0,7);
 				gasCfgStatusData.sPerPortData
 				    [PORT0].u32aNewSinkPDO[0] =
 				    CFG_PORT_0_SINK_PDO_1;
@@ -93,6 +95,8 @@ void PSF_ADCRun()
 				    u8NewSinkPDOCnt = 1;
 				u8CurrentPos = 1;
 			} else if (u32input_voltage < 1600U) {
+                memset(gasCfgStatusData.sPerPortData
+				    [PORT0].u32aNewSinkPDO,0,7);
 				gasCfgStatusData.sPerPortData
 				    [PORT0].u32aNewSinkPDO[0] =
 				    CFG_PORT_0_SINK_PDO_1;
@@ -102,6 +106,8 @@ void PSF_ADCRun()
 				    u8NewSinkPDOCnt = 2;
 				u8CurrentPos = 2;
 			} else if (u32input_voltage < 2100U) {
+                memset(gasCfgStatusData.sPerPortData
+				    [PORT0].u32aNewSinkPDO,0,7);
 				gasCfgStatusData.sPerPortData
 				    [PORT0].u32aNewSinkPDO[0] =
 				    CFG_PORT_0_SINK_PDO_1;
@@ -111,6 +117,8 @@ void PSF_ADCRun()
 				    u8NewSinkPDOCnt = 2;
 				u8CurrentPos = 3;
 			} else if (u32input_voltage < 2800U) {
+                memset(gasCfgStatusData.sPerPortData
+				    [PORT0].u32aNewSinkPDO,0,7);
 				gasCfgStatusData.sPerPortData
 				    [PORT0].u32aNewSinkPDO[0] =
 				    CFG_PORT_0_SINK_PDO_1;

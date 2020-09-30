@@ -59,14 +59,14 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
     
+    /*PSF init called*/
+	(void)MchpPSF_Init();
+    
     /*PCT init called*/
     MchpPSF_PCTInit();
-    
-	/*PSF init called*/
-	(void)MchpPSF_Init();
-  
+   
     /*Always monitor SPACE BAR for Enter or exit PCT*/
-    PSF_monitorandwait();
+    //PSF_monitorandwait();
     
     while (TRUE)
     {

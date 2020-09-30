@@ -1188,7 +1188,13 @@ void MchpPSF_PCTInit()
 	 */
 	UINT8 u8aPrintStirng[] =
 	    "> Welcome to PSF Control Terminal\n\n\r> Type ? for the list of supported commands\n\n\r> ";
-	(void)SERCOM1_USART_Write(&u8aPrintStirng[0], sizeof(u8aPrintStirng));
+    /*If debug message is enabled in PSF then MCHP_PSF_HOOK_DEBUG_INIT is initialized as part of MchpPSF_Init by PSF stack*/
+    #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
+        /*Initialize debug hardware*/
+        MCHP_PSF_HOOK_DEBUG_INIT();
+    #endif
+        (void)SERCOM1_USART_Write(&u8aPrintStirng[0], sizeof(u8aPrintStirng));
+    
 }
 
 void PSF_monitorandwait()

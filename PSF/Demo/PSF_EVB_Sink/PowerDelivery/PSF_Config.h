@@ -202,7 +202,8 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL         1
+/*Disabled INCLUDE_POWER_MANAGEMENT_CTRL to avoid inactivity of UPD350 when PCT is running  */
+#define INCLUDE_POWER_MANAGEMENT_CTRL         0
 
 /**************************************************************************
 Summary:
