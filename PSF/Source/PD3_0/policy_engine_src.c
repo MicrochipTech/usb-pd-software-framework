@@ -278,8 +278,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     /* Reset CapsCounter and HardReset Counter to 0 */
                     gasPolicyEngine[u8PortNum].u8CapsCounter = RESET_TO_ZERO;
-                    gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_IDLE_SS;
+                    gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;                    
 					
 					/* Set PD Status as Connected */
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PDCONNECTED_STS_MASK;
@@ -300,6 +299,8 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
                     }
 #endif                    
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_IDLE_SS;
+                    
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
