@@ -256,6 +256,24 @@ void PCTPrintNewSinkPDO()
 	if (gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt) {
 		pu32PDOList =
 		    gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO;
+        for (u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt ; u8Index++) {
+		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
+		PCTWrite((UINT8 *) "\n\n\r>NewSinkPDO -",
+			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 18);
+
+		// Get the voltage form PDO list
+		u32Data =
+		    DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(pu32PDOList[u8Index]);
+		pu8PrintValue = HextoAscii(u32Data, sizeof(u32Data));
+		PCTWrite(u8aVoltageString, (UINT8 *) pu8PrintValue,
+			 sizeof(pu8PrintValue), sizeof(u8aVoltageString));
+
+		// Get the current form PDO list
+		u32Data = DPM_GET_PDO_CURRENT(pu32PDOList[u8Index]);
+		pu8PrintValue = HextoAscii(u32Data, sizeof(u32Data));
+		PCTWrite(u8aCurrentString, (UINT8 *) pu8PrintValue,
+			 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
+	}
 	} else {
 		pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO;
 	}
@@ -300,14 +318,10 @@ void PCTPrintAdvertisedPDO()
 	if (gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt) {
 		pu32PDOList =
 		    gasCfgStatusData.sPerPortData[PORT0].u32aAdvertisedPDO;
-	} else {
-		pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO;
-	}
-
-	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) {
+        for (u8Index = SET_TO_ZERO; u8Index <gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt; u8Index++) {
 		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
-		PCTWrite((UINT8 *) "\n\n\r>AdvertisedPDO -",
-			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 21);
+		PCTWrite((UINT8 *) "\n\n\r>PDO -", (UINT8 *) pu8PrintValue,
+			 sizeof(pu8PrintValue), 11);
 
 		// Get the voltage form PDO list
 		u32Data =
@@ -322,8 +336,8 @@ void PCTPrintAdvertisedPDO()
 		PCTWrite(u8aCurrentString, (UINT8 *) pu8PrintValue,
 			 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
 	}
+	}
 }
-
 /*
  * Function: PCTPrintCableIdentity
  * 
@@ -371,9 +385,26 @@ void PCTPrintPDO()
 	if (gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt) {
 		pu32PDOList =
 		    gasCfgStatusData.sPerPortData[PORT0].u32aAdvertisedPDO;
+        for (u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt; u8Index++) {
+		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
+		PCTWrite((UINT8 *) "\n\n\r>AdvertisedPDO -", (UINT8 *) pu8PrintValue,
+			 sizeof(pu8PrintValue), 20);
+
+		// Get the voltage form PDO list
+		u32Data =
+		    DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(pu32PDOList[u8Index]);
+		pu8PrintValue = HextoAscii(u32Data, sizeof(u32Data));
+		PCTWrite(u8aVoltageString, (UINT8 *) pu8PrintValue,
+			 sizeof(pu8PrintValue), sizeof(u8aVoltageString));
+
+		// Get the current form PDO list
+		u32Data = DPM_GET_PDO_CURRENT(pu32PDOList[u8Index]);
+		pu8PrintValue = HextoAscii(u32Data, sizeof(u32Data));
+		PCTWrite(u8aCurrentString, (UINT8 *) pu8PrintValue,
+			 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
+	}
 	} else {
 		pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO;
-	}
 
 	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) {
 		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
@@ -393,6 +424,7 @@ void PCTPrintPDO()
 		PCTWrite(u8aCurrentString, (UINT8 *) pu8PrintValue,
 			 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
 	}
+    }
 }
 
 /*

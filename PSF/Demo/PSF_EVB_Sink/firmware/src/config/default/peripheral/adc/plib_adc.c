@@ -103,7 +103,7 @@ void ADC_Initialize( void )
 
     /* positive and negative input pins */
     ADC_REGS->ADC_INPUTCTRL = (uint32_t) ADC_POSINPUT_PIN4 | (uint32_t) ADC_NEGINPUT_GND \
-        | ADC_INPUTCTRL_INPUTSCAN(0) | ADC_INPUTCTRL_INPUTOFFSET(0) | ADC_INPUTCTRL_GAIN_1X;
+        | ADC_INPUTCTRL_INPUTSCAN(0) | ADC_INPUTCTRL_INPUTOFFSET(0) | ADC_INPUTCTRL_GAIN_DIV2;
 
     /* Prescaler, Resolution & Operation Mode */
     ADC_REGS->ADC_CTRLB = ADC_CTRLB_PRESCALER_DIV32 | ADC_CTRLB_RESSEL_12BIT ;

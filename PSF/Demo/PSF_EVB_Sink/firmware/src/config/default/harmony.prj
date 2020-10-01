@@ -23,7 +23,7 @@
           <LogicalPath dnOrder="3">config/default/</LogicalPath>
           <PhysicalPath dnOrder="4">/</PhysicalPath>
           <GeneratedChecksum dnOrder="5">381DFE268B6B6E6A16207D2C89850828</GeneratedChecksum>
-          <UserChecksum dnOrder="6">900BEFCF1F3D7788B2AAB7F7BB045D02</UserChecksum>
+          <UserChecksum dnOrder="6">177770394F3A4B46358807BDE53E64CE</UserChecksum>
         </File>
         <File dnOrder="2">
           <Type dnOrder="0">SOURCE</Type>
@@ -58,8 +58,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/default/peripheral/adc/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/adc/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">773796254A2FB16B31C3008B6AE2DBA1</GeneratedChecksum>
-          <UserChecksum dnOrder="6">773796254A2FB16B31C3008B6AE2DBA1</UserChecksum>
+          <GeneratedChecksum dnOrder="5">49056D65990925C4F5109F1B6D13A006</GeneratedChecksum>
+          <UserChecksum dnOrder="6">49056D65990925C4F5109F1B6D13A006</UserChecksum>
         </File>
         <File dnOrder="6">
           <Type dnOrder="0">SOURCE</Type>

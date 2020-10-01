@@ -13,17 +13,27 @@
             <User dnOrder="0" value="3"/>
           </Values>
         </KeyValueSet>
-        <KeyValueSet dnOrder="2" id="ADC_INPUTCTRL_MUXPOS">
+        <KeyValueSet dnOrder="2" id="ADC_INPUTCTRL_GAIN">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="5"/>
+          </Values>
+        </KeyValueSet>
+        <KeyValueSet dnOrder="3" id="ADC_INPUTCTRL_MUXPOS">
           <Values dnOrder="0">
             <User dnOrder="0" value="4"/>
           </Values>
         </KeyValueSet>
-        <Integer dnOrder="3" id="ADC_SAMPCTRL_SAMPLEN">
+        <KeyValueSet dnOrder="4" id="ADC_REFCTRL_REFSEL">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="2"/>
+          </Values>
+        </KeyValueSet>
+        <Integer dnOrder="5" id="ADC_SAMPCTRL_SAMPLEN">
           <Values dnOrder="0">
             <User dnOrder="0" value="8"/>
           </Values>
         </Integer>
-        <Comment dnOrder="4" id="ADC_SAMPCTRL_SAMPLEN_TIME">
+        <Comment dnOrder="6" id="ADC_SAMPCTRL_SAMPLEN_TIME">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="text">
               <Value dnOrder="0">****&amp;#160;Conversion&amp;#160;Time&amp;#160;is&amp;#160;13.3333333333&amp;#160;uS&amp;#160;****</Value>
@@ -1863,8 +1873,7 @@
     </UniqueComponent>
   </Components>
   <UserData>
-    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
-    <ComponentGraph dnOrder="1" id="__ROOTVIEW">
+    <ComponentGraph dnOrder="0" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="adc" x="190" y="160"/>
         <ElementPosition dnOrder="1" id="cmsis" x="430" y="60"/>
@@ -1878,5 +1887,6 @@
         <ElementPosition dnOrder="9" id="tc0" x="370" y="102"/>
       </ElementPositions>
     </ComponentGraph>
+    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="1"/>
   </UserData>
 </Configuration>
