@@ -57,7 +57,7 @@ void PSF_ADCRun()
 	UINT32 u32input_voltage;
 	UINT8 *pu8PrintString;
 	static ADC_RUN_STATE u8State = eADC_INIT;
-	UINT8 StrPrint[] = "\n\n\r> Knob Voltage";
+	UINT8 StrPrint[] = "\n\n\r> Knob Voltage 0x";
 	switch (u8State) 
     {
         case eADC_INIT:
@@ -87,6 +87,7 @@ void PSF_ADCRun()
             u16adc_count = ADC_ConversionResultGet();
             u32input_voltage = u16adc_count * ADC_VREF / 4095U;
             memset(gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO,0,7);
+            
             if(!((gu8PDContract == true)&&(gu8PSFIdle == true)))
             {
                 u8State = eADC_INIT;

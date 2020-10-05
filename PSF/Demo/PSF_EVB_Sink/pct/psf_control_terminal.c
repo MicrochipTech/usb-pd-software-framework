@@ -76,9 +76,9 @@ UINT8 PCTReadByte(void)
 void PCTPrintCommands()
 {
 	UINT8 u8aPrintString[] =
-	    "?\n\n\r> get version - Gets the current version\n\n\r> get pdo - Gets the sink power details\n\n\r> "
-	    "get sr[GlobalCfgStatusData] - Gets the config status data\n\n\r> get sr[gasCfgStatusData] - Gets the gas config status\n\n\r> get sr[PortCfgStatus] - Gets the port Config Status\n\n\r> "
-	    "get mem[memory_address][length] -  Reads the memory at the given location\n\n\r> set mem[memory_address][byte value] - Writes memory to SAMD20\n\n\r> "
+	    "?\n\n\r> get version - Gets the current version\n\r> get pdo - Gets the sink power details\n\r> "
+	    "get sr[GlobalCfgStatusData] - Gets the config status data\n\r> get sr[PortCfgStatus] - Gets the port Config Status\n\r> "
+	    "get mem[memory_address][length] -  Reads the memory at the given location\n\r> set mem[memory_address][byte value] - Writes memory to SAMD20\n\r> "
 	    "set pdo[position][value] -  Insert a new PDO at the specified location\n\n\r";
 	(void)SERCOM1_USART_Write(&u8aPrintString[0], sizeof(u8aPrintString));
     (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
@@ -949,41 +949,25 @@ void PCTSetPDO(const UINT8 u8array[])
         DEBUG_PRINT_PORT_STR(PORT0,"PDO_OVERFLOW_ERROR:Supported Pdo Size is 7\r\n");
         return;
     }
-    for (u8Index = SET_TO_ZERO;u8Index < gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt;\
+    for (u8Index = SET_TO_ZERO;u8Index < gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt;\
         u8Index++) 
     {
-        gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[u8Index] =
+        gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[u8Index] = \
 		    gasCfgStatusData.sPerPortData[PORT0].u32aAdvertisedPDO[u8Index];
-		// gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt++;
-
     }
 
     gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[u32PDOPosition] = u32PDOValue;
-    gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt =
-	    gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt;
-    if (gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[u32PDOPosition] != 
-	    gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[u32PDOPosition]) 
-    {
-		/*
-		 * User application may request PSF to renegotiate based on
-		 * default PDOs
-		 * gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO) or
-		 * gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO).
-		 * 
-		 * To renegotiate with new PDOs, user application must ensure that
-		 * new PDOs
-		 * (gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO) are
-		 * configured and BIT(10) in
-		 * gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable is
-		 * set. Then BIT(5) in
-		 * gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest
-		 * variable needs to be set by the user application. 
-		 */
-        gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |=
-		    DPM_CLIENT_REQ_RENEGOTIATE;
-        gasCfgStatusData.sPerPortData[PORT0].u32CfgData |=
-		    DPM_CLIENT_REQ_GET_PARTNER_IDENTITY;
-    }
+    gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = \
+	    gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt;
+    
+
+    MCHP_PSF_HOOK_PRINT_TRACE(" Set PDO\r\n");
+    
+    gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= \
+        DPM_CLIENT_REQ_RENEGOTIATE;
+    gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= \
+        DPM_CLIENT_REQ_GET_PARTNER_IDENTITY;
+    
 }
 
 /*
