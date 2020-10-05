@@ -866,8 +866,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY);
             
             /* Move the Policy Engine to ePE_INIT_PORT_VDM_IDENTITY_REQUEST state */
-            gasPolicyEngine[u8PortNum].ePEState = ePE_INIT_PORT_VDM_IDENTITY_REQUEST; 
-            gasPolicyEngine[u8PortNum].ePESubState = ePE_INIT_PORT_VDM_IDENTITY_REQUEST_ENTRY_SS;
+            gasPolicyEngine[u8PortNum].ePEState = ePE_INIT_PORT_VDM_REQUEST; 
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_INIT_PORT_VDM_REQUEST_ENTRY_SS;
             u16IsAMSInProgress = DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY;            
         }
 #endif /* INCLUDE_PD_VDM */

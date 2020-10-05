@@ -376,7 +376,7 @@ UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header)
            interruptible AMS is in progress */
         if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) ||
            (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || 
-           (ePE_INIT_PORT_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState))
+           (ePE_INIT_PORT_VDM_REQUEST == gasPolicyEngine[u8PortNum].ePEState))
         {
             PE_SendNotSupportedOrRejectMsg(u8PortNum);            
         }
@@ -583,13 +583,13 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_SRC_VDM_IDENTITY_ACKED,(ePolicySubState)SET_TO_ZERO);
                     }
 #if (TRUE == INCLUDE_PD_VDM)
-                    else if ((ePE_INIT_PORT_VDM_IDENTITY_REQUEST_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
-                             (ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState))
+                    else if ((ePE_INIT_PORT_VDM_REQUEST_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
+                             (ePE_INIT_PORT_VDM_REQUEST_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {                        
                         /* Kill VDM Response timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
-                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_INIT_PORT_VDM_IDENTITY_REQUEST,\
-                                                ePE_INIT_PORT_VDM_IDENTITY_REQUEST_RESP_RCVD_SS);
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_INIT_PORT_VDM_REQUEST,
+                                    ePE_INIT_PORT_VDM_REQUEST_RESP_RCVD_SS);
                     }
 #endif
                     else 
@@ -1236,7 +1236,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header)
                     (ePE_VCS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState) || 
                     (ePE_PRS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState) || 
                     (ePE_DRS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState) || 
-                    (ePE_INIT_PORT_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState))                     
+                    (ePE_INIT_PORT_VDM_REQUEST == gasPolicyEngine[u8PortNum].ePEState))                     
                     {
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);

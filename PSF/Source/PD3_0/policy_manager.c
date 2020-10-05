@@ -332,20 +332,24 @@ void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev)
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8PDSpecRev << DPM_PORT_PD_SPEC_REV_STATUS_POS);    
 }
 
+#if (TRUE == INCLUDE_PD_SOURCE)
 /**************************************************************************************************/
 /*********************************DPM VDM Cable APIs**************************************/
 /**************************************************************************************************/
-UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u32DataBuf)
+UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32 *u32DataBuf)
 {
     UINT32 u32ProductTypeVDO;
     UINT8 u8RetVal = FALSE;
     UINT8 u8CurVal;
     
-    /* Store the received VDM response in u32aCableIdentity array.
-    If the response is NAK or BUSY, the response will contain
-    only 1 Data Object which is the VDM Header */
-    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity, u32DataBuf,
-                 (PRL_GET_OBJECT_COUNT(u16Header) * BYTE_LEN_4));                                                   
+    /* Store the received VDM Data Object count in u8CableIdentityCnt.
+       Subtracting 1 from the actual count to eliminate the VDM Header */
+    gasCfgStatusData.sPerPortData[u8PortNum].u8CableIdentityCnt = \
+                                        (PRL_GET_OBJECT_COUNT(u16Header) - BYTE_LEN_1);
+    
+    /* Store the received VDM Data Objects in u32aCableIdentity array */
+    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity, (u32DataBuf + BYTE_LEN_1),
+                 (gasCfgStatusData.sPerPortData[u8PortNum].u8CableIdentityCnt * BYTE_LEN_4));                                                   
     
     /* Get the CMD type from received VDM */
     u8RetVal = DPM_VDM_GET_CMD_TYPE(u32DataBuf[DPM_VDM_HEADER_POS]);
@@ -386,7 +390,6 @@ UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
 /*******************************************************************************/
 
 /*******************************************************************************************/
-#if (TRUE == INCLUDE_PD_SOURCE)
 /****************************** DPM Source related APIs*****************************************/
 /***********************************************************************************************/
 /* Validate the received Request message */
@@ -1441,8 +1444,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity[u8Index] = RESET_TO_ZERO;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;        
         #if (TRUE == INCLUDE_PD_VDM)
         gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[u8Index] = RESET_TO_ZERO;
         #endif
@@ -1495,6 +1497,15 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
             ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
     #endif
+
+    /* Clear the VDM registers */
+    #if (TRUE == INCLUDE_PD_SOURCE)
+    for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_VDO_CNT; u8Index++)
+    {
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity[u8Index] = RESET_TO_ZERO;
+    }
+    gasCfgStatusData.sPerPortData[u8PortNum].u8CableIdentityCnt = RESET_TO_ZERO;
+    #endif 
 }
 
 /********************* DPM API to check if PPS APDO is advertised ********************/

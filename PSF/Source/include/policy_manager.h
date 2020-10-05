@@ -418,6 +418,8 @@ Source/Sink Power delivery objects*/
 #define DPM_VDM_HEADER_POS              0
 #define DPM_VMD_PRODUCT_TYPE_VDO_POS    4
 
+#define DPM_MAX_VDO_CNT                 6 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Defines to form Data Request packet

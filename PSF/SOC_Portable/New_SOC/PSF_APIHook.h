@@ -1166,8 +1166,8 @@ Description:
     VCONN Source.
   
     <b> eMCHP_PSF_CABLE_IDENTITY_NAKED </b>: This event is used by PSF to notify the 
-    application when NAK or no response is received from cable for VDM:Discover Identity request 
-    initiated by PSF. 
+    application of the scenarios Good_CRC not received, no response, NAK response and 
+    BUSY response from cable for SOP' VDM:Discover Identity request initiated by PSF. 
     This event is applicable only when the port is operating as both VBUS Source and
     VCONN Source. 
  
