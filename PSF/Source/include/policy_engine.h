@@ -253,7 +253,7 @@ typedef enum {
     ePE_VCS_SEND_PS_RDY,
     //---------------------------VDM states---------------------------------------//
     ePE_VDM_GET_IDENTITY,
-    ePE_INIT_PORT_VDM_IDENTITY_REQUEST, 
+    ePE_INIT_PORT_VDM_REQUEST, 
     ePE_INIT_PORT_VDM_IDENTITY_ACKED,         
     ePE_INIT_PORT_VDM_IDENTITY_NAKED,
     //--------------------------DR_SWAP States-----------------------------------//
@@ -437,12 +437,12 @@ typedef enum {
     ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS,
 	ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS,
     //--------------------VDM Sub States-------------------------------------------------//            
-    /* ePE_INIT_PORT_VDM_IDENTITY_REQUEST */ 
-    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_ENTRY_SS, 
-    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS,
-    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_RESP_RCVD_SS,  
-    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS,            
-    ePE_INIT_PORT_VDM_IDENTITY_REQUEST_IDLE_SS,
+    /* ePE_INIT_PORT_VDM_REQUEST */ 
+    ePE_INIT_PORT_VDM_REQUEST_ENTRY_SS, 
+    ePE_INIT_PORT_VDM_REQUEST_MSG_DONE_SS,
+    ePE_INIT_PORT_VDM_REQUEST_RESP_RCVD_SS,  
+    ePE_INIT_PORT_VDM_REQUEST_NO_RESPONSE_SS,            
+    ePE_INIT_PORT_VDM_REQUEST_IDLE_SS,
     //--------------------Common States-------------------------------------------------//
     /* ePE_SOFT_RESET */        
     ePE_SOFT_RESET_ENTRY_SS, 

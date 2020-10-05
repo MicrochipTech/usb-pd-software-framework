@@ -725,16 +725,15 @@ typedef enum
 																		specified in mA
                                                                       * This array is common for 
 																	    Source and Sink.
-    u32aCableIdentity[7]            28        R            R         * Cable Identity array 
-                                                                        holding the Vendor 
-                                                                        Defined Objects where 
-                                                                        Index 0 corresponds to VDM
-                                                                        Header, Index 1 being ID 
-                                                                        Header VDO, Index 2 being
-                                                                        Cert Stat VDO, Index 3 
-                                                                        being Product VDO and 
-                                                                        indices 4 corresponds to 
-                                                                        Product Type VDO
+    u32aCableIdentity[6]            24        R            R         * Cable Identity array 
+                                                                        holding the VDM Data 
+                                                                        Objects received from cable
+                                                                        where Index 0 corresponds
+                                                                        to ID Header VDO, Index 1
+                                                                        being Cert Stat VDO, 
+                                                                        Index 2 being Product VDO
+                                                                        and indices 3-5 correspond 
+                                                                        to Product Type VDO(s)
     u32aPartnerIdentity[7]          28        R            R         * Partner Identity array 
                                                                         holding upto 7 Vendor 
                                                                         Defined Objects where 
@@ -743,7 +742,7 @@ typedef enum
                                                                         Header VDO, Index 2 being
                                                                         Cert Stat VDO, Index 3 
                                                                         being Product VDO and 
-                                                                        indices 4-7 correspond to 
+                                                                        indices 4-6 correspond to 
                                                                         0-3 Product Type VDO(s)
     u32RDO                          4         R            R         * Complete raw RDO Data as
 																		sent to the port partner 
@@ -908,6 +907,8 @@ typedef enum
 																		port partner.
                                                                       * This variable is common for 
 																	    Source and Sink.
+    u8CableIdentityCnt              1         R            R         * Number of VDM Data Objects 
+                                                                        received from cable.
     u8SinkConfigSel                 1         R/W          R         * BIT[1:0] - Sink Selection 
 																	    mode for operation.
                                                                         1. '0x00' Mode A: Prefer 
@@ -1136,7 +1137,7 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		  for Sink operation. 
-	u8aReserved1[2]					2								 Reserved
+	u8Reserved1  					1								 Reserved
 	u8Reserved2   					1								 Reserved
  	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
                                                                          based on configuration macro 
@@ -1616,7 +1617,6 @@ typedef struct _PortCfgStatus
     UINT32 u32aNewSinkPDO[7]; 
     UINT32 u32aAdvertisedPDO[7];	
     UINT32 u32aPartnerPDO[7];  
-    UINT32 u32aCableIdentity[7];
 #if (TRUE == INCLUDE_PD_VDM)
     UINT32 u32aPartnerIdentity[7]; 
 #endif 
@@ -1656,11 +1656,13 @@ typedef struct _PortCfgStatus
     UINT8 u8VBUSMaxFaultCnt;
     UINT8 u8VCONNMaxFaultCnt;
     UINT8 u8Pio_FAULT_IN;
-    UINT8 u8Mode_FAULT_IN;
+    UINT8 u8Mode_FAULT_IN;    
 #if (TRUE == INCLUDE_PD_SOURCE)
+    UINT32 u32aCableIdentity[6];
+    UINT8 u8CableIdentityCnt; 
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
-    UINT8 u8aReserved1[2];
+    UINT8 u8Reserved1;
 #endif
 #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 

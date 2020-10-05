@@ -79,11 +79,11 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
     switch(gasPolicyEngine[u8PortNum].ePEState)
     {
         /* Initiator to Port VDM Discover Identity */
-        case ePE_INIT_PORT_VDM_IDENTITY_REQUEST:
+        case ePE_INIT_PORT_VDM_REQUEST:
         {
             switch(gasPolicyEngine[u8PortNum].ePESubState)
             {
-                case ePE_INIT_PORT_VDM_IDENTITY_REQUEST_ENTRY_SS: 
+                case ePE_INIT_PORT_VDM_REQUEST_ENTRY_SS: 
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_IDENTITY_REQUEST_ENTRY_SS\r\n");
 
@@ -100,17 +100,17 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                                                                         BYTE_LEN_1, PE_NON_EXTENDED_MSG);
                     u32pTransmitDataObj = &u32VDMHeader;
 
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_INIT_PORT_VDM_IDENTITY_REQUEST, \
-                                                ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_INIT_PORT_VDM_REQUEST, \
+                                                ePE_INIT_PORT_VDM_REQUEST_MSG_DONE_SS, \
                                                 ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
               
                     u8IsTransmit = TRUE;
                     
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_INIT_PORT_VDM_IDENTITY_REQUEST_IDLE_SS;                                       
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_INIT_PORT_VDM_REQUEST_IDLE_SS;                                       
                     
                     break; 
                 }               
-                case ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS:
+                case ePE_INIT_PORT_VDM_REQUEST_MSG_DONE_SS:
                 {
 					/* GoodCRC received for VDM Identity request sent to SOP */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS\r\n");
@@ -125,12 +125,12 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_VDMRESPONSE_TIMEOUT_MS),
                                                             PE_SubStateChange_TimerCB,u8PortNum,  
-                                                            (UINT8)ePE_INIT_PORT_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS);
+                                                            (UINT8)ePE_INIT_PORT_VDM_REQUEST_NO_RESPONSE_SS);
                     
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_INIT_PORT_VDM_IDENTITY_REQUEST_IDLE_SS;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_INIT_PORT_VDM_REQUEST_IDLE_SS;
                     break;
                 }
-                case ePE_INIT_PORT_VDM_IDENTITY_REQUEST_RESP_RCVD_SS:
+                case ePE_INIT_PORT_VDM_REQUEST_RESP_RCVD_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_IDENTITY_REQUEST_RESP_RCVD_SS\r\n");
 
@@ -157,7 +157,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     }
                     break; 
                 }
-                case ePE_INIT_PORT_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS:
+                case ePE_INIT_PORT_VDM_REQUEST_NO_RESPONSE_SS:
                 {
                     /* No response from port partner for the VDM:DiscIdentity 
                        message sent. Post notification and move to Ready state 
@@ -167,7 +167,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                                         
                     break; 
                 }
-                case ePE_INIT_PORT_VDM_IDENTITY_REQUEST_IDLE_SS:
+                case ePE_INIT_PORT_VDM_REQUEST_IDLE_SS:
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                    
