@@ -694,6 +694,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         /* Check for renegotiation request */
         if (DPM_CLIENT_REQ_RENEGOTIATE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
         {
+            DEBUG_PRINT_PORT_STR(PORT0,
+                    "\n\n\rClient Req renegotiate");
             /* Clear the request since the request is accepted and going to be handled */
             gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_RENEGOTIATE);                
@@ -750,6 +752,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
     else if(DPM_INT_EVT_PORT_ENABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                 DPM_INT_EVT_PORT_ENABLE))
     {
+        DEBUG_PRINT_PORT_STR(PORT0,
+                    "\n\n\rClear Internal event");
         /*Clear the Internal event since it is processed*/
         gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_PORT_ENABLE);
 

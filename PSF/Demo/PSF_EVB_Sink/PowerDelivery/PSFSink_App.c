@@ -55,6 +55,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Local Functions                                                   */
 /* ************************************************************************** */
 /* ************************************************************************** */
+UINT8 gu8PSFIdle=false;
+UINT8 gu8PDContract=false;
 void App_SetMCUIdle()
 {
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
@@ -144,6 +146,8 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
         {
+            DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> PD_contract_negotiate");
+            gu8PDContract = true;
             break; 
         }
        
@@ -182,11 +186,16 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         
         case eMCHP_PSF_IDLE:
         {
+            DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> PSF_Idle");
+            (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
+            gu8PSFIdle = true;
             break; 
         }
         
         case eMCHP_PSF_BUSY:
         {
+            DEBUG_PRINT_PORT_STR(PORT0,
+                    "\n\n\r> PSF_Busy");
             break; 
         }
         

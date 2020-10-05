@@ -64,9 +64,11 @@ int main ( void )
     
     /*PCT init called*/
     MchpPSF_PCTInit();
-   
+#ifdef WAIT_FOR_PCT_CONFIGURATON
     /*Always monitor SPACE BAR for Enter or exit PCT*/
-    //PSF_monitorandwait();
+    PSF_monitorandwait();
+#endif
+    
     
     while (TRUE)
     {

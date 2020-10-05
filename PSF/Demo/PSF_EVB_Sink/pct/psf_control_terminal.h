@@ -27,7 +27,7 @@ void PSF_monitorandwait(void);
 void MchpPSF_PCTRUN(PCT_LOCK_STATE);
 UINT8* HextoAscii(UINT32 u32HexVal,UINT8 Length);
 void PCTWrite(const UINT8 *u8aPrintString,const UINT8 *u8aValue,UINT8 u8Size,UINT8 u8StrSize);
-
+void PCTPrintPDO();
 typedef enum
 {
     eINIT,
