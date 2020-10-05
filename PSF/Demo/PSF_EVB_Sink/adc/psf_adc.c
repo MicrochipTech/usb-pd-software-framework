@@ -48,7 +48,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define   ADC_VREF         (3300U)	// 3300mV (3.3V)
 extern UINT8 gu8PSFIdle;
 extern UINT8 gu8PDContract;
-UINT8 u8SinkMode=CFG_PORT_0_SINK_MODE;
 void PSF_ADCRun()
 {
     static UINT8 u8PrevPos = 4;	/* By default PDO's are available
@@ -58,7 +57,7 @@ void PSF_ADCRun()
 	UINT32 u32input_voltage;
 	UINT8 *pu8PrintString;
 	static ADC_RUN_STATE u8State = eADC_INIT;
-	UINT8 StrPrint[] = "\n\n\rKnob Voltage";
+	UINT8 StrPrint[] = "\n\n\r> Knob Voltage";
 	switch (u8State) 
     {
         case eADC_INIT:
@@ -128,12 +127,9 @@ void PSF_ADCRun()
             {
                 /*Supported PDOs are (5V,3A),(9V,3A),(15V,3A),(20V,3A) in Sink Mode A*/
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = 
-                        ((CFG_PORT_0_SINK_PDO_2)|(u8SinkMode));
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = 
-                        ((CFG_PORT_0_SINK_PDO_3)|(u8SinkMode));
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = 
-                        ((CFG_PORT_0_SINK_PDO_4)|(u8SinkMode));
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;
                 u8CurrentPos = 4;
             } 
@@ -141,12 +137,10 @@ void PSF_ADCRun()
             {
                 /*Supported PDOs are (5V,3A),(9V,3A),(15V,3A),(20V,3A) in Sink Mode B*/
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = 
-                        ((CFG_PORT_0_SINK_PDO_2)|((u8SinkMode)|0x01));
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = 
-                        ((CFG_PORT_0_SINK_PDO_3)|((u8SinkMode)|0x01));
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = 
-                        ((CFG_PORT_0_SINK_PDO_4)|((u8SinkMode)|0x01));
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] |= CFG_PORT_0_SINK_MODEB;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;
                 u8CurrentPos = 5;
             } 
@@ -178,17 +172,12 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CLIENT_REQ_GET_PARTNER_IDENTITY;
                 gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
 
-                DEBUG_PRINT_PORT_STR(PORT0,"\n\n\rClient Req set");
+                DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> Client Req set");
 
                 /*clear the variables since the request is handled */
                 gu8PDContract = false;
                 gu8PSFIdle = false;
                 
-                /*Clear if CFG_PORT_0_SINK_MODE is set*/
-                if(u8SinkMode)
-                {
-                    u8SinkMode&=(~(0x01));
-                }
                 /*Print the selected knob voltage*/
                 pu8PrintString = HextoAscii(u32input_voltage,sizeof(u32input_voltage));
                 PCTWrite(StrPrint,(UINT8 *) & pu8PrintString[0],sizeof(pu8PrintString),sizeof(StrPrint));

@@ -121,7 +121,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /********************************Sink Specific Configuration********************************/
 /*u8SinkConfigSel configuration*/
 /*Sink Mode A - 0x00, Mode B - 0x01*/
-#define CFG_PORT_0_SINK_MODE            0x00
+#define CFG_PORT_0_SINK_MODE            0x01
+
 /*Sink Give Back Flag - 0 - Disabled, 1 - Enabled*/
 #define CFG_PORT_0_SINK_GIVE_BACK_FLAG      (0U << 2)
 /*Sink USB Suspend support - 0- Disabled, 1-Enabled*/
