@@ -514,7 +514,7 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	{
         DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE\r\n");
                 
-		gu8SetMCUidle = UPD_MCU_IDLE;
+		gu8SetMCUIdle = UPD_MCU_IDLE;
 	}
 	
 }
@@ -551,11 +551,11 @@ void UPD_PwrManagementCtrl(UINT8 u8PortNum)
    /*Restart IDLE Timer if UPD350 is Active*/
     PD_StartIdleTimer (u8PortNum);
 
-    if (UPD_MCU_IDLE == gu8SetMCUidle)
+    if (UPD_MCU_IDLE == gu8SetMCUIdle)
     {
         /*Invalidate MCU Idle, Before keeping MCU in Idle clear this set 
          gu8SetMCUidle to Active state for next run */
-        gu8SetMCUidle = UPD_MCU_ACTIVE;
+        gu8SetMCUIdle = UPD_MCU_ACTIVE;
 
         if (FALSE == UPD_CheckUPDsActive())
         {
@@ -580,7 +580,7 @@ void UPD_PwrManagementInit(UINT8 u8PortNum)
                                         (UINT8)SET_TO_ZERO);
     
     /*Set MCU Idle flag as UPD_MCU_ACTIVE*/
-    gu8SetMCUidle = UPD_MCU_ACTIVE;
+    gu8SetMCUIdle = UPD_MCU_ACTIVE;
 }
 /********************************************************************************************/
 #endif /* INCLUDE_POWER_MANAGEMENT_CTRL*/

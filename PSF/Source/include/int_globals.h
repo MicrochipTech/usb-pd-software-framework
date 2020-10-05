@@ -86,7 +86,7 @@ extern DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 	/*Timer ID of IDLE Timer*/
     extern UINT8 gau8PortIdleTimerID [CONFIG_PD_PORT_COUNT];
     /*MCU Idle flag*/
-    extern UINT8 gu8SetMCUidle;
+    extern UINT8 gu8SetMCUIdle;
 
 #endif
 

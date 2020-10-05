@@ -1843,14 +1843,6 @@ typedef struct _PPSPortCfgStatus
 																	    macro is mandatory when 
 																		INCLUDE_PDFU is defined as 1. 
 																		It should always be two byte wide. 															   
-	u16ProductTypeVDO               2         R/W          R         Defines Product Type VDO  
-
-	u16ProductVDO                   2         R/W          R         Defines Product VDO
-
-	u16CertStatVDO                  2         R/W          R         Defines Cert Stat VDO
-	
-	u16IDHeaderVDO                  2         R/W          R         Defines ID Header VDO 
-	     
 	u16SystemPowerBankAIn250mW 	    2         R/W          R         * Defines the Total System 
 																		Power of Bank A. Each unit 
 																		is 0.25W 
@@ -2041,10 +2033,6 @@ typedef struct _GlobalCfgStatusData
     UINT8 u8aReserved3[3];    
     UINT16 u16ProducdID;	
     UINT16 u16VendorID;		
-    UINT16 u16ProductTypeVDO; 
-    UINT16 u16ProductVDO; 
-    UINT16 u16CertStatVDO; 
-    UINT16 u16IDHeaderVDO; 
     
     PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; 
     
