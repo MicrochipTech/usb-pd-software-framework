@@ -354,22 +354,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 }
                 
                 case ePE_SNK_READY_END_AMS_SS:
-                {
-#if (TRUE == INCLUDE_PD_VDM)
-                    /* Post not received notification if VDM:Disc Identity was initiated 
-                       previously and no response has been received */
-                    if (gasPolicyEngine[u8PortNum].u8PERuntimeConfig & PE_DISCOVER_ID_INITIATED)
-                    {
-                        gasPolicyEngine[u8PortNum].u8PERuntimeConfig &= ~(PE_DISCOVER_ID_INITIATED);
-                        if (SET_TO_ZERO == DPM_VDM_GET_CMD_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[INDEX_0]))
-                        {
-                            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD);                                                         
-                        }
-                    }
-#endif
-                    
+                {                    
                     gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;                        
 
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
+                    
                     if(SET_TO_ZERO == gasDPM[u8PortNum].u16DPMInternalEvents)
                     {
                         /* Hook to notify PSF is IDLE */
@@ -378,9 +367,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     else
                     {
                         /*Do nothing*/
-                    }
-                    
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_IDLE_SS;
+                    }                                        
                     
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);

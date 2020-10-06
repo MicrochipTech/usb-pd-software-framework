@@ -38,9 +38,6 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
     /* Transmit Message Type - SOP SOP' SOP" */ 
     UINT8 u8TransmitSOP = PRL_SOP_TYPE; 
     
-    /* VDM Header */
-    UINT32 u32VDMHeader = SET_TO_ZERO; 
-    
     /* VDM Command Type */
     UINT8 u8VDMCmdType = SET_TO_ZERO; 
     
@@ -85,24 +82,17 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_INIT_PORT_VDM_REQUEST_ENTRY_SS: 
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_IDENTITY_REQUEST_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_REQUEST_ENTRY_SS\r\n");
 
-                    /* Choose VDM version as per current spec revision */
-                    if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
-                    {
-                        u32VDMHeader = PE_VDM_HEADER_LOW_VER;
-                    }                    
-                    else
-                    {
-                        u32VDMHeader = PE_VDM_HEADER_HIGH_VER;
-                    }
+                    /* Get the VDM Header configured by the application */
+                    u32pTransmitDataObj = &gasCfgStatusData.sVDMPerPortData[u8PortNum].u32VDMHeader;
+                    
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
-                                                                        BYTE_LEN_1, PE_NON_EXTENDED_MSG);
-                    u32pTransmitDataObj = &u32VDMHeader;
+                                                                        BYTE_LEN_1, PE_NON_EXTENDED_MSG);                    
 
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_INIT_PORT_VDM_REQUEST, \
                                                 ePE_INIT_PORT_VDM_REQUEST_MSG_DONE_SS, \
-                                                ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
+                                                eTxDoneSt, eTxDoneSS);
               
                     u8IsTransmit = TRUE;
                     
@@ -113,12 +103,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 case ePE_INIT_PORT_VDM_REQUEST_MSG_DONE_SS:
                 {
 					/* GoodCRC received for VDM Identity request sent to SOP */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_IDENTITY_REQUEST_MSG_DONE_SS\r\n");
-                    
-                    /* Set the Discover Identity initiated Flag. This would be useful in cases 
-                       where response for the VDM request is not received from the partner 
-                       and not received notification will be sent based on this flag */
-                    gasPolicyEngine[u8PortNum].u8PERuntimeConfig |= PE_DISCOVER_ID_INITIATED; 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_REQUEST_MSG_DONE_SS\r\n");
                     
 					/* Start the VDMResponse timer, if timed out set the PE sub-state to 
 					   ePE_INIT_PORT_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS */
@@ -132,38 +117,62 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 }
                 case ePE_INIT_PORT_VDM_REQUEST_RESP_RCVD_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_IDENTITY_REQUEST_RESP_RCVD_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_INIT_PORT_VDM_REQUEST_RESP_RCVD_SS\r\n");
 
-                    /* Store the received VDM response in u32aPartnerIdentity array.
-                       If the response is NAK or BUSY, the response will contain
-                       only 1 Data Object which is the VDM Header */
-                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity, pu8DataBuf,
-                                 (PRL_GET_OBJECT_COUNT(u32Header) * BYTE_LEN_4));                                                   
+                    /* Store the received VDM Header and VDM response in status registers */                    
+                    (void)MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader, pu8DataBuf, \
+                                                                    BYTE_LEN_4);      
+                    
+                    gasCfgStatusData.sVDMPerPortData[u8PortNum].u8PartnerPDIdentityCnt = \
+                                        (PRL_GET_OBJECT_COUNT(u32Header) - BYTE_LEN_1);
+                            
+                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sVDMPerPortData[u8PortNum].u32aPartnerPDIdentity, (pu8DataBuf + BYTE_LEN_4), \
+                                        (gasCfgStatusData.sVDMPerPortData[u8PortNum].u8PartnerPDIdentityCnt * BYTE_LEN_4));                                                   
                                        
-                    /* Move the VDM SM based on the type of response received */
+                    /* Get the VDM response type */
                     u8VDMCmdType = DPM_VDM_GET_CMD_TYPE(pu8DataBuf[DPM_VDM_HEADER_POS]);
                     
-                    if (PE_VDM_ACK == u8VDMCmdType)
-                    {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_INIT_PORT_VDM_IDENTITY_ACKED;                        
+                    /* Move to Ready state based on the current power role */
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                      
+                   
+                    if (PE_VDM_BUSY == u8VDMCmdType)
+                    {                  
+                        if(gasPolicyEngine[u8PortNum].u8VDMBusyCounter < PE_N_BUSY_COUNT)
+                        {
+                            gasPolicyEngine[u8PortNum].u8VDMBusyCounter++; 
+                            /* Start the VDM Busy Retry Timer */            
+                            gasDPM[u8PortNum].u8VDMBusyTmrID = PDTimer_Start (
+                                                                    (PE_VDM_BUSY_TIMEOUT_MS),
+                                                                    DPM_VDMBusy_TimerCB,u8PortNum,  
+                                                                    (UINT8)SET_TO_ZERO);                                             
+                        }
+                        else
+                        {
+                            /* Reset the VDM Busy Counter */
+                            gasPolicyEngine[u8PortNum].u8VDMBusyCounter = RESET_TO_ZERO;
+                            
+                            /* Post eMCHP_PSF_VDM_RESPONSE_NOT_RCVD notification */
+                            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_RESPONSE_NOT_RCVD); 
+                        }
                     }
-                    else if ((PE_VDM_NAK == u8VDMCmdType) || (PE_VDM_BUSY == u8VDMCmdType))
+                    else /* ACK or NAK response */
                     {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_INIT_PORT_VDM_IDENTITY_NAKED;                                                
-                    }
-                    else /* PE_VDM_REQ */
-                    {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_GET_IDENTITY;                        
+                        /* Post eMCHP_PSF_VDM_RESPONSE_RCVD notification */
+                        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_RESPONSE_RCVD);                                                
                     }
                     break; 
                 }
                 case ePE_INIT_PORT_VDM_REQUEST_NO_RESPONSE_SS:
                 {
-                    /* No response from port partner for the VDM:DiscIdentity 
-                       message sent. Post notification and move to Ready state 
+                    /* No response from port partner for the VDM request sent. 
+                       Post notification and move to Ready state 
                        based on the current power role */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                      
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS; 
+                    
+                    /* Post eMCHP_PSF_VDM_RESPONSE_NOT_RCVD notification */
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_RESPONSE_NOT_RCVD); 
                                         
                     break; 
                 }
@@ -179,43 +188,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 }
             }            
             break; 
-        }                
-        case ePE_INIT_PORT_VDM_IDENTITY_ACKED:
-        {
-            /* Move PE to Ready state based on the current power role */
-            gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-            gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                      
-            
-            /* Post eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED notification */
-            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED);
-            
-            break; 
-        }
-        case ePE_INIT_PORT_VDM_IDENTITY_NAKED:
-        {
-            /* Policy Engine would enter this state if the response is NAK or BUSY 
-               Start VDM Busy Retry Timer only for BUSY response */
-            u8VDMCmdType = DPM_VDM_GET_CMD_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[INDEX_0]);
-            
-            if (PE_VDM_BUSY == u8VDMCmdType)
-            {
-                gasDPM[u8PortNum].u8VDMBusyTmrID = PDTimer_Start (
-                                                    (PE_VDM_BUSY_TIMEOUT_MS),
-                                                    DPM_VDMBusy_TimerCB,u8PortNum,  
-                                                    (UINT8)SET_TO_ZERO);                                
-            }
-            /* Move PE to Ready state based on the current power role */
-            gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-            gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                      
-            
-            /* Post notification only for NAK response */
-            if (PE_VDM_NAK == u8VDMCmdType)
-            {
-                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PARTNER_IDENTITY_NAKED);
-            }
-            break; 
-        }
-                
+        }                       
         default:
         {
             break; 

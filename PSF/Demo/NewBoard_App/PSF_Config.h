@@ -734,16 +734,6 @@ typedef enum
                                                                         Index 2 being Product VDO
                                                                         and indices 3-5 correspond 
                                                                         to Product Type VDO(s)
-    u32aPartnerIdentity[7]          28        R            R         * Partner Identity array 
-                                                                        holding upto 7 Vendor 
-                                                                        Defined Objects where 
-                                                                        Index 0 corresponds to VDM
-                                                                        Header, Index 1 being ID 
-                                                                        Header VDO, Index 2 being
-                                                                        Cert Stat VDO, Index 3 
-                                                                        being Product VDO and 
-                                                                        indices 4-6 correspond to 
-                                                                        0-3 Product Type VDO(s)
     u32RDO                          4         R            R         * Complete raw RDO Data as
 																		sent to the port partner 
 																		when acting as Sink and 
@@ -1482,16 +1472,13 @@ typedef enum
 									Power Throttling is enabled. Therefore, user application should not trigger 
 									this client request when Power Balancing or Power Throttling is enabled.
     9:6                             Reserved.
-    10       R/W          R/W      Get Partner Identity Request      
-                                    * '0' PSF has not received any Get Partner Identity request.
-                                    * '1' PSF has received a Get Partner Identity request. 									 
-                                    *  eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED notification will 
-                                        will be posted for an ACK response, 
-                                        eMCHP_PSF_PARTNER_IDENTITY_NAKED will be posted for a 
-                                        NAK response and eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD
+    10       R/W          R/W      Initiate a Structured VDM request       
+                                    * '0' PSF has not received any Structured VDM request.
+                                    * '1' PSF has received a Structured VDM request. 									 
+                                    *  eMCHP_PSF_VDM_RESPONSE_RCVD notification will 
+                                        will be posted for an ACK/NAK response, 
+                                        eMCHP_PSF_VDM_RESPONSE_NOT_RCVD
                                         will be posted when no response is received.
-                                    *  Application can read the partner identity by 
-                                        accessing the u32aPartnerIdentity[7] register
                                     *  This request is supported only when INCLUDE_PD_VDM is 
                                         defined as '1'. 
 	31:11  						   Reserved 									
@@ -1616,10 +1603,7 @@ typedef struct _PortCfgStatus
     UINT32 u32aNewSourcePDO[7];	
     UINT32 u32aNewSinkPDO[7]; 
     UINT32 u32aAdvertisedPDO[7];	
-    UINT32 u32aPartnerPDO[7];  
-#if (TRUE == INCLUDE_PD_VDM)
-    UINT32 u32aPartnerIdentity[7]; 
-#endif 
+    UINT32 u32aPartnerPDO[7];   
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
     UINT32 u32PortStatusChange;
@@ -1739,6 +1723,61 @@ typedef struct _PBPortCfgStatus
     UINT8 u8PortPriority; 
     UINT8 u8aReserved4;
 } PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
+
+#endif 
+ /**********************************************************************
+   Summary:
+     This structure contains port specific VDM Configuration and Status parameters. 
+	 sVDMPerPortData is referred from _GlobalCfgStatusData.
+   Description:
+     This structure contains the following parameters that 
+     are either Integer Datatypes or Bit-Mapped bytes.  
+	 This structure is used only when INCLUDE_PD_SOURCE_PPS is set to '1'.
+	 
+	<b>1. Members that are Integer Datatypes:</b> 
+	
+	<table> 	
+    Name                            Size in   R/W Config   R/W Run   \Description
+                                     Bytes     time         time      
+    ------------------------------  --------  -----------  --------  -------------------------------------------------------------------	
+    u32VDMHeader                    4         R/W          R/W       * VDM Header used while 
+                                                                        initiating a VDM request
+                                                                      * The fields of this variable
+                                                                         shall comply with 
+                                                                         Table 6-25: Structured VDM 
+                                                                         Header of PD Specification
+    u32PartnerVDMHeader             4         R            R         * VDM Header sent by partner 
+                                                                        in the VDM response	  
+    u32aPartnerPDIdentity[6]        24        R            R         * Partner Identities received
+                                                                        in response to a Discover
+                                                                        Identity request. This
+                                                                        array can hold upto 7 VDM 
+                                                                        Data Objects where 
+                                                                        Index 0 corresponds to ID                                                                        
+                                                                        Header VDO, Index 1 being
+                                                                        Cert Stat VDO, Index 2 
+                                                                        being Product VDO and 
+                                                                        indices 3-6 correspond to 
+                                                                        0-3 Product Type VDO(s)
+    u8PartnerPDIdentityCnt          1         R            R         * Number of Identities received
+                                                                        from partner in response to 
+                                                                        a Discover Identity request
+    u8aReservedArr[3]				2                                Reserved 
+	</table> 
+
+   Remarks:
+     None                                                               
+   **********************************************************************/
+#if (TRUE == INCLUDE_PD_VDM)   
+
+typedef struct _VDMPortCfgStatus
+{
+    UINT32 u32VDMHeader;
+    UINT32 u32PartnerVDMHeader; 
+    UINT32 u32aPartnerPDIdentity[6];
+    UINT8 u8PartnerPDIdentityCnt; 
+    UINT8 u8aReservedArr[3]; 
+} VDM_PORT_CFG_STATUS, *PVDM_PORT_CFG_STATUS;
 
 #endif 
  /**********************************************************************
@@ -2052,6 +2091,10 @@ typedef struct _GlobalCfgStatusData
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
     PPS_PORT_CFG_STATUS sPPSPerPortData[CONFIG_PD_PORT_COUNT]; 
 #endif
+    
+#if (TRUE == INCLUDE_PD_VDM)
+    VDM_PORT_CFG_STATUS sVDMPerPortData[CONFIG_PD_PORT_COUNT]; 
+#endif 
 
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
     UINT8 u8ReservedPadBytes[16];

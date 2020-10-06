@@ -1175,19 +1175,16 @@ Description:
     BUSY response from cable for SOP' VDM:Discover Identity request initiated by PSF. 
     This event is applicable only when the port is operating as both VBUS Source and
     VCONN Source. 
- 
-    <b> eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED </b>: This event is used by PSF to notify the 
-    application when the Partner Identity has been received from Port Partner in response to the 
-    VDM:Discover Identity request initiated by PSF. Application can read the partner identity by 
-    accessing the gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity array.
- 
-    <b> eMCHP_PSF_PARTNER_IDENTITY_NAKED </b>: This event is used by PSF to notify the 
-    application when NAK response is received from port partner for VDM:Discover Identity request 
-    initiated by PSF. 
+   
+    <b> eMCHP_PSF_VDM_RESPONSE_RCVD </b>: This notification will be posted by PSF when the partner 
+    has sent an ACK/NAK response for the VDM request initiated by PSF within VDM Response time. 
+    This notification will not be posted for a BUSY response. Instead, PSF will re-initiate the 
+    request after PE_VDM_BUSY_TIMEOUT_MS. This will be done for a maximum Busy count of 5 times.
   
-    <b> eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD </b>: This event is used by PSF to notify the
-    application when the VDM Response Timer has timed out and there is no response from the 
-    port partner for the VDM:Discover Identity request initiated. 
+    <b> eMCHP_PSF_VDM_RESPONSE_NOT_RCVD </b>: This notification will be posted by PSF when
+	the VDM response timer has timed out due to no response from the partner for the VDM request 
+    sent or when the partner has responded BUSY for a maximum of 5 times and the VDM request will 
+    not be initiated by PSF anymore or when the partner has sent Not Supported for the VDM request.
   
     <b> eMCHP_PSF_PORT_DISABLED</b>: This event is used by PSF to notify the application 
     that a port has been disabled as a result of port disable client request (BIT[0] in 
@@ -1249,9 +1246,8 @@ eMCHP_PSF_DR_SWAP_RCVD,                // Data Role swap received from port part
 eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for the DR_SWAP initiated        
 eMCHP_PSF_CABLE_IDENTITY_DISCOVERED,   // ACK received from cable for Discover Identity sent to SOP'        
 eMCHP_PSF_CABLE_IDENTITY_NAKED,        // NAK received from cable for Discover Identity sent to SOP'
-eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED, // ACK received from partner for Discover Identity sent to SOP
-eMCHP_PSF_PARTNER_IDENTITY_NAKED,      // NAK received from partner for Discover Identity sent to SOP
-eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD,   // No response from partner for Discover Identity sent to SOP     
+eMCHP_PSF_VDM_RESPONSE_RCVD,           // Response received from partner for VDM request sent to SOP
+eMCHP_PSF_VDM_RESPONSE_NOT_RCVD,       // No response from partner for VDM request sent to SOP  
 eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
 eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
 eMCHP_PSF_BUSY,                        // PSF is busy, cannot handle client request

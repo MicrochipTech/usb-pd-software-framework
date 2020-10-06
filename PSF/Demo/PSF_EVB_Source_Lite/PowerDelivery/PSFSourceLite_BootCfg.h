@@ -222,7 +222,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  | (AsVCONNSrc_Accept_VCONNSwap << 10) | (AsNotVCONNSrc_Accept_VCONNSwap << 11))
 
 
-
+/* To-do: VDM - Add #defines for VDM Header formation */
 
 void PSF_LoadConfig(); 
 

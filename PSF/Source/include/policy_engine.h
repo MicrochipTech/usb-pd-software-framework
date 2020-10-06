@@ -113,10 +113,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 	Example:
 	<code>
-	#define PE_N_BUSY_COUNT		7
+	#define PE_N_BUSY_COUNT		5
 	</code>
 **************************************************************************************************/
-#define PE_N_BUSY_COUNT                 7
+#define PE_N_BUSY_COUNT                 5
 
 #if (TRUE == INCLUDE_PD_3_0)
 	/*Current Spec Role*/
@@ -183,8 +183,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_VDM_OBJ_POS_MASK             0x700
 #define PE_VDM_SVID_MASK                0xFFFF0000
 
-#define PE_VDM_HEADER_HIGH_VER      0xFF00A001
-#define PE_VDM_HEADER_LOW_VER       0xFF008001
+#define PE_VDM_HEADER_HIGH_VER          0xFF00A001
+#define PE_VDM_HEADER_LOW_VER           0xFF008001
 
 #define PE_GET_VDM_CMD(VDM_HEADER)              (VDM_HEADER & PE_VDM_COMMAND_MASK)
 #define PE_GET_VDM_CMD_TYPE(VDM_HEADER)         ((VDM_HEADER & PE_VDM_COMMAND_TYPE_MASK) >> PE_VDM_COMMAND_TYPE_POS)
@@ -203,9 +203,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* PPS Status message defines */
 #define PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES 4
 #define PE_PPS_STATUS_DATA_OBJ_CNT             2 
-
-/*--------------Run Time Config--------------------*/
-#define PE_DISCOVER_ID_INITIATED               BIT(0)
 
 typedef enum {
     /* Source Policy Engine Main State */ 
@@ -253,9 +250,7 @@ typedef enum {
     ePE_VCS_SEND_PS_RDY,
     //---------------------------VDM states---------------------------------------//
     ePE_VDM_GET_IDENTITY,
-    ePE_INIT_PORT_VDM_REQUEST, 
-    ePE_INIT_PORT_VDM_IDENTITY_ACKED,         
-    ePE_INIT_PORT_VDM_IDENTITY_NAKED,
+    ePE_INIT_PORT_VDM_REQUEST,       
     //--------------------------DR_SWAP States-----------------------------------//
     ePE_DRS_EVALUATE_SWAP,
     ePE_DRS_ACCEPT_SWAP,
@@ -545,8 +540,10 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                             // Bit 5 - PR Swap In Progress Flag <p />
 	UINT8 u8PETimerID;                      // Policy Engine Timer ID
 	UINT8 u8PENoResponseTimerID;            // NoResponse Timer ID
-    UINT8 u8HardResetRcvdISR;               // Hard Reset received status
-    UINT8 u8PERuntimeConfig;                // Bit 0 - SOP VDM:Disc Identity initiated
+    UINT8 u8HardResetRcvdISR;               // Hard Reset received status  
+#if (TRUE == INCLUDE_PD_VDM)
+    UINT8 u8VDMBusyCounter;                 // VDM Busy Counter 
+#endif 
 }MCHP_PSF_STRUCT_PACKED_END POLICY_ENGINE_STATUS;
 
 // *****************************************************************************
@@ -639,18 +636,18 @@ void PE_RunStateMachine(UINT8 u8PortNum);
 void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
-        void PE_ReceiveMsgHandler(UINT8 u8PortNum, UINT32 u32Header);
+        void PE_ReceiveMsgHandler(UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf);
 
     Summary:
         This API is called to process the received PD message and do the state transition in 
-        policy engine state machine depending on the current policy engine state and substate
+        policy engine state machine depending on the current policy engine state and sub-state
 
     Devices Supported:
         UPD350 REV A
 
     Description:
         This API is called to process the received PD message and do the state transition in 
-        policy engine state machine depending on the current policy engine state and substate
+        policy engine state machine depending on the current policy engine state and sub-state
 
     Conditions:
         None
@@ -658,6 +655,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
     Input:
         u8PortNum - Port Number.
         u32Header  - Header of the received PD message
+        pu8DataBuf - Pointer to the 8 bit buffer of received PD message object
 
     Return:
         None.
@@ -665,7 +663,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
     Remarks:
         None.
 **************************************************************************************************/
-void PE_ReceiveMsgHandler(UINT8 u8PortNum, UINT32 u32Header);
+void PE_ReceiveMsgHandler(UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf);
 /**************************************************************************************************
     Function:
         UINT8 PE_ValidateMessage(UINT8 u8PortNum, UINT32 u32Header);
