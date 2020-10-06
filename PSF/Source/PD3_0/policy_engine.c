@@ -1222,7 +1222,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #endif 
                 case PE_CTRL_NOT_SUPPORTED:
                 {
-#if (TRUE == INCLUDE_PD_VDM)
                     if (ePE_INIT_PORT_VDM_REQUEST == gasPolicyEngine[u8PortNum].ePEState)
                     {
                         /* Kill the VDM Sender Response Timer */
@@ -1231,8 +1230,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_INIT_PORT_VDM_REQUEST,\
                                                                    ePE_INIT_PORT_VDM_REQUEST_NO_RESPONSE_SS);                                                     
                     }
-#endif 
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
                     else if (ePE_SRC_GET_SINK_STATUS == gasPolicyEngine[u8PortNum].ePEState)
                     {
                         /* Kill the Sender Response Timer */
@@ -1241,8 +1238,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SRC_GET_SINK_STATUS,\
                                                                    ePE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS);                                                                                                    
                     }
-#endif
-#if (TRUE == INCLUDE_PD_VCONN_SWAP)
                     else if (ePE_VCS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState)
                     {
                         /* Kill the Sender Response Timer */
@@ -1251,8 +1246,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_VCS_SEND_SWAP,\
                                                                    ePE_VCS_SEND_SWAP_NO_RESPONSE_SS);                          
                     }
-#endif 
-#if (TRUE == INCLUDE_PD_PR_SWAP)
                     else if (ePE_PRS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState)
                     {
                         /* Kill the Sender Response Timer */
@@ -1261,8 +1254,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_PRS_SEND_SWAP,\
                                                                    ePE_PRS_SEND_SWAP_NO_RESPONSE_SS);                                                  
                     }
-#endif 
-#if (TRUE == INCLUDE_PD_DR_SWAP)
                     else if (ePE_DRS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState)
                     {
                         /* Kill the Sender Response Timer */
@@ -1271,7 +1262,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_DRS_SEND_SWAP,\
                                                                    ePE_DRS_SEND_SWAP_NO_RESPONSE_SS);                                                                          
                     }
-#endif 
                     else
                     {
                         if ((gasPolicyEngine[u8PortNum].ePEState != ePE_SRC_READY) && 

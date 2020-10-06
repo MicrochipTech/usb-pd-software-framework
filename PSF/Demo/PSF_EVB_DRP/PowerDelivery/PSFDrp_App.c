@@ -246,22 +246,15 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break;
         }
         
-        case eMCHP_PSF_PARTNER_IDENTITY_DISCOVERED:
+        case eMCHP_PSF_VDM_RESPONSE_RCVD:
         {
-            /* Partner identity received from port partner is available in 
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity array */            
             break;
         }
         
-        case eMCHP_PSF_PARTNER_IDENTITY_NAKED:
+        case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
         {
             break; 
-        }
-        
-        case eMCHP_PSF_PARTNER_IDENTITY_NOT_RCVD:
-        {            
-            break; 
-        }
+        }                
         
         case eMCHP_PSF_PORT_DISABLED:
         {
