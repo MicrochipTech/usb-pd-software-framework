@@ -1475,6 +1475,9 @@ typedef enum
     10       R/W          R/W      Initiate a Structured VDM request       
                                     * '0' PSF has not received any Structured VDM request.
                                     * '1' PSF has received a Structured VDM request. 									 
+                                    *  User Application shall configure the respective VDM 
+                                        Header in u32VDMHeader variable of sVDMPerPortData 
+                                        structure
                                     *  eMCHP_PSF_VDM_RESPONSE_RCVD notification will 
                                         will be posted for an ACK/NAK response, 
                                         eMCHP_PSF_VDM_RESPONSE_NOT_RCVD

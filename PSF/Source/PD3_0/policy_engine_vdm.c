@@ -34,10 +34,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #if (TRUE == INCLUDE_PD_VDM)
 
 void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header)
-{
-    /* Transmit Message Type - SOP SOP' SOP" */ 
-    UINT8 u8TransmitSOP = PRL_SOP_TYPE; 
-    
+{     
     /* VDM Command Type */
     UINT8 u8VDMCmdType = SET_TO_ZERO; 
     
@@ -56,13 +53,10 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
 	/* Transmit Flag */
 	UINT8 u8IsTransmit = FALSE;
     
-    /* Current Power Role */
-    UINT8 u8CurrPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum); 
-    
     ePolicyState eTxDoneSt;
     ePolicySubState eTxDoneSS;
     
-    if (PD_ROLE_SOURCE == u8CurrPwrRole)
+    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         eTxDoneSt = ePE_SRC_READY;
         eTxDoneSS = ePE_SRC_READY_END_AMS_SS;
@@ -198,7 +192,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
 	/* Transmit the message if u8IsTransmit is set */
     if (TRUE == u8IsTransmit)
     {
-		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, u32TransmitHeader, \
+		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
                     (UINT8 *)u32pTransmitDataObj, pfnTransmitCB, u32TransmitTmrIDTxSt); 
     }
     
