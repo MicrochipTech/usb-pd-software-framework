@@ -558,8 +558,8 @@ Source/Sink Power delivery objects*/
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(3)
 #define DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT      BIT(4)
 #define DPM_CLIENT_REQ_RENEGOTIATE               BIT(5)
-/*Bits 9:6 reserved for other client requests.*/
-#define DPM_CLIENT_REQ_GET_PARTNER_IDENTITY      BIT(10)
+/*Bits 9:6 reserved for other client requests */
+#define DPM_CLIENT_REQ_INITIATE_VDM              BIT(10)
 
 /***************************Internal Events Defines**********************************/
 #define DPM_INT_EVT_INITIATE_GET_SINK_CAPS          BIT(0)
@@ -567,7 +567,7 @@ Source/Sink Power delivery objects*/
 #define DPM_INT_EVT_INITIATE_VCONN_SWAP             BIT(2)
 #define DPM_INT_EVT_INITIATE_PR_SWAP                BIT(3)
 #define DPM_INT_EVT_INITIATE_DR_SWAP                BIT(4)
-#define DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY   BIT(5)
+#define DPM_INT_EVT_INITIATE_VDM                    BIT(5)
 #define DPM_INT_EVT_INITIATE_ALERT                  BIT(6)
 #define DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
 #define DPM_INT_EVT_PORT_DISABLE            		BIT(8)

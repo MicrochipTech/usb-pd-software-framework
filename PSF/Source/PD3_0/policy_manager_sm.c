@@ -583,6 +583,15 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             DPM_OnTypeCDetach(u8PortNum);
             break;
         }
+        case eMCHP_PSF_VDM_RESPONSE_RCVD:
+        case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
+        {
+            /* Clear the VDM internal event since the AMS is complete */
+            #if (TRUE == INCLUDE_PD_VDM)
+            gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VDM);
+            #endif
+            break; 
+        }
         default:
             break;
     }
@@ -703,14 +712,14 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
         } /*DPM_CLIENT_REQ_RENEGOTIATE*/
 #if (TRUE == INCLUDE_PD_VDM)
-        else if (DPM_CLIENT_REQ_GET_PARTNER_IDENTITY & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+        else if (DPM_CLIENT_REQ_INITIATE_VDM & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
         {
             /* Clear the request since the request is accepted and going to be handled */
             gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_GET_PARTNER_IDENTITY);
+                                      ~(DPM_CLIENT_REQ_INITIATE_VDM);
             
             /* Request DPM for initiating Get Partner Identity */
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY);            
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VDM);            
         }  /* DPM_CLIENT_REQ_GET_PARTNER_IDENTITY */
 #endif 
         else
@@ -859,16 +868,16 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         }
 #endif/*INCLUDE_PD_DR_SWAP*/
 #if (TRUE == INCLUDE_PD_VDM)
-        else if (DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY == (gasDPM[u8PortNum].u16DPMInternalEvents &\
-                                                    DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY))
+        else if (DPM_INT_EVT_INITIATE_VDM == (gasDPM[u8PortNum].u16DPMInternalEvents &\
+                                                    DPM_INT_EVT_INITIATE_VDM))
         {
-            /*Clear the Internal event since it is processed*/
-            gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY);
+            /* Internal event will be cleared once the VDM AMS is complete.
+               No need to do it here */
             
             /* Move the Policy Engine to ePE_INIT_PORT_VDM_IDENTITY_REQUEST state */
             gasPolicyEngine[u8PortNum].ePEState = ePE_INIT_PORT_VDM_REQUEST; 
             gasPolicyEngine[u8PortNum].ePESubState = ePE_INIT_PORT_VDM_REQUEST_ENTRY_SS;
-            u16IsAMSInProgress = DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY;            
+            u16IsAMSInProgress = DPM_INT_EVT_INITIATE_VDM;            
         }
 #endif /* INCLUDE_PD_VDM */
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)

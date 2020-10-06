@@ -1445,9 +1445,6 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
         gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;        
-        #if (TRUE == INCLUDE_PD_VDM)
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerIdentity[u8Index] = RESET_TO_ZERO;
-        #endif
     }
     gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = RESET_TO_ZERO; 
@@ -1481,9 +1478,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
                                             & DPM_INT_EVT_INITIATE_ALERT);
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
-    gasDPM[u8PortNum].u16DPMStatus &= ~DPM_SWAP_REJECT_STS_MASK;
-    
-    gasPolicyEngine[u8PortNum].u8PERuntimeConfig = SET_TO_ZERO; 
+    gasDPM[u8PortNum].u16DPMStatus &= ~DPM_SWAP_REJECT_STS_MASK;    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
@@ -1498,14 +1493,24 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
     #endif
 
-    /* Clear the VDM registers */
-    #if (TRUE == INCLUDE_PD_SOURCE)
+    /* Clear the VDM registers */    
     for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_VDO_CNT; u8Index++)
     {
+        #if (TRUE == INCLUDE_PD_SOURCE)
         gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity[u8Index] = RESET_TO_ZERO;
+        #endif 
+        #if (TRUE == INCLUDE_PD_VDM)
+        gasCfgStatusData.sVDMPerPortData[u8PortNum].u32aPartnerPDIdentity[u8Index] = RESET_TO_ZERO;
+        #endif
     }
+    #if (TRUE == INCLUDE_PD_SOURCE)
     gasCfgStatusData.sPerPortData[u8PortNum].u8CableIdentityCnt = RESET_TO_ZERO;
-    #endif 
+    #endif
+
+    #if (TRUE == INCLUDE_PD_VDM)
+    gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader = RESET_TO_ZERO;
+    gasCfgStatusData.sVDMPerPortData[u8PortNum].u8PartnerPDIdentityCnt = RESET_TO_ZERO;
+    #endif      
 }
 
 /********************* DPM API to check if PPS APDO is advertised ********************/
@@ -1726,7 +1731,7 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     gasDPM[u8PortNum].u8VDMBusyTmrID = MAX_CONCURRENT_TIMERS;
 
     /* Re-initiate the corresponding VDM command on Busy Timer expiry */
-    DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY);
+    DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VDM);
 }
 
 #endif 
