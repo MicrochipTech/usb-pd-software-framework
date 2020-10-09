@@ -221,8 +221,24 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  | (AsSnk_Accept_PRSwap << 7) | (AsVCONNSrc_Req_VCONNSwap << 8) | (AsNotVCONNSrc_Req_VCONNSwap << 9)\
  | (AsVCONNSrc_Accept_VCONNSwap << 10) | (AsNotVCONNSrc_Accept_VCONNSwap << 11))
 
+/***********************Defines to form VDM Header************************/
+/* VDM Header (From Table 6-25 Structured VDM Header of PD 3.0 Spec)
+   B31-16  - Standard or Vendor ID (SVID) 
+   B15     - VDM Type 
+   B14-13  - Structured VDM Version
+   B12-11  - Reserved 
+   B10-8   - Object Position 
+   B7-6    - Command Type 
+   B5      - Reserved 
+   B4-0    - Command */
 
-/* To-do: VDM - Add #defines for VDM Header formation */
+#define CFG_FORM_VDM_HEADER(svid,vdmType,svdmVersion,objPos,cmdType,cmd) \
+    (((svid) << 16) | \
+    ((vdmType) << 15) | \
+    ((svdmVersion) << 13) | \
+    ((objPos) << 8) | \
+    ((cmdType) << 6) | \
+    (cmd))
 
 void PSF_LoadConfig(); 
 
