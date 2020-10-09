@@ -257,10 +257,10 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             are not supported*/
             /*Any control message with message type between soft reset and Not supported are
             not supported as they are reserved fields*/
-            /* Get_Status and Get_PPS_Status messages are supported for Source
-            and if any APDOs are advertised to port partner.*/
             if ((PE_CTRL_GET_STATUS == u8MsgType) || (PE_CTRL_GET_PPS_STATUS == u8MsgType))
             {
+                /* Get_Status and Get_PPS_Status messages are supported for Source
+                and if any APDOs are advertised to port partner.*/                
                 #if (FALSE == INCLUDE_PD_SOURCE_PPS)
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 #else
@@ -304,6 +304,14 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 }
             }
+            else if (PE_CTRL_GET_SOURCE_CAP == u8MsgType)
+            {
+                /* Get Source Caps shall be supported for Source only and DRP ports */
+                if (PD_ROLE_SINK == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
+                {
+                    u8RetVal = PE_UNSUPPORTED_MSG;
+                }                
+            }
             else if ((u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
                     && (u8MsgType < PE_CTRL_NOT_SUPPORTED)))
             {
@@ -311,11 +319,6 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             }
             else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
                      ((PE_CTRL_PING == u8MsgType) || (PE_CTRL_GOTO_MIN == u8MsgType)))
-            {
-                u8RetVal = PE_UNSUPPORTED_MSG;
-            }
-            else if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
-                     ((PE_CTRL_GET_SOURCE_CAP == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
@@ -1024,10 +1027,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 }
                 case PE_CTRL_GET_SOURCE_CAP:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_SOURCE_CAP: Get Source Cap Received\r\n");
                     if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
-                    {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_SOURCE_CAP: Get Source Cap Received\r\n");
+                    {                        
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
 
@@ -1040,6 +1043,13 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         }
 #endif 
                     }
+#if (TRUE == INCLUDE_PD_DRP)
+                    else if (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState)
+                    {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_GIVE_CAP;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_GIVE_CAP_ENTRY_SS;                                                
+                    }
+#endif 
                     else
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);
@@ -1357,11 +1367,10 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
     }
 #if (FALSE != INCLUDE_PDFU)
     static UINT8 u8TempRespBuffer[3];
-#endif
-#if ((TRUE == INCLUDE_PD_SINK) || (TRUE == INCLUDE_PD_DRP))       
+#endif   
     UINT32 u32aDataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
     UINT8 u8DataObjCnt;
-#endif 
+
     switch (gasPolicyEngine[u8PortNum].ePEState)
     {
        case ePE_SOFT_RESET:
@@ -1756,17 +1765,16 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             }
         break;
         #endif
-        
-#if ((TRUE == INCLUDE_PD_SINK) || (TRUE == INCLUDE_PD_DRP))        
+               
         /* <ePE_GIVE_CAP>: This PE state can be entered when
            i.   a Dual Role Source Port receives Get Sink Caps message 
            ii.  a Dual Role Sink Port receives Get Source Caps message 
            iii. a Sink only Port receives Get Sink Caps message 
-           iv.  a Sink only Port receives Get Sink Caps Extended message 
-           Note: Scenarios iii and iv are common for Sink only and DRP ports 
-           They are handled in a generic manner in this state to reduce code size
+           Note: Scenarios iii is common for Sink only and DRP ports 
+           It is handled in a generic manner in this state to reduce code size.
            In future, this same state can be used when a Source only port 
-           receives Get Source Caps Extended message */
+           receives Get Source Caps Extended message or a Sink only or Dual 
+           Role Source/Sink Port receives a Get Sink Caps Extended message */
 
         case ePE_GIVE_CAP:
         {
@@ -1779,14 +1787,23 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP RCVD\r\n");
                         
+                        #if (TRUE == INCLUDE_PD_SINK)
                         DPM_GetSinkCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);                    
-                         
+                        #endif                      
+
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SINK_CAP,\
                                                          u8DataObjCnt, PE_NON_EXTENDED_MSG);                                                               
                     }
                     else if (PE_CTRL_GET_SOURCE_CAP == PRL_GET_MESSAGE_TYPE (u32Header))
                     {
-                        /* Get Source Cap support to be added */
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_GIVE_CAP_ENTRY_SS:GET_SOURCE_CAP RCVD\r\n");
+
+                        #if (TRUE == INCLUDE_PD_SOURCE)                        
+                        DPM_GetSourceCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);
+                        #endif 
+
+                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,\
+                                                         u8DataObjCnt, PE_NON_EXTENDED_MSG);                                                                                       
                     }
                     else
                     {
@@ -1817,7 +1834,6 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             }
             break; 
         }
-#endif
         
         default:
         {
