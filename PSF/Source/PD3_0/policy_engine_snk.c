@@ -511,61 +511,12 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
            }
            break;        
         }            
-        /*This State is set by PE_ReceiveMsgHandler API if Get Sink Caps is received if SNK ready state*/
-        case ePE_SNK_GIVE_SINK_CAP:
-        {              
-            switch (gasPolicyEngine[u8PortNum].ePESubState)
-            {
-                case ePE_SNK_GIVE_SINK_CAP_ENTRY_SS:
-                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_GIVE_SINK_CAP: Entered the state\r\n");
-
-                    UINT16 u16Header;
-                    UINT8 u8SinkPDOCnt;
-
-                    /*Request Device policy manager for Sink Capability Message*/
-                    /*If the Port does not have sink capability, Send Reject/Not Supported message*/
-                    DPM_GetSinkCapabilities(u8PortNum, &u8SinkPDOCnt, u32DataObj);                    
-                    
-                    u16Header = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SINK_CAP,\
-                                                         u8SinkPDOCnt, PE_NON_EXTENDED_MSG);
-                
-                    /*Set the PD message transmitter  API to Send Sink Capability Message*/
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u16TransmitHeader = u16Header;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
-                    
-                    /*Set the transmitter callback to transition to Soft reset state if
-                    message transmission fails*/
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_READY,\
-                                             ePE_SNK_READY_END_AMS_SS,ePE_SEND_SOFT_RESET,\
-                                             ePE_SEND_SOFT_RESET_SOP_SS);
-                    u8IsTransmit = TRUE;
-                    
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_GIVE_SINK_CAP_IDLE_SS;
-                    
-                    break;
-
-                }
-                /*Wait here until the Sink capability message is sent*/
-                case ePE_SNK_GIVE_SINK_CAP_IDLE_SS:
-                { 
-                    /* Hook to notify PE state machine entry into idle sub-state */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
-                    break;  
-                }
-                default:
-                {
-                    break;
-                }
-            }
-            break;
-        }    
+  
         default:
         {
             break;
         }
-     }  
+    }  
 
     /*Send PD message if the variable "u8IsTransmit" is set as true inside the state machine*/
 	if (TRUE == u8IsTransmit)

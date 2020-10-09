@@ -238,8 +238,6 @@ typedef enum {
 	ePE_SNK_READY,
 	ePE_SNK_HARD_RESET,
 	ePE_SNK_TRANSITION_TO_DEFAULT,
-	ePE_SNK_GIVE_SINK_CAP,
-	ePE_SNK_GIVE_SOURCE_CAP,
 	/*VCONN Swap related States*/
     ePE_VCS_SEND_SWAP,
     ePE_VCS_EVALUATE_SWAP,
@@ -273,6 +271,7 @@ typedef enum {
     ePE_SEND_REJECT,
 	ePE_BIST_MODE,
     ePE_PDFU_MODE,
+    ePE_GIVE_CAP,
 	ePE_INVALIDSTATE   /* Number of states. Not an actual state. */
 }ePolicyState;
 
@@ -372,9 +371,6 @@ typedef enum {
     ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS,
     ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS,
     ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS,
-    /*ePE_SNK_GIVE_SINK_CAP*/
-    ePE_SNK_GIVE_SINK_CAP_ENTRY_SS,
-    ePE_SNK_GIVE_SINK_CAP_IDLE_SS,
     //----------------------------VCONN SWAP Sub states-------------------------------//
     ePE_VCS_SEND_SWAP_ENTRY_SS,
     ePE_VCS_SEND_SWAP_MSG_DONE_SS,
@@ -457,8 +453,7 @@ typedef enum {
 	/*ePE_BIST_MODE*/
 	ePE_BIST_MODE_ENTRY_SS,
 	ePE_BIST_MODE_IDLE_SS,
-	ePE_BIST_MODE_EXIT_SS,
-    
+	ePE_BIST_MODE_EXIT_SS,    
     /*ePE_PDFU_MODE*/
     ePE_FWUP_ENUMERATION_SS,
     ePE_FWUP_RECONFIG_ENTRY_SS,
@@ -466,6 +461,9 @@ typedef enum {
     ePE_FWUP_TRANSFER_SS,
     ePE_FWUP_VALIDATION_SS,
     ePE_FWUP_MANIFEST_SS,
+    /* ePE_GIVE_CAP */ 
+    ePE_GIVE_CAP_ENTRY_SS,
+    ePE_GIVE_CAP_IDLE_SS,
 	ePE_INVALIDSUBSTATE
 
 }ePolicySubState;
