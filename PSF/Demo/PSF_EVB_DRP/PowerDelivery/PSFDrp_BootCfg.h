@@ -311,7 +311,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_VCONN_SWAP_ACCEPT_AS_VCONN_SRC     1
 #define CFG_PORT_0_VCONN_SWAP_ACCEPT_NOT_AS_VCONN_SRC 1
 
-
 #define CFG_PORT_1_AS_DFP_REQUEST_DR_SWAP             1
 #define CFG_PORT_1_AS_UFP_REQUEST_DR_SWAP             0
 #define CFG_PORT_1_AS_DFP_ACCEPT_DR_SWAP              1
@@ -421,6 +420,25 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 	- 2 (DRP) */
 #define CFG_GET_CONFIGURED_POWER_ROLE(u8PortNum)  \
     (gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & (BIT(0)|BIT(1)))
+
+/***********************Defines to form VDM Header************************/
+/* VDM Header (From Table 6-25 Structured VDM Header of PD 3.0 Spec)
+   B31-16  - Standard or Vendor ID (SVID) 
+   B15     - VDM Type 
+   B14-13  - Structured VDM Version
+   B12-11  - Reserved 
+   B10-8   - Object Position 
+   B7-6    - Command Type 
+   B5      - Reserved 
+   B4-0    - Command */
+
+#define CFG_FORM_VDM_HEADER(svid,vdmType,svdmVersion,objPos,cmdType,cmd) \
+    (((svid) << 16) | \
+    ((vdmType) << 15) | \
+    ((svdmVersion) << 13) | \
+    ((objPos) << 8) | \
+    ((cmdType) << 6) | \
+    (cmd))
 
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData); 
 
