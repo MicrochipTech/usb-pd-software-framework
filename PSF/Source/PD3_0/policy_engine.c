@@ -270,7 +270,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                     }
                 #endif    
             }
-            else if(PE_CTRL_DR_SWAP == u8MsgType)
+            else if (PE_CTRL_DR_SWAP == u8MsgType)
             {
                 /* DR Swap will be supported only when Dual Role Data(DRD)
                    capability is enabled */
@@ -296,18 +296,24 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                     }
                 #endif 
             }
-            else if((u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
+            else if (PE_CTRL_GET_SINK_CAP == u8MsgType)
+            {
+                /* Get Sink Caps shall be supported for Sink only and DRP ports */
+                if (PD_ROLE_SOURCE == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
+                {
+                    u8RetVal = PE_UNSUPPORTED_MSG;
+                }
+            }
+            else if ((u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
                     && (u8MsgType < PE_CTRL_NOT_SUPPORTED)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
             else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
-                     ((PE_CTRL_GET_SINK_CAP == u8MsgType) || (PE_CTRL_PING == u8MsgType)\
-                        || (PE_CTRL_GOTO_MIN == u8MsgType)))
+                     ((PE_CTRL_PING == u8MsgType) || (PE_CTRL_GOTO_MIN == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
-
             else if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
                      ((PE_CTRL_GET_SOURCE_CAP == u8MsgType)))
             {
@@ -1044,13 +1050,12 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 
                 case PE_CTRL_GET_SINK_CAP:
                 {
-                    /*Discard VDM AMS and handle the PD message here*/
-                    if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                      (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                    if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))   
                     {
-                        /*Go to "ePE_SNK_GIVE_SINK_CAP" state if GET_SINK_CAP message is received*/
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_GIVE_SINK_CAP;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_GIVE_SINK_CAP_ENTRY_SS;
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_GIVE_CAP;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_GIVE_CAP_ENTRY_SS;                        
                     }
                     else
                     {
@@ -1353,6 +1358,10 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 #if (FALSE != INCLUDE_PDFU)
     static UINT8 u8TempRespBuffer[3];
 #endif
+#if ((TRUE == INCLUDE_PD_SINK) || (TRUE == INCLUDE_PD_DRP))       
+    UINT32 u32aDataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
+    UINT8 u8DataObjCnt;
+#endif 
     switch (gasPolicyEngine[u8PortNum].ePEState)
     {
        case ePE_SOFT_RESET:
@@ -1747,6 +1756,68 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             }
         break;
         #endif
+        
+#if ((TRUE == INCLUDE_PD_SINK) || (TRUE == INCLUDE_PD_DRP))        
+        /* <ePE_GIVE_CAP>: This PE state can be entered when
+           i.   a Dual Role Source Port receives Get Sink Caps message 
+           ii.  a Dual Role Sink Port receives Get Source Caps message 
+           iii. a Sink only Port receives Get Sink Caps message 
+           iv.  a Sink only Port receives Get Sink Caps Extended message 
+           Note: Scenarios iii and iv are common for Sink only and DRP ports 
+           They are handled in a generic manner in this state to reduce code size
+           In future, this same state can be used when a Source only port 
+           receives Get Source Caps Extended message */
+
+        case ePE_GIVE_CAP:
+        {
+            switch(gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_GIVE_CAP_ENTRY_SS:
+                {                                                      
+                    /*Request Device Policy Manager for the Capability Message*/
+                    if (PE_CTRL_GET_SINK_CAP == PRL_GET_MESSAGE_TYPE (u32Header))
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP RCVD\r\n");
+                        
+                        DPM_GetSinkCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);                    
+                         
+                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SINK_CAP,\
+                                                         u8DataObjCnt, PE_NON_EXTENDED_MSG);                                                               
+                    }
+                    else if (PE_CTRL_GET_SOURCE_CAP == PRL_GET_MESSAGE_TYPE (u32Header))
+                    {
+                        /* Get Source Cap support to be added */
+                    }
+                    else
+                    {
+                        /* Do Nothing */
+                    }
+                    
+                    u32pTransmitDataObj = u32aDataObj;
+                    
+                    /*Set the transmitter callback to transition to Soft reset state if
+                    message transmission fails*/
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(eTxDoneSt,\
+                                             eTxDoneSS,ePE_SEND_SOFT_RESET,\
+                                             ePE_SEND_SOFT_RESET_SOP_SS);
+                    u8IsTransmit = TRUE;
+                    
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_GIVE_CAP_IDLE_SS;
+                                        
+                    break;
+                }
+                case ePE_GIVE_CAP_IDLE_SS:
+                {
+                    break; 
+                }
+                default:
+                {
+                    break; 
+                }
+            }
+            break; 
+        }
+#endif
         
         default:
         {

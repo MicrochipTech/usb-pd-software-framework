@@ -244,8 +244,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                              Send Soft reset since PD connected presently*/
                             u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
                                                         ePE_SRC_SEND_CAP_GOODCRC_RCVD_SS, \
-                                                          ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);                                                  
-                          
+                                                          ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);                                                                            
                         }
                         else
                         {                          
@@ -267,7 +266,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_SEND_CAP_IDLE_SS:
                 {
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;  
                 }
