@@ -1143,25 +1143,6 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void DPM_ResetVCONNErrorCnt (UINT8 u8PortNum);
-    Summary:
-        This API is used to reset the VCONN Error Count  
-    Devices Supported:
-        UPD350 REV A
-    Description:
-        This API is used to reset the VCONN Error Count to Zero.
-    Conditions:
-        None
-    Input:
-        u8PortNum       - Port Number.
-    Return:
-        None.
-    Remarks:
-        None.
-**************************************************************************************************/
-void DPM_ResetVCONNErrorCnt (UINT8 u8PortNum);
-/**************************************************************************************************
-    Function:
         void DPM_StateMachineInit();
     Summary:
         This API refers to initial the Device Policy Manager 
