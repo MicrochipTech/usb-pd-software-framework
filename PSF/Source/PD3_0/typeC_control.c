@@ -1177,7 +1177,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Set BLK_PD_MSG. Done in cronus*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
                         
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SNK_ENTRY_SS;
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_ENTRY_SS;
                         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SNK;                    
                     }                    
                     break;
@@ -2790,13 +2790,18 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 		{	
             /*Setting the Powered cable presence in u8PortSts variable*/
             gasTypeCcontrol[u8PortNum].u8PortSts |= TYPEC_PWDCABLE_PRES_MASK;
-            
-			DPM_ResetVCONNErrorCnt (u8PortNum);
+
             DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Powered Cable is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n"); 
             
-            /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is TYPEC_ATTACHED_SRC*/
-            if (TYPEC_ATTACHED_SRC == u8TypeCState)
+            /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is TYPEC_ATTACHED_SRC. 
+              A PR_Swap from Sink to Source should not be considered 
+              as a detach. So, don't do anything */
+            if ((TYPEC_ATTACHED_SRC == u8TypeCState)
+                #if (TRUE == INCLUDE_PD_PR_SWAP)
+                    && (u8TypeCSubState != TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS)
+                #endif
+                    )
             {
                 u8TypeCState = TYPEC_UNATTACHED_WAIT_SRC;
                 u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS;            
@@ -2909,36 +2914,27 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 /*Clearing the Powered cable presence in u8PortSts variable*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
                 
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: No Devices are present\r\n");
-                
-                /* A PR_Swap from Sink to Source should not be considered 
-                   as a detach. So, don't do anything */
-                #if (TRUE == INCLUDE_PD_PR_SWAP)
-                if ((TYPEC_ATTACHED_SRC == u8TypeCState) && 
-                        (TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS == u8TypeCSubState)) 
-                {
-                    break; 
-                }
-                else
-                #endif 
-                {
-                    DPM_ResetVCONNErrorCnt (u8PortNum);
-                }
+                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: No Devices are present\r\n");                
                                                 
                 if(TYPEC_ATTACHWAIT_SRC == u8TypeCState)
                 {
                     /*Kill the TCC debounce timer running already*/
-                     TypeC_KillTypeCTimer(u8PortNum);
+                    TypeC_KillTypeCTimer(u8PortNum);
                     
                     /*Move to TYPEC_UNATTACHED_SRC state  if current state is 
                     TYPEC_ATTACHWAIT_SRC*/
                     u8TypeCState = TYPEC_UNATTACHED_SRC;
                     u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;                              
                 }
-                else if (TYPEC_ATTACHED_SRC == u8TypeCState)
+                else if ((TYPEC_ATTACHED_SRC == u8TypeCState)
+                #if (TRUE == INCLUDE_PD_PR_SWAP)
+                    && (u8TypeCSubState != TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS)
+                #endif
+                        )
                 {
                     /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is 
-                    TYPEC_ATTACHED_SRC*/
+                    TYPEC_ATTACHED_SRC. A PR_Swap from Sink to Source should 
+                    not be considered as a detach. So, don't do anything */
                     u8TypeCState = TYPEC_UNATTACHED_WAIT_SRC;
                     u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS; 
                 }
@@ -2997,29 +2993,29 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             TypeC_DecodeCCSourceRpValue(u8PortNum);
                        
             if (TYPEC_ATTACHWAIT_SNK == u8TypeCState)
-            {
-                    /*Kill the TPD Debounce timer running for last detach event or
-                    Kill the TCC Debounce timer running for previous attach event*/
-                    TypeC_KillTypeCTimer(u8PortNum);                    
+            {                    
+                /*Kill the TPD Debounce timer running for last detach event or
+                Kill the TCC Debounce timer running for previous attach event*/
+                TypeC_KillTypeCTimer(u8PortNum);                    
             }
             else if ((TYPEC_ATTACHED_SNK == u8TypeCState) && ((((UINT8)TYPEC_ATTACHED_SNK_RUN_SM_SS) == u8TypeCSubState) 
                         #if (TRUE == INCLUDE_PD_PR_SWAP)
                         || (((UINT8)TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS) == u8TypeCSubState)
                         #endif 
                         ))
-            {
-                 break;
+            {                
+                break;
             }
             else
             {
                  /*Attach event has occurred within the TPD Debounce timeout of previous Detach event
                  So in this case moving to the Attach wait state and also killing the 
                  TPD Debounce timer which is active currently*/
-                 if((TYPEC_ATTACHED_SNK == u8TypeCState) && (u8TypeCSubState != ((UINT8)TYPEC_ATTACHED_SNK_RUN_SM_SS)))
-                 {
+                if((TYPEC_ATTACHED_SNK == u8TypeCState) && (u8TypeCSubState != ((UINT8)TYPEC_ATTACHED_SNK_RUN_SM_SS)))
+                {
                     /*Kill the TPD Debounce timer running previously for detach event*/
                     TypeC_KillTypeCTimer(u8PortNum);                 
-                 }
+                }
                  
                 DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Source is Present in CC");
                 DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");                                                             
@@ -3040,21 +3036,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             /*Valid Detach event happens only when both the CC1 and CC2 are 0*/  
             if(SET_TO_ZERO == gasTypeCcontrol[u8PortNum].u8CC1MatchISR)
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: NO DEVICES ARE PRESENT\r\n");                
-                
-                /* A PR_Swap from Source to Sink should not be considered 
-                   as a detach. So, don't do anything */
-                #if (TRUE == INCLUDE_PD_PR_SWAP)
-                if ((TYPEC_ATTACHED_SNK == u8TypeCState) && 
-                        (TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS == u8TypeCSubState))
-                {
-                    break; 
-                }
-                else
-                #endif 
-                {
-                    DPM_ResetVCONNErrorCnt (u8PortNum);
-                }
+                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: NO DEVICES ARE PRESENT\r\n");                                
 
                 if (TYPEC_ATTACHWAIT_SNK == u8TypeCState)
                 {
@@ -3076,9 +3058,15 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                         u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
                     }
                 }
-                /*This condition occurs if VCONN Discharge is enabled in Attached Sink State
-                or Source detach occurs after VBUS drops below VSinkdisconnect */ 
-                else if (TYPEC_ATTACHED_SNK == u8TypeCState)                         
+                /* This condition occurs if VCONN Discharge is enabled in 
+                   Attached Sink State or Source detach occurs after VBUS drops 
+                   below VSinkdisconnect. A PR_Swap from Source to Sink should 
+                   not be considered as a detach. So, don't do anything */ 
+                else if ((TYPEC_ATTACHED_SNK == u8TypeCState) 
+                #if (TRUE == INCLUDE_PD_PR_SWAP)
+                    && (u8TypeCSubState != TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS)
+                #endif 
+                        )
                 {
                     u8TypeCState = TYPEC_UNATTACHED_SNK;
                     u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
@@ -3102,7 +3090,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
             }
             else if((TYPEC_UNATTACHED_SNK == u8TypeCState) || (TYPEC_ATTACHWAIT_SNK == u8TypeCState))
-            {
+            {               
                 /*This threshold will get hit when DFP Connected and advertising
                 proprietary current. Setting the state as TYPEC_ATTACHWAIT_SNK 
                 for Tcc Debounce and VBUS presence check*/
@@ -3528,7 +3516,7 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
     
     if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
     {   
-        DPM_ResetVCONNErrorCnt(u8PortNum);
+        gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;
         
         /*Disable VBUS by driving to vSafe0V*/
         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);

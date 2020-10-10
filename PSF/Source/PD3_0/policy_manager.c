@@ -149,10 +149,7 @@ void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable)
         TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);     
     }
 }
-void DPM_ResetVCONNErrorCnt (UINT8 u8PortNum)
-{  
-    gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;  
-}
+
 UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum)
 { 
     UINT8 u8IsVCONNSrc;
@@ -1421,6 +1418,9 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
         DPM_UpdateDataRole(u8PortNum, DPM_GET_DEFAULT_DATA_ROLE(u8PortNum));
     }
     #endif
+    
+    gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;
+    
     /* Clear the DPM variables whose data is no more valid after a Type C detach */
     gasDPM[u8PortNum].u8NegotiatedPDOIndex = RESET_TO_ZERO;
     gasDPM[u8PortNum].u32NegotiatedPDO = RESET_TO_ZERO;
