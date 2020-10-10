@@ -103,34 +103,39 @@ void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset,
 {
     #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
     
-	UINT8 u8Command [UPD_SPI_WRITE_CMD_LEN] = {UPD_SPI_WRITE_OPCODE,
-                                                HIBYTE(u16RegOffset),   /*HiByte of Register to written*/
-                                                LOBYTE(u16RegOffset)};  /*LoByte of Register to written*/
-	  
-    /*Enable SPI Select for communication*/
+    UINT8 u8WriteBuf [UPD_SPI_MAX_BYTE_WRITE];
+    UINT8 u8WriteBufLen = UPD_SPI_WRITE_CMD_LEN;
+
+    u8WriteBuf[INDEX_0] = UPD_SPI_WRITE_OPCODE;
+    u8WriteBuf[INDEX_1] = HIBYTE(u16RegOffset); /* HiByte of Register to be written*/ 
+    u8WriteBuf[INDEX_2] = LOBYTE(u16RegOffset); /* LoByte of Register to be written */
+
+    for (; u8WriteBufLen < (u8WriteDataLen + UPD_SPI_WRITE_CMD_LEN); u8WriteBufLen++)
+    {        
+        u8WriteBuf[u8WriteBufLen] = pu8WriteData[u8WriteBufLen - UPD_SPI_WRITE_CMD_LEN]; 
+    }
+    
+    /* Enable SPI Select for communication */
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_ASSERT);
     
-	(void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, u8Command, \
-            (UINT16)UPD_SPI_WRITE_CMD_LEN);
-    
-	(void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, pu8WriteData, u8WriteDataLen);
-    
+    (void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, u8WriteBuf, u8WriteBufLen);
+
     /*Disable SPI Select communication */
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSPI_CHIP_SELECT_FUNC, eGPIO_DEASSERT);
     
     #else
-    UINT8 u8Writebuffer [UPD_I2C_MAX_BYTE_WRITE];
+    UINT8 u8WriteBuf [UPD_I2C_MAX_BYTE_WRITE];
     UINT8 u8WriteBufLen = 2;
     
-    u8Writebuffer[INDEX_0] = HIBYTE (u16RegOffset);
-    u8Writebuffer[INDEX_1] = LOBYTE (u16RegOffset);
+    u8WriteBuf[INDEX_0] = HIBYTE (u16RegOffset);
+    u8WriteBuf[INDEX_1] = LOBYTE (u16RegOffset);
     
     for (; u8WriteBufLen < (u8WriteDataLen+2); u8WriteBufLen++)
     {
-         u8Writebuffer[u8WriteBufLen] = pu8WriteData[u8WriteBufLen - 2];
+         u8WriteBuf[u8WriteBufLen] = pu8WriteData[u8WriteBufLen - 2];
     }
 
-    (void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, u8Writebuffer, u8WriteBufLen);
+    (void)MCHP_PSF_HOOK_UPD_WRITE (u8PortNum, u8WriteBuf, u8WriteBufLen);
     
     #endif
 }

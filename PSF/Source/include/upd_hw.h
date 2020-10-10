@@ -55,6 +55,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_SPI_DUMMY_BYTE                          0x00
 #define UPD_SPI_WRITE_CMD_LEN                       3
 #define UPD_SPI_READ_CMD_LEN                        4
+#define UPD_SPI_MAX_BYTE_WRITE                      38 
 
 #else
 
