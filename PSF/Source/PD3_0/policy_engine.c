@@ -596,7 +596,12 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_INIT_PORT_VDM_REQUEST,
                                     ePE_INIT_PORT_VDM_REQUEST_RESP_RCVD_SS);
                         }
-                    }                    
+                    }        
+                    else
+                    {
+                        PE_HandleUnExpectedMsg (u8PortNum);
+                    }
+                    break; 
                 }
                 case PE_EXT_FW_UPDATE_REQUEST:
                 {

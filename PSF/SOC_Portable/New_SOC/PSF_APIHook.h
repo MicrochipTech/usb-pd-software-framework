@@ -1064,6 +1064,10 @@ Description:
     <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
     established with the Port partner.
     
+    <b> eMCHP_PSF_HARD_RESET_COMPLETE</b>: This event is posted when a Hard Reset is 
+    is sent or received by the port and as a result of which the port has entered into an 
+    implicit contract and is going to reestablish the explicit contract with the port partner. 
+  
     <b> eMCHP_PSF_PE_SRC_DISABLED</b>: This event is posted when Source policy
     engine enters PE_SRC_DISABLED indicating Power Delivery capable port partner 
     is not present and only Implicit contract is established with Sink port partner.
@@ -1223,6 +1227,7 @@ eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT,       // Port Recovered from VCONN powe
 eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT,        // Port Recovered from VBUS Power fault
 eMCHP_PSF_PE_SRC_DISABLED,              // Only Type C device is present, Partner does not support PD
 eMCHP_PSF_PD_CONTRACT_NEGOTIATED,      // PD Contract established with port partner
+eMCHP_PSF_HARD_RESET_COMPLETE,         // Hard Reset is sent or received by the port         
 eMCHP_PSF_SINK_CAPS_RCVD,              // Sink Caps received from Port Partner
 eMCHP_PSF_SINK_CAPS_NOT_RCVD,          // Sink Caps not received from Port Partner
 eMCHP_PSF_CAPS_MISMATCH,               // Capability mismatch with Source Port Partner

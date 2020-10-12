@@ -610,7 +610,7 @@ UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer
 
 /***************************************************************************************************/
 
-void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxCallback pfnTxCallback, UINT32  u32PkdPEstOnTxStatus)
+void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxCallback pfnTxCallback, UINT32 u32PkdPEstOnTxStatus)
 {
   	/* update the PDMAC globals */
 	gasPRL[u8PortNum].u32PkdPEstOnTxStatus = u32PkdPEstOnTxStatus;
@@ -628,7 +628,7 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
 		UPD_RegWriteByte (u8PortNum, PRL_TX_CTL_B, (PRL_TX_CTL_B_TX_CABLE_RESET | PRL_TX_CTL_B_GO));
 		
 		/* Tx state variable is set to Cable Reset*/
-	PRL_ChangeTxState (u8PortNum, PRL_TX_CABLE_RESET_ST);
+        PRL_ChangeTxState (u8PortNum, PRL_TX_CABLE_RESET_ST);
 	}
 	else
 	{
@@ -1016,6 +1016,15 @@ void PRL_OnHardResetComplete (UINT8 u8PortNum)
     /* Bug UP301-48 fix - when HR is received from port partner, EN_RCV bit is cleared. 
 		Hence, after HR completion it is re-enabled */
     UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_A, (PRL_RX_CTL_A_EN_RCV | PRL_RX_CTL_A_EN_SMBUS_MODE) );
+   
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+    /* If there has been a Data Role Swap the Hard Reset Shall cause the 
+       Port Data Role to be changed back to DFP for a Port with the Rp resistor 
+       asserted and UFP for a Port with the Rd resistor asserted.*/
+    DPM_UpdateDataRole (u8PortNum, DPM_GET_CURRENT_POWER_ROLE(u8PortNum)); 
+    
+    PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+#endif     
 		    
 }
 

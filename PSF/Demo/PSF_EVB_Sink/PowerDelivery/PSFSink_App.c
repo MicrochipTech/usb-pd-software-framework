@@ -147,6 +147,11 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break; 
         }
        
+        case eMCHP_PSF_HARD_RESET_COMPLETE:
+        {
+            break; 
+        }
+        
         case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
         {
 			/*Returning TRUE to enable PSF to handle Error Recovery*/

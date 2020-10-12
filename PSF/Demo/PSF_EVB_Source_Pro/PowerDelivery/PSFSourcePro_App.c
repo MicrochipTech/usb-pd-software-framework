@@ -145,6 +145,11 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break; 
         }
         
+        case eMCHP_PSF_HARD_RESET_COMPLETE:
+        {
+            break; 
+        }
+        
         case eMCHP_PSF_SINK_CAPS_NOT_RCVD: 
         {
             break; 

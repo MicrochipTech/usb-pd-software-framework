@@ -542,7 +542,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_CAPABILITY_RESPONSE_IDLE_SS:
                 {
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;  
                 }
@@ -642,7 +642,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         case ePE_SRC_WAIT_NEW_CAPABILITIES:
         {
 			/* Since our source capabilities are fixed this state will be in idle*/
-            /* Hook to notify PE state machine entry into idle substate */
+            /* Hook to notify PE state machine entry into idle sub-state */
             MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
             break;  
         }
@@ -726,7 +726,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     PE_KillPolicyEngineTimer (u8PortNum);  
                  
                     /* Send Hard Reset to Port Partner*/
-                    PRL_SendCableorHardReset(u8PortNum, PRL_SEND_HARD_RESET, NULL, 0);	
+                    PRL_SendCableorHardReset(u8PortNum, PRL_SEND_HARD_RESET, NULL, SET_TO_ZERO);	
 
                     /* Increment the HardReset Counter */
                     gasPolicyEngine[u8PortNum].u8HardResetCounter++;
@@ -1050,6 +1050,10 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
+                    
+                    /* Post eMCHP_PSF_HARD_RESET_COMPLETE notification */
+                    (void) DPM_NotifyClient (u8PortNum, eMCHP_PSF_HARD_RESET_COMPLETE);
+                    
                     break;
                 }
                
@@ -1329,7 +1333,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_GOODCRC_RECEIVED_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS\r\n"); 
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_IDLE_SS; 
                     
@@ -1350,7 +1354,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                    /* Sink Status not received within tSenderResponse. Send 
                       SINK_STATUS_NOT_RECEIVED notification and move to 
                       PE_SRC_READY state */ 
-                   DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS\r\n"); 
+                   DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS\r\n"); 
                                       
                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
