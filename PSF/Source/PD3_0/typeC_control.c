@@ -345,7 +345,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
           
 	            /*Setting the Initial State and Sub-state for Sink*/
 	            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
-	            gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SNK_ENTRY_SS; 
+	            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS; 
             }
 			else
 			{
@@ -353,7 +353,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             	TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);    
 
  				gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
-	            gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_DISABLED_ENTRY_SS; 
+	            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS; 
         
         		/* Change Policy Engine state and sub-state to invalid state */
 		        gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;

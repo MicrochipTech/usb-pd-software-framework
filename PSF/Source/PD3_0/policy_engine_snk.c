@@ -406,7 +406,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     
                     /* API to send HardReset is called*/
                     PRL_SendCableorHardReset(u8PortNum, PRL_SEND_HARD_RESET,\
-                                             NULL, 0x00);
+                                             NULL, SET_TO_ZERO);
                     
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_TRANSITION_TO_DEFAULT;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS;
@@ -497,10 +497,12 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         
                         /*Clearing the Hard Reset IN Progress status bit since Hard Reset 
                         is complete after the vSafe0V transition*/
-                        gasPolicyEngine[u8PortNum].u8PEPortSts &= ~ PE_HARDRESET_PROGRESS_MASK;
+                        gasPolicyEngine[u8PortNum].u8PEPortSts &= ~PE_HARDRESET_PROGRESS_MASK;
                  
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
-                    
+                        
+                        /* Post eMCHP_PSF_HARD_RESET_COMPLETE notification */
+                        (void) DPM_NotifyClient (u8PortNum, eMCHP_PSF_HARD_RESET_COMPLETE);
                     }                                                     
                     break;                                 
                }
