@@ -171,6 +171,7 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     
     /* Notify external DPM of DRP Port enabled event through a user defined call back*/
     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_ENABLED);
+	DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: DRP Port initialization completed\r\n");
 }
 #endif
 /**************************************************************************************/
@@ -1011,6 +1012,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     if(TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     { 
+                        DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK_WAIT_FOR_VSAFE0V_SS" \
+                                            " - VBUS_0V Present\r\n");
+                        
                         /*Disabling the VBUS discharge functionality for VBUS has reached Vsafe0V*/                  
                         PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
             
@@ -1054,8 +1058,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*This SubState is used to start a tCCDebounce Software timer for Source attachment*/ 
                 case TYPEC_ATTACHWAIT_SNK_ENTRY_SS:
                 {                  
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SNK: Entered"\
-                                         "ATTACHWAIT SNK State\r\n");                  
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SNK_ENTRY_SS\r\n");                  
                     /* Configure VBUS threshold to detect 5V*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR); 
@@ -1084,6 +1087,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #if(TRUE == INCLUDE_PD_DRP)
                     if (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
                     {
+                        /*Intentionally assigning u8DRPLastAttachedState as source to achieve
+                         triggering of DRP offload enable in TYPEC_UNATTACHED_SRC_ENTRY_SS state 
+                         and thereby discovering a valid attach*/
+                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_SOURCE;
+                        
 						/*If source is detached during TYPEC_ATTACHWAIT_SNK state, according to
 						DRP state machine, the next state should be TYPEC_UNATTACHED_SRC*/
                         gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start ( \
@@ -1111,6 +1119,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Check for VBUS Presence before moving to Attached SNK state */
                     if(TYPEC_VBUS_5V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SNK_CC_DEB_TIMEOUT_SS "\
+                                "- VBUS_5V_PRESENT\r\n");
                         /*Set BLK_PD_MSG. Done in cronus*/
                         UPD_RegByteSetBit(u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
                         
@@ -1206,8 +1216,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Assign Operating current based on the Rp value*/
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
                                      
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK: Entered"\
-                                         "ATTACHED SNK State\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_ENTRY_SS\r\n");
                     /* Update connected CC orientation status */
                     /*Source Attached in CC1 pin*/
                     if(u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
@@ -1255,6 +1264,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*Sink enters this sub-state to start a tPDDeounce timer for source detach event*/
                 case TYPEC_ATTACHED_SNK_START_PD_DEB_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_START_PD_DEB_SS\r\n");
+                    
                     /*Kill all the timers for a port before starting a Type C Debounce timer*/
                     PDTimer_KillPortTimers(u8PortNum);
                     
@@ -1274,6 +1285,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 vSinkDisconnect*/
                 case TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS:
                 {    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS\r\n");
+                    
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                     /*Disable the Sink circuitry to stop sinking the power from source*/
                     PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
