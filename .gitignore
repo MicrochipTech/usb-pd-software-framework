@@ -45,3 +45,13 @@ PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/nbproject/Package-default.bash
 PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/nbproject/private/configurations.xml
 PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/nbproject/private/private.xml
 PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/dist/default/
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/nbproject/private/private.xml
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/nbproject/private/configurations.xml
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/dist/default/production/
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/build/
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/nbproject/Package-default.bash
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/nbproject/Makefile-variables.mk
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/nbproject/Makefile-local-default.mk
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/nbproject/Makefile-impl.mk
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/nbproject/Makefile-genesis.properties
+PSF/Demo/UPD301C_Basic_Sink_AE/firmware/UPD301C_Basic_Sink_AE.X/nbproject/Makefile-default.mk
