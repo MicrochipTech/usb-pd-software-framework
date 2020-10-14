@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFSink_App.c
+    UPD301C_Basic_Sink_AE_App.c
 
   Summary:
     User Application Source file

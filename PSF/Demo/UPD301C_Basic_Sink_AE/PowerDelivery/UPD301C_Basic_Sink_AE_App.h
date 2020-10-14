@@ -5,7 +5,7 @@ Power Delivery Sink Application header file
     Microchip Technology Inc.
 
   File Name:
-    PSFSink_App.h
+    UPD301C_Basic_Sink_AE_App.h
 
   Description:
     This header file contains user application specific functions and interfaces
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFSINK_APP_H
-#define _PSFSINK_APP_H
+#ifndef _UPD301C_BASIC_SINK_AE_APP_H
+#define _UPD301C_BASIC_SINK_AE_APP_H
 
 /* Defines major and minor version of PSF Sink Application*/
 #define APP_REV_MAJOR	0x01

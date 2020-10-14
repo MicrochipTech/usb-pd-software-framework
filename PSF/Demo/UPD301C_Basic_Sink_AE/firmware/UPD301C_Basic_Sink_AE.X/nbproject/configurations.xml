@@ -104,8 +104,8 @@
                      displayName="PowerDelivery"
                      projectFiles="true">
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFSink_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFSink_BootCfg.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_Basic_Sink_AE_App.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_Basic_Sink_AE_BootCfg.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -200,8 +200,8 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFSink_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFSink_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_Basic_Sink_AE_App.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_Basic_Sink_AE_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -257,13 +257,15 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>AtmelIceTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>2.30</languageToolchainVersion>
+        <languageToolchainVersion>2.41</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
         <pack name="SAMD20_DFP" vendor="Microchip" version="3.3.56"/>
         <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
       </packs>
+      <ScriptingSettings>
+      </ScriptingSettings>
       <compileType>
         <linkerTool>
           <linkerLibItems>

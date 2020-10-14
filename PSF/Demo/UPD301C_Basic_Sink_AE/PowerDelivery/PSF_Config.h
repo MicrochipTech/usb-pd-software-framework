@@ -2082,7 +2082,7 @@ typedef struct _GlobalCfgStatusData
    
 extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
 
-#include "PSFSink_App.h"
-#include "PSFSink_BootCfg.h"
+#include "UPD301C_Basic_Sink_AE_App.h"
+#include "UPD301C_Basic_Sink_AE_BootCfg.h"
 
 #endif
