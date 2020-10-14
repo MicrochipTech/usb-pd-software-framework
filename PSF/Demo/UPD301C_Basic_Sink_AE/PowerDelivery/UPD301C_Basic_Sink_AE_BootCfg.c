@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFSink_BootCfg.c
+    UPD301C_Basic_Sink_AE_BootCfg.c
 
   Summary:
     User Configuration Source file

@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFSink_BootCfg.h
+    UPD301C_Basic_Sink_AE_BootCfg.h
 
   Description:
     This header file contains user configurable globals and function prototypes.
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFSINK_BOOTCFG_H    /* Guard against multiple inclusion */
-#define _PSFSINK_BOOTCFG_H
+#ifndef _UPD301C_BASIC_SINK_AE_BOOTCFG_H    /* Guard against multiple inclusion */
+#define _UPD301C_BASIC_SINK_AE_BOOTCFG_H
 
 /*********************************Common Configuration*****************************************/
 #define CFG_PRODUCT_ID              0x0350U
