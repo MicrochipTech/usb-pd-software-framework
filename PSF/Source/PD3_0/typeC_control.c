@@ -2528,11 +2528,6 @@ void TypeC_VCONNDisOn_IntrHandler(UINT8 u8PortNum)
     /* Clearing VCONN_STATUS bit in Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_VCONN_ENABLE_STATUS);
 
-    /*Kill the VCONN Off timer which would have been started during VCONN Swap */
-    PDTimer_Kill(gasDPM[u8PortNum].u8VCONNOffTmrID);
-    /* Set the timer Id to Max Concurrent Value*/
-    gasDPM[u8PortNum].u8VCONNOffTmrID = MAX_CONCURRENT_TIMERS;
-
     /*VCONN discharge complete can occur while the sink is still attached or detached for source port*/
     /*VCONN discharge complete can occur while the source is still attached or detached for sink port*/
     

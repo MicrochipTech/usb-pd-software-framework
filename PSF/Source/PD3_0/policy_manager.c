@@ -43,7 +43,6 @@ void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
 
         gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-        gasDPM[u8PortNum].u8VCONNOffTmrID = MAX_CONCURRENT_TIMERS;
 
         #if (TRUE == INCLUDE_PD_PR_SWAP)
         /* Clear the PR_Swap In Progress Flag during PSSourceOff Timer expiry.
