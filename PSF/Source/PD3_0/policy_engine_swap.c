@@ -1086,21 +1086,10 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
         {             
             DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Entered the state\r\n");
 
-            /*Turn off VCONN since PS RDY message is received from VCONN Source partner*/
+            /* Request DPM to turn off VCONN since PS RDY message is 
+               received from VCONN Source partner*/
             DPM_VCONNOnOff (u8PortNum, DPM_VCONN_OFF);            
-                    
-            /*Start the VCONN_OFF timer*/
-            /*This Timeout is implemented outside of the PD Specification to track 
-            VCONN Turn OFF error. VCONN OFF Timer is implemented as DPM 
-            timer, so that Policy Engine will not be blocked until VCONN 
-            discharge is completed and hence any AMS received during the VCONN 
-            discharge will be processed */
-            gasDPM[u8PortNum].u8VCONNOffTmrID = PDTimer_Start (\
-                                                      PE_VCONNOFF_TIMEOUT_MS,\
-                                                      DPM_VBUSorVCONNOnOff_TimerCB,\
-                                                      u8PortNum,\
-                                                      (UINT8)SET_TO_ZERO);                    
-                        
+
             /* Reset the discover identity counter to 0*/
             gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
                     

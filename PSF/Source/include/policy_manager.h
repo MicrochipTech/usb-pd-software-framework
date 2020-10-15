@@ -638,7 +638,6 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #endif
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
   UINT8 u8VCONNSwapWaitTmrID;      // VCONN_Swap Wait Timer ID
-  UINT8 u8VCONNOffTmrID;           // VCONN Off Timer ID 
 #endif
 #if (TRUE == INCLUDE_PD_PR_SWAP)
   UINT8 u8PRSwapWaitTmrID;         // PR_Swap Wait Timer ID
