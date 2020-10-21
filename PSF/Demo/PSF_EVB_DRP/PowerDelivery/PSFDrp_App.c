@@ -259,7 +259,13 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
         {
             break; 
-        }                
+        }
+        
+        case eMCHP_PSF_VDM_REQUEST_RCVD:
+        {
+            u8RetVal = TRUE;
+            break; 
+        }
         
         case eMCHP_PSF_PORT_DISABLED:
         {

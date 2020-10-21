@@ -38,7 +38,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     UINT8 u8TypeCState = TYPEC_INVALID_STATE;
     UINT8 u8TypeCSubState = TYPEC_INVALID_SUBSTATE;
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
-    UINT32 u32DataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
+    UINT32 u32aDataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
 	UINT16 u16TransmitHeader = SET_TO_ZERO;
 	PRLTxCallback pfnTransmitCB = NULL;
 	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
@@ -228,7 +228,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     u16TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_REQUEST,\
                                             PE_OBJECT_COUNT_1, PE_NON_EXTENDED_MSG);
                     
-                    u32DataObj[INDEX_0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
+                    u32aDataObj[INDEX_0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to Soft reset state if
@@ -525,7 +525,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     /*Send PD message if the variable "u8IsTransmit" is set as true inside the state machine*/
 	if (TRUE == u8IsTransmit)
 	{
-		(void) PRL_TransmitMsg(u8PortNum, u8TransmitSOP, u16TransmitHeader, (UINT8 *)u32DataObj,\
+		(void) PRL_TransmitMsg(u8PortNum, u8TransmitSOP, u16TransmitHeader, (UINT8 *)u32aDataObj,\
                         pfnTransmitCB, u32TransmitTmrIDTxSt);
 	}
 

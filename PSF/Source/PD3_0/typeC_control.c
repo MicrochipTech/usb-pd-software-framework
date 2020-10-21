@@ -1457,8 +1457,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         #endif
             
                         /*Setting the CC1 and CC2 line as Open Disconnect*/
-                        TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2); 
-                    
+                        TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);                     
                     }
                     else
                     {

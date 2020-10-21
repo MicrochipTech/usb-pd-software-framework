@@ -553,9 +553,11 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_VCONN_SWAP_COMPLETE:
         {
+            /* After a swap, clear the pending internal event in case role 
+               swap policy does not match. */
             #if (TRUE == INCLUDE_PD_VCONN_SWAP)
             if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
-            {
+            {                
                 gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VCONN_SWAP);
             }
             #endif
@@ -563,9 +565,11 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         }
         case eMCHP_PSF_DR_SWAP_COMPLETE:
         {
+            /* After a swap, clear the pending internal event in case role 
+               swap policy does not match. */            
             #if (TRUE == INCLUDE_PD_DR_SWAP)
             if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
-            {
+            {                
                 gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_DR_SWAP);
             }
             #endif
@@ -592,8 +596,10 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
                 }
                 gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
             }
+            /* After a swap, clear the pending internal event in case role 
+               swap policy does not match. */            
             if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
-            {
+            {                
                 gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_PR_SWAP);
             }
             #endif
@@ -608,11 +614,16 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
         {
             /* Clear the VDM internal event since the AMS is complete */
-            #if (TRUE == INCLUDE_PD_VDM)
+            #if (TRUE == INCLUDE_PD_VDM)            
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VDM);
             #endif
             break; 
         }
+        case eMCHP_PSF_HARD_RESET_COMPLETE:
+        {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"***************HARD RESET COMPLETE***********\r\n");
+            break; 
+        }        
         default:
             break;
     }
@@ -797,7 +808,8 @@ void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT16 u16EventType)
 
 void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
-    UINT16 u16IsAMSInProgress = FALSE, u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    UINT16 u16IsAMSInProgress = FALSE;
+    UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     
     /*Process port disable/enable internal events irrespective of whether PSF is idle*/
     if(DPM_INT_EVT_PORT_DISABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
@@ -853,7 +865,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_RENEGOTIATION);
 
             /* Check for Port Power Role */
-            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            if (PD_ROLE_SOURCE == u8DPMPowerRole)
             {
                 /* Move the Policy Engine to PE_SRC_SEND_CAPABILITIES state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
@@ -877,7 +889,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_SEND_SWAP;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_SWAP_ENTRY_SS;
                 u16IsAMSInProgress = DPM_INT_EVT_INITIATE_VCONN_SWAP;
-            }            
+            }  
         }
 #endif /*INCLUDE_PD_VCONN_SWAP*/
 #if (TRUE == INCLUDE_PD_PR_SWAP)
@@ -925,8 +937,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                No need to do it here */
             
             /* Move the Policy Engine to ePE_INIT_PORT_VDM_IDENTITY_REQUEST state */
-            gasPolicyEngine[u8PortNum].ePEState = ePE_INIT_PORT_VDM_REQUEST; 
-            gasPolicyEngine[u8PortNum].ePESubState = ePE_INIT_PORT_VDM_REQUEST_ENTRY_SS;
+            gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_VDM; 
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_VDM_ENTRY_SS;
             u16IsAMSInProgress = DPM_INT_EVT_INITIATE_VDM;            
         }
 #endif /* INCLUDE_PD_VDM */

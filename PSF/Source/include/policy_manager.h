@@ -271,10 +271,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /**************************Feature Select parameters - **********
  ****gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect *********************** */
 #define DPM_PORT_PB_ENABLE                           BIT(0)
+#define DPM_PORT_VDM_ENABLE                          BIT(1)
 /* Macro to know if PB is enabled for the system and for the port */
 #define DPM_IS_PB_ENABLED(u8PortNum)   \
     ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE) \
     ? TRUE : FALSE)   
+/* Macro to know if VDM is supported by the port */
+#define DPM_IS_VDM_SUPPORTED(u8PortNum)  \
+    ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_VDM_ENABLE) \
+    ? TRUE : FALSE)   
+
 /**********gasCfgStatusData.u8PBEnableSelect defines******/
 /* PB Enable for System */
 #define DPM_PB_ENABLE                   0x10
@@ -398,28 +404,62 @@ Source/Sink Power delivery objects*/
 // Section: Defines to decode VDM packet
 // *****************************************************************************
 // ***************************************************************************** 
-/** Macros for E-Cable *****/
-#define DPM_VDM_GET_CMD_TYPE(u32VDMHeader)      ((u32VDMHeader & DPM_VDM_CMD_TYPE_MASK) >> \
+/** Macros for VDM Header fields *****/
+
+#define DPM_VDM_COMMAND_MASK                        0x0000001F
+
+#define DPM_CABLE_CUR_VAL_BIT_MASK                  (BIT(5) | BIT(6))
+#define DPM_CABLE_CUR_VAL_BIT_POS                   5
+
+#define DPM_VDM_CMD_TYPE_MASK                       (BIT(6) | BIT(7))
+#define DPM_VDM_CMD_TYPE_POS                        6               
+
+#define DPM_VDM_OBJ_POS_MASK                        (BIT(8) | BIT(9) | BIT(10))
+#define DPM_VDM_OBJ_POS_POS                         8
+
+#define DPM_VDM_SVID_MASK                           0xFFFF0000
+#define DPM_VDM_SVID_POS                            16
+
+#define DPM_CABLE_CURR_3A                           1
+#define DPM_CABLE_CURR_5A                           2
+
+#define DPM_CABLE_CURR_3A_UNIT                      3000
+#define DPM_CABLE_CURR_5A_UNIT                      5000
+
+#define DPM_VDM_HEADER_POS                          0
+#define DPM_VMD_PRODUCT_TYPE_VDO_POS                4
+
+#define DPM_MAX_VDO_CNT                             6 
+
+#define DPM_VDM_PD_SID                              0xFF00 
+
+#define DPM_MAX_SVID_CNT                            12 
+
+#define DPM_LAST_SVID_MASK                          0xFFFF0000
+
+#define DPM_VDM_GET_CMD_TYPE(u32VDMHeader)          ((u32VDMHeader & DPM_VDM_CMD_TYPE_MASK) >> \
                                                         DPM_VDM_CMD_TYPE_POS)
+
+#define DPM_GET_VDM_CMD(u32VDMHeader)               (u32VDMHeader & DPM_VDM_COMMAND_MASK)
+
+#define DPM_GET_VDM_SVID(u32VDMHeader)              ((u32VDMHeader & DPM_VDM_SVID_MASK) >> \
+                                                        DPM_VDM_SVID_POS)
+
+#define DPM_GET_VDM_OBJ_POS(u32VDMHeader)           ((u32VDMHeader & DPM_VDM_OBJ_POS_MASK) >> \
+                                                        DPM_VDM_OBJ_POS_POS)
+
 #define DPM_GET_CABLE_CUR_VAL(u32ProductTypeVDO)    ((u32ProductTypeVDO & DPM_CABLE_CUR_VAL_BIT_MASK) >> \
                                                         DPM_CABLE_CUR_VAL_BIT_POS)
-#define DPM_CABLE_CUR_VAL_BIT_MASK       (BIT(5) | BIT(6))
-#define DPM_CABLE_CUR_VAL_BIT_POS        5
 
-#define DPM_VDM_CMD_TYPE_MASK            (BIT(6) | BIT(7))
-#define DPM_VDM_CMD_TYPE_POS             6               
+#define DPM_NO_OF_MODES_MASK                        (BIT(0) | BIT(1) | BIT(2))
+#define DPM_GET_NO_OF_MODES(u8SVIDEntry)            (u8SVIDEntry & DPM_NO_OF_MODES_MASK)
 
-#define DPM_CABLE_CURR_3A                1
-#define DPM_CABLE_CURR_5A                2
-
-#define DPM_CABLE_CURR_3A_UNIT           3000
-#define DPM_CABLE_CURR_5A_UNIT           5000
-
-#define DPM_VDM_HEADER_POS              0
-#define DPM_VMD_PRODUCT_TYPE_VDO_POS    4
-
-#define DPM_MAX_VDO_CNT                 6 
-
+#define DPM_START_MODE_IDX_POS                      3
+#define DPM_START_MODE_IDX_MASK                     (BIT(3) | BIT(4) | BIT(5) | BIT(6))
+#define DPM_GET_START_MODE_IDX(u8SVIDEntry)         ((u8SVIDEntry & DPM_START_MODE_IDX_MASK) >> \
+                                                           DPM_START_MODE_IDX_POS)
+                                    
+#define DPM_EXIT_ALL_ACTIVE_MODES                  7 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Defines to form Data Request packet
@@ -465,6 +505,11 @@ Source/Sink Power delivery objects*/
 #define DPM_ACCEPT_SWAP                     1
 #define DPM_REJECT_SWAP                     0 
 /******************************************************************************/
+
+/********************** Return Values from DPM_EvaluateVDMRequest API**************/
+#define DPM_IGNORE_VDM_RESPONSE                    2
+#define DPM_RESPOND_VDM_ACK                        1 
+#define DPM_RESPOND_VDM_NAK                        0 
 
 // *****************************************************************************
 // *****************************************************************************
@@ -647,6 +692,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #endif
 #if (TRUE == INCLUDE_PD_VDM)
   UINT8 u8VDMBusyTmrID;            // VDM Busy Timer ID 
+  UINT8 u8CurrSVIDIndex;           // Current SVID Index 
 #endif 
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
@@ -675,6 +721,16 @@ typedef enum {
     ePR_SWAP_INITIATE = BIT(3),  /*same as DPM_INT_EVT_INITIATE_PR_SWAP value*/
     eDR_SWAP_INITIATE = BIT(4)  /*same as DPM_INT_EVT_INITIATE_DR_SWAP value*/
 }eRoleSwapMsgtype;
+
+/* Enum for Structured VDM Commands */
+typedef enum {
+    eSVDM_DISCOVER_IDENTITY = 1,
+    eSVDM_DISCOVER_SVIDS,
+    eSVDM_DISCOVER_MODES,
+    eSVDM_ENTER_MODE,
+    eSVDM_EXIT_MODE,
+    eSVDM_ATTENTION
+}eSVDMCmd;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1695,6 +1751,10 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
         None
 **************************************************************************************************/
 void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev); 
+
+UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader); 
+
+void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 *pu32VDMHeader, UINT8 *u8VDOCnt, UINT32 *pu32ResponseVDO);
 
 #endif /*_POLICY_MANAGER_H_*/
 

@@ -590,11 +590,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        - PR_RDY not sent after retries 
                        - PSSourceOn timer expired */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS\r\n");
-                    
-                    /* Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
-                        TimerID does not hold any valid timer IDs anymore */
-                    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-                    
+                     
                     /* Revert the port's power role to Source and invoke Type C Error Recovery, 
                        so that Type C SM would move to Unattached Source state after Error 
                        recovery where the u8DRPLastAttachedState condition would pass and DRP 
