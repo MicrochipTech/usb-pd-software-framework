@@ -175,8 +175,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_VDM_NAK                  2
 #define PE_VDM_BUSY                 3
 
-#define PE_VDM_COMMAND_MASK             0x0000001F
-
 #define PE_VDM_COMMAND_TYPE_MASK        0x000000C0
 #define PE_VDM_COMMAND_TYPE_POS         6u
 
@@ -186,7 +184,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_VDM_HEADER_HIGH_VER          0xFF00A001
 #define PE_VDM_HEADER_LOW_VER           0xFF008001
 
-#define PE_GET_VDM_CMD(VDM_HEADER)              (VDM_HEADER & PE_VDM_COMMAND_MASK)
 #define PE_GET_VDM_CMD_TYPE(VDM_HEADER)         ((VDM_HEADER & PE_VDM_COMMAND_TYPE_MASK) >> PE_VDM_COMMAND_TYPE_POS)
 #define PE_VDM_NAK_COMMAND_TYPE                 (2 << PE_VDM_COMMAND_TYPE_POS )
 
@@ -247,8 +244,8 @@ typedef enum {
     ePE_VCS_TURN_ON_VCONN,
     ePE_VCS_SEND_PS_RDY,
     //---------------------------VDM states---------------------------------------//
-    ePE_VDM_GET_IDENTITY,
-    ePE_INIT_PORT_VDM_REQUEST,       
+    ePE_SEND_VDM,   
+    ePE_VDM_REQ_RCVD,
     //--------------------------DR_SWAP States-----------------------------------//
     ePE_DRS_EVALUATE_SWAP,
     ePE_DRS_ACCEPT_SWAP,
@@ -428,12 +425,15 @@ typedef enum {
     ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS,
 	ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS,
     //--------------------VDM Sub States-------------------------------------------------//            
-    /* ePE_INIT_PORT_VDM_REQUEST */ 
-    ePE_INIT_PORT_VDM_REQUEST_ENTRY_SS, 
-    ePE_INIT_PORT_VDM_REQUEST_MSG_DONE_SS,
-    ePE_INIT_PORT_VDM_REQUEST_RESP_RCVD_SS,  
-    ePE_INIT_PORT_VDM_REQUEST_NO_RESPONSE_SS,            
-    ePE_INIT_PORT_VDM_REQUEST_IDLE_SS,
+    /* ePE_SEND_VDM */ 
+    ePE_SEND_VDM_ENTRY_SS, 
+    ePE_SEND_VDM_MSG_DONE_SS,
+    ePE_SEND_VDM_RESP_RCVD_SS,  
+    ePE_SEND_VDM_NO_RESPONSE_SS,            
+    ePE_SEND_VDM_IDLE_SS,
+    /* ePE_VDM_REQ_RCVD */
+    ePE_VDM_REQ_RCVD_ENTRY_SS,
+    ePE_VDM_REQ_RCVD_IDLE_SS,
     //--------------------Common States-------------------------------------------------//
     /* ePE_SOFT_RESET */        
     ePE_SOFT_RESET_ENTRY_SS, 

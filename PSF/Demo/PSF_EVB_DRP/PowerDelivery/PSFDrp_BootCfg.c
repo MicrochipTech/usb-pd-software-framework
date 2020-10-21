@@ -263,7 +263,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u16PowerGoodTimerInms = MILLISECONDS_TO_TICKS(CFG_POWER_GOOD_TIMER_MS);
     pasCfgStatusData->sPerPortData[PORT0].u16MaxSrcPrtCurrentIn10mA = CFG_MAX_PORT_CURRENT_IN_10mA;
    
-    pasCfgStatusData->sPerPortData[PORT0].u16FeatureSelect = CFG_PB_PORT_ENABLE;
+    pasCfgStatusData->sPerPortData[PORT0].u16FeatureSelect = (CFG_PB_PORT_ENABLE | CFG_PORT_0_ENABLE_VDM_SUPPORT);
 
     CFG_Port_0_PDOs (pasCfgStatusData);  
                   
@@ -300,7 +300,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT1].u16PowerGoodTimerInms = MILLISECONDS_TO_TICKS(CFG_POWER_GOOD_TIMER_MS);
     pasCfgStatusData->sPerPortData[PORT1].u16MaxSrcPrtCurrentIn10mA = CFG_MAX_PORT_CURRENT_IN_10mA;
     
-    pasCfgStatusData->sPerPortData[PORT1].u16FeatureSelect = CFG_PB_PORT_ENABLE;
+    pasCfgStatusData->sPerPortData[PORT1].u16FeatureSelect = (CFG_PB_PORT_ENABLE | CFG_PORT_1_ENABLE_VDM_SUPPORT);
 
     CFG_Port_1_PDOs (pasCfgStatusData);  
 

@@ -336,6 +336,7 @@ Example:
 **************************************************************************************************/
 #define INCLUDE_PD_VDM             1
 
+#define INCLUDE_PD_ALT_MODE             1
 // *****************************************************************************
 // *****************************************************************************
 // Section: Power Delivery IDs
@@ -1545,6 +1546,15 @@ typedef enum
                                     * '0' Disable.
                                     * '1' Enable. 
 								    This bit is applicable only for source operation. 			
+    1       R/W          R         Indicates if Vendor Defined Message is supported
+                                    by the port.
+                                    * '0' - Vendor Defined Messages are not supported.
+                                       The port will respond with 'Not Supported' on
+                                       reception of a Vendor Defined Message.  
+                                    * '1' - Vendor Defined Messages are supported.
+                                       The port will respond with relevant VDM data on
+                                       reception of a Vendor Defined Message.    
+                                        
     15:1	                       Reserved 
     </table>
     
@@ -1756,18 +1766,33 @@ typedef struct _PBPortCfgStatus
     u32aPartnerPDIdentity[6]        24        R            R         * Partner Identities received
                                                                         in response to a Discover
                                                                         Identity request. This
-                                                                        array can hold upto 7 VDM 
+                                                                        array can hold upto 6 VDM 
                                                                         Data Objects where 
                                                                         Index 0 corresponds to ID                                                                        
                                                                         Header VDO, Index 1 being
                                                                         Cert Stat VDO, Index 2 
                                                                         being Product VDO and 
-                                                                        indices 3-6 correspond to 
+                                                                        indices 3-5 correspond to 
                                                                         0-3 Product Type VDO(s)
+    u32aPDIdentity[6]               24        R            R         * Port PD Identities to be 
+                                                                        sent in Discover
+                                                                        Identity response. This
+                                                                        array can hold upto 6 VDM 
+                                                                        Data Objects where 
+                                                                        Index 0 corresponds to ID                                                                        
+                                                                        Header VDO, Index 1 being
+                                                                        Cert Stat VDO, Index 2 
+                                                                        being Product VDO and 
+                                                                        indices 3-5 correspond to 
+                                                                        0-3 Product Type VDO(s)   
     u8PartnerPDIdentityCnt          1         R            R         * Number of Identities received
                                                                         from partner in response to 
                                                                         a Discover Identity request
-    u8aReservedArr[3]				2                                Reserved 
+    u8PDIdentityCnt                 1         R            R         * Number of PD Identities of
+                                                                        the port that needs to be 
+                                                                        sent in response to a
+                                                                        Discover Identity request   
+    u8aReserved9                    2                                Reserved 
 	</table> 
 
    Remarks:
@@ -1777,14 +1802,30 @@ typedef struct _PBPortCfgStatus
 
 typedef struct _VDMPortCfgStatus
 {
-    UINT32 u32VDMHeader;
+    UINT32 u32VDMHeader;  
     UINT32 u32PartnerVDMHeader; 
     UINT32 u32aPartnerPDIdentity[6];
+    UINT32 u32aPDIdentity[6];  
+    UINT8 u8PDIdentityCnt; 
     UINT8 u8PartnerPDIdentityCnt; 
-    UINT8 u8aReservedArr[3]; 
+    UINT8 u8aReserved9[2];     
 } VDM_PORT_CFG_STATUS, *PVDM_PORT_CFG_STATUS;
 
 #endif 
+/**********************************************************************
+ *      To-do: Add Summary and description 
+   **********************************************************************/
+typedef struct _AltModePortCfgStatus
+{
+    UINT32 u32aModesTable[16];
+    UINT32 u32aVDO[6]; 
+    UINT16 u16aSVIDsTable[16];
+    UINT8 u8aSVIDEntryTable[16];
+	UINT8 u8SVIDsCnt; 	        
+    UINT8 u8VDOCnt; 
+    UINT8 u8aReserved10[2]; 
+} ALT_MODE_PORT_CFG_STATUS, *PALT_MODE_PORT_CFG_STATUS;
+
  /**********************************************************************
    Summary:
      This structure contains port specific status parameters.
@@ -2101,6 +2142,10 @@ typedef struct _GlobalCfgStatusData
     VDM_PORT_CFG_STATUS sVDMPerPortData[CONFIG_PD_PORT_COUNT]; 
 #endif 
 
+#if (TRUE == INCLUDE_PD_ALT_MODE)    
+    ALT_MODE_PORT_CFG_STATUS sAltModePerPortData[CONFIG_PD_PORT_COUNT]; 
+#endif 
+    
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
     UINT8 u8ReservedPadBytes[16];
 #endif

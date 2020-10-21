@@ -1190,6 +1190,18 @@ Description:
     sent or when the partner has responded BUSY for a maximum of 5 times and the VDM request will 
     not be initiated by PSF anymore or when the partner has sent Not Supported for the VDM request.
   
+    <b> eMCHP_PSF_VDM_REQUEST_RCVD </b>: This notification will be posted by PSF when a VDM request
+    received from the partner is evaluated and determined to be ACKed or when the request 
+    is a SVID specific command i.e it needs evaluation by the user application. In case of 
+    Structured VDM commands like Discover Identity, Discover SVIDs, Discover Modes, Enter Mode, 
+    and Exit Mode, PSF expects a return value from the application to send ACK/NAK response.
+    If the application returns TRUE, PSF will send ACK response. The application may also return 
+    FALSE in which case PSF will send NAK response. If after the evaluation by PSF, it is 
+    determined that these commands are to be NAKed, then PSF will send NAK response without 
+    notifying the user application. For SVID specific commands, PSF will not 
+    send any response since it is expected that the user application will send the response by 
+    raising a VDM client request within the VDM response time specified by USB PD Specification. 
+ 
     <b> eMCHP_PSF_PORT_DISABLED</b>: This event is used by PSF to notify the application 
     that a port has been disabled as a result of port disable client request (BIT[0] in 
     gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is disabled,
@@ -1253,6 +1265,7 @@ eMCHP_PSF_CABLE_IDENTITY_DISCOVERED,   // ACK received from cable for Discover I
 eMCHP_PSF_CABLE_IDENTITY_NAKED,        // NAK received from cable for Discover Identity sent to SOP'
 eMCHP_PSF_VDM_RESPONSE_RCVD,           // Response received from partner for VDM request sent to SOP
 eMCHP_PSF_VDM_RESPONSE_NOT_RCVD,       // No response from partner for VDM request sent to SOP  
+eMCHP_PSF_VDM_REQUEST_RCVD,            // VDM Request received from partner        
 eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
 eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
 eMCHP_PSF_BUSY,                        // PSF is busy, cannot handle client request

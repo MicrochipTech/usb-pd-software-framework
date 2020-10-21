@@ -1724,6 +1724,210 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
 /********************* Policy Manager APIs for VDM ********************/
 #if (TRUE == INCLUDE_PD_VDM)
 
+UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
+{
+    /* DPM Response */
+    UINT8 u8DPMResponse = DPM_RESPOND_VDM_NAK;   
+    
+    /* SVID extracted from received VDM Header */
+    UINT16 u16SVID = DPM_GET_VDM_SVID(*pu32VDMHeader); 
+    
+    /* Object Position extracted from received VDM Header */
+    UINT8 u8ObjPos = DPM_GET_VDM_OBJ_POS(*pu32VDMHeader);
+    
+    /* SVIDs Count - Copy of global variable to reduce code size */
+#if (TRUE == INCLUDE_PD_ALT_MODE)
+    UINT8 u8SVIDsCnt = gasCfgStatusData.sAltModePerPortData[u8PortNum].u8SVIDsCnt;
+#endif 
+    
+    /* Invalid Port State - If Data Role is DFP and negotiated PD Rev is 2.0 */
+    UINT8 u8InvalidPortState = (((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && 
+            (PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))) ? TRUE : FALSE);
+        
+    switch (DPM_GET_VDM_CMD(*pu32VDMHeader))
+    {
+        case eSVDM_DISCOVER_IDENTITY:
+        {
+            if ((DPM_VDM_PD_SID == u16SVID) && !(u8InvalidPortState) && !(u8ObjPos) && \
+                     (gasCfgStatusData.sVDMPerPortData[u8PortNum].u8PDIdentityCnt != SET_TO_ZERO))
+            {
+                u8DPMResponse = DPM_RESPOND_VDM_ACK;
+            }
+            break; 
+        }
+#if (TRUE == INCLUDE_PD_ALT_MODE)   
+        case eSVDM_DISCOVER_SVIDS:
+        {
+            if ((DPM_VDM_PD_SID == u16SVID) && !(u8InvalidPortState) && \
+                            !(u8ObjPos) && (u8SVIDsCnt != SET_TO_ZERO))
+            {
+                u8DPMResponse = DPM_RESPOND_VDM_ACK;
+            }            
+            break; 
+        }
+        case eSVDM_DISCOVER_MODES:
+        {
+            if (!(u8InvalidPortState) && !(u8ObjPos))
+            {
+                for (UINT8 u8Index = INDEX_0; u8Index < u8SVIDsCnt; u8Index++)
+                {
+                    if (u16SVID == gasCfgStatusData.sAltModePerPortData[u8PortNum].u16aSVIDsTable[u8Index])
+                    {
+                        u8DPMResponse = DPM_RESPOND_VDM_ACK;
+                        break; 
+                    }
+                }
+            }
+            break; 
+        }
+        case eSVDM_EXIT_MODE:
+        {
+            if (DPM_EXIT_ALL_ACTIVE_MODES == u8ObjPos)
+            {
+                u8DPMResponse = DPM_RESPOND_VDM_ACK; 
+            }
+            /* Break statement is left intentionally for the below logic to 
+               get executed. Object Position in Exit Mode command can be 7 or 
+               any valid index of Modes advertised */
+        }
+        case eSVDM_ENTER_MODE:        
+        {
+            for (UINT8 u8Index = INDEX_0; u8Index < u8SVIDsCnt; u8Index++)
+            {
+                if (u16SVID == gasCfgStatusData.sAltModePerPortData[u8PortNum].u16aSVIDsTable[u8Index])
+                {                   
+                    if ((u8ObjPos >= INDEX_1) && \
+                            (u8ObjPos <= DPM_GET_NO_OF_MODES(gasCfgStatusData.sAltModePerPortData[u8PortNum].u8aSVIDEntryTable[u8Index])))
+                    {
+                        u8DPMResponse = DPM_RESPOND_VDM_ACK;                        
+                    }                     
+                    break;
+                }
+            }    
+            break;
+        }
+#endif 
+        default:
+        {
+            /* When INCLUDE_PD_ALT_MODE is 0 and INCLUDE_PD_VDM is 1, 
+               all VMDs except Discover Identity shall be NAKed*/
+#if (TRUE == INCLUDE_PD_ALT_MODE) 
+            u8DPMResponse = DPM_IGNORE_VDM_RESPONSE; 
+#endif 
+            break; 
+        }
+    }
+    
+    /* Notify user only if DPM Evaluation results in ACK response or 
+       the evaluation of VDM is ignored by DPM since it is dependent on 
+       response from the application  */
+    if (u8DPMResponse)
+    {
+        if (FALSE == DPM_NotifyClient (u8PortNum, eMCHP_PSF_VDM_REQUEST_RCVD))
+        {
+            /* Change the DPM response as NAK if application returns FALSE */
+            if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
+            {
+                u8DPMResponse = DPM_RESPOND_VDM_NAK;
+            }
+        }
+    }
+    
+    return u8DPMResponse;
+}
+
+void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 *pu32VDMHeader, UINT8 *pu8VDOCnt, UINT32 *pu32ResponseVDO)
+{
+    switch (DPM_GET_VDM_CMD(*pu32VDMHeader))
+    {
+        case eSVDM_DISCOVER_IDENTITY:
+        {
+            *pu8VDOCnt = gasCfgStatusData.sVDMPerPortData[u8PortNum].u8PDIdentityCnt;
+            
+            (void)MCHP_PSF_HOOK_MEMCPY(pu32ResponseVDO, gasCfgStatusData.sVDMPerPortData[u8PortNum].u32aPDIdentity,                    
+                                                    (*pu8VDOCnt * BYTE_LEN_4));                                                               
+            
+            /* The Responder Shall restart the list of SVIDs each time a Discover Identity
+               Command request is received from the Initiator.*/
+            gasDPM[u8PortNum].u8CurrSVIDIndex = SET_TO_ZERO; 
+            break; 
+        }
+#if (TRUE == INCLUDE_PD_ALT_MODE)         
+        case eSVDM_DISCOVER_SVIDS:
+        {
+            UINT8 u8Count, u8NumObjects = SET_TO_ZERO; 
+            UINT8 u8SVIDsToCopyCnt = MIN((gasCfgStatusData.sAltModePerPortData[u8PortNum].u8SVIDsCnt - \
+                                                gasDPM[u8PortNum].u8CurrSVIDIndex), DPM_MAX_SVID_CNT);                       
+            UINT16 u16SVID; 
+            
+            /* The SVIDs are returned 2 per VDO. If there are an odd number of 
+               supported SVIDs, the Discover SVIDs Command is returned ending 
+               with a SVID value of 0x0000 in the last part of the last VDO. 
+               If there are an even number of supported SVIDs, the Discover SVIDs 
+               Command is returned ending with an additional VDO containing two 
+               SVIDs with values of 0x0000.*/
+            for(u8Count = SET_TO_ZERO; u8Count < u8SVIDsToCopyCnt; u8Count++)
+            {
+                u16SVID = gasCfgStatusData.sAltModePerPortData[u8PortNum].u16aSVIDsTable[gasDPM[u8PortNum].u8CurrSVIDIndex];
+                
+                if(u8Count & BYTE_LEN_1)
+                {                                       
+                    *pu32ResponseVDO |= u16SVID;                    
+                    pu32ResponseVDO++;
+                    u8NumObjects++; 
+                }
+                else
+                {
+                    *pu32ResponseVDO = (u16SVID << BYTE_LEN_16);
+                }
+                gasDPM[u8PortNum].u8CurrSVIDIndex++;
+            }  
+            if(u8Count != DPM_MAX_SVID_CNT)
+            {
+                /* check if count is even then pad with 2 zeros */
+                if(!(u8Count & BYTE_LEN_1))
+                {
+                    *pu32ResponseVDO = SET_TO_ZERO;
+                }
+                else
+                {
+                    *pu32ResponseVDO &= DPM_LAST_SVID_MASK; 
+                }
+                u8NumObjects++;
+            }
+            *pu8VDOCnt = u8NumObjects;            
+                        
+            break; 
+        }
+        case eSVDM_DISCOVER_MODES:
+        { 
+            UINT8 u8StartModeIdx = SET_TO_ZERO;
+            
+            for (UINT8 u8Index = INDEX_0; \
+                       u8Index < gasCfgStatusData.sAltModePerPortData[u8PortNum].u8SVIDsCnt; \
+                       u8Index++)
+            {
+                if (DPM_GET_VDM_SVID(*pu32VDMHeader) == gasCfgStatusData.sAltModePerPortData[u8PortNum].u16aSVIDsTable[u8Index])
+                {
+                    *pu8VDOCnt = DPM_GET_NO_OF_MODES(gasCfgStatusData.sAltModePerPortData[u8PortNum].u8aSVIDEntryTable[u8Index]);
+                    u8StartModeIdx = DPM_GET_START_MODE_IDX(gasCfgStatusData.sAltModePerPortData[u8PortNum].u8aSVIDEntryTable[u8Index]);
+                    break; 
+                }
+            }      
+            
+            (void)MCHP_PSF_HOOK_MEMCPY(pu32ResponseVDO, &gasCfgStatusData.sAltModePerPortData[u8PortNum].u32aModesTable[u8StartModeIdx],                    
+                                                    (*pu8VDOCnt * BYTE_LEN_4));                                                               
+
+            break; 
+        }        
+#endif
+        default:
+        {
+            break; 
+        }
+    }  
+}
+
 void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
     /* Set the timer Id to Max Concurrent Value*/

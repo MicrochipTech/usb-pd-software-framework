@@ -324,6 +324,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_VCONN_SWAP_ACCEPT_AS_VCONN_SRC     1
 #define CFG_PORT_1_VCONN_SWAP_ACCEPT_NOT_AS_VCONN_SRC 1
 
+/***********************  VDM Defines *************************************/
+#define CFG_PORT_0_ENABLE_VDM_SUPPORT                 (1U << 1)
+#define CFG_PORT_1_ENABLE_VDM_SUPPORT                 (1U << 1)
+
 /*****************Defines to form PDOs ****************************************/
 /* Macro used to form Fixed PDO 1 */
 /*Source PDO 
