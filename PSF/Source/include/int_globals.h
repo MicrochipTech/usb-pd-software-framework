@@ -115,6 +115,10 @@ extern DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 #endif  
 /**************************************************************************************************/  
 
+#if(TRUE == INCLUDE_PD_ALT_MODE)
+typedef UINT16 HPD_CONTROL;
+extern HPD_CONTROL gu16HPDStsISR;
+#endif
 // *****************************************************************************
 // *****************************************************************************
 //  Section: Interface Routines

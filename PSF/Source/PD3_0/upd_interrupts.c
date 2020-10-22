@@ -80,6 +80,13 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
             
         }
 
+        #if(TRUE == INCLUDE_PD_ALT_MODE)
+        if(u16InterruptStatus & UPDINTR_HPD_INT)
+        {
+            UPD_HPDRegisterInterrupt(u8PortNum);
+        }
+        #endif
+
         /*CC,PWR,VBUS interrupts are handled by the function "TypeC_InterruptHandler"*/
         if((u16InterruptStatus & UPDINTR_CC_INT) || (u16InterruptStatus & UPDINTR_PWR_INT) || (u16InterruptStatus & UPDINTR_VBUS_INT))
         {
