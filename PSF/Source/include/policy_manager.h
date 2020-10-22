@@ -141,7 +141,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CURR_POWER_ROLE_MASK                (BIT(0)|BIT(1))
 #define DPM_CURR_DATA_ROLE_MASK                 (BIT(2)|BIT(3))
 #define DPM_CURR_PD_SPEC_REV_MASK               (BIT(4)|BIT(5))
-#define DPM_VDM_AMS_ACTIVE_MASK                  BIT(6)
+#define DPM_PORT_IN_MODAL_OPERATION              BIT(6)
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK    (BIT(8) | BIT(7))
 #define DPM_VCONN_SWAP_REJ_STS_AS_VCONNSRC      (BIT(9))
 #define DPM_VCONN_SWAP_REJ_STS_AS_NOT_VCONNSRC  (BIT(10))
@@ -154,7 +154,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CURR_POWER_ROLE_POS            0
 #define DPM_CURR_DATA_ROLE_POS             2
 #define DPM_CURR_PD_SPEC_REV_POS           4
-#define DPM_VDM_STATE_ACTIVE_POS           6
+#define DPM_PORT_IN_MODAL_OPERATION_POS    6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u16DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
@@ -1752,8 +1752,52 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 **************************************************************************************************/
 void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev); 
 
+/**************************************************************************************************
+    Function:
+        UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader); 
+    Summary:
+        API to evaluate VDM requests received from partner.
+    Description:
+        This API evaluates the VDM requests received from port partner 
+        and determines ACK/NAK response status. It also notifies the user of
+        reception of VDM request and gets the evaluation result from application.
+        The response returned by this API will be logical AND of result of DPM
+        evaluation and application evaluation. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        pu32VDMHeader - Pointer to VDM Header received 
+    Return:
+        UINT8 - DPM_RESPOND_VDM_NAK in case of NAK response
+                DPM_RESPOND_VDM_ACK in case of ACK response
+                DPM_IGNORE_VDM_RESPONSE in case of no response
+    Remarks:
+        None. 
+**************************************************************************************************/
 UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader); 
 
+/**************************************************************************************************
+    Function:
+        void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 *pu32VDMHeader, UINT8 *u8VDOCnt, UINT32 *pu32ResponseVDO);
+    Summary:
+        API to return the Vendor Defined Message Data Objects 
+    Description:
+        This API is used by VDM Policy Engine to get the VDOs that need 
+        to be sent in VDM ACK response for Discover Identity, Discover SVIDs
+        Discover Modes commands.            
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        pu32VDMHeader - Pointer to VDM Header received 
+        u8VDOCnt - Pointer to return the number of VDOs
+        pu32ResponseVDO - Pointer to array of VDOs
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
 void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 *pu32VDMHeader, UINT8 *u8VDOCnt, UINT32 *pu32ResponseVDO);
 
 #endif /*_POLICY_MANAGER_H_*/

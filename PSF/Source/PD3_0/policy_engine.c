@@ -120,9 +120,6 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT ();
 
-        /*Check the current policy engine states and set the VDM state active flag accordingly*/
-        PE_SetVDMActiveFlag (u8PortNum);
-
 	    u8RetVal = PRL_ReceiveMsg (u8PortNum, &u8SOPType, &u32Header, u8aDataBuf, NULL);
 
         /* If any new Msg is received, pass it to the Receive Handler */
@@ -382,7 +379,8 @@ UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header)
            interruptible AMS is in progress */
         if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) ||
            (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || 
-           (ePE_SEND_VDM == gasPolicyEngine[u8PortNum].ePEState))
+           (ePE_SEND_VDM == gasPolicyEngine[u8PortNum].ePEState) || 
+           (ePE_VDM_REQ_RCVD == gasPolicyEngine[u8PortNum].ePEState))
         {
             PE_SendNotSupportedOrRejectMsg(u8PortNum);            
         }
@@ -437,6 +435,9 @@ void PE_HandleUnExpectedMsg (UINT8 u8PortNum)
 void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 {
     UINT8 u8MsgOperation = PE_ValidateMessage (u8PortNum, u32Header);
+    UINT8 u8PEInVDMState = ((ePE_SEND_VDM == gasPolicyEngine[u8PortNum].ePEState) || \
+          (ePE_VDM_REQ_RCVD == gasPolicyEngine[u8PortNum].ePEState) ? TRUE : FALSE);
+    
     /* Validate the received message*/
     if (PE_PROCESS_MSG == u8MsgOperation)
     {   
@@ -489,8 +490,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     /*Discard the VDM AMS and process the source capability message received*/
                     if ((ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
                          gasPolicyEngine[u8PortNum].ePESubState)|| (ePE_SNK_READY == \
-                         gasPolicyEngine[u8PortNum].ePEState) || \
-                       (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                         gasPolicyEngine[u8PortNum].ePEState) || (u8PEInVDMState))
                     {
                         if (ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
                             gasPolicyEngine[u8PortNum].ePESubState)
@@ -517,7 +517,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 {
                     if ((ePE_SRC_SEND_CAPABILITIES == gasPolicyEngine[u8PortNum].ePEState) || \
                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                       (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                       (u8PEInVDMState))
                     {
                         /* Kill SenderResponse timer only in ePE_SRC_SEND_CAPABILITIES 
                            Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
@@ -545,9 +545,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState)) &&	\
                             (TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum)))
                     {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_BIST_MODE;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_BIST_MODE_ENTRY_SS;
-                        
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                         /* Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
                            the current explicit contract is for a PPS APDO*/
@@ -556,7 +553,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         {
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }
-#endif 
+#endif                        
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_BIST_MODE;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_BIST_MODE_ENTRY_SS;                         
                     }
                     break;
                 }
@@ -727,7 +726,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 case PE_DATA_ALERT: 
                 {
                     if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                            (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                                                (u8PEInVDMState))
                     {
                         /* Kill SourcePPSCommTimer if the current explicit contract 
                            is for a PPS APDO*/
@@ -1062,11 +1061,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_SOURCE_CAP: Get Source Cap Received\r\n");
                     if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                        (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                        (u8PEInVDMState))
                     {                        
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
-
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                        
                         /* Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
                            the current explicit contract is for a PPS APDO*/
@@ -1074,7 +1070,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         {
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }
-#endif 
+#endif                        
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS; 
                     }
 #if (TRUE == INCLUDE_PD_DRP)
                     else if (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState)
@@ -1097,6 +1095,15 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (ePE_SEND_VDM == gasPolicyEngine[u8PortNum].ePEState))   
                     {
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)                        
+                        /* Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
+                           the current explicit contract is for a PPS APDO*/
+                        if((DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)) && 
+                                (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState))
+                        {
+                            PE_KillPolicyEngineTimer (u8PortNum);
+                        }  
+#endif                        
                         gasPolicyEngine[u8PortNum].ePEState = ePE_GIVE_CAP;
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_GIVE_CAP_ENTRY_SS;                        
                     }
@@ -1113,19 +1120,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                      if current state is READY State or any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                         (u8PEInVDMState))
                     {
-
-#if (TRUE == INCLUDE_PD_VCONN_SWAP)
-                                          
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_EVALUATE_SWAP;
-                        /* Set the timer Id to Max Concurrent Value*/
-                        gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
-#else
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;
-#endif
-
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                        
                         /* Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
                            the current explicit contract is for a PPS APDO*/
@@ -1134,6 +1130,15 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         {
                             PE_KillPolicyEngineTimer (u8PortNum);
                         } 
+#endif
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
+                                          
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_EVALUATE_SWAP;
+                        /* Set the timer Id to Max Concurrent Value*/
+                        gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+#else
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;
 #endif 
                     }
                     else
@@ -1154,7 +1159,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 case PE_CTRL_GET_STATUS:
                 {
                     if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                            (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                            (u8PEInVDMState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_STATUS: Get Status Received\r\n");
                         
@@ -1183,7 +1188,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 case PE_CTRL_GET_PPS_STATUS:
                 {
                     if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                            (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                            (u8PEInVDMState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_PPS_STATUS: Get PPS Status Received\r\n");
                         
@@ -1207,15 +1212,17 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #if (TRUE == INCLUDE_PD_DR_SWAP)
                 case PE_CTRL_DR_SWAP:
                 {
-                    /*DR_SWAP message is valid only if the PE state is SRC_READY or SNK_READY*/
-                    if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                        (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                    /* If there are any Active Modes between the Port Partners when a DR_Swap Message 
+                       is a received then a Hard Reset Shall be performed*/
+                    if (gasDPM[u8PortNum].u16DPMStatus & DPM_PORT_IN_MODAL_OPERATION)
                     {
-                        /*Kill the u8DRSwapWaitTmrID timer*/
-                        PDTimer_Kill(gasDPM[u8PortNum].u8DRSwapWaitTmrID);
-                        gasDPM[u8PortNum].u8DRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_EVALUATE_SWAP;
+                        PE_SendHardReset(u8PortNum);
+                    }
+                    /*DR_SWAP message is valid only if the PE state is SRC_READY or SNK_READY*/
+                    else if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (u8PEInVDMState))
+                    {
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                        
                         /* Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
                            the current explicit contract is for a PPS APDO*/
@@ -1225,6 +1232,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             PE_KillPolicyEngineTimer (u8PortNum);
                         } 
 #endif                         
+                        /*Kill the u8DRSwapWaitTmrID timer*/
+                        PDTimer_Kill(gasDPM[u8PortNum].u8DRSwapWaitTmrID);
+                        gasDPM[u8PortNum].u8DRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_EVALUATE_SWAP;                         
                     }
                     else
                     {
@@ -1241,16 +1252,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                         (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_AMS_ACTIVE_MASK))
+                         (u8PEInVDMState))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP Received from Partner \r\n");
-                        /*Kill the tPRSwapWait timer*/
-                        PDTimer_Kill(gasDPM[u8PortNum].u8PRSwapWaitTmrID);
-                        /* Set the timer Id to Max Concurrent Value*/
-                        gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
-
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_EVALUATE_SWAP;
-
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)                        
                         /* Kill SourcePPSCommTimer only in ePE_SRC_READY state if 
                            the current explicit contract is for a PPS APDO*/
@@ -1259,7 +1262,14 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         {
                             PE_KillPolicyEngineTimer (u8PortNum);
                         } 
-#endif 
+#endif                        
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP Received from Partner \r\n");
+                        /*Kill the tPRSwapWait timer*/
+                        PDTimer_Kill(gasDPM[u8PortNum].u8PRSwapWaitTmrID);
+                        /* Set the timer Id to Max Concurrent Value*/
+                        gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_EVALUATE_SWAP; 
                     }
                     else
                     {
@@ -1962,21 +1972,7 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum)
     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 
 }
-/********************************************************************************/
-/********************************************************************************/
-/*****************VDM Support function*******************************************/
-/********************************************************************************/
-void PE_SetVDMActiveFlag (UINT8 u8PortNum)
-{
-    switch (gasPolicyEngine[u8PortNum].ePEState)
-    {        
-        default:
-        {
-           gasDPM[u8PortNum].u16DPMStatus &= ~DPM_VDM_AMS_ACTIVE_MASK;
-           break;
-        }
-    }
-}
+
 /*******************************************************************************/
 UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
 {

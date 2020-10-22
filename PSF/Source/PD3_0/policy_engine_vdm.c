@@ -139,7 +139,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_VDM_RESP_RCVD_SS\r\n");
 
                     /* Store the received VDM Header and VDM response in status registers */                    
-                    if (eSVDM_DISCOVER_IDENTITY == DPM_GET_VDM_CMD(pu8DataBuf[DPM_VDM_HEADER_POS]))
+                    if (eSVDM_DISCOVER_IDENTITY == (eSVDMCmd) DPM_GET_VDM_CMD(pu8DataBuf[DPM_VDM_HEADER_POS]))
                     {                        
                         (void)MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader, pu8DataBuf, \
                                                                     BYTE_LEN_4);      

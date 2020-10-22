@@ -1477,7 +1477,8 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
                                             & DPM_INT_EVT_INITIATE_ALERT);
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
-    gasDPM[u8PortNum].u16DPMStatus &= ~DPM_SWAP_REJECT_STS_MASK;    
+    gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_SWAP_REJECT_STS_MASK | \
+                                        DPM_PORT_IN_MODAL_OPERATION);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
@@ -1744,7 +1745,10 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
     UINT8 u8InvalidPortState = (((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && 
             (PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))) ? TRUE : FALSE);
         
-    switch (DPM_GET_VDM_CMD(*pu32VDMHeader))
+    /* Type of SVDM Command */
+    eSVDMCmd eVDMCmd = (eSVDMCmd) DPM_GET_VDM_CMD(*pu32VDMHeader); 
+            
+    switch (eVDMCmd)
     {
         case eSVDM_DISCOVER_IDENTITY:
         {
@@ -1790,6 +1794,7 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
                get executed. Object Position in Exit Mode command can be 7 or 
                any valid index of Modes advertised */
         }
+        /* fallthrough */
         case eSVDM_ENTER_MODE:        
         {
             for (UINT8 u8Index = INDEX_0; u8Index < u8SVIDsCnt; u8Index++)
@@ -1832,6 +1837,41 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
             }
         }
     }
+    
+    /* Set/Clear Modal Operation Active Status based on the command type
+       and DPM Response. Both DPM and User Application has evaluated the
+       VDM command. So, it is obvious that a modal operation is going 
+       to be established on reception of a Enter mode. So, setting the 
+       modal operation active status in this API itself */   
+#if (TRUE == INCLUDE_PD_ALT_MODE)  
+    
+    if (eSVDM_ENTER_MODE == eVDMCmd)
+    {
+        if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
+        {
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;
+        }
+        else
+        {
+            gasDPM[u8PortNum].u16DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;
+        }
+    }
+    else if (eSVDM_EXIT_MODE == eVDMCmd)
+    {
+        if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
+        {
+            gasDPM[u8PortNum].u16DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;
+        }
+        else
+        {
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;
+        }
+    }
+    else
+    {
+        /* Do Nothing */
+    }
+#endif 
     
     return u8DPMResponse;
 }

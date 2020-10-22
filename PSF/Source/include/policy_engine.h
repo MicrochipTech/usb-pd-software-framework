@@ -934,35 +934,7 @@ void PE_SendNotSupportedOrRejectMsg(UINT8 u8PortNum);
 
 **************************************************************************************************/
 void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8TxDoneSubState, UINT8 u8TxFailedState, UINT8 u8TxFailedSubState);
-/**************************************************************************************************
-    Function:
-        void PE_SetVDMActiveFlag(UINT8 u8PortNum);
 
-    Summary:
-        This API is called to set the VDM Active Flag based on the current 
-        policy engine state for a given port
-       
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        This API is called to set the VDM Active Flag based on the current 
-        policy engine state for a given port
-
-    Conditions:
-        None
-
-    Input:
-        u8PortNum - Port Number.
-
-    Return:
-        None.
-
-    Remarks:
-        None.
-
-**************************************************************************************************/
-void PE_SetVDMActiveFlag(UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
         void PE_KillPolicyEngineTimer (UINT8 u8PortNum);
