@@ -828,4 +828,21 @@ void UPD_HPDInit(UINT8 u8PortNum)
     UPD_RegByteSetBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
     
 }
+
+void UPD_HPDRegisterInterrupt(UINT8 u8PortNum)
+{
+    UINT8 u8Data;
+    
+    gu16HPDStsISR |= UPD_HPD_INTERRUPT_OCCURRED;
+    
+    UPD_RegisterReadISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
+    gu16HPDStsISR |= (u8Data & UPD_HPD_ALL_INTERRUPTS);
+    UPD_RegisterWriteISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
+    
+    UPD_RegisterReadISR (u8PortNum, UPD_HPD_QUEUE, &u8Data, BYTE_LEN_1);
+    gu16HPDStsISR |= (u8Data << UPD_HPD_QUEUE_POS);
+    UPD_RegisterWriteISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
+}
+
+
 #endif

@@ -108,6 +108,24 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 GLOBAL_CFG_STATUS_DATA gasCfgStatusData = {SET_TO_ZERO};
 /**************************************************************************************************/ 
 
+#if (TRUE == INCLUDE_PD_ALT_MODE)
+  HPD_CONTROL gu16HPDStsISR;          /*BIT0 - > IRQ_HPD occurred
+                                    BIT1 -> HPD_LOW occurred
+                                    BIT2 -> HPD_HIGH occurred
+                                    BIT3 -> HPD_INT occurred
+                                    BIT[15:8] ?> HPD Queue
+                                      BIT[7:6] ? HPD event 3
+                                      BIT[5:4] ? HPD event 2
+                                      BIT[3:2] ? HPD event 1
+                                      BIT[1:0] ? HPD event 0
+                                        00b: HPD event field is empty
+                                        01b: HPD_HIGH Detected
+                                        10b: HPD_LOW Detected
+                                        11b: HPD_IRQ Detected */
+
+
+#endif
+
 /*******************************************************************/
 /******************* Functions**************************************/
 /*******************************************************************/

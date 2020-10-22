@@ -134,6 +134,10 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     /* Run Policy engine State machine*/
     PE_RunStateMachine(u8PortNum);     
 
+    #if(TRUE == INCLUDE_PD_ALT_MODE)
+    DPM_HPDEventHandler(u8PortNum);
+    #endif
+    
     /* Handle Power Throttling Bank Switching */
     #if (TRUE == INCLUDE_POWER_THROTTLING)
         PT_HandleBankSwitch(u8PortNum);
@@ -985,4 +989,19 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
     }
 }
 
+#if (TRUE == INCLUDE_PD_ALT_MODE)    
+void DPM_HPDEventHandler(UINT8 u8PortNum)
+{
+    if(gu16HPDStsISR & UPD_HPD_INTERRUPT_OCCURRED)
+    {
+        gu16HPDStsISR &= (~UPD_HPD_INTERRUPT_OCCURRED);
+        gasCfgStatusData.sPerPortData[u8PortNum].u16HPDStatus = gu16HPDStsISR;
+        DPM_NotifyClient(u8PortNum, eMCHP_PSF_HPD_EVENT_OCCURRED);
+    }
+    else
+    {
+        /*Do nothing*/
+    }
+}    
+#endif
 /*************************************************************************************/

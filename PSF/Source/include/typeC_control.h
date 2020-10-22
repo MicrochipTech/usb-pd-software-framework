@@ -377,6 +377,7 @@ event for UFP*/
 					/ TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
 #endif /* end of INCLUDE_POWER_FAULT_HANDLING*/
+
 /**************************************************************************************/                
 
 /*Bit definitions for gasTypeCcontrol[u8PortNum].u8DRPStsISR variable*/
@@ -685,25 +686,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
   UINT8 u8DRPLastAttachedState; /*BIT[1:0] -> Previous DRP attached power role*/
 #endif
   
-#if (TRUE == INCLUDE_PD_ALT_MODE)
-  UINT16 u16HPDStsISR;          /*BIT0 - > IRQ_HPD occurred
-                                BIT1 -> HPD_LOW occurred
-                                BIT2 -> HPD_HIGH occurred
-                                BIT3 -> HPD_INT occurred
-                                BIT[15:8] ?> HPD Queue
-                                  BIT[7:6] ? HPD event 3
-                                  BIT[5:4] ? HPD event 2
-                                  BIT[3:2] ? HPD event 1
-                                  BIT[1:0] ? HPD event 0
-                                    00b: HPD event field is empty
-                                    01b: HPD_HIGH Detected
-                                    10b: HPD_LOW Detected
-                                    11b: HPD_IRQ Detected */
-
-
-#endif
-  
-  float fVBUSCorrectionFactor;
+float fVBUSCorrectionFactor;
   
 }MCHP_PSF_STRUCT_PACKED_END TYPEC_CONTROL;
 
