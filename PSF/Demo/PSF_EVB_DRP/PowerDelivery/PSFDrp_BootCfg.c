@@ -277,6 +277,10 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPBPerPortData[PORT0].u8PortPriority = PORT0;
     #endif
 
+#if(TRUE == INCLUDE_PD_ALT_MODE)
+    pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
+#endif
+
 /*Per port configuration for Port 1*/      
 #if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT) 
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
@@ -312,6 +316,10 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPBPerPortData[PORT1].u16MaxPrtPwrBankBIn250mW = CFG_PB_MAX_PORT_1_POWER_BANKB_IN_250mW;
     pasCfgStatusData->sPBPerPortData[PORT1].u16MaxPrtPwrBankCIn250mW = CFG_PB_MAX_PORT_1_POWER_BANKC_IN_250mW;
     pasCfgStatusData->sPBPerPortData[PORT1].u8PortPriority = PORT1;
+    #endif
+    
+    #if(TRUE == INCLUDE_PD_ALT_MODE)
+    pasCfgStatusData->sPerPortData[PORT1].u8PIO_HPD = CFG_PORT_1_HPD_IO;
     #endif
     
 #endif
