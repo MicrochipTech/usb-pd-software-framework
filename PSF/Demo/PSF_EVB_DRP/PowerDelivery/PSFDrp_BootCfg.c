@@ -241,7 +241,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->u16MinPowerBankCIn250mW = CFG_PB_MIN_POWER_BANKC_IN_250mW;
 #endif     
 
-/*Per port configuration for Port 0*/    
+    /*Per port configuration for Port 0*/    
     pasCfgStatusData->sPerPortData[PORT0].u32CfgData =       
         ((CFG_PORT_0_VCONN_OCS_ENABLE) | (CFG_PORT_0_ENABLE) | (CFG_PORT_0_RP_CURRENT_VALUE)| \
         (CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_0_POWER_ROLE));
@@ -277,7 +277,36 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPBPerPortData[PORT0].u8PortPriority = PORT0;
     #endif
 
-/*Per port configuration for Port 1*/      
+    #if (TRUE == INCLUDE_PD_VDM)
+    /* PD Identity Configuration for Port 0 */
+    pasCfgStatusData->sVDMPerPortData[PORT0].u8PDIdentityCnt = CFG_PORT_0_PD_IDENTITY_COUNT;
+    
+    pasCfgStatusData->sVDMPerPortData[PORT0].u32aPDIdentity[INDEX_0] = CFG_PORT_0_ID_HEADER_VDO;
+    pasCfgStatusData->sVDMPerPortData[PORT0].u32aPDIdentity[INDEX_1] = CFG_PORT_0_CERT_STAT_VDO_XID;
+    pasCfgStatusData->sVDMPerPortData[PORT0].u32aPDIdentity[INDEX_2] = CFG_PORT_0_PRODUCT_VDO;    
+    /* Note: Application shall configure the Product Type VDOs in indices 3-5
+       depending upon the product type */
+    #if (TRUE == INCLUDE_PD_ALT_MODE)
+    /* SVIDs Configuration for Port 0 */
+    pasCfgStatusData->sAltModePerPortData[PORT0].u8SVIDsCnt = CFG_PORT_0_SVID_COUNT;
+    
+    pasCfgStatusData->sAltModePerPortData[PORT0].u16aSVIDsTable[INDEX_0] = CFG_PORT_0_SVID_0;
+    pasCfgStatusData->sAltModePerPortData[PORT0].u16aSVIDsTable[INDEX_1] = CFG_PORT_0_SVID_1;
+    
+    /* Modes Configuration for Port 0 */
+    pasCfgStatusData->sAltModePerPortData[PORT0].u32aModesTable[INDEX_0] = CFG_PORT_0_SVID_0_MODE_0;
+    pasCfgStatusData->sAltModePerPortData[PORT0].u32aModesTable[INDEX_1] = CFG_PORT_0_SVID_0_MODE_1;
+    pasCfgStatusData->sAltModePerPortData[PORT0].u32aModesTable[INDEX_2] = CFG_PORT_0_SVID_1_MODE_0;
+    pasCfgStatusData->sAltModePerPortData[PORT0].u32aModesTable[INDEX_3] = CFG_PORT_0_SVID_1_MODE_1;
+    
+    pasCfgStatusData->sAltModePerPortData[PORT0].u8aSVIDEntryTable[INDEX_0] = \
+                      (CFG_PORT_0_SVID_0_MODES_COUNT | CFG_PORT_0_SVID_0_START_MODE_INDEX);
+    pasCfgStatusData->sAltModePerPortData[PORT0].u8aSVIDEntryTable[INDEX_1] = \
+                      (CFG_PORT_0_SVID_1_MODES_COUNT | CFG_PORT_0_SVID_1_START_MODE_INDEX);    
+    #endif
+    #endif 
+
+    /*Per port configuration for Port 1*/      
 #if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT) 
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
         ((CFG_PORT_1_VCONN_OCS_ENABLE) | (CFG_PORT_1_ENABLE) | (CFG_PORT_1_RP_CURRENT_VALUE)| \
@@ -313,6 +342,35 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPBPerPortData[PORT1].u16MaxPrtPwrBankCIn250mW = CFG_PB_MAX_PORT_1_POWER_BANKC_IN_250mW;
     pasCfgStatusData->sPBPerPortData[PORT1].u8PortPriority = PORT1;
     #endif
+    
+    #if (TRUE == INCLUDE_PD_VDM)
+    /* PD Identity Configuration for Port 1 */
+    pasCfgStatusData->sVDMPerPortData[PORT1].u8PDIdentityCnt = CFG_PORT_1_PD_IDENTITY_COUNT;
+    
+    pasCfgStatusData->sVDMPerPortData[PORT1].u32aPDIdentity[INDEX_0] = CFG_PORT_1_ID_HEADER_VDO;
+    pasCfgStatusData->sVDMPerPortData[PORT1].u32aPDIdentity[INDEX_1] = CFG_PORT_1_CERT_STAT_VDO_XID;
+    pasCfgStatusData->sVDMPerPortData[PORT1].u32aPDIdentity[INDEX_2] = CFG_PORT_1_PRODUCT_VDO;   
+    /* Note: Application shall configure the Product Type VDOs in indices 3-5
+       depending upon the product type */    
+    #if (TRUE == INCLUDE_PD_ALT_MODE)
+    /* SVIDs Configuration for Port 1 */
+    pasCfgStatusData->sAltModePerPortData[PORT1].u8SVIDsCnt = CFG_PORT_1_SVID_COUNT;
+    
+    pasCfgStatusData->sAltModePerPortData[PORT1].u16aSVIDsTable[INDEX_0] = CFG_PORT_1_SVID_0;
+    pasCfgStatusData->sAltModePerPortData[PORT1].u16aSVIDsTable[INDEX_1] = CFG_PORT_1_SVID_1;
+
+    /* Modes Configuration for Port 0 */
+    pasCfgStatusData->sAltModePerPortData[PORT1].u32aModesTable[INDEX_0] = CFG_PORT_1_SVID_0_MODE_0;
+    pasCfgStatusData->sAltModePerPortData[PORT1].u32aModesTable[INDEX_1] = CFG_PORT_1_SVID_0_MODE_1;
+    pasCfgStatusData->sAltModePerPortData[PORT1].u32aModesTable[INDEX_2] = CFG_PORT_1_SVID_1_MODE_0;
+    pasCfgStatusData->sAltModePerPortData[PORT1].u32aModesTable[INDEX_3] = CFG_PORT_1_SVID_1_MODE_1;
+    
+    pasCfgStatusData->sAltModePerPortData[PORT0].u8aSVIDEntryTable[INDEX_0] = \
+                      (CFG_PORT_1_SVID_0_MODES_COUNT | CFG_PORT_1_SVID_0_START_MODE_INDEX);
+    pasCfgStatusData->sAltModePerPortData[PORT0].u8aSVIDEntryTable[INDEX_1] = \
+                      (CFG_PORT_1_SVID_1_MODES_COUNT | CFG_PORT_1_SVID_1_START_MODE_INDEX);        
+    #endif    
+    #endif 
     
 #endif
     
