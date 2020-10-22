@@ -335,6 +335,24 @@ Example:
 **************************************************************************************************/
 #define INCLUDE_PD_VDM             0
 
+/**************************************************************************************************
+Summary:
+    Alternate Mode support code inclusion.
+Description:
+    Setting the INCLUDE_PD_ALT_MODE as 1 enables PSF to include the Alternate Mode 
+    feature at the compile time. Users can set this define to 0 to reduce the code size
+    if none of the ports in the system require Alternate Mode support.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_PD_ALT_MODE to be 1,
+    INCLUDE_PD_VDM shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_ALT_MODE	1(Include Alternate Mode support in PSF)
+    #define INCLUDE_PD_ALT_MODE	0(Exclude Alternate Mode support from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_ALT_MODE             0
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Power Delivery IDs
@@ -1473,18 +1491,18 @@ typedef enum
 									Power Throttling is enabled. Therefore, user application should not trigger 
 									this client request when Power Balancing or Power Throttling is enabled.
     9:6                             Reserved.
-    10       R/W          R/W      Initiate a Structured VDM request       
-                                    * '0' PSF has not received any Structured VDM request.
-                                    * '1' PSF has received a Structured VDM request. 									 
-                                    *  User Application shall configure the respective VDM 
-                                        Header in u32VDMHeader variable of sVDMPerPortData 
-                                        structure
-                                    *  eMCHP_PSF_VDM_RESPONSE_RCVD notification will 
-                                        will be posted for an ACK/NAK response, 
-                                        eMCHP_PSF_VDM_RESPONSE_NOT_RCVD
-                                        will be posted when no response is received.
-                                    *  This request is supported only when INCLUDE_PD_VDM is 
-                                        defined as '1'. 
+    10       R/W          R/W      Send a Structured Vendor Defined Message        
+                                    * Set this bit to send a VDM to port partner
+                                    * User Application shall configure the respective VDM 
+                                       Header in u32VDMHeader variable of sVDMPerPortData 
+                                       structure and VDOs in the u32aVDO array and VDOs 
+                                       count in u8VDOCnt of sAltModePerPortData structure
+                                    * If the VDM is a request, eMCHP_PSF_VDM_RESPONSE_RCVD 
+                                       notification will be posted for an ACK/NAK response, 
+                                       and eMCHP_PSF_VDM_RESPONSE_NOT_RCVD
+                                       will be posted when no response is received.
+                                    * This client request is supported only when INCLUDE_PD_VDM 
+                                       or INCLUDE_PD_ALT_MODE is defined as '1'. 
 	31:11  						   Reserved 									
 	</table> 								
  
@@ -1544,6 +1562,15 @@ typedef enum
                                     * '0' Disable.
                                     * '1' Enable. 
 								    This bit is applicable only for source operation. 			
+    1       R/W          R         Indicates if Vendor Defined Message is supported
+                                    by the port.
+                                    * '0' - Vendor Defined Messages are not supported.
+                                       The port will respond with 'Not Supported' on
+                                       reception of a Vendor Defined Message.  
+                                    * '1' - Vendor Defined Messages are supported.
+                                       The port will respond with relevant VDM data on
+                                       reception of a Vendor Defined Message.    
+                                        
     15:1	                       Reserved 
     </table>
     
@@ -1736,7 +1763,7 @@ typedef struct _PBPortCfgStatus
    Description:
      This structure contains the following parameters that 
      are either Integer Datatypes or Bit-Mapped bytes.  
-	 This structure is used only when INCLUDE_PD_SOURCE_PPS is set to '1'.
+	 This structure is used only when INCLUDE_PD_VDM is set to '1'.
 	 
 	<b>1. Members that are Integer Datatypes:</b> 
 	
@@ -1745,28 +1772,43 @@ typedef struct _PBPortCfgStatus
                                      Bytes     time         time      
     ------------------------------  --------  -----------  --------  -------------------------------------------------------------------	
     u32VDMHeader                    4         R/W          R/W       * VDM Header used while 
-                                                                        initiating a VDM request
+                                                                        sending a VDM to port 
+                                                                        partner
                                                                       * The fields of this variable
                                                                          shall comply with 
                                                                          Table 6-25: Structured VDM 
                                                                          Header of PD Specification
-    u32PartnerVDMHeader             4         R            R         * VDM Header sent by partner 
-                                                                        in the VDM response	  
+    u32PartnerVDMHeader             4         R            R         * VDM Header sent by partner                                                                         
     u32aPartnerPDIdentity[6]        24        R            R         * Partner Identities received
                                                                         in response to a Discover
                                                                         Identity request. This
-                                                                        array can hold upto 7 VDM 
+                                                                        array can hold upto 6 VDM 
                                                                         Data Objects where 
                                                                         Index 0 corresponds to ID                                                                        
                                                                         Header VDO, Index 1 being
                                                                         Cert Stat VDO, Index 2 
                                                                         being Product VDO and 
-                                                                        indices 3-6 correspond to 
+                                                                        indices 3-5 correspond to 
                                                                         0-3 Product Type VDO(s)
+    u32aPDIdentity[6]               24        R/W           R        * Port PD Identities to be 
+                                                                        sent in Discover
+                                                                        Identity response. This
+                                                                        array can hold upto 6 VDM 
+                                                                        Data Objects where 
+                                                                        Index 0 corresponds to ID                                                                        
+                                                                        Header VDO, Index 1 being
+                                                                        Cert Stat VDO, Index 2 
+                                                                        being Product VDO and 
+                                                                        indices 3-5 correspond to 
+                                                                        0-3 Product Type VDO(s)   
     u8PartnerPDIdentityCnt          1         R            R         * Number of Identities received
                                                                         from partner in response to 
                                                                         a Discover Identity request
-    u8aReservedArr[3]				2                                Reserved 
+    u8PDIdentityCnt                 1         R/W          R         * Number of PD Identities of
+                                                                        the port that needs to be 
+                                                                        sent in response to a
+                                                                        Discover Identity request   
+    u8aReserved9                    2                                Reserved 
 	</table> 
 
    Remarks:
@@ -1776,12 +1818,81 @@ typedef struct _PBPortCfgStatus
 
 typedef struct _VDMPortCfgStatus
 {
-    UINT32 u32VDMHeader;
+    UINT32 u32VDMHeader;  
     UINT32 u32PartnerVDMHeader; 
     UINT32 u32aPartnerPDIdentity[6];
+    UINT32 u32aPDIdentity[6];  
+    UINT8 u8PDIdentityCnt; 
     UINT8 u8PartnerPDIdentityCnt; 
-    UINT8 u8aReservedArr[3]; 
+    UINT8 u8aReserved9[2];     
 } VDM_PORT_CFG_STATUS, *PVDM_PORT_CFG_STATUS;
+
+#endif 
+/**********************************************************************
+   Summary:
+     This structure contains port specific Alternate Mode Configuration and 
+     Status parameters. sAltModePerPortData is referred from _GlobalCfgStatusData.
+   Description:
+     This structure contains the following parameters that 
+     are either Integer Datatypes or Bit-Mapped bytes.  
+	 This structure is used only when INCLUDE_PD_ALT_MODE is set to '1'.
+	 
+	<b>1. Members that are Integer Datatypes:</b> 
+	
+	<table> 	
+    Name                            Size in   R/W Config   R/W Run   \Description
+                                     Bytes     time         time      
+    ------------------------------  --------  -----------  --------  -------------------------------------------------------------------	
+    u32aModesTable                  64        R/W          R         * List of Modes corresponding
+                                                                        to each supported SVID 
+    u32aVDO                         24        R/W          R/W       * This array contains VDOs 
+                                                                        received from partner
+                                                                        during an Enter Mode
+                                                                        request and other SVID 
+                                                                        specific commands.
+                                                                     * Application can make use of
+                                                                        this array to send the VDOs
+                                                                        to partner while initiating
+                                                                        or responding to Enter Mode
+                                                                        and other SVID specific 
+                                                                        commands
+    u16aSVIDsTable                  32        R/W          R         * List of SVIDs supported by
+                                                                        the port
+    u8aSVIDEntryTable               16        R/W          R         * SVID Entry table where 
+                                                                        in every index, 
+                                                                        Bits 2:0 ? No of Modes for
+                                                                        an SVID
+                                                                        Bits 6:3 ? Start Mode Index
+                                                                        The index into the mode 
+                                                                        table for the first mode
+                                                                        for this SVID. The 
+                                                                        allocation of modes in the
+                                                                        table starts from this 
+                                                                        field up to the value in No
+                                                                        of Modes.
+                                                                        Bit 7 ? Reserved 
+    u8SVIDsCnt                      1         R/W          R         * Number of entries stored in
+                                                                        u16aSVIDsTable                  
+    u8VDOCnt                        1         R/W          R/W       * Number of VDOs stored in or 
+                                                                        to be sent from u32aVDO 
+    u8aReserved10                   2                                Reserved 
+	</table> 
+
+   Remarks:
+     None                                                               
+   **********************************************************************/
+#if (TRUE == INCLUDE_PD_ALT_MODE)
+
+typedef struct _AltModePortCfgStatus
+{
+    UINT32 u32aModesTable[16];
+    UINT32 u32aVDO[6]; 
+    UINT16 u16aSVIDsTable[16];
+    UINT8 u8aSVIDEntryTable[16];
+	UINT8 u8SVIDsCnt; 	        
+    UINT8 u8VDOCnt; 
+    UINT8 u8aReserved10[2]; 
+} ALT_MODE_PORT_CFG_STATUS, *PALT_MODE_PORT_CFG_STATUS;
 
 #endif 
  /**********************************************************************
@@ -2100,6 +2211,10 @@ typedef struct _GlobalCfgStatusData
     VDM_PORT_CFG_STATUS sVDMPerPortData[CONFIG_PD_PORT_COUNT]; 
 #endif 
 
+#if (TRUE == INCLUDE_PD_ALT_MODE)    
+    ALT_MODE_PORT_CFG_STATUS sAltModePerPortData[CONFIG_PD_PORT_COUNT]; 
+#endif 
+    
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
     UINT8 u8ReservedPadBytes[16];
 #endif
