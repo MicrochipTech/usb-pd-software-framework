@@ -139,6 +139,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_PIO_OVR3_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD6													  
 #define UPD_PIO_OVR4_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD8													  
 #define UPD_PIO_OVR5_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xDA		
+
+#define UPD_HPD_BASE_ADDR			0x0C00            
+#define UPD_HPD_CTL             UPD_HPD_BASE_ADDR + 0x00
+#define UPD_IRQ_HPD_MIN_TIME	UPD_HPD_BASE_ADDR + 0x04
+#define UPD_IRQ_HPD_MAX_TIME    UPD_HPD_BASE_ADDR + 0x05
+#define UPD_HPD_HIGH_DET_TIME   UPD_HPD_BASE_ADDR + 0x06
+#define UPD_HPD_LOW_DET_TIME    UPD_HPD_BASE_ADDR + 0x08
+#define UPD_HPD_INT_EN              UPD_HPD_BASE_ADDR + 0x02
 /**************************************************************************************************/
 
 /* Defines for PIO Overridex Source Select Register (PIO_OVRx_SRC_SEL)*/
@@ -228,6 +236,23 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Default UPD VBUS Threshold value */
 #define UPD_VBUS_THRS_DEFAULT    222 
+
+/*Defines used in UPD_HPDInit() API*/
+#define HPD_IRQ_MIN_TIME_350US           5
+#define HPD_IRQ_MIN_TIME_2_1MS           40
+#define UPD_HPD_HIGH_DET_TIME_100_1MS    2000
+#define UPD_HPD_LOW_DET_TIME_2_1MS       40
+
+#define UPD_IRQ_HPD_EN                   BIT(0)
+#define UPD_HPD_LOW_EN                   BIT(1)
+#define UPD_HPD_HIGH_EN                  BIT(2)
+#define UPD_QUEUE_NOT_EMPTY_EN           BIT(3)
+
+#define UPD_CFG_PIO_ENABLE               BIT(0)
+
+#define UPD_HPD_ENABLE                   BIT(0)
+#define UPD_HPD_CFG                      BIT(1)
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Routines

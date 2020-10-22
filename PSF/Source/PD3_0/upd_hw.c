@@ -804,3 +804,28 @@ void UPD_RegDump(UINT8 u8PortNum)
 }
 /********************************************************************************************/
 #endif
+
+#if(TRUE == INCLUDE_PD_ALT_MODE)
+
+void UPD_HPDInit(UINT8 u8PortNum)
+{
+    UPD_RegWriteByte(u8PortNum, UPD_IRQ_HPD_MIN_TIME, HPD_IRQ_MIN_TIME_350US);
+    
+    UPD_RegWriteByte(u8PortNum, UPD_IRQ_HPD_MAX_TIME, HPD_IRQ_MIN_TIME_2_1MS);
+    
+    UPD_RegWriteWord(u8PortNum, UPD_HPD_HIGH_DET_TIME, UPD_HPD_HIGH_DET_TIME_100_1MS);
+    
+    UPD_RegWriteWord(u8PortNum, UPD_HPD_LOW_DET_TIME, UPD_HPD_LOW_DET_TIME_2_1MS);
+    
+    UPD_RegWriteByte(u8PortNum, UPD_HPD_INT_EN, (UPD_IRQ_HPD_EN | UPD_HPD_LOW_EN \
+            | UPD_HPD_HIGH_EN | UPD_QUEUE_NOT_EMPTY_EN));
+    
+    UPD_RegByteClearBit (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8PIO_HPD), \
+                        UPD_CFG_PIO_ENABLE);
+    
+    UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_CFG);
+    
+    UPD_RegByteSetBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
+    
+}
+#endif
