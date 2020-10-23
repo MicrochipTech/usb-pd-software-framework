@@ -1184,7 +1184,11 @@ Description:
 	the VDM response timer has timed out due to no response from the partner for the VDM request 
     sent or when the partner has responded BUSY for a maximum of 5 times and the VDM request will 
     not be initiated by PSF anymore or when the partner has sent Not Supported for the VDM request.
-  
+
+    <b> eMCHP_PSF_HPD_EVENT_OCCURRED </b>: This notification will be posted by PSF when
+	an HPD (Hot Plug Detect) event has occurred. When this notification is received, 
+    User_application may read u16HPDStatus variable to know the status of HPD IO. 
+
     <b> eMCHP_PSF_PORT_DISABLED</b>: This event is used by PSF to notify the application 
     that a port has been disabled as a result of port disable client request (BIT[0] in 
     gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is disabled,
@@ -1249,6 +1253,7 @@ eMCHP_PSF_CABLE_IDENTITY_NAKED,        // NAK received from cable for Discover I
 eMCHP_PSF_VDM_RESPONSE_RCVD,           // Response received from partner for VDM request sent to SOP
 eMCHP_PSF_VDM_RESPONSE_NOT_RCVD,       // No response from partner for VDM request sent to SOP  
 eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
+eMCHP_PSF_HPD_EVENT_OCCURRED,          // Indicates that an HPD event has occurred        
 eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
 eMCHP_PSF_BUSY,                        // PSF is busy, cannot handle client request
 eMCHP_PSF_IDLE                         // PSF is idle, Application can raise any client request   
