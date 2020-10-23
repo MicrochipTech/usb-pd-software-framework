@@ -85,6 +85,9 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     /*Configure role swap policy for note type port*/
     pasCfgStatusData->sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
     
+#if(TRUE == INCLUDE_UPD_HPD)
+    pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
+#endif
 /*Port 1 Per Port Configuration*/    
 #if(PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)    
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
@@ -118,6 +121,11 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 
     /*Configure role swap policy for dock type port*/
     pasCfgStatusData->sPerPortData[PORT1].u16SwapPolicy = CFG_PORT_1_ROLE_SWAP_POLICY;
+    
+    #if(TRUE == INCLUDE_UPD_HPD)
+    pasCfgStatusData->sPerPortData[PORT1].u8PIO_HPD = CFG_PORT_1_HPD_IO;
+    #endif
+    
 #endif
     
 }

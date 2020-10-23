@@ -136,6 +136,10 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 			
     /*Configure role swap policy for note type port*/
     pasCfgStatusData->sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
+
+#if(TRUE == INCLUDE_UPD_HPD)
+    pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
+#endif
                
 }
 
