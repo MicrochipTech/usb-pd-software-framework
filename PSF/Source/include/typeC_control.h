@@ -377,7 +377,6 @@ event for UFP*/
 					/ TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
 #endif /* end of INCLUDE_POWER_FAULT_HANDLING*/
-
 /**************************************************************************************/                
 
 /*Bit definitions for gasTypeCcontrol[u8PortNum].u8DRPStsISR variable*/
@@ -685,8 +684,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
   UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status*/
   UINT8 u8DRPLastAttachedState; /*BIT[1:0] -> Previous DRP attached power role*/
 #endif
-  
-float fVBUSCorrectionFactor;
+  float fVBUSCorrectionFactor;
   
 }MCHP_PSF_STRUCT_PACKED_END TYPEC_CONTROL;
 
