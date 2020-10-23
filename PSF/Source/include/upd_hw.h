@@ -1131,7 +1131,7 @@ void UPD_RegDump(UINT8 u8PortNum);
         This API is to enable UPD350 to detect HPD events.
 
     Conditions:
-        This is applicable only for Alternate mode operation.
+        This is applicable only when INCLUDE_PD_HPD is enabled.
 
     Input:
         u8PortNum - Port number of the device.
@@ -1160,7 +1160,7 @@ void UPD_HPDInit(UINT8 u8PortNum);
         those events in gu16HPDStsISR variable.
 
     Conditions:
-        This is applicable only for Alternate mode operation.
+        This is applicable only when INCLUDE_PD_HPD is enabled.
 
     Input:
         u8PortNum - Port number of the device.

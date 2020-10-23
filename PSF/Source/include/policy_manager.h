@@ -1262,7 +1262,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
     Function:
         void DPM_HPDEventHandler(UINT8 u8PortNum);
     Summary:
-        API handles an HPD event. 
+        This API handles an HPD event. 
     Devices Supported:
         UPD350 REV A
     Description:
@@ -1271,7 +1271,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
         User_application that an HPD event has occurred using eMCHP_PSF_HPD_EVENT_OCCURRED
         notification.
     Conditions:
-        This API is applicable only for Alternate mode operation.
+        This API is applicable only when INCLUDE_PD_HPD is enabled.
     Input:
         u8PortNum - Port number of the device. Value passed will be less than CONFIG_PD_PORT_COUNT.
     Return:
