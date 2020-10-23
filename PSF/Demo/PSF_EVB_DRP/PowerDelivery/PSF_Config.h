@@ -1151,8 +1151,8 @@ typedef enum
 																		number used for HPD IO pin.
                                                                       * The state of this pin is tracked
                                                                         in u16HPDStatus variable.
-																	  * This is applicable only for
-																		Alternate mode operation.
+																	  * This is applicable only when
+																		INCLUDE_PD_HPD is enabled.
 	u8Reserved1  					1								 Reserved
 	u8Reserved2   					1								 Reserved
  	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
@@ -1624,7 +1624,7 @@ typedef enum
 	u16HPDStatus defines the status of HPD IO. The value in this variable is valid only when 
     eMCHP_PSF_HPD_EVENT_OCCURRED notification is posted by PSF. User_application may read this variable
     when eMCHP_PSF_HPD_EVENT_OCCURRED notification is received from PSF.
-    This variable is applicable only for Alternate mode operation.
+    This variable is applicable only when INCLUDE_PD_HPD is enabled.
 	<table> 
     Bit     R/W Config   R/W Run   \Description
              time         time      
