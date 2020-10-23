@@ -140,6 +140,7 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     PE_RunStateMachine(u8PortNum);     
 
     #if(TRUE == INCLUDE_PD_HPD)
+    /*Handle HPD events if any*/
     DPM_HPDEventHandler(u8PortNum);
     #endif
     
