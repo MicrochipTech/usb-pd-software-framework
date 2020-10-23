@@ -3103,19 +3103,10 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 u8TypeCState = TYPEC_ATTACHWAIT_SNK;
                 u8TypeCSubState = TYPEC_ATTACHWAIT_SNK_ENTRY_SS;
             }
-            else if((TYPEC_UNATTACHED_SNK == u8TypeCState) || (TYPEC_ATTACHWAIT_SNK == u8TypeCState))
+            else 
             {
-                /*This threshold will get hit when DFP Connected and advertising
-                proprietary current. Setting the state as TYPEC_ATTACHWAIT_SNK 
-                for Tcc Debounce and VBUS presence check*/
-                
-                TypeC_KillTypeCTimer(u8PortNum);
-                
-                /*Disable the Protocol layer receiver function since moving to Attach wait state*/
-                PRL_EnableRx (u8PortNum, FALSE);
-            
-                u8TypeCState = TYPEC_ATTACHWAIT_SNK;
-                u8TypeCSubState = TYPEC_ATTACHWAIT_SNK_ENTRY_SS;
+                /*Execution is not expected to hit here.
+                 Do nothing.*/
             }
             break; 
         } 

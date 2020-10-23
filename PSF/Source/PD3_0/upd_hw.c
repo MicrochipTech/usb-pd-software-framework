@@ -805,7 +805,7 @@ void UPD_RegDump(UINT8 u8PortNum)
 /********************************************************************************************/
 #endif
 
-#if(TRUE == INCLUDE_PD_HPD)
+#if(TRUE == INCLUDE_UPD_HPD)
 
 void UPD_HPDInit(UINT8 u8PortNum)
 {
@@ -836,20 +836,20 @@ void UPD_HPDInit(UINT8 u8PortNum)
     UPD_RegByteSetBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
 }
 
-void UPD_HPDRegisterInterrupt(UINT8 u8PortNum)
+void UPD_HPDHandleISR(UINT8 u8PortNum)
 {
     UINT8 u8Data;
     
-    gu16HPDStsISR |= UPD_HPD_INTERRUPT_OCCURRED;
+    gu16HPDStsISR[u8PortNum] |= UPD_HPD_INTERRUPT_OCCURRED;
     
-    /*Copy IRQ_HPD, HPD_LOW and HPD_HIGH interrupts to BITs[0:2] of gu16HPDStsISR*/
+    /*Copy IRQ_HPD, HPD_LOW and HPD_HIGH interrupts to BITs[0:2] of gu16HPDStsISR[u8PortNum]*/
     UPD_RegisterReadISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
-    gu16HPDStsISR |= (u8Data & UPD_HPD_ALL_INTERRUPTS);
+    gu16HPDStsISR[u8PortNum] |= (u8Data & UPD_HPD_ALL_INTERRUPTS);
     UPD_RegisterWriteISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
     
-    /*Copy HPD_QUEUE interrupts to BITs[15:8] of gu16HPDStsISR*/
+    /*Copy HPD_QUEUE interrupts to BITs[15:8] of gu16HPDStsISR[u8PortNum]*/
     UPD_RegisterReadISR (u8PortNum, UPD_HPD_QUEUE, &u8Data, BYTE_LEN_1);
-    gu16HPDStsISR |= (u8Data << UPD_HPD_QUEUE_POS);
+    gu16HPDStsISR[u8PortNum] |= (u8Data << UPD_HPD_QUEUE_POS);
     UPD_RegisterWriteISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
 }
 

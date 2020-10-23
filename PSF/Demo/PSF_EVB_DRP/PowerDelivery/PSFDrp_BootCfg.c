@@ -277,7 +277,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPBPerPortData[PORT0].u8PortPriority = PORT0;
     #endif
 
-#if(TRUE == INCLUDE_PD_HPD)
+#if(TRUE == INCLUDE_UPD_HPD)
     pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
 #endif
 
@@ -318,7 +318,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPBPerPortData[PORT1].u8PortPriority = PORT1;
     #endif
     
-    #if(TRUE == INCLUDE_PD_HPD)
+    #if(TRUE == INCLUDE_UPD_HPD)
     pasCfgStatusData->sPerPortData[PORT1].u8PIO_HPD = CFG_PORT_1_HPD_IO;
     #endif
     
