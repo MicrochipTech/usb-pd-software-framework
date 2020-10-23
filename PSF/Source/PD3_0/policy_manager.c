@@ -348,12 +348,12 @@ UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
                  (gasCfgStatusData.sPerPortData[u8PortNum].u8CableIdentityCnt * BYTE_LEN_4));                                                   
     
     /* Get the CMD type from received VDM */
-    u8RetVal = DPM_VDM_GET_CMD_TYPE(u32DataBuf[DPM_VDM_HEADER_POS]);
+    u8RetVal = DPM_GET_VDM_CMD_TYPE(u32DataBuf[DPM_VDM_HEADER_POS]);
     
     /* if Data object is one, received message is NAK */
-    if((PE_VDM_NAK == u8RetVal) || (PE_VDM_BUSY == u8RetVal))
+    if((DPM_VDM_NAK == u8RetVal) || (DPM_VDM_BUSY == u8RetVal))
     {
-        u8RetVal = PE_VDM_NAK;
+        u8RetVal = DPM_VDM_NAK;
     }
     else
     {
@@ -378,7 +378,7 @@ UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header,
         }
         
         /* Received message is ACK */
-        u8RetVal = PE_VDM_ACK;
+        u8RetVal = DPM_VDM_ACK;
     }    
     
     return u8RetVal;
@@ -407,7 +407,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
                                             PE_CABLE_RESPOND_NAK) >> PE_CABLE_RESPOND_NAK_POS));
     
     /* Get the Requested PDO object position from received buffer */
-    u8SinkReqObjPos = ((u8DataBuf[INDEX_3]) & PE_REQUEST_OBJ_MASK) >> PE_REQUEST_OBJ_POS;
+    u8SinkReqObjPos = ((u8DataBuf[INDEX_3]) & DPM_RDO_OBJ_MASK) >> DPM_RDO_OBJ_POS;
     
     /* Get the PDO/APDO from Advertised PDO Array */
     u32PDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8SinkReqObjPos-1]; 
@@ -416,17 +416,17 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     u32RDO = MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], 
                                         u8DataBuf[INDEX_2], u8DataBuf[INDEX_3]);
     
-    if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+    if (ePDO_FIXED == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
     {
         /* Get the Requested current value */
-        u16SinkReqCurrInmA = (UINT16)(((u32RDO & PE_REQUEST_OPR_CUR_MASK) >> PE_REQUEST_OPR_CUR_START_POS) * DPM_PDO_CURRENT_UNIT);
+        u16SinkReqCurrInmA = (UINT16)(((u32RDO & DPM_RDO_OPR_CUR_MASK) >> DPM_RDO_OPR_CUR_START_POS) * DPM_PDO_CURRENT_UNIT);
         
         /* Get the current value of Requested Source PDO */
-        u16SrcPDOCurrInmA = ((u32PDO & PE_REQUEST_MAX_CUR_MASK) * DPM_PDO_CURRENT_UNIT);       
+        u16SrcPDOCurrInmA = ((u32PDO & DPM_RDO_MAX_CUR_MASK) * DPM_PDO_CURRENT_UNIT);       
     }
     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)    
-    else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+    else if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
     {     
         /* Get the Requested current value */ 
         u16SinkReqCurrInmA = DPM_GET_PROG_RDO_OPR_CURRENT_IN_mA(u32RDO); 
@@ -444,13 +444,13 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
     }
     
     /* Update the Previous VBUS voltage */
-    if (ePDO_FIXED == (ePDOtypes)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+    if (ePDO_FIXED == (ePDOType)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
     {
         /* If previous request is for a fixed PDO, calculate previous output
            voltage from gasDPM[u8PortNum].u32NegotiatedPDO */
         gasDPM[u8PortNum].u16PrevVBUSVoltageInmV = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO);
     }
-    else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
+    else if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
     {
         /* If previous request is for a PPS APDO, calculate previous output
            voltage from gasCfgStatusData.sPerPortData[u8PortNum].u32RDO */            
@@ -470,7 +470,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
                 DPM_INVALID_REQUEST : DPM_VALID_REQUEST;   
    
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)     
-    if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+    if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
     {
         if ((u16RDOOpVoltInmV >= DPM_GET_APDO_MIN_VOLTAGE_IN_mV(u32PDO)) && 
                 (u16RDOOpVoltInmV <= DPM_GET_APDO_MAX_VOLTAGE_IN_mV(u32PDO)))
@@ -492,7 +492,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         gasCfgStatusData.sPerPortData[u8PortNum].u32RDO = u32RDO;
         
         /* Set Capability mismatch status */
-        if (u32RDO & PE_REQUEST_CAP_MISMATCH_MASK)
+        if (u32RDO & DPM_RDO_CAP_MISMATCH_MASK)
         {
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                     DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS; 
@@ -503,7 +503,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
                         ~(DPM_PORT_SRC_CAPABILITY_MISMATCH_STATUS);                 
         }
 
-        if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+        if (ePDO_FIXED == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as Fixed Supply */
             gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
@@ -521,7 +521,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
                     DPM_250mW);             
         }
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)        
-        else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+        else if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as PPS */
             gasDPM[u8PortNum].u16DPMStatus |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;           
@@ -554,11 +554,11 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 UINT32 DPM_CurrentCutDown (UINT8 u8PortNum, UINT32 u32PDO)
 {
     /* If PDO max current greater than E-Cable supported current, reset the current value */
-    if (ePDO_FIXED == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+    if (ePDO_FIXED == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
     {
-        if((u32PDO & PE_MAX_CURR_MASK) > (DPM_CABLE_CURR_3A_UNIT / DPM_10mA))
+        if((u32PDO & DPM_MAX_CURR_MASK) > (DPM_CABLE_CURR_3A_UNIT / DPM_10mA))
         {
-            u32PDO &= ~PE_MAX_CURR_MASK;
+            u32PDO &= ~DPM_MAX_CURR_MASK;
             u32PDO |= (DPM_CABLE_CURR_3A_UNIT / DPM_10mA);
             /* Source PDO Current value reduced due to cable limitation */   
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
@@ -566,7 +566,7 @@ UINT32 DPM_CurrentCutDown (UINT8 u8PortNum, UINT32 u32PDO)
         }  
     }
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)    
-    else if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(u32PDO))
+    else if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
     {
         if (DPM_GET_APDO_MAX_CURRENT_IN_mA(u32PDO) > DPM_3000mA)
         {
@@ -1520,7 +1520,7 @@ UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum)
 
     for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt; u8Index++)
     {
-        if (ePDO_PROGRAMMABLE == (ePDOtypes)DPM_GET_PDO_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index]))
+        if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index]))
         {
             u8RetVal = TRUE; 
             break;
@@ -1530,7 +1530,7 @@ UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum)
 }
 
 /********************* Policy Manager APIs for Swap ********************/
-UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg)
+UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
 {
     UINT8 u8RetVal = DPM_REJECT_SWAP;
 #if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
@@ -1714,7 +1714,7 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
     }
 
     /* Re-initiate the corresponding Swap on SwapWait timer expiry */
-    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, (eRoleSwapMsgtype)u8SwapInitiateType))
+    if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, (eRoleSwapMsgType)u8SwapInitiateType))
     {
         DPM_RegisterInternalEvent(u8PortNum, u8SwapInitiateType);
     } 

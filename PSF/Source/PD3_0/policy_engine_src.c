@@ -1176,11 +1176,11 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     /* Choosing VDM version as per Current spec revision */
                     if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
                     {
-                        u32VDMHeader = PE_VDM_HEADER_LOW_VER;
+                        u32VDMHeader = DPM_VDM_HEADER_LOW_VER;
                     }                    
                     else
                     {
-                        u32VDMHeader = PE_VDM_HEADER_HIGH_VER;
+                        u32VDMHeader = DPM_VDM_HEADER_HIGH_VER;
                     }
                     
 					/* Send VDM Discover Identity message to E-Cable */
@@ -1244,7 +1244,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             
 			/* VDM ACK received from cable */
 			/* Pass the cable data to the DPM */
-            if (PE_VDM_ACK == DPM_StoreCableIdentity(u8PortNum, u8SOPType, (UINT16) u32Header, (UINT32*) pu8DataBuf))
+            if (DPM_VDM_ACK == DPM_StoreCableIdentity(u8PortNum, u8SOPType, (UINT16) u32Header, (UINT32*) pu8DataBuf))
             {
                 DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;

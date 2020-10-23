@@ -137,16 +137,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_SUPPORTED_MSG            0
 #define PE_SUPPORTED_EXTDMSG         0x02u
 
-#define PE_REQUEST_OBJ_MASK            0x70
-#define PE_REQUEST_OBJ_POS             4
-#define PE_REQUEST_OPR_CUR_MASK        0xFFC00
-#define PE_REQUEST_OPR_CUR_START_POS   10
-#define PE_REQUEST_MAX_CUR_MASK        0x3FF
-#define PE_REQUEST_MAX_CUR_POS         9
-#define PE_REQUEST_CAP_MISMATCH_POS    26 
-#define PE_REQUEST_CAP_MISMATCH_MASK   (1 << PE_REQUEST_CAP_MISMATCH_POS)
-
-
 /*-------------- Policy Engine Port Status -----------------*/
 #define PE_PDCONTRACT_MASK             BIT(0)
 #define PE_PDCONNECTED_STS_MASK        BIT(1)
@@ -167,28 +157,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Define to get PD contract */
 #define PE_GET_PD_CONTRACT(u8PortNum)	(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PDCONTRACT_MASK)		
-
-/*--------------VDM related macros--------------------*/
-/*VDM Command Types found in VDM Header message */
-#define PE_VDM_REQ				    0
-#define PE_VDM_ACK                  1
-#define PE_VDM_NAK                  2
-#define PE_VDM_BUSY                 3
-
-#define PE_VDM_COMMAND_TYPE_MASK        0x000000C0
-#define PE_VDM_COMMAND_TYPE_POS         6u
-
-#define PE_VDM_OBJ_POS_MASK             0x700
-#define PE_VDM_SVID_MASK                0xFFFF0000
-
-#define PE_VDM_HEADER_HIGH_VER          0xFF00A001
-#define PE_VDM_HEADER_LOW_VER           0xFF008001
-
-#define PE_GET_VDM_CMD_TYPE(VDM_HEADER)         ((VDM_HEADER & PE_VDM_COMMAND_TYPE_MASK) >> PE_VDM_COMMAND_TYPE_POS)
-#define PE_VDM_NAK_COMMAND_TYPE                 (2 << PE_VDM_COMMAND_TYPE_POS )
-
-/* Capability max current check */
-#define PE_MAX_CURR_MASK        0x1FF
 
 /* Alert message defines */
 #define PE_ALERT_DATA_OBJECT_SIZE              1 
