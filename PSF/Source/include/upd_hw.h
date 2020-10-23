@@ -1131,7 +1131,7 @@ void UPD_RegDump(UINT8 u8PortNum);
         This API is to enable UPD350 to detect HPD events.
 
     Conditions:
-        This is applicable only when INCLUDE_PD_HPD is enabled.
+        This is applicable only when INCLUDE_UPD_HPD is enabled.
 
     Input:
         u8PortNum - Port number of the device.
@@ -1147,20 +1147,20 @@ void UPD_HPDInit(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void UPD_HPDRegisterInterrupt(UINT8 u8PortNum)
+        void UPD_HPDHandleISR(UINT8 u8PortNum)
 
     Summary:
-        If an HPD event occurs, this API will register those events in gu16HPDStsISR variable.
+        If an HPD event occurs, this API will register those events in gu16HPDStsISR[u8PortNum] variable.
 
     Devices Supported:
         UPD350 REV A
 
     Description:
         If an HPD event occurs, this API will read the interrupt status registers and will record
-        those events in gu16HPDStsISR variable.
+        those events in gu16HPDStsISR[u8PortNum] variable.
 
     Conditions:
-        This is applicable only when INCLUDE_PD_HPD is enabled.
+        This is applicable only when INCLUDE_UPD_HPD is enabled.
 
     Input:
         u8PortNum - Port number of the device.
@@ -1172,5 +1172,5 @@ void UPD_HPDInit(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_HPDRegisterInterrupt(UINT8 u8PortNum);
+void UPD_HPDHandleISR(UINT8 u8PortNum);
 #endif /*_UPD_HW_H_*/

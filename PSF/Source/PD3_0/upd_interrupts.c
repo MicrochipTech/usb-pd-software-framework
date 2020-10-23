@@ -80,10 +80,10 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
             
         }
 
-        #if(TRUE == INCLUDE_PD_HPD)
+        #if(TRUE == INCLUDE_UPD_HPD)
         if(u16InterruptStatus & UPDINTR_HPD_INT)
         {
-            UPD_HPDRegisterInterrupt(u8PortNum);
+            UPD_HPDHandleISR(u8PortNum);
         }
         #endif
 

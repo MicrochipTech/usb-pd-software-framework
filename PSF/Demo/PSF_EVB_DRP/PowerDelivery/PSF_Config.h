@@ -340,19 +340,19 @@ Example:
 Summary:
     Hot Plug Detect support code inclusion.
 Description:
-    Setting the INCLUDE_PD_HPD as 1 enables PSF to include the Hot Plug Detect(HPD) feature 
+    Setting the INCLUDE_UPD_HPD as 1 enables PSF to include the Hot Plug Detect(HPD) feature 
     at the compile time. Users can set this define to 0 to reduce the code size
     if none of the ports in the system require HPD support.
 Remarks: 
     Recommended default value is 1. 
-    For INCLUDE_PD_HPD to be set to 1, INCLUDE_PD_ALT_MODE shall also be set to 1.
+    For INCLUDE_UPD_HPD to be set to 1, INCLUDE_PD_ALT_MODE shall also be set to 1.
 Example:
     <code>
-    #define INCLUDE_PD_HPD	1(Include Hot Plug Detect support in PSF)
-    #define INCLUDE_PD_HPD	0(Exclude Hot Plug Detect support from PSF)
+    #define INCLUDE_UPD_HPD	1(Include Hot Plug Detect support in PSF)
+    #define INCLUDE_UPD_HPD	0(Exclude Hot Plug Detect support from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_HPD             1
+#define INCLUDE_UPD_HPD             1
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1152,7 +1152,7 @@ typedef enum
                                                                       * The state of this pin is tracked
                                                                         in u16HPDStatus variable.
 																	  * This is applicable only when
-																		INCLUDE_PD_HPD is enabled.
+																		INCLUDE_UPD_HPD is enabled.
 	u8Reserved1  					1								 Reserved
 	u8Reserved2   					1								 Reserved
  	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
@@ -1624,7 +1624,7 @@ typedef enum
 	u16HPDStatus defines the status of HPD IO. The value in this variable is valid only when 
     eMCHP_PSF_HPD_EVENT_OCCURRED notification is posted by PSF. User_application may read this variable
     when eMCHP_PSF_HPD_EVENT_OCCURRED notification is received from PSF.
-    This variable is applicable only when INCLUDE_PD_HPD is enabled.
+    This variable is applicable only when INCLUDE_UPD_HPD is enabled.
 	<table> 
     Bit     R/W Config   R/W Run   \Description
              time         time      
@@ -1723,7 +1723,7 @@ typedef struct _PortCfgStatus
     UINT8 u8DAC_I_Direction; 
     UINT8 u8Reserved2;    
 #endif
-#if (TRUE == INCLUDE_PD_HPD)    
+#if (TRUE == INCLUDE_UPD_HPD)    
     UINT16 u16HPDStatus;
     UINT8 u8PIO_HPD;
     UINT8 u8Reserved3;

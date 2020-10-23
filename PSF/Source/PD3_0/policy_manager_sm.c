@@ -102,7 +102,7 @@ void DPM_StateMachineInit(void)
 		  	/* Init UPD350 GPIO */
 		  	UPD_GPIOInit(u8PortNum);
 			
-            #if(TRUE == INCLUDE_PD_HPD)
+            #if(TRUE == INCLUDE_UPD_HPD)
             /*Init UPD350 to support HPD*/
             UPD_HPDInit(u8PortNum);
             #endif
@@ -139,7 +139,7 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     /* Run Policy engine State machine*/
     PE_RunStateMachine(u8PortNum);     
 
-    #if(TRUE == INCLUDE_PD_HPD)
+    #if(TRUE == INCLUDE_UPD_HPD)
     /*Handle HPD events if any*/
     DPM_HPDEventHandler(u8PortNum);
     #endif
@@ -995,14 +995,21 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
     }
 }
 
-#if (TRUE == INCLUDE_PD_HPD)    
+#if (TRUE == INCLUDE_UPD_HPD)    
 void DPM_HPDEventHandler(UINT8 u8PortNum)
 {
-    if(gu16HPDStsISR & UPD_HPD_INTERRUPT_OCCURRED)
+    UINT16 u16HPDStsISR;
+    
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+    u16HPDStsISR = gu16HPDStsISR[u8PortNum];
+    gu16HPDStsISR[u8PortNum] &= (~UPD_HPD_INTERRUPT_OCCURRED);
+    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+    
+    if(u16HPDStsISR & UPD_HPD_INTERRUPT_OCCURRED)
     {
-        gu16HPDStsISR &= (~UPD_HPD_INTERRUPT_OCCURRED);
-        gasCfgStatusData.sPerPortData[u8PortNum].u16HPDStatus = gu16HPDStsISR;
-        DPM_NotifyClient(u8PortNum, eMCHP_PSF_HPD_EVENT_OCCURRED);
+        u16HPDStsISR &= (~UPD_HPD_INTERRUPT_OCCURRED);
+        gasCfgStatusData.sPerPortData[u8PortNum].u16HPDStatus = u16HPDStsISR;
+        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_HPD_EVENT_OCCURRED);
     }
     else
     {
