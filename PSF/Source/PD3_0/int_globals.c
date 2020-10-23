@@ -108,7 +108,7 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 GLOBAL_CFG_STATUS_DATA gasCfgStatusData = {SET_TO_ZERO};
 /**************************************************************************************************/ 
 
-#if (TRUE == INCLUDE_PD_ALT_MODE)
+#if (TRUE == INCLUDE_PD_HPD)
   HPD_CONTROL gu16HPDStsISR;          /*BIT0 - > IRQ_HPD occurred
                                     BIT1 -> HPD_LOW occurred
                                     BIT2 -> HPD_HIGH occurred
