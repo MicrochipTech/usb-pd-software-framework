@@ -805,7 +805,7 @@ void UPD_RegDump(UINT8 u8PortNum)
 /********************************************************************************************/
 #endif
 
-#if(TRUE == INCLUDE_PD_ALT_MODE)
+#if(TRUE == INCLUDE_PD_HPD)
 
 void UPD_HPDInit(UINT8 u8PortNum)
 {
@@ -826,7 +826,6 @@ void UPD_HPDInit(UINT8 u8PortNum)
     UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_CFG);
     
     UPD_RegByteSetBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
-    
 }
 
 void UPD_HPDRegisterInterrupt(UINT8 u8PortNum)
@@ -843,6 +842,7 @@ void UPD_HPDRegisterInterrupt(UINT8 u8PortNum)
     gu16HPDStsISR |= (u8Data << UPD_HPD_QUEUE_POS);
     UPD_RegisterWriteISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
 }
+
 
 
 #endif

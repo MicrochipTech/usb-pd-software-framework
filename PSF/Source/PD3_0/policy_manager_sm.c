@@ -102,6 +102,11 @@ void DPM_StateMachineInit(void)
 		  	/* Init UPD350 GPIO */
 		  	UPD_GPIOInit(u8PortNum);
 			
+            #if(TRUE == INCLUDE_PD_HPD)
+            /*Init UPD350 to support HPD*/
+            UPD_HPDInit(u8PortNum);
+            #endif
+
 #if(TRUE == INCLUDE_PD_DRP)
             /*Type-C UPD350 register configuration for a port*/
             if(PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
@@ -134,7 +139,7 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     /* Run Policy engine State machine*/
     PE_RunStateMachine(u8PortNum);     
 
-    #if(TRUE == INCLUDE_PD_ALT_MODE)
+    #if(TRUE == INCLUDE_PD_HPD)
     DPM_HPDEventHandler(u8PortNum);
     #endif
     
@@ -989,7 +994,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
     }
 }
 
-#if (TRUE == INCLUDE_PD_ALT_MODE)    
+#if (TRUE == INCLUDE_PD_HPD)    
 void DPM_HPDEventHandler(UINT8 u8PortNum)
 {
     if(gu16HPDStsISR & UPD_HPD_INTERRUPT_OCCURRED)
