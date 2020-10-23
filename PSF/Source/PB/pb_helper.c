@@ -197,10 +197,10 @@ void PB_CalculateRequiredPortPower(UINT8 u8PortNum, UINT8 u8SinkPDOCnt, const UI
     
     for (u8PDOCnt = INDEX_0; u8PDOCnt < u8SinkPDOCnt; u8PDOCnt++)
     {
-        if ((ePDO_FIXED == (ePDOtypes)PB_GET_PDO_TYPE (pu32SinkCap[u8PDOCnt])) || \
-                (ePDO_VARIABLE == (ePDOtypes)PB_GET_PDO_TYPE (pu32SinkCap[u8PDOCnt])))
+        if ((ePDO_FIXED == (ePDOType)PB_GET_PDO_TYPE (pu32SinkCap[u8PDOCnt])) || \
+                (ePDO_VARIABLE == (ePDOType)PB_GET_PDO_TYPE (pu32SinkCap[u8PDOCnt])))
         {
-            if (ePDO_FIXED == (ePDOtypes)PB_GET_PDO_TYPE (pu32SinkCap[u8PDOCnt]))
+            if (ePDO_FIXED == (ePDOType)PB_GET_PDO_TYPE (pu32SinkCap[u8PDOCnt]))
             {      
                 u16TempVoltIn50mV = PB_GET_VOLTAGE_FROM_FIXED_PDO (pu32SinkCap[u8PDOCnt]);          
             }

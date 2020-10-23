@@ -98,7 +98,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
                                                                     (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                    
 
-                    if (PE_VDM_REQ == DPM_VDM_GET_CMD_TYPE(u32aVDMDataObj[INDEX_0]))
+                    if (DPM_VDM_REQ == DPM_GET_VDM_CMD_TYPE(u32aVDMDataObj[INDEX_0]))
                     {
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SEND_VDM, \
                                                     ePE_SEND_VDM_MSG_DONE_SS, \
@@ -154,7 +154,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                      
                    
-                    if (PE_VDM_BUSY == DPM_VDM_GET_CMD_TYPE(pu8DataBuf[DPM_VDM_HEADER_POS]))
+                    if (DPM_VDM_BUSY == DPM_GET_VDM_CMD_TYPE(pu8DataBuf[DPM_VDM_HEADER_POS]))
                     {                  
                         if(gasPolicyEngine[u8PortNum].u8VDMBusyCounter < PE_N_BUSY_COUNT)
                         {
@@ -254,14 +254,14 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                         
                         if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
                         {
-                            u32aVDMDataObj[INDEX_0] |= (PE_VDM_ACK << PE_VDM_COMMAND_TYPE_POS);
+                            u32aVDMDataObj[INDEX_0] |= (DPM_VDM_ACK << DPM_VDM_CMD_TYPE_POS);
                             
                             /* Get VDOs from DPM */
                             DPM_ReturnVDOs (u8PortNum, (UINT32*)pu8DataBuf, &u8VDOCnt, (u32aVDMDataObj + BYTE_LEN_1));                                           
                         }
                         else /* DPM_RESPOND_VDM_NAK */
                         {
-                            u32aVDMDataObj[INDEX_0] |= (PE_VDM_NAK << PE_VDM_COMMAND_TYPE_POS); 
+                            u32aVDMDataObj[INDEX_0] |= (DPM_VDM_NAK << DPM_VDM_CMD_TYPE_POS); 
                         }
                         
                        /* u8VDOCnt returned by DPM during ACK will not include VDM 

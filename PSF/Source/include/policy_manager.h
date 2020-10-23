@@ -322,6 +322,9 @@ Source/Sink Power delivery objects*/
 #define DPM_PDO_CURRENT_MASK              0x000003FF 
 #define DPM_PDO_CURRENT_UNIT                 10
 
+/* Capability max current check */
+#define DPM_MAX_CURR_MASK                 0x1FF
+
 #define DPM_GET_PDO_TYPE(X)   					((X & 0xC0000000) >> 30)
 #define DPM_GET_PDO_CURRENT(X)                  ((X & 0x000003FF))
 #define DPM_GET_PDO_VOLTAGE(X)                  ((X & 0x000FFC00) >> 10)	/*in 50mv units*/
@@ -330,12 +333,24 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_PDO_DUAL_POWER(X)               ((X & 0x20000000) >> 29)
 #define DPM_MAX_PDO_CNT                          7
 
+/*********************Fixed Supply RDO Defines ******************/ 
+#define DPM_RDO_OBJ_MASK            0x70
+#define DPM_RDO_OBJ_POS             4
+#define DPM_RDO_OPR_CUR_MASK        0xFFC00
+#define DPM_RDO_OPR_CUR_START_POS   10
+#define DPM_RDO_MAX_CUR_MASK        0x3FF
+#define DPM_RDO_MAX_CUR_POS         9
+#define DPM_RDO_CAP_MISMATCH_POS    26 
+#define DPM_RDO_CAP_MISMATCH_MASK   (1 << DPM_RDO_CAP_MISMATCH_POS)
+
+/*********************Debug Trace Defines ******************/ 
 #define DPM_DEBUG_PDO_GENERATION( USB_SUSPEND, UNCONS_POWER, USB_COM, MAX_CURRENT, MAX_VOLTAGE)  \
         (((UINT32)USB_SUSPEND << 28) | ((UINT32)UNCONS_POWER << 27) | ((UINT32)USB_COM << 26) | (((UINT32)MAX_VOLTAGE/50) << 10) | (((UINT32)MAX_CURRENT)/10))
 
 #define DPM_DEBUG_PDO_5V_9MA      DPM_DEBUG_PDO_GENERATION(1, 1, 0, 900, 5000)
 #define DPM_DEBUG_PDO_5V_1P5A     DPM_DEBUG_PDO_GENERATION(1, 1, 0, 1500, 5000)
 #define DPM_DEBUG_PDO_5V_3A       DPM_DEBUG_PDO_GENERATION(1, 1, 0, 3000, 5000)
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Defines to get data from given APDO
@@ -404,13 +419,18 @@ Source/Sink Power delivery objects*/
 // Section: Defines to decode VDM packet
 // *****************************************************************************
 // ***************************************************************************** 
-/** Macros for VDM Header fields *****/
 
-#define DPM_VDM_COMMAND_MASK                        0x0000001F
+/* Defines related to Cable supported current */
+#define DPM_CABLE_CURR_3A                           1
+#define DPM_CABLE_CURR_5A                           2
+
+#define DPM_CABLE_CURR_3A_UNIT                      3000
+#define DPM_CABLE_CURR_5A_UNIT                      5000
 
 #define DPM_CABLE_CUR_VAL_BIT_MASK                  (BIT(5) | BIT(6))
 #define DPM_CABLE_CUR_VAL_BIT_POS                   5
 
+/* VDM Header defines */
 #define DPM_VDM_CMD_TYPE_MASK                       (BIT(6) | BIT(7))
 #define DPM_VDM_CMD_TYPE_POS                        6               
 
@@ -420,24 +440,34 @@ Source/Sink Power delivery objects*/
 #define DPM_VDM_SVID_MASK                           0xFFFF0000
 #define DPM_VDM_SVID_POS                            16
 
-#define DPM_CABLE_CURR_3A                           1
-#define DPM_CABLE_CURR_5A                           2
-
-#define DPM_CABLE_CURR_3A_UNIT                      3000
-#define DPM_CABLE_CURR_5A_UNIT                      5000
+#define DPM_VDM_COMMAND_MASK                        0x0000001F
 
 #define DPM_VDM_HEADER_POS                          0
 #define DPM_VMD_PRODUCT_TYPE_VDO_POS                4
 
+/* Max VDO Count */
 #define DPM_MAX_VDO_CNT                             6 
 
+/* PD SID defined by PD Specification */
 #define DPM_VDM_PD_SID                              0xFF00 
 
+/* Max SVID Count */
 #define DPM_MAX_SVID_CNT                            12 
 
+/* Last SVID Mask */
 #define DPM_LAST_SVID_MASK                          0xFFFF0000
 
-#define DPM_VDM_GET_CMD_TYPE(u32VDMHeader)          ((u32VDMHeader & DPM_VDM_CMD_TYPE_MASK) >> \
+/*VDM Command Types found in VDM Header message */
+#define DPM_VDM_REQ                                 0
+#define DPM_VDM_ACK                                 1
+#define DPM_VDM_NAK                                 2
+#define DPM_VDM_BUSY                                3
+
+/* Defines to decode VDM Header */
+#define DPM_VDM_HEADER_HIGH_VER                     0xFF00A001
+#define DPM_VDM_HEADER_LOW_VER                      0xFF008001
+
+#define DPM_GET_VDM_CMD_TYPE(u32VDMHeader)          ((u32VDMHeader & DPM_VDM_CMD_TYPE_MASK) >> \
                                                         DPM_VDM_CMD_TYPE_POS)
 
 #define DPM_GET_VDM_CMD(u32VDMHeader)               (u32VDMHeader & DPM_VDM_COMMAND_MASK)
@@ -451,6 +481,7 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_CABLE_CUR_VAL(u32ProductTypeVDO)    ((u32ProductTypeVDO & DPM_CABLE_CUR_VAL_BIT_MASK) >> \
                                                         DPM_CABLE_CUR_VAL_BIT_POS)
 
+/* Defines to get number of modes and start mode index from u8aSVIDEntry Table */
 #define DPM_NO_OF_MODES_MASK                        (BIT(0) | BIT(1) | BIT(2))
 #define DPM_GET_NO_OF_MODES(u8SVIDEntry)            (u8SVIDEntry & DPM_NO_OF_MODES_MASK)
 
@@ -458,8 +489,10 @@ Source/Sink Power delivery objects*/
 #define DPM_START_MODE_IDX_MASK                     (BIT(3) | BIT(4) | BIT(5) | BIT(6))
 #define DPM_GET_START_MODE_IDX(u8SVIDEntry)         ((u8SVIDEntry & DPM_START_MODE_IDX_MASK) >> \
                                                            DPM_START_MODE_IDX_POS)
-                                    
-#define DPM_EXIT_ALL_ACTIVE_MODES                  7 
+                             
+/* Object Position in VDM Header indicating exit of all active modes */
+#define DPM_EXIT_ALL_ACTIVE_MODES                   7 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Defines to form Data Request packet
@@ -710,7 +743,7 @@ typedef enum PDOtype
     ePDO_VARIABLE = 0x02,
     ePDO_PROGRAMMABLE = 0x03,
     ePDO_INVALID = 0xFF
-} ePDOtypes;
+} ePDOType;
 
 /* Enum for Swap messages */
 typedef enum {
@@ -720,7 +753,7 @@ typedef enum {
     eVCONN_SWAP_INITIATE = BIT(2), /*same as DPM_INT_EVT_INITIATE_VCONN_SWAP value*/
     ePR_SWAP_INITIATE = BIT(3),  /*same as DPM_INT_EVT_INITIATE_PR_SWAP value*/
     eDR_SWAP_INITIATE = BIT(4)  /*same as DPM_INT_EVT_INITIATE_DR_SWAP value*/
-}eRoleSwapMsgtype;
+}eRoleSwapMsgType;
 
 /* Enum for Structured VDM Commands */
 typedef enum {
@@ -1708,7 +1741,7 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType);
     Remarks:
         None. 
 **************************************************************************************************/
-UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgtype eRoleSwapMsg); 
+UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg); 
 
 /**************************************************************************************************
     Function:
