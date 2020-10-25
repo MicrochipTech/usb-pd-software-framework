@@ -305,13 +305,12 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
                       (CFG_PORT_0_SVID_1_MODES_COUNT | CFG_PORT_0_SVID_1_START_MODE_INDEX);    
     #endif
     #endif 
-
-    /*Per port configuration for Port 1*/      
+     
 #if(TRUE == INCLUDE_UPD_HPD)
     pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
 #endif
 
-/*Per port configuration for Port 1*/      
+    /*Per port configuration for Port 1*/      
 #if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT) 
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
         ((CFG_PORT_1_VCONN_OCS_ENABLE) | (CFG_PORT_1_ENABLE) | (CFG_PORT_1_RP_CURRENT_VALUE)| \
@@ -364,7 +363,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sAltModePerPortData[PORT1].u16aSVIDsTable[INDEX_0] = CFG_PORT_1_SVID_0;
     pasCfgStatusData->sAltModePerPortData[PORT1].u16aSVIDsTable[INDEX_1] = CFG_PORT_1_SVID_1;
 
-    /* Modes Configuration for Port 0 */
+    /* Modes Configuration for Port 1 */
     pasCfgStatusData->sAltModePerPortData[PORT1].u32aModesTable[INDEX_0] = CFG_PORT_1_SVID_0_MODE_0;
     pasCfgStatusData->sAltModePerPortData[PORT1].u32aModesTable[INDEX_1] = CFG_PORT_1_SVID_0_MODE_1;
     pasCfgStatusData->sAltModePerPortData[PORT1].u32aModesTable[INDEX_2] = CFG_PORT_1_SVID_1_MODE_0;

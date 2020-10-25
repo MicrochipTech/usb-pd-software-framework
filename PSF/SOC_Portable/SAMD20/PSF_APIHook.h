@@ -1190,10 +1190,6 @@ Description:
     sent or when the partner has responded BUSY for a maximum of 5 times and the VDM request will 
     not be initiated by PSF anymore or when the partner has sent Not Supported for the VDM request.
 
-    <b> eMCHP_PSF_HPD_EVENT_OCCURRED </b>: This notification will be posted by PSF when
-	an HPD (Hot Plug Detect) event has occurred. When this notification is received, 
-    User_application may read u16HPDStatus variable to know the status of HPD IO. 
-
     <b> eMCHP_PSF_VDM_REQUEST_RCVD </b>: This notification will be posted by PSF when a VDM request
     received from the partner is evaluated and determined to be ACKed or when the request 
     is a SVID specific command i.e it needs evaluation by the user application. In case of 
@@ -1205,6 +1201,10 @@ Description:
     notifying the user application. For SVID specific commands, PSF will not 
     send any response since it is expected that the user application will send the response by 
     raising a VDM client request within the VDM response time specified by USB PD Specification. 
+ 
+    <b> eMCHP_PSF_HPD_EVENT_OCCURRED </b>: This notification will be posted by PSF when
+	an HPD (Hot Plug Detect) event has occurred. When this notification is received, 
+    User_application may read u16HPDStatus variable to know the status of HPD IO. 
  
     <b> eMCHP_PSF_PORT_DISABLED</b>: This event is used by PSF to notify the application 
     that a port has been disabled as a result of port disable client request (BIT[0] in 
