@@ -365,13 +365,13 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sAltModePerPortData[PORT1].u32aModesTable[INDEX_2] = CFG_PORT_1_SVID_1_MODE_0;
     pasCfgStatusData->sAltModePerPortData[PORT1].u32aModesTable[INDEX_3] = CFG_PORT_1_SVID_1_MODE_1;
     
-    pasCfgStatusData->sAltModePerPortData[PORT0].u8aSVIDEntryTable[INDEX_0] = \
+    pasCfgStatusData->sAltModePerPortData[PORT1].u8aSVIDEntryTable[INDEX_0] = \
                       (CFG_PORT_1_SVID_0_MODES_COUNT | CFG_PORT_1_SVID_0_START_MODE_INDEX);
-    pasCfgStatusData->sAltModePerPortData[PORT0].u8aSVIDEntryTable[INDEX_1] = \
+    pasCfgStatusData->sAltModePerPortData[PORT1].u8aSVIDEntryTable[INDEX_1] = \
                       (CFG_PORT_1_SVID_1_MODES_COUNT | CFG_PORT_1_SVID_1_START_MODE_INDEX);        
     #endif    
     #endif 
-    
+
 #endif
     
 }

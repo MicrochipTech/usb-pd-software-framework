@@ -170,7 +170,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_PPS_STATUS_DATA_OBJ_CNT             2 
 
 typedef enum {
-    /* Source Policy Engine Main State */ 
+    //--------------------------Source States-----------------------------------//
 	ePE_SRC_STARTUP,
 	ePE_SRC_DISCOVERY,
 	ePE_SRC_SEND_CAPABILITIES,
@@ -184,7 +184,6 @@ typedef enum {
 	ePE_SRC_TRANSITION_TO_DEFAULT,
 	ePE_SRC_WAIT_NEW_CAPABILITIES,
     ePE_SRC_GET_SINK_CAP,
-	ePE_SRC_SOFT_RESET,
     ePE_SRC_VDM_IDENTITY_REQUEST,
     ePE_SRC_VDM_IDENTITY_ACKED,
     ePE_SRC_VDM_IDENTITY_NAKED,
@@ -193,7 +192,7 @@ typedef enum {
     ePE_SRC_SEND_SOURCE_ALERT,
     ePE_SRC_GIVE_SOURCE_STATUS,
     ePE_SRC_GIVE_PPS_STATUS,
-	//----------------Sink Specific Policy Engine States-------------------------//
+	//--------------------------Sink States-------------------------------------//
 	ePE_SNK_STARTUP,
 	ePE_SNK_DISCOVERY,
 	ePE_SNK_WAIT_FOR_CAPABILITIES,
@@ -203,7 +202,7 @@ typedef enum {
 	ePE_SNK_READY,
 	ePE_SNK_HARD_RESET,
 	ePE_SNK_TRANSITION_TO_DEFAULT,
-	/*VCONN Swap related States*/
+	//--------------------------VCONN SWAP States-----------------------------------//
     ePE_VCS_SEND_SWAP,
     ePE_VCS_EVALUATE_SWAP,
     ePE_VCS_ACCEPT_SWAP,
@@ -211,15 +210,12 @@ typedef enum {
     ePE_VCS_TURN_OFF_VCONN,
     ePE_VCS_TURN_ON_VCONN,
     ePE_VCS_SEND_PS_RDY,
-    //---------------------------VDM states---------------------------------------//
-    ePE_SEND_VDM,   
-    ePE_VDM_REQ_RCVD,
     //--------------------------DR_SWAP States-----------------------------------//
     ePE_DRS_EVALUATE_SWAP,
     ePE_DRS_ACCEPT_SWAP,
     ePE_DRS_DFP_UFP_ROLE_CHANGE,
     ePE_DRS_SEND_SWAP,
-    //---------------------------PR_Swap States-----------------------------------// 
+    //--------------------------PR_Swap States-----------------------------------// 
     ePE_PRS_SEND_SWAP, 
     ePE_PRS_EVALUATE_SWAP,
     ePE_PRS_ACCEPT_SWAP,
@@ -229,6 +225,10 @@ typedef enum {
     ePE_PRS_SNK_SRC_TRANSITION_TO_OFF,
     ePE_PRS_SNK_SRC_ASSERT_RP,
     ePE_PRS_SNK_SRC_SOURCE_ON,
+    //---------------------------VDM states---------------------------------------//
+    ePE_VDM_INITIATE_VDM, 
+    ePE_VDM_EVALUATE_VDM,            
+    ePE_VDM_RESPOND_VDM,            
     //-------------------------Common States------------------------------//
     ePE_SOFT_RESET,
     ePE_SEND_SOFT_RESET,
@@ -337,13 +337,14 @@ typedef enum {
     ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS,
     ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS,
     //----------------------------VCONN SWAP Sub states-------------------------------//
+    /*ePE_VCS_SEND_SWAP*/
     ePE_VCS_SEND_SWAP_ENTRY_SS,
     ePE_VCS_SEND_SWAP_MSG_DONE_SS,
     ePE_VCS_SEND_SWAP_NO_RESPONSE_SS,
     ePE_VCS_SEND_SWAP_IDLE_SS,
     ePE_VCS_SEND_SWAP_REJECT_RCVD_SS,
     ePE_VCS_SEND_SWAP_WAIT_RCVD_SS,
-    /*PE_VCS_WAIT_FOR_VCONN*/
+    /*ePE_VCS_WAIT_FOR_VCONN*/
     ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS,
     ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS,
     /*ePE_VCS_ACCEPT_SWAP*/
@@ -393,15 +394,15 @@ typedef enum {
     ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS,
 	ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS,
     //--------------------VDM Sub States-------------------------------------------------//            
-    /* ePE_SEND_VDM */ 
-    ePE_SEND_VDM_ENTRY_SS, 
-    ePE_SEND_VDM_MSG_DONE_SS,
-    ePE_SEND_VDM_RESP_RCVD_SS,  
-    ePE_SEND_VDM_NO_RESPONSE_SS,            
-    ePE_SEND_VDM_IDLE_SS,
-    /* ePE_VDM_REQ_RCVD */
-    ePE_VDM_REQ_RCVD_ENTRY_SS,
-    ePE_VDM_REQ_RCVD_IDLE_SS,
+    /* ePE_VDM_INITIATE_VDM */ 
+    ePE_VDM_INITIATE_VDM_ENTRY_SS, 
+    ePE_VDM_INITIATE_VDM_MSG_DONE_SS,
+    ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS,  
+    ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS,            
+    ePE_VDM_INITIATE_VDM_IDLE_SS,
+    /* ePE_VDM_RESPOND_VDM */
+    ePE_VDM_RESPOND_VDM_ENTRY_SS,
+    ePE_VDM_RESPOND_VDM_IDLE_SS,
     //--------------------Common States-------------------------------------------------//
     /* ePE_SOFT_RESET */        
     ePE_SOFT_RESET_ENTRY_SS, 

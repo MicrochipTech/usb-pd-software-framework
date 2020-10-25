@@ -796,7 +796,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
            re-initiate the request on receiving the Busy notification */
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
         
-       (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_BUSY); 
+        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_BUSY); 
     } /*else part of PE engine idle check*/
 }
 
@@ -937,8 +937,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                No need to do it here */
             
             /* Move the Policy Engine to ePE_INIT_PORT_VDM_IDENTITY_REQUEST state */
-            gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_VDM; 
-            gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_VDM_ENTRY_SS;
+            gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_INITIATE_VDM; 
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_INITIATE_VDM_ENTRY_SS;
             u16IsAMSInProgress = DPM_INT_EVT_INITIATE_VDM;            
         }
 #endif /* INCLUDE_PD_VDM */

@@ -73,13 +73,13 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
     switch(gasPolicyEngine[u8PortNum].ePEState)
     {
         /************************** VDM Initiator State **********************/
-        case ePE_SEND_VDM:
+        case ePE_VDM_INITIATE_VDM:
         {
             switch(gasPolicyEngine[u8PortNum].ePESubState)
             {
-                case ePE_SEND_VDM_ENTRY_SS: 
+                case ePE_VDM_INITIATE_VDM_ENTRY_SS: 
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_VDM_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_INITIATE_VDM_ENTRY_SS\r\n");
 
                     /* Get the VDM Header and VDOs configured by the application */
                     u32aVDMDataObj[INDEX_0] = gasCfgStatusData.sVDMPerPortData[u8PortNum].u32VDMHeader;
@@ -100,8 +100,8 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
 
                     if (DPM_VDM_REQ == DPM_GET_VDM_CMD_TYPE(u32aVDMDataObj[INDEX_0]))
                     {
-                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SEND_VDM, \
-                                                    ePE_SEND_VDM_MSG_DONE_SS, \
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_INITIATE_VDM, \
+                                                    ePE_VDM_INITIATE_VDM_MSG_DONE_SS, \
                                                     eTxDoneSt, eTxDoneSS);                                                
                     }
                     else
@@ -115,28 +115,28 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
               
                     u8IsTransmit = TRUE;
                     
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_VDM_IDLE_SS;                                       
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_INITIATE_VDM_IDLE_SS;                                       
                     
                     break; 
                 }               
-                case ePE_SEND_VDM_MSG_DONE_SS:
+                case ePE_VDM_INITIATE_VDM_MSG_DONE_SS:
                 {
 					/* GoodCRC received for VDM Identity request sent to SOP */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_VDM_MSG_DONE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_INITIATE_VDM_MSG_DONE_SS\r\n");
                     
 					/* Start the VDMResponse timer, if timed out set the PE sub-state to 
 					   ePE_INIT_PORT_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_VDMRESPONSE_TIMEOUT_MS),
                                                             PE_SubStateChange_TimerCB,u8PortNum,  
-                                                            (UINT8)ePE_SEND_VDM_NO_RESPONSE_SS);
+                                                            (UINT8)ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS);
                     
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_VDM_IDLE_SS;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_INITIATE_VDM_IDLE_SS;
                     break;
                 }
-                case ePE_SEND_VDM_RESP_RCVD_SS:
+                case ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_VDM_RESP_RCVD_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS\r\n");
 
                     /* Store the received VDM Header and VDM response in status registers */                    
                     if (eSVDM_DISCOVER_IDENTITY == (eSVDMCmd) DPM_GET_VDM_CMD(pu8DataBuf[DPM_VDM_HEADER_POS]))
@@ -154,6 +154,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                      
                    
+                    /* BUSY Response Handling */
                     if (DPM_VDM_BUSY == DPM_GET_VDM_CMD_TYPE(pu8DataBuf[DPM_VDM_HEADER_POS]))
                     {                  
                         if(gasPolicyEngine[u8PortNum].u8VDMBusyCounter < PE_N_BUSY_COUNT)
@@ -181,9 +182,9 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     }
                     break; 
                 }
-                case ePE_SEND_VDM_NO_RESPONSE_SS:
+                case ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_VDM_NO_RESPONSE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS\r\n");
                     
                     /* No response from port partner for the VDM request sent. 
                        Post notification and move to Ready state 
@@ -196,7 +197,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                                         
                     break; 
                 }
-                case ePE_SEND_VDM_IDLE_SS:
+                case ePE_VDM_INITIATE_VDM_IDLE_SS:
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                    
@@ -209,78 +210,86 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             }            
             break; 
         }         
+        /************************** VDM Evaluation State *********************/
+        case ePE_VDM_EVALUATE_VDM:
+        {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_EVALUATE_VDM\r\n");
+                    
+            /* Store the received VDM Header in u32PartnerVDMHeader */                    
+            (void) MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader, \
+                                                                pu8DataBuf, BYTE_LEN_4);      
+                    
+#if (TRUE == INCLUDE_PD_ALT_MODE)
+            /* For Enter Mode and other SVID specific commands, copy the
+               received VDOs in the status registers for the application to 
+               handle the evaluation and response */
+            gasCfgStatusData.sAltModePerPortData[u8PortNum].u8VDOCnt = \
+                                (PRL_GET_OBJECT_COUNT(u32Header) - BYTE_LEN_1);
+                            
+            (void) MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sAltModePerPortData[u8PortNum].u32aVDO, (pu8DataBuf + BYTE_LEN_4), \
+                                (gasCfgStatusData.sAltModePerPortData[u8PortNum].u8VDOCnt * BYTE_LEN_4));                                                   
+#endif 
+                    
+            /* Get Evaluation of VDM request from Device Policy Manager */
+            if (DPM_IGNORE_VDM_RESPONSE == DPM_EvaluateVDMRequest (u8PortNum, (UINT32*)pu8DataBuf))
+            {
+                /* It is expected that the user application will evaluate the 
+                   VDM request and send response by raising VDM Client request.
+                   So, move to Ready state */
+                gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
+                gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                        
+            }
+            else /* DPM_RESPOND_VDM_ACK or DPM_RESPOND_VDM_NAK */
+            {
+                gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_RESPOND_VDM;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_RESPOND_VDM_ENTRY_SS;
+            }                                    
+            break; 
+        }
         /************************** VDM Responder State **********************/
-        case ePE_VDM_REQ_RCVD:
+        case ePE_VDM_RESPOND_VDM:
         {
             switch (gasPolicyEngine[u8PortNum].ePESubState)
             {
-                case ePE_VDM_REQ_RCVD_ENTRY_SS:
+                case ePE_VDM_RESPOND_VDM_ENTRY_SS:
                 {                 
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_REQ_RCVD_ENTRY_SS\r\n");
-
-                    /* Store the received VDM Header in u32PartnerVDMHeader */                    
-                    (void) MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader, \
-                                                                        pu8DataBuf, BYTE_LEN_4);      
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_RESPOND_VDM_ENTRY_SS\r\n");
                     
-#if (TRUE == INCLUDE_PD_ALT_MODE)
-                    /* For Enter Mode and other SVID specific commands, copy the
-                       received VDOs in the status registers for the application to 
-                       handle the evaluation and response */
-                    gasCfgStatusData.sAltModePerPortData[u8PortNum].u8VDOCnt = \
-                                        (PRL_GET_OBJECT_COUNT(u32Header) - BYTE_LEN_1);
-                            
-                    (void) MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sAltModePerPortData[u8PortNum].u32aVDO, (pu8DataBuf + BYTE_LEN_4), \
-                                        (gasCfgStatusData.sAltModePerPortData[u8PortNum].u8VDOCnt * BYTE_LEN_4));                                                   
-#endif 
-                    
-                    /* Get Evaluation of VDM request from Device Policy Manager */
-                    UINT8 u8DPMResponse = DPM_EvaluateVDMRequest (u8PortNum, (UINT32*)pu8DataBuf);
-                    
-                    if (DPM_IGNORE_VDM_RESPONSE == u8DPMResponse)
+                    /* Copy the received VDM Header */
+                    u32aVDMDataObj[INDEX_0] = gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader; 
+                        
+                    /* Clear the command type bits in VDM header */
+                    u32aVDMDataObj[INDEX_0] &= ~DPM_VDM_CMD_TYPE_MASK; 
+                        
+                    if (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_RESPONSE_MASK)
                     {
-                        /* It is expected that the user application will evaluate the 
-                           VDM request and send response by raising VDM Client request.
-                           So, move to Ready state */
-                        gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
-                        gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                        
+                        u32aVDMDataObj[INDEX_0] |= (DPM_VDM_ACK << DPM_VDM_CMD_TYPE_POS);
+                            
+                        /* Get VDOs from DPM */
+                        DPM_ReturnVDOs (u8PortNum, u32aVDMDataObj[INDEX_0], &u8VDOCnt, (u32aVDMDataObj + BYTE_LEN_1));                                           
                     }
-                    else /* DPM_RESPOND_VDM_ACK or DPM_RESPOND_VDM_NAK */
+                    else /* DPM_RESPOND_VDM_NAK */
                     {
-                        /* Copy the received VDM Header */
-                        u32aVDMDataObj[INDEX_0] = gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader; 
+                        u32aVDMDataObj[INDEX_0] |= (DPM_VDM_NAK << DPM_VDM_CMD_TYPE_POS); 
+                    }
                         
-                        /* Clear the command type bits in VDM header */
-                        u32aVDMDataObj[INDEX_0] &= ~DPM_VDM_CMD_TYPE_MASK; 
-                        
-                        if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
-                        {
-                            u32aVDMDataObj[INDEX_0] |= (DPM_VDM_ACK << DPM_VDM_CMD_TYPE_POS);
-                            
-                            /* Get VDOs from DPM */
-                            DPM_ReturnVDOs (u8PortNum, (UINT32*)pu8DataBuf, &u8VDOCnt, (u32aVDMDataObj + BYTE_LEN_1));                                           
-                        }
-                        else /* DPM_RESPOND_VDM_NAK */
-                        {
-                            u32aVDMDataObj[INDEX_0] |= (DPM_VDM_NAK << DPM_VDM_CMD_TYPE_POS); 
-                        }
-                        
-                       /* u8VDOCnt returned by DPM during ACK will not include VDM 
-                          Header. So, Object count is incremented by 1 to include 
-                          VDM Header. In case of NAK, u8VDOCnt will be 0 */
-                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_VENDOR_DEFINED, \
+                    /* u8VDOCnt returned by DPM during ACK will not include VDM 
+                       Header. So, Object count is incremented by 1 to include 
+                       VDM Header. In case of NAK, u8VDOCnt will be 0 */
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_VENDOR_DEFINED, \
                                                                         (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                                        
-                        u32pTransmitDataObj = u32aVDMDataObj;
+                    u32pTransmitDataObj = u32aVDMDataObj;
                     
-                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
                                                     eTxDoneSS, eTxDoneSt, eTxDoneSS);              
                         
-                        u8IsTransmit = TRUE; 
+                    u8IsTransmit = TRUE; 
                         
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_REQ_RCVD_IDLE_SS;                                                                                       
-                    }                                                      
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_RESPOND_VDM_IDLE_SS;                                                                                       
+                                                                    
                     break;
                 }
-                case ePE_VDM_REQ_RCVD_IDLE_SS:
+                case ePE_VDM_RESPOND_VDM_IDLE_SS:
                 {
                     break; 
                 }
