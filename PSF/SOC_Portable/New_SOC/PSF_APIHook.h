@@ -1184,7 +1184,11 @@ Description:
 	the VDM response timer has timed out due to no response from the partner for the VDM request 
     sent or when the partner has responded BUSY for a maximum of 5 times and the VDM request will 
     not be initiated by PSF anymore or when the partner has sent Not Supported for the VDM request.
-  
+
+    <b> eMCHP_PSF_HPD_EVENT_OCCURRED </b>: This notification will be posted by PSF when
+	an HPD (Hot Plug Detect) event has occurred. When this notification is received, 
+    User_application may read u16HPDStatus variable to know the status of HPD IO. 
+
     <b> eMCHP_PSF_VDM_REQUEST_RCVD </b>: This notification will be posted by PSF when a VDM request
     received from the partner is evaluated and determined to be ACKed or when the request 
     is a SVID specific command i.e it needs evaluation by the user application. In case of 
@@ -1262,6 +1266,7 @@ eMCHP_PSF_VDM_RESPONSE_RCVD,           // Response received from partner for VDM
 eMCHP_PSF_VDM_RESPONSE_NOT_RCVD,       // No response from partner for VDM request sent to SOP  
 eMCHP_PSF_VDM_REQUEST_RCVD,            // VDM Request received from partner        
 eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
+eMCHP_PSF_HPD_EVENT_OCCURRED,          // Indicates that an HPD event has occurred        
 eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
 eMCHP_PSF_BUSY,                        // PSF is busy, cannot handle client request
 eMCHP_PSF_IDLE                         // PSF is idle, Application can raise any client request   

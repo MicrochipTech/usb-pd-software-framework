@@ -307,6 +307,11 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     #endif 
 
     /*Per port configuration for Port 1*/      
+#if(TRUE == INCLUDE_UPD_HPD)
+    pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
+#endif
+
+/*Per port configuration for Port 1*/      
 #if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT) 
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
         ((CFG_PORT_1_VCONN_OCS_ENABLE) | (CFG_PORT_1_ENABLE) | (CFG_PORT_1_RP_CURRENT_VALUE)| \
@@ -372,6 +377,10 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     #endif    
     #endif 
 
+    #if(TRUE == INCLUDE_UPD_HPD)
+    pasCfgStatusData->sPerPortData[PORT1].u8PIO_HPD = CFG_PORT_1_HPD_IO;
+    #endif
+    
 #endif
     
 }

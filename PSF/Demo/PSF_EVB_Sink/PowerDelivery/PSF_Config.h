@@ -352,6 +352,24 @@ Example:
 **************************************************************************************************/
 #define INCLUDE_PD_ALT_MODE             0
 
+/**************************************************************************************************
+Summary:
+    Hot Plug Detect support code inclusion.
+Description:
+    Setting the INCLUDE_UPD_HPD as 1 enables PSF to include the Hot Plug Detect(HPD) feature 
+    at the compile time. Users can set this define to 0 to reduce the code size
+    if none of the ports in the system require HPD support.
+Remarks: 
+    Recommended default value is 1. 
+    For INCLUDE_UPD_HPD to be set to 1, INCLUDE_PD_ALT_MODE shall also be set to 1.
+Example:
+    <code>
+    #define INCLUDE_UPD_HPD	1(Include Hot Plug Detect support in PSF)
+    #define INCLUDE_UPD_HPD	0(Exclude Hot Plug Detect support from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_UPD_HPD             0
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Power Delivery IDs
@@ -1144,7 +1162,13 @@ typedef enum
 																		 2. 1- High Amperage - 
 																			  Min Voltage 
 																	  * This is applicable only 
-																		  for Sink operation. 
+																		  for Sink operation.
+    u8PIO_HPD                       1         R/W          R       	 * Defines the UPD350 PIO 
+																		number used for HPD IO pin.
+                                                                      * The state of this pin is tracked
+                                                                        in u16HPDStatus variable.
+																	  * This is applicable only when
+																		INCLUDE_UPD_HPD is enabled.
 	u8Reserved1  					1								 Reserved
 	u8Reserved2   					1								 Reserved
  	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
@@ -1620,7 +1644,47 @@ typedef enum
                                     * '1' Enable Auto VCONN Swap Accept When not working as VCONN Source 
     15:12  						   Reserved 									
 	</table> 
-									
+
+    <b>h. u16HPDStatus</b>: 
+	u16HPDStatus defines the status of HPD IO. The value in this variable is valid only when 
+    eMCHP_PSF_HPD_EVENT_OCCURRED notification is posted by PSF. User_application may read this variable
+    when eMCHP_PSF_HPD_EVENT_OCCURRED notification is received from PSF.
+    This variable is applicable only when INCLUDE_UPD_HPD is enabled.
+	<table> 
+    Bit     R/W Config   R/W Run   \Description
+             time         time      
+    ------  -----------  --------  --------------------
+    0       R            R         Indicates IRQ_HPD event has occurred
+                                    * '0' IRQ_HPD event has not occurred
+                                    * '1' IRQ_HPD event has occurred
+    1       R            R         Indicates that HPD transition from high to low has occurred
+                                    * '0' HPD transition from high to low has not occurred
+                                    * '1' HPD transition from high to low has occurred
+    2       R            R         Indicates that HPD transition from low to high has occurred
+                                    * '0' HPD transition from low to high has not occurred
+                                    * '1' HPD transition from low to high has occurred
+    7:3  						   Reserved 	
+    9:8     R            R         Indicates that 0th HPD event has occurred in HPD queue
+                                    * '00b' HPD event field is empty
+                                    * '01b' HPD transition from low to high has occurred
+                                    * '10b' HPD transition from high to low has occurred
+                                    * '11b' IRQ_HPD event has occurred 
+    11:10   R            R         Indicates that 1st HPD event has occurred in HPD queue
+                                    * '00b' HPD event field is empty
+                                    * '01b' HPD transition from low to high has occurred
+                                    * '10b' HPD transition from high to low has occurred
+                                    * '11b' IRQ_HPD event has occurred
+    13:12   R            R         Indicates that 2nd HPD event has occurred in HPD queue
+                                    * '00b' HPD event field is empty
+                                    * '01b' HPD transition from low to high has occurred
+                                    * '10b' HPD transition from high to low has occurred
+                                    * '11b' IRQ_HPD event has occurred
+    15:14   R            R         Indicates that 3rd HPD event has occurred in HPD queue
+                                    * '00b' HPD event field is empty
+                                    * '01b' HPD transition from low to high has occurred
+                                    * '10b' HPD transition from high to low has occurred
+                                    * '11b' IRQ_HPD event has occurred
+	</table>									
    Remarks:
      None                                                                                                                             
   ***************************************************************************************************************************************/
@@ -1683,6 +1747,11 @@ typedef struct _PortCfgStatus
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction; 
     UINT8 u8Reserved2;    
+#endif
+#if (TRUE == INCLUDE_UPD_HPD)    
+    UINT16 u16HPDStatus;
+    UINT8 u8PIO_HPD;
+    UINT8 u8Reserved3;
 #endif
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
     UINT8 u8ReservedPortPadBytes[32];
