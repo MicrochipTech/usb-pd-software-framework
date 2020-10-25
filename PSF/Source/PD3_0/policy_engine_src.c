@@ -1214,7 +1214,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_VDM_IDENTITY_REQUEST-GOODCRC_SS\r\n");
                     
 					/* Start the VDMIDentityRequest Sender Response timer, if timed out set the PE
-						sub-state to ePE_SRC_VDM_IDENTITY_REQUEST_SENDER_RESPONSE_TIMEOUT */
+						sub-state to ePE_SRC_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_VDMRESPONSE_TIMEOUT_MS),
                                                             PE_SSChngAndTimeoutValidate_TimerCB,u8PortNum,  

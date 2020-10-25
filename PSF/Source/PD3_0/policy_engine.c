@@ -379,8 +379,8 @@ UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header)
            interruptible AMS is in progress */
         if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) ||
            (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || 
-           (ePE_SEND_VDM == gasPolicyEngine[u8PortNum].ePEState) || 
-           (ePE_VDM_REQ_RCVD == gasPolicyEngine[u8PortNum].ePEState))
+           (ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState) || 
+           (ePE_VDM_RESPOND_VDM == gasPolicyEngine[u8PortNum].ePEState))
         {
             PE_SendNotSupportedOrRejectMsg(u8PortNum);            
         }
@@ -435,8 +435,8 @@ void PE_HandleUnExpectedMsg (UINT8 u8PortNum)
 void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 {
     UINT8 u8MsgOperation = PE_ValidateMessage (u8PortNum, u32Header);
-    UINT8 u8PEInVDMState = ((ePE_SEND_VDM == gasPolicyEngine[u8PortNum].ePEState) || \
-          (ePE_VDM_REQ_RCVD == gasPolicyEngine[u8PortNum].ePEState) ? TRUE : FALSE);
+    UINT8 u8PEInVDMState = ((ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState) || \
+          (ePE_VDM_RESPOND_VDM == gasPolicyEngine[u8PortNum].ePEState) ? TRUE : FALSE);
     
     /* Validate the received message*/
     if (PE_PROCESS_MSG == u8MsgOperation)
@@ -580,7 +580,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }  
 #endif                        
-                        if (ePE_SEND_VDM == gasPolicyEngine[u8PortNum].ePEState)
+                        if (ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState)
                         {
                             /* Kill VDM Response timer */
                             PE_KillPolicyEngineTimer (u8PortNum);                            
@@ -590,8 +590,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             /* Respond with appropriate VDO if VDM is supported by the port */                            
                             if (DPM_IS_VDM_SUPPORTED(u8PortNum))
                             {
-                                gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_REQ_RCVD; 
-                                gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_REQ_RCVD_ENTRY_SS; 
+                                gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_EVALUATE_VDM; 
                             }
                             else
                             {
@@ -620,8 +619,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         }
                         else /* VDM message is a response */
                         {
-                            PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_SEND_VDM,
-                                    ePE_SEND_VDM_RESP_RCVD_SS);
+                            PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_VDM_INITIATE_VDM,
+                                    ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS);
                         }
                     }        
                     else
@@ -1283,13 +1282,13 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #endif 
                 case PE_CTRL_NOT_SUPPORTED:
                 {
-                    if (ePE_SEND_VDM == gasPolicyEngine[u8PortNum].ePEState)
+                    if (ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState)
                     {
                         /* Kill the VDM Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);  
                         
-                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SEND_VDM,\
-                                                                   ePE_SEND_VDM_NO_RESPONSE_SS);                                                     
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_VDM_INITIATE_VDM,\
+                                                                   ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS);                                                     
                     }
                     else if (ePE_SRC_GET_SINK_STATUS == gasPolicyEngine[u8PortNum].ePEState)
                     {

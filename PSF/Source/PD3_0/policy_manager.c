@@ -1350,14 +1350,16 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 {
     
 #if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
-    UINT16 u16DPMStatus = gasDPM[u8PortNum].u16DPMStatus;
+    UINT16 u16DPMStatus = gasDPM[u8PortNum].u16DPMStatus;    
 #endif  
 #if (TRUE == INCLUDE_PD_SOURCE)
+    UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    
     /*On negotiation, initiate Get Sink caps if Get Sink is not initiated already
      and Partner PDO is null; In case of PB enabled, Get Sink caps is initiated 
      by PB layer*/
     if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]) &&\
-          (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&\
+          (PD_ROLE_SOURCE == u8DPMPowerRole) &&\
             (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
     {
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
@@ -1392,9 +1394,9 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #endif /*INCLUDE_PD_DR_SWAP*/
     
 #if (TRUE == INCLUDE_PD_PR_SWAP)
-    if (!(((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && \
+    if (!(((PD_ROLE_SOURCE == u8DPMPowerRole) && \
                             (u16DPMStatus& DPM_PR_SWAP_REJ_STS_AS_SRC)) ||\
-               ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) && \
+               ((PD_ROLE_SINK == u8DPMPowerRole) && \
                             (u16DPMStatus & DPM_PR_SWAP_REJ_STS_AS_SNK))))
     {
         if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
@@ -1808,6 +1810,10 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
                     }                     
                     break;
                 }
+                else
+                {
+                    u8DPMResponse = DPM_RESPOND_VDM_NAK; 
+                }
             }    
             break;
         }
@@ -1837,48 +1843,57 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
             }
         }
     }
-    
+
     /* Set/Clear Modal Operation Active Status based on the command type
        and DPM Response. Both DPM and User Application has evaluated the
        VDM command. So, it is obvious that a modal operation is going 
        to be established on reception of a Enter mode. So, setting the 
-       modal operation active status in this API itself */   
-#if (TRUE == INCLUDE_PD_ALT_MODE)  
-    
-    if (eSVDM_ENTER_MODE == eVDMCmd)
+       modal operation active status in this API itself */      
+    if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
     {
-        if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
+        gasDPM[u8PortNum].u16DPMStatus |= DPM_VDM_RESPONSE_MASK; 
+        
+        if (eSVDM_ENTER_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u16DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;            
+        }
+        else if (eSVDM_EXIT_MODE == eVDMCmd)
+        {
+            gasDPM[u8PortNum].u16DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;            
         }
         else
         {
-            gasDPM[u8PortNum].u16DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;
+            /* Do Nothing */
         }
     }
-    else if (eSVDM_EXIT_MODE == eVDMCmd)
+    else if (DPM_RESPOND_VDM_NAK == u8DPMResponse)
     {
-        if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
+        gasDPM[u8PortNum].u16DPMStatus &= ~DPM_VDM_RESPONSE_MASK;        
+        
+        if (eSVDM_ENTER_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u16DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;
+            gasDPM[u8PortNum].u16DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;            
+        }
+        else if (eSVDM_EXIT_MODE == eVDMCmd)
+        {
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;            
         }
         else
         {
-            gasDPM[u8PortNum].u16DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;
+            /* Do Nothing */
         }
     }
     else
     {
         /* Do Nothing */
     }
-#endif 
     
     return u8DPMResponse;
 }
 
-void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 *pu32VDMHeader, UINT8 *pu8VDOCnt, UINT32 *pu32ResponseVDO)
+void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 u32VDMHeader, UINT8 *pu8VDOCnt, UINT32 *pu32ResponseVDO)
 {
-    switch (DPM_GET_VDM_CMD(*pu32VDMHeader))
+    switch (DPM_GET_VDM_CMD(u32VDMHeader))
     {
         case eSVDM_DISCOVER_IDENTITY:
         {
@@ -1947,7 +1962,7 @@ void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 *pu32VDMHeader, UINT8 *pu8VDOCnt, U
                        u8Index < gasCfgStatusData.sAltModePerPortData[u8PortNum].u8SVIDsCnt; \
                        u8Index++)
             {
-                if (DPM_GET_VDM_SVID(*pu32VDMHeader) == gasCfgStatusData.sAltModePerPortData[u8PortNum].u16aSVIDsTable[u8Index])
+                if (DPM_GET_VDM_SVID(u32VDMHeader) == gasCfgStatusData.sAltModePerPortData[u8PortNum].u16aSVIDsTable[u8Index])
                 {
                     *pu8VDOCnt = DPM_GET_NO_OF_MODES(gasCfgStatusData.sAltModePerPortData[u8PortNum].u8aSVIDEntryTable[u8Index]);
                     u8StartModeIdx = DPM_GET_START_MODE_IDX(gasCfgStatusData.sAltModePerPortData[u8PortNum].u8aSVIDEntryTable[u8Index]);

@@ -149,6 +149,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PR_SWAP_REJ_STS_AS_SNK              (BIT(12))
 #define DPM_DR_SWAP_REJ_STS_AS_DFP              (BIT(13))
 #define DPM_DR_SWAP_REJ_STS_AS_UFP              (BIT(14))
+#define DPM_VDM_RESPONSE_MASK                    BIT(15)
 #define DPM_SWAP_REJECT_STS_MASK                0x7E00
 /*Bit position for u16DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
@@ -670,7 +671,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT16 u16DPMStatus;                 //Bits 1:0 - Status of Port Role <p />
                                         //Bits 3:2 - Status of Data Role <p />
                                         //Bits 5:4 - Status of PD Spec Revision <p />
-                                        //Bit 6 - VDM Active Status
+                                        //Bit 6 - Modal Operation Active Status
                                         //Bits 8:7 - Type of current Explicit Contract 
                                         //      00 - Fixed  
                                         //      01 - Variable
@@ -679,6 +680,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bits 10:9 - VCONN Reject status
                                         // Bits 12:11 - PR Swap Reject Status
                                         // Bits 14:13 - DR Swap Reject Status 
+                                        // Bit 15 - VDM Response (ACK/NAK)
   UINT16 u16DPMInternalEvents;      //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
                                     //DPM_INT_EVT_INITIATE_RENEGOTIATION          BIT(1)
                                     //DPM_INT_EVT_INITIATE_VCONN_SWAP             BIT(2)
@@ -1812,7 +1814,7 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader);
 
 /**************************************************************************************************
     Function:
-        void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 *pu32VDMHeader, UINT8 *u8VDOCnt, UINT32 *pu32ResponseVDO);
+        void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 u32VDMHeader, UINT8 *u8VDOCnt, UINT32 *pu32ResponseVDO);
     Summary:
         API to return the Vendor Defined Message Data Objects 
     Description:
@@ -1823,7 +1825,7 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader);
         None.
     Input:
         u8PortNum - Port number.
-        pu32VDMHeader - Pointer to VDM Header received 
+        u32VDMHeader - VDM Header received 
         u8VDOCnt - Pointer to return the number of VDOs
         pu32ResponseVDO - Pointer to array of VDOs
     Return:
@@ -1831,7 +1833,7 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 *pu32VDMHeader, UINT8 *u8VDOCnt, UINT32 *pu32ResponseVDO);
+void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 u32VDMHeader, UINT8 *u8VDOCnt, UINT32 *pu32ResponseVDO);
 
 #endif /*_POLICY_MANAGER_H_*/
 
