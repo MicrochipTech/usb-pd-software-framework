@@ -102,7 +102,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     {
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_INITIATE_VDM, \
                                                     ePE_VDM_INITIATE_VDM_MSG_DONE_SS, \
-                                                    eTxDoneSt, eTxDoneSS);                                                
+                                                    eTxDoneSt, eTxDoneSS);  
                     }
                     else
                     {
@@ -139,47 +139,71 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS\r\n");
 
                     /* Store the received VDM Header and VDM response in status registers */                    
-                    if (eSVDM_DISCOVER_IDENTITY == (eSVDMCmd) DPM_GET_VDM_CMD(pu8DataBuf[DPM_VDM_HEADER_POS]))
-                    {                        
-                        (void)MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader, pu8DataBuf, \
-                                                                    BYTE_LEN_4);      
+                    (void)MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader, \
+                                                            pu8DataBuf, BYTE_LEN_4);      
                     
+                    if (eSVDM_DISCOVER_IDENTITY == (eSVDMCmd) DPM_GET_VDM_CMD(pu8DataBuf[DPM_VDM_HEADER_POS]))
+                    {                                            
                         gasCfgStatusData.sVDMPerPortData[u8PortNum].u8PartnerPDIdentityCnt = \
                                             (PRL_GET_OBJECT_COUNT(u32Header) - BYTE_LEN_1);
                             
                         (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sVDMPerPortData[u8PortNum].u32aPartnerPDIdentity, (pu8DataBuf + BYTE_LEN_4), \
                                             (gasCfgStatusData.sVDMPerPortData[u8PortNum].u8PartnerPDIdentityCnt * BYTE_LEN_4));                                                   
-                    }
-                    /* Move to Ready state based on the current power role */
-                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                      
-                   
-                    /* BUSY Response Handling */
+                    }                     
+                                       
                     if (DPM_VDM_BUSY == DPM_GET_VDM_CMD_TYPE(pu8DataBuf[DPM_VDM_HEADER_POS]))
-                    {                  
-                        if(gasPolicyEngine[u8PortNum].u8VDMBusyCounter < PE_N_BUSY_COUNT)
-                        {
-                            gasPolicyEngine[u8PortNum].u8VDMBusyCounter++; 
-                            /* Start the VDM Busy Retry Timer */            
-                            gasDPM[u8PortNum].u8VDMBusyTmrID = PDTimer_Start (
-                                                                    (PE_VDM_BUSY_TIMEOUT_MS),
-                                                                    DPM_VDMBusy_TimerCB,u8PortNum,  
-                                                                    (UINT8)SET_TO_ZERO);                                             
-                        }
-                        else
-                        {
-                            /* Reset the VDM Busy Counter */
-                            gasPolicyEngine[u8PortNum].u8VDMBusyCounter = RESET_TO_ZERO;
-                            
-                            /* Post eMCHP_PSF_VDM_RESPONSE_NOT_RCVD notification */
-                            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_RESPONSE_NOT_RCVD); 
-                        }
+                    {   
+                        /* BUSY Response Handling */
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_INITIATE_VDM_BUSY_RCVD_SS;                       
                     }
                     else /* ACK or NAK response */
                     {
+                        /* Reset the VDM Busy Counter on receiving a non-BUSY response */
+                        gasPolicyEngine[u8PortNum].u8VDMBusyCounter = RESET_TO_ZERO;                          
+                        
+                        /* Move to Ready state based on the current power role */
+                        gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                        gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                         
+                        
                         /* Post eMCHP_PSF_VDM_RESPONSE_RCVD notification */
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_RESPONSE_RCVD);                                                
                     }
+                    break; 
+                }
+                case ePE_VDM_INITIATE_VDM_BUSY_RCVD_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_INITIATE_VDM_BUSY_RCVD_SS\r\n");
+
+                    /* Clear the internal event since it will be re-initiated when 
+                       the VDM Busy Timer expires */                        
+                    gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VDM);                        
+
+                    if(gasPolicyEngine[u8PortNum].u8VDMBusyCounter < PE_N_BUSY_COUNT)
+                    {              
+                        /* Increment the VDM Busy Counter */
+                        gasPolicyEngine[u8PortNum].u8VDMBusyCounter++;
+                        
+                        /* Start the VDM Busy Retry Timer */            
+                        gasDPM[u8PortNum].u8VDMBusyTmrID = PDTimer_Start (
+                                                                (PE_VDM_BUSY_TIMEOUT_MS),
+                                                                DPM_VDMBusy_TimerCB,u8PortNum,  
+                                                                (UINT8)SET_TO_ZERO);  
+                        
+                        /* Move to Ready state based on the current power role */
+                        gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                        gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                                 
+                    }
+                    else
+                    {
+                        /* Reset the VDM Busy Counter when it exceeds PE_N_BUSY_COUNT */
+                        gasPolicyEngine[u8PortNum].u8VDMBusyCounter = RESET_TO_ZERO;
+                         
+                        /* Partner has sent BUSY for the 6th time. But, as per PD Spec, a responder 
+                           is allowed to send BUSY for a maximum of 5 times. So, consider this 
+                           as no response and do not retry further */
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS; 
+                    }
+                    
                     break; 
                 }
                 case ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS:
