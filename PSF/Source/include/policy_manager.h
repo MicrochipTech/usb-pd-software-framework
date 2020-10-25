@@ -1350,6 +1350,29 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
+        void DPM_HPDEventHandler(UINT8 u8PortNum);
+    Summary:
+        This API handles an HPD event. 
+    Devices Supported:
+        UPD350 REV A
+    Description:
+        This API copies all HPD events that have occurred into 
+        gasCfgStatusData.sPerPortData[u8PortNum].u16HPDStatus variable and notifies 
+        User_application that an HPD event has occurred using eMCHP_PSF_HPD_EVENT_OCCURRED
+        notification.
+    Conditions:
+        This API is applicable only when INCLUDE_UPD_HPD is enabled.
+    Input:
+        u8PortNum - Port number of the device. Value passed will be less than CONFIG_PD_PORT_COUNT.
+    Return:
+        None. 
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_HPDEventHandler(UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
         void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum); 
     Summary:
         Updates the Advertised PDO registers and status bits once PDOs are advertised. 

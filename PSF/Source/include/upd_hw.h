@@ -139,6 +139,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_PIO_OVR3_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD6													  
 #define UPD_PIO_OVR4_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD8													  
 #define UPD_PIO_OVR5_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xDA		
+
+#define UPD_HPD_BASE_ADDR			0x0C00            
+#define UPD_HPD_CTL                 UPD_HPD_BASE_ADDR + 0x00
+#define UPD_HPD_INT_STS             UPD_HPD_BASE_ADDR + 0x01
+#define UPD_HPD_INT_EN              UPD_HPD_BASE_ADDR + 0x02
+#define UPD_HPD_QUEUE               UPD_HPD_BASE_ADDR + 0x03
+#define UPD_IRQ_HPD_MIN_TIME        UPD_HPD_BASE_ADDR + 0x04
+#define UPD_IRQ_HPD_MAX_TIME        UPD_HPD_BASE_ADDR + 0x05
+#define UPD_HPD_HIGH_DET_TIME       UPD_HPD_BASE_ADDR + 0x06
+#define UPD_HPD_LOW_DET_TIME        UPD_HPD_BASE_ADDR + 0x08
 /**************************************************************************************************/
 
 /* Defines for PIO Overridex Source Select Register (PIO_OVRx_SRC_SEL)*/
@@ -228,6 +238,27 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Default UPD VBUS Threshold value */
 #define UPD_VBUS_THRS_DEFAULT    222 
+
+/*Defines used in UPD_HPDInit() API*/
+#define HPD_IRQ_MIN_TIME_350US           5
+#define HPD_IRQ_MIN_TIME_2_1MS           40
+#define UPD_HPD_HIGH_DET_TIME_100_1MS    2000
+#define UPD_HPD_LOW_DET_TIME_2_1MS       40
+
+#define UPD_IRQ_HPD_EN                   BIT(0)
+#define UPD_HPD_LOW_EN                   BIT(1)
+#define UPD_HPD_HIGH_EN                  BIT(2)
+#define UPD_QUEUE_NOT_EMPTY_EN           BIT(3)
+
+#define UPD_CFG_PIO_ENABLE               BIT(0)
+
+#define UPD_HPD_ENABLE                   BIT(0)
+#define UPD_HPD_CFG                      BIT(1)
+
+/*Defines for gu16HPDStsISR variable*/
+#define UPD_HPD_INTERRUPT_OCCURRED       BIT(4)
+#define UPD_HPD_ALL_INTERRUPTS           0x0F
+#define UPD_HPD_QUEUE_POS                8
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Routines
@@ -1085,4 +1116,61 @@ void UPD_ResetThroughGPIO(void);
         None.
 **************************************************************************************************/
 void UPD_RegDump(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void UPD_HPDInit(UINT8 u8PortNum)
+
+    Summary:
+        Enables UPD350 to detect HPD events.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is to enable UPD350 to detect HPD events.
+
+    Conditions:
+        This is applicable only when INCLUDE_UPD_HPD is enabled.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_HPDInit(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void UPD_HPDHandleISR(UINT8 u8PortNum)
+
+    Summary:
+        If an HPD event occurs, this API will register those events in gu16HPDStsISR[u8PortNum] variable.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        If an HPD event occurs, this API will read the interrupt status registers and will record
+        those events in gu16HPDStsISR[u8PortNum] variable.
+
+    Conditions:
+        This is applicable only when INCLUDE_UPD_HPD is enabled.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_HPDHandleISR(UINT8 u8PortNum);
 #endif /*_UPD_HW_H_*/
