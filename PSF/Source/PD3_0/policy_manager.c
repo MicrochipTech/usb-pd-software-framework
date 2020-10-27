@@ -1754,6 +1754,10 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
     {
         case eSVDM_DISCOVER_IDENTITY:
         {
+            /* A Discover Identity request shall have SVID as PD SID(0xFF00) and
+               Object Position as 0. Send NAK if any of these fails. Also, send NAK 
+               when the data role is DFP and current negotiated PD Rev is 2.0 or 
+               when PD Identity Count is configured as 0 */
             if ((DPM_VDM_PD_SID == u16SVID) && !(u8InvalidPortState) && !(u8ObjPos) && \
                      (gasCfgStatusData.sVDMPerPortData[u8PortNum].u8PDIdentityCnt != SET_TO_ZERO))
             {
@@ -1764,6 +1768,10 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
 #if (TRUE == INCLUDE_PD_ALT_MODE)   
         case eSVDM_DISCOVER_SVIDS:
         {
+            /* A Discover SVIDs request shall have SVID as PD SID(0xFF00) and
+               Object Position as 0. Send NAK if any of these fails. Also, send NAK 
+               when the data role is DFP and current negotiated PD Rev is 2.0 or 
+               when SVIDs Count is configured as 0 */            
             if ((DPM_VDM_PD_SID == u16SVID) && !(u8InvalidPortState) && \
                             !(u8ObjPos) && (u8SVIDsCnt != SET_TO_ZERO))
             {
@@ -1773,6 +1781,9 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
         }
         case eSVDM_DISCOVER_MODES:
         {
+            /* A Discover Modes request shall have SVID as one of the SVIDs advertised
+               in Discover SVIDs and Object Position as 0. Send NAK if any of these fails. Also, send NAK 
+               when the data role is DFP and current negotiated PD Rev is 2.0 */            
             if (!(u8InvalidPortState) && !(u8ObjPos))
             {
                 for (UINT8 u8Index = INDEX_0; u8Index < u8SVIDsCnt; u8Index++)
@@ -1788,6 +1799,8 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
         }
         case eSVDM_EXIT_MODE:
         {
+            /* When Object Position is 7, it means Exit All Active Modes.
+               This is applicable only for Exit Mode command */
             if (DPM_EXIT_ALL_ACTIVE_MODES == u8ObjPos)
             {
                 u8DPMResponse = DPM_RESPOND_VDM_ACK; 
@@ -1799,6 +1812,8 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
         /* fallthrough */
         case eSVDM_ENTER_MODE:        
         {
+            /* Enter Mode and Exit Modes commands shall have the object position 
+               as one of the VDOs(Modes) advertised in Discover Modes */
             for (UINT8 u8Index = INDEX_0; u8Index < u8SVIDsCnt; u8Index++)
             {
                 if (u16SVID == gasCfgStatusData.sAltModePerPortData[u8PortNum].u16aSVIDsTable[u8Index])
@@ -1812,6 +1827,8 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
                 }
                 else
                 {
+                    /* In case of Object Position as 7, if SVID match fails, 
+                       update the response as NAK */
                     u8DPMResponse = DPM_RESPOND_VDM_NAK; 
                 }
             }    
