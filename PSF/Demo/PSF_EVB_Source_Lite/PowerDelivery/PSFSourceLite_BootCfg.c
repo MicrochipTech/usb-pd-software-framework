@@ -51,7 +51,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
         u8Length++;
     }
 
-/*Per port configuration for Port 0*/    
+    /*Per port configuration for Port 0*/    
     pasCfgStatusData->sPerPortData[PORT0].u32CfgData =       
         ((CFG_PORT_0_VCONN_OCS_ENABLE) | (CFG_PORT_0_ENABLE) | (CFG_PORT_0_RP_CURRENT_VALUE)| \
         (CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_0_POWER_ROLE));
@@ -82,14 +82,14 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_5] = CFG_PORT_0_SOURCE_PDO_6;               
     pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_6] = CFG_PORT_0_SOURCE_PDO_7;
     
-    /*Configure role swap policy for note type port*/
+    /*Configure role swap policy for Port 0 */
     pasCfgStatusData->sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
     
 #if(TRUE == INCLUDE_UPD_HPD)
     pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
 #endif
 /*Port 1 Per Port Configuration*/    
-#if(PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)    
+#if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1)    
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
         ((CFG_PORT_1_VCONN_OCS_ENABLE) | (CFG_PORT_1_ENABLE) | (CFG_PORT_1_RP_CURRENT_VALUE)| \
         (CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_1_POWER_ROLE));
@@ -119,7 +119,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_5] = CFG_PORT_1_SOURCE_PDO_6;
     pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_6] = CFG_PORT_1_SOURCE_PDO_7;
 
-    /*Configure role swap policy for dock type port*/
+    /*Configure role swap policy for Port 1 */
     pasCfgStatusData->sPerPortData[PORT1].u16SwapPolicy = CFG_PORT_1_ROLE_SWAP_POLICY;
     
     #if(TRUE == INCLUDE_UPD_HPD)

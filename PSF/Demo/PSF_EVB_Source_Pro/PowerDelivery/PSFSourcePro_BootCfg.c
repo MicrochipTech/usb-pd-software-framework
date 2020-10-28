@@ -72,7 +72,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->u16MinPowerBankCIn250mW = CFG_PB_MIN_POWER_BANKC_IN_250mW;
 #endif     
 
-/*Port 0 Per Port Configuration*/    
+    /*Port 0 Per Port Configuration*/    
     pasCfgStatusData->sPerPortData[PORT0].u32CfgData =       
         ((CFG_PORT_0_VCONN_OCS_ENABLE) | (CFG_PORT_0_ENABLE) | (CFG_PORT_0_RP_CURRENT_VALUE)| \
         (CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_0_POWER_ROLE));
@@ -112,7 +112,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPBPerPortData[PORT0].u8PortPriority = PORT0;
     #endif
 
-    /*Configure role swap policy for note type port*/
+    /*Configure role swap policy for Port 0 */
     pasCfgStatusData->sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
 	
 #if(TRUE == INCLUDE_UPD_HPD)
@@ -120,7 +120,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 #endif	
 
 /*Port 1 Per Port Configuration*/      
-#if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)  
+#if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
         ((CFG_PORT_1_VCONN_OCS_ENABLE) | (CFG_PORT_1_ENABLE) | (CFG_PORT_1_RP_CURRENT_VALUE)| \
         (CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_1_POWER_ROLE));
@@ -159,7 +159,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPBPerPortData[PORT1].u8PortPriority = PORT1;
     #endif
     
-    /*Configure role swap policy for dock type port*/
+    /*Configure role swap policy for Port 1 */
     pasCfgStatusData->sPerPortData[PORT1].u16SwapPolicy = CFG_PORT_1_ROLE_SWAP_POLICY;
 
     #if(TRUE == INCLUDE_UPD_HPD)
