@@ -1369,9 +1369,9 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
     /*Initiate VCONN Swap only if the swap is not already initiated and rejected*/
     if (!(((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
-                            (u16DPMStatus& DPM_VCONN_SWAP_REJ_STS_AS_VCONNSRC)) ||
+                            (u16DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC)) ||
                ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
-                            (u16DPMStatus & DPM_VCONN_SWAP_REJ_STS_AS_NOT_VCONNSRC))))
+                            (u16DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC))))
     {
         if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
         {
@@ -1382,9 +1382,9 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_DR_SWAP)
     /*Initiate DR Swap only if the swap is not already initiated and rejected*/
     if (!(((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && \
-                            (u16DPMStatus& DPM_DR_SWAP_REJ_STS_AS_DFP)) ||\
+                            (u16DPMStatus & DPM_DR_SWAP_INIT_STS_AS_DFP)) ||\
                ((PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && \
-                            (u16DPMStatus & DPM_DR_SWAP_REJ_STS_AS_UFP))))
+                            (u16DPMStatus & DPM_DR_SWAP_INIT_STS_AS_UFP))))
     {
         if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
         {
@@ -1395,9 +1395,9 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
     
 #if (TRUE == INCLUDE_PD_PR_SWAP)
     if (!(((PD_ROLE_SOURCE == u8DPMPowerRole) && \
-                            (u16DPMStatus& DPM_PR_SWAP_REJ_STS_AS_SRC)) ||\
+                            (u16DPMStatus & DPM_PR_SWAP_INIT_STS_AS_SRC)) ||\
                ((PD_ROLE_SINK == u8DPMPowerRole) && \
-                            (u16DPMStatus & DPM_PR_SWAP_REJ_STS_AS_SNK))))
+                            (u16DPMStatus & DPM_PR_SWAP_INIT_STS_AS_SNK))))
     {
         if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
         {
@@ -1479,7 +1479,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
                                             & DPM_INT_EVT_INITIATE_ALERT);
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
-    gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_SWAP_REJECT_STS_MASK | \
+    gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | \
                                         DPM_PORT_IN_MODAL_OPERATION);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();

@@ -560,30 +560,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_STATUS);
             #endif 
             break; 
-        }
-        case eMCHP_PSF_VCONN_SWAP_COMPLETE:
-        {
-            /* After a swap, clear the pending internal event in case role 
-               swap policy does not match. */
-            #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-            if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
-            {                
-                gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VCONN_SWAP);
-            }
-            #endif
-            break; 
-        }
-        case eMCHP_PSF_DR_SWAP_COMPLETE:
-        {
-            /* After a swap, clear the pending internal event in case role 
-               swap policy does not match. */            
-            #if (TRUE == INCLUDE_PD_DR_SWAP)
-            if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
-            {                
-                gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_DR_SWAP);
-            }
-            #endif
-            break; 
         }         
         case eMCHP_PSF_PR_SWAP_COMPLETE:
         {            
@@ -606,13 +582,7 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
                 }
                 gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
             }
-            /* After a swap, clear the pending internal event in case role 
-               swap policy does not match. */            
-            if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
-            {                
-                gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_PR_SWAP);
-            }
-            #endif
+            #endif 
             break; 
         }
         case eMCHP_PSF_PORT_DISABLED:

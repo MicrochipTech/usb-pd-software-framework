@@ -143,14 +143,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CURR_PD_SPEC_REV_MASK               (BIT(4)|BIT(5))
 #define DPM_PORT_IN_MODAL_OPERATION              BIT(6)
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK    (BIT(8) | BIT(7))
-#define DPM_VCONN_SWAP_REJ_STS_AS_VCONNSRC      (BIT(9))
-#define DPM_VCONN_SWAP_REJ_STS_AS_NOT_VCONNSRC  (BIT(10))
-#define DPM_PR_SWAP_REJ_STS_AS_SRC              (BIT(11))
-#define DPM_PR_SWAP_REJ_STS_AS_SNK              (BIT(12))
-#define DPM_DR_SWAP_REJ_STS_AS_DFP              (BIT(13))
-#define DPM_DR_SWAP_REJ_STS_AS_UFP              (BIT(14))
+#define DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC     (BIT(9))
+#define DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC (BIT(10))
+#define DPM_PR_SWAP_INIT_STS_AS_SRC             (BIT(11))
+#define DPM_PR_SWAP_INIT_STS_AS_SNK             (BIT(12))
+#define DPM_DR_SWAP_INIT_STS_AS_DFP             (BIT(13))
+#define DPM_DR_SWAP_INIT_STS_AS_UFP             (BIT(14))
 #define DPM_VDM_RESPONSE_MASK                    BIT(15)
-#define DPM_SWAP_REJECT_STS_MASK                0x7E00
+#define DPM_SWAP_INIT_STS_MASK                   0x7E00
 /*Bit position for u16DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
 #define DPM_CURR_DATA_ROLE_POS             2
