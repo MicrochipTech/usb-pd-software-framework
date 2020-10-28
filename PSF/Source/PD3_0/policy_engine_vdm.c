@@ -80,48 +80,33 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 case ePE_VDM_INITIATE_VDM_ENTRY_SS: 
                 {
                     /* PE will enter this sub-state when sending a VDM request 
-                       or when responding to SVID specific VDM commands. Both the
-                       scenarios are initiated by application via Client Request */                    
+                       initiated by application via Client Request */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_INITIATE_VDM_ENTRY_SS\r\n");
 
-                    /* Get the VDM Header and VDOs configured by the application */
+                    /* Get the VDM Header and VDOs configured by the application */                                                   
                     u32aVDMDataObj[INDEX_0] = gasCfgStatusData.sVDMPerPortData[u8PortNum].u32VDMHeader;
-
-#if (TRUE == INCLUDE_PD_ALT_MODE)    
+                    
+#if (TRUE == INCLUDE_PD_ALT_MODE)
                     /* This is used in cases where the response for SVID specific VDM 
                        commands like DPStatus, DPConfigure, etc., comes from the application 
-                       Commands like Disc Identity, Disc SVIDs, Disc Modes, etc., have
-                       no VDOs in the message */
+                       */
                     u8VDOCnt = gasCfgStatusData.sAltModePerPortData[u8PortNum].u8VDOCnt;
                             
                     (void) MCHP_PSF_HOOK_MEMCPY((u32aVDMDataObj + BYTE_LEN_1), gasCfgStatusData.sAltModePerPortData[u8PortNum].u32aVDO, \
-                                                                        (u8VDOCnt * BYTE_LEN_4));                                                                       
+                                                                        (u8VDOCnt * BYTE_LEN_4));                                                      
 #endif 
-                                        
                     u32pTransmitDataObj = u32aVDMDataObj;
                     
                     /* Object Count is incremented by 1 to include VDM Header */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
-                                                                    (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                    
+                                                                    (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                   
 
-                    if (DPM_VDM_REQ == DPM_GET_VDM_CMD_TYPE(u32aVDMDataObj[INDEX_0]))
-                    {
-                        /* In case of VDM request, move to ePE_VDM_INITIATE_VDM_MSG_DONE_SS sub-state 
-                           on Good CRC reception and to Ready state on Tx Failure since 
-                           VDMs shall not be retried after a transmission failure */ 
-                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_INITIATE_VDM, \
+                    /* Move to ePE_VDM_INITIATE_VDM_MSG_DONE_SS sub-state 
+                       on Good CRC reception and to Ready state on Tx Failure since 
+                       VDMs shall not be retried after a transmission failure */ 
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_INITIATE_VDM, \
                                                     ePE_VDM_INITIATE_VDM_MSG_DONE_SS, \
                                                     eTxDoneSt, eTxDoneSS);  
-                    }
-                    else
-                    {
-                        /* In case of VDM response, move to Ready state on Good CRC
-                           reception and on Tx failure */
-                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                    eTxDoneSS, eTxDoneSt, eTxDoneSS);                                                                        
-                        /* Clear the internal event */                        
-                        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VDM);                        
-                    }
               
                     u8IsTransmit = TRUE;
                     
@@ -306,7 +291,9 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 case ePE_VDM_RESPOND_VDM_ENTRY_SS:
                 {                 
                     /* PE will enter this sub-state to send the ACK or NAK 
-                       response for the VDM request received from port partner */
+                       response for the VDM request received from port partner
+                       Application initiated VDM response will be sent through
+                       ePE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS sub-state */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_RESPOND_VDM_ENTRY_SS\r\n");
                     
                     /* Copy the received VDM Header */
@@ -346,6 +333,42 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                                                                     
                     break;
                 }
+#if (TRUE == INCLUDE_PD_ALT_MODE)                  
+                case ePE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS:
+                {
+                    /* PE will enter this sub-state when application raises a 
+                       DPM_CLIENT_REQ_RESPOND_VDM client request */
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS\r\n");
+
+                    /* Get the VDM Header and VDOs configured by the application */
+                    u32aVDMDataObj[INDEX_0] = gasCfgStatusData.sVDMPerPortData[u8PortNum].u32VDMHeader;
+  
+                    /* This is used in cases where the response for SVID specific VDM 
+                       commands like DPStatus, DPConfigure, etc., comes from the application 
+                       */
+                    u8VDOCnt = gasCfgStatusData.sAltModePerPortData[u8PortNum].u8VDOCnt;
+                            
+                    (void) MCHP_PSF_HOOK_MEMCPY((u32aVDMDataObj + BYTE_LEN_1), gasCfgStatusData.sAltModePerPortData[u8PortNum].u32aVDO, \
+                                                                        (u8VDOCnt * BYTE_LEN_4));                                                                        
+                                        
+                    u32pTransmitDataObj = u32aVDMDataObj;
+                    
+                    /* Object Count is incremented by 1 to include VDM Header */
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
+                                                                    (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                    
+                    
+                    /* Move to Ready state on Good CRC reception and on Tx failure */
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
+                                                    eTxDoneSS, eTxDoneSt, eTxDoneSS);                                                                                                                    
+              
+                    u8IsTransmit = TRUE;
+                    
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_RESPOND_VDM_IDLE_SS;                                                                                       
+                    
+                    break; 
+                }
+#endif
+                
                 case ePE_VDM_RESPOND_VDM_IDLE_SS:
                 {
                     break; 
