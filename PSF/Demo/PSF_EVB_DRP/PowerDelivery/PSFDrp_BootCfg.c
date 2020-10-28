@@ -53,7 +53,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 static void CFG_Port_0_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
-#if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)
+#if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
 
 static void CFG_Port_1_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
@@ -120,7 +120,7 @@ static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     
 }
 
-#endif /*(PORT_COUNT_2 == CONFIG_PD_PORT_COUNT)*/
+#endif /* (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) */
 
 static void CFG_Port_0_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
@@ -311,7 +311,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 #endif
 
     /*Per port configuration for Port 1*/      
-#if (PORT_COUNT_2 == CONFIG_PD_PORT_COUNT) 
+#if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
         ((CFG_PORT_1_VCONN_OCS_ENABLE) | (CFG_PORT_1_ENABLE) | (CFG_PORT_1_RP_CURRENT_VALUE)| \
         (CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_1_POWER_ROLE));
