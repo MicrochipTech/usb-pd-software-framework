@@ -279,7 +279,7 @@ Example:
     #define INCLUDE_PD_SOURCE_PPS	0(Exclude Source PPS functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_SOURCE_PPS           0
+#define INCLUDE_PD_SOURCE_PPS           1
 
 /**************************************************************************************************
 Summary:

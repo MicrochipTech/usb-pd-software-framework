@@ -159,7 +159,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_DUAL_ROLE_DATA            1U
 
 /*Port - 0 NoteBook Source PDO Configuration***/
-#define CFG_PORT_0_SOURCE_NUM_OF_PDOS      1U
+#define CFG_PORT_0_SOURCE_NUM_OF_PDOS        1U
 #define CFG_PORT_0_SOURCE_USB_SUSP           0U
 #define CFG_PORT_0_SOURCE_UNCONSTARINED_PWR  1U
 #define CFG_PORT_0_SOURCE_USB_COMM           0U
@@ -204,11 +204,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_DUAL_ROLE_DATA            1U
 
 /*Port - 1 Dock Source PDO Configuration***/
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
-#define CFG_PORT_1_SOURCE_NUM_OF_PDOS      5U
-#else 
-#define CFG_PORT_1_SOURCE_NUM_OF_PDOS      4U
-#endif 
+#define CFG_PORT_1_SOURCE_NUM_OF_PDOS        4U
 #define CFG_PORT_1_SOURCE_USB_SUSP           0U
 #define CFG_PORT_1_SOURCE_UNCONSTARINED_PWR  1U
 #define CFG_PORT_1_SOURCE_USB_COMM           0U
@@ -227,14 +223,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SOURCE_PDO_2     CFG_FORM_FIXED_PDOx(9000U,3000U)    
 #define CFG_PORT_1_SOURCE_PDO_3     CFG_FORM_FIXED_PDOx(15000U,3000U)   
 #define CFG_PORT_1_SOURCE_PDO_4     CFG_FORM_FIXED_PDOx(20000U,3000U)
-#if (TRUE == INCLUDE_PD_SOURCE_PPS)
-#define CFG_PORT_1_SOURCE_PDO_5     CFG_FORM_PPS_APDO(CFG_PORT_1_SOURCE_APDO_5_MIN_VOLTAGE, \
-                                                    CFG_PORT_1_SOURCE_APDO_5_MAX_VOLTAGE, \
-                                                    CFG_PORT_1_SOURCE_APDO_5_MAX_CURRENT, \
-                                                    CFG_PORT_1_SOURCE_APDO_5_PPS_PWR_LTD);            
-#else 
 #define CFG_PORT_1_SOURCE_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
-#endif 
 #define CFG_PORT_1_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
 #define CFG_PORT_1_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0)
 
