@@ -403,6 +403,7 @@ typedef enum {
     ePE_VDM_INITIATE_VDM_IDLE_SS,
     /* ePE_VDM_RESPOND_VDM */
     ePE_VDM_RESPOND_VDM_ENTRY_SS,
+    ePE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS,            
     ePE_VDM_RESPOND_VDM_IDLE_SS,
     //--------------------Common States-------------------------------------------------//
     /* ePE_SOFT_RESET */        

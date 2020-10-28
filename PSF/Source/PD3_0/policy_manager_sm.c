@@ -739,75 +739,91 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         }
         #endif
     }
-#endif /*INCLUDE_POWER_FAULT_HANDLING*/
-    
-    /* Check if Policy Engine is Idle and no internal event pending*/
-    else if((TRUE == PE_IsPolicyEngineIdle(u8PortNum)) && (!gasDPM[u8PortNum].u16DPMInternalEvents))
-    {            
-        /* Check for renegotiation request */
-        if (DPM_CLIENT_REQ_RENEGOTIATE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
-        {
-            /* Clear the request since the request is accepted and going to be handled */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_RENEGOTIATE);                
-            /* Request DPM for renegotiation */
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
-        } /*DPM_CLIENT_REQ_RENEGOTIATE*/
-        /* Check for DPM_CLIENT_REQ_VCONN_SWAP request */
-        if (DPM_CLIENT_REQ_VCONN_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
-        {
-            /* Clear the request since the request is accepted and going to be handled */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_VCONN_SWAP);                
-            /* Request DPM for VCONN swap */
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
-        } /*DPM_CLIENT_REQ_VCONN_SWAP*/
-        /* Check for DPM_CLIENT_REQ_PR_SWAP request */
-        if (DPM_CLIENT_REQ_PR_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
-        {   
-            /* Clear the request since the request is accepted and going to be handled */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_PR_SWAP);                
-            /* Request DPM for PR swap */
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
-        } /*DPM_CLIENT_REQ_PR_SWAP*/
-                /* Check for DPM_CLIENT_REQ_DR_SWAP request */
-        if (DPM_CLIENT_REQ_DR_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
-        {
+#endif /*INCLUDE_POWER_FAULT_HANDLING*/       
+#if (TRUE == INCLUDE_PD_ALT_MODE)
+    else if (DPM_CLIENT_REQ_RESPOND_VDM & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {
+        /* Clear the request since the request is accepted and going to be handled */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                  ~(DPM_CLIENT_REQ_RESPOND_VDM);
             
-            /* Clear the request since the request is accepted and going to be handled */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_DR_SWAP);                
-            /* Request DPM for DR swap */
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
-        } /*DPM_CLIENT_REQ_DR_SWAP*/
-        
-#if (TRUE == INCLUDE_PD_VDM)
-        else if (DPM_CLIENT_REQ_INITIATE_VDM & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+        /* Assigning the PE states to VDM states directly because this client 
+           request is not the start of an AMS. So, no need to handle Collision 
+           Avoidance. If we handle this client request via Internal Event Handler, 
+           the VDM response would never be sent if the port power role is Sink 
+           since the Rp value might be set as 3A by the Source partner. It is checked              
+           whether PE is in Ready state before sending a response. Without this check, 
+           if application raises this client request when some other AMS is in 
+           progress, then it would corrupt the PE states */
+        if ((gasPolicyEngine[u8PortNum].ePEState == ePE_SRC_READY) || \
+                        (gasPolicyEngine[u8PortNum].ePEState == ePE_SNK_READY))
         {
-            /* Clear the request since the request is accepted and going to be handled */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_INITIATE_VDM);
-            
-            /* Request DPM for initiating Get Partner Identity */
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VDM);            
-        }  /* DPM_CLIENT_REQ_GET_PARTNER_IDENTITY */
-#endif 
-        else
-        {
-            /* Do Nothing */
+            gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_RESPOND_VDM; 
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS;                                            
         }
-    }
+    } /* DPM_CLIENT_REQ_RESPOND_VDM */  
+#endif     
+    /* Check for renegotiation request */
+    else if (DPM_CLIENT_REQ_RENEGOTIATE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {
+        /* Clear the request since the request is accepted and going to be handled */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_RENEGOTIATE);  
+        
+        /* Request DPM for renegotiation */
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
+    } /*DPM_CLIENT_REQ_RENEGOTIATE*/    
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
+        /* Check for DPM_CLIENT_REQ_VCONN_SWAP request */
+    else if (DPM_CLIENT_REQ_VCONN_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {
+        /* Clear the request since the request is accepted and going to be handled */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_VCONN_SWAP);   
+        
+        /* Request DPM for VCONN swap */
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
+    } /*DPM_CLIENT_REQ_VCONN_SWAP*/
+#endif     
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+    /* Check for DPM_CLIENT_REQ_PR_SWAP request */
+    else if (DPM_CLIENT_REQ_PR_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {   
+        /* Clear the request since the request is accepted and going to be handled */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_PR_SWAP); 
+        
+        /* Request DPM for PR swap */
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
+    } /*DPM_CLIENT_REQ_PR_SWAP*/
+#endif     
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+    /* Check for DPM_CLIENT_REQ_DR_SWAP request */
+    else if (DPM_CLIENT_REQ_DR_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {            
+        /* Clear the request since the request is accepted and going to be handled */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_DR_SWAP); 
+        
+        /* Request DPM for DR swap */
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
+    } /*DPM_CLIENT_REQ_DR_SWAP*/
+#endif     
+#if (TRUE == INCLUDE_PD_VDM)
+    else if (DPM_CLIENT_REQ_INITIATE_VDM & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {
+        /* Clear the request since the request is accepted and going to be handled */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_INITIATE_VDM);
+
+        /* Request DPM for initiating a VDM request */
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VDM);                                    
+    }  /* DPM_CLIENT_REQ_INITIATE_VDM */
+#endif     
     else
     {
-        /* Since Policy Engine is not Idle i.e not in PE_SRC_READY/PE_SNK_READY state,
-           DPM cannot handle any of the Client Requests. So, clear the 
-           flag and send Busy notification, so that the application can 
-           re-initiate the request on receiving the Busy notification */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest = DPM_CLEAR_ALL_CLIENT_REQ; 
-        
-        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_BUSY); 
-    } /*else part of PE engine idle check*/
+        /* Do Nothing */
+    } 
 }
 
 /************************DPM Internal Event Handling APIs *******************************/

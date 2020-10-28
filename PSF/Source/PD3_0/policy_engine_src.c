@@ -604,25 +604,14 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     /*On PD negotiation complete and source is in ready state, inform DPM to initiate internal events*/
                     DPM_OnPDNegotiationCmplt(u8PortNum);
-            
-                    /*This Sub-state shall be assigned if the AMS is started by PSF*/
+                                
 #if (TRUE == INCLUDE_PD_3_0)
 					/* Collision avoidance - Rp value set to TYPEC_SINK_TXOK */
                     PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
 #endif 
                     gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;                        
 
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;
-                    
-                    if(SET_TO_ZERO == gasDPM[u8PortNum].u16DPMInternalEvents)
-                    {
-                        /* Hook to notify PSF is IDLE */
-                        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_IDLE);                    
-                    }
-                    else
-                    {
-                        /*Do nothing*/
-                    }                                        
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;                                      
 
                     break;
                 }
@@ -630,6 +619,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break;
                 }
                 

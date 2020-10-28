@@ -636,11 +636,11 @@ Source/Sink Power delivery objects*/
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(2)
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS     BIT(3)
 #define DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT      BIT(4)
-#define DPM_CLIENT_REQ_RENEGOTIATE               BIT(5)
-#define DPM_CLIENT_REQ_VCONN_SWAP                BIT(6)
-#define DPM_CLIENT_REQ_PR_SWAP                   BIT(7)
-#define DPM_CLIENT_REQ_DR_SWAP                   BIT(8)
-/*Bit 9 is reserved for Port policy switch client request*/
+#define DPM_CLIENT_REQ_RESPOND_VDM               BIT(5)
+#define DPM_CLIENT_REQ_RENEGOTIATE               BIT(6)
+#define DPM_CLIENT_REQ_VCONN_SWAP                BIT(7)
+#define DPM_CLIENT_REQ_PR_SWAP                   BIT(8)
+#define DPM_CLIENT_REQ_DR_SWAP                   BIT(9)
 #define DPM_CLIENT_REQ_INITIATE_VDM              BIT(10)
 
 /***************************Internal Events Defines**********************************/

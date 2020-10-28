@@ -1214,18 +1214,6 @@ Description:
     gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is enabled,
     Type-C attach and PD negotiation sequence happens again.
  
-    <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
-    Busy due to which it cannot process any of the client requests, say 
-    Renegotiation, etc., which were raised by the application through 
-    u32ClientRequest variable in sPerPortData structure. On receiving this notification, 
-    the application can re-initiate the request.
-    
-    <b> eMCHP_PSF_IDLE</b>: This event is used by PSF to indicate that PSF is idle,
-    Client request can be initiated by the User Application. In case Port partner 
-    sends a message in mean time, PSF will send eMCHP_PSF_BUSY notification indicating
-    PSF is not idle. User application has to retry the client request again once
-    eMCHP_PSF_IDLE is posted.
- 
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -1268,8 +1256,6 @@ eMCHP_PSF_VDM_REQUEST_RCVD,            // VDM Request received from partner
 eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
 eMCHP_PSF_HPD_EVENT_OCCURRED,          // Indicates that an HPD event has occurred        
 eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
-eMCHP_PSF_BUSY,                        // PSF is busy, cannot handle client request
-eMCHP_PSF_IDLE                         // PSF is idle, Application can raise any client request   
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************
