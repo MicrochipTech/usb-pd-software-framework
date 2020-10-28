@@ -204,13 +204,17 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 }
                 case ePE_DRS_SEND_SWAP_REJECT_RCVD_SS:
                 {
+                    /* Set Swap Init status so that DR_Swap will not be 
+                       re-initiated on moving to eTxDoneSS sub-state. No need 
+                       to set this bit for accept case since policy will not
+                       match in that case */                    
                     if (PD_ROLE_DFP == u8CurrentDataRole)
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_DR_SWAP_REJ_STS_AS_DFP;
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_DFP;
                     }
                     else if (PD_ROLE_UFP == u8CurrentDataRole)
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_DR_SWAP_REJ_STS_AS_UFP;
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_UFP;
                     }
                     /*SRC_READY/SNK_READY state is set*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -332,15 +336,17 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SEND_SWAP_REJECT_RCVD_SS:
                 {
-                    /* Set Reject Rcvd status so that PR_Swap will not be 
-                       re-initiated once it is rejected */
+                    /* Set Swap Init status so that PR_Swap will not be 
+                       re-initiated on moving to eTxDoneSS sub-state. No need 
+                       to set this bit for accept case since policy will not
+                       match in that case */
                     if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_REJ_STS_AS_SRC;
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC;
                     }
                     else
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_REJ_STS_AS_SNK;
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SNK;
                     }
                     /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -927,13 +933,15 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_VCS_SEND_SWAP_REJECT_RCVD_SS:
                 {
+                    /* Set Swap Init status so that VCONN Swap will not be 
+                       re-initiated on moving to eTxDoneSS sub-state */                    
                     if (TRUE == DPM_IsPortVCONNSource(u8PortNum))
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_REJ_STS_AS_VCONNSRC;
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
                     }
                     else
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_REJ_STS_AS_NOT_VCONNSRC;
+                        gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC;
                     }
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_REJECT_RCVD_SS\r\n");
                     /* Response not received within tSenderResponse. Move to 
@@ -1089,12 +1097,20 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             /* Reset the discover identity counter to 0*/
             gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
                     
+            /* Set the Swap Init status so that DPM will not re-initiate the
+               VCONN Swap on moving to eTxDoneSS sub-state. This is particularly
+               needed here because the port will now be discharging VCONN and hence
+               TYPEC_VCONN_SOURCE_MASK will be TRUE. If this bit is not set, 
+               VCONN Swap will be once again initiated */
+            gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
+            
             /* Move to Ready state */
             gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
             gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                     
             /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
+            
             break;
         }
 
