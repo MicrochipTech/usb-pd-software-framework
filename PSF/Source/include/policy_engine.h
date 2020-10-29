@@ -399,11 +399,13 @@ typedef enum {
     ePE_VDM_INITIATE_VDM_MSG_DONE_SS,
     ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS,
     ePE_VDM_INITIATE_VDM_BUSY_RCVD_SS,
-    ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS,            
+    ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS, 
+    ePE_VDM_INITIATE_VDM_END_AMS_SS, 
     ePE_VDM_INITIATE_VDM_IDLE_SS,
     /* ePE_VDM_RESPOND_VDM */
     ePE_VDM_RESPOND_VDM_ENTRY_SS,
-    ePE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS,            
+    ePE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS,    
+    ePE_VDM_RESPOND_VDM_END_AMS_SS,
     ePE_VDM_RESPOND_VDM_IDLE_SS,
     //--------------------Common States-------------------------------------------------//
     /* ePE_SOFT_RESET */        

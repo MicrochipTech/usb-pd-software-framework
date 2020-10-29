@@ -1970,6 +1970,11 @@ typedef struct _VDMPortCfgStatus
                                                                         or responding to Enter Mode
                                                                         and other SVID specific 
                                                                         commands
+    u32aPartnerVDO                  24        R            R         * This array contains VDOs 
+                                                                        received from partner
+                                                                        during an Enter Mode
+                                                                        request and other SVID 
+                                                                        specific commands.  
     u16aSVIDsTable                  32        R/W          R         * List of SVIDs supported by
                                                                         the port
     u8aSVIDEntryTable               16        R/W          R         * SVID Entry table where 
@@ -1987,9 +1992,12 @@ typedef struct _VDMPortCfgStatus
                                                                         Bit 7 ? Reserved 
     u8SVIDsCnt                      1         R/W          R         * Number of entries stored in
                                                                         u16aSVIDsTable                  
-    u8VDOCnt                        1         R/W          R/W       * Number of VDOs stored in or 
-                                                                        to be sent from u32aVDO 
-    u8aReserved10                   2                                Reserved 
+    u8VDOCnt                        1         R/W          R/W       * Number of VDOs to be sent  
+                                                                        from u32aVDO   
+    u8PartnerVDOCnt                 1         R            R         * Number of VDOs stored in 
+                                                                        u32aPartnerVDO which are
+                                                                        received from partner
+    u8aReserved10                   1                                Reserved 
 	</table> 
 
    Remarks:
@@ -2001,11 +2009,13 @@ typedef struct _AltModePortCfgStatus
 {
     UINT32 u32aModesTable[16];
     UINT32 u32aVDO[6]; 
+    UINT32 u32aPartnerVDO[6];
     UINT16 u16aSVIDsTable[16];
     UINT8 u8aSVIDEntryTable[16];
 	UINT8 u8SVIDsCnt; 	        
     UINT8 u8VDOCnt; 
-    UINT8 u8aReserved10[2]; 
+    UINT8 u8PartnerVDOCnt;     
+    UINT8 u8Reserved10; 
 } ALT_MODE_PORT_CFG_STATUS, *PALT_MODE_PORT_CFG_STATUS;
 
 #endif 
