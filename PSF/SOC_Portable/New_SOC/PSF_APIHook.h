@@ -1197,6 +1197,11 @@ Description:
     send any response since it is expected that the user application will send the response by 
     raising a VDM client request within the VDM response time specified by USB PD Specification. 
  
+    <b> eMCHP_PSF_VDM_AMS_COMPLETE </b>: This notification will be posted by PSF when Good CRC 
+    is received for the VDM request initiated by PSF that consists of no command response or when 
+    Good CRC is received for the VDM response sent in response to the VDM request received
+    from partner.  
+  
     <b> eMCHP_PSF_HPD_EVENT_OCCURRED </b>: This notification will be posted by PSF when
 	an HPD (Hot Plug Detect) event has occurred. When this notification is received, 
     User_application may read u16HPDStatus variable to know the status of HPD IO. 
@@ -1253,6 +1258,7 @@ eMCHP_PSF_CABLE_IDENTITY_NAKED,        // NAK received from cable for Discover I
 eMCHP_PSF_VDM_RESPONSE_RCVD,           // Response received from partner for VDM request sent to SOP
 eMCHP_PSF_VDM_RESPONSE_NOT_RCVD,       // No response from partner for VDM request sent to SOP  
 eMCHP_PSF_VDM_REQUEST_RCVD,            // VDM Request received from partner        
+eMCHP_PSF_VDM_AMS_COMPLETE,            // VDM AMS Completed 
 eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
 eMCHP_PSF_HPD_EVENT_OCCURRED,          // Indicates that an HPD event has occurred        
 eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully

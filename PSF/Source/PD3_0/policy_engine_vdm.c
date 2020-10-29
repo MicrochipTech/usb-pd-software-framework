@@ -101,13 +101,25 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
                                                                     (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                   
 
-                    /* Move to ePE_VDM_INITIATE_VDM_MSG_DONE_SS sub-state 
-                       on Good CRC reception and to Ready state on Tx Failure since 
-                       VDMs shall not be retried after a transmission failure */ 
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_INITIATE_VDM, \
-                                                    ePE_VDM_INITIATE_VDM_MSG_DONE_SS, \
-                                                    eTxDoneSt, eTxDoneSS);  
-              
+                    if (eSVDM_ATTENTION == (eSVDMCmd) DPM_GET_VDM_CMD(u32aVDMDataObj[INDEX_0]))
+                    {
+                        /* Attention command does not have a response. So, move to
+                           ePE_VDM_INITIATE_VDM_END_AMS_SS sub-state since the AMS is 
+                           considered complete on Good CRC reception */
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_INITIATE_VDM, \
+                                                        ePE_VDM_INITIATE_VDM_END_AMS_SS, \
+                                                        eTxDoneSt, eTxDoneSS);                                        
+                    }
+                    else 
+                    {
+                        /* Move to ePE_VDM_INITIATE_VDM_MSG_DONE_SS sub-state 
+                        on Good CRC reception and to Ready state on Tx Failure since 
+                        VDMs shall not be retried after a transmission failure */ 
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_INITIATE_VDM, \
+                                                        ePE_VDM_INITIATE_VDM_MSG_DONE_SS, \
+                                                        eTxDoneSt, eTxDoneSS);                
+                    }
+                    
                     u8IsTransmit = TRUE;
                     
                     /* Move PE to an idle state to wait for Good CRC reception */
@@ -129,7 +141,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                                                             (UINT8)ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS);
                     
                     /* Move the PE to an idle state to wait for response */
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_INITIATE_VDM_IDLE_SS;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_INITIATE_VDM_IDLE_SS;                    
                     break;
                 }
                 case ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS:
@@ -232,6 +244,21 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                                         
                     break; 
                 }
+                case ePE_VDM_INITIATE_VDM_END_AMS_SS:
+                {
+                    /* PE will enter this sub-state when Good CRC is received for 
+                       a VDM request that does not have a response. */
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_INITIATE_VDM_END_AMS_SS\r\n");
+                    
+                    /* Move to Ready state based on the current power role*/
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS; 
+                    
+                    /* Post eMCHP_PSF_VDM_AMS_COMPLETE notification */
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_AMS_COMPLETE); 
+                    
+                    break; 
+                }
                 case ePE_VDM_INITIATE_VDM_IDLE_SS:
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
@@ -260,10 +287,10 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             /* For Enter Mode and other SVID specific commands, copy the
                received VDOs in the status registers for the application to 
                handle the evaluation and response */
-            gasCfgStatusData.sAltModePerPortData[u8PortNum].u8VDOCnt = \
+            gasCfgStatusData.sAltModePerPortData[u8PortNum].u8PartnerVDOCnt = \
                                 (PRL_GET_OBJECT_COUNT(u32Header) - BYTE_LEN_1);
                             
-            (void) MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sAltModePerPortData[u8PortNum].u32aVDO, (pu8DataBuf + BYTE_LEN_4), \
+            (void) MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sAltModePerPortData[u8PortNum].u32aPartnerVDO, (pu8DataBuf + BYTE_LEN_4), \
                                 (gasCfgStatusData.sAltModePerPortData[u8PortNum].u8VDOCnt * BYTE_LEN_4));                                                   
 #endif 
                     
@@ -321,9 +348,10 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                                                                         (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                                        
                     u32pTransmitDataObj = u32aVDMDataObj;
                     
-                    /* Move to Ready state on Good CRC reception and on Tx failure */
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                    eTxDoneSS, eTxDoneSt, eTxDoneSS);              
+                    /* Move to ePE_VDM_RESPOND_VDM_END_AMS_SS sub-state on Good CRC reception 
+                       and to Ready state on Tx failure */
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_RESPOND_VDM, \
+                                                    ePE_VDM_RESPOND_VDM_END_AMS_SS, eTxDoneSt, eTxDoneSS);              
                         
                     u8IsTransmit = TRUE; 
                         
@@ -357,9 +385,10 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
                                                                     (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                    
                     
-                    /* Move to Ready state on Good CRC reception and on Tx failure */
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                    eTxDoneSS, eTxDoneSt, eTxDoneSS);                                                                                                                    
+                    /* Move to ePE_VDM_RESPOND_VDM_END_AMS_SS sub-state on Good CRC reception 
+                       and to Ready state on Tx failure */
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_RESPOND_VDM, \
+                                                    ePE_VDM_RESPOND_VDM_END_AMS_SS, eTxDoneSt, eTxDoneSS);                                                                                                                    
               
                     u8IsTransmit = TRUE;
                     
@@ -368,9 +397,25 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     break; 
                 }
 #endif
-                
+                case ePE_VDM_RESPOND_VDM_END_AMS_SS:
+                {
+                    /* PE will enter this sub-state when Good CRC is received for 
+                       a VDM response sent. */
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_RESPOND_VDM_END_AMS_SS\r\n");
+                    
+                    /* Move to Ready state based on the current power role*/
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS; 
+                    
+                    /* Post eMCHP_PSF_VDM_AMS_COMPLETE notification */
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_AMS_COMPLETE); 
+                    
+                    break; 
+                }     
                 case ePE_VDM_RESPOND_VDM_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                                        
                     break; 
                 }
                 default:
