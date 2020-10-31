@@ -1489,12 +1489,19 @@ typedef enum
                                     * Set this bit to respond to a VDM request received from 
                                        port partner
                                     * Reception of a VDM request from partner will be notified 
-                                       through eMCHP_PSF_VDM_REQUEST_RCVD notification. 
-                                       User Application shall configure the respective VDM 
-                                       Header in u32VDMHeader variable of sVDMPerPortData 
+                                       through eMCHP_PSF_VDM_REQUEST_RCVD notification. VDM Header,
+                                       received from partner will be stored in u32PartnerVDMHeader 
+                                       variable of sVDMPerPortData structure, VDOs and number of 
+                                       VDOs will be stored in u32aPartnerVDO array and                                        
+                                       u8PartnerVDOCnt variable of sAltModePerPortData structure 
+                                       respectively. 
+                                    * User Application shall ensure that the VDM Header is 
+                                       configured in u32VDMHeader variable of sVDMPerPortData 
                                        structure and VDOs in the u32aVDO array and VDOs 
-                                       count in u8VDOCnt of sAltModePerPortData structure 
+                                       count in u8VDOCnt of sAltModePerPortData structure
                                        while raising this client request
+                                    * eMCHP_PSF_VDM_AMS_COMPLETE notification will be posted
+                                        when Good CRC is received for the response sent       
                                     * This client request is supported only when 
                                        INCLUDE_PD_ALT_MODE is defined as '1'.    
     6       R/W          R/W       Renegotiation Request 
@@ -1563,7 +1570,8 @@ typedef enum
                                     * This client request is supported only when  
                                        INCLUDE_PD_DR_SWAP is defined as '1'. 
     10       R/W          R/W      Initiate a Structured Vendor Defined Message        
-                                    * Set this bit to request PSF to initiate a VDM to port partner
+                                    * Set this bit to request PSF to initiate a VDM request 
+                                       to port partner
                                     * User Application shall ensure that the VDM Header is 
                                        configured in u32VDMHeader variable of sVDMPerPortData 
                                        structure and VDOs in the u32aVDO array and VDOs 
@@ -1572,8 +1580,11 @@ typedef enum
                                     * eMCHP_PSF_VDM_RESPONSE_RCVD notification will be posted for
                                        an ACK/NAK response, and eMCHP_PSF_VDM_RESPONSE_NOT_RCVD
                                        will be posted when no response is received.
+                                    * eMCHP_PSF_VDM_AMS_COMPLETE notification will be posted 
+                                       when Good CRC is received for the VDM requests that does
+                                       not consist of a command response, say Attention command
                                     * This client request is supported only when INCLUDE_PD_VDM 
-                                       or INCLUDE_PD_ALT_MODE is defined as '1'. 
+                                       is defined as '1'. 
 	31:11  						   Reserved 									
 	</table> 								
  
