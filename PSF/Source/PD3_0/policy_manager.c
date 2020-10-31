@@ -1507,6 +1507,9 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
         #if (TRUE == INCLUDE_PD_VDM)
         gasCfgStatusData.sVDMPerPortData[u8PortNum].u32aPartnerPDIdentity[u8Index] = RESET_TO_ZERO;
         #endif
+        #if (TRUE == INCLUDE_PD_ALT_MODE)
+        gasCfgStatusData.sAltModePerPortData[u8PortNum].u32aPartnerVDO[u8Index] = RESET_TO_ZERO;
+        #endif 
     }
     #if (TRUE == INCLUDE_PD_SOURCE)
     gasCfgStatusData.sPerPortData[u8PortNum].u8CableIdentityCnt = RESET_TO_ZERO;
@@ -1516,6 +1519,9 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader = RESET_TO_ZERO;
     gasCfgStatusData.sVDMPerPortData[u8PortNum].u8PartnerPDIdentityCnt = RESET_TO_ZERO;
     #endif      
+    #if (TRUE == INCLUDE_PD_ALT_MODE)
+    gasCfgStatusData.sAltModePerPortData[u8PortNum].u8PartnerVDOCnt = RESET_TO_ZERO;    
+    #endif 
 }
 
 /********************* DPM API to check if PPS APDO is advertised ********************/

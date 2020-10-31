@@ -250,6 +250,9 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                        a VDM request that does not have a response. */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_INITIATE_VDM_END_AMS_SS\r\n");
                     
+                    /* Clear the VDM internal event since the AMS is complete */
+                    gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VDM);
+                    
                     /* Move to Ready state based on the current power role*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS; 
