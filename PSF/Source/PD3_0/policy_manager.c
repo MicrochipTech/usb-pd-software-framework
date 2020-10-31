@@ -1410,6 +1410,9 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 /*********************************DPM TypeC Detach API**************************************/
 void DPM_OnTypeCDetach(UINT8 u8PortNum)
 {
+    /* Kill all the port timers */
+    PDTimer_KillPortTimers(u8PortNum);
+
     #if (TRUE == INCLUDE_PD_DR_SWAP)
     
     /* If the port is configured as either Source/DFP or Sink/UFP with 
