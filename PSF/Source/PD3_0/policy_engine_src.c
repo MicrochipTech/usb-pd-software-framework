@@ -96,10 +96,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     gasPolicyEngine[u8PortNum].ePETimeoutSubState = ePE_INVALIDSUBSTATE;
     
     /* If port partner detached set the Policy Engine State to PE_SRC_STARTUP */
-    if((TYPEC_UNATTACHED_SRC == u8TypeCState) && (ePE_SRC_STARTUP != gasPolicyEngine[u8PortNum].ePEState))
+    if(((TYPEC_UNATTACHED_WAIT_SRC == u8TypeCState) || (TYPEC_UNATTACHED_SRC == u8TypeCState)) && \
+         (ePE_SRC_STARTUP != gasPolicyEngine[u8PortNum].ePEState))
     {
-		/* Kill all the port timers */
-        PDTimer_KillPortTimers(u8PortNum);
         gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
         gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;        
