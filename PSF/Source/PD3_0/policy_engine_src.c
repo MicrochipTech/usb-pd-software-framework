@@ -272,7 +272,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_SEND_CAP_GOODCRC_RCVD_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-GOODCRC_RECEIVED_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP_GOODCRC_RCVD_SS\r\n");
                     
                     /* Reset CapsCounter and HardReset Counter to 0 */
                     gasPolicyEngine[u8PortNum].u8CapsCounter = RESET_TO_ZERO;
@@ -601,6 +601,8 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 }
                 case ePE_SRC_READY_END_AMS_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_READY_END_AMS_SS\r\n");
+                    
                     /*On PD negotiation complete and source is in ready state, inform DPM to initiate internal events*/
                     DPM_OnPDNegotiationCmplt(u8PortNum);
                                 
@@ -947,7 +949,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     if(TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_TRANSITION_TO_DEFAULT_CHECK_VBUS_ON_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_ON_SS\r\n");
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)                        
                         switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
                         {
@@ -1063,7 +1065,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
            {
                 case ePE_SRC_GET_SINK_CAP_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_CAP_ENTRY_SS\r\n"); 
                     
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_SINK_CAP, \
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -1084,7 +1086,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS: 
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_GOODCRC_RECEIVED_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS\r\n"); 
                     
                     /* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT sub state if timeout happens */
@@ -1103,7 +1105,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                    /* Sink caps not received within tSenderResponse. Send 
                       SINK_CAPS_NOT_RECEIVED notification and move to 
                       PE_SRC_READY state */ 
-                   DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT_SS\r\n"); 
+                   DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_CAP_NO_RESPONSE_SS\r\n"); 
                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
                    
@@ -1114,7 +1116,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS\r\n"); 
                     /* Store the received sink caps and send notification */                                               
                     gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = PRL_GET_OBJECT_COUNT(u32Header);
     
@@ -1200,7 +1202,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_RCVD_SS:
                 {
 					/* GoodCRC received for VDM Identity request */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_VDM_IDENTITY_REQUEST-GOODCRC_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_RCVD_SS\r\n");
                     
 					/* Start the VDMIDentityRequest Sender Response timer, if timed out set the PE
 						sub-state to ePE_SRC_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS */
@@ -1284,7 +1286,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             /************* PE_SRC_SINK_ALERT_RECEIVED *******/
         case ePE_SRC_SINK_ALERT_RECEIVED: 
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_SINK_ALERT_RECEIVED\r\n"); 
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SINK_ALERT_RECEIVED\r\n"); 
             /* Store the Alert Information received from Sink Partner */
             (void)MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert, 
                                             pu8DataBuf, BYTE_LEN_4);
@@ -1304,7 +1306,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             {
                 case ePE_SRC_GET_SINK_STATUS_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_ENTRY_SS\r\n"); 
                     
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_STATUS, \
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -1325,7 +1327,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS\r\n"); 
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_IDLE_SS; 
                     
@@ -1346,7 +1348,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                    /* Sink Status not received within tSenderResponse. Send 
                       SINK_STATUS_NOT_RECEIVED notification and move to 
                       PE_SRC_READY state */ 
-                   DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS\r\n"); 
+                   DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS\r\n"); 
                                       
                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
@@ -1358,7 +1360,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS\r\n"); 
                     
                     /* Store the received Sink Status and send notification */                            
                     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus, 
@@ -1394,7 +1396,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             {
                 case ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS: 
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_SOURCE_ALERT_ENTRY_SS\r\n"); 
                     
                     /* Obtain the Alert Data Object from DPM */
                     u32DataBlock = DPM_ObtainAlertDO(u8PortNum);
@@ -1440,7 +1442,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             {
                 case ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS\r\n"); 
                             
                     /* Obtain the Status Data Block from DPM */
                     DPM_ObtainStatusDB(u8PortNum, u8aStatusDB);
@@ -1489,7 +1491,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             {
                 case ePE_SRC_GIVE_PPS_STATUS_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SRC_GIVE_PPS_STATUS_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GIVE_PPS_STATUS_ENTRY_SS\r\n"); 
                     
                     /* Obtain the PPS Status Data Block from DPM */
                     u32DataBlock = DPM_ObtainPPSStatusDB(u8PortNum);

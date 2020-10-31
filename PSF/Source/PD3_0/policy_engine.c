@@ -963,8 +963,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
                         if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
-                        {
-                            DEBUG_PRINT_PORT_STR (u8PortNum,"Reject Received for VCONN_Swap Sent\r\n");
+                        {                            
                             /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_SWAP_REJECT_RCVD_SS;                            
                         }
@@ -982,8 +981,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     /* Reject or Wait message received for PR_Swap request */
                     else if ((ePE_PRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_PRS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
-                    {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"Reject Received for PR_Swap Sent\r\n");
+                    {                        
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
@@ -1050,7 +1048,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     else if (ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS == \
                              gasPolicyEngine[u8PortNum].ePESubState)
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"VCONN_SWAP: PS_RDY received \r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"VCONN_SWAP: PS_RDY received\r\n");
                         /*Kill the VCONNON timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
 
@@ -1088,8 +1086,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     break;
                 }
                 case PE_CTRL_GET_SOURCE_CAP:
-                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_SOURCE_CAP: Get Source Cap Received\r\n");
+                {                    
                     if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (u8PEInVDMState))
                     {                        
@@ -1197,9 +1194,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 {
                     if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (u8PEInVDMState))
-                    {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_STATUS: Get Status Received\r\n");
-                        
+                    {                                                
                         /* In case of PPS, Kill SourcePPSCommTimer only in ePE_SRC_READY  
                            state if the current explicit contract is for a PPS APDO 
                            Kill VDM Response timer if PE is waiting for a VDM response, but
@@ -1232,9 +1227,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 {
                     if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (u8PEInVDMState))
-                    {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_CTRL_GET_PPS_STATUS: Get PPS Status Received\r\n");
-                                              
+                    {                                                                      
                         /* In case of PPS, Kill SourcePPSCommTimer only in ePE_SRC_READY  
                            state if the current explicit contract is for a PPS APDO 
                            Kill VDM Response timer if PE is waiting for a VDM response, but
@@ -1316,7 +1309,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }  
 #endif                        
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP Received from Partner \r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP Received from Partner\r\n");
                         /*Kill the tPRSwapWait timer*/
                         PDTimer_Kill(gasDPM[u8PortNum].u8PRSwapWaitTmrID);
                         /* Set the timer Id to Max Concurrent Value*/
@@ -1475,7 +1468,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             {
                 case ePE_SOFT_RESET_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SOFT_RESET_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SOFT_RESET_ENTRY_SS\r\n");
                     
                     /* Kill Policy Engine Timer */
                     PE_KillPolicyEngineTimer (u8PortNum);
@@ -1529,7 +1522,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
            {
                case ePE_SEND_SOFT_RESET_SOP_SS:
                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_SOFT_RESET_SOP_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_SOFT_RESET_SOP_SS\r\n");
                    
                     /* Kill Policy Engine Timer */
                     PE_KillPolicyEngineTimer (u8PortNum);
@@ -1562,7 +1555,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                }
                case ePE_SEND_SOFT_RESET_SOP_P_SS:
                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_SOFT_RESET_SOP_P_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_SOFT_RESET_SOP_P_SS\r\n");
 					
                     /* Kill Policy Engine Timer */
                     PE_KillPolicyEngineTimer (u8PortNum);
@@ -1597,7 +1590,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                }
                case ePE_SEND_SOFT_RESET_MSG_DONE_SS:
                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_SOFT_RESET_MSG_DONE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_SOFT_RESET_MSG_DONE_SS\r\n");
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SSChngAndTimeoutValidate_TimerCB,u8PortNum,  
@@ -1626,7 +1619,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             {
                 case ePE_SEND_NOT_SUPPORTED_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_NOT_SUPPORTED: Entered the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_NOT_SUPPORTED_ENTRY_SS\r\n");
 
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_NOT_SUPPORTED, \
                                                     PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -1664,7 +1657,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             {
                 case ePE_SEND_REJECT_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_SEND_REJECT: Entered the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_REJECT_ENTRY_SS\r\n");
 
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT, \
                                                     PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -1855,7 +1848,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     /*Request Device Policy Manager for the Capability Message*/
                     if (PE_CTRL_GET_SINK_CAP == PRL_GET_MESSAGE_TYPE (u32Header))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP RCVD\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP RCVD\r\n");
                         
                         #if (TRUE == INCLUDE_PD_SINK)
                         DPM_GetSinkCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);                    
@@ -1866,7 +1859,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     }
                     else if (PE_CTRL_GET_SOURCE_CAP == PRL_GET_MESSAGE_TYPE (u32Header))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_GIVE_CAP_ENTRY_SS:GET_SOURCE_CAP RCVD\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SOURCE_CAP RCVD\r\n");
 
                         #if (TRUE == INCLUDE_PD_SOURCE)                        
                         DPM_GetSourceCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);

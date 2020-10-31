@@ -65,6 +65,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
    {
         case ePE_DRS_EVALUATE_SWAP:
         {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_EVALUATE_SWAP\r\n");
+            
             /* Inform DR_SWAP request from port partner has been received notification*/
             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_RCVD);
             /*Evaluate swap through DPM function*/
@@ -90,6 +92,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
             {
                 case ePE_DRS_ACCEPT_SWAP_SEND_ACCEPT_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_ACCEPT_SWAP_SEND_ACCEPT_SS\r\n");
+                    
                     /*SOP type is hard coded to SOP and Data object pointer to NULL
                      and Transmit call back to PE_StateChange_TransmitCB*/
                     /* Send the Accept message */
@@ -121,6 +125,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
         }
         case ePE_DRS_DFP_UFP_ROLE_CHANGE:
         {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_DFP_UFP_ROLE_CHANGE\r\n");
+            
             /*Change the present role*/
             if (PD_ROLE_DFP == u8CurrentDataRole)
             {
@@ -152,6 +158,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
             {
                 case ePE_DRS_SEND_SWAP_ENTRY_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_SEND_SWAP_ENTRY_SS\r\n");
+                    
                     /* Send the Reject message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_DR_SWAP,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -169,6 +177,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 }
                 case ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS\r\n");
+                    
                     /* Start Sender Response Timer */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_SENDERRESPONSE_TIMEOUT_MS),
@@ -181,6 +191,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 }
                 case ePE_DRS_SEND_SWAP_NO_RESPONSE_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_SEND_SWAP_NO_RESPONSE_SS\r\n");
+                    
                     /* Response not received within tSenderResponse. Assign
                      * PE_SRC_READY/PE_SNK_READY state*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -191,6 +203,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 }
                 case ePE_DRS_SEND_SWAP_WAIT_RCVD_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_SEND_SWAP_WAIT_RCVD_SS\r\n");
+                    
                     /* Start Wait timer*/
                     gasDPM[u8PortNum].u8DRSwapWaitTmrID = PDTimer_Start (
                                                           (PE_DR_SWAP_WAIT_TIMEOUT_MS),
@@ -204,6 +218,8 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 }
                 case ePE_DRS_SEND_SWAP_REJECT_RCVD_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_SEND_SWAP_REJECT_RCVD_SS\r\n");
+                    
                     /* Set Swap Init status so that DR_Swap will not be 
                        re-initiated on moving to eTxDoneSS sub-state. No need 
                        to set this bit for accept case since policy will not
@@ -290,7 +306,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_PRS_SEND_SWAP_ENTRY_SS:
                 {                 
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SEND_SWAP_ENTRY_SS\r\n");                    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SEND_SWAP_ENTRY_SS\r\n");                    
 					/* Send the PR_Swap message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PR_SWAP,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -309,7 +325,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 {                   
                     /* Policy Engine would enter this sub-state on reception of GoodCRC 
                        for the PR_Swap message sent */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SEND_SWAP_MSG_DONE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SEND_SWAP_MSG_DONE_SS\r\n");
                     /* Start Sender Response Timer. Either Accept, Reject or wait would be 
                        received as response. If no response is received, move to 
                        ePE_SRC_READY or ePE_SNK_READY state */
@@ -324,6 +340,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SEND_SWAP_NO_RESPONSE_SS:
                 {                    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SEND_SWAP_NO_RESPONSE_SS\r\n");
+                    
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -336,6 +354,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SEND_SWAP_REJECT_RCVD_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SEND_SWAP_REJECT_RCVD_SS\r\n");
+                    
                     /* Set Swap Init status so that PR_Swap will not be 
                        re-initiated on moving to eTxDoneSS sub-state. No need 
                        to set this bit for accept case since policy will not
@@ -359,6 +379,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }                
                 case ePE_PRS_SEND_SWAP_WAIT_RCVD_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SEND_SWAP_WAIT_RCVD_SS\r\n");
+                    
                     /* Policy Engine would enter this sub-state on reception of 
                        Wait response from the port partner. Start PR Swap Wait timer
                        and move to ePE_SRC_READY or ePE_SNK_READY state. On PR_Swap
@@ -389,7 +411,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
         
         case ePE_PRS_EVALUATE_SWAP:
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_EVALUATE_SWAP\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_EVALUATE_SWAP\r\n");
             
             /* Post PR_SWAP_RCVD notification*/
             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_RCVD);
@@ -417,7 +439,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_PRS_ACCEPT_SWAP_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_ACCEPT_SWAP_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_ACCEPT_SWAP_ENTRY_SS\r\n");
 					/* Send the Accept message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -465,7 +487,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* Policy Engine would enter this state on reception of Accept 
                        message from port partner or if GoodCRC has been received 
                        for the accept message sent */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS\r\n");
                     /* Start Source transition timer - The time the Source Shall wait before 
                        transitioning the power supply to ensure that the Sink has sufficient time to prepare.*/
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
@@ -482,7 +504,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* tSrcTransition after the GoodCRC Message was received the 
                        power supply starts to change its output power capability to 
                        Swap Standby*/
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_PWROFF_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_TRANSITION_TO_OFF_PWROFF_SS\r\n");
 					/* Turn Off Power Supply by driving vSafe0V in VBUS */
                     DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                     
@@ -502,7 +524,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     {
                         /* The Policy Engine determines its power supply is no longer 
                            supplying VBUS */
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS\r\n");                        
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS\r\n");                        
                         /*Kill the VBUS Off timer since vSafe0V is reached*/
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
@@ -531,7 +553,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
         {
             /* Policy Engine enters this state when the source power supply 
                has been turned off. There are no sub-states involved in this state*/
-            DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_ASSERT_RD\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_ASSERT_RD\r\n");
             /* The Policy Engine requests the Device Policy Manager to assert the Rd 
                pull down on the CC wire.*/
             DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SRC, TYPEC_ATTACHED_SRC_PRS_TRANS_TO_SNK_SS);
@@ -551,7 +573,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
                             (TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS\r\n");
                         
                         /* The Policy Engine then directs the Protocol Layer to generate a 
                            PS_RDY Message, with the Port Power Role bit in the Message 
@@ -575,7 +597,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS\r\n");
                     
                     /* PS_RDY Message was successfully sent. At this point the 
                        Initial Source is ready to be the new Sink.
@@ -595,7 +617,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        following scenarios:
                        - PR_RDY not sent after retries 
                        - PSSourceOn timer expired */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS\r\n");
                      
                     /* Revert the port's power role to Source and invoke Type C Error Recovery, 
                        so that Type C SM would move to Unattached Source state after Error 
@@ -639,7 +661,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
                             (TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
                         
                         /* Resetting the Protocol Layer would be taken care by the 
                         ePE_SNK_STARTUP state */
@@ -665,7 +687,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS\r\n");
                     /* Set PR_Swap in progress Flag. This would prevent PSF Sink from 
                        detach when VBUS drops below VSinkDisconnect.
                        PD Spec Reference Note: during the Power Role Swap process the 
@@ -711,7 +733,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
         
         case ePE_PRS_SNK_SRC_ASSERT_RP:
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_ASSERT_RP\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_ASSERT_RP\r\n");
             /* Policy Engine enters this state when the sink circuitry has been 
                turned off and PS_RDY received from original source. There are no 
                sub-states involved in this state. 
@@ -734,7 +756,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     if ((TYPEC_ATTACHED_SRC == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
                             (TYPEC_ATTACHED_SRC_SET_PRL_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS\r\n");
                         /*  Policy Engine, when its power supply is ready to supply power,
                             tells the Protocol Layer to form a PS_RDY Message */
                             
@@ -756,7 +778,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS\r\n");
                     
                     /* Start SwapSourceStart timer which must timeout before sending 
                        any Source_Capabilities Message */
@@ -771,7 +793,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS\r\n");
                     /* This sub-state would be entered if PS_Rdy message 
                        is not sent after retries */
                     /* Clear the PR_Swap In Progress Flag since PE would come out of Swap 
@@ -810,7 +832,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 {
                     /* This sub-state would be entered when SwapSourceStart 
                        timer times out */                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
                     
                     /* Clear the PR_Swap in progress flag since the Swap is complete */
                     gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
@@ -887,7 +909,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_VCS_SEND_SWAP_ENTRY_SS:
                 {                 
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_ENTRY_SS\r\n");                    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_SWAP_ENTRY_SS\r\n");                    
 					/* Send the VCONN_Swap message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_VCONN_SWAP,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -906,7 +928,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 {                   
                     /* Policy Engine would enter this sub-state on reception of GoodCRC 
                        for the VCONN_Swap message sent */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_MSG_DONE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_SWAP_MSG_DONE_SS\r\n");
                     /* Start Sender Response Timer. Either Accept, Reject or wait would be 
                        received as response. If no response is received, move to 
                        ePE_SRC_READY or ePE_SNK_READY state */
@@ -921,7 +943,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_VCS_SEND_SWAP_NO_RESPONSE_SS:
                 { 
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_NO_RESPONSE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_SWAP_NO_RESPONSE_SS\r\n");
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -933,6 +955,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_VCS_SEND_SWAP_REJECT_RCVD_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_SWAP_REJECT_RCVD_SS\r\n");
+                    
                     /* Set Swap Init status so that VCONN Swap will not be 
                        re-initiated on moving to eTxDoneSS sub-state */                    
                     if (TRUE == DPM_IsPortVCONNSource(u8PortNum))
@@ -943,7 +967,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     {
                         gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC;
                     }
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_REJECT_RCVD_SS\r\n");
+                    
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -955,7 +979,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_VCS_SEND_SWAP_WAIT_RCVD_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_SWAP_WAIT_RCVD_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_SWAP_WAIT_RCVD_SS\r\n");
                     /* Policy Engine would enter this sub-state on reception of 
                        Wait response from the port partner. Start VCONN Swap Wait timer
                        and move to ePE_SRC_READY or ePE_SNK_READY state. On PR_Swap
@@ -986,12 +1010,13 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
         
         case ePE_VCS_EVALUATE_SWAP:
         {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP\r\n");
+            
             /* Post VCONN_Swap received notification as VCONN_Swap is received by partner */
             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_RCVD);             
             
             /*Evaluate whether received VCONN_SWAP message can be accepted or rejected
-             based swap policy configuration*/
-            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_EVALUATE_SWAP: Entered the state\r\n");
+             based swap policy configuration*/            
             if (DPM_ACCEPT_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_RCVD))
             {
                 gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_ACCEPT_SWAP;
@@ -1013,7 +1038,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_VCS_ACCEPT_SWAP_SEND_ACCEPT_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-SEND_ACCEPT_SS: Entered the SubState \r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_ACCEPT_SWAP-SEND_ACCEPT_SS\r\n");
 
                      /*Send Accept message*/
                     /*Set the PD message transmitter API to Send Accept Message*/
@@ -1058,7 +1083,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS:
                 {
-                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_WAIT_FOR_VCONN-START_TIMER_SS: Entered the SubState \r\n");
+                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_WAIT_FOR_VCONN_START_TIMER_SS\r\n");
 
                     /*If PS RDY message is not received from port partner, then transition to Hard
                     reset state*/
@@ -1088,7 +1113,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 
         case ePE_VCS_TURN_OFF_VCONN:
         {             
-            DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN: Entered the state\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_OFF_VCONN\r\n");
 
             /* Request DPM to turn off VCONN since PS RDY message is 
                received from VCONN Source partner*/
@@ -1116,7 +1141,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 
         case ePE_VCS_TURN_ON_VCONN:
         {                  
-            DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN: Entered the state\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN\r\n");
                     
             /* Turn ON VCONN */
             DPM_VCONNOnOff (u8PortNum, DPM_VCONN_ON);
@@ -1150,7 +1175,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     {
                         /* Kill the VCONN On Self Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VCS_SEND_PS_RDY-ENTRY_SS: Entered the SubState \r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_PS_RDY-ENTRY_SS\r\n");
             
                         /*Send PS_RDY message*/
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY,\
@@ -1175,12 +1200,14 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_VCS_SEND_PS_RDY_MSG_DONE_SS:
                 {
-                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_PS_RDY_MSG_DONE_SS\r\n");
                     
                     /* Reset the discover identity counter to 0*/
                     gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
-
+                    
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    
                     /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
                     break;

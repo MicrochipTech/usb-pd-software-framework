@@ -59,14 +59,13 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
         /*Reset the HardResetCounter*/
         gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;
         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
-
     }
   
     switch (gasPolicyEngine[u8PortNum].ePEState)
     {
         case ePE_SNK_STARTUP:
         {         
-            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_STARTUP: Entered the state\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_STARTUP\r\n");
  
             /*Reset the Protocol Layer */
              PRL_ProtocolReset(u8PortNum);
@@ -122,7 +121,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             {
                 case ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS:
                 {                   
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_WAIT_FOR_CAPABILITIES: Entered the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS\r\n");
 
                     /*Advertised PDO is updated with Sink's PDO*/
                     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
@@ -175,7 +174,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
         /*This State is set by the PE_ReceiveMsgHandler API if the source capability message has been received*/    
         case ePE_SNK_EVALUATE_CAPABILITY:
         {            
-            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY: Entered the state\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY\r\n");
               
             if(DPM_INT_EVT_INITIATE_RENEGOTIATION != gasDPM[u8PortNum].u16InternalEvntInProgress)
             {
@@ -220,7 +219,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             {
                 case ePE_SNK_SELECT_CAPABILITY_SEND_REQ_SS:
                 {                 
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Entered the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY_SEND_REQ_SS\r\n");
 
                     /*Set the PD message transmitter API variables to send Sink Data request Message*/
                     u8TransmitSOP = PRL_SOP_TYPE;
@@ -285,7 +284,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             {
                 case ePE_SNK_TRANSITION_SINK_ENTRY_SS:
                 {                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK: Entered the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK_ENTRY_SS\r\n");
                     
                     /* Requested current controlling */
                     PWRCTRL_ConfigSinkHW(u8PortNum, \
@@ -325,7 +324,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             {
                 case ePE_SNK_READY_ENTRY_SS:
                 {                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY: Entered the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_ENTRY_SS\r\n");
 					/* configure threshold to detect faults*/
                    	DPM_EnablePowerFaultDetection(u8PortNum);
 					
@@ -354,7 +353,9 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 }
                 
                 case ePE_SNK_READY_END_AMS_SS:
-                {                    
+                {                 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_END_AMS_SS\r\n");
+                    
                     /*On PD negotiation complete and sink is in ready state, inform DPM to initiate internal events*/
                     DPM_OnPDNegotiationCmplt(u8PortNum);
                     
@@ -386,7 +387,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
            {           
                case ePE_SNK_HARD_RESET_SEND_SS:
                {                     
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_HARD_RESET_SEND_SS: Entered the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_HARD_RESET_SEND_SS\r\n");
 
                     /*Kill All the Active timers of policy engine for the port*/
                     PE_KillPolicyEngineTimer (u8PortNum);
@@ -426,7 +427,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
            {                  
                case ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS:
                {            
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_TO_DEFAULT: Entered the state\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS\r\n");
                     
                     /*Setting the Hard Reset IN progress bit to avoid VBUS discharge
                     when VBUS drops below VSinkDisconnnect*/
