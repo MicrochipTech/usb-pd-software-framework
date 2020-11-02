@@ -1585,7 +1585,20 @@ typedef enum
                                        not consist of a command response, say Attention command
                                     * This client request is supported only when INCLUDE_PD_VDM 
                                        is defined as '1'. 
-	31:11  						   Reserved 									
+    11       R/W          R/W      Hot Plug Detect (HPD) disable request        
+                                    * Set this bit to request PSF to disable HPD support. 
+                                    * This client request is supported only when INCLUDE_PD_HPD 
+                                       is defined as '1'. 
+                                    * eMCHP_PSF_HPD_DISABLED notification will be posted once
+                                       HPD peripheral is disabled.
+    12       R/W          R/W      Hot Plug Detect (HPD) enable request        
+                                    * Set this bit to request PSF to enable HPD support. 
+                                    * This client request is supported only when INCLUDE_PD_HPD 
+                                       is defined as '1'. 
+                                    * eMCHP_PSF_HPD_ENABLED notification will be posted once
+                                       HPD peripheral is enabled.
+
+	31:13  						   Reserved 									
 	</table> 								
  
 	<b>f. u16PortIntrMask</b>: 

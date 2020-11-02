@@ -1206,10 +1206,16 @@ Description:
     is received for the VDM request initiated by PSF that consists of no command response or when 
     Good CRC is received for the VDM response sent in response to the VDM request received
     from partner.  
-  
+
+    <b> eMCHP_PSF_HPD_ENABLED </b>: This notification will be posted by PSF when
+	an Hot Plug Detect (HPD) support is enabled.
+ 
     <b> eMCHP_PSF_HPD_EVENT_OCCURRED </b>: This notification will be posted by PSF when
 	an HPD (Hot Plug Detect) event has occurred. When this notification is received, 
     User_application may read u16HPDStatus variable to know the status of HPD IO. 
+
+    <b> eMCHP_PSF_HPD_DISABLED </b>: This notification will be posted by PSF when
+	an Hot Plug Detect (HPD) support is disabled.
  
     <b> eMCHP_PSF_PORT_DISABLED</b>: This event is used by PSF to notify the application 
     that a port has been disabled as a result of port disable client request (BIT[0] in 
@@ -1265,7 +1271,9 @@ eMCHP_PSF_VDM_RESPONSE_NOT_RCVD,       // No response from partner for VDM reque
 eMCHP_PSF_VDM_REQUEST_RCVD,            // VDM Request received from partner        
 eMCHP_PSF_VDM_AMS_COMPLETE,            // VDM AMS Completed 
 eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
-eMCHP_PSF_HPD_EVENT_OCCURRED,          // Indicates that an HPD event has occurred        
+eMCHP_PSF_HPD_ENABLED,                 // Indicates that HPD module is enabled
+eMCHP_PSF_HPD_EVENT_OCCURRED,          // Indicates that an HPD event has occurred 
+eMCHP_PSF_HPD_DISABLED,                // Indicates that HPD module is disabled        
 eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
 } eMCHP_PSF_NOTIFICATION;
 

@@ -789,7 +789,31 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         /* Request DPM for initiating a VDM request */
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VDM);                                    
     }  /* DPM_CLIENT_REQ_INITIATE_VDM */
-#endif     
+#endif
+#if(TRUE == INCLUDE_UPD_HPD)
+    else if(DPM_CLIENT_REQ_DISABLE_HPD & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {
+        /* Clear the request since the request is accepted and going to be handled */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_DISABLE_HPD);
+        
+        DPM_DISABLE_HPD(u8PortNum);
+        DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Disabled\r\n");
+        
+        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_HPD_DISABLED);
+    }
+    else if(DPM_CLIENT_REQ_ENABLE_HPD & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    {
+        /* Clear the request since the request is accepted and going to be handled */
+        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
+                                      ~(DPM_CLIENT_REQ_ENABLE_HPD);
+        
+        DPM_ENABLE_HPD(u8PortNum);
+        DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Enabled\r\n");
+
+        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_HPD_ENABLED);        
+    }
+#endif
     else
     {
         /* Do Nothing */

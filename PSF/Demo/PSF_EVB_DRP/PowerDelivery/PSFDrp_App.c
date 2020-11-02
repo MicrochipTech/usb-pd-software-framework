@@ -271,9 +271,21 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         {
             break; 
         }
+
+        case eMCHP_PSF_HPD_ENABLED:
+        {
+            DEBUG_PRINT_PORT_STR(u8PortNum, "eMCHP_PSF_HPD_ENABLED\r\n");
+            break;
+        }
         
         case eMCHP_PSF_HPD_EVENT_OCCURRED:
         {
+            break;
+        }
+
+        case eMCHP_PSF_HPD_DISABLED:
+        {
+            DEBUG_PRINT_PORT_STR(u8PortNum, "eMCHP_PSF_HPD_DISABLED\r\n");
             break;
         }
         

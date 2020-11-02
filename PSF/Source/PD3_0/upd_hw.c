@@ -832,8 +832,12 @@ void UPD_HPDInit(UINT8 u8PortNum)
     /*Configure HPD peripheral in input mode*/
     UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_CFG);
     
-    /*Enable HPD peripheral*/
-    UPD_RegByteSetBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
+    /*Initially disable HPD*/
+    UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
+    
+    DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Initialized and disabled\r\n");
+    
+    /*HPD peripheral will be enabled by user application via client request.*/
 }
 
 void UPD_HPDHandleISR(UINT8 u8PortNum)
