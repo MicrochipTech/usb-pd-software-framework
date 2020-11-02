@@ -545,6 +545,10 @@ Source/Sink Power delivery objects*/
 #define DPM_RESPOND_VDM_ACK                        1 
 #define DPM_RESPOND_VDM_NAK                        0 
 
+/*Funtion defines to Enable/Disable HPD peripheral*/
+#define DPM_ENABLE_HPD(u8PortNum)      UPD_RegByteSetBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE)
+#define DPM_DISABLE_HPD(u8PortNum)     UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE)
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: constants
@@ -642,6 +646,8 @@ Source/Sink Power delivery objects*/
 #define DPM_CLIENT_REQ_PR_SWAP                   BIT(8)
 #define DPM_CLIENT_REQ_DR_SWAP                   BIT(9)
 #define DPM_CLIENT_REQ_INITIATE_VDM              BIT(10)
+#define DPM_CLIENT_REQ_DISABLE_HPD               BIT(11)
+#define DPM_CLIENT_REQ_ENABLE_HPD                BIT(12)
 
 /***************************Internal Events Defines**********************************/
 #define DPM_INT_EVT_INITIATE_GET_SINK_CAPS          BIT(0)
