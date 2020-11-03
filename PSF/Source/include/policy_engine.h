@@ -441,6 +441,9 @@ typedef enum {
 
 }ePolicySubState;
 
+/* Macro for Reserved Message Type */
+#define PE_RESERVED_MSG_TYPE        0 
+
 /*Macros for Control Message type */
 #define PE_CTRL_GOOD_CRC            1
 #define	PE_CTRL_GOTO_MIN            2

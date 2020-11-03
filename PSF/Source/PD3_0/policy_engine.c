@@ -309,8 +309,8 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 }                
             }
-            else if ((u8MsgType > PE_CTRL_NOT_SUPPORTED) || ((u8MsgType > PE_CTRL_SOFT_RESET)\
-                    && (u8MsgType < PE_CTRL_NOT_SUPPORTED)))
+            else if ((PE_RESERVED_MSG_TYPE == u8MsgType) || (u8MsgType > PE_CTRL_NOT_SUPPORTED) || \
+                    ((u8MsgType > PE_CTRL_SOFT_RESET) && (u8MsgType < PE_CTRL_NOT_SUPPORTED)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
@@ -341,7 +341,8 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                     }
                 #endif 
             }
-            else if ((u8MsgType > PE_DATA_SINK_CAP) && (u8MsgType != PE_DATA_VENDOR_DEFINED))
+            else if ((PE_RESERVED_MSG_TYPE == u8MsgType) || ((u8MsgType > PE_DATA_SINK_CAP) && \
+                    (u8MsgType != PE_DATA_VENDOR_DEFINED)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
