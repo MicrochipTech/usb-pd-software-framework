@@ -270,9 +270,9 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
 /*******************************************************************************/
 void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
 {
-    /*Set Port Power Role in gasDPM[u8PortNum].u16DPMStatus variable*/
-    gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_POWER_ROLE_MASK);
-    gasDPM[u8PortNum].u16DPMStatus |= (u8NewPowerRole << DPM_CURR_POWER_ROLE_POS);
+    /*Set Port Power Role in gasDPM[u8PortNum].u32DPMStatus variable*/
+    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_CURR_POWER_ROLE_MASK);
+    gasDPM[u8PortNum].u32DPMStatus |= (u8NewPowerRole << DPM_CURR_POWER_ROLE_POS);
     
     /* Set Port Power Role in Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
@@ -295,9 +295,9 @@ void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
 
 void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
 {
-    /*Set Port Data Role in gasDPM[u8PortNum].u16DPMStatus variable*/
-    gasDPM[u8PortNum].u16DPMStatus &= (~DPM_CURR_DATA_ROLE_MASK); 
-    gasDPM[u8PortNum].u16DPMStatus |= (u8NewDataRole << DPM_CURR_DATA_ROLE_POS);
+    /*Set Port Data Role in gasDPM[u8PortNum].u32DPMStatus variable*/
+    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_CURR_DATA_ROLE_MASK); 
+    gasDPM[u8PortNum].u32DPMStatus |= (u8NewDataRole << DPM_CURR_DATA_ROLE_POS);
     
     /* Set Port Data Role in Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS_MASK);
@@ -319,9 +319,9 @@ void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
 
 void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev)
 {
-    /* Set PD Spec Rev in gasDPM[u8PortNum].u16DPMStatus variable */
-    gasDPM[u8PortNum].u16DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
-	gasDPM[u8PortNum].u16DPMStatus |= (u8PDSpecRev << DPM_CURR_PD_SPEC_REV_POS);    
+    /* Set PD Spec Rev in gasDPM[u8PortNum].u32DPMStatus variable */
+    gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+	gasDPM[u8PortNum].u32DPMStatus |= (u8PDSpecRev << DPM_CURR_PD_SPEC_REV_POS);    
     
     /* Set PD Spec Rev in Port Connection Status register */
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_PD_SPEC_REV_STATUS_MASK);
@@ -506,7 +506,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         if (ePDO_FIXED == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as Fixed Supply */
-            gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
+            gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK); 
             
             /* Update Negotiated current in terms of mA */            
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = u16SrcPDOCurrInmA;
@@ -524,7 +524,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         else if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
         {
             /* Set the current Explicit Contract Type as PPS */
-            gasDPM[u8PortNum].u16DPMStatus |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;           
+            gasDPM[u8PortNum].u32DPMStatus |= DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK;           
             
             /* Update Negotiated current in terms of mA */            
             gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = \
@@ -1350,7 +1350,7 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 {
     
 #if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
-    UINT16 u16DPMStatus = gasDPM[u8PortNum].u16DPMStatus;    
+    UINT32 u32DPMStatus = gasDPM[u8PortNum].u32DPMStatus;    
 #endif  
 #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
@@ -1369,9 +1369,9 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
     /*Initiate VCONN Swap only if the swap is not already initiated and rejected*/
     if (!(((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
-                            (u16DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC)) ||
+                            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC)) ||
                ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
-                            (u16DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC))))
+                            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC))))
     {
         if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
         {
@@ -1382,9 +1382,9 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_DR_SWAP)
     /*Initiate DR Swap only if the swap is not already initiated and rejected*/
     if (!(((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && \
-                            (u16DPMStatus & DPM_DR_SWAP_INIT_STS_AS_DFP)) ||\
+                            (u32DPMStatus & DPM_DR_SWAP_INIT_STS_AS_DFP)) ||\
                ((PD_ROLE_UFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && \
-                            (u16DPMStatus & DPM_DR_SWAP_INIT_STS_AS_UFP))))
+                            (u32DPMStatus & DPM_DR_SWAP_INIT_STS_AS_UFP))))
     {
         if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
         {
@@ -1395,9 +1395,9 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
     
 #if (TRUE == INCLUDE_PD_PR_SWAP)
     if (!(((PD_ROLE_SOURCE == u8DPMPowerRole) && \
-                            (u16DPMStatus & DPM_PR_SWAP_INIT_STS_AS_SRC)) ||\
+                            (u32DPMStatus & DPM_PR_SWAP_INIT_STS_AS_SRC)) ||\
                ((PD_ROLE_SINK == u8DPMPowerRole) && \
-                            (u16DPMStatus & DPM_PR_SWAP_INIT_STS_AS_SNK))))
+                            (u32DPMStatus & DPM_PR_SWAP_INIT_STS_AS_SNK))))
     {
         if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
         {
@@ -1482,7 +1482,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
                                             & DPM_INT_EVT_INITIATE_ALERT);
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
-    gasDPM[u8PortNum].u16DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | \
+    gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | \
                                         DPM_PORT_IN_MODAL_OPERATION);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
@@ -1733,7 +1733,7 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
 
 /************************************************************************************************************************/
 
-/********************* Policy Manager APIs for VDM ********************/
+/********************* Policy Manager APIs for VDM & AltMode ********************/
 #if (TRUE == INCLUDE_PD_VDM)
 
 UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
@@ -1820,7 +1820,7 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
         }
         /* fallthrough */
         case eSVDM_ENTER_MODE:        
-        {
+        {           
             /* Enter Mode and Exit Modes commands shall have the object position 
                as one of the VDOs(Modes) advertised in Discover Modes */
             for (UINT8 u8Index = INDEX_0; u8Index < u8SVIDsCnt; u8Index++)
@@ -1877,15 +1877,15 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
        modal operation active status in this API itself */      
     if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
     {
-        gasDPM[u8PortNum].u16DPMStatus |= DPM_VDM_RESPONSE_MASK; 
+        gasDPM[u8PortNum].u32DPMStatus |= DPM_VDM_RESPONSE_MASK; 
         
         if (eSVDM_ENTER_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u16DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;            
+            gasDPM[u8PortNum].u32DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;            
         }
         else if (eSVDM_EXIT_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u16DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;            
+            gasDPM[u8PortNum].u32DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;            
         }
         else
         {
@@ -1894,15 +1894,15 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
     }
     else if (DPM_RESPOND_VDM_NAK == u8DPMResponse)
     {
-        gasDPM[u8PortNum].u16DPMStatus &= ~DPM_VDM_RESPONSE_MASK;        
+        gasDPM[u8PortNum].u32DPMStatus &= ~DPM_VDM_RESPONSE_MASK;        
         
         if (eSVDM_ENTER_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u16DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;            
+            gasDPM[u8PortNum].u32DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;            
         }
         else if (eSVDM_EXIT_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u16DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;            
+            gasDPM[u8PortNum].u32DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;            
         }
         else
         {
@@ -1913,6 +1913,18 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
     {
         /* Do Nothing */
     }
+    
+#if (TRUE == INCLUDE_PD_ALT_MODE)   
+    
+    if (gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)
+    {
+        /* Port will enter modal operation. So, Kill the AME timer */
+        PDTimer_Kill(gasDPM[u8PortNum].u8AMETmrID);
+        /* Set the timer Id to Max Concurrent Value*/
+        gasDPM[u8PortNum].u8AMETmrID = MAX_CONCURRENT_TIMERS;                
+    }
+    
+#endif 
     
     return u8DPMResponse;
 }
@@ -2016,6 +2028,34 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 
     /* Re-initiate the corresponding VDM command on Busy Timer expiry */
     DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VDM);
+}
+
+#endif 
+
+#if (TRUE == INCLUDE_PD_ALT_MODE)
+
+void DPM_EnableAMEMonitoring (UINT8 u8PortNum)
+{   
+    /* Start the AltMode Entry timer if AME monitoring is enabled in the 
+       configuration and only during an implicit contract. This API will also be 
+       called during a PR_Swap at which time AME monitoring shall not restart*/
+    if((PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum)) && \
+            (TRUE == DPM_IS_AME_MONITORING_NEEDED(u8PortNum)))
+    {        
+        gasDPM[u8PortNum].u8AMETmrID = PDTimer_Start (
+                                           (TYPEC_AME_TIMEOUT_MS),
+                                           DPM_AME_TimerCB,u8PortNum,  
+                                           (UINT8)SET_TO_ZERO);
+    }    
+}
+
+void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+{    
+    /* Set the timer Id to Max Concurrent Value*/
+    gasDPM[u8PortNum].u8AMETmrID = MAX_CONCURRENT_TIMERS;    
+    
+    /* Set the Timer Done status to post notification in the foreground */
+    gasDPM[u8PortNum].u32DPMStatus |= DPM_AME_TIMER_DONE; 
 }
 
 #endif 

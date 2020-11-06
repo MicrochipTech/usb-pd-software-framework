@@ -226,11 +226,11 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                        match in that case */                    
                     if (PD_ROLE_DFP == u8CurrentDataRole)
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_DFP;
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_DFP;
                     }
                     else if (PD_ROLE_UFP == u8CurrentDataRole)
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_UFP;
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_UFP;
                     }
                     /*SRC_READY/SNK_READY state is set*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -362,11 +362,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        match in that case */
                     if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC;
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC;
                     }
                     else
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SNK;
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SNK;
                     }
                     /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -961,11 +961,11 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                        re-initiated on moving to eTxDoneSS sub-state */                    
                     if (TRUE == DPM_IsPortVCONNSource(u8PortNum))
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
                     }
                     else
                     {
-                        gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC;
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC;
                     }
                     
                     /* Response not received within tSenderResponse. Move to 
@@ -1127,7 +1127,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                needed here because the port will now be discharging VCONN and hence
                TYPEC_VCONN_SOURCE_MASK will be TRUE. If this bit is not set, 
                VCONN Swap will be once again initiated */
-            gasDPM[u8PortNum].u16DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
+            gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
             
             /* Move to Ready state */
             gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;

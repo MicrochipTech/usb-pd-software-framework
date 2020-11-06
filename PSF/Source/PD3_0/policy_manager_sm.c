@@ -51,8 +51,8 @@ void DPM_Init(UINT8 u8PortNum)
             | (u8CfgPowerRole << DPM_DEFAULT_POWER_ROLE_POS) \
             | (u8CfgPowerRole << DPM_DEFAULT_DATA_ROLE_POS));
    
-    /*Update PD spec revision in u16DPMStatus*/
-    gasDPM[u8PortNum].u16DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
+    /*Update PD spec revision in u32DPMStatus*/
+    gasDPM[u8PortNum].u32DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
     gasDPM[u8PortNum].u16DPMInternalEvents = SET_TO_ZERO;
     #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
@@ -88,6 +88,10 @@ void DPM_Init(UINT8 u8PortNum)
     #if (TRUE == INCLUDE_PD_VDM)
     gasDPM[u8PortNum].u8VDMBusyTmrID = MAX_CONCURRENT_TIMERS;
     #endif 
+
+    #if (TRUE == INCLUDE_PD_ALT_MODE)
+    gasDPM[u8PortNum].u8AMETmrID = MAX_CONCURRENT_TIMERS;
+    #endif     
 }
 /********************************************************************************************/
 
@@ -138,9 +142,9 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
     /* Run Policy engine State machine*/
     PE_RunStateMachine(u8PortNum);     
 
-    #if(TRUE == INCLUDE_UPD_HPD)
-    /*Handle HPD events if any*/
-    DPM_HPDEventHandler(u8PortNum);
+    #if(TRUE == INCLUDE_PD_ALT_MODE)
+    /*Handle AltMode events if any*/
+    DPM_AltModeEventHandler(u8PortNum);
     #endif
     
     /* Handle Power Throttling Bank Switching */
@@ -943,7 +947,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             if ((DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE)) &&\
                     ((DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
                         (DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))) &&\
-                            (!(gasDPM[u8PortNum].u16DPMStatus & DPM_PORT_IN_MODAL_OPERATION)))                     
+                            (!(gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)))                     
             {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_SEND_SWAP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
@@ -1042,9 +1046,11 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
     }
 }
 
+#if (TRUE == INCLUDE_PD_ALT_MODE) 
+    
+void DPM_AltModeEventHandler(UINT8 u8PortNum)
+{    
 #if (TRUE == INCLUDE_UPD_HPD)    
-void DPM_HPDEventHandler(UINT8 u8PortNum)
-{
     UINT16 u16HPDStsISR;
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
@@ -1058,10 +1064,16 @@ void DPM_HPDEventHandler(UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u16HPDStatus = u16HPDStsISR;
         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_HPD_EVENT_OCCURRED);
     }
-    else
+#endif 
+    
+    /* Post eMCHP_PSF_ALT_MODE_ENTRY_FAILED notification */
+    if (gasDPM[u8PortNum].u32DPMStatus & DPM_AME_TIMER_DONE)
     {
-        /*Do nothing*/
+        gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_AME_TIMER_DONE);
+        
+        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_ALT_MODE_ENTRY_FAILED);        
     }
 }    
+
 #endif
 /*************************************************************************************/

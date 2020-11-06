@@ -39,7 +39,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Configuration and Status register structure version */
 #define STRUCT_MAJOR_VERSION    0x01U
-#define STRUCT_MINOR_VERSION    0x02U
+#define STRUCT_MINOR_VERSION    0x03U
 
 
 #endif /*_PROJECT_VERSION_*/

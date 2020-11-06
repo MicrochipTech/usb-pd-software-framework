@@ -1217,6 +1217,9 @@ Description:
     <b> eMCHP_PSF_HPD_DISABLED </b>: This notification will be posted by PSF when
 	an Hot Plug Detect (HPD) support is disabled.
  
+    <b> eMCHP_PSF_ALT_MODE_ENTRY_FAILED </b>: This notification will be posted by PSF when
+    AltModeEntry timer has timed out because of No 'Enter Mode' command from the port partner
+   
     <b> eMCHP_PSF_PORT_DISABLED</b>: This event is used by PSF to notify the application 
     that a port has been disabled as a result of port disable client request (BIT[0] in 
     gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is disabled,
@@ -1270,10 +1273,11 @@ eMCHP_PSF_VDM_RESPONSE_RCVD,           // Response received from partner for VDM
 eMCHP_PSF_VDM_RESPONSE_NOT_RCVD,       // No response from partner for VDM request sent to SOP  
 eMCHP_PSF_VDM_REQUEST_RCVD,            // VDM Request received from partner        
 eMCHP_PSF_VDM_AMS_COMPLETE,            // VDM AMS Completed 
-eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully
 eMCHP_PSF_HPD_ENABLED,                 // Indicates that HPD module is enabled
 eMCHP_PSF_HPD_EVENT_OCCURRED,          // Indicates that an HPD event has occurred 
 eMCHP_PSF_HPD_DISABLED,                // Indicates that HPD module is disabled        
+eMCHP_PSF_ALT_MODE_ENTRY_FAILED,       // Alt Mode Entry Failed        
+eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully        
 eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
 } eMCHP_PSF_NOTIFICATION;
 

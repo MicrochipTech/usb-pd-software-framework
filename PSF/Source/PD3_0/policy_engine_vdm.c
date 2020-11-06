@@ -332,7 +332,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     /* Clear the command type bits in VDM header */
                     u32aVDMDataObj[INDEX_0] &= ~DPM_VDM_CMD_TYPE_MASK; 
                         
-                    if (gasDPM[u8PortNum].u16DPMStatus & DPM_VDM_RESPONSE_MASK)
+                    if (gasDPM[u8PortNum].u32DPMStatus & DPM_VDM_RESPONSE_MASK)
                     {
                         u32aVDMDataObj[INDEX_0] |= (DPM_VDM_ACK << DPM_VDM_CMD_TYPE_POS);
                             

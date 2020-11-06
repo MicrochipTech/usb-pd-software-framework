@@ -107,6 +107,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #else 
     #define PD_SYS_VDM_BUSY_TIMER                  0
 #endif 
+
+/*Maximum active concurrent timers for a port when AltMode is enabled*/
+#if (TRUE == INCLUDE_PD_ALT_MODE)
+    #define PD_SYS_ALT_MODE_ENTRY_TIMER             1 
+#else 
+    #define PD_SYS_ALT_MODE_ENTRY_TIMER             0
+#endif 
+
 /***********************************************************************************/
 /*Maximum concurrent timer per port*/
 #define MAX_CONCURRENT_TIMERS_PER_PORT           (PD_SYS_MAX_CONCURRENT_TIMERS + \
@@ -116,7 +124,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                                  PD_SYS_VCONNSWAP_WAIT_TIMER + \
                                                  PD_SYS_DRSWAP_WAIT_TIMER + \
                                                  PD_SYS_PRSWAP_WAIT_TIMER + \
-                                                 PD_SYS_VDM_BUSY_TIMER)
+                                                 PD_SYS_VDM_BUSY_TIMER + \
+                                                 PD_SYS_ALT_MODE_ENTRY_TIMER)
 
 /* This variable of size MAX_CONCURRENT_TIMERS is the software timer which stores the timeout value, timer state,
  call back function and arguments to be passed to call back function*/

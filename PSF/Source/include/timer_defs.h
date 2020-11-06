@@ -80,6 +80,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     Default value of TYPEC_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.*/
 #define TYPEC_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
 
+/*  TYPEC_AME_TIMEOUT_MS defines the tAMETimeout specified in the USB-Type C Specification. 
+    Default value of TYPEC_AME_TIMEOUT_MS is set as 1000 milliseconds.*/
+#define TYPEC_AME_TIMEOUT_MS                    MILLISECONDS_TO_TICKS(1000)
+
 // *****************************************************************************
 // Section: Protocol Layer Timeout configuration
 // *****************************************************************************
