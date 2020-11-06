@@ -111,9 +111,12 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_ACCEPT_SWAP_IDLE_SS;
                     break;
                 }
+                /*Idle state*/
                 case ePE_DRS_ACCEPT_SWAP_IDLE_SS:
                 {
-                    /*Idle state*/
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                                       
                     break;
                 }
                 default:
@@ -241,6 +244,9 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 }
                 case ePE_DRS_SEND_SWAP_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                                                           
                     break;
                 }
                 default:
@@ -396,9 +402,12 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                                  
                     break; 
                 }
+                /* Idle state to wait for message transmit completion or timer expiry */
                 case ePE_PRS_SEND_SWAP_IDLE_SS:
                 {
-                    /* Idle state to wait for message transmit completion or timer expiry */
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break; 
                 }
                 default:
@@ -465,9 +474,12 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_ACCEPT_SWAP_IDLE_SS;                    
                     break; 
                 }
+                /* Idle state to wait for accept message transmit completion */
                 case ePE_PRS_ACCEPT_SWAP_IDLE_SS:
                 {
-                    /* Idle state to wait for accept message transmit completion */
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break; 
                 }
                 default:
@@ -533,12 +545,20 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         
                         /* Move the Policy Engine to ePE_PRS_SRC_SNK_ASSERT_RD state */
                         gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SRC_SNK_ASSERT_RD;                     
-                    }                    
+                    }       
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
+                    }
                     break; 
                 }
+                /* Idle state to wait for Source transition timer expiry */
                 case ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_IDLE_SS:
                 {
-                    /* Idle state to wait for Source transition timer expiry */
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break; 
                 }
                 default:
@@ -593,6 +613,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         /* Move the Policy Engine to Idle sub-state */
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS;
                     }
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
+                    }
                     break; 
                 }
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS:
@@ -641,14 +666,20 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 
                     break; 
                 }
+                /* Idle state to wait for PS_RDY message transmit completion */
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS:
                 {
-                    /* Idle state to wait for PS_RDY message transmit completion */
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                    
+                    
                     break; 
                 }
+                /* Idle state to wait for PS_RDY message from port partner */
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS:
                 {
-                    /* Idle state to wait for PS_RDY message from port partner */
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break; 
                 }
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS:
@@ -669,6 +700,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         
                         /* Send PR_Swap complete notification */
                         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE);                                         
+                    }
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
                     }
                     break; 
                 }
@@ -718,9 +754,12 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS;                                                                                    
                     break;                     
                 }
+                /* Idle state to wait for PS_RDY from original Source */
                 case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS:
                 {
-                    /* Idle state to wait for PS_RDY from original Source */
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break; 
                 }
                 default:
@@ -773,7 +812,12 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                         u8IsTransmit = TRUE;
                         /* Move the Policy Engine to Idle sub-state */
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS;
-                    }                    
+                    }     
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
+                    }
                     break; 
                 }
                 case ePE_PRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS:
@@ -822,10 +866,13 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     
                     break;
                 }
+                /* Idle state to wait for PS_RDY message transmit completion 
+                   and to wait for SwapSourceStart timer expiry */                
                 case ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS:
                 {
-                    /* Idle state to wait for PS_RDY message transmit completion 
-                       and to wait for SwapSourceStart timer expiry */
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break; 
                 }
                 case ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS:
@@ -995,9 +1042,12 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                                  
                     break; 
                 }
+                /* Idle state to wait for message transmit completion or timer expiry */
                 case ePE_VCS_SEND_SWAP_IDLE_SS:
-                {
-                    /* Idle state to wait for message transmit completion or timer expiry */
+                {                    
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                                                           
                     break; 
                 }
                 default:
@@ -1068,9 +1118,13 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 /*Wait here until the message is sent*/
                 case ePE_VCS_ACCEPT_SWAP_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                                      
                     break;
                 }
-                 default:
+                
+                default:
                 {
                     break;
                 }
@@ -1083,7 +1137,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS:
                 {
-                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_WAIT_FOR_VCONN_START_TIMER_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_WAIT_FOR_VCONN_START_TIMER_SS\r\n");
 
                     /*If PS RDY message is not received from port partner, then transition to Hard
                     reset state*/
@@ -1101,7 +1155,10 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_VCS_WAIT_FOR_VCONN_WAIT_FOR_PS_RDY_SS:
                 {
-                   break;
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                                      
+                    break;                                     
                 }
                 default:
                 {
@@ -1158,9 +1215,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     
             gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_SEND_PS_RDY;
             gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_ENTRY_SS;                                       
-
-            /* Hook to notify PE state machine entry into idle sub-state */
-            MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                    
+            
             break;                                  
         }
 
@@ -1190,12 +1245,20 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                         
                         u8IsTransmit = TRUE;
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_IDLE_SS;                        
-                    }                    
+                    }            
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
+                    }
                     break;
                 }
                 /*Wait here until the PS_RDY message is sent*/
                 case ePE_VCS_SEND_PS_RDY_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break;
                 }
                 case ePE_VCS_SEND_PS_RDY_MSG_DONE_SS:

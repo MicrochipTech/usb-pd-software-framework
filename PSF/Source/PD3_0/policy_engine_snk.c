@@ -37,7 +37,6 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 {
     UINT8 u8TypeCState = TYPEC_INVALID_STATE;
     UINT8 u8TypeCSubState = TYPEC_INVALID_SUBSTATE;
-    UINT8 u8TransmitSOP = PRL_SOP_TYPE;
     UINT32 u32aDataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
 	UINT16 u16TransmitHeader = SET_TO_ZERO;
 	PRLTxCallback pfnTransmitCB = NULL;
@@ -72,7 +71,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
              
             /*Clearing the Hard Reset IN Progress bit here because source detach
             can occur while waiting in ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS*/
-            gasPolicyEngine[u8PortNum].u8PEPortSts &= ~ PE_HARDRESET_PROGRESS_MASK;
+            gasPolicyEngine[u8PortNum].u8PEPortSts &= ~PE_HARDRESET_PROGRESS_MASK;
 
             /*Explicit Contract becomes invalid once this state is reached 
             from Hard Reset or Initial Power up*/
@@ -112,6 +111,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_WAIT_FOR_CAPABILITIES;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS;
             }
+            else
+            {
+                /* Hook to notify PE state machine entry into idle sub-state */
+                MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+            }
             break;                
         }
            
@@ -127,6 +131,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
                             gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
                             DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
+                    
                     /*Advertised PDO Count is updated to SinkPDO Count*/
                     gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
                             gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
@@ -154,6 +159,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     }
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS;                    
+                    
                     break;
                 }
                 /*Wait in this sub-state for the reception of Source capability message 
@@ -162,6 +168,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break; 
                 }
                 default:
@@ -189,11 +196,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             DPM_EvaluateReceivedSrcCaps(u8PortNum,(UINT16) u32Header ,(UINT32*)pu8DataBuf );
 
             /*Invalid Source Capability Message results in Sink request object count to be 0*/
-           if (SET_TO_ZERO == gasCfgStatusData.sPerPortData[u8PortNum].u32RDO)
-           {
+            if (SET_TO_ZERO == gasCfgStatusData.sPerPortData[u8PortNum].u32RDO)
+            {
                 /*Transition to Ready state if already in PD contract*/
                 if (PE_EXPLICIT_CONTRACT == (gasPolicyEngine[u8PortNum].u8PEPortSts \
-                        & PE_PDCONTRACT_MASK ))
+                        & PE_PDCONTRACT_MASK))
                 {
                      gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
                      gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
@@ -221,13 +228,12 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 {                 
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY_SEND_REQ_SS\r\n");
 
-                    /*Set the PD message transmitter API variables to send Sink Data request Message*/
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    
+                    /*Set the PD message transmitter API variables to send Sink Data request Message*/                    
                     u16TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_REQUEST,\
                                             PE_OBJECT_COUNT_1, PE_NON_EXTENDED_MSG);
                     
                     u32aDataObj[INDEX_0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
+                    
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
                     /*Set the transmitter callback to transition to Soft reset state if
@@ -236,9 +242,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                                              ePE_SNK_SELECT_CAPABILITY_REQ_SENT_SS,\
                                              ePE_SEND_SOFT_RESET,\
                                              ePE_SEND_SOFT_RESET_SOP_SS );
+                    
                     u8IsTransmit = TRUE;
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_SELECT_CAPABILITY_SEND_REQ_IDLE_SS;
+                    
                     break;                                   
                 }
                  /*Wait here until the Sink data request message is sent*/
@@ -246,6 +254,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 {    
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break;
                 }
                     
@@ -260,6 +269,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                                                               u8PortNum,(UINT8) ePE_SNK_HARD_RESET_SEND_SS);
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS;
+                    
                     break;
                 }
                 
@@ -268,6 +278,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break;
                 }
                 default:
@@ -300,6 +311,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                                                               u8PortNum, (UINT8)ePE_SNK_HARD_RESET_SEND_SS);
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_SINK_WAIT_FOR_PSRDY_SS;
+                    
                     break;
                 }              
                 /*Wait here for the PS Ready message from Source for the sink data request*/
@@ -307,6 +319,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break;
                 }
                 default:
@@ -349,6 +362,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         /* Notify the capability mismatch*/
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MISMATCH);
                     }
+                    
                     break;
                 }
                 
@@ -394,20 +408,17 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     
                     /*Setting the Hard Reset IN progress bit to avoid VBUS discharge
                     when VBUS drops below VSinkDisconnnect*/
-                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_HARDRESET_PROGRESS_MASK;
-                   
-                     /*The transmitter callback is set to transition to Startup state 
-                      * if message transmission fails*/
+                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_HARDRESET_PROGRESS_MASK;                   
                     
                     /* API to send HardReset is called*/
                     PRL_SendCableorHardReset(u8PortNum, PRL_SEND_HARD_RESET,\
                                              NULL, SET_TO_ZERO);
                     
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_TRANSITION_TO_DEFAULT;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS;
-
                     /*Increment HardReset Counter*/
-                    gasPolicyEngine[u8PortNum].u8HardResetCounter++;             
+                    gasPolicyEngine[u8PortNum].u8HardResetCounter++; 
+                    
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_TRANSITION_TO_DEFAULT;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS;            
                     
                     break;
                }
@@ -446,8 +457,6 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                                                                   DPM_VBUSorVCONNOnOff_TimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO); 
-                        /* Hook to notify PE state machine entry into idle substate */
-                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS;                    
                     }
@@ -468,6 +477,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS;                    
                     }
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    }
                     
                     break;                 
                }
@@ -479,7 +493,9 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA, \
                             TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS;
+                    
                     break;                    
                }
                case ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS:
@@ -498,7 +514,12 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         
                         /* Post eMCHP_PSF_HARD_RESET_COMPLETE notification */
                         (void) DPM_NotifyClient (u8PortNum, eMCHP_PSF_HARD_RESET_COMPLETE);
-                    }                                                     
+                    }
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
+                    }
                     break;                                 
                }
                default:
@@ -518,7 +539,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     /*Send PD message if the variable "u8IsTransmit" is set as true inside the state machine*/
 	if (TRUE == u8IsTransmit)
 	{
-		(void) PRL_TransmitMsg(u8PortNum, u8TransmitSOP, u16TransmitHeader, (UINT8 *)u32aDataObj,\
+		(void) PRL_TransmitMsg(u8PortNum, PRL_SOP_TYPE, u16TransmitHeader, (UINT8 *)u32aDataObj,\
                         pfnTransmitCB, u32TransmitTmrIDTxSt);
 	}
 

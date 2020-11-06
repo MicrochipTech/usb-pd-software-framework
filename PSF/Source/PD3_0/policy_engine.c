@@ -1506,7 +1506,8 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_SOFT_RESET_IDLE_SS:
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                    
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY); 
+                    
                     break;
                 }
                 default:
@@ -1592,10 +1593,12 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                case ePE_SEND_SOFT_RESET_MSG_DONE_SS:
                {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_SOFT_RESET_MSG_DONE_SS\r\n");
+                    
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SSChngAndTimeoutValidate_TimerCB,u8PortNum,  
                                                             (UINT8)eTxHardRstSS);
+                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_IDLE_SS;
                    
                     break; 
@@ -1604,6 +1607,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                {
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break; 
                }
                default:
@@ -1642,6 +1646,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break;
                 }
                 default:
@@ -1693,6 +1698,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break;
                 }
                 default:
@@ -1735,6 +1741,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 				  	/*Idle state for BISTContModeTimer timeout*/
                     /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break;
                 }
                 case ePE_BIST_MODE_EXIT_SS:
@@ -1889,6 +1896,9 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 }
                 case ePE_GIVE_CAP_IDLE_SS:
                 {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY); 
+                                        
                     break; 
                 }
                 default:
