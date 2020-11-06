@@ -265,7 +265,8 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 case ePE_VDM_INITIATE_VDM_IDLE_SS:
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                    
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY); 
+                    
                     break; 
                 }
                 default:
@@ -418,7 +419,8 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 case ePE_VDM_RESPOND_VDM_IDLE_SS:
                 {
                     /* Hook to notify PE state machine entry into idle sub-state */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                                        
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
                     break; 
                 }
                 default:
