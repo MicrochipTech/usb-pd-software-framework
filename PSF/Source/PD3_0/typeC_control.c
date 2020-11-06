@@ -754,7 +754,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         TypeC_EnabDisVCONN(u8PortNum, TYPEC_VCONN_ENABLE);               
                     }
 
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_ATTACHED_SRC_WAIT_FOR_VBUS_ON_SS;                   
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_WAIT_FOR_VBUS_ON_SS;                   
                                      
                     break;
                 }
@@ -830,7 +830,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                 
                 case TYPEC_ATTACHED_SRC_SET_PRL_SS:
-                {                  
+                {                                      
                     /*Sink Attached in CC1 pin*/
                     if(u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
                     {
@@ -853,6 +853,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 
                     /* Enable Power Fault Threshold for TYPEC_VBUS_5V */
                     DPM_EnablePowerFaultDetection(u8PortNum);
+                    
+                    #if(TRUE == INCLUDE_PD_ALT_MODE)
+                    /* Enable AME Monitoring */
+                    DPM_EnableAMEMonitoring (u8PortNum);
+                    #endif     
                     
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_RUN_SM_SS;
                        
@@ -1266,10 +1271,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                  about the Type C Attached event this sub-state */
                 case TYPEC_ATTACHED_SNK_ENTRY_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_ENTRY_SS\r\n");
+                    
                     /* Assign Operating current based on the Rp value*/
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
-                                     
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_ENTRY_SS\r\n");
+                                                         
                     /* Update connected CC orientation status */
                     /*Source Attached in CC1 pin*/
                     if(u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
@@ -1295,9 +1301,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     }
                     #endif
 
-                    PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_5V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
-                                       
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_RUN_SM_SS; 
+                    PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_5V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);                               
                     
 					/* Enabling PRL Rx*/
                     PRL_EnableRx (u8PortNum, TRUE);
@@ -1305,8 +1309,15 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 				    /* Enable Power Threshold for TYPEC_VBUS_5V */
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_PWR_FAULT_THR);
-                   
-                   break;
+                    
+                    #if(TRUE == INCLUDE_PD_ALT_MODE)
+                    /* Enable AME Monitoring  */                                        
+                    DPM_EnableAMEMonitoring (u8PortNum);                    
+                    #endif 
+
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_RUN_SM_SS; 
+                    
+                    break;
                 }
                 
                 case TYPEC_ATTACHED_SNK_RUN_SM_SS:	

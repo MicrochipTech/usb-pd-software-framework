@@ -1257,7 +1257,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 {
                     /* If there are any Active Modes between the Port Partners when a DR_Swap Message 
                        is a received then a Hard Reset Shall be performed*/
-                    if (gasDPM[u8PortNum].u16DPMStatus & DPM_PORT_IN_MODAL_OPERATION)
+                    if (gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)
                     {
                         PE_SendHardReset(u8PortNum);
                     }

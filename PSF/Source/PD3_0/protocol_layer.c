@@ -1013,7 +1013,7 @@ void PRL_OnHardResetComplete (UINT8 u8PortNum)
      * response, Tx_EOP interrupt is fired. Thus, Disable the Tx interrupt*/
 	UPD_RegWriteByte (u8PortNum, PRL_TX_IRQ_EN, CLR_VAL);
 
-    /* Bug UP301-48 fix - when HR is received from port partner, EN_RCV bit is cleared. 
+    /* When HR is received from port partner, EN_RCV bit is cleared. 
 		Hence, after HR completion it is re-enabled */
     UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_A, (PRL_RX_CTL_A_EN_RCV | PRL_RX_CTL_A_EN_SMBUS_MODE) );
    

@@ -315,9 +315,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_VCONN_SWAP_ACCEPT_AS_VCONN_SRC     1
 #define CFG_PORT_1_VCONN_SWAP_ACCEPT_NOT_AS_VCONN_SRC 1
 
-/***********************  VDM Defines *************************************/
+/*********************** Feature Select Defines *************************************/
 #define CFG_PORT_0_ENABLE_VDM_SUPPORT                 (0U << 1)
 #define CFG_PORT_1_ENABLE_VDM_SUPPORT                 (0U << 1)
+
+#define CFG_PORT_0_ENABLE_AME_MONITORING              (0U << 2)
+#define CFG_PORT_1_ENABLE_AME_MONITORING              (0U << 2)
 
 /******************* PD Identity Count Defines **************************/
 #define CFG_PORT_0_PD_IDENTITY_COUNT                   0U

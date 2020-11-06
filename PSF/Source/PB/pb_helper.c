@@ -56,7 +56,7 @@ void PB_Init(void)
         {
             if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
             {    
-                if (gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE)
+                if (gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_ENABLE_PB)
                 {
                     PB_InitializePortParam(u8PortNum); 
                     /* Deduct the Minimum Guaranteed Power from available Shared Capacity */
@@ -71,7 +71,7 @@ void PB_Init(void)
            system, but enabled for any of the ports. */
         for (u8PortNum = INDEX_0; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect &= ~(DPM_PORT_PB_ENABLE);            
+            gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect &= ~(DPM_PORT_ENABLE_PB);            
         }
     }
 }

@@ -68,7 +68,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_STARTUP\r\n");
  
             /*Reset the Protocol Layer */
-             PRL_ProtocolReset(u8PortNum);
+            PRL_ProtocolReset(u8PortNum);
              
             /*Clearing the Hard Reset IN Progress bit here because source detach
             can occur while waiting in ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS*/
@@ -160,7 +160,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 from source partner*/    
                 case ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS:
                 {
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break; 
                 }
@@ -244,7 +244,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                  /*Wait here until the Sink data request message is sent*/
                 case ePE_SNK_SELECT_CAPABILITY_SEND_REQ_IDLE_SS:
                 {    
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
@@ -266,7 +266,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here for the accept message from Source for the sink data request*/
                 case ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS:
                 {
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }
@@ -305,7 +305,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 /*Wait here for the PS Ready message from Source for the sink data request*/
                 case ePE_SNK_TRANSITION_SINK_WAIT_FOR_PSRDY_SS:
                 {
-                    /* Hook to notify PE state machine entry into idle substate */
+                    /* Hook to notify PE state machine entry into idle sub-state */
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     break;
                 }

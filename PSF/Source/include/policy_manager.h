@@ -137,7 +137,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /**************************************************************************************************/
 /***************************Define to get DPM current status data*****************************************/
 /************************************************************************************************************/
-/*Bit definition for u16DPMStatus variable*/
+/*Bit definition for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_MASK                (BIT(0)|BIT(1))
 #define DPM_CURR_DATA_ROLE_MASK                 (BIT(2)|BIT(3))
 #define DPM_CURR_PD_SPEC_REV_MASK               (BIT(4)|BIT(5))
@@ -151,31 +151,32 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_DR_SWAP_INIT_STS_AS_UFP             (BIT(14))
 #define DPM_VDM_RESPONSE_MASK                    BIT(15)
 #define DPM_SWAP_INIT_STS_MASK                   0x7E00
-/*Bit position for u16DPMStatus variable*/
+#define DPM_AME_TIMER_DONE                       BIT(16)
+/*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS            0
 #define DPM_CURR_DATA_ROLE_POS             2
 #define DPM_CURR_PD_SPEC_REV_POS           4
 #define DPM_PORT_IN_MODAL_OPERATION_POS    6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7
-/*Defines for getting current status of a port from gasDPM[u8PortNum].u16DPMStatus using u8PortNum variable*/
+/*Defines for getting current status of a port from gasDPM[u8PortNum].u32DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_SINK
 	- PD_ROLE_SOURCE
 	- PD_ROLE_DRP*/
 #define DPM_GET_CURRENT_POWER_ROLE(u8PortNum)         \
-    ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
+    ((gasDPM[u8PortNum].u32DPMStatus & DPM_CURR_POWER_ROLE_MASK) >> DPM_CURR_POWER_ROLE_POS)
 
 /*DPM_GET_CURRENT_DATA_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_UFP
 	- PD_ROLE_DFP
 	- PD_ROLE_TOGGLING */
 #define DPM_GET_CURRENT_DATA_ROLE(u8PortNum)         \
-   ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
+   ((gasDPM[u8PortNum].u32DPMStatus & DPM_CURR_DATA_ROLE_MASK) >> DPM_CURR_DATA_ROLE_POS)
 
 #define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)       \
-    ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
+    ((gasDPM[u8PortNum].u32DPMStatus & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
 #define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum) \
-    ((gasDPM[u8PortNum].u16DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> \
+    ((gasDPM[u8PortNum].u32DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> \
     DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
 /**************************************************************************************************/
 
@@ -271,16 +272,22 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /****************** Power Balancing Defines ***********/
 /**************************Feature Select parameters - **********
  ****gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect *********************** */
-#define DPM_PORT_PB_ENABLE                           BIT(0)
-#define DPM_PORT_VDM_ENABLE                          BIT(1)
+#define DPM_PORT_ENABLE_PB                           BIT(0)
+#define DPM_PORT_ENABLE_VDM                          BIT(1)
+#define DPM_PORT_ENABLE_AME_MONITORING               BIT(2)
+
 /* Macro to know if PB is enabled for the system and for the port */
 #define DPM_IS_PB_ENABLED(u8PortNum)   \
-    ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_PB_ENABLE) \
+    ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_ENABLE_PB) \
     ? TRUE : FALSE)   
 /* Macro to know if VDM is supported by the port */
 #define DPM_IS_VDM_SUPPORTED(u8PortNum)  \
-    ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_VDM_ENABLE) \
+    ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_ENABLE_VDM) \
     ? TRUE : FALSE)   
+/* Macro to check if AME monitoring is needed by the port */
+#define DPM_IS_AME_MONITORING_NEEDED(u8PortNum) \
+    ((gasCfgStatusData.sPerPortData[u8PortNum].u16FeatureSelect & DPM_PORT_ENABLE_AME_MONITORING) \
+    ? TRUE : FALSE)
 
 /**********gasCfgStatusData.u8PBEnableSelect defines******/
 /* PB Enable for System */
@@ -674,7 +681,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT16 u16SinkOperatingCurrInmA;    //Operating current
   UINT16 u16PrevVBUSVoltageInmV;      // Previous VBUS Voltage in terms of mV
   UINT16 u16ExpectedVBUSVoltageInmV;  // Expected VBUS Voltage in terms of mV
-  UINT16 u16DPMStatus;                 //Bits 1:0 - Status of Port Role <p />
+  UINT32 u32DPMStatus;                 //Bits 1:0 - Status of Port Role <p />
                                         //Bits 3:2 - Status of Data Role <p />
                                         //Bits 5:4 - Status of PD Spec Revision <p />
                                         //Bit 6 - Modal Operation Active Status
@@ -683,20 +690,21 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         //      01 - Variable
                                         //      10 - Battery
                                         //      11 - Programmable
-                                        // Bits 10:9 - VCONN Reject status
-                                        // Bits 12:11 - PR Swap Reject Status
-                                        // Bits 14:13 - DR Swap Reject Status 
+                                        // Bits 10:9 - VCONN Swap Initiate status
+                                        // Bits 12:11 - PR Swap Initiate Status
+                                        // Bits 14:13 - DR Swap Initiate Status 
                                         // Bit 15 - VDM Response (ACK/NAK)
+                                        // Bit 16 - AME Timer Done Status 
   UINT16 u16DPMInternalEvents;      //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
-                                    //DPM_INT_EVT_INITIATE_RENEGOTIATION          BIT(1)
-                                    //DPM_INT_EVT_INITIATE_VCONN_SWAP             BIT(2)
-                                    //DPM_INT_EVT_INITIATE_PR_SWAP                BIT(3)
-                                    //DPM_INT_EVT_INITIATE_DR_SWAP                BIT(4)
-                                    //DPM_INT_EVT_INITIATE_GET_PARTNER_IDENTITY   BIT(5)
-                                    //DPM_INT_EVT_INITIATE_ALERT                  BIT(6)
-                                    //DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
-                                    //DPM_INT_EVT_PORT_DISABLE                    BIT(8)
-                                    //DPM_INT_EVT_PORT_ENABLE                     BIT(9)
+                                    //DPM_INT_EVT_INITIATE_RENEGOTIATION  BIT(1)
+                                    //DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
+                                    //DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
+                                    //DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
+                                    //DPM_INT_EVT_INITIATE_VDM            BIT(5)
+                                    //DPM_INT_EVT_INITIATE_ALERT          BIT(6)
+                                    //DPM_INT_EVT_INITIATE_GET_STATUS     BIT(7)
+                                    //DPM_INT_EVT_PORT_DISABLE            BIT(8)
+                                    //DPM_INT_EVT_PORT_ENABLE             BIT(9)
 
   UINT8 u8DPMConfigData;    //Bit  1:0 - Default Port Power Role
                             //Bit  3:2 - Default Port Data Role
@@ -735,6 +743,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT8 u8VDMBusyTmrID;            // VDM Busy Timer ID 
   UINT8 u8CurrSVIDIndex;           // Current SVID Index 
 #endif 
+#if (TRUE == INCLUDE_PD_ALT_MODE)
+  UINT8 u8AMETmrID;               // AME Timer ID 
+#endif   
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 
 // *****************************************************************************
@@ -888,13 +899,13 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
     Function:
         void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
     Summary:
-        This API is used to set power role in gasDPM[u8PortNum].u16DPMStatus
+        This API is used to set power role in gasDPM[u8PortNum].u32DPMStatus
         variable, Port Connect Status register and Port IO Status register.
     Devices Supported:
         UPD350 REV A
     Description:
         This API is used to assign power role in various status fields
-        namely gasDPM[u8PortNum].u16DPMStatus variable, Port Connect Status register
+        namely gasDPM[u8PortNum].u32DPMStatus variable, Port Connect Status register
         and Port IO Status register.
     Conditions:
         None.
@@ -916,13 +927,13 @@ void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole);
     Function:
         void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
     Summary:
-        This API is used to set data role in gasDPM[u8PortNum].u16DPMStatus
+        This API is used to set data role in gasDPM[u8PortNum].u32DPMStatus
         variable, Port Connect Status register and Port IO Status register.
     Devices Supported:
         UPD350 REV A
     Description:
         This API is used to assign data role in various status fields
-        namely gasDPM[u8PortNum].u16DPMStatus variable, Port Connect Status register
+        namely gasDPM[u8PortNum].u32DPMStatus variable, Port Connect Status register
         and Port IO Status register.
     Conditions:
         None.
@@ -1356,18 +1367,19 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_HPDEventHandler(UINT8 u8PortNum);
+        void DPM_AltModeEventHandler(UINT8 u8PortNum);
     Summary:
-        This API handles an HPD event. 
+        This API handles the AltMode events. 
     Devices Supported:
         UPD350 REV A
     Description:
-        This API copies all HPD events that have occurred into 
+        In case of HPD event, this API copies all HPD events that have occurred into 
         gasCfgStatusData.sPerPortData[u8PortNum].u16HPDStatus variable and notifies 
         User_application that an HPD event has occurred using eMCHP_PSF_HPD_EVENT_OCCURRED
-        notification.
+        notification. In case of AME event, this API notifies the User application of 
+        AME failure. 
     Conditions:
-        This API is applicable only when INCLUDE_UPD_HPD is enabled.
+        This API is applicable only when INCLUDE_PD_ALT_MODE is enabled.
     Input:
         u8PortNum - Port number of the device. Value passed will be less than CONFIG_PD_PORT_COUNT.
     Return:
@@ -1375,7 +1387,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void DPM_HPDEventHandler(UINT8 u8PortNum); 
+void DPM_AltModeEventHandler(UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:
@@ -1798,11 +1810,11 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
         void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev)
     Summary:
         This API is used to set the negotiated PD Spec Rev value in 
-        gasDPM[u8PortNum].u16DPMStatus variable and 
+        gasDPM[u8PortNum].u32DPMStatus variable and 
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus.
     Description:
         This API is used to assign negotiated PD Spec Rev value in 
-        gasDPM[u8PortNum].u16DPMStatus variable and 
+        gasDPM[u8PortNum].u32DPMStatus variable and 
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus. 
     Conditions:
         None.
@@ -1863,6 +1875,44 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader);
         None. 
 **************************************************************************************************/
 void DPM_ReturnVDOs (UINT8 u8PortNum, UINT32 u32VDMHeader, UINT8 *u8VDOCnt, UINT32 *pu32ResponseVDO);
+
+/**************************************************************************************************
+    Function:
+        void DPM_EnableAMEMonitoring (UINT8 u8PortNum)
+    Summary:
+        API to enable the monitoring of Alt Mode Entry
+    Description:
+        This API starts the AME timer once a Type C attach is detected to monitor
+        the entry of Alt Mode within tAMETimeout 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_EnableAMEMonitoring (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+    Summary:
+        Timer callback for TYPEC_AME_TIMEOUT_MS timeout
+    Description:
+        API to set the Notify status of Alt Mode Entry Failure on AME timeout
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number
+        u8DummyVariable - Dummy Variable
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
 
 #endif /*_POLICY_MANAGER_H_*/
 

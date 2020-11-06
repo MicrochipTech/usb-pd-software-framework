@@ -1586,13 +1586,13 @@ typedef enum
                                        is defined as '1'. 
     11       R/W          R/W      Hot Plug Detect (HPD) disable request        
                                     * Set this bit to request PSF to disable HPD support. 
-                                    * This client request is supported only when INCLUDE_PD_HPD 
+                                    * This client request is supported only when INCLUDE_UPD_HPD 
                                        is defined as '1'. 
                                     * eMCHP_PSF_HPD_DISABLED notification will be posted once
                                        HPD peripheral is disabled.
     12       R/W          R/W      Hot Plug Detect (HPD) enable request        
                                     * Set this bit to request PSF to enable HPD support. 
-                                    * This client request is supported only when INCLUDE_PD_HPD 
+                                    * This client request is supported only when INCLUDE_UPD_HPD 
                                        is defined as '1'. 
                                     * eMCHP_PSF_HPD_ENABLED notification will be posted once
                                        HPD peripheral is enabled.
@@ -1664,8 +1664,11 @@ typedef enum
                                     * '1' - Vendor Defined Messages are supported.
                                        The port will respond with relevant VDM data on
                                        reception of a Vendor Defined Message.    
-                                        
-    15:1	                       Reserved 
+    2       R/W          R         AltMode Entry Monitoring Enable/Disable 
+                                    * '0' - The port will not monitor AltMode Entry
+                                    * '1' - The port will monitor AltMode Entry and indicate
+                                       the failure when AMETimer times out         
+    15:3	                       Reserved 
     </table>
     
     <b>h. u16SwapPolicy</b>: 
