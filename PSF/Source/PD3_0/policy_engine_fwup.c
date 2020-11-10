@@ -887,7 +887,7 @@ UINT16 PE_FwUpdtGetFWIDRequest(void)
     stGetFWID.u16VID = gasCfgStatusData.u16VendorID;
 
     /*Marked as TBD in Hermes interface*/
-    stGetFWID.u16PID = gasCfgStatusData.u16ProducdID;
+    stGetFWID.u16PID = gasCfgStatusData.u16ProductID;
 
     /*Set HW revision to 1 as mentioned UDID section of Hermes Interface*/
     stGetFWID.u8HWVersion =
