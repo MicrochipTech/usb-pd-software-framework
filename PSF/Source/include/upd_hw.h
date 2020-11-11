@@ -257,8 +257,19 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Defines for gu16HPDStsISR variable*/
 #define UPD_HPD_INTERRUPT_OCCURRED       BIT(8)
-#define UPD_HPD_ALL_INTERRUPTS           0x0F
-#define UPD_HPD_QUEUE_POS                8
+
+#define UPD_HPD_EVENT_MASK               (BIT(1)|BIT(0))
+#define UPD_HPD_EVENT_SIZE               2
+#define UPD_HPD_WRITE_CLR                0x55
+#define UPD_HPD_QUEUE_SIZE               4
+
+typedef enum
+{ 
+    eMCHP_PSF_UPD_HPD_HIGH = 0x01,
+    eMCHP_PSF_UPD_HPD_LOW,        
+    eMCHP_PSF_UPD_IRQ_HPD                
+} eMCHP_UPD_HPD_EVENT;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Routines
@@ -1150,14 +1161,15 @@ void UPD_HPDInit(UINT8 u8PortNum);
         void UPD_HPDHandleISR(UINT8 u8PortNum)
 
     Summary:
-        If an HPD event occurs, this API will register those events in gu16HPDStsISR[u8PortNum] variable.
+        If an HPD_QUEUE_NOT_EMPTY event occurs, this API will register the events stored in the queue 
+        in gu16HPDStsISR[u8PortNum] variable.
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-        If an HPD event occurs, this API will read the interrupt status registers and will record
-        those events in gu16HPDStsISR[u8PortNum] variable.
+        If an HPD_QUEUE_NOT_EMPTY event occurs, this API will read the HPD queue interrupt status register
+ *      and will record those events in gu16HPDStsISR[u8PortNum] variable.
 
     Conditions:
         This is applicable only when INCLUDE_UPD_HPD is enabled.

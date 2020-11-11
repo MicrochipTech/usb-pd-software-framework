@@ -925,12 +925,12 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             if ((DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE)) &&\
                     (DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])))
             {
-                if(PD_ROLE_DRP == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                if(PD_ROLE_DRP == u8DPMPowerRole)
                 {
                     /*Execution is not expected to hit here*/
                     /*Do nothing*/
                 }
-                else if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                else if(PD_ROLE_SOURCE == u8DPMPowerRole)
                 {
                     u32PartnerPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0];
                 }
@@ -964,12 +964,12 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                     (DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
                             (!(gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)))                     
             {
-                if(PD_ROLE_DRP == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                if(PD_ROLE_DRP == u8DPMPowerRole)
                 {
                     /*Execution is not expected to hit here*/
                     /*Do nothing*/
                 }
-                else if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                else if(PD_ROLE_SOURCE == u8DPMPowerRole)
                 {
                     u32PartnerPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0];
                 }
@@ -1097,22 +1097,22 @@ void DPM_AltModeEventHandler(UINT8 u8PortNum)
         /*Lower byte of u16HPDStsISR is copied to u8Data*/
         u8Data = u16HPDStsISR;
         
-        for(UINT8 i=0; i<4 ; i++)
+        for(UINT8 u8QueueEvtNo = SET_TO_ZERO; u8QueueEvtNo < UPD_HPD_QUEUE_SIZE; u8QueueEvtNo++)
        {
-           UINT8 u8QueueEntry = ((u8Data >> (2*u8HPDCurrentIndex)) & 0x03);
+           UINT8 u8QueueEntry = ((u8Data >> (UPD_HPD_EVENT_SIZE*u8HPDCurrentIndex)) & UPD_HPD_EVENT_MASK);
            if(u8QueueEntry)
            {
                u8HPDCurrentIndex++;
-               u8HPDCurrentIndex =(u8HPDCurrentIndex % 4);
+               u8HPDCurrentIndex =(u8HPDCurrentIndex % UPD_HPD_QUEUE_SIZE);
                switch(u8QueueEntry)
                { 
-                   case 0x01: 
+                   case eMCHP_PSF_UPD_HPD_HIGH: 
                        MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
                        break; 
-                   case 0x02: 
+                   case eMCHP_PSF_UPD_HPD_LOW: 
                        MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
                        break; 
-                   case 0x03: 
+                   case eMCHP_PSF_UPD_IRQ_HPD: 
                        MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
                        break; 
                    default: 

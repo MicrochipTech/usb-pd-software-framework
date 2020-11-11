@@ -1372,11 +1372,11 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
     Devices Supported:
         UPD350 REV A
     Description:
-        In case of HPD event, this API copies all HPD events that have occurred into 
-        gasCfgStatusData.sPerPortData[u8PortNum].u16HPDStatus variable and notifies 
-        User_application that an HPD event has occurred using eMCHP_PSF_HPD_EVENT_OCCURRED
-        notification. In case of AME event, this API notifies the User application of 
-        AME failure. 
+        In case of HPD event, this API posts notifications to User_application that an 
+        HPD event has occurred. eMCHP_PSF_HPD_EVENT_HIGH, eMCHP_PSF_HPD_EVENT_LOW and 
+        eMCHP_PSF_HPD_EVENT_IRQ_HPD notifications are posted respectively when HPD_HIGH, 
+        HPD_LOW and IRQ_HPD events occur. In case of AME event, this API notifies the 
+        User application of AME failure. 
     Conditions:
         This API is applicable only when INCLUDE_PD_ALT_MODE is enabled.
     Input:

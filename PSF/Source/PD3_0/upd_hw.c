@@ -823,8 +823,7 @@ void UPD_HPDInit(UINT8 u8PortNum)
     /*Configure HPD_LOW_DET_TIME to be 2ms*/
     UPD_RegWriteWord(u8PortNum, UPD_HPD_LOW_DET_TIME, UPD_HPD_LOW_DET_TIME_2_1MS);
     
-    
-    /*Enable QUEUE_NOT_EMPTY interrupts*/
+    /*Enable QUEUE_NOT_EMPTY interrupt*/
     UPD_RegWriteByte(u8PortNum, UPD_HPD_INT_EN, UPD_QUEUE_NOT_EMPTY_EN);
     
     /*Setting the UPD350 high level HPD interrupt*/ 
@@ -839,7 +838,7 @@ void UPD_HPDInit(UINT8 u8PortNum)
     /*Configure HPD peripheral in input mode*/
     UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_CFG);
     
-    /*Initially disable HPD*/
+    /*Initially, disable HPD*/
     UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
     
     DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Initialized and disabled\r\n");
@@ -850,29 +849,25 @@ void UPD_HPDInit(UINT8 u8PortNum)
 void UPD_HPDHandleISR(UINT8 u8PortNum)
 {
     UINT8 u8Data;
-    UINT8 u8HPDClr = 0x00;
-    UINT8 u8Mask = 0;
+    UINT8 u8HPDClr = SET_TO_ZERO;
+    UINT8 u8Mask = SET_TO_ZERO;
 
     UPD_RegisterReadISR (u8PortNum, UPD_HPD_QUEUE, &u8Data, BYTE_LEN_1);
 
-    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "UPD_HPDHandleISR", u8Data, 1, "\r\n");
-
-    /* need to do this to write b'01 to each queue slot to clear h/w status */
-    for (u8Mask = 0x03; u8Mask != 0; u8Mask <<= 2)
+    /*If an entry in the queue is non-zero, write b'01 to the queue slot to clear h/w status*/
+    for (u8Mask = UPD_HPD_EVENT_MASK; u8Mask != SET_TO_ZERO; u8Mask <<= UPD_HPD_EVENT_SIZE)
     {
         if (u8Mask & u8Data)
         { 
-            u8HPDClr |= (u8Mask & 0x55); 
+            u8HPDClr |= (u8Mask & UPD_HPD_WRITE_CLR); 
         }
     }
 
-    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "UPD_HPDHandleISR", u8HPDClr, 1, "\r\n");
     UPD_RegisterWriteISR (u8PortNum, UPD_HPD_QUEUE, &u8HPDClr, BYTE_LEN_1);
 
+    /*Copy the queue events to gu16HPDStsISR[u8PortNum]*/
     gu16HPDStsISR[u8PortNum] = u8Data;
     gu16HPDStsISR[u8PortNum] |= UPD_HPD_INTERRUPT_OCCURRED;
-    
-    
 }
 
 
