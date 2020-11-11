@@ -1275,10 +1275,13 @@ eMCHP_PSF_VDM_REQUEST_RCVD,            // VDM Request received from partner
 eMCHP_PSF_VDM_AMS_COMPLETE,            // VDM AMS Completed 
 eMCHP_PSF_HPD_ENABLED,                 // Indicates that HPD module is enabled
 eMCHP_PSF_HPD_EVENT_OCCURRED,          // Indicates that an HPD event has occurred 
+eMCHP_PSF_HPD_EVENT_HIGH,
+eMCHP_PSF_HPD_EVENT_LOW,
+eMCHP_PSF_HPD_EVENT_IRQ_HPD,
 eMCHP_PSF_HPD_DISABLED,                // Indicates that HPD module is disabled        
 eMCHP_PSF_ALT_MODE_ENTRY_FAILED,       // Alt Mode Entry Failed        
 eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully        
-eMCHP_PSF_PORT_ENABLED,                // Indicates that the port is enabled successfully
+eMCHP_PSF_PORT_ENABLED                // Indicates that the port is enabled successfully
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************

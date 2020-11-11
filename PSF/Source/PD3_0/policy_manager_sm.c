@@ -801,7 +801,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_DISABLE_HPD);
         
-        DPM_DISABLE_HPD(u8PortNum);
+        UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE); 
+        gu8HPDNextIndex[u8PortNum] = SET_TO_ZERO; 
+        gu16HPDStsISR[u8PortNum] = SET_TO_ZERO;
+                                      
         DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Disabled\r\n");
         
         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_HPD_DISABLED);
@@ -1052,6 +1055,8 @@ void DPM_AltModeEventHandler(UINT8 u8PortNum)
 {    
 #if (TRUE == INCLUDE_UPD_HPD)    
     UINT16 u16HPDStsISR;
+    UINT8 u8HPDCurrentIndex = gu8HPDNextIndex[u8PortNum];
+    UINT8 u8Data;
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     u16HPDStsISR = gu16HPDStsISR[u8PortNum];
@@ -1060,9 +1065,37 @@ void DPM_AltModeEventHandler(UINT8 u8PortNum)
     
     if(u16HPDStsISR & UPD_HPD_INTERRUPT_OCCURRED)
     {
-        u16HPDStsISR &= (~UPD_HPD_INTERRUPT_OCCURRED);
-        gasCfgStatusData.sPerPortData[u8PortNum].u16HPDStatus = u16HPDStsISR;
-        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_HPD_EVENT_OCCURRED);
+        /*Lower byte of u16HPDStsISR is copied to u8Data*/
+        u8Data = u16HPDStsISR;
+        
+        for(UINT8 i=0; i<4 ; i++)
+       {
+           UINT8 u8QueueEntry = ((u8Data >> (2*u8HPDCurrentIndex)) & 0x03);
+           if(u8QueueEntry)
+           {
+               u8HPDCurrentIndex++;
+               u8HPDCurrentIndex =(u8HPDCurrentIndex % 4);
+               switch(u8QueueEntry)
+               { 
+                   case 0x01: 
+                       MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
+                       break; 
+                   case 0x02: 
+                       MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
+                       break; 
+                   case 0x03: 
+                       MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
+                       break; 
+                   default: 
+                       break; 
+               }
+           }
+           else
+           { 
+               break; 
+           }
+       }
+       gu8HPDNextIndex[u8PortNum] = u8HPDCurrentIndex;
     }
 #endif 
     
