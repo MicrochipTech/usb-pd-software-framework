@@ -36,10 +36,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*********************************Common Configuration*****************************************/
 #define CFG_PRODUCT_ID              0x0350U
 #define CFG_VENDOR_ID               0x0424U
-#define CFG_PRODUCT_TYPE_VDO        0x0000U
-#define CFG_PRODUCT_VDO             0x0000U  
-#define CFG_CERT_STAT_VDO           0x0000U
-#define CFG_ID_HEADER_VDO           0x0000U
 #define CFG_HW_VERSION              0x00U
 #define CFG_SILICON_VERSION         0x00U
 

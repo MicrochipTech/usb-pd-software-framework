@@ -577,15 +577,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
               Clearing of Partner PDOs should not happen during 3rd and 4th
               scenarios and hence the if condition */
             #if (TRUE == INCLUDE_PD_PR_SWAP)
-            if ((ePE_SRC_STARTUP == gasPolicyEngine[u8PortNum].ePEState) || 
-                    (ePE_SNK_STARTUP == gasPolicyEngine[u8PortNum].ePEState))
-            {
-                for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
-                {
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
-                }
-                gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
-            }
             #endif 
             break; 
         }
@@ -923,18 +914,38 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         else if (DPM_INT_EVT_INITIATE_PR_SWAP == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_PR_SWAP))
         {
+            UINT32 u32PartnerPDO = SET_TO_ZERO;
+            
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_PR_SWAP);
             
+           
             /*Process initiate PR_SWAP only if the port partner and PSF port supports dual
               power and PR_SWAP initiation still valid as per the current power role*/
             if ((DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE)) &&\
-                    ((DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
-                        (DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))))
+                    (DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])))
             {
-                gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SEND_SWAP;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;
-                u16IsAMSInProgress = DPM_INT_EVT_INITIATE_PR_SWAP;
+                if(PD_ROLE_DRP == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                {
+                    /*Execution is not expected to hit here*/
+                    /*Do nothing*/
+                }
+                else if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                {
+                    u32PartnerPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0];
+                }
+                else
+                {
+                    u32PartnerPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[INDEX_0];
+                }
+                
+                if(DPM_GET_PDO_DUAL_POWER(u32PartnerPDO))
+                {
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SEND_SWAP;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;
+                    u16IsAMSInProgress = DPM_INT_EVT_INITIATE_PR_SWAP;
+                }
+
             }
         }
 #endif /*INCLUDE_PD_PR_SWAP*/
@@ -942,19 +953,37 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         else if (DPM_INT_EVT_INITIATE_DR_SWAP == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_DR_SWAP))
         {
+            UINT32 u32PartnerPDO = SET_TO_ZERO;
+            
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_DR_SWAP);
             
             /*Check whether it still valid to initiate a swap and the partner supports dual role data
               and the port is not in modal operation */
             if ((DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE)) &&\
-                    ((DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
-                        (DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))) &&\
+                    (DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
                             (!(gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)))                     
             {
+                if(PD_ROLE_DRP == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                {
+                    /*Execution is not expected to hit here*/
+                    /*Do nothing*/
+                }
+                else if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                {
+                    u32PartnerPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0];
+                }
+                else
+                {
+                    u32PartnerPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[INDEX_0];
+                }
+                
+                if(DPM_GET_PDO_DUAL_DATA(u32PartnerPDO))
+                {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_SEND_SWAP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
-                    u16IsAMSInProgress = DPM_INT_EVT_INITIATE_DR_SWAP;                
+                    u16IsAMSInProgress = DPM_INT_EVT_INITIATE_DR_SWAP;      
+                }
             }
         }
 #endif/*INCLUDE_PD_DR_SWAP*/

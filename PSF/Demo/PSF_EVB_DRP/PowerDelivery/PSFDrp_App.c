@@ -171,7 +171,7 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         case eMCHP_PSF_SINK_CAPS_RCVD:
         {
             /* Sink Capabilities received from partner is available in 
-               gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO array */            
+               gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO array */            
             break;            
         }
         

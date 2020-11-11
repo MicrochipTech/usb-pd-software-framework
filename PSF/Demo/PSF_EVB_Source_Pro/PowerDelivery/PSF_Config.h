@@ -757,12 +757,18 @@ typedef enum
 																		u32CfgData is enabled 
 																		else holds the value of 
 																		current u32aSinkPDO[7].
-    u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Partner PDOs 
+    u32aPartnerSourcePDO[7]         28        R            R         * Upto 7 fixed Partner's Source PDOs 
+																		where Voltage is specified 
+																		in mV and Current is 
+																		specified in mA
+                                                                      * This array is specific for 
+																	    Sink functionalities.
+    u32aPartnerSinkPDO[7]           28        R            R         * Upto 7 fixed Partner's Sink PDOs 
 																		where Voltage is specified 
 																		in mV and Current is 
 																		specified in mA
                                                                       * This array is common for 
-																	    Source and Sink.
+																	    Source and Sink functionality.
     u32aCableIdentity[6]            24        R            R         * Cable Identity array 
                                                                         holding the VDM Data 
                                                                         Objects received from cable
@@ -931,10 +937,14 @@ typedef enum
 																	    only when the port acts as Sink.																		
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
-    u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
+    u8PartnerSourcePDOCnt           1         R            R         * Number of Source PDOs received from 
+																		port partner.
+                                                                      * This variable is specific for 
+																	    Sink functionality.
+    u8PartnerSinkPDOCnt             1         R            R         * Number of Sink PDOs received from 
 																		port partner.
                                                                       * This variable is common for 
-																	    Source and Sink.
+																	    Source and Sink functionalities.
     u8CableIdentityCnt              1         R            R         * Number of VDM Data Objects 
                                                                         received from cable.
     u8SinkConfigSel                 1         R/W          R         * BIT[1:0] - Sink Selection 
@@ -1165,14 +1175,27 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		  for Sink operation.
+    u8aSinkCapsExtd[21]             21        R/W          R         * 21-byte Sink Capabilities 
+                                                                        Extended Data Block that
+                                                                        needs to be sent in 
+                                                                        response to a 
+                                                                        Get_Sink_Cap_Extended 
+                                                                        Message
+                                                                      * The contents of the array
+                                                                        shall comply with Table 6-60 
+                                                                        Sink Capabilities Extended
+                                                                        Data Block (SKEDB) of USB 
+                                                                        PD 3.0 Specification
+                                                                      * This array shall be used 
+																	    only when the port is 
+																		configured as Sink or DRP
     u8PIO_HPD                       1         R/W          R       	 * Defines the UPD350 PIO 
 																		number used for HPD IO pin.
                                                                       * The state of this pin is tracked
                                                                         in u16HPDStatus variable.
 																	  * This is applicable only when
 																		INCLUDE_UPD_HPD is enabled.
-	u8Reserved1  					1								 Reserved
-	u8Reserved2   					1								 Reserved
+	u8Reserved1  					1								 Reserved	
  	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
                                                                          based on configuration macro 
                                                                          INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
@@ -1772,7 +1795,8 @@ typedef struct _PortCfgStatus
     UINT32 u32aNewSourcePDO[7];	
     UINT32 u32aNewSinkPDO[7]; 
     UINT32 u32aAdvertisedPDO[7];	
-    UINT32 u32aPartnerPDO[7];   
+    UINT32 u32aPartnerSourcePDO[7];
+    UINT32 u32aPartnerSinkPDO[7];
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
     UINT32 u32PortStatusChange;
@@ -1799,7 +1823,8 @@ typedef struct _PortCfgStatus
     UINT8 u8NewSourcePDOCnt;   
     UINT8 u8NewSinkPDOCnt;
     UINT8 u8AdvertisedPDOCnt; 		
-    UINT8 u8PartnerPDOCnt;                    
+    UINT8 u8PartnerSourcePDOCnt;
+    UINT8 u8PartnerSinkPDOCnt;
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
@@ -1820,8 +1845,8 @@ typedef struct _PortCfgStatus
 #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
-    UINT8 u8DAC_I_Direction; 
-    UINT8 u8Reserved2;    
+    UINT8 u8DAC_I_Direction;
+    UINT8 u8aSinkCapsExtd[21];    
 #endif
 #if (TRUE == INCLUDE_UPD_HPD)    
     UINT16 u16HPDStatus;
@@ -2123,7 +2148,7 @@ typedef struct _PPSPortCfgStatus
 
 	u8PSFMinorVersion               1         R/W          R         Defines PSF Stack Minor Version 
 
-	u16ProducdID               	    2         R/W          R         * Defines the Product Identifier 
+	u16ProductID               	    2         R/W          R         * Defines the Product Identifier 
 																		Value. 
 																	  * It is used by the PD 
 																		Firmware Update state 
@@ -2338,7 +2363,7 @@ typedef struct _GlobalCfgStatusData
     UINT8 u8PSFMinorVersion; 
     UINT8 u8PwrThrottleCfg;
     UINT8 u8aReserved3[3];    
-    UINT16 u16ProducdID;	
+    UINT16 u16ProductID;	
     UINT16 u16VendorID;		
     
     PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; 
