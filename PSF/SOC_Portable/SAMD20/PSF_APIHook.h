@@ -1209,10 +1209,15 @@ Description:
 
     <b> eMCHP_PSF_HPD_ENABLED </b>: This notification will be posted by PSF when
 	an Hot Plug Detect (HPD) support is enabled.
- 
-    <b> eMCHP_PSF_HPD_EVENT_OCCURRED </b>: This notification will be posted by PSF when
-	an HPD (Hot Plug Detect) event has occurred. When this notification is received, 
-    User_application may read u16HPDStatus variable to know the status of HPD IO. 
+
+    <b> eMCHP_PSF_HPD_EVENT_HIGH </b>: This notification will be posted by PSF when
+	an HPD_HIGH event has occurred. 
+
+    <b> eMCHP_PSF_HPD_EVENT_LOW </b>: This notification will be posted by PSF when
+	an HPD_LOW event has occurred. 
+
+    <b> eMCHP_PSF_HPD_EVENT_IRQ_HPD </b>: This notification will be posted by PSF when
+	an IRQ_HPD event has occurred. 
 
     <b> eMCHP_PSF_HPD_DISABLED </b>: This notification will be posted by PSF when
 	an Hot Plug Detect (HPD) support is disabled.
@@ -1274,10 +1279,9 @@ eMCHP_PSF_VDM_RESPONSE_NOT_RCVD,       // No response from partner for VDM reque
 eMCHP_PSF_VDM_REQUEST_RCVD,            // VDM Request received from partner        
 eMCHP_PSF_VDM_AMS_COMPLETE,            // VDM AMS Completed 
 eMCHP_PSF_HPD_ENABLED,                 // Indicates that HPD module is enabled
-eMCHP_PSF_HPD_EVENT_OCCURRED,          // Indicates that an HPD event has occurred 
-eMCHP_PSF_HPD_EVENT_HIGH,
-eMCHP_PSF_HPD_EVENT_LOW,
-eMCHP_PSF_HPD_EVENT_IRQ_HPD,
+eMCHP_PSF_HPD_EVENT_HIGH,              //Indicates that HPD_HIGH event has occurred
+eMCHP_PSF_HPD_EVENT_LOW,               //Indicates that HPD_LOW event has occurred
+eMCHP_PSF_HPD_EVENT_IRQ_HPD,           //Indicates that IRQ_HPD event has occurred
 eMCHP_PSF_HPD_DISABLED,                // Indicates that HPD module is disabled        
 eMCHP_PSF_ALT_MODE_ENTRY_FAILED,       // Alt Mode Entry Failed        
 eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully        

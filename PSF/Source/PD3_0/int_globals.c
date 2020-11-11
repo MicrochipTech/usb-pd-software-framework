@@ -109,20 +109,16 @@ GLOBAL_CFG_STATUS_DATA gasCfgStatusData = {SET_TO_ZERO};
 /**************************************************************************************************/ 
 
 #if (TRUE == INCLUDE_UPD_HPD)
-  HPD_CONTROL gu16HPDStsISR[CONFIG_PD_PORT_COUNT];   /*BIT0 - > IRQ_HPD occurred
-                                                    BIT1 -> HPD_LOW occurred
-                                                    BIT2 -> HPD_HIGH occurred
-                                                    BIT3 -> HPD_INT occurred
-                                                    BIT[7:4] -> Reserved
-                                                    BIT[15:8] -> HPD Event Queue
-                                                      BIT[15:14] -> HPD event 3
-                                                      BIT[13:12] -> HPD event 2
-                                                      BIT[11:10] -> HPD event 1
-                                                      BIT[9:8] -> HPD event 0
-                                                        00b: HPD event field is empty
-                                                        01b: HPD_HIGH Detected
-                                                        10b: HPD_LOW Detected
-                                                        11b: HPD_IRQ Detected */
+  HPD_CONTROL gu16HPDStsISR[CONFIG_PD_PORT_COUNT];    /*BIT[7:0] -> HPD Event Queue
+                                                            BIT[7:6] -> HPD event 3
+                                                            BIT[5:4] -> HPD event 2
+                                                            BIT[3:2] -> HPD event 1
+                                                            BIT[1:0] -> HPD event 0
+                                                            00b: HPD event field is empty
+                                                            01b: HPD_HIGH Detected
+                                                            10b: HPD_LOW Detected
+                                                            11b: HPD_IRQ Detected 
+                                                        BIT[8] -> HPD Event occurred*/
 UINT8 gu8HPDNextIndex[CONFIG_PD_PORT_COUNT];
 
 #endif
