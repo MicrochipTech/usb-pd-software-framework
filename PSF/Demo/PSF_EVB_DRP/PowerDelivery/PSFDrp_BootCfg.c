@@ -215,7 +215,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     UINT8 u8Length = SET_TO_ZERO;
 
     /*System Configuration*/    
-    pasCfgStatusData->u16ProducdID = CFG_PRODUCT_ID;
+    pasCfgStatusData->u16ProductID = CFG_PRODUCT_ID;
     pasCfgStatusData->u16VendorID = CFG_VENDOR_ID;
     pasCfgStatusData->u8HWVersion = CFG_HW_VERSION;
     pasCfgStatusData->u8SiVersion = CFG_SILICON_VERSION;

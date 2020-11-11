@@ -1173,14 +1173,27 @@ typedef enum
 																			  Min Voltage 
 																	  * This is applicable only 
 																		  for Sink operation.
+    u8aSinkCapsExtd[21]             21        R/W          R         * 21-byte Sink Capabilities 
+                                                                        Extended Data Block that
+                                                                        needs to be sent in 
+                                                                        response to a 
+                                                                        Get_Sink_Cap_Extended 
+                                                                        Message
+                                                                      * The contents of the array
+                                                                        shall comply with Table 6-60 
+                                                                        Sink Capabilities Extended
+                                                                        Data Block (SKEDB) of USB 
+                                                                        PD 3.0 Specification
+                                                                      * This array shall be used 
+																	    only when the port is 
+																		configured as Sink or DRP
     u8PIO_HPD                       1         R/W          R       	 * Defines the UPD350 PIO 
 																		number used for HPD IO pin.
                                                                       * The state of this pin is tracked
                                                                         in u16HPDStatus variable.
 																	  * This is applicable only when
 																		INCLUDE_UPD_HPD is enabled.
-	u8Reserved1  					1								 Reserved
-	u8Reserved2   					1								 Reserved
+	u8Reserved1  					1								 Reserved	
  	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
                                                                          based on configuration macro 
                                                                          INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
@@ -1830,8 +1843,8 @@ typedef struct _PortCfgStatus
 #if (TRUE == INCLUDE_PD_SINK)
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
-    UINT8 u8DAC_I_Direction; 
-    UINT8 u8Reserved2;    
+    UINT8 u8DAC_I_Direction;
+    UINT8 u8aSinkCapsExtd[21];    
 #endif
 #if (TRUE == INCLUDE_UPD_HPD)    
     UINT16 u16HPDStatus;
@@ -2133,7 +2146,7 @@ typedef struct _PPSPortCfgStatus
 
 	u8PSFMinorVersion               1         R/W          R         Defines PSF Stack Minor Version 
 
-	u16ProducdID               	    2         R/W          R         * Defines the Product Identifier 
+	u16ProductID               	    2         R/W          R         * Defines the Product Identifier 
 																		Value. 
 																	  * It is used by the PD 
 																		Firmware Update state 
@@ -2348,7 +2361,7 @@ typedef struct _GlobalCfgStatusData
     UINT8 u8PSFMinorVersion; 
     UINT8 u8PwrThrottleCfg;
     UINT8 u8aReserved3[3];    
-    UINT16 u16ProducdID;	
+    UINT16 u16ProductID;	
     UINT16 u16VendorID;		
     
     PORT_CFG_STATUS sPerPortData[CONFIG_PD_PORT_COUNT]; 
