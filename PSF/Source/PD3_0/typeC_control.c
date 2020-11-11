@@ -290,7 +290,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
             
             if(FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
-    		{      
+            {      
 	            /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and 
 	            CC2*/ 
 	            u16Data = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
@@ -303,21 +303,20 @@ void TypeC_InitPort (UINT8 u8PortNum)
             
 	            /*Setting the Initial State and Sub state for Source*/
 	            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
-	            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS;  
-			}
-			else
-			{
-				/*Setting the CC1 and CC2 line as Open Disconnect*/
-            	TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);        
-				
-				gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
-        		gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS; 
-        
-        		/* Change Policy Engine state and sub-state to invalid state */
-        		gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-        		gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
-			}
-            
+	            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS;
+            }
+            else
+            {
+                /*Setting the CC1 and CC2 line as Open Disconnect*/
+                TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, TYPEC_ROLE_SOURCE_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);
+                
+                gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
+                gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS;
+                
+                /* Change Policy Engine state and sub-state to invalid state */
+                gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+            }
             break;
         }
             
@@ -338,8 +337,9 @@ void TypeC_InitPort (UINT8 u8PortNum)
             
 			/*Setting Port Role as UFP in TYPEC_CC_HW_CTL register */
             TypeC_SetCCDeviceRole (u8PortNum,PD_ROLE_UFP);
+            
             if(FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
-			{
+            {
 	            /*Setting the Rd Value */ 
 	            TypeC_SetCCPowerRole (u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
           
@@ -347,18 +347,18 @@ void TypeC_InitPort (UINT8 u8PortNum)
 	            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
 	            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS; 
             }
-			else
-			{
+            else
+            {
 			    /*Setting the CC1 and CC2 line as Open Disconnect*/
-            	TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);    
-
- 				gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
-	            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS; 
-        
-        		/* Change Policy Engine state and sub-state to invalid state */
-		        gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-        		gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
-			}
+            	TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);
+                
+                gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
+                gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS;
+                
+                /* Change Policy Engine state and sub-state to invalid state */
+                gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+            }
             break;
          }
            
