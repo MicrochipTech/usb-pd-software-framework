@@ -1080,7 +1080,7 @@ Description:
     <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
     Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
     message initiated by PSF. Application can read the Sink Capabilities by accessing 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO array. This event is applicable 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO array. This event is applicable 
     only when PSF is operating as Source or the power role of the port is resolved as 
     Source during DRP operation.  
     

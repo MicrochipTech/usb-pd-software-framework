@@ -755,12 +755,18 @@ typedef enum
 																		u32CfgData is enabled 
 																		else holds the value of 
 																		current u32aSinkPDO[7].
-    u32aPartnerPDO[7]               28        R            R         * Upto 7 fixed Partner PDOs 
+    u32aPartnerSourcePDO[7]         28        R            R         * Upto 7 fixed Partner's Source PDOs 
+																		where Voltage is specified 
+																		in mV and Current is 
+																		specified in mA
+                                                                      * This array is specific for 
+																	    Sink functionalities.
+    u32aPartnerSinkPDO[7]           28        R            R         * Upto 7 fixed Partner's Sink PDOs 
 																		where Voltage is specified 
 																		in mV and Current is 
 																		specified in mA
                                                                       * This array is common for 
-																	    Source and Sink.
+																	    Source and Sink functionality.
     u32aCableIdentity[6]            24        R            R         * Cable Identity array 
                                                                         holding the VDM Data 
                                                                         Objects received from cable
@@ -929,10 +935,14 @@ typedef enum
 																	    only when the port acts as Sink.																		
     u8AdvertisedPDOCnt              1         R            R         * Number of PDOs advertised to 
 																		port partner.
-    u8PartnerPDOCnt                 1         R            R         * Number of PDOs received from 
+    u8PartnerSourcePDOCnt           1         R            R         * Number of Source PDOs received from 
+																		port partner.
+                                                                      * This variable is specific for 
+																	    Sink functionality.
+    u8PartnerSinkPDOCnt             1         R            R         * Number of Sink PDOs received from 
 																		port partner.
                                                                       * This variable is common for 
-																	    Source and Sink.
+																	    Source and Sink functionalities.
     u8CableIdentityCnt              1         R            R         * Number of VDM Data Objects 
                                                                         received from cable.
     u8SinkConfigSel                 1         R/W          R         * BIT[1:0] - Sink Selection 
@@ -1770,7 +1780,8 @@ typedef struct _PortCfgStatus
     UINT32 u32aNewSourcePDO[7];	
     UINT32 u32aNewSinkPDO[7]; 
     UINT32 u32aAdvertisedPDO[7];	
-    UINT32 u32aPartnerPDO[7];   
+    UINT32 u32aPartnerSourcePDO[7];
+    UINT32 u32aPartnerSinkPDO[7];
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
     UINT32 u32PortStatusChange;
@@ -1797,7 +1808,8 @@ typedef struct _PortCfgStatus
     UINT8 u8NewSourcePDOCnt;   
     UINT8 u8NewSinkPDOCnt;
     UINT8 u8AdvertisedPDOCnt; 		
-    UINT8 u8PartnerPDOCnt;                    
+    UINT8 u8PartnerSourcePDOCnt;
+    UINT8 u8PartnerSinkPDOCnt;
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
