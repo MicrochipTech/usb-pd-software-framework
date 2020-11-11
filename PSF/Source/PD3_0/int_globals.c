@@ -123,7 +123,7 @@ GLOBAL_CFG_STATUS_DATA gasCfgStatusData = {SET_TO_ZERO};
                                                         01b: HPD_HIGH Detected
                                                         10b: HPD_LOW Detected
                                                         11b: HPD_IRQ Detected */
-
+UINT8 gu8HPDNextIndex[CONFIG_PD_PORT_COUNT];
 
 #endif
 

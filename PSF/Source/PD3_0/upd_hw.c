@@ -809,6 +809,8 @@ void UPD_RegDump(UINT8 u8PortNum)
 
 void UPD_HPDInit(UINT8 u8PortNum)
 {
+    UINT16 u16Data;
+    
     /*Configure IRQ_HPD_MIN_TIME to be 350us (i.e) greater than 250us*/
     UPD_RegWriteByte(u8PortNum, UPD_IRQ_HPD_MIN_TIME, HPD_IRQ_MIN_TIME_350US);
     
@@ -821,9 +823,14 @@ void UPD_HPDInit(UINT8 u8PortNum)
     /*Configure HPD_LOW_DET_TIME to be 2ms*/
     UPD_RegWriteWord(u8PortNum, UPD_HPD_LOW_DET_TIME, UPD_HPD_LOW_DET_TIME_2_1MS);
     
-    /*Enable IRQ_HPD, HPD_LOW, HPD_HIGH and QUEUE_NOT_EMPTY interrupts*/
-    UPD_RegWriteByte(u8PortNum, UPD_HPD_INT_EN, (UPD_IRQ_HPD_EN | UPD_HPD_LOW_EN \
-            | UPD_HPD_HIGH_EN | UPD_QUEUE_NOT_EMPTY_EN));
+    
+    /*Enable QUEUE_NOT_EMPTY interrupts*/
+    UPD_RegWriteByte(u8PortNum, UPD_HPD_INT_EN, UPD_QUEUE_NOT_EMPTY_EN);
+    
+    /*Setting the UPD350 high level HPD interrupt*/ 
+    u16Data = UPD_RegReadWord(u8PortNum, UPDINTR_INT_EN);
+    u16Data |= UPDINTR_HPD_INT;
+	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, u16Data);
     
     /*Disable u8PIO_HPD as gpio, to enable it to act as HPD IO*/
     UPD_RegByteClearBit (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8PIO_HPD), \
@@ -843,18 +850,29 @@ void UPD_HPDInit(UINT8 u8PortNum)
 void UPD_HPDHandleISR(UINT8 u8PortNum)
 {
     UINT8 u8Data;
-    
+    UINT8 u8HPDClr = 0x00;
+    UINT8 u8Mask = 0;
+
+    UPD_RegisterReadISR (u8PortNum, UPD_HPD_QUEUE, &u8Data, BYTE_LEN_1);
+
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "UPD_HPDHandleISR", u8Data, 1, "\r\n");
+
+    /* need to do this to write b'01 to each queue slot to clear h/w status */
+    for (u8Mask = 0x03; u8Mask != 0; u8Mask <<= 2)
+    {
+        if (u8Mask & u8Data)
+        { 
+            u8HPDClr |= (u8Mask & 0x55); 
+        }
+    }
+
+    DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "UPD_HPDHandleISR", u8HPDClr, 1, "\r\n");
+    UPD_RegisterWriteISR (u8PortNum, UPD_HPD_QUEUE, &u8HPDClr, BYTE_LEN_1);
+
+    gu16HPDStsISR[u8PortNum] = u8Data;
     gu16HPDStsISR[u8PortNum] |= UPD_HPD_INTERRUPT_OCCURRED;
     
-    /*Copy IRQ_HPD, HPD_LOW and HPD_HIGH interrupts to BITs[0:2] of gu16HPDStsISR[u8PortNum]*/
-    UPD_RegisterReadISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
-    gu16HPDStsISR[u8PortNum] |= (u8Data & UPD_HPD_ALL_INTERRUPTS);
-    UPD_RegisterWriteISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
     
-    /*Copy HPD_QUEUE interrupts to BITs[15:8] of gu16HPDStsISR[u8PortNum]*/
-    UPD_RegisterReadISR (u8PortNum, UPD_HPD_QUEUE, &u8Data, BYTE_LEN_1);
-    gu16HPDStsISR[u8PortNum] |= (u8Data << UPD_HPD_QUEUE_POS);
-    UPD_RegisterWriteISR (u8PortNum, UPD_HPD_INT_STS, &u8Data, BYTE_LEN_1);
 }
 
 

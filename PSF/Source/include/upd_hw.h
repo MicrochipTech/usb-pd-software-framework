@@ -256,7 +256,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_HPD_CFG                      BIT(1)
 
 /*Defines for gu16HPDStsISR variable*/
-#define UPD_HPD_INTERRUPT_OCCURRED       BIT(4)
+#define UPD_HPD_INTERRUPT_OCCURRED       BIT(8)
 #define UPD_HPD_ALL_INTERRUPTS           0x0F
 #define UPD_HPD_QUEUE_POS                8
 // *****************************************************************************
