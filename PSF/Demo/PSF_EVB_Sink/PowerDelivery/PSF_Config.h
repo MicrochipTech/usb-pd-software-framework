@@ -760,7 +760,7 @@ typedef enum
 																		in mV and Current is 
 																		specified in mA
                                                                       * This array is specific for 
-																	    Sink functionalities.
+																	    Sink functionality.
     u32aPartnerSinkPDO[7]           28        R            R         * Upto 7 fixed Partner's Sink PDOs 
 																		where Voltage is specified 
 																		in mV and Current is 
@@ -1741,46 +1741,6 @@ typedef enum
     15:12  						   Reserved 									
 	</table> 
 
-    <b>h. u16HPDStatus</b>: 
-	u16HPDStatus defines the status of HPD IO. The value in this variable is valid only when 
-    eMCHP_PSF_HPD_EVENT_OCCURRED notification is posted by PSF. User_application may read this variable
-    when eMCHP_PSF_HPD_EVENT_OCCURRED notification is received from PSF.
-    This variable is applicable only when INCLUDE_UPD_HPD is enabled.
-	<table> 
-    Bit     R/W Config   R/W Run   \Description
-             time         time      
-    ------  -----------  --------  --------------------
-    0       R            R         Indicates IRQ_HPD event has occurred
-                                    * '0' IRQ_HPD event has not occurred
-                                    * '1' IRQ_HPD event has occurred
-    1       R            R         Indicates that HPD transition from high to low has occurred
-                                    * '0' HPD transition from high to low has not occurred
-                                    * '1' HPD transition from high to low has occurred
-    2       R            R         Indicates that HPD transition from low to high has occurred
-                                    * '0' HPD transition from low to high has not occurred
-                                    * '1' HPD transition from low to high has occurred
-    7:3  						   Reserved 	
-    9:8     R            R         Indicates that 0th HPD event has occurred in HPD queue
-                                    * '00b' HPD event field is empty
-                                    * '01b' HPD transition from low to high has occurred
-                                    * '10b' HPD transition from high to low has occurred
-                                    * '11b' IRQ_HPD event has occurred 
-    11:10   R            R         Indicates that 1st HPD event has occurred in HPD queue
-                                    * '00b' HPD event field is empty
-                                    * '01b' HPD transition from low to high has occurred
-                                    * '10b' HPD transition from high to low has occurred
-                                    * '11b' IRQ_HPD event has occurred
-    13:12   R            R         Indicates that 2nd HPD event has occurred in HPD queue
-                                    * '00b' HPD event field is empty
-                                    * '01b' HPD transition from low to high has occurred
-                                    * '10b' HPD transition from high to low has occurred
-                                    * '11b' IRQ_HPD event has occurred
-    15:14   R            R         Indicates that 3rd HPD event has occurred in HPD queue
-                                    * '00b' HPD event field is empty
-                                    * '01b' HPD transition from low to high has occurred
-                                    * '10b' HPD transition from high to low has occurred
-                                    * '11b' IRQ_HPD event has occurred
-	</table>									
    Remarks:
      None                                                                                                                             
   ***************************************************************************************************************************************/
@@ -1788,12 +1748,7 @@ typedef enum
 typedef struct _PortCfgStatus
 {
     UINT32 u32CfgData;				
-    UINT32 u32aSourcePDO[7];		
-    UINT32 u32aSinkPDO[7];          
-    UINT32 u32aNewSourcePDO[7];	
-    UINT32 u32aNewSinkPDO[7]; 
     UINT32 u32aAdvertisedPDO[7];	
-    UINT32 u32aPartnerSourcePDO[7];
     UINT32 u32aPartnerSinkPDO[7];
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
@@ -1816,12 +1771,7 @@ typedef struct _PortCfgStatus
     UINT16 u16DAC_I_MinOutVoltInmV;
 	UINT16 u16DAC_I_CurrentInd_MaxInA; 
     #endif
-    UINT8 u8SourcePDOCnt;			
-    UINT8 u8SinkPDOCnt;             
-    UINT8 u8NewSourcePDOCnt;   
-    UINT8 u8NewSinkPDOCnt;
-    UINT8 u8AdvertisedPDOCnt; 		
-    UINT8 u8PartnerSourcePDOCnt;
+	UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerSinkPDOCnt;
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
@@ -1834,22 +1784,32 @@ typedef struct _PortCfgStatus
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;    
 #if (TRUE == INCLUDE_PD_SOURCE)
+	UINT32 u32aSourcePDO[7];
+	UINT32 u32aNewSourcePDO[7];	
     UINT32 u32aCableIdentity[6];
+	UINT8 u8SourcePDOCnt;
+	UINT8 u8NewSourcePDOCnt;
     UINT8 u8CableIdentityCnt; 
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
-    UINT8 u8Reserved1;
+    UINT8 u8aReserved1[3];
 #endif
 #if (TRUE == INCLUDE_PD_SINK)
+	UINT32 u32aSinkPDO[7];
+	UINT32 u32aNewSinkPDO[7];
+	UINT32 u32aPartnerSourcePDO[7];
+	UINT8 u8SinkPDOCnt;
+	UINT8 u8NewSinkPDOCnt;
+	UINT8 u8PartnerSourcePDOCnt;  
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction;
-    UINT8 u8aSinkCapsExtd[21];    
+    UINT8 u8aSinkCapsExtd[21];
+	UINT8 u8Reserved2;    
 #endif
 #if (TRUE == INCLUDE_UPD_HPD)    
-    UINT16 u16HPDStatus;
     UINT8 u8PIO_HPD;
-    UINT8 u8Reserved3;
+    UINT8 u8Reserved3[3];
 #endif
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
     UINT8 u8ReservedPortPadBytes[32];

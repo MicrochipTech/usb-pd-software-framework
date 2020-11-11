@@ -762,7 +762,7 @@ typedef enum
 																		in mV and Current is 
 																		specified in mA
                                                                       * This array is specific for 
-																	    Sink functionalities.
+																	    Sink functionality.
     u32aPartnerSinkPDO[7]           28        R            R         * Upto 7 fixed Partner's Sink PDOs 
 																		where Voltage is specified 
 																		in mV and Current is 
@@ -1750,12 +1750,7 @@ typedef enum
 typedef struct _PortCfgStatus
 {
     UINT32 u32CfgData;				
-    UINT32 u32aSourcePDO[7];		
-    UINT32 u32aSinkPDO[7];          
-    UINT32 u32aNewSourcePDO[7];	
-    UINT32 u32aNewSinkPDO[7]; 
     UINT32 u32aAdvertisedPDO[7];	
-    UINT32 u32aPartnerSourcePDO[7];
     UINT32 u32aPartnerSinkPDO[7];
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
@@ -1778,12 +1773,7 @@ typedef struct _PortCfgStatus
     UINT16 u16DAC_I_MinOutVoltInmV;
 	UINT16 u16DAC_I_CurrentInd_MaxInA; 
     #endif
-    UINT8 u8SourcePDOCnt;			
-    UINT8 u8SinkPDOCnt;             
-    UINT8 u8NewSourcePDOCnt;   
-    UINT8 u8NewSinkPDOCnt;
-    UINT8 u8AdvertisedPDOCnt; 		
-    UINT8 u8PartnerSourcePDOCnt;
+	UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerSinkPDOCnt;
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
@@ -1796,21 +1786,32 @@ typedef struct _PortCfgStatus
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;    
 #if (TRUE == INCLUDE_PD_SOURCE)
+	UINT32 u32aSourcePDO[7];
+	UINT32 u32aNewSourcePDO[7];	
     UINT32 u32aCableIdentity[6];
+	UINT8 u8SourcePDOCnt;
+	UINT8 u8NewSourcePDOCnt;
     UINT8 u8CableIdentityCnt; 
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
-    UINT8 u8Reserved1;
+    UINT8 u8aReserved1[3];
 #endif
 #if (TRUE == INCLUDE_PD_SINK)
+	UINT32 u32aSinkPDO[7];
+	UINT32 u32aNewSinkPDO[7];
+	UINT32 u32aPartnerSourcePDO[7];
+	UINT8 u8SinkPDOCnt;
+	UINT8 u8NewSinkPDOCnt;
+	UINT8 u8PartnerSourcePDOCnt;  
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction;
-    UINT8 u8aSinkCapsExtd[21];    
+    UINT8 u8aSinkCapsExtd[21];
+	UINT8 u8Reserved2;    
 #endif
 #if (TRUE == INCLUDE_UPD_HPD)    
     UINT8 u8PIO_HPD;
-    UINT8 u8Reserved3;
+    UINT8 u8Reserved3[3];
 #endif
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
     UINT8 u8ReservedPortPadBytes[32];
