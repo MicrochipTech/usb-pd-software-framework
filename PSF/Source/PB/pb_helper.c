@@ -459,8 +459,8 @@ void PB_SinkCapsReceivedHandler(UINT8 u8PortNum)
     UINT8 u8IsAvailablePwrSufficient; 
    
     /* Get the Sink capabilities from DPM */
-    u8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt;  
-    pu32SinkCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]; 
+    u8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt;  
+    pu32SinkCap = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0]; 
     
     /* Calculate the power required for the port based on Sink caps values */
     PB_CalculateRequiredPortPower(u8PortNum, u8SinkPDOCnt, pu32SinkCap); 
