@@ -961,7 +961,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /*Check whether it still valid to initiate a swap and the partner supports dual role data
               and the port is not in modal operation */
             if ((DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE)) &&\
-                    (DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &\
+                    (DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &&\
                             (!(gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)))                     
             {
                 if(PD_ROLE_DRP == u8DPMPowerRole)
