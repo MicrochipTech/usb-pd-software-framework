@@ -1194,8 +1194,11 @@ typedef enum
                                                                         in u16HPDStatus variable.
 																	  * This is applicable only when
 																		INCLUDE_UPD_HPD is enabled.
-	u8Reserved1  					1								 Reserved	
- 	u8ReservedPortPadBytes[32]	    32	                              * Reserved bytes included
+	u8aReserved2  					3								 Reserved	
+	u8aReserved3  					3								 Reserved	  
+	u8aReserved4  					2								 Reserved	  
+    u8aReserved5  					3								 Reserved	    
+ 	u8aReservedPortPadBytes[32]	    32	                              * Reserved bytes included
                                                                          based on configuration macro 
                                                                          INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
     </table>
@@ -1750,6 +1753,7 @@ typedef struct _PortCfgStatus
 {
     UINT32 u32CfgData;				
     UINT32 u32aAdvertisedPDO[7];	
+    UINT32 u32aPartnerSourcePDO[7];
     UINT32 u32aPartnerSinkPDO[7];
     UINT32 u32RDO;                  
 	UINT32 u32PortConnectStatus;	
@@ -1774,6 +1778,7 @@ typedef struct _PortCfgStatus
     #endif
 	UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerSinkPDOCnt;
+    UINT8 u8PartnerSourcePDOCnt;  
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
@@ -1783,7 +1788,8 @@ typedef struct _PortCfgStatus
     UINT8 u8VBUSMaxFaultCnt;
     UINT8 u8VCONNMaxFaultCnt;
     UINT8 u8Pio_FAULT_IN;
-    UINT8 u8Mode_FAULT_IN;    
+    UINT8 u8Mode_FAULT_IN;  
+    UINT8 u8aReserved2[3]; 
 #if (TRUE == INCLUDE_PD_SOURCE)
 	UINT32 u32aSourcePDO[7];
 	UINT32 u32aNewSourcePDO[7];	
@@ -1793,27 +1799,25 @@ typedef struct _PortCfgStatus
     UINT8 u8CableIdentityCnt; 
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
-    UINT8 u8aReserved1[3];
+    UINT8 u8aReserved3[3];
 #endif
 #if (TRUE == INCLUDE_PD_SINK)
 	UINT32 u32aSinkPDO[7];
-	UINT32 u32aNewSinkPDO[7];
-	UINT32 u32aPartnerSourcePDO[7];
+	UINT32 u32aNewSinkPDO[7];	
 	UINT8 u8SinkPDOCnt;
 	UINT8 u8NewSinkPDOCnt;
-	UINT8 u8PartnerSourcePDOCnt;  
     UINT8 u8Pio_EN_SINK; 
     UINT8 u8Mode_EN_SINK; 
     UINT8 u8DAC_I_Direction;
     UINT8 u8aSinkCapsExtd[21];
-	UINT8 u8Reserved2;    
+	UINT8 u8aReserved4[2];    
 #endif
 #if (TRUE == INCLUDE_UPD_HPD)    
     UINT8 u8PIO_HPD;
-    UINT8 u8Reserved3[3];
+    UINT8 u8aReserved5[3];
 #endif
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
-    UINT8 u8ReservedPortPadBytes[32];
+    UINT8 u8aReservedPortPadBytes[32];
 #endif
    } PORT_CFG_STATUS, *PPORT_CFG_STATUS;
 
@@ -1864,7 +1868,7 @@ typedef struct _PortCfgStatus
 																		and 0x191-0xFFF is invalid.	
     u8PortPriority                  1         R/W          R         * Selects the port priority 
                                                                       * 000b is the highest priority
-	u8aReserved4					1						          Reserved 											
+	u8Reserved2 					1						          Reserved 											
 	</table>	
 									
    Remarks:
@@ -1879,7 +1883,7 @@ typedef struct _PBPortCfgStatus
     UINT16 u16MaxPrtPwrBankBIn250mW; 
     UINT16 u16MaxPrtPwrBankCIn250mW; 
     UINT8 u8PortPriority; 
-    UINT8 u8aReserved4;
+    UINT8 u8Reserved2;
 } PB_PORT_CFG_STATUS, *PPB_PORT_CFG_STATUS;
 
 #endif 
@@ -1935,7 +1939,7 @@ typedef struct _PBPortCfgStatus
                                                                         the port that needs to be 
                                                                         sent in response to a
                                                                         Discover Identity request   
-    u8aReserved9                    2                                Reserved 
+    u8aReserved7                    2                                Reserved 
 	</table> 
 
    Remarks:
@@ -1951,7 +1955,7 @@ typedef struct _VDMPortCfgStatus
     UINT32 u32aPDIdentity[6];  
     UINT8 u8PDIdentityCnt; 
     UINT8 u8PartnerPDIdentityCnt; 
-    UINT8 u8aReserved9[2];     
+    UINT8 u8aReserved7[2];     
 } VDM_PORT_CFG_STATUS, *PVDM_PORT_CFG_STATUS;
 
 #endif 
@@ -2010,7 +2014,7 @@ typedef struct _VDMPortCfgStatus
     u8PartnerVDOCnt                 1         R            R         * Number of VDOs stored in 
                                                                         u32aPartnerVDO which are
                                                                         received from partner
-    u8aReserved10                   1                                Reserved 
+    u8Reserved3                     1                                Reserved 
 	</table> 
 
    Remarks:
@@ -2028,7 +2032,7 @@ typedef struct _AltModePortCfgStatus
 	UINT8 u8SVIDsCnt; 	        
     UINT8 u8VDOCnt; 
     UINT8 u8PartnerVDOCnt;     
-    UINT8 u8Reserved10; 
+    UINT8 u8Reserved3; 
 } ALT_MODE_PORT_CFG_STATUS, *PALT_MODE_PORT_CFG_STATUS;
 
 #endif 
@@ -2062,7 +2066,7 @@ typedef struct _AltModePortCfgStatus
 																		would be 0 when 
 																		eMCHP_PSF_SINK_STATUS_NOT_RCVD
 																		notification is posted. 
-    u8aReserved5[2]				    2                                Reserved 
+    u8aReserved6[2]				    2                                Reserved 
 	</table> 
 
    Remarks:
@@ -2074,7 +2078,7 @@ typedef struct _PPSPortCfgStatus
 {
     UINT32 u32PartnerAlert; 
     UINT8 u8aPartnerStatus[6];
-    UINT8 u8aReserved5[2];
+    UINT8 u8aReserved6[2];
 } PPS_PORT_CFG_STATUS, *PPPS_PORT_CFG_STATUS;
 
 #endif 
@@ -2243,13 +2247,11 @@ typedef struct _PPSPortCfgStatus
 																		INCLUDE_POWER_BALANCING or 
 																		INCLUDE_POWER_THROTTLING is 
 																		set to '1'.
-    u8aReserved3				     1 								 Reserved 	
-    u8aReserved6				     1 								 Reserved 	
-    u8aReserved7[3]				     3								 Reserved 
-    u8aReserved8[3]				     3 								 Reserved 																
- 	u8ReservedPadBytes[16]	         16	                              * Reserved bytes included
-                                                                         based on configuration macro 
-                                                                         INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
+    u8aReserved1				     3 								 Reserved 	
+    u8Reserved1				         1 								 Reserved 	
+ 	u8aReservedPadBytes[16]	         16	                             * Reserved bytes included
+                                                                        based on configuration macro 
+                                                                        INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
 																		
 	</table> 															  										
 
@@ -2321,7 +2323,7 @@ typedef struct _GlobalCfgStatusData
     UINT8 u8PSFMajorVersion; 
     UINT8 u8PSFMinorVersion; 
     UINT8 u8PwrThrottleCfg;
-    UINT8 u8aReserved3[3];    
+    UINT8 u8aReserved1[3];    
     UINT16 u16ProductID;	
     UINT16 u16VendorID;		
     
@@ -2330,7 +2332,7 @@ typedef struct _GlobalCfgStatusData
 #if (TRUE == INCLUDE_POWER_BALANCING || (TRUE == INCLUDE_POWER_THROTTLING))
     UINT16 u16SharedPwrCapacityIn250mW;
     UINT8 u8PBEnableSelect;	    
-    UINT8 u8aReserved6;
+    UINT8 u8Reserved1; 
     UINT16 u16SystemPowerBankAIn250mW; 
     UINT16 u16MinPowerBankAIn250mW;   
     UINT16 u16SystemPowerBankBIn250mW; 
@@ -2353,7 +2355,7 @@ typedef struct _GlobalCfgStatusData
 #endif 
     
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
-    UINT8 u8ReservedPadBytes[16];
+    UINT8 u8aReservedPadBytes[16];
 #endif
 } GLOBAL_CFG_STATUS_DATA, * PGLOBAL_CFG_STATUS_DATA;
 
