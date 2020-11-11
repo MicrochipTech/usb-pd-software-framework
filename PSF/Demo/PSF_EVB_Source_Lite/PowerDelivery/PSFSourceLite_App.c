@@ -188,21 +188,6 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break;
         }
         
-        case eMCHP_PSF_HPD_ENABLED:
-        {
-            break;
-        }
-        
-        case eMCHP_PSF_HPD_EVENT_OCCURRED:
-        {
-            break;
-        }
-		
-        case eMCHP_PSF_HPD_DISABLED:
-        {
-            break;
-        }
-        
 		case eMCHP_PSF_PORT_DISABLED:
         {
             break;
