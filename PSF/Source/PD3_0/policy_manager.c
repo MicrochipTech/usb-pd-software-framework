@@ -1005,8 +1005,8 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     UINT8 u8SinkIndex = SET_TO_ZERO;
     UINT8 u8CapMismatch = FALSE;   
     UINT8 u8SinkAdvertisedPDOCnt;
-    UINT8 u8PartnerPDOCnt;
-    UINT32 u32aPartnerPDO[DPM_MAX_PDO_CNT];
+    UINT8 u8PartnerSourcePDOCnt;
+    UINT32 u32aPartnerSourcePDO[DPM_MAX_PDO_CNT];
     UINT32 u32RcvdSrcPDO;
     UINT8 u8SrcPDOIndex;
     UINT8 u8SinkAdvertisedPDOIndex;
@@ -1024,22 +1024,22 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
         /*PDO Count of the source derived from received src caps*/
         UINT8 u8RcvdSrcPDOCnt =  PRL_GET_OBJECT_COUNT(u16RecvdSrcCapsHeader);
     
-        /*Clear partner pdo variable initially*/
+        /*Clear partner's source pdo variable initially*/
         for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = SET_TO_ZERO;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[u8Index] = SET_TO_ZERO;
         }
 
-        /*Update received source capabilities to partner variable*/
-        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, 
+        /*Update received source capabilities to partner's source variable*/
+        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO, 
                                         pu32RecvdSrcCapsPayload, DPM_4BYTES_FOR_EACH_PDO_OF(u8RcvdSrcPDOCnt));
-        gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = u8RcvdSrcPDOCnt;
+        gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSourcePDOCnt = u8RcvdSrcPDOCnt;
     }
     
-    u8PartnerPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt;
+    u8PartnerSourcePDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSourcePDOCnt;
     /*Update received source capabilities to partner variable*/
-    (void)MCHP_PSF_HOOK_MEMCPY(u32aPartnerPDO, gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, 
-            DPM_4BYTES_FOR_EACH_PDO_OF(u8PartnerPDOCnt));
+    (void)MCHP_PSF_HOOK_MEMCPY(u32aPartnerSourcePDO, gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO, 
+            DPM_4BYTES_FOR_EACH_PDO_OF(u8PartnerSourcePDOCnt));
         
     DPM_UpdateAdvertisedPDOParam(u8PortNum);
     
@@ -1050,7 +1050,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     DPM_CalculateAndSortPower(u8SinkAdvertisedPDOCnt, gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, u8SinkPower, u8SinkMode);
     
     /* Calculate and sort the received source PDOs power */
-    DPM_CalculateAndSortPower(u8PartnerPDOCnt, u32aPartnerPDO, u8SrcPower, u8SinkMode);
+    DPM_CalculateAndSortPower(u8PartnerSourcePDOCnt, u32aPartnerSourcePDO, u8SrcPower, u8SinkMode);
     
     /* Compare Maximum power sink PDO to received source PDOs */
     /* Storing PDO index of the Sink PDO which has maximum power.*/
@@ -1058,14 +1058,14 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     /* Storing Sink PDO which has maximum power*/
     u32SinkAdvertisedPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8SinkAdvertisedPDOIndex];
     
-    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8PartnerPDOCnt; u8SrcIndex++)
+    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8PartnerSourcePDOCnt; u8SrcIndex++)
     {
         /* Comparing whether any of Source power is greater than or 
          * equal to maximum Sink power*/
         if(u8SrcPower[u8SrcIndex][DPM_PDO_PWR] >= u8SinkPower[DPM_PDO_WITH_MAX_PWR][DPM_PDO_PWR])
         {
             u8SrcPDOIndex = u8SrcPower[u8SrcIndex][DPM_PDO_INDEX];
-            u32RcvdSrcPDO = u32aPartnerPDO[u8SrcPDOIndex];
+            u32RcvdSrcPDO = u32aPartnerSourcePDO[u8SrcPDOIndex];
             if((DPM_GET_PDO_VOLTAGE(u32RcvdSrcPDO) == DPM_GET_PDO_VOLTAGE(u32SinkAdvertisedPDO)) && \
                 (DPM_GET_PDO_CURRENT(u32RcvdSrcPDO)) >= DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO))
             {
@@ -1105,10 +1105,10 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     }
     
     /* Check DPM whether minimum PDO current matches*/
-    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8PartnerPDOCnt; u8SrcIndex++)
+    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8PartnerSourcePDOCnt; u8SrcIndex++)
     {
         u8SrcPDOIndex = u8SrcPower[u8SrcIndex][DPM_PDO_INDEX];
-        u32RcvdSrcPDO = u32aPartnerPDO[u8SrcPDOIndex];
+        u32RcvdSrcPDO = u32aPartnerSourcePDO[u8SrcPDOIndex];
         for(u8SinkIndex = SET_TO_ZERO; u8SinkIndex < u8SinkAdvertisedPDOCnt; u8SinkIndex++)
         {
             u8SinkAdvertisedPDOIndex = u8SinkPower[u8SinkIndex][DPM_PDO_INDEX];
@@ -1165,10 +1165,10 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
     
     /*  None of the capability matches thus capability mismatch bit is set*/
     u8CapMismatch = TRUE;   
-    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8PartnerPDOCnt; u8SrcIndex++)
+    for(u8SrcIndex = SET_TO_ZERO; u8SrcIndex < u8PartnerSourcePDOCnt; u8SrcIndex++)
     {
         u8SrcPDOIndex = u8SrcPower[u8SrcIndex][DPM_PDO_INDEX];
-        u32RcvdSrcPDO = u32aPartnerPDO[u8SrcPDOIndex];
+        u32RcvdSrcPDO = u32aPartnerSourcePDO[u8SrcPDOIndex];
         
         for(u8SinkIndex = SET_TO_ZERO; u8SinkIndex < u8SinkAdvertisedPDOCnt; u8SinkIndex++)
         {
@@ -1354,11 +1354,11 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #endif  
 #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
-    
+
     /*On negotiation, initiate Get Sink caps if Get Sink is not initiated already
      and Partner PDO is null; In case of PB enabled, Get Sink caps is initiated 
      by PB layer*/
-    if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]) &&\
+    if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0]) &&\
           (PD_ROLE_SOURCE == u8DPMPowerRole) &&\
             (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
     {
@@ -1447,10 +1447,12 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     /*Clear Partner PDO, Advertised PDO, Cable Identity and Partner Identity registers */
     for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
     {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[u8Index] = RESET_TO_ZERO;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[u8Index] = RESET_TO_ZERO;
         gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;        
     }
-    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSourcePDOCnt = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = RESET_TO_ZERO; 
     
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
@@ -1603,6 +1605,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_NOT_VCONN_SRC))))
             {
                 u8RetVal = DPM_REQUEST_SWAP;
+                
             }
             else
             {

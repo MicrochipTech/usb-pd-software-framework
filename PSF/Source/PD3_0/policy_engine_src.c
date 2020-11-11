@@ -1121,10 +1121,10 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS\r\n"); 
                     /* Store the received sink caps and send notification */                                               
-                    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = PRL_GET_OBJECT_COUNT(u32Header);
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt = PRL_GET_OBJECT_COUNT(u32Header);
     
-                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, pu8DataBuf,
-                                 (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt * BYTE_LEN_4));           
+                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO, pu8DataBuf,
+                                 (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt * BYTE_LEN_4));           
                     
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
