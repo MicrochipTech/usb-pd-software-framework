@@ -1103,17 +1103,17 @@ void DPM_AltModeEventHandler(UINT8 u8PortNum)
            if(u8QueueEntry)
            {
                u8HPDCurrentIndex++;
-               u8HPDCurrentIndex =(u8HPDCurrentIndex % UPD_HPD_QUEUE_SIZE);
+               u8HPDCurrentIndex = (u8HPDCurrentIndex % UPD_HPD_QUEUE_SIZE);
                switch(u8QueueEntry)
                { 
                    case eMCHP_PSF_UPD_HPD_HIGH: 
-                       MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
+                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
                        break; 
                    case eMCHP_PSF_UPD_HPD_LOW: 
-                       MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
+                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
                        break; 
                    case eMCHP_PSF_UPD_IRQ_HPD: 
-                       MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
+                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
                        break; 
                    default: 
                        break; 
