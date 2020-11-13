@@ -141,8 +141,10 @@ void PE_RunStateMachine (UINT8 u8PortNum)
             /*Assign Idle state to PE if AMS is not initiated on TX and message is received
              * before that*/
             if ((TRUE == gasPRL[u8PortNum].u8TxStsDPMSyncISR) && \
-                    (gasDPM[u8PortNum].u16InternalEvntInProgress))
+                    (gasDPM[u8PortNum].u16InternalEvntInProgress))            
             {
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PE: INTERNAL EVT Discarded due to Rcvd Msg\r\n");
+                
                 if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
@@ -533,7 +535,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         else
                         {
                             gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_EVALUATE_CAPABILITY;
-                        }
+                        }                        
                     }
                     else
                     {
@@ -544,6 +546,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 
                 case PE_DATA_REQUEST:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DATA_REQUEST: Request message received\r\n");
+                    
                     if ((ePE_SRC_SEND_CAPABILITIES == gasPolicyEngine[u8PortNum].ePEState) || \
                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                        (u8PEInVDMState))
@@ -564,8 +568,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }
                         
-                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SRC_NEGOTIATE_CAPABILITY,(ePolicySubState)SET_TO_ZERO);
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DATA_REQUEST: Request message received\r\n");
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SRC_NEGOTIATE_CAPABILITY,(ePolicySubState)SET_TO_ZERO);                        
                     }
                     else
                     {
@@ -1334,43 +1337,53 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 {
                     if (ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState)
                     {
+#if (TRUE == INCLUDE_PD_VDM)
                         /* Kill the VDM Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);  
                         
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_VDM_INITIATE_VDM,\
                                                                    ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS);                                                     
-                    }
+#endif 
+                    }                    
                     else if (ePE_SRC_GET_SINK_STATUS == gasPolicyEngine[u8PortNum].ePEState)
                     {
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)                        
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);  
                         
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SRC_GET_SINK_STATUS,\
                                                                    ePE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS);                                                                                                    
+#endif
                     }
                     else if (ePE_VCS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState)
                     {
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)                        
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);  
                         
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_VCS_SEND_SWAP,\
                                                                    ePE_VCS_SEND_SWAP_NO_RESPONSE_SS);                          
+#endif 
                     }
                     else if (ePE_PRS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState)
                     {
+#if (TRUE == INCLUDE_PD_PR_SWAP)
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);  
                         
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_PRS_SEND_SWAP,\
                                                                    ePE_PRS_SEND_SWAP_NO_RESPONSE_SS);                                                  
+#endif 
                     }
                     else if (ePE_DRS_SEND_SWAP == gasPolicyEngine[u8PortNum].ePEState)
                     {
+#if (TRUE == INCLUDE_PD_DR_SWAP)                        
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);  
                         
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_DRS_SEND_SWAP,\
                                                                    ePE_DRS_SEND_SWAP_NO_RESPONSE_SS);                                                                          
+#endif
                     }
                     else
                     {
@@ -1394,8 +1407,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
     {
         
     }
-
-
 }
 /***************************************************************************************/
 /***************************************************************************************/
@@ -1861,25 +1872,25 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     /*Request Device Policy Manager for the Capability Message*/
                     if (PE_CTRL_GET_SINK_CAP == PRL_GET_MESSAGE_TYPE (u32Header))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP RCVD\r\n");
+#if (TRUE == INCLUDE_PD_SINK)                        
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP RCVD\r\n");                        
                         
-                        #if (TRUE == INCLUDE_PD_SINK)
                         DPM_GetSinkCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);                    
-                        #endif                      
-
+                                              
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SINK_CAP,\
                                                          u8DataObjCnt, PE_NON_EXTENDED_MSG);                                                               
+#endif
                     }
                     else if (PE_CTRL_GET_SOURCE_CAP == PRL_GET_MESSAGE_TYPE (u32Header))
                     {
+#if (TRUE == INCLUDE_PD_SOURCE)                         
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SOURCE_CAP RCVD\r\n");
-
-                        #if (TRUE == INCLUDE_PD_SOURCE)                        
-                        DPM_GetSourceCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);
-                        #endif 
+                                               
+                        DPM_GetSourceCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);                        
 
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,\
                                                          u8DataObjCnt, PE_NON_EXTENDED_MSG);                                                                                       
+#endif 
                     }
                     else
                     {
