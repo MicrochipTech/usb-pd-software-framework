@@ -1186,11 +1186,11 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                VCONN Swap will be once again initiated */
             gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
             
+            DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
+            
             /* Move to Ready state */
             gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-            gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
-                    
-            DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
+            gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                
             
             /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
@@ -1270,13 +1270,14 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     /* Reset the discover identity counter to 0*/
                     gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
                     
-                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
-                    
                     DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
+                    
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                        
                     
                     /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
+                    
                     break;
                 }
                 default:

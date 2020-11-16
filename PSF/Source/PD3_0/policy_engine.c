@@ -210,11 +210,11 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 /*******************PE Support functions to decode and handle received messages**********************/
 /****************************************************************************************/
 UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
-{
-    UINT8 u8MsgType;
+{    
     UINT8 u8RetVal = PE_SUPPORTED_MSG;
-
-    u8MsgType = PRL_GET_MESSAGE_TYPE (u16Header);
+    UINT8 u8MsgType = PRL_GET_MESSAGE_TYPE (u16Header);
+    UINT8 u8DefaultPwrRole = DPM_GET_DEFAULT_POWER_ROLE(u8PortNum); 
+    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
 
     /*Only Status and FW_Update_Request Extended messages are supported 
       by the policy engine*/
@@ -298,7 +298,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             else if (PE_CTRL_GET_SINK_CAP == u8MsgType)
             {
                 /* Get Sink Caps shall be supported for Sink only and DRP ports */                
-                if (PD_ROLE_SOURCE == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
+                if (PD_ROLE_SOURCE == u8DefaultPwrRole)
                 {
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 }
@@ -306,7 +306,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             else if (PE_CTRL_GET_SOURCE_CAP == u8MsgType)
             {
                 /* Get Source Caps shall be supported for Source only and DRP ports */
-                if (PD_ROLE_SINK == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
+                if (PD_ROLE_SINK == u8DefaultPwrRole)
                 {
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 }                
@@ -316,7 +316,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
-            else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
+            else if ((PD_ROLE_SOURCE == u8CurrentPwrRole) && \
                      ((PE_CTRL_PING == u8MsgType) || (PE_CTRL_GOTO_MIN == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
@@ -348,12 +348,12 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
-            else if ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
-                    (PE_DATA_SOURCE_CAP == u8MsgType))
+            else if ((PD_ROLE_SOURCE == u8CurrentPwrRole) && \
+                     (PE_DATA_SOURCE_CAP == u8MsgType))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
-            else if ((PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum)) && \
+            else if ((PD_ROLE_SINK == u8CurrentPwrRole) && \
                     ((PE_DATA_SINK_CAP == u8MsgType) || (PE_DATA_REQUEST == u8MsgType) || \
                     (PE_DATA_ALERT == u8MsgType)))
             {
