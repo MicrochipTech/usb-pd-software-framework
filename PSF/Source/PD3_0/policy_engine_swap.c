@@ -1095,7 +1095,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,\
                                          PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
-                    if (DPM_IsPortVCONNSource(u8PortNum))
+                    if (DPM_IS_VCONN_SRC_RESPONSIBLE(u8PortNum))
                     {
                         eTxDoneSt = ePE_VCS_WAIT_FOR_VCONN;
                         eTxDoneSS = ePE_VCS_WAIT_FOR_VCONN_START_TIMER_SS;
@@ -1190,6 +1190,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
             gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                     
+            DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
+            
             /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
             
@@ -1270,6 +1272,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    
+                    DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
                     
                     /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
