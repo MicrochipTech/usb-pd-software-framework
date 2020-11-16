@@ -68,12 +68,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 	UINT8 u8IsTransmit = FALSE;
 
 	/* Ra Presence Check */
-    UINT8 u8RaPresence = FALSE;
-    
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)    
-    /* Added for negotiated PDO debug message */
-    UINT32 u32PDODebug = SET_TO_ZERO;
-#endif
+    UINT8 u8RaPresence = FALSE;    
     
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)    
     /* PS_RDY Timer value to be used in case of PPS contract */
@@ -170,9 +165,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         {
 							/* Port partner attached with E-Cable */
                             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_STARTUP-IDLE_SS: E-Cable and Device Attached\r\n");
-                            gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_REQUEST;
-                            gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;
                             gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_3A_UNIT;
+                            gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_REQUEST;
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;                            
                         }
                     } 
                     else
@@ -564,11 +559,6 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 case ePE_SRC_READY_ENTRY_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_READY-ENTRY_SS\r\n");
-                    
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-                    u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
-                    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
-#endif
 					
 					/* Set the PD contract as Explicit Contract */
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_EXPLICIT_CONTRACT;                    
@@ -860,12 +850,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO);
                         
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-                        u32PDODebug = SET_TO_ZERO;
-                        DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
-#endif
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS;
-                     
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS;                     
                     }
                     else
                     {
@@ -953,35 +938,10 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     if(TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_ON_SS\r\n");
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)                        
-                        switch((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS)
-                        {
-                            case TYPEC_DFP_DEFAULT_CURRENT:
-                            {
-                                u32PDODebug = DPM_DEBUG_PDO_5V_9MA;
-                                break;  
-                            }
-                            
-                            case TYPEC_DFP_1A5_CURRENT:
-                            {
-                                u32PDODebug = DPM_DEBUG_PDO_5V_1P5A;
-                                break;  
-                            }
-                            
-                            case TYPEC_DFP_3A0_CURRENT:
-                            {
-                                u32PDODebug = DPM_DEBUG_PDO_5V_3A;
-                                break;  
-                            }
-                        }
-#endif                        
-                        
+
                         /*Kill the VBUS ON timer since vSafe5V is reached*/
                         PE_KillPolicyEngineTimer (u8PortNum);
 
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-                        DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
-#endif
                         /* Inform Protocol Layer about Hard Reset Complete */
                         PRL_OnHardResetComplete(u8PortNum);
 						

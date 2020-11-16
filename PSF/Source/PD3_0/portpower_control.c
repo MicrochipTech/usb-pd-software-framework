@@ -92,7 +92,8 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
 /************************************************************************************/
 void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
 {
-    #if (TRUE == INCLUDE_PD_SOURCE)
+#if (TRUE == INCLUDE_PD_SOURCE)
+    
     if(PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
     {
         UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
@@ -120,7 +121,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Cur
         MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS (u8PortNum, u16VBUSVoltage, u16Current);
     }
 
-    #endif
+#endif
     
 }
 /************************************************************************************/

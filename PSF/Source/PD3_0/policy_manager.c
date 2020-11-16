@@ -63,20 +63,6 @@ void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
         the user application will raise a Port disable client request*/
     }
 }
-void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
-{
-    if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
-    {
-        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
-        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
-    }    
-    else
-    {
-        DPM_VBUSorVCONNOnOff_TimerCB ( u8PortNum, u8DummyVariable);
-    }
-    
-    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-}
 
 void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 { 
@@ -172,21 +158,27 @@ void DPM_SetPortPower(UINT8 u8PortNum)
     
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
+#if (TRUE == INCLUDE_PD_SOURCE)        
         u16CurrentInmA = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA;
                 
         TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);            
         
         PWRCTRL_SetPortPower (u8PortNum, u16VoltageInmV, u16CurrentInmA);
+#endif 
     }
     else
     {
+#if (TRUE == INCLUDE_PD_SINK)        
         u16CurrentInmA = gasDPM[u8PortNum].u16SinkOperatingCurrInmA;
+        
         TypeC_ConfigureVBUSThr(u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+#endif 
     }
 }
 
 void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 {
+#if (TRUE == INCLUDE_PD_SOURCE)    
 	UINT16 u16CurrentInmA, u16VoltageInmV;
     
 	if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
@@ -218,6 +210,7 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
         /* Drive the VBUS as per the voltage value */
         PWRCTRL_SetPortPower (u8PortNum, u16VoltageInmV, u16CurrentInmA);        
     }
+#endif 
 }
 
 UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum)
@@ -544,7 +537,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         {
             /* Do Nothing */
         }
-        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Request is Valid \r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Request is Valid\r\n");
     }
 
     return u8RetVal;
@@ -745,8 +738,7 @@ void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
  	gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
 	
 	/* Reset the status variable*/
-    gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;
-	
+    gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;	
 }
 
 UINT8 DPM_ReturnTemperatureStatus (void)
@@ -915,13 +907,22 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_SINK)
 /****************************** DPM Sink related APIs*****************************************/
 /**************************************************************************************************/
-void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
+void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj)
 {   
-    /* Get Sink Capability from Port Configuration Data Structure */
-    *u8pSinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt;
-    
-        (void)MCHP_PSF_HOOK_MEMCPY ( pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, \
-                            DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt));
+    if (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
+    {
+        *pu8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewSinkPDOCnt;
+   
+        (void)MCHP_PSF_HOOK_MEMCPY (pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO, \
+                    DPM_4BYTES_FOR_EACH_PDO_OF(*pu8SinkPDOCnt));        
+    }
+    else
+    {
+        *pu8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+   
+        (void)MCHP_PSF_HOOK_MEMCPY (pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, \
+                    DPM_4BYTES_FOR_EACH_PDO_OF(*pu8SinkPDOCnt));        
+    }    
 }
 
 void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2], UINT8 u8SinkMode)
@@ -1146,7 +1147,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
                             u8SinkNoUSBSusp, u16SinkRDOCurIn10mA,\
                                                 DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO));
                 }
-                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = u16SinkRDOCurIn10mA * DPM_10mA;
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = (u16SinkRDOCurIn10mA * DPM_10mA);
                 /*Updating the globals with Sink PDO selected */
                 gasDPM[u8PortNum].u32NegotiatedPDO = u32RcvdSrcPDO;
                 /*Updating the globals with Sink PDO index selected*/
@@ -1196,7 +1197,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
                             u8SinkNoUSBSusp, DPM_GET_PDO_CURRENT(u32RcvdSrcPDO),\
                                                 DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO));
                 }
-                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_GET_PDO_CURRENT(u32RcvdSrcPDO) * DPM_10mA;
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = (DPM_GET_PDO_CURRENT(u32RcvdSrcPDO) * DPM_10mA);
                 
                 /*Updating the globals with Sink PDO selected */
                 gasDPM[u8PortNum].u32NegotiatedPDO = u32RcvdSrcPDO;
@@ -1255,8 +1256,6 @@ void DPM_UpdateNewPDOFrmSrcPwr(UINT8 u8PortNum, UINT16 u16PowerIn250mW)
 /********************* DPM API for Port Enable/Disable ******************/
 void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 {
-    UINT8 u8ConfiguredRpVal;
-    
     if (FALSE == u8Enable)
     {
         /* Disable the port by changing Type C states to 
@@ -1280,7 +1279,8 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
             
             if (PD_ROLE_SOURCE == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
             {
-                u8ConfiguredRpVal = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
+#if(TRUE == INCLUDE_PD_SOURCE)                
+                UINT8 u8ConfiguredRpVal = DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum);
                 
                 /*Setting the CC1 and CC2 line as user given Rp value*/
                 TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SOURCE, u8ConfiguredRpVal, TYPEC_ENABLE_CC1_CC2);
@@ -1288,33 +1288,31 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
                 /*Setting the Current Rp value status in u8PortSts variable as user given Rp value*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
                 gasTypeCcontrol[u8PortNum].u8PortSts |= (u8ConfiguredRpVal << TYPEC_CURR_RPVAL_POS);
-            
-#if(TRUE == INCLUDE_PD_SOURCE)                           
+                                       
                 /*Enable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                 PWRCTRL_ConfigDCDCEn(u8PortNum, TRUE);
-#endif                        
+                       
                 #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                 /*Enable PIO override enable*/
                 UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
                 #endif
 
                 DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SRC, TYPEC_UNATTACHED_SRC_ENTRY_SS);  
-
+#endif 
             }
             else if (PD_ROLE_SINK == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
             {
+#if (TRUE == INCLUDE_PD_SINK)                
                 /*Setting the CC1 and CC2 line as sink Rd*/
-                TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);                        
+                TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);                        
                 
                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                     
 	            TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
-	                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
-            
-				#if (TRUE == INCLUDE_PD_SINK)
+	                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+            				
 	            /*Disable the Sink circuitry to stop sinking the power from source*/
-	            PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
-	            #endif
+	            PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);	            
 
                 /*Setting CC Comparator ON*/
                 TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);   
@@ -1323,6 +1321,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 	            PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);
                 
                 DPM_SetTypeCState(u8PortNum, TYPEC_UNATTACHED_SNK, TYPEC_UNATTACHED_SNK_ENTRY_SS);
+#endif
             }
             else /*Power role is DRP*/
             {
@@ -1341,7 +1340,6 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
             /* Do nothing since the port shall only be enabled if it was 
             previously in the disabled state */ 
         }
-
     }
 }
 

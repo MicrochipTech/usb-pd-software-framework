@@ -54,6 +54,8 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
     
     if (u8CurrPTBank != u8PrevPTBank)
     {
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PT:Handle Bank Switch\r\n");
+        
         gau8PTPrevBank[u8PortNum] = u8CurrPTBank; 
         
         switch(u8CurrPTBank)
@@ -125,6 +127,8 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
     UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK;
     UINT16 u16PowerIn250mW = SET_TO_ZERO; 
     
+    DEBUG_PRINT_PORT_STR (u8PortNum,"PT:Calculate New Src PDOs\r\n");
+            
     if (DPM_PD_THROTTLE_BANK_A == u8CurrPTBank)
     {
         u16PowerIn250mW = gasCfgStatusData.sPBPerPortData[u8PortNum].u16MaxPrtPwrBankAIn250mW;

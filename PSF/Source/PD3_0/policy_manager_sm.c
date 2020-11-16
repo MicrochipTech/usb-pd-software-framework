@@ -44,7 +44,9 @@ void DPM_Init(UINT8 u8PortNum)
     
     DPM_UpdateDataRole(u8PortNum, u8CfgPowerRole);
     DPM_UpdatePowerRole(u8PortNum, u8CfgPowerRole); 
+#if (TRUE == INCLUDE_PD_SINK)
     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;        
+#endif
 
     /*Update PD spec revision, power and data roles in u8DPMConfigData*/
 	gasDPM[u8PortNum].u8DPMConfigData |= ((CONFIG_PD_DEFAULT_SPEC_REV  << DPM_DEFAULT_PD_SPEC_REV_POS)\
@@ -134,35 +136,35 @@ void DPM_StateMachineInit(void)
 
 void DPM_RunStateMachine (UINT8 u8PortNum)
 {
-    MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum);
+    MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum);       
+
+    /* Handle Client Requests if any */
+    DPM_ClientRequestHandler (u8PortNum);
     
+    /* Handle Internal Events if any */
+    DPM_InternalEventHandler (u8PortNum);
+    
+	/* Handle Power Faults if any */
+	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+		DPM_PowerFaultHandler (u8PortNum);
+	#endif
+        
+    /* Handle AltMode events if any */
+    #if(TRUE == INCLUDE_PD_ALT_MODE)    
+        DPM_AltModeEventHandler (u8PortNum);
+    #endif
+    
+    /* Handle Power Throttling Bank Switch */
+    #if (TRUE == INCLUDE_POWER_THROTTLING)
+        PT_HandleBankSwitch (u8PortNum);
+    #endif          
+        
     /* Run Type C State machine*/
     TypeC_RunStateMachine (u8PortNum);
     
     /* Run Policy engine State machine*/
-    PE_RunStateMachine(u8PortNum);     
-
-    #if(TRUE == INCLUDE_PD_ALT_MODE)
-    /*Handle AltMode events if any*/
-    DPM_AltModeEventHandler(u8PortNum);
-    #endif
+    PE_RunStateMachine (u8PortNum);  
     
-    /* Handle Power Throttling Bank Switching */
-    #if (TRUE == INCLUDE_POWER_THROTTLING)
-        PT_HandleBankSwitch(u8PortNum);
-    #endif  
-        
-	/* Power Fault handling*/
-	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-		DPM_PowerFaultHandler(u8PortNum);
-	#endif
-
-    /* Client Request Handling */
-    DPM_ClientRequestHandler(u8PortNum);
-    
-    /*Internal Event Handler*/
-    DPM_InternalEventHandler(u8PortNum);
-        
     /* UPD Power Management */
     #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         UPD_PwrManagementCtrl (u8PortNum);
@@ -171,7 +173,7 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
 
 /*********************************************************************************/
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-static void DPM_ClearPowerfaultFlags(UINT8 u8PortNum)
+static void DPM_ClearPowerFaultFlags(UINT8 u8PortNum)
 {
     /*ISR flag is cleared by disabling the interrupt*/
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
@@ -293,7 +295,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             if(FALSE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_VCONN_PWR_FAULT))
             {
                 /*Clear the Power fault flag and return*/
-                DPM_ClearPowerfaultFlags(u8PortNum);
+                DPM_ClearPowerFaultFlags(u8PortNum);
                 return;
             }
             /*Kill the VCONN Power fault timer*/
@@ -315,7 +317,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             if(FALSE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_VBUS_PWR_FAULT))
             {
                 /*Clear the Power fault flag and return*/
-                DPM_ClearPowerfaultFlags(u8PortNum);
+                DPM_ClearPowerFaultFlags(u8PortNum);
                 return;
             }
 
@@ -454,7 +456,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         #endif
             
 		/*Clear the Power fault flag*/
-        DPM_ClearPowerfaultFlags(u8PortNum);
+        DPM_ClearPowerFaultFlags(u8PortNum);
     }
 }
 void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
@@ -553,10 +555,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             #endif
             break;
         }
-        case eMCHP_PSF_PD_CONTRACT_NEGOTIATED:
-        {
-            break;
-        }
         case eMCHP_PSF_SINK_ALERT_RCVD:
         {
             #if (TRUE == INCLUDE_PD_SOURCE_PPS)
@@ -565,21 +563,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             #endif 
             break; 
         }         
-        case eMCHP_PSF_PR_SWAP_COMPLETE:
-        {            
-            /*Clear Partner PDO registers so that Get Sink Caps event would be 
-              triggered once an explicit contract is established.
-              Note: eMCHP_PSF_PR_SWAP_COMPLETE will be posted when 
-              1. Source to Sink PR_Swap is complete
-              2. Sink to Source PR_Swap is complete 
-              3. PR_Swap initiated by PSF is rejected by the partner
-              4. PR_Swap initiated by the partner is rejected by PSF
-              Clearing of Partner PDOs should not happen during 3rd and 4th
-              scenarios and hence the if condition */
-            #if (TRUE == INCLUDE_PD_PR_SWAP)
-            #endif 
-            break; 
-        }
         case eMCHP_PSF_PORT_DISABLED:
         {
             DPM_OnTypeCDetach(u8PortNum);
@@ -1064,6 +1047,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
     }
     if (u16IsAMSInProgress)
     {
+        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: INTERNAL EVT IN PROGRESS\r\n");
+        
 		gasDPM[u8PortNum].u16InternalEvntInProgress = u16IsAMSInProgress;
         #if (TRUE == INCLUDE_PD_3_0)
         if (PD_ROLE_SOURCE == u8DPMPowerRole)
@@ -1103,17 +1088,17 @@ void DPM_AltModeEventHandler(UINT8 u8PortNum)
            if(u8QueueEntry)
            {
                u8HPDCurrentIndex++;
-               u8HPDCurrentIndex =(u8HPDCurrentIndex % UPD_HPD_QUEUE_SIZE);
+               u8HPDCurrentIndex = (u8HPDCurrentIndex % UPD_HPD_QUEUE_SIZE);
                switch(u8QueueEntry)
                { 
                    case eMCHP_PSF_UPD_HPD_HIGH: 
-                       MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
+                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
                        break; 
                    case eMCHP_PSF_UPD_HPD_LOW: 
-                       MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
+                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
                        break; 
                    case eMCHP_PSF_UPD_IRQ_HPD: 
-                       MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
+                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
                        break; 
                    default: 
                        break; 
