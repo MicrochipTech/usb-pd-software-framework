@@ -63,20 +63,6 @@ void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
         the user application will raise a Port disable client request*/
     }
 }
-void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
-{
-    if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
-    {
-        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
-        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
-    }    
-    else
-    {
-        DPM_VBUSorVCONNOnOff_TimerCB ( u8PortNum, u8DummyVariable);
-    }
-    
-    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-}
 
 void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
 { 
@@ -551,7 +537,7 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         {
             /* Do Nothing */
         }
-        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Request is Valid \r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Request is Valid\r\n");
     }
 
     return u8RetVal;
@@ -752,8 +738,7 @@ void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
  	gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
 	
 	/* Reset the status variable*/
-    gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;
-	
+    gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;	
 }
 
 UINT8 DPM_ReturnTemperatureStatus (void)
@@ -922,13 +907,22 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_SINK)
 /****************************** DPM Sink related APIs*****************************************/
 /**************************************************************************************************/
-void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *u8pSinkPDOCnt, UINT32 * pu32DataObj)
+void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj)
 {   
-    /* Get Sink Capability from Port Configuration Data Structure */
-    *u8pSinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt;
-    
-        (void)MCHP_PSF_HOOK_MEMCPY ( pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, \
-                            DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt));
+    if (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
+    {
+        *pu8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8NewSinkPDOCnt;
+   
+        (void)MCHP_PSF_HOOK_MEMCPY (pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO, \
+                    DPM_4BYTES_FOR_EACH_PDO_OF(*pu8SinkPDOCnt));        
+    }
+    else
+    {
+        *pu8SinkPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
+   
+        (void)MCHP_PSF_HOOK_MEMCPY (pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, \
+                    DPM_4BYTES_FOR_EACH_PDO_OF(*pu8SinkPDOCnt));        
+    }    
 }
 
 void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2], UINT8 u8SinkMode)

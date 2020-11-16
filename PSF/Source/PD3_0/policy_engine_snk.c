@@ -124,15 +124,6 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 case ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS:
                 {                   
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS\r\n");
-
-                    /*Advertised PDO is updated with Sink's PDO*/
-                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-                            gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
-                            DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
-                    
-                    /*Advertised PDO Count is updated to SinkPDO Count*/
-                    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                            gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
                     
                     if (gasPolicyEngine[u8PortNum].u8HardResetCounter <= PE_N_HARD_RESET_COUNT)
                     {
