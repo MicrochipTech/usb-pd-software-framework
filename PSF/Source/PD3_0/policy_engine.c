@@ -510,10 +510,12 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
             {
                 case PE_DATA_SOURCE_CAP:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DATA_SOURCE_CAP: Source Cap message received\r\n");
+                    
                     /*Discard the VDM AMS and process the source capability message received*/
-                    if ((ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
-                         gasPolicyEngine[u8PortNum].ePESubState)|| (ePE_SNK_READY == \
-                         gasPolicyEngine[u8PortNum].ePEState) || (u8PEInVDMState))
+                    if ((ePE_SNK_WAIT_FOR_CAPABILITIES == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (u8PEInVDMState))
                     {
 #if (TRUE == INCLUDE_PD_VDM)
                         /* Kill VDM Response timer if PE is waiting for a VDM response, but
@@ -523,8 +525,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }
 #endif 
-                        if (ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS == \
-                            gasPolicyEngine[u8PortNum].ePESubState)
+                        if (ePE_SNK_WAIT_FOR_CAPABILITIES == \
+                            gasPolicyEngine[u8PortNum].ePEState)
                         {
                             /*Kill the PE_SINK_WAIT_CAP_TIMEOUT since the source
                             capability message has been received*/
@@ -828,8 +830,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 case PE_CTRL_ACCEPT:
                 {
                     /*Accept message received for Sink Data request*/
-                    if (ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS == \
-                        gasPolicyEngine[u8PortNum].ePESubState)
+                    if ((ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS == \
+                        gasPolicyEngine[u8PortNum].ePESubState) || \
+                        (ePE_SNK_SELECT_CAPABILITY_REQ_SENT_SS == \
+                         gasPolicyEngine[u8PortNum].ePESubState))
                     {
                         /*kill the timer PE_SENDER_RESPONSE_TIMEOUTID*/
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Accept Message Received\r\n");
@@ -920,8 +924,10 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 case PE_CTRL_WAIT:
                 case PE_CTRL_REJECT:
                 {
-                    if (ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS == \
-                        gasPolicyEngine[u8PortNum].ePESubState)
+                    if ((ePE_SNK_SELECT_CAPABILITY_WAIT_FOR_ACCEPT_SS == \
+                        gasPolicyEngine[u8PortNum].ePESubState)  || \
+                        (ePE_SNK_SELECT_CAPABILITY_REQ_SENT_SS == \
+                         gasPolicyEngine[u8PortNum].ePESubState))
                     {
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
