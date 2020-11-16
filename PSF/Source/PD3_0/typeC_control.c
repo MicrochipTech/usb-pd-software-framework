@@ -545,6 +545,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;                    
                     }
                    
+                    DPM_CLR_VCONN_SRC_RESPONSIBILITY(u8PortNum);
+                    
                     /* Notify external DPM of Port enabled event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_ENABLED);
                     
@@ -860,7 +862,16 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 }
                 
                 case TYPEC_ATTACHED_SRC_SET_PRL_SS:
-                {                                      
+                {                    
+                    if(FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum))
+                    {
+                        DPM_SET_VCONN_SRC_RESPONSIBILITY(u8PortNum);
+                    }
+                    else
+                    {
+                        /*Do nothing*/
+                    }
+
                     /*Sink Attached in CC1 pin*/
                     if(u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
                     {

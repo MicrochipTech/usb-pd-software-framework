@@ -152,12 +152,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VDM_RESPONSE_MASK                    BIT(15)
 #define DPM_SWAP_INIT_STS_MASK                   0x7E00
 #define DPM_AME_TIMER_DONE                       BIT(16)
+#define DPM_VCONN_SRC_RESPONSIBILITY             BIT(17)
 /*Bit position for u32DPMStatus variable*/
-#define DPM_CURR_POWER_ROLE_POS            0
-#define DPM_CURR_DATA_ROLE_POS             2
-#define DPM_CURR_PD_SPEC_REV_POS           4
-#define DPM_PORT_IN_MODAL_OPERATION_POS    6
-#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS  7
+#define DPM_CURR_POWER_ROLE_POS                     0
+#define DPM_CURR_DATA_ROLE_POS                      2
+#define DPM_CURR_PD_SPEC_REV_POS                    4
+#define DPM_PORT_IN_MODAL_OPERATION_POS             6
+#define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS         7
+#define DPM_VCONN_SRC_RESPONSIBILITY_POS            17
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u32DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_SINK
@@ -178,6 +180,19 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum) \
     ((gasDPM[u8PortNum].u32DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> \
     DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
+
+#define DPM_IS_VCONN_SRC_RESPONSIBLE(u8PortNum) \
+    ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONN_SRC_RESPONSIBILITY) >> \
+    DPM_VCONN_SRC_RESPONSIBILITY_POS)
+
+#define DPM_SET_VCONN_SRC_RESPONSIBILITY(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SRC_RESPONSIBILITY)
+
+#define DPM_CLR_VCONN_SRC_RESPONSIBILITY(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONN_SRC_RESPONSIBILITY))
+
+#define DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus ^= DPM_VCONN_SRC_RESPONSIBILITY)
 /**************************************************************************************************/
 
 /*******************************************************************************/
