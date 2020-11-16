@@ -55,16 +55,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    be enabled, change the value of CFG_PT_ENABLE macro to 1U. */
 #define CFG_PT_ENABLE                         0U 
 /*Bank A - 0, Bank B - 1, Bank C - 2, Shutdown mode - 3*/
-#define CFG_PT_POWER_THROTTLE_BANK_SEL  0U /*Bank A selected*/
+#define CFG_PT_POWER_THROTTLE_BANK_SEL        0U /*Bank A selected*/
 
 /**************************Power Balancing configuration******************* */
 /* Note: By default, PB is disabled for the system since support for 
    PPS + PB coexistence is planned for future phases. If PB needs to be 
    enabled, change the value of CFG_PB_ENABLE macro to 0x10U and 
-   CFG_PB_PORT_ENABLE to 0x01U. This will enable PB for the system 
-   with FCFS as Selection Algorithm and for the ports. */
+   CFG_PORT_x_PB_ENABLE to 0x01U. This will enable PB 
+   with FCFS as Selection Algorithm. */
 #define CFG_PB_ENABLE                         0x00U 
-#define CFG_PB_PORT_ENABLE                    0x00U
+
+#define CFG_PORT_0_PB_ENABLE                  0x00U
+#define CFG_PORT_1_PB_ENABLE                  0x00U
 
 /* Default Total System Power Bank A is 120W */
 #define CFG_PB_TOT_SYS_POWER_BANKA_IN_250mW            0x01E0U 
@@ -100,7 +102,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Data Role supported values 0-Dual Role Data Not supported, 1- Dual Role Date Supported */
 #define CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT    (0U << 2)
-#define CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT     (0U << 2)
+#define CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT    (0U << 2)
 
 /*Rp Value - 0 -Rd(Sink), 1-Default USB Rp, 2- 1.5A Rp, 3-3.0A Rp */
 #define CFG_PORT_0_RP_CURRENT_VALUE          (3U << 3)
@@ -111,10 +113,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_ENABLE       (1U << 5)
 
 /*VCONN OCS Enable - 0- Disable, 1-Enable*/
-#define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
+#define CFG_PORT_0_VCONN_OCS_ENABLE      (1U << 9)
 #define CFG_PORT_1_VCONN_OCS_ENABLE      (1U << 9)  
 
-/********************************PIO Specific configuraiton******************************/
+/********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 #define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 
@@ -126,8 +128,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_1_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 
-#define CFG_PORT_0_HPD_IO                   eUPD_PIO9
-#define CFG_PORT_1_HPD_IO                   eUPD_PIO9
+#define CFG_PORT_0_HPD_IO                    eUPD_PIO9
+#define CFG_PORT_1_HPD_IO                    eUPD_PIO9
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
 #define CFG_UNDER_VOLTAGE_FACTOR		  85U

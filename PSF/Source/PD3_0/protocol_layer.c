@@ -451,7 +451,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 		/* if Timer SinkTxTimer is ON, Tx Message is just buffered in Tx_FIFO by not setting Go bit*/
 		PRL_ChangeTxState (u8PortNum, PRL_TX_MSG_BUFFERED_ON_CA_ST);
         
-        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_MSG_BUFFERED_ON_CA: Tx Msg Buffered due to CA\r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg Buffered due to CA\r\n");
         
 		return PRL_RET_TX_MSG_BUFFERED;
 	}
@@ -473,7 +473,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 						Entered on condition "discarding Complete" */
 		PRL_PHYLayerReset (u8PortNum);
         
-        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_MSG_DISCARD_ON_RCV: Tx Msg Discarded on Recv\r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg Discarded on Recv\r\n");
 		
 		return PRL_RET_TX_MSG_DISCARD_ON_RCV;
 	}
@@ -485,7 +485,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	
 	while (!(u8OKToTx & PRL_TX_CTL_B_OK_TO_TX));
 	
-	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_MSG_ON_LINE: Tx Msg sent on line\r\n");
+	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg sent on line\r\n");
 	
 	/* Go bit is set & message sent to PHY Layer*/
 	/* Spec Ref: PRL_Tx_Wait_for_PHY_response, PRL_Tx_Match_MessageID, PRL_Tx_Check_RetryCounter state is handled by UPD hardware */
@@ -711,8 +711,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8 *pu8SOPType, UINT32 *pu32Header, UI
             }
         }
         
-        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_RX_PKT_PASSED_TO_PE: Rx Msg received passed to PE\r\n");
-
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Rx Msg passed to PE\r\n");        
     }
     
     #if (TRUE == INCLUDE_PD_3_0)

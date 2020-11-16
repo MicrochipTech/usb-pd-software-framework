@@ -42,10 +42,6 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 	PRLTxCallback pfnTransmitCB = NULL;
 	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
 	UINT8 u8IsTransmit = FALSE;
-
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-    UINT32 u32PDODebug = SET_TO_ZERO;
-#endif
     
     /*Getting Type-C state and Type-C Sub State from DPM to find Type C detach event*/
     DPM_GetTypeCStates (u8PortNum, &u8TypeCState, &u8TypeCSubState);
@@ -102,8 +98,10 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     
             /*Query the Device policy manager for VBUS of 5V Presence*/
             if ((TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum)) && \
-                (TYPEC_ATTACHED_SNK == u8TypeCState) && (TYPEC_ATTACHED_SNK_RUN_SM_SS == u8TypeCSubState))
+                (TYPEC_ATTACHED_SNK == u8TypeCState))
             {
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_DISCOVERY\r\n");
+                
 			  	/* Enable Power fault thresholds for TYPEC_VBUS_5V to detect Power faults*/
                 TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA,TYPEC_CONFIG_PWR_FAULT_THR);
@@ -126,15 +124,6 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 case ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS:
                 {                   
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS\r\n");
-
-                    /*Advertised PDO is updated with Sink's PDO*/
-                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO, 
-                            gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, 
-                            DPM_4BYTES_FOR_EACH_PDO_OF(gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt));
-                    
-                    /*Advertised PDO Count is updated to SinkPDO Count*/
-                    gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = \
-                            gasCfgStatusData.sPerPortData[u8PortNum].u8SinkPDOCnt;
                     
                     if (gasPolicyEngine[u8PortNum].u8HardResetCounter <= PE_N_HARD_RESET_COUNT)
                     {
@@ -338,16 +327,13 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 case ePE_SNK_READY_ENTRY_SS:
                 {                    
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_ENTRY_SS\r\n");
-					/* configure threshold to detect faults*/
+					
+                    /* Configure threshold to detect faults*/
                    	DPM_EnablePowerFaultDetection(u8PortNum);
 					
                     /*Setting the explicit contract as True*/
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= (PE_EXPLICIT_CONTRACT);                    
-                    
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)                    
-                    u32PDODebug = gasDPM[u8PortNum].u32NegotiatedPDO;
-                    DEBUG_PRINT_PORT_UINT32_STR( u8PortNum, "PDPWR", u32PDODebug, 1, "\r\n");
-#endif                  
+                                    
                     /*Set EN_SINK*/
                     PWRCTRL_ConfigEnSink(u8PortNum, TRUE);
 
