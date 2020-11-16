@@ -136,35 +136,35 @@ void DPM_StateMachineInit(void)
 
 void DPM_RunStateMachine (UINT8 u8PortNum)
 {
-    MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum);
+    MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum);       
+
+    /* Handle Client Requests if any */
+    DPM_ClientRequestHandler (u8PortNum);
     
+    /* Handle Internal Events if any */
+    DPM_InternalEventHandler (u8PortNum);
+    
+	/* Handle Power Faults if any */
+	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+		DPM_PowerFaultHandler (u8PortNum);
+	#endif
+        
+    /* Handle AltMode events if any */
+    #if(TRUE == INCLUDE_PD_ALT_MODE)    
+        DPM_AltModeEventHandler (u8PortNum);
+    #endif
+    
+    /* Handle Power Throttling Bank Switch */
+    #if (TRUE == INCLUDE_POWER_THROTTLING)
+        PT_HandleBankSwitch (u8PortNum);
+    #endif          
+        
     /* Run Type C State machine*/
     TypeC_RunStateMachine (u8PortNum);
     
     /* Run Policy engine State machine*/
-    PE_RunStateMachine(u8PortNum);     
-
-    #if(TRUE == INCLUDE_PD_ALT_MODE)
-    /*Handle AltMode events if any*/
-    DPM_AltModeEventHandler(u8PortNum);
-    #endif
+    PE_RunStateMachine (u8PortNum);  
     
-    /* Handle Power Throttling Bank Switching */
-    #if (TRUE == INCLUDE_POWER_THROTTLING)
-        PT_HandleBankSwitch(u8PortNum);
-    #endif  
-        
-	/* Power Fault handling*/
-	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-		DPM_PowerFaultHandler(u8PortNum);
-	#endif
-
-    /* Client Request Handling */
-    DPM_ClientRequestHandler(u8PortNum);
-    
-    /*Internal Event Handler*/
-    DPM_InternalEventHandler(u8PortNum);
-        
     /* UPD Power Management */
     #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         UPD_PwrManagementCtrl (u8PortNum);
