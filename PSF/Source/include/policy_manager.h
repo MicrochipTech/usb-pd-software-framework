@@ -1150,26 +1150,27 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, 
 
 /**************************************************************************************************
     Function:
-        void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8* u8pSinkPDOCnt, UINT32 * pu32DataObj);
+        void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj);
     Summary:
         Device Policy Manager updates the policy engine about the sink capability for a given port
     Devices Supported:
         UPD350 REV A
     Description:
-        This Function is called by the policy engine to the Device policy Manager to get the sink capability Power data object for a given port
+        This Function is called by the policy engine to the Device policy Manager to get the 
+        sink capability Power data object for a given port
     Conditions:
         None.
     Input:
 
         u8PortNum      - Port Number for which the sink capability to be returned
-        u8pSinkPDOCnt  - Pointer variable holding the PDO count of sink capability
+        pu8SinkPDOCnt  - Pointer variable holding the PDO count of sink capability
         pu32DataObj   - Pointer variable holding the Data object of Sink Capability message
     Return:
         None
     Remarks:
         None
 **************************************************************************************************/
-void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8* u8pSinkPDOCnt, UINT32 * pu32DataObj);
+void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj);
 
 /**************************************************************************************************
     Function:
@@ -1194,30 +1195,6 @@ void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8* u8pSinkPDOCnt, UINT32 * pu3
 
 **************************************************************************************************/
 void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
-
-/**************************************************************************************************
-    Function:
-        void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
-    Summary:
-        This API is given as the timer call back API when starting the tSrcReady Timer from 
-        Type-C and source policy engine state machines.     
-    Devices Supported:
-        UPD350 REV A
-    Description:
-        This API is given as the timer call back API when starting the tSrcReady Timer from 
-        Type-C and source policy engine state machines.  
-    Conditions:
-        None
-    Input:
-        u8PortNum       - Port Number.
-        u8DummyVariable - Dummy Argument
-    Return:
-        None.
-    Remarks:
-        None.
-
-**************************************************************************************************/
-void DPM_SrcReady_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
