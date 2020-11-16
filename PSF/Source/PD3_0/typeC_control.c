@@ -929,7 +929,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             
             /*Source enters this SubState after the tPDDeounce Software timer expires*/  
             case TYPEC_UNATTACHED_WAIT_SRC_PD_DEB_TIMEOUT_SS:
-            {                    
+            {         
+                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_WAIT_SRC_PD_DEB_TIMEOUT_SS\r\n"); 
+                
                 /*Disable VBUS by driving to vSafe0V*/
                 DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
                 
@@ -938,8 +940,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
                                                               DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
-                                                              (UINT8)SET_TO_ZERO);
-                		
+                                                              (UINT8)SET_TO_ZERO);                		
                  
                 /*Enabling the VCONN Discharge if we are supplying VCONN or VCONN Req was ON*/
                 if(((u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) != TYPEC_VCONN_DISABLED) \
@@ -948,14 +949,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Disable VCONN by switching off the VCONN FETS*/
                     TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);
                     
-                    /*Clearing the VCONN ON Request mask if VCONN has turned ON*/
+                    /*Clearing the VCONN ON Request mask if VCONN has turned OFF*/
                     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
                     
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_IDLE_SS;
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_WAIT_FOR_VCONN_OFF_SS;
                 }
                 else
                 {
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_CHECK_VBUS_OFF_SS;
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_WAIT_FOR_VBUS_OFF_SS;
                 }
                 
                 break;
@@ -971,12 +972,26 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 break;
             }
              
+            case TYPEC_UNATTACHED_WAIT_SRC_WAIT_FOR_VCONN_OFF_SS:
+            {
+                if(!(u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
+                {
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_WAIT_FOR_VBUS_OFF_SS;                    
+                }
+                else
+                {
+                    /* Hook to notify Type C state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);                        
+                }                
+                break;
+            }
+            
             /*Wait in this sub-state until the VBUS goes to 0V before moving into Unattached state*/
-            case TYPEC_UNATTACHED_WAIT_SRC_CHECK_VBUS_OFF_SS:
+            case TYPEC_UNATTACHED_WAIT_SRC_WAIT_FOR_VBUS_OFF_SS:
             {
                 if(TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
-                {                    
-                    /*Kill the VBUS ON timer since vSafe0V is reached*/
+                {                                         
+                    /*Kill the VBUS OFF timer since vSafe0V is reached*/
                     TypeC_KillTypeCTimer (u8PortNum);
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;
                     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
@@ -1701,13 +1716,27 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Disable VCONN by switching off the VCONN FETS*/
                         TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);
 
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_IDLE_SS;
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_WAIT_FOR_VCONN_OFF_SS;
                     }
                     else
                     {
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_WAIT_FOR_VBUS_OFF_SS;
                     }
                            
+                    break; 
+                }
+                
+                case TYPEC_DISABLED_WAIT_FOR_VCONN_OFF_SS:
+                {
+                    if(!(u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
+                    {
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_WAIT_FOR_VBUS_OFF_SS;                    
+                    }
+                    else
+                    {
+                        /* Hook to notify Type C state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);                        
+                    }                      
                     break; 
                 }
                 
@@ -2732,23 +2761,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
                     TypeC_SrcIntrHandler(u8PortNum); 
                     break;
                 }
-                #endif
-                case TYPEC_UNATTACHED_WAIT_SRC:
-                {                       
-                    /*Setting the Sub-state to verify whether VBUS has reached to 0V before moving into 
-                    unattached state */
-                    /*This condition occurs when VCONN Discharge is completed*/                    
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_CHECK_VBUS_OFF_SS;                  
-                    break;
-                }     
-                case TYPEC_DISABLED:
-                {                       
-                    /*Setting the Sub-state to verify whether VBUS has reached to 0V before moving into 
-                    unattached state */
-                    /*This condition occurs when VCONN Discharge is completed*/                    
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_WAIT_FOR_VBUS_OFF_SS;                  
-                    break;
-                } 
+                #endif      
                 #if (TRUE == INCLUDE_PD_SINK)
                 case TYPEC_UNATTACHED_SNK:
                 case TYPEC_ATTACHWAIT_SNK:
@@ -2756,8 +2769,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
                 {                          
                     TypeC_SnkIntrHandler(u8PortNum);
                     break;
-                }
-                
+                }                
                 #endif
                 
                 case TYPEC_AUDIO_ACCESSORY:
@@ -2765,7 +2777,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
                 {                
                     /*Only the CC Detach is expected in both the above states.Hence CC interrupt leads 
                     to unattached state*/
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_UNATTACHED_SRC_ENTRY_SS;
+                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;
                     gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SRC;
                     break; 
                 }
@@ -3558,7 +3570,7 @@ void TypeC_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
 /*Generic timer call back routine for device policy manager*/
 void TypeC_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCSubState)
 {	
-	gasTypeCcontrol[u8PortNum].u8TypeCSubState  = u8TypeCSubState;
+	gasTypeCcontrol[u8PortNum].u8TypeCSubState = u8TypeCSubState;
     gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
 }
 
