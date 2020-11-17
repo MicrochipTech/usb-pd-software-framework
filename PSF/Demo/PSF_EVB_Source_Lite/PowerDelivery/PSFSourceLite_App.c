@@ -506,7 +506,8 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
             UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
             /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL1_STATUS;            break;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL1_STATUS;            
+            break;
         }
         case APP_VOLTAGE_20000mV:
         {

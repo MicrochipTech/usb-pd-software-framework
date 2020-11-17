@@ -205,6 +205,14 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 #endif 
         PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);        
     }
+    else
+    {
+        /* This hook is needed to notify that PE has entered idle 
+           after a detach. For a DRP port, current power role will be 
+           changed to DRP after detach. So, PE SMs will not run and 
+           therefore this notification is needed */
+        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+    }    
 }
 /***************************************************************************************/
 /*******************PE Support functions to decode and handle received messages**********************/
