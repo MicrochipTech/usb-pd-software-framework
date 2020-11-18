@@ -205,6 +205,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 #endif 
         PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType,u32Header);        
     }
+#if(TRUE == INCLUDE_PD_DRP)    
     else
     {
         /* This hook is needed to notify that PE has entered idle 
@@ -212,7 +213,8 @@ void PE_RunStateMachine (UINT8 u8PortNum)
            changed to DRP after detach. So, PE SMs will not run and 
            therefore this notification is needed */
         MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
-    }    
+    }  
+#endif 
 }
 /***************************************************************************************/
 /*******************PE Support functions to decode and handle received messages**********************/
@@ -1489,7 +1491,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
     static UINT8 u8TempRespBuffer[3];
 #endif   
     UINT32 u32aDataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
-    UINT8 u8DataObjCnt;
+    UINT8 u8DataObjCnt = SET_TO_ZERO;
 
     switch (gasPolicyEngine[u8PortNum].ePEState)
     {
