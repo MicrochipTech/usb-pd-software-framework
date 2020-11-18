@@ -399,7 +399,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
     TypeC_ConfigCCComp (u8PortNum,TYPEC_CC_COMP_CTL_CC1_CC2);
     
     /*Setting the Power Module as per the port role*/
-    if(DPM_GET_CURRENT_POWER_ROLE(u8PortNum)== PD_ROLE_SOURCE)
+    if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         /*Setting the VBUS to vSafe0V before entering the State machine*/
         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);

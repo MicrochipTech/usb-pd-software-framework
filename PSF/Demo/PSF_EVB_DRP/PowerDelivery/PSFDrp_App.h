@@ -59,7 +59,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PWRCTRL_GPIO_DC_DC     1
 
 /* Macro to indicate I2C based DC-DC Controller */
-#define PWRCTRL_I2C_DC_DC     2
+#define PWRCTRL_I2C_DC_DC      2
 
 /* Defines the type of DC DC Controller used */
 #define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC
