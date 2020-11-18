@@ -168,7 +168,7 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_DRS_SEND_SWAP , \
-                                                ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS, \
+                                                ePE_DRS_SEND_SWAP_MSG_DONE_SS, \
                                                ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
 
                     u8IsTransmit = TRUE;
@@ -178,9 +178,9 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                    
                     break;
                 }
-                case ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS:
+                case ePE_DRS_SEND_SWAP_MSG_DONE_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_SEND_SWAP_MSG_DONE_SS\r\n");
                     
                     /* Start Sender Response Timer */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (

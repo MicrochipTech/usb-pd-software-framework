@@ -351,6 +351,7 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_PDO_TYPE(X)   					((X & 0xC0000000) >> 30)
 #define DPM_GET_PDO_CURRENT(X)                  ((X & 0x000003FF))
 #define DPM_GET_PDO_VOLTAGE(X)                  ((X & 0x000FFC00) >> 10)	/*in 50mv units*/
+#define DPM_GET_PDO_FRS_CURRENT(X)              ((X & 0x01800000) >> 23)    
 #define DPM_GET_PDO_USB_COMM_CAP(X)             ((X & 0x04000000) >> 26)
 #define DPM_GET_PDO_DUAL_DATA(X)                ((X & 0x02000000) >> 25)
 #define DPM_GET_PDO_DUAL_POWER(X)               ((X & 0x20000000) >> 29)

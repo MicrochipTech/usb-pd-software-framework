@@ -179,9 +179,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_0_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_0_SINK_USB_COMM             0U
-#define CFG_PORT_0_SINK_PDO_1_VOLTAGE        5000U
-#define CFG_PORT_0_SINK_PDO_1_CURRENT        3000U 
+/* To-do: Set relevant current value */
+#define CFG_PORT_0_SINK_FRS_CURRENT          0U
+
 #define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
+                                    CFG_PORT_0_SINK_FRS_CURRENT, \
                                     CFG_PORT_0_DUAL_ROLE_DATA, \
                                     CFG_PORT_0_SINK_USB_COMM, \
                                     CFG_PORT_0_SINK_UNCONSTRAINED_PWR, \
@@ -230,8 +232,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_1_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_1_SINK_USB_COMM             0U
+/* To-do: Set relevant current value */
+#define CFG_PORT_1_SINK_FRS_CURRENT          0U 
 
 #define CFG_PORT_1_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 0,\
+                                    CFG_PORT_1_SINK_FRS_CURRENT, \
                                     CFG_PORT_1_DUAL_ROLE_DATA, \
                                     CFG_PORT_1_SINK_USB_COMM, \
                                     CFG_PORT_1_SINK_UNCONSTRAINED_PWR, \
@@ -462,12 +467,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
   B19-B10   - Voltage in 50mV units
   B9-B0     - Maximum current in 10mA units */
 /* Macro used to form Sink Fixed PDO 1 */
-#define CFG_FORM_SINK_FIXED_PDO1(voltage,current,DualRoleData,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
+#define CFG_FORM_SINK_FIXED_PDO1(voltage,current,FRSCurrent,DualRoleData,usbCommn,unconstrainedPwr,HigherCapability,isDrp)  \
     (((isDrp) << 29) | \
     (((HigherCapability) << 28)) | \
     ((unconstrainedPwr) << 27) | \
     ((usbCommn) << 26) | \
     ((DualRoleData) << 25) |\
+    ((FRSCurrent) << 23) |\
     (((voltage)/50) << 10) | \
     ((current)/10))  
 

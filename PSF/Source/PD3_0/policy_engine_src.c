@@ -1037,7 +1037,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     u32pTransmitDataObj = NULL;
                     pfnTransmitCB = PE_StateChange_TransmitCB;                 
                         
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_MSG_DONE_SS, \
                                                     ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
                                                 
                     u8IsTransmit = TRUE;                                             
@@ -1047,9 +1047,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     break; 
                 }                   
                 
-                case ePE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS: 
+                case ePE_SRC_GET_SINK_CAP_MSG_DONE_SS: 
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_CAP_GOODCRC_RCVD_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_CAP_MSG_DONE_SS\r\n"); 
                     
                     /* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_SRC_GET_SINK_CAP_TIMER_TIMEDOUT sub state if timeout happens */
@@ -1281,7 +1281,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     u32pTransmitDataObj = NULL;
                     pfnTransmitCB = PE_StateChange_TransmitCB;                 
                         
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS, \
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_MSG_DONE_SS, \
                                                     ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
                                                 
                     u8IsTransmit = TRUE;                                             
@@ -1291,9 +1291,9 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     break; 
                 }
                 
-                case ePE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS:
+                case ePE_SRC_GET_SINK_STATUS_MSG_DONE_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_GOODCRC_RCVD_SS\r\n");                                         
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_MSG_DONE_SS\r\n");                                         
                     
                     /* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS sub state if timeout happens */

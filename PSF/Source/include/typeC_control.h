@@ -508,7 +508,7 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHED_SNK_IDLE_SS                     6
 #define TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS         7
 
-/*Defines for TYPEC_ERROR_RECOVERY's sub-states in TYPE C SM*/ 
+/*Defines for TYPEC_ERROR_RECOVERY's substates in TYPE C SM*/ 
 #define TYPEC_ERROR_RECOVERY_ENTRY_SS                   0
 #define TYPEC_ERROR_RECOVERY_WAIT_FOR_VCONN_OFF_SS      1
 #define TYPEC_ERROR_RECOVERY_WAIT_FOR_VBUS_OFF_SS       2
@@ -1515,7 +1515,7 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
         UPD350 REV A
 
     Description:
-        This API is to obtain the current value from the Rp value.
+        This API is used to obtain the current value from the Rp value.
 
     Conditions:
         None.
@@ -1530,4 +1530,32 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
         None.
 **************************************************************************************************/
 UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void TypeC_FRSSignalDetectInit (UINT8 u8PortNum)
+
+    Summary:
+        API to enable detection of FRS signal 
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is used to initialize UPD350 to enable it to detect FRS signal. 
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void TypeC_FRSSignalDetectInit (UINT8 u8PortNum);
+
 #endif /*_TYPECCONTROL_H_*/

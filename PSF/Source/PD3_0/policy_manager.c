@@ -1353,16 +1353,25 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_SOURCE)
     UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
 
-    /*On negotiation, initiate Get Sink caps if Get Sink is not initiated already
-     and Partner PDO is null; In case of PB enabled, Get Sink caps is initiated 
-     by PB layer*/
+    /* Initiate Get Sink Caps if the PartnerSinkPDO array is null. If it is not 
+       null, it means that Get Sink Caps has been already initiated. In case of 
+       PB enabled, Get Sink caps is initiated by PB layer 
+       Note: Get Sink Caps will be initiated when the current power role is 
+       Source or when the port supports Fast Role Swap */    
     if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0]) &&\
-          (PD_ROLE_SOURCE == u8DPMPowerRole) &&\
             (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
     {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
+        if ((PD_ROLE_SOURCE == u8DPMPowerRole)
+            #if (TRUE == INCLUDE_PD_FR_SWAP) 
+                || (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
+            #endif 
+           )
+        {
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
+        }
     }        
-#endif
+#endif  /* INCLUDE_PD_SOURCE */                  
+    
     /*Evaluate swap and register internal event*/
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
     /*Initiate VCONN Swap only if the swap is not already initiated and rejected*/
@@ -1376,7 +1385,7 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
         }
     }
-#endif
+#endif /* INCLUDE_PD_VCONN_SWAP */
 #if (TRUE == INCLUDE_PD_DR_SWAP)
     /*Initiate DR Swap only if the swap is not already initiated and rejected*/
     if (!(((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && \

@@ -493,15 +493,17 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 case PE_EXT_STATUS:
                 {
                     /* Once response for Get_Status is received, kill the Sender 
-                       Response Timer and change the PE sub-state as ePE_SRC_GET_SINK_STATUS_RESPONSE_RECEIVED_SS */
-                    if (ePE_SRC_GET_SINK_STATUS == gasPolicyEngine[u8PortNum].ePEState)
+                       Response Timer and change the PE sub-state to ePE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS */
+                    if ((ePE_SRC_GET_SINK_STATUS_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState) || \
+                        (ePE_SRC_GET_SINK_STATUS_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {                       
                         PE_KillPolicyEngineTimer (u8PortNum);
                         PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS);
                     }
                     else
                     {
-                        /* Handle Unexpected message by sending Soft Reset */
+                        /* Handle Unexpected message when Status is received in an
+                           incorrect state */
                         PE_HandleUnExpectedMsg (u8PortNum);
                     }
                     break; 
@@ -750,11 +752,13 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     #endif
                     break;
                 }   
+#if (TRUE == INCLUDE_PD_SOURCE)                
                 case PE_DATA_SINK_CAP:
                 {
                     /* Once response for Get_Sink_Cap is received, kill the Sender 
-                       Response Timer and change the PE sub-state as  ePE_SRC_GET_SINK_CAP_RESPONSE_RECEIVED */
-                    if (ePE_SRC_GET_SINK_CAP == gasPolicyEngine[u8PortNum].ePEState)
+                       Response Timer and change the PE sub-state as  ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS */
+                    if ((ePE_SRC_GET_SINK_CAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState) || \
+                        (ePE_SRC_GET_SINK_CAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {                       
                         PE_KillPolicyEngineTimer (u8PortNum);
                         PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS);
@@ -762,11 +766,12 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     else
                     {
                         /* Handle Unexpected message when Sink capabilities message is 
-                           received in wrong PE State */
+                           received in incorrect PE State */
                         PE_HandleUnExpectedMsg (u8PortNum);
                     }
                     break; 
                 }
+#endif 
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                 case PE_DATA_ALERT: 
                 {
@@ -914,7 +919,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #endif 
 #if (TRUE == INCLUDE_PD_DR_SWAP)
                     else if((ePE_DRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
-                            (ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState))
+                            (ePE_DRS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {
 						/*Accept handling for DR_SWAP*/
                         /* Kill the Sender Response Timer */
@@ -1026,7 +1031,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #endif
 #if (TRUE == INCLUDE_PD_DR_SWAP)
                     else if ((ePE_DRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
-                            (ePE_DRS_SEND_SWAP_GOOD_CRC_RCVD_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
+                            (ePE_DRS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
 						/*Reject and wait handling for DR_SWAP*/
                         /* Kill the Sender Response Timer */
@@ -1053,7 +1058,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     }
                     break;
                 }
-                 case PE_CTRL_PS_RDY:
+                case PE_CTRL_PS_RDY:
                 {
                     /*PS RDY received from source after accept message*/
                     if (ePE_SNK_TRANSITION_SINK_WAIT_FOR_PSRDY_SS == \
@@ -1495,8 +1500,11 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 
     switch (gasPolicyEngine[u8PortNum].ePEState)
     {
+       /**************** Soft Reset Reception State ********************/ 
        case ePE_SOFT_RESET:
        {
+           /* To save code size, Soft Reset handling is kept common for
+              both Source and Sink */
             switch (gasPolicyEngine[u8PortNum].ePESubState)
             {
                 case ePE_SOFT_RESET_ENTRY_SS:
@@ -1549,7 +1557,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             }
             break;  
        }
-       
+       /**************** Soft Reset Transmission State ********************/ 
        case ePE_SEND_SOFT_RESET:
        {
            switch (gasPolicyEngine[u8PortNum].ePESubState)
@@ -1650,6 +1658,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
            break; 
        }
 #if (TRUE == INCLUDE_PD_3_0)
+       /**************** Not Supported Transmission State ********************/ 
        case ePE_SEND_NOT_SUPPORTED:
        {
             switch (gasPolicyEngine[u8PortNum].ePESubState)
@@ -1689,8 +1698,9 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             break;
        }
 #endif
+       /**************** Reject Transmission State ********************/ 
        case ePE_SEND_REJECT:
-       {
+       {           
             switch (gasPolicyEngine[u8PortNum].ePESubState)
             {
                 case ePE_SEND_REJECT_ENTRY_SS:
@@ -1869,6 +1879,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
         break;
         #endif
                
+        /**************** Give Capabilities State ********************/ 
         /* <ePE_GIVE_CAP>: This PE state can be entered when
            i.   a Dual Role Source Port receives Get Sink Caps message 
            ii.  a Dual Role Sink Port receives Get Source Caps message 
