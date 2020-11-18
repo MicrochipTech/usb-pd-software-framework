@@ -1078,17 +1078,15 @@ Description:
     is not present and only Implicit contract is established with Sink port partner.
    
     <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
-    Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
+    Sink capabilities has been received from Port Partner in response to the Get_Sink_Cap
     message initiated by PSF. Application can read the Sink Capabilities by accessing 
     gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO array. This event is applicable 
-    only when PSF is operating as Source or the power role of the port is resolved as 
-    Source during DRP operation.  
+    only when the port is configured for Source only or DRP configuration.  
     
     <b> eMCHP_PSF_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink capabilities has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Sink_Caps message initiated by PSF. This event is applicable 
-    only when PSF is operating as Source or the power role of the port is resolved as 
-    Source during DRP operation. 
+    as a response to the Get_Sink_Cap message initiated by PSF. This event is applicable 
+    only when when the port is configured for Source only or DRP configuration. 
     
     <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
     mismatch with Source partner PDOs in a PD negotiation. This event is applicable 

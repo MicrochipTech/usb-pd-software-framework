@@ -282,7 +282,7 @@ Example:
 
 /**************************************************************************************************
 Summary:
-    DR_SWAP support code inclusion.
+    Data Role Swap support code inclusion.
 Description:
     Setting the INCLUDE_PD_DR_SWAP as 1 enables PSF to include the Data Role 
     Swap (DR_SWAP) feature at the compile time. Users can set this define to 0
@@ -301,7 +301,7 @@ Example:
 
 /**************************************************************************************************
 Summary:
-    PR_SWAP support code inclusion.
+    Power Role Swap support code inclusion.
 Description:
     Setting the INCLUDE_PD_PR_SWAP as 1 enables PSF to include the Power Role 
     Swap (PR_SWAP) feature at the compile time. PR_Swap is applicable only for the ports that
@@ -370,6 +370,24 @@ Example:
     </code>
 **************************************************************************************************/
 #define INCLUDE_UPD_HPD             0
+/**************************************************************************************************
+Summary:
+    Fast Role Swap support code inclusion.
+Description:
+    Setting the INCLUDE_PD_FR_SWAP as 1 enables PSF to include the Fast Role 
+    Swap (FR_SWAP) feature at the compile time. FR_Swap is applicable only for the ports that
+    are configured for DRP operation. Users can set this define to 0 to reduce the code size
+    if none of the DRP ports in the system require Fast Role Swap functionality.
+Remarks: 
+    Recommended default value is 1 for DRP application. For INCLUDE_PD_FR_SWAP to be 1, 
+    INCLUDE_PD_DRP and INCLUDE_PD_3_0 shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_FR_SWAP	1(Include FR_SWAP functionality in PSF)
+    #define INCLUDE_PD_FR_SWAP	0(Exclude FR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_FR_SWAP      0
 
 // *****************************************************************************
 // *****************************************************************************
