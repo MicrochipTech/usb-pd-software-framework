@@ -363,8 +363,13 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
             }
+            else if ((PD_ROLE_SINK == u8DefaultPwrRole) && \
+                    (PE_DATA_SINK_CAP == u8MsgType))
+            {
+                u8RetVal = PE_UNSUPPORTED_MSG;
+            }
             else if ((PD_ROLE_SINK == u8CurrentPwrRole) && \
-                    ((PE_DATA_SINK_CAP == u8MsgType) || (PE_DATA_REQUEST == u8MsgType) || \
+                    ((PE_DATA_REQUEST == u8MsgType) || \
                     (PE_DATA_ALERT == u8MsgType)))
             {
                 u8RetVal = PE_UNSUPPORTED_MSG;
@@ -757,11 +762,11 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 {
                     /* Once response for Get_Sink_Cap is received, kill the Sender 
                        Response Timer and change the PE sub-state as  ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS */
-                    if ((ePE_SRC_GET_SINK_CAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState) || \
-                        (ePE_SRC_GET_SINK_CAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))
+                    if ((ePE_GET_SINK_CAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState) || \
+                        (ePE_GET_SINK_CAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {                       
                         PE_KillPolicyEngineTimer (u8PortNum);
-                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_SRC_GET_SINK_CAP, ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS);
+                        PE_HandleRcvdMsgAndTimeoutEvents(u8PortNum, ePE_GET_SINK_CAP, ePE_GET_SINK_CAP_RESPONSE_RCVD_SS);
                     }
                     else
                     {
@@ -1406,6 +1411,14 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                                                                    ePE_DRS_SEND_SWAP_NO_RESPONSE_SS);                                                                          
 #endif
                     }
+                    else if (ePE_GET_SINK_CAP == gasPolicyEngine[u8PortNum].ePEState)
+                    {
+                        /* Kill the Sender Response Timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);  
+                        
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_GET_SINK_CAP,\
+                                                                   ePE_GET_SINK_CAP_NO_RESPONSE_SS);                                                                          
+                    }
                     else
                     {
                         if ((gasPolicyEngine[u8PortNum].ePEState != ePE_SRC_READY) && 
@@ -1951,7 +1964,112 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             }
             break; 
         }
-        
+        /************ PE_GET_SINK_CAP *****************/ 
+        case ePE_GET_SINK_CAP: 
+        {
+           switch(gasPolicyEngine[u8PortNum].ePESubState) 
+           {
+                case ePE_GET_SINK_CAP_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GET_SINK_CAP_ENTRY_SS\r\n"); 
+                    
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_SINK_CAP, \
+                                            PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+
+                    u8TransmitSOP = PRL_SOP_TYPE;
+                    u32pTransmitDataObj = NULL;
+                    pfnTransmitCB = PE_StateChange_TransmitCB;                 
+                        
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_GET_SINK_CAP, ePE_GET_SINK_CAP_MSG_DONE_SS, \
+                                                    ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
+                                                
+                    u8IsTransmit = TRUE;                                             
+                   
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_IDLE_SS;
+                    
+                    break; 
+                }                   
+                
+                case ePE_GET_SINK_CAP_MSG_DONE_SS: 
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GET_SINK_CAP_GOODCRC_RCVD_SS\r\n"); 
+                    
+                    /* Start Sender Response timer and Set the timer callback to transition to 
+					ePE_GET_SINK_CAP_TIMER_TIMEDOUT sub state if timeout happens */
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
+                                                            PE_SubStateChange_TimerCB, u8PortNum,  
+                                                            (UINT8)ePE_GET_SINK_CAP_NO_RESPONSE_SS); 
+
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_IDLE_SS; 
+
+                    break; 
+                }
+                  
+                case ePE_GET_SINK_CAP_NO_RESPONSE_SS:
+                {
+                   /* Sink caps not received within tSenderResponse. Send 
+                      SINK_CAPS_NOT_RECEIVED notification and move to 
+                      PE_SRC_READY state */ 
+                   DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GET_SINK_CAP_NO_RESPONSE_SS\r\n"); 
+                   
+                   if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                   {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;                       
+                   }
+                   else
+                   {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY; 
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
+                   }
+
+                   
+                   (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_CAPS_NOT_RCVD);
+                   
+                   break;  
+                }   
+                
+                case ePE_GET_SINK_CAP_RESPONSE_RCVD_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GET_SINK_CAP_RESPONSE_RCVD_SS\r\n"); 
+                    /* Store the received sink caps and send notification */                                               
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt = PRL_GET_OBJECT_COUNT(u32Header);
+    
+                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO, pu8DataBuf,
+                                 (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt * BYTE_LEN_4));           
+                    
+                    if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                    {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;                       
+                    }
+                    else
+                    {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY; 
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
+                    }
+                    
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_CAPS_RCVD);
+                    
+                    break; 
+                }
+                
+                case ePE_GET_SINK_CAP_IDLE_SS: 
+                { 
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
+                    break; 
+                }   
+                
+                default: 
+                {
+                    break; 
+                }
+           }
+           break;
+        }
         default:
         {
             break;
