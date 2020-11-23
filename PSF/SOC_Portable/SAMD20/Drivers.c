@@ -230,7 +230,7 @@ void SAMD20_UART_Write_String(char* pbyMessage)
 }
 
 
-#endif //CONFIG_HOOK_DEBUG_MSG
+#endif /* CONFIG_HOOK_DEBUG_MSG */
 
 /* *****************************************************************************
  End of File

@@ -505,15 +505,14 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	/*Enable RX_AFE: In order to receive a PD message the RX AFE shall be enabled by SW and the
       trip point set via CC RX DAC Control Register (CC_RX_DAC_CTL) and  CC RX DAC Filter Register
 	  (CC_RX_DAC_FILT)*/
-	//TBD
 	
 	/*Disable Ring , 48 MHz Oscillator and System clock to put UPD350 to idle*/
-	UPD_RegByteClearBit (u8PortNum, UPD_CLK_CTL , \
-            (UPD_RING_OSC_ENABLE | UPD_48MHZ_OSC_ENABLE | UPD_SYS_CLK_ENABLE) );
+	UPD_RegByteClearBit (u8PortNum, UPD_CLK_CTL, \
+            (UPD_RING_OSC_ENABLE | UPD_48MHZ_OSC_ENABLE | UPD_SYS_CLK_ENABLE));
     
     DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set Port Idle\r\n");
 	
-	//Put MCU into IDLE
+	/* Put MCU into IDLE */
 
 	if (FALSE == UPD_CheckUPDsActive())
 	{
@@ -694,6 +693,75 @@ void UPD_FindVBusCorrectionFactor(void)
 }
 /********************************************************************************************/
 
+#if(TRUE == INCLUDE_UPD_HPD)
+
+void UPD_HPDInit(UINT8 u8PortNum)
+{
+    UINT16 u16Data;
+    
+    /*Configure IRQ_HPD_MIN_TIME to be 350us (i.e) greater than 250us*/
+    UPD_RegWriteByte(u8PortNum, UPD_IRQ_HPD_MIN_TIME, HPD_IRQ_MIN_TIME_350US);
+    
+    /*Configure IRQ_HPD_MAX_TIME to be 2ms*/
+    UPD_RegWriteByte(u8PortNum, UPD_IRQ_HPD_MAX_TIME, HPD_IRQ_MIN_TIME_2_1MS);
+    
+    /*Configure HPD_HIGH_DET_TIME to be 100ms*/
+    UPD_RegWriteWord(u8PortNum, UPD_HPD_HIGH_DET_TIME, UPD_HPD_HIGH_DET_TIME_100_1MS);
+    
+    /*Configure HPD_LOW_DET_TIME to be 2ms*/
+    UPD_RegWriteWord(u8PortNum, UPD_HPD_LOW_DET_TIME, UPD_HPD_LOW_DET_TIME_2_1MS);
+    
+    /*Enable QUEUE_NOT_EMPTY interrupt*/
+    UPD_RegWriteByte(u8PortNum, UPD_HPD_INT_EN, UPD_QUEUE_NOT_EMPTY_EN);
+    
+    /*Setting the UPD350 high level HPD interrupt*/ 
+    u16Data = UPD_RegReadWord(u8PortNum, UPDINTR_INT_EN);
+    u16Data |= UPDINTR_HPD_INT;
+	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, u16Data);
+    
+    /*Disable u8PIO_HPD as gpio, to enable it to act as HPD IO*/
+    UPD_RegByteClearBit (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8PIO_HPD), \
+                        UPD_CFG_PIO_ENABLE);
+    
+    /*Configure HPD peripheral in input mode*/
+    UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_CFG);
+    
+    /*Initially, disable HPD*/
+    UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
+    
+    DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Initialized and disabled\r\n");
+    
+    /*HPD peripheral will be enabled by user application via client request.*/
+}
+
+void UPD_HPDHandleISR(UINT8 u8PortNum)
+{
+    UINT8 u8Data;
+    UINT8 u8HPDClr = SET_TO_ZERO;
+    UINT8 u8Mask = SET_TO_ZERO;
+
+    UPD_RegisterReadISR (u8PortNum, UPD_HPD_QUEUE, &u8Data, BYTE_LEN_1);
+
+    /*If an entry in the queue is non-zero, write b'01 to the queue slot to clear h/w status*/
+    for (u8Mask = UPD_HPD_EVENT_MASK; u8Mask != SET_TO_ZERO; u8Mask <<= UPD_HPD_EVENT_SIZE)
+    {
+        if (u8Mask & u8Data)
+        { 
+            u8HPDClr |= (u8Mask & UPD_HPD_WRITE_CLR); 
+        }
+    }
+
+    UPD_RegisterWriteISR (u8PortNum, UPD_HPD_QUEUE, &u8HPDClr, BYTE_LEN_1);
+
+    /*Copy the queue events to gu16HPDStsISR[u8PortNum]*/
+    gu16HPDStsISR[u8PortNum] = u8Data;
+    gu16HPDStsISR[u8PortNum] |= UPD_HPD_INTERRUPT_OCCURRED;
+}
+
+
+
+#endif
+
 #if(TRUE == CONFIG_HOOK_DEBUG_MSG)
 /********************************************************************************************/
 void UPD_RegDump(UINT8 u8PortNum)
@@ -803,73 +871,4 @@ void UPD_RegDump(UINT8 u8PortNum)
     DEBUG_PRINT_PORT_UINT32_STR(u8PortNum, "TYPEC_DRP_DUTY_CYC - ", u8Data, BYTE_LEN_1, "\r\n");
 }
 /********************************************************************************************/
-#endif
-
-#if(TRUE == INCLUDE_UPD_HPD)
-
-void UPD_HPDInit(UINT8 u8PortNum)
-{
-    UINT16 u16Data;
-    
-    /*Configure IRQ_HPD_MIN_TIME to be 350us (i.e) greater than 250us*/
-    UPD_RegWriteByte(u8PortNum, UPD_IRQ_HPD_MIN_TIME, HPD_IRQ_MIN_TIME_350US);
-    
-    /*Configure IRQ_HPD_MAX_TIME to be 2ms*/
-    UPD_RegWriteByte(u8PortNum, UPD_IRQ_HPD_MAX_TIME, HPD_IRQ_MIN_TIME_2_1MS);
-    
-    /*Configure HPD_HIGH_DET_TIME to be 100ms*/
-    UPD_RegWriteWord(u8PortNum, UPD_HPD_HIGH_DET_TIME, UPD_HPD_HIGH_DET_TIME_100_1MS);
-    
-    /*Configure HPD_LOW_DET_TIME to be 2ms*/
-    UPD_RegWriteWord(u8PortNum, UPD_HPD_LOW_DET_TIME, UPD_HPD_LOW_DET_TIME_2_1MS);
-    
-    /*Enable QUEUE_NOT_EMPTY interrupt*/
-    UPD_RegWriteByte(u8PortNum, UPD_HPD_INT_EN, UPD_QUEUE_NOT_EMPTY_EN);
-    
-    /*Setting the UPD350 high level HPD interrupt*/ 
-    u16Data = UPD_RegReadWord(u8PortNum, UPDINTR_INT_EN);
-    u16Data |= UPDINTR_HPD_INT;
-	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, u16Data);
-    
-    /*Disable u8PIO_HPD as gpio, to enable it to act as HPD IO*/
-    UPD_RegByteClearBit (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8PIO_HPD), \
-                        UPD_CFG_PIO_ENABLE);
-    
-    /*Configure HPD peripheral in input mode*/
-    UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_CFG);
-    
-    /*Initially, disable HPD*/
-    UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
-    
-    DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Initialized and disabled\r\n");
-    
-    /*HPD peripheral will be enabled by user application via client request.*/
-}
-
-void UPD_HPDHandleISR(UINT8 u8PortNum)
-{
-    UINT8 u8Data;
-    UINT8 u8HPDClr = SET_TO_ZERO;
-    UINT8 u8Mask = SET_TO_ZERO;
-
-    UPD_RegisterReadISR (u8PortNum, UPD_HPD_QUEUE, &u8Data, BYTE_LEN_1);
-
-    /*If an entry in the queue is non-zero, write b'01 to the queue slot to clear h/w status*/
-    for (u8Mask = UPD_HPD_EVENT_MASK; u8Mask != SET_TO_ZERO; u8Mask <<= UPD_HPD_EVENT_SIZE)
-    {
-        if (u8Mask & u8Data)
-        { 
-            u8HPDClr |= (u8Mask & UPD_HPD_WRITE_CLR); 
-        }
-    }
-
-    UPD_RegisterWriteISR (u8PortNum, UPD_HPD_QUEUE, &u8HPDClr, BYTE_LEN_1);
-
-    /*Copy the queue events to gu16HPDStsISR[u8PortNum]*/
-    gu16HPDStsISR[u8PortNum] = u8Data;
-    gu16HPDStsISR[u8PortNum] |= UPD_HPD_INTERRUPT_OCCURRED;
-}
-
-
-
 #endif

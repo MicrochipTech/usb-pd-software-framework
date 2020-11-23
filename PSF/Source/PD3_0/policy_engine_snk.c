@@ -357,7 +357,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_END_AMS_SS\r\n");
                     
                     /*On PD negotiation complete and sink is in ready state, inform DPM to initiate internal events*/
-                    DPM_OnPDNegotiationCmplt(u8PortNum);
+                    DPM_InitiateInternalEvts(u8PortNum);
                     
                     gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;                        
 
