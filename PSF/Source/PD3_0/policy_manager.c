@@ -1349,9 +1349,10 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
     
 #if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
     UINT32 u32DPMStatus = gasDPM[u8PortNum].u32DPMStatus;    
-#endif  
-#if (TRUE == INCLUDE_PD_SOURCE)
-    UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+#endif
+
+	UINT8 u8DefaultPwrRole = DPM_GET_DEFAULT_POWER_ROLE(u8PortNum);  
+    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
 
     /* Initiate Get Sink Caps if the PartnerSinkPDO array is null. If it is not 
        null, it means that Get Sink Caps has been already initiated. In case of 
@@ -1359,19 +1360,16 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
        Note: Get Sink Caps will be initiated when the current power role is 
        Source or when the port supports Fast Role Swap */    
     if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0]) &&\
-            (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
+          (PD_ROLE_SINK != u8DefaultPwrRole) &&\
+            (TRUE != DPM_IS_PB_ENABLED(u8PortNum)) &&\
+            (FALSE == DPM_IS_GET_SINK_CAP_DONE(u8PortNum)))
     {
-        if ((PD_ROLE_SOURCE == u8DPMPowerRole)
-            #if (TRUE == INCLUDE_PD_FR_SWAP) 
-                || (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
-            #endif 
-           )
-        {
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
-        }
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
+        
+        /*Set DPM_GET_SINK_CAP_DONE bit in u32DPMStatus since it is handled*/
+        gasDPM[u8PortNum].u32DPMStatus |= DPM_GET_SINK_CAP_DONE;
+        
     }        
-#endif  /* INCLUDE_PD_SOURCE */                  
-    
     /*Evaluate swap and register internal event*/
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
     /*Initiate VCONN Swap only if the swap is not already initiated and rejected*/
@@ -1401,9 +1399,9 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #endif /*INCLUDE_PD_DR_SWAP*/
     
 #if (TRUE == INCLUDE_PD_PR_SWAP)
-    if (!(((PD_ROLE_SOURCE == u8DPMPowerRole) && \
+    if (!(((PD_ROLE_SOURCE == u8CurrentPwrRole) && \
                             (u32DPMStatus & DPM_PR_SWAP_INIT_STS_AS_SRC)) ||\
-               ((PD_ROLE_SINK == u8DPMPowerRole) && \
+               ((PD_ROLE_SINK == u8CurrentPwrRole) && \
                             (u32DPMStatus & DPM_PR_SWAP_INIT_STS_AS_SNK))))
     {
         if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
@@ -1488,7 +1486,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
                                             & DPM_INT_EVT_INITIATE_ALERT);
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
-    gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | \
+    gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_GET_SINK_CAP_DONE | \
                                         DPM_PORT_IN_MODAL_OPERATION);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();

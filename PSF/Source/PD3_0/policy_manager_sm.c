@@ -846,18 +846,10 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
             
-            /* Check for Port Power Role */
-            if (PD_ROLE_SOURCE == u8DPMPowerRole)
-            {
-                /* Move the Policy Engine to PE_SRC_GET_SINK_CAP state */
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_CAP; 
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_CAP_ENTRY_SS;
-                u16IsAMSInProgress = DPM_INT_EVT_INITIATE_GET_SINK_CAPS;
-            }
-            else
-            {
-                /*When role is sink Get_Sink_Caps request is not applicable*/
-            }
+            /* Move the Policy Engine to PE_GET_SINK_CAP state */
+            gasPolicyEngine[u8PortNum].ePEState = ePE_GET_SINK_CAP; 
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_ENTRY_SS;
+            u16IsAMSInProgress = DPM_INT_EVT_INITIATE_GET_SINK_CAPS;
         }
         else if (DPM_INT_EVT_INITIATE_RENEGOTIATION == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_RENEGOTIATION))
