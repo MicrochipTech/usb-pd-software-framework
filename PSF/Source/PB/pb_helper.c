@@ -703,7 +703,7 @@ void PB_OnPTBankSwitch(UINT8 u8PortNum)
     }
     else
     {
-       // Do Nothing 
+       /* Do Nothing */
     } 
     
     gasCfgStatusData.u16SharedPwrCapacityIn250mW = gsPBIntSysParam.u16TotalSysPwrIn250mW; 

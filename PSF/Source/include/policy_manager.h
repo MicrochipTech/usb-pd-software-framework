@@ -1714,11 +1714,11 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum); 
+        void DPM_InitiateInternalEvts(UINT8 u8PortNum); 
     Summary:
-        API to do necessary operation required by DPM during a PD negotiation complete. 
+        API to initiate internal events on entering the Ready state
     Description:
-        This API does the internal event registering on PD negotiation complete.
+        This API does the internal event registering on entering the Ready state.
     Conditions:
         None.
     Input:
@@ -1728,7 +1728,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum);
+void DPM_InitiateInternalEvts(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
