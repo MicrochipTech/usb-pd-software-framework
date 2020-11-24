@@ -207,8 +207,8 @@ void TypeC_InitPort (UINT8 u8PortNum)
 {
 	UINT16 u16Data;
     UINT8 u8MatchDebVal;
-    UINT8 u8VBUSDebVal;
- 	
+    UINT8 u8VBUSDebVal; 
+    
 	/*Setting CC Comparator OFF*/
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
     
@@ -401,16 +401,25 @@ void TypeC_InitPort (UINT8 u8PortNum)
     /*Setting the Power Module as per the port role*/
     if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
+        #if (TRUE == INCLUDE_PD_FR_SWAP)        
+        if (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
+        {
+            /* Enable transmission of FRS signal */
+            TypeC_FRSSignalTransmitInit (u8PortNum);
+        }        
+        #endif 
         /*Setting the VBUS to vSafe0V before entering the State machine*/
         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
     }
     else
     {
 #if (TRUE == INCLUDE_PD_SINK)
-        #if (TRUE == INCLUDE_PD_FR_SWAP)
+        #if (TRUE == INCLUDE_PD_FR_SWAP)        
+        if (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
+        {
             /* Enable detection of FRS signal */
-            /* To-do: Check FR Swap is enabled in PDO - needed ? */
             TypeC_FRSSignalDetectInit (u8PortNum);
+        }
         #endif 
         /*Disable the Sink circuitry to stop sinking the power from source*/
         PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
@@ -3733,14 +3742,14 @@ void TypeC_FRSSignalDetectInit (UINT8 u8PortNum)
     
     /* Program CC Sample Clock Register to enable >= 250KHz sampling rate */
 	UPD_RegWriteByte (u8PortNum, UPD_CC_SAMP_CLK, \
-                    (UINT8) (UPD_CC_SAMP_GEN_250_KS | UPD_CC_CLK_48_KHZ));    
+                    (UINT8)(UPD_CC_SAMP_GEN_250_KS | UPD_CC_CLK_48_KHZ));    
     
     /* Set VBUS High Bandwidth Mode Enable in VBUS Control 1 Register */
     UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_HIGH, (UINT8)TYPEC_VBUS_DET_HBW_EN);    
     
     /* Program VBUS Sample Clock Register to enable >= 250KHz sampling rate */    
 	UPD_RegWriteByte (u8PortNum, UPD_VBUS_SAMP_CLK, \
-                    (UINT8) (UPD_VBUS_SAMP_GEN_250_KS | UPD_VBUS_CLK_48_KHZ));    
+                    (UINT8)(UPD_VBUS_SAMP_GEN_250_KS | UPD_VBUS_CLK_48_KHZ));    
           
     /* Enable the VBUS debouncer */
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
@@ -3753,4 +3762,41 @@ void TypeC_FRSSignalDetectInit (UINT8 u8PortNum)
     UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
 }
 
-#endif 
+void TypeC_FRSSignalTransmitInit (UINT8 u8PortNum)
+{
+    /* Ensure at minimum that cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
+       pio_clk_gate_en, and i2c_clk_gate_en (or spi_clk_gate_en) are cleared in Clock Gate Register */    
+    UPD_RegByteClearBit (u8PortNum, UPD_CLK_GATE_LOW, \
+            (UINT8)(UPD_I2C_CLK_GATE_EN | UPD_SPI_CLK_GATE_EN | UPD_PIO_CLK_GATE_EN));                 
+    UPD_RegByteClearBit (u8PortNum, UPD_CLK_GATE_HIGH, \
+            (UINT8)(UPD_PD_MAC_CLK_GATE_EN | UPD_CABLE_PLUG_CLK_GATE_EN)); 
+    
+    /* Program FRS Transmission Length register with a value of 90us */
+    UPD_RegWriteByte (u8PortNum, TYPEC_FRS_TX_LEN, TYPEC_FRS_TX_LEN_90US);
+    
+    /* Program the CC pin which has sink attached in FRS_CC_SEL in FRS Control Register */
+        /* 5:4  Description 
+           00b: CC1 pin
+           01b: CC2 pin
+           1xb: CC1 and CC2 pin */
+    /* In case of CC1 attach, clear both the bits */
+    UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_LOW, (UINT8)TYPEC_FRS_CC_SEL);
+    /* In case of CC2 attach, set Bit 4 */
+    if(gasTypeCcontrol[u8PortNum].u8CC2MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
+    {
+        UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_LOW, (UINT8)TYPEC_FRS_CC_SEL_CC2);    
+    }
+    
+    /* Enable FRS_XMT_STS interrupt in Extended Interrupt Enable Register */
+    UPD_RegByteSetBit (u8PortNum, TYPEC_EXT_INT_EN, (UINT8)TYPEC_FRS_XMT_STS);	
+    
+    /* PIO which is used to transmit FRS signal is indicated by programming FRS Request PIO Select Register*/
+    UPD_RegWriteByte (u8PortNum, TYPEC_FRS_PIO_SEL, \
+            (gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FRSRequest << TYPEC_FRS_REQ_PIO_SEL_POS));
+    
+    /* Clear FRS_REQ_PIO bit in FRS_CTL register. It will be enabled in PE_SRC_READY state 
+       where power negotiation is stable */
+    UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO);
+}
+
+#endif /* INCLUDE_PD_FR_SWAP */ 
