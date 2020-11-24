@@ -234,7 +234,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
          
 	/*Enabling the CC Interrupts in CC_INT_EN register (TYPEC_CC_MATCH_VLD, TYPEC_CC1_MATCH_CHG and 
     TYPEC_CC2_MATCH_CHG interrupt)*/   
-    UPD_RegByteSetBit (u8PortNum,  TYPEC_CC_INT_EN,\
+    UPD_RegByteSetBit (u8PortNum, TYPEC_CC_INT_EN,\
                       (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
     
     /*Enable the VBUS interrupt (VBUS_MATCH_VLD interrupt) and VCONN OCS interrupt*/
@@ -336,12 +336,12 @@ void TypeC_InitPort (UINT8 u8PortNum)
 			TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP); 
             
 			/*Setting Port Role as UFP in TYPEC_CC_HW_CTL register */
-            TypeC_SetCCDeviceRole (u8PortNum,PD_ROLE_UFP);
+            TypeC_SetCCDeviceRole (u8PortNum, PD_ROLE_UFP);
             
             if(FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
             {
 	            /*Setting the Rd Value */ 
-	            TypeC_SetCCPowerRole (u8PortNum,TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
+	            TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
           
 	            /*Setting the Initial State and Sub-state for Sink*/
 	            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
@@ -350,7 +350,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             else
             {
 			    /*Setting the CC1 and CC2 line as Open Disconnect*/
-            	TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);
+            	TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);
                 
                 gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
                 gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS;
@@ -385,7 +385,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
 	u16Data = (TYPEC_VBUS_VSAFE0V_MATCH | TYPEC_VBUS_THRES0_MATCH | TYPEC_VBUS_THRES1_MATCH |\
                     TYPEC_VBUS_THRES2_MATCH | TYPEC_VBUS_THRES3_MATCH | TYPEC_VBUS_THRES4_MATCH);
 	UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_MATCH_EN, (UINT8*)&u16Data, BYTE_LEN_1);
-	UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_DBCLR_EN,	(UINT8*)&u16Data, BYTE_LEN_1);
+	UPD_RegisterWrite (u8PortNum, TYPEC_VBUS_DBCLR_EN, (UINT8*)&u16Data, BYTE_LEN_1);
     
     /*Setting VBUS Comparator ON*/
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
@@ -406,10 +406,15 @@ void TypeC_InitPort (UINT8 u8PortNum)
     }
     else
     {
-        #if (TRUE == INCLUDE_PD_SINK)
+#if (TRUE == INCLUDE_PD_SINK)
+        #if (TRUE == INCLUDE_PD_FR_SWAP)
+            /* Enable detection of FRS signal */
+            /* To-do: Check FR Swap is enabled in PDO - needed ? */
+            TypeC_FRSSignalDetectInit (u8PortNum);
+        #endif 
         /*Disable the Sink circuitry to stop sinking the power from source*/
         PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
-        #endif
+#endif
     }
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: TypeC Port initialization completed\r\n");             
 }
@@ -1341,7 +1346,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     }
                     #endif
 
-                    PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_5V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);                               
+                    PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_5V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);                               
                     
 					/* Enabling PRL Rx*/
                     PRL_EnableRx (u8PortNum, TRUE);
@@ -1526,11 +1531,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                         
                         /*Disable the Sink circuitry to stop sinking the power from source*/
-                        PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
+                        PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, \
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA);                        
                         
                          /*Setting the CC1 and CC2 line as Open Disconnect*/
-                        TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS,                                  
+                        TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS,                                  
                                      TYPEC_ENABLE_CC1_CC2); 
 #endif                        
                     }
@@ -1704,11 +1709,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
                                                         
                         /*Disable the Sink circuitry to stop sinking the power from source*/
-                        PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
+                        PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, \
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                         
                          /*Setting the CC1 and CC2 line as Open Disconnect*/
-                        TypeC_SetCCPowerRole (u8PortNum,PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);                        
+                        TypeC_SetCCPowerRole (u8PortNum, PD_ROLE_SINK, TYPEC_ROLE_SINK_OPEN_DIS, TYPEC_ENABLE_CC1_CC2);                        
 #endif                        
                     }
                     else
@@ -1952,7 +1957,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                 {
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
                     u8HandleUV = TRUE;
-#endif //#if INCLUDE_POWER_FAULT_HANDLING
+#endif /* #if INCLUDE_POWER_FAULT_HANDLING */
                 }
             }
             else
@@ -2168,7 +2173,7 @@ void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole)
         {
           /* UFP_DFP_DEF (CC_THR0) ,UFP_DFP_1A5(CC_THR2), UFP_DFP_3A0 (CC_THR4) */ 
             u8CCDebMatch = (TYPEC_CC_THRES0_MATCH | TYPEC_CC_THRES2_MATCH \
-                                                       | TYPEC_CC_THRES4_MATCH | TYPEC_CC_THRES7_MATCH); 
+                                   | TYPEC_CC_THRES4_MATCH | TYPEC_CC_THRES7_MATCH); 
             /*u8CCSrcSnkMatch variable will be set depending on the type of Source Rp attached
             TypeC_DecodeCCSourceRpValue(u8PortNum); function*/
             break;
@@ -2216,7 +2221,7 @@ void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole)
     gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = u8CCSrcSnkMatch;
 
 }
-void TypeC_ConfigCCComp(UINT8 u8PortNum ,UINT8 u8ConfigVal)
+void TypeC_ConfigCCComp(UINT8 u8PortNum, UINT8 u8ConfigVal)
 {     
     UINT8 u8Data;
     UINT8 u8DesiredDBState;
@@ -2318,7 +2323,7 @@ void TypeC_SetCCSampleEnable (UINT8 u8PortNum, UINT8 u8CCEnablePins)
     }    
 }
 
-void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin)
+void TypeC_SetCCPowerRole(UINT8 u8PortNum, UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin)
 {   
      UINT16 u16CCControlReg1Val;
      
@@ -2370,7 +2375,7 @@ void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, 
     UPD_RegisterWrite (u8PortNum, TYPEC_CC_CTL1, (UINT8 *)&u16CCControlReg1Val, BYTE_LEN_2);
 
 }
-void TypeC_SetCCDeviceRole (UINT8 u8PortNum,UINT8 u8DevRole)
+void TypeC_SetCCDeviceRole (UINT8 u8PortNum, UINT8 u8DevRole)
 {
     /* Setting Port Device Role in TYPEC_CC_HW_CTL register */
     if (PD_ROLE_UFP == u8DevRole)
@@ -3322,7 +3327,7 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
 /*******************************************************************************************/
 /*********************************TypeC VBUS Comparator Support Functions**************************************/
 /*******************************************************************************************/
-void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum,UINT8 u8ConfigVal)
+void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum, UINT8 u8ConfigVal)
 {
     UINT8 u8Data;
     UINT8 u8DesiredDBState;
@@ -3594,7 +3599,7 @@ void TypeC_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
   
 }
 
-void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
+void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
     
@@ -3648,7 +3653,7 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum)
 /*******************************************************************************************/
 /*********************************TypeC Common Support APIs**************************************/
 /*******************************************************************************************/
-UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
+UINT16 TypeC_ObtainCurrentValueFrmRp (UINT8 u8PortNum)
 {
     UINT16 u16ReturnVal;
     UINT8 u8RpVal = ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) >> TYPEC_CURR_RPVAL_POS);
@@ -3694,7 +3699,58 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
 /*******************************************************************************************/
 /**************************TypeC FRS Support Functions**************************************/
 /*******************************************************************************************/
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+
 void TypeC_FRSSignalDetectInit (UINT8 u8PortNum)
-{
+{      
+    /* Ensure at minimum that pwr_sw_clk_gate_en, cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
+       pio_clk_gate_en, and i2c_clk_gate_en (or spi_clk_gate_en) are cleared in Clock Gate Register */    
+    UPD_RegByteClearBit (u8PortNum, UPD_CLK_GATE_LOW, (UINT8)(UPD_PWR_SW_CLK_GATE_EN | \
+            UPD_I2C_CLK_GATE_EN | UPD_SPI_CLK_GATE_EN | UPD_PIO_CLK_GATE_EN));                 
+    UPD_RegByteClearBit (u8PortNum, UPD_CLK_GATE_HIGH, (UINT8)(UPD_PD_MAC_CLK_GATE_EN | \
+            UPD_CABLE_PLUG_CLK_GATE_EN));
+                
+    /* Program the CC Comparator Control to 00b and disable the CC debouncer */
+    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);    
     
+    /* Disable the VBUS debouncer */
+    TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
+    
+    /* Program FRS CC Debounce Register with FRS CC debounce time of 30us */
+    UPD_RegWriteByte (u8PortNum, TYPEC_FRS_CC_DEB, TYPEC_FRS_CC_DEB_30US);
+    
+    /* Program FRS Threshold Select Register with its default value to point to the FRSWAP threshold */
+    UPD_RegWriteByte (u8PortNum, TYPEC_FRS_THR_SEL, TYPEC_FRS_THRESHOLD);
+    
+    /* Enable FRS_RCV_STS interrupt in Extended Interrupt Enable Register */
+    UPD_RegByteSetBit (u8PortNum, TYPEC_EXT_INT_EN, (UINT8)TYPEC_FRS_RCV_STS);	
+    
+    /* Program FRS_VBUS_DEB register with FRS VBUS debounce time of 30us */
+    UPD_RegWriteByte (u8PortNum, TYPEC_FRS_VBUS_DEB, TYPEC_FRS_VBUS_DEB_30US);
+    
+    /* Set CC High Bandwidth Mode Enable in CC Hardware Control Register */
+    UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, (UINT8)TYPEC_CC_DET_HBW_EN);	
+    
+    /* Program CC Sample Clock Register to enable >= 250KHz sampling rate */
+	UPD_RegWriteByte (u8PortNum, UPD_CC_SAMP_CLK, \
+                    (UINT8) (UPD_CC_SAMP_GEN_250_KS | UPD_CC_CLK_48_KHZ));    
+    
+    /* Set VBUS High Bandwidth Mode Enable in VBUS Control 1 Register */
+    UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_HIGH, (UINT8)TYPEC_VBUS_DET_HBW_EN);    
+    
+    /* Program VBUS Sample Clock Register to enable >= 250KHz sampling rate */    
+	UPD_RegWriteByte (u8PortNum, UPD_VBUS_SAMP_CLK, \
+                    (UINT8) (UPD_VBUS_SAMP_GEN_250_KS | UPD_VBUS_CLK_48_KHZ));    
+          
+    /* Enable the VBUS debouncer */
+    TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
+    
+    /* Program the CC Comparator Control in CC Control 1 Register to enable detection on the
+       connected CC pin.*/     
+    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
+    
+    /* Set FRS_DET_EN bit in FRS_CTL register */
+    UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
 }
+
+#endif 
