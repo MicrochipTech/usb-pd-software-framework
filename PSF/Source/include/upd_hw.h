@@ -67,88 +67,87 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*****************************************************************************************************/
 /* UPD Address Base*/
 #define UPD_SYSTEM_CSR_BASE_ADDR	                0x0000
-#define UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR            0x1000
-
+#define UPD_HPD_BASE_ADDR                           0x0C00 
+#define UPD_CLK_PWR_MGMT_CSR_BASE_ADDR              0x1000
 /**************************************************************************************************/
 
 /* System Control and Status Register */
-#define UPD_VID          	        UPD_SYSTEM_CSR_BASE_ADDR + 0x04
-#define UPD_SPI_TEST      	        UPD_SYSTEM_CSR_BASE_ADDR + 0x0E
-#define UPD_HW_CTL          	    UPD_SYSTEM_CSR_BASE_ADDR + 0x18
-#define UPD_PIO_STS				    UPD_SYSTEM_CSR_BASE_ADDR + 0x20
-#define UPD_PIO_STS_LOW		        UPD_SYSTEM_CSR_BASE_ADDR + 0x20
-#define UPD_PIO_STS_HIGH	        UPD_SYSTEM_CSR_BASE_ADDR + 0x21
-#define UPD_PIO_INT_STS				UPD_SYSTEM_CSR_BASE_ADDR + 0x22
-#define UPD_PIO_INT_EN			    UPD_SYSTEM_CSR_BASE_ADDR + 0x24
+#define UPD_VID          	        (UPD_SYSTEM_CSR_BASE_ADDR + 0x04)
+#define UPD_SPI_TEST      	        (UPD_SYSTEM_CSR_BASE_ADDR + 0x0E)
+#define UPD_HW_CTL          	    (UPD_SYSTEM_CSR_BASE_ADDR + 0x18)
+#define UPD_PIO_STS				    (UPD_SYSTEM_CSR_BASE_ADDR + 0x20)
+#define UPD_PIO_STS_LOW		        (UPD_SYSTEM_CSR_BASE_ADDR + 0x20)
+#define UPD_PIO_STS_HIGH	        (UPD_SYSTEM_CSR_BASE_ADDR + 0x21)
+#define UPD_PIO_INT_STS				(UPD_SYSTEM_CSR_BASE_ADDR + 0x22)
+#define UPD_PIO_INT_EN			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x24)
 
 /* Configure PIOx Registers*/
-#define UPD_CFG_PIO_BASE			UPD_SYSTEM_CSR_BASE_ADDR + 0x30                                                  
-#define UPD_CFG_PIO0			    UPD_SYSTEM_CSR_BASE_ADDR + 0x30
-#define UPD_CFG_PIO1			    UPD_SYSTEM_CSR_BASE_ADDR + 0x31
-#define UPD_CFG_PIO2			    UPD_SYSTEM_CSR_BASE_ADDR + 0x32
-#define UPD_CFG_PIO3			    UPD_SYSTEM_CSR_BASE_ADDR + 0x33
-#define UPD_CFG_PIO4			    UPD_SYSTEM_CSR_BASE_ADDR + 0x34
-#define UPD_CFG_PIO5			    UPD_SYSTEM_CSR_BASE_ADDR + 0x35
-#define UPD_CFG_PIO6			    UPD_SYSTEM_CSR_BASE_ADDR + 0x36
-#define UPD_CFG_PIO7			    UPD_SYSTEM_CSR_BASE_ADDR + 0x37
-#define UPD_CFG_PIO8			    UPD_SYSTEM_CSR_BASE_ADDR + 0x38
-#define UPD_CFG_PIO9			    UPD_SYSTEM_CSR_BASE_ADDR + 0x39
-#define UPD_CFG_PIO10			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3A
-#define UPD_CFG_PIO11			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3B
-#define UPD_CFG_PIO12			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3C
-#define UPD_CFG_PIO13			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3D
-#define UPD_CFG_PIO14			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3E
-#define UPD_CFG_PIO15			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3F
+#define UPD_CFG_PIO_BASE			(UPD_SYSTEM_CSR_BASE_ADDR + 0x30)                                                  
+#define UPD_CFG_PIO0			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x30)
+#define UPD_CFG_PIO1			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x31)
+#define UPD_CFG_PIO2			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x32)
+#define UPD_CFG_PIO3			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x33)
+#define UPD_CFG_PIO4			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x34)
+#define UPD_CFG_PIO5			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x35)
+#define UPD_CFG_PIO6			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x36)
+#define UPD_CFG_PIO7			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x37)
+#define UPD_CFG_PIO8			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x38)
+#define UPD_CFG_PIO9			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x39)
+#define UPD_CFG_PIO10			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3A)
+#define UPD_CFG_PIO11			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3B)
+#define UPD_CFG_PIO12			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3C)
+#define UPD_CFG_PIO13			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3D)
+#define UPD_CFG_PIO14			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3E)
+#define UPD_CFG_PIO15			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3F)
 
 #define UPD_CFG_PIO_REGADDR(PIONum) (UPD_CFG_PIO_BASE + PIONum)
 
 /* PIO override register*/
-#define UPD_PIO_MON_VAL				UPD_SYSTEM_CSR_BASE_ADDR + 0x54
-#define UPD_PIO_OVR_EN				UPD_SYSTEM_CSR_BASE_ADDR + 0x55
-#define UPD_PIO_OVR_STS				UPD_SYSTEM_CSR_BASE_ADDR + 0x56
-#define UPD_PIO_OVR_INT_STS			UPD_SYSTEM_CSR_BASE_ADDR + 0x57
-#define UPD_PIO_OVR_INT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0x58
+#define UPD_PIO_MON_VAL				(UPD_SYSTEM_CSR_BASE_ADDR + 0x54)
+#define UPD_PIO_OVR_EN				(UPD_SYSTEM_CSR_BASE_ADDR + 0x55)
+#define UPD_PIO_OVR_STS				(UPD_SYSTEM_CSR_BASE_ADDR + 0x56)
+#define UPD_PIO_OVR_INT_STS			(UPD_SYSTEM_CSR_BASE_ADDR + 0x57)
+#define UPD_PIO_OVR_INT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0x58)
 												  											  
-#define UPD_CFG_PIO_OUT_LOW		    UPD_SYSTEM_CSR_BASE_ADDR + 0x59
-#define UPD_CFG_PIO_OUT_HIGH	    UPD_SYSTEM_CSR_BASE_ADDR + 0x5A
-#define UPD_CFG_PIO_OUT_UPD_LOW	    UPD_SYSTEM_CSR_BASE_ADDR + 0x5B
-#define UPD_CFG_PIO_OUT_UPD_HIGH	UPD_SYSTEM_CSR_BASE_ADDR + 0x5C
+#define UPD_CFG_PIO_OUT_LOW		    (UPD_SYSTEM_CSR_BASE_ADDR + 0x59)
+#define UPD_CFG_PIO_OUT_HIGH	    (UPD_SYSTEM_CSR_BASE_ADDR + 0x5A)
+#define UPD_CFG_PIO_OUT_UPD_LOW	    (UPD_SYSTEM_CSR_BASE_ADDR + 0x5B)
+#define UPD_CFG_PIO_OUT_UPD_HIGH	(UPD_SYSTEM_CSR_BASE_ADDR + 0x5C)
 												  
-#define UPD_PIO_OVR_OUT				UPD_SYSTEM_CSR_BASE_ADDR + 0x68
-#define UPD_PIO_OVR_DIR				UPD_SYSTEM_CSR_BASE_ADDR + 0x6A
+#define UPD_PIO_OVR_OUT				(UPD_SYSTEM_CSR_BASE_ADDR + 0x68)
+#define UPD_PIO_OVR_DIR				(UPD_SYSTEM_CSR_BASE_ADDR + 0x6A)
                                                   
-#define UPD_PIO_DEBOUNCE_10MS_COUNT UPD_SYSTEM_CSR_BASE_ADDR + 0x6C
-#define UPD_PIO_DEBOUNCE_1MS_COUNT  UPD_SYSTEM_CSR_BASE_ADDR + 0x6D
-#define UPD_PIO_DEBOUNCE_1US_COUNT  UPD_SYSTEM_CSR_BASE_ADDR + 0x6E
-#define UPD_PIO_DEBOUNCE_EN         UPD_SYSTEM_CSR_BASE_ADDR + 0x70                                                  
+#define UPD_PIO_DEBOUNCE_10MS_COUNT (UPD_SYSTEM_CSR_BASE_ADDR + 0x6C)
+#define UPD_PIO_DEBOUNCE_1MS_COUNT  (UPD_SYSTEM_CSR_BASE_ADDR + 0x6D)
+#define UPD_PIO_DEBOUNCE_1US_COUNT  (UPD_SYSTEM_CSR_BASE_ADDR + 0x6E)
+#define UPD_PIO_DEBOUNCE_EN         (UPD_SYSTEM_CSR_BASE_ADDR + 0x70)                                                  
                                                   
                                                  										  
-#define UPD_TRIM_ZTC			    UPD_SYSTEM_CSR_BASE_ADDR + 0x98
-#define UPD_TRIM_ZTC_BYTE_3		    UPD_TRIM_ZTC + 0x02
+#define UPD_TRIM_ZTC			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x98)
+#define UPD_TRIM_ZTC_BYTE_3		    (UPD_TRIM_ZTC + 0x02)
 												  
-#define UPD_PIO_OVR0_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC0							
-#define UPD_PIO_OVR1_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC1
-#define UPD_PIO_OVR2_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC2													  
-#define UPD_PIO_OVR3_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC3													  
-#define UPD_PIO_OVR4_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC4													  
-#define UPD_PIO_OVR5_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC5													  
+#define UPD_PIO_OVR0_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC0)							
+#define UPD_PIO_OVR1_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC1)
+#define UPD_PIO_OVR2_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC2)													  
+#define UPD_PIO_OVR3_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC3)													  
+#define UPD_PIO_OVR4_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC4)													  
+#define UPD_PIO_OVR5_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC5)													  
 												  
-#define UPD_PIO_OVR0_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD0								
-#define UPD_PIO_OVR1_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD2
-#define UPD_PIO_OVR2_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD4													  
-#define UPD_PIO_OVR3_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD6													  
-#define UPD_PIO_OVR4_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD8													  
-#define UPD_PIO_OVR5_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xDA		
-
-#define UPD_HPD_BASE_ADDR			0x0C00            
-#define UPD_HPD_CTL                 UPD_HPD_BASE_ADDR + 0x00
-#define UPD_HPD_INT_STS             UPD_HPD_BASE_ADDR + 0x01
-#define UPD_HPD_INT_EN              UPD_HPD_BASE_ADDR + 0x02
-#define UPD_HPD_QUEUE               UPD_HPD_BASE_ADDR + 0x03
-#define UPD_IRQ_HPD_MIN_TIME        UPD_HPD_BASE_ADDR + 0x04
-#define UPD_IRQ_HPD_MAX_TIME        UPD_HPD_BASE_ADDR + 0x05
-#define UPD_HPD_HIGH_DET_TIME       UPD_HPD_BASE_ADDR + 0x06
-#define UPD_HPD_LOW_DET_TIME        UPD_HPD_BASE_ADDR + 0x08
+#define UPD_PIO_OVR0_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD0)								
+#define UPD_PIO_OVR1_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD2)
+#define UPD_PIO_OVR2_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD4)													  
+#define UPD_PIO_OVR3_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD6)													  
+#define UPD_PIO_OVR4_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD8)													  
+#define UPD_PIO_OVR5_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xDA)		
+           
+#define UPD_HPD_CTL                 (UPD_HPD_BASE_ADDR + 0x00)
+#define UPD_HPD_INT_STS             (UPD_HPD_BASE_ADDR + 0x01)
+#define UPD_HPD_INT_EN              (UPD_HPD_BASE_ADDR + 0x02)
+#define UPD_HPD_QUEUE               (UPD_HPD_BASE_ADDR + 0x03)
+#define UPD_IRQ_HPD_MIN_TIME        (UPD_HPD_BASE_ADDR + 0x04)
+#define UPD_IRQ_HPD_MAX_TIME        (UPD_HPD_BASE_ADDR + 0x05)
+#define UPD_HPD_HIGH_DET_TIME       (UPD_HPD_BASE_ADDR + 0x06)
+#define UPD_HPD_LOW_DET_TIME        (UPD_HPD_BASE_ADDR + 0x08)
 /**************************************************************************************************/
 
 /* Defines for PIO Overridex Source Select Register (PIO_OVRx_SRC_SEL)*/
@@ -198,20 +197,56 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*****************************************************************************************************/
 
 /* Clock and Power Management control and status register */ 
-#define UPD_CLK_CTL				    	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x00
-#define UPD_CC_SAMP_CLK             	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x06
-#define UPD_VBUS_SAMP_CLK		    	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x07
+#define UPD_CLK_CTL				    	(UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x00)
+#define UPD_CC_SAMP_CLK             	(UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x06)
+#define UPD_VBUS_SAMP_CLK		    	(UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x07)
+#define UPD_CLK_GATE                    (UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x08)
+#define UPD_CLK_GATE_LOW                (UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x08)
+#define UPD_CLK_GATE_HIGH               (UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x09)
 
 /*Defines for UPD_CC_SAMP_CLK register*/
 #define UPD_CC_CLK_20_KHZ               0
 #define UPD_CC_CLK_48_KHZ               BIT(3)
-#define UPD_CC_SAMP_GEN_10_KS           0
 
-/*Defines for UPD_CC_SAMP_CLK register*/
+#define UPD_CC_SAMP_GEN_10_KS           0
+#define UPD_CC_SAMP_GEN_50_KS           BIT(0)
+#define UPD_CC_SAMP_GEN_100_KS          BIT(1)
+#define UPD_CC_SAMP_GEN_200_KS          (BIT(0) | BIT(1))
+#define UPD_CC_SAMP_GEN_250_KS          BIT(2)
+#define UPD_CC_SAMP_GEN_300_KS          (BIT(0) | BIT(2))
+#define UPD_CC_SAMP_GEN_375_KS          (BIT(1) | BIT(2))
+#define UPD_CC_SAMP_GEN_500_KS          (BIT(0) | BIT(1) | BIT(2))
+
+/*Defines for UPD_VBUS_SAMP_CLK register*/
 #define UPD_VBUS_CLK_20_KHZ             0
 #define UPD_VBUS_CLK_48_KHZ             BIT(3)
+
 #define UPD_VBUS_SAMP_GEN_10_KS         0
-                                                  
+#define UPD_VBUS_SAMP_GEN_50_KS         BIT(0)
+#define UPD_VBUS_SAMP_GEN_100_KS        BIT(1)
+#define UPD_VBUS_SAMP_GEN_200_KS        (BIT(0) | BIT(1))
+#define UPD_VBUS_SAMP_GEN_250_KS        BIT(2)
+#define UPD_VBUS_SAMP_GEN_300_KS        (BIT(0) | BIT(2))
+#define UPD_VBUS_SAMP_GEN_375_KS        (BIT(1) | BIT(2))
+#define UPD_VBUS_SAMP_GEN_500_KS        (BIT(0) | BIT(1) | BIT(2))
+             
+/*Defines for UPD_CLK_GATE_LOW register*/
+#define UPD_GPT_CLK_GATE_EN             BIT(0)
+#define UPD_PWR_SW_CLK_GATE_EN          BIT(1)
+#define UPD_I2C_CLK_GATE_EN             BIT(2)
+#define UPD_SPI_CLK_GATE_EN             BIT(3)
+#define UPD_OTP_CTRL_CLK_GATE_EN        BIT(4)
+#define UPD_ANA_TEST_GATE_EN            BIT(5)
+#define UPD_PPC_CLK_GATE_EN             BIT(6)
+#define UPD_PIO_CLK_GATE_EN             BIT(7)
+
+/*Defines for UPD_CLK_GATE_HIGH register*/
+#define UPD_OCS_CLK_GATE_EN             BIT(0)
+#define UPD_PD_MAC_CLK_GATE_EN          BIT(1)
+#define UPD_WDT_CLK_GATE_EN             BIT(2)
+#define UPD_HPD_CLK_GATE_EN             BIT(3)
+#define UPD_CABLE_PLUG_CLK_GATE_EN      BIT(4)
+
 /*Vendor ID & Product ID information*/
 #define UPD_VID_LSB                     0x24
 #define UPD_VID_MSB                     0x04  

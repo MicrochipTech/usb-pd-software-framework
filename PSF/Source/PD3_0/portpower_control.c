@@ -229,7 +229,7 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
     }
     else
     {
-        //Do nothing
+        /*Do nothing */
     }
     PWRCTRL_DriveDAC_I(u8PortNum, u16Current);
 
@@ -287,15 +287,14 @@ void PWRCTRL_DriveDAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
     {
         u16DacData = u16MaxOpVoltInmV - ((u16MaxNegoCurInmA *\
                 (u16MaxOpVoltInmV - u16MinOpVoltInmV )) / u16MaxCurIndInmA);
-
     }
     else
     {
-        //Do nothing
+        /* Do nothing */
     }
     
     /* value calculated in u16DacData should reflect in DAC_I pin */
     MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DacData);
 }
-#endif //#if (TRUE == INCLUDE_PD_SINK)
+#endif /* #if (TRUE == INCLUDE_PD_SINK) */
 

@@ -825,7 +825,7 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
     UINT8 u8AdvertisedPDOCnt;
     
     /*Clear u32aAdvertisedPDO initially*/
-    for(UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
+    for(UINT8 u8Index = INDEX_0; u8Index < DPM_MAX_PDO_CNT; u8Index++)
     {
         gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = SET_TO_ZERO;
     }
@@ -1125,7 +1125,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader,
                 }
                 else
                 {
-                    //u16SinkRDOCurIn10mA will be greater than or equal to u16SinkRDOCurIn10mA
+                    /*u16SinkRDOCurIn10mA will be greater than or equal to u16SinkRDOCurIn10mA */
                     u16SinkRDOCurIn10mA = DPM_GET_PDO_CURRENT(u32RcvdSrcPDO);
                 }
                 if(u8SinkGiveBackFlag)
@@ -1344,7 +1344,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
 }
 
 /*********************************DPM PD negotiation API**************************************/
-void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
+void DPM_InitiateInternalEvts(UINT8 u8PortNum)
 {
     
 #if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
