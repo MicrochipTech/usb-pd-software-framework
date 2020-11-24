@@ -1357,20 +1357,25 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
     /* Initiate Get Sink Caps if the PartnerSinkPDO array is null. If it is not 
        null, it means that Get Sink Caps has been already initiated. In case of 
        PB enabled, Get Sink caps is initiated by PB layer 
-       Note: Get Sink Caps will be initiated when the current power role is 
-       Source or when the port supports Fast Role Swap */    
+       Note: Get Sink Caps will not be initiated when:
+          1. The configured power role is sink only
+          2. If partner attached is source only */
     if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0]) &&\
           (PD_ROLE_SINK != u8DefaultPwrRole) &&\
-            (TRUE != DPM_IS_PB_ENABLED(u8PortNum)) &&\
-            (FALSE == DPM_IS_GET_SINK_CAP_DONE(u8PortNum)))
+            (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
     {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
-        
-        /*Set DPM_GET_SINK_CAP_DONE bit in u32DPMStatus since it is handled*/
-        gasDPM[u8PortNum].u32DPMStatus |= DPM_GET_SINK_CAP_DONE;
-        
-    }        
+        if(!((PD_ROLE_SINK == u8CurrentPwrRole) && \
+            (FALSE == DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[INDEX_0]))))
+        {
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
+
+        }   
+    }     
+    
     /*Evaluate swap and register internal event*/
+#if(FALSE == INCLUDE_PD_FR_SWAP)
+    /*If INCLUDE_PD_FR_SWAP macro is enabled, VCONN swap will be handled in 
+      Get_Sink_Cap and PR_Swap complete notifications*/
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
     /*Initiate VCONN Swap only if the swap is not already initiated and rejected*/
     if (!(((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
@@ -1384,6 +1389,8 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
         }
     }
 #endif /* INCLUDE_PD_VCONN_SWAP */
+#endif /* INCLUDE_PD_FR_SWAP */
+    
 #if (TRUE == INCLUDE_PD_DR_SWAP)
     /*Initiate DR Swap only if the swap is not already initiated and rejected*/
     if (!(((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && \
@@ -1412,6 +1419,49 @@ void DPM_OnPDNegotiationCmplt(UINT8 u8PortNum)
 #endif /*INCLUDE_PD_PR_SWAP*/
 }
 
+/********************DPM API to handle VCONN_Swap if FRS is supported************************/
+#if(TRUE == (INCLUDE_PD_FR_SWAP && INCLUDE_PD_VCONN_SWAP))
+void DPM_HandleVCONNSwapForFRS(UINT8 u8PortNum)
+{
+    UINT32 u32DPMStatus = gasDPM[u8PortNum].u32DPMStatus;    
+    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    
+    if(u32DPMStatus & DPM_FRS_CONDITIONS_SUPPORTED)
+    {
+		/*Initiate VCONN_Swap irrespective of user configured swap policy, 
+		  such that the sink partner sources VCONN */
+        if((PD_ROLE_SINK == u8CurrentPwrRole) && ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
+            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC)))
+        {
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
+        }
+        else if((PD_ROLE_SOURCE == u8CurrentPwrRole) && ((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
+            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC)))
+        {
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
+        }
+        else
+        {
+            /*Do nothing*/
+        }
+    }
+    else
+    {
+        /*Initiate VCONN Swap based on user configured swap policy and only if the swap is 
+		  not already initiated and rejected*/
+        if (!(((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
+                                (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC)) ||
+                   ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
+                                (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC))))
+        {
+            if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
+            {
+                DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
+            }
+        }
+    }
+}
+#endif
 /*********************************DPM TypeC Detach API**************************************/
 void DPM_OnTypeCDetach(UINT8 u8PortNum)
 {
@@ -1486,7 +1536,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
                                             & DPM_INT_EVT_INITIATE_ALERT);
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
-    gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_GET_SINK_CAP_DONE | \
+    gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_FRS_CONDITIONS_SUPPORTED |\
                                         DPM_PORT_IN_MODAL_OPERATION);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
@@ -1609,6 +1659,14 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
                 u8RetVal = DPM_REQUEST_SWAP;
                 
             }
+#if(TRUE == INCLUDE_PD_FR_SWAP)            
+            else if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CONDITIONS_SUPPORTED)
+            {
+                /*Since all FRS conditions are satisfied, PSF stack has initiated VCONN_Swap. 
+                  It has to be accepted*/
+                u8RetVal = DPM_REQUEST_SWAP;
+            }
+#endif
             else
             {
                 u8RetVal = DPM_IGNORE_INITIATE_SWAP;

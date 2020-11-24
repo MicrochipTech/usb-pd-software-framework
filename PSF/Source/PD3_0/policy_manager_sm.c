@@ -581,7 +581,46 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"***************HARD RESET COMPLETE***********\r\n");
             break; 
-        }        
+        } 
+        case eMCHP_PSF_SINK_CAPS_RCVD:
+        {
+#if(TRUE == INCLUDE_PD_FR_SWAP)
+            UINT8 u8ConfiguredFRSCurrent, u8PartnerFRSCurrent;
+
+            u8PartnerFRSCurrent = DPM_GET_PDO_FRS_CURRENT( \
+                gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0]);
+            
+            if(DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
+            {
+                u8ConfiguredFRSCurrent = DPM_GET_PDO_FRS_CURRENT( \
+                gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO[INDEX_0]);
+            }
+            else
+            {
+                u8ConfiguredFRSCurrent = DPM_GET_PDO_FRS_CURRENT( \
+                gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]);               
+            }
+
+            if(u8ConfiguredFRSCurrent && u8PartnerFRSCurrent && (u8ConfiguredFRSCurrent >= u8PartnerFRSCurrent))
+            {
+                gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_CONDITIONS_SUPPORTED;
+                
+                /*To-do-Ish Drive FRS arm IO pin and status io bit high*/
+            }
+#if(TRUE == INCLUDE_PD_VCONN_SWAP)
+            DPM_HandleVCONNSwapForFRS(u8PortNum);
+#endif
+            
+#endif
+            break;
+        }
+        case eMCHP_PSF_PR_SWAP_COMPLETE:
+        {
+#if(TRUE == (INCLUDE_PD_FR_SWAP && INCLUDE_PD_VCONN_SWAP))
+            DPM_HandleVCONNSwapForFRS(u8PortNum);
+#endif
+            break;
+        }
         default:
             break;
     }
