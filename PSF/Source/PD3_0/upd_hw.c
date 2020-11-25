@@ -32,7 +32,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
 #include <psf_stdinc.h>
-/******************************************************************************************************/
+
+/*******************************************************************************************/
+/**************************UPD Register Read/Write APIs*************************************/
+/*******************************************************************************************/
+
 void UPD_RegWriteByte (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8WriteValue)
 {
 	UPD_RegisterWrite (u8PortNum, u16RegOffset, &u8WriteValue, BYTE_LEN_1);
@@ -173,7 +177,10 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, \
     #endif
 
 }
-/******************************************************************************************************/
+
+/*******************************************************************************************/
+/**************************UPD PIO Configuration APIs***************************************/
+/*******************************************************************************************/
 
 void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
 {
@@ -194,7 +201,6 @@ void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT
 }
 
 /******************************************************************************************************/
-
 void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType)
 {
 	if(u8IntrType)
@@ -207,6 +213,7 @@ void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType)
 		  						(UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT));
     } 
 }
+
 /******************************************************************************************************/
 void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8CountValue)
 {
@@ -236,8 +243,8 @@ void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8C
     UPD_RegWriteByte(u8PortNum, u16RegOffset, u8CountValue);
      
 }
-/******************************************************************************************************/
 
+/******************************************************************************************************/
 void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType)
 {
     UINT32 u32Data = SET_TO_ZERO;
@@ -256,60 +263,6 @@ void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnTyp
         UPD_RegisterWrite (u8PortNum, UPD_PIO_DEBOUNCE_EN, (UINT8 *)&u32Data, BYTE_LEN_4);
     }   
 }
-/**********************************************************************************/
-#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-
-void UPD_FaultInInit (UINT8 u8PortNum)
-{
-	/* Get the PIO number*/
-	UINT8 u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
-    
-    /* Get the Fault in PIO mode*/
-    UINT8 u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
-    
-    UINT16 u16Data;
-    
-    /* Clear bits 3:0 from user input.*/
-    u8FaultInMode &= (UPD_CFG_PIO_PULL_UP_ENABLE | UPD_CFG_PIO_PULL_DOWN_ENABLE | \
-                        UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
-    
-    /* Set direction to input and enable GPIO.*/
-    u8FaultInMode |= UPD_CFG_PIO_GPIO_ENABLE;
-    
-    /* Write the value to the PIO config register.*/
-    UPD_RegWriteByte(u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), u8FaultInMode);
-    
-    /*Write Debounce count*/
-    UPD_ConfigurePIODebounceCount(u8PortNum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS, gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms);
-    
-    /* Enable Debounce*/
-    UPD_GPIOSetDebounce (u8PortNum, u8PIONum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS);
-	
-    u16Data = BIT(u8PIONum);
-    UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16Data, BYTE_LEN_2);
-    
-	/* Enable the PIO interrupt*/
-	u16Data |= UPD_RegReadWord(u8PortNum, UPD_PIO_INT_EN);
-	UPD_RegWriteWord(u8PortNum, UPD_PIO_INT_EN, u16Data);
-}
-
-/*******************************************************************************/
-void UPD_EnableFaultIn(UINT8 u8PortNum)
-{
-	UINT8 u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
-	UINT16 u16INTSTS = BIT(u8PIONum);
-    UINT8 u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
-    
-    /* Get the edge type from the user input.*/
-    u8FaultInMode &= (UPD_CFG_PIO_RISING_ALERT | UPD_CFG_PIO_FALLING_ALERT);
-
-	/* Fault-in interrupt configuration*/
-	UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16INTSTS, BYTE_LEN_2);
-	UPD_GPIOSetIntrAlert (u8PortNum, u8PIONum, u8FaultInMode);
-	
-}
-
-#endif /* endif of INCLUDE_POWER_FAULT_HANDLING */
 
 /******************************************************************************************************/
 void UPD_GPIOInit(UINT8 u8PortNum)
@@ -329,7 +282,6 @@ void UPD_GPIOInit(UINT8 u8PortNum)
 }
 
 /******************************************************************************************************/
-
 void UPD_PIOHandleISR(UINT8 u8PortNum)
 {
 	UINT16 u16PIOIntSts = SET_TO_ZERO;
@@ -392,7 +344,67 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
 	/* clear the interrupt status */
 	UPD_RegisterWriteISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntSts, BYTE_LEN_2);
 }
-/******************************************************************************************************/
+
+/*******************************************************************************************/
+/********************UPD Power Fault Handling Support APIs *********************************/
+/*******************************************************************************************/
+
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+
+void UPD_FaultInInit (UINT8 u8PortNum)
+{
+	/* Get the PIO number*/
+	UINT8 u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
+    
+    /* Get the Fault in PIO mode*/
+    UINT8 u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
+    
+    UINT16 u16Data;
+    
+    /* Clear bits 3:0 from user input.*/
+    u8FaultInMode &= (UPD_CFG_PIO_PULL_UP_ENABLE | UPD_CFG_PIO_PULL_DOWN_ENABLE | \
+                        UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
+    
+    /* Set direction to input and enable GPIO.*/
+    u8FaultInMode |= UPD_CFG_PIO_GPIO_ENABLE;
+    
+    /* Write the value to the PIO config register.*/
+    UPD_RegWriteByte(u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), u8FaultInMode);
+    
+    /*Write Debounce count*/
+    UPD_ConfigurePIODebounceCount(u8PortNum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS, gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms);
+    
+    /* Enable Debounce*/
+    UPD_GPIOSetDebounce (u8PortNum, u8PIONum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS);
+	
+    u16Data = BIT(u8PIONum);
+    UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16Data, BYTE_LEN_2);
+    
+	/* Enable the PIO interrupt*/
+	u16Data |= UPD_RegReadWord(u8PortNum, UPD_PIO_INT_EN);
+	UPD_RegWriteWord(u8PortNum, UPD_PIO_INT_EN, u16Data);
+}
+
+/*******************************************************************************/
+void UPD_EnableFaultIn(UINT8 u8PortNum)
+{
+	UINT8 u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
+	UINT16 u16IntrSts = BIT(u8PIONum);
+    UINT8 u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
+    
+    /* Get the edge type from the user input.*/
+    u8FaultInMode &= (UPD_CFG_PIO_RISING_ALERT | UPD_CFG_PIO_FALLING_ALERT);
+
+	/* Fault-in interrupt configuration*/
+	UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
+	UPD_GPIOSetIntrAlert (u8PortNum, u8PIONum, u8FaultInMode);	
+}
+
+#endif /* endif of INCLUDE_POWER_FAULT_HANDLING */
+
+/*******************************************************************************************/
+/************************ UPD PIO Override APIs ********************************************/
+/*******************************************************************************************/
 
 #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
 
@@ -455,140 +467,15 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
     /* Enable the override for FAULT_IN*/
     /* Under voltage and overvoltage override is enabled after configuring the
         threshold*/
-    UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
-
+    UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, UPD_PIO_OVR_2);
 }
+/*******************************************************************************************/
 #endif
 
-/******************************************************************************************************/
+/*******************************************************************************************/
+/************************ UPD Common Support APIs ******************************************/
+/*******************************************************************************************/
 
-#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
-
-UINT8 UPD_CheckUPDsActive()
-{
-    UINT8 u8IsAllUPDsActive = FALSE;
-    
-    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
-  	{
-		/*Ignore if port is disabled, so consider only for enabled ports*/
-		if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
-		{
-			/*UPD_STATE_ACTIVE will be set frequently by respective Alert ISR.
-			  It means that the appropriate port is active, so skip MCU IDLE*/
-			if ((UPD_STATE_ACTIVE == gau8ISRPortState[u8PortNum]) ||
-			/*Verify any other IDLE timer is running for all other ports.
-			if its running, then lets handle in that timer expire event, so skip MCU
-			IDLE for now*/
-             (((gau8PortIdleTimerID[u8PortNum]< MAX_CONCURRENT_TIMERS) && \
-             (gasPDTimers[gau8PortIdleTimerID[u8PortNum]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
-
-			{
-				u8IsAllUPDsActive = TRUE;
-				break;
-			}
-		}
-    }
-  
-    return u8IsAllUPDsActive;
-}
-
-/******************************************************************************************************/
-void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
-{
- 
-	/*Invalidate this Timer ID since it is stored in global*/
-    gau8PortIdleTimerID[u8PortNum] = MAX_CONCURRENT_TIMERS;
-	
-	/*Set gau8PortState to UPD_STATE_IDLE*/
-	gau8ISRPortState[u8PortNum] = UPD_STATE_IDLE;
-
-	/*Enable RX_AFE: In order to receive a PD message the RX AFE shall be enabled by SW and the
-      trip point set via CC RX DAC Control Register (CC_RX_DAC_CTL) and  CC RX DAC Filter Register
-	  (CC_RX_DAC_FILT)*/
-	
-	/*Disable Ring , 48 MHz Oscillator and System clock to put UPD350 to idle*/
-	UPD_RegByteClearBit (u8PortNum, UPD_CLK_CTL, \
-            (UPD_RING_OSC_ENABLE | UPD_48MHZ_OSC_ENABLE | UPD_SYS_CLK_ENABLE));
-    
-    DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set Port Idle\r\n");
-	
-	/* Put MCU into IDLE */
-
-	if (FALSE == UPD_CheckUPDsActive())
-	{
-        DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE\r\n");
-                
-		gu8SetMCUIdle = UPD_MCU_IDLE;
-	}
-	
-}
-/******************************************************************************************************/
-
-void PD_StartIdleTimer(UINT8 u8PortNum)
-{
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-                
-    /*if UPD350 is active; Restart UPD IDLE Timer*/
-    if (UPD_STATE_ACTIVE == gau8ISRPortState[u8PortNum])
-    {        
-        PDTimer_Kill (gau8PortIdleTimerID[u8PortNum]);
-        
-        gau8PortIdleTimerID[u8PortNum] = MAX_CONCURRENT_TIMERS;
-        
-        gau8PortIdleTimerID[u8PortNum] = PDTimer_Start(\
-                    UPD_IDLE_TIMEOUT_MS,\
-                    UPD_SetIdleCB,\
-                    u8PortNum, \
-                    (UINT8)SET_TO_ZERO);
-                    
-        gau8ISRPortState[u8PortNum] = UPD_STATE_STARTED_IDLE_TIMER;
-    }
-    
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
-} 
-
-/******************************************************************************************************/
-
-/********************************************************************************************/
-void UPD_PwrManagementCtrl(UINT8 u8PortNum)
-{
-   /*Restart IDLE Timer if UPD350 is Active*/
-    PD_StartIdleTimer (u8PortNum);
-
-    if (UPD_MCU_IDLE == gu8SetMCUIdle)
-    {
-        /*Invalidate MCU Idle, Before keeping MCU in Idle clear this set 
-         gu8SetMCUidle to Active state for next run */
-        gu8SetMCUIdle = UPD_MCU_ACTIVE;
-
-        if (FALSE == UPD_CheckUPDsActive())
-        {
-            /* Notification CallBack to the Client, to indicate all the
-             UPD350s are in idle state */
-            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_UPDS_IN_IDLE);
-        }
-    } 
-}
-/********************************************************************************************/
-
-void UPD_PwrManagementInit(UINT8 u8PortNum)
-{
-    /*Set UPD state as Active in the initialization*/
-    gau8ISRPortState[u8PortNum] = UPD_STATE_ACTIVE;
-
-    /*Start idle timer */
-    gau8PortIdleTimerID[u8PortNum] = PDTimer_Start(\
-                                        UPD_IDLE_TIMEOUT_MS,\
-                                        UPD_SetIdleCB,\
-                                        u8PortNum, \
-                                        (UINT8)SET_TO_ZERO);
-    
-    /*Set MCU Idle flag as UPD_MCU_ACTIVE*/
-    gu8SetMCUIdle = UPD_MCU_ACTIVE;
-}
-/********************************************************************************************/
-#endif /* INCLUDE_POWER_MANAGEMENT_CTRL*/
-/********************************************************************************************/
 void UPD_ResetThroughGPIO()
 {
     /*Since, all UPD350 PIOs are tied to single PIO, Reset is done for PORT0
@@ -600,6 +487,7 @@ void UPD_ResetThroughGPIO()
     MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(PORT0, eUPD350_RESET_FUNC,eGPIO_DEASSERT);
 }
 
+/********************************************************************************************/
 void UPD_CheckAndDisablePorts (void)
 {
     UINT8 u8ReadData[BYTE_LEN_4];
@@ -671,7 +559,6 @@ void UPD_CheckAndDisablePorts (void)
         }
     }
 }
-/********************************************************************************************/
 
 /********************************************************************************************/
 void UPD_FindVBusCorrectionFactor(void)
@@ -688,10 +575,12 @@ void UPD_FindVBusCorrectionFactor(void)
             gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor = \
                                     (float)((float)u16VBUSTHR3/(float)UPD_VBUS_THRS_DEFAULT);
         }
-    }
-        
+    }        
 }
-/********************************************************************************************/
+
+/*******************************************************************************************/
+/************************ UPD Hot Plug Detect(HPD) APIs ************************************/
+/*******************************************************************************************/
 
 #if(TRUE == INCLUDE_UPD_HPD)
 
@@ -734,6 +623,7 @@ void UPD_HPDInit(UINT8 u8PortNum)
     /*HPD peripheral will be enabled by user application via client request.*/
 }
 
+/********************************************************************************************/
 void UPD_HPDHandleISR(UINT8 u8PortNum)
 {
     UINT8 u8Data;
@@ -758,12 +648,158 @@ void UPD_HPDHandleISR(UINT8 u8PortNum)
     gu16HPDStsISR[u8PortNum] |= UPD_HPD_INTERRUPT_OCCURRED;
 }
 
-
-
 #endif
 
-#if(TRUE == CONFIG_HOOK_DEBUG_MSG)
+/*******************************************************************************************/
+/************************ UPD FRS Support APIs *********************************************/
+/*******************************************************************************************/
+
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+
+void UPD_FRSRequestPIOInit (UINT8 u8PortNum)
+{
+    
+}
+/*******************************************************************************************/
+#endif
+
+/*******************************************************************************************/
+/************************ Power Management Control APIs ************************************/
+/*******************************************************************************************/
+
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
+
+UINT8 UPD_CheckUPDsActive()
+{
+    UINT8 u8IsAllUPDsActive = FALSE;
+    
+    for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
+  	{
+		/*Ignore if port is disabled, so consider only for enabled ports*/
+		if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
+		{
+			/*UPD_STATE_ACTIVE will be set frequently by respective Alert ISR.
+			  It means that the appropriate port is active, so skip MCU IDLE*/
+			if ((UPD_STATE_ACTIVE == gau8ISRPortState[u8PortNum]) ||
+			/*Verify any other IDLE timer is running for all other ports.
+			if its running, then lets handle in that timer expire event, so skip MCU
+			IDLE for now*/
+             (((gau8PortIdleTimerID[u8PortNum]< MAX_CONCURRENT_TIMERS) && \
+             (gasPDTimers[gau8PortIdleTimerID[u8PortNum]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
+
+			{
+				u8IsAllUPDsActive = TRUE;
+				break;
+			}
+		}
+    }
+  
+    return u8IsAllUPDsActive;
+}
+
+/******************************************************************************************************/
+void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+{
+ 
+	/*Invalidate this Timer ID since it is stored in global*/
+    gau8PortIdleTimerID[u8PortNum] = MAX_CONCURRENT_TIMERS;
+	
+	/*Set gau8PortState to UPD_STATE_IDLE*/
+	gau8ISRPortState[u8PortNum] = UPD_STATE_IDLE;
+
+	/*Enable RX_AFE: In order to receive a PD message the RX AFE shall be enabled by SW and the
+      trip point set via CC RX DAC Control Register (CC_RX_DAC_CTL) and  CC RX DAC Filter Register
+	  (CC_RX_DAC_FILT)*/
+	
+	/*Disable Ring , 48 MHz Oscillator and System clock to put UPD350 to idle*/
+	UPD_RegByteClearBit (u8PortNum, UPD_CLK_CTL, \
+            (UPD_RING_OSC_ENABLE | UPD_48MHZ_OSC_ENABLE | UPD_SYS_CLK_ENABLE));
+    
+    DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set Port Idle\r\n");
+	
+	/* Put MCU into IDLE */
+
+	if (FALSE == UPD_CheckUPDsActive())
+	{
+        DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE\r\n");
+                
+		gu8SetMCUIdle = UPD_MCU_IDLE;
+	}
+	
+}
+
+/******************************************************************************************************/
+void PD_StartIdleTimer(UINT8 u8PortNum)
+{
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+                
+    /*if UPD350 is active; Restart UPD IDLE Timer*/
+    if (UPD_STATE_ACTIVE == gau8ISRPortState[u8PortNum])
+    {        
+        PDTimer_Kill (gau8PortIdleTimerID[u8PortNum]);
+        
+        gau8PortIdleTimerID[u8PortNum] = MAX_CONCURRENT_TIMERS;
+        
+        gau8PortIdleTimerID[u8PortNum] = PDTimer_Start(\
+                    UPD_IDLE_TIMEOUT_MS,\
+                    UPD_SetIdleCB,\
+                    u8PortNum, \
+                    (UINT8)SET_TO_ZERO);
+                    
+        gau8ISRPortState[u8PortNum] = UPD_STATE_STARTED_IDLE_TIMER;
+    }
+    
+    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+} 
+
+/******************************************************************************************************/
+void UPD_PwrManagementCtrl(UINT8 u8PortNum)
+{
+   /*Restart IDLE Timer if UPD350 is Active*/
+    PD_StartIdleTimer (u8PortNum);
+
+    if (UPD_MCU_IDLE == gu8SetMCUIdle)
+    {
+        /*Invalidate MCU Idle, Before keeping MCU in Idle clear this set 
+         gu8SetMCUidle to Active state for next run */
+        gu8SetMCUIdle = UPD_MCU_ACTIVE;
+
+        if (FALSE == UPD_CheckUPDsActive())
+        {
+            /* Notification CallBack to the Client, to indicate all the
+             UPD350s are in idle state */
+            (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_UPDS_IN_IDLE);
+        }
+    } 
+}
+
 /********************************************************************************************/
+void UPD_PwrManagementInit(UINT8 u8PortNum)
+{
+    /*Set UPD state as Active in the initialization*/
+    gau8ISRPortState[u8PortNum] = UPD_STATE_ACTIVE;
+
+    /*Start idle timer */
+    gau8PortIdleTimerID[u8PortNum] = PDTimer_Start(\
+                                        UPD_IDLE_TIMEOUT_MS,\
+                                        UPD_SetIdleCB,\
+                                        u8PortNum, \
+                                        (UINT8)SET_TO_ZERO);
+    
+    /*Set MCU Idle flag as UPD_MCU_ACTIVE*/
+    gu8SetMCUIdle = UPD_MCU_ACTIVE;
+}
+
+/********************************************************************************************/
+#endif /* INCLUDE_POWER_MANAGEMENT_CTRL*/
+
+
+/*******************************************************************************************/
+/************************ UPD Debug Support APIs *******************************************/
+/*******************************************************************************************/
+
+#if(TRUE == CONFIG_HOOK_DEBUG_MSG)
+
 void UPD_RegDump(UINT8 u8PortNum)
 {
     UINT8 u8Data = SET_TO_ZERO;

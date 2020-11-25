@@ -100,8 +100,7 @@ void DPM_Init(UINT8 u8PortNum)
 void DPM_StateMachineInit(void)
 {
 	for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
-  	{
-        
+  	{        
         if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
 		  	/* Init UPD350 GPIO */
