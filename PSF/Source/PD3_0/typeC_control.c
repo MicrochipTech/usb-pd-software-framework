@@ -405,7 +405,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
         if (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
         {
             /* Enable transmission of FRS signal */
-            TypeC_FRSSignalTransmitInit (u8PortNum);
+            TypeC_EnableFRSSignalTransmission (u8PortNum);
         }        
         #endif 
         /*Setting the VBUS to vSafe0V before entering the State machine*/
@@ -418,7 +418,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
         if (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
         {
             /* Enable detection of FRS signal */
-            TypeC_FRSSignalDetectInit (u8PortNum);
+            TypeC_EnableFRSSignalDetection (u8PortNum);
         }
         #endif 
         /*Disable the Sink circuitry to stop sinking the power from source*/
@@ -2749,7 +2749,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
     avoid variable corruption*/
 
 #if(TRUE == INCLUDE_PD_DRP)
-    TypeC_DrpIntrHandler(u8PortNum);
+    TypeC_DRPIntrHandler(u8PortNum);
 #endif
 
     
@@ -2836,7 +2836,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
 }
 
 #if(TRUE == INCLUDE_PD_DRP)
-void TypeC_DrpIntrHandler (UINT8 u8PortNum)
+void TypeC_DRPIntrHandler (UINT8 u8PortNum)
 {
  	UINT8 u8Data = SET_TO_ZERO;
     
@@ -3238,8 +3238,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
 /*INCLUDE_PD_SINK*/
 
 void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
-{
-    
+{    
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE COMPLETED\r\n");
     
     /*Power down the CC comparator*/
@@ -3738,7 +3737,7 @@ UINT16 TypeC_ObtainCurrentValueFrmRp (UINT8 u8PortNum)
 /*******************************************************************************************/
 #if (TRUE == INCLUDE_PD_FR_SWAP)
 
-void TypeC_FRSSignalDetectInit (UINT8 u8PortNum)
+void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
 {      
     /* Ensure at minimum that pwr_sw_clk_gate_en, cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
        pio_clk_gate_en, and i2c_clk_gate_en (or spi_clk_gate_en) are cleared in Clock Gate Register */    
@@ -3790,7 +3789,7 @@ void TypeC_FRSSignalDetectInit (UINT8 u8PortNum)
     UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
 }
 
-void TypeC_FRSSignalTransmitInit (UINT8 u8PortNum)
+void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
 {
     /* Ensure at minimum that cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
        pio_clk_gate_en, and i2c_clk_gate_en (or spi_clk_gate_en) are cleared in Clock Gate Register */    

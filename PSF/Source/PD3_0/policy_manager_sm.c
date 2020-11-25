@@ -104,7 +104,7 @@ void DPM_StateMachineInit(void)
         if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
 		  	/* Init UPD350 GPIO */
-		  	UPD_GPIOInit(u8PortNum);
+		  	UPD_InitGPIO (u8PortNum);
 			
             #if(TRUE == INCLUDE_UPD_HPD)
             /*Init UPD350 to support HPD*/
@@ -127,7 +127,6 @@ void DPM_StateMachineInit(void)
                 /* Protocol Layer initialization for all the port present */
                 PRL_Init (u8PortNum);
             }
-
         }
     }
 }

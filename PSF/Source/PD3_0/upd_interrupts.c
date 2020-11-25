@@ -70,8 +70,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         
         /*Checking for Device ready Interrupt*/
         if(u16InterruptStatus & UPDINTR_RDY_INT)
-        {    
-            
+        {                
             UPD_RegisterReadISR (u8PortNum, UPDINTR_INT_EN, (UINT8 *)&u16Data, BYTE_LEN_2);
             
             u16Data &= ~UPDINTR_RDY_INT; 
@@ -106,8 +105,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
             UPD_PIOHandleISR (u8PortNum);
         }
 
-#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
-        
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)        
         /*Set UPD_STATE_ACTIVE at End of ISR*/
         gau8ISRPortState[u8PortNum] = UPD_STATE_ACTIVE;
 #endif
