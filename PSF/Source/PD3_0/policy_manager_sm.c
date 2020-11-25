@@ -582,45 +582,6 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             DEBUG_PRINT_PORT_STR (u8PortNum,"***************HARD RESET COMPLETE***********\r\n");
             break; 
         } 
-        case eMCHP_PSF_SINK_CAPS_RCVD:
-        {
-#if(TRUE == INCLUDE_PD_FR_SWAP)
-            UINT8 u8ConfiguredFRSCurrent, u8PartnerFRSCurrent;
-
-            u8PartnerFRSCurrent = DPM_GET_PDO_FRS_CURRENT( \
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0]);
-            
-            if(DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
-            {
-                u8ConfiguredFRSCurrent = DPM_GET_PDO_FRS_CURRENT( \
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO[INDEX_0]);
-            }
-            else
-            {
-                u8ConfiguredFRSCurrent = DPM_GET_PDO_FRS_CURRENT( \
-                gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]);               
-            }
-
-            if(u8ConfiguredFRSCurrent && u8PartnerFRSCurrent && (u8ConfiguredFRSCurrent >= u8PartnerFRSCurrent))
-            {
-                gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_CONDITIONS_SUPPORTED;
-                
-                /*To-do-Ish Drive FRS arm IO pin and status io bit high*/
-            }
-#if(TRUE == INCLUDE_PD_VCONN_SWAP)
-            DPM_HandleVCONNSwapForFRS(u8PortNum);
-#endif
-            
-#endif
-            break;
-        }
-        case eMCHP_PSF_PR_SWAP_COMPLETE:
-        {
-#if(TRUE == (INCLUDE_PD_FR_SWAP && INCLUDE_PD_VCONN_SWAP))
-            DPM_HandleVCONNSwapForFRS(u8PortNum);
-#endif
-            break;
-        }
         default:
             break;
     }
@@ -756,9 +717,15 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         /* Clear the request since the request is accepted and going to be handled */
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_RENEGOTIATE);  
+
+        /*Disable FRS_REQ_PIO as this renegotiation might affect FRS criteria 
+          by changing the negotiated PDO*/
+        DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
+        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
         
         /* Request DPM for renegotiation */
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
+        
     } /*DPM_CLIENT_REQ_RENEGOTIATE*/    
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
         /* Check for DPM_CLIENT_REQ_VCONN_SWAP request */
@@ -779,6 +746,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         /* Clear the request since the request is accepted and going to be handled */
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_PR_SWAP); 
+        
+        /*Disable FRS_REQ_PIO to avoid FRS in between a PR_Swap*/
+        DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
+        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
         
         /* Request DPM for PR swap */
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
