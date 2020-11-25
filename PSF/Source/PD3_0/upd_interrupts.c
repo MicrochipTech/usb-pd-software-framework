@@ -88,7 +88,8 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         #endif
 
         /*CC,PWR,VBUS interrupts are handled by the function "TypeC_InterruptHandler"*/
-        if((u16InterruptStatus & UPDINTR_CC_INT) || (u16InterruptStatus & UPDINTR_PWR_INT) || (u16InterruptStatus & UPDINTR_VBUS_INT))
+        if((u16InterruptStatus & UPDINTR_CC_INT) || (u16InterruptStatus & UPDINTR_PWR_INT) || \
+                (u16InterruptStatus & UPDINTR_VBUS_INT) || (u16InterruptStatus & UPDINTR_EXT_INT))
         {
             TypeC_HandleISR (u8PortNum, u16InterruptStatus);
         }
