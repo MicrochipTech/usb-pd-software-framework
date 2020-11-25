@@ -60,6 +60,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_VBUS_MATCH		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x08)
 #define TYPEC_VBUS_CHG_STS          (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x09)
 #define TYPEC_PWR_INT_STS		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x0A)
+#define TYPEC_EXT_INT_STS           (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x0B)
 #define TYPEC_CC_INT_EN             (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x11)
 #define TYPEC_CC1_MATCH_EN		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x12)
 #define TYPEC_CC2_MATCH_EN		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x13)
@@ -418,6 +419,7 @@ event for UFP*/
 
 /*Bit definitions for gasTypeCcontrol[u8PortNum].u8DRPStsISR variable*/
 #define TYPEC_DRP_DONE_INTERRUPT                    BIT(0)
+#define TYPEC_FRS_XMT_RCV_STS_INTERRUPT             BIT(1)
 
 /*Defines for different Type C current values of DFP*/
 #define TYPEC_UFP                               PD_ROLE_UFP

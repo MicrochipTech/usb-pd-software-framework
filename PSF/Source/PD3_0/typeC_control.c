@@ -1845,6 +1845,21 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
     
     UINT8 u8IntStsISR = gasTypeCcontrol[u8PortNum].u8IntStsISR;
     
+    /*Check for EXT_INT*/
+    if(u16InterruptStatus & UPDINTR_EXT_INT)
+    {
+        UPD_RegisterReadISR (u8PortNum, TYPEC_EXT_INT_STS, &u8Data, BYTE_LEN_1);
+#if(TRUE == INCLUDE_PD_FR_SWAP)        
+        if (u8Data & (TYPEC_FRS_XMT_STS | TYPEC_FRS_RCV_STS))
+        {
+            /*Clearing the FRS_XMT_STS/FRS_RCV_STS interrupt */
+            UPD_RegisterWriteISR (u8PortNum, TYPEC_EXT_INT_STS, &u8Data, BYTE_LEN_1);
+            
+            gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_FRS_XMT_RCV_STS_INTERRUPT;
+        }
+#endif
+    }
+    
     /*Check for CC Change interrupt*/
     if (u16InterruptStatus & UPDINTR_CC_INT)
     {			       
@@ -2845,6 +2860,22 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
         gasTypeCcontrol[u8PortNum].u8DRPStsISR &= (~TYPEC_DRP_DONE_INTERRUPT);
         
     }
+#if(TRUE == INCLUDE_PD_FR_SWAP)
+    else if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_FRS_XMT_RCV_STS_INTERRUPT)
+    {
+        UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+        
+        if(PD_ROLE_SOURCE == u8CurrentPwrRole)
+        {
+            #if (TRUE == INCLUDE_PD_3_0)                    
+            PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
+            #endif 
+        }
+        {
+            /*To-do Handle for sink*/
+        }
+    }
+#endif
 }
 #endif
 
