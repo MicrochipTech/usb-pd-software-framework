@@ -1359,6 +1359,39 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     break;                    
                 }
 #endif 
+                
+                
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+                case PE_CTRL_FR_SWAP: 
+                {
+                    /*Accept the Power Role swap if current state is READY State or
+                    any VDM AMS is active*/
+                    if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                        (u8PEInVDMState))
+                    {
+#if ((TRUE == INCLUDE_PD_SOURCE_PPS) || (TRUE == INCLUDE_PD_VDM))                        
+                        /* In case of PPS, Kill SourcePPSCommTimer only in ePE_SRC_READY  
+                           state if the current explicit contract is for a PPS APDO 
+                           Kill VDM Response timer if PE is waiting for a VDM response, but
+                           the AMS is interrupted by DR Swap AMS */
+                        if(((u8IsPPSContract) && (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState)) || 
+                           (ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState))
+                        {
+                            PE_KillPolicyEngineTimer (u8PortNum);
+                        }  
+#endif                        
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"FR_SWAP Received from Partner\r\n");
+
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_EVALUATE_SWAP; 
+                    }
+                    else
+                    {
+                        PE_HandleUnExpectedMsg (u8PortNum);
+                    }
+                    break;                    
+                }
+#endif                 
                 case PE_CTRL_NOT_SUPPORTED:
                 {
                     if (ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState)
