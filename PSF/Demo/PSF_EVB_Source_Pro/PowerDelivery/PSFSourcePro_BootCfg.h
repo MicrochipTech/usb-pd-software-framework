@@ -120,8 +120,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 #define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 
-#define CFG_PORT_0_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
-#define CFG_PORT_1_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
+#define CFG_PORT_0_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
+#define CFG_PORT_1_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
 
 #define CFG_PORT_0_UPD_EN_VBUS               eUPD_PIO3
 #define CFG_PORT_1_UPD_EN_VBUS               eUPD_PIO3
@@ -133,12 +133,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
 #define CFG_UNDER_VOLTAGE_FACTOR		  85U
-#define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5U
-#define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2U
+#define CFG_FAULT_IN_OCS_DEBOUNCE_MS      5U
+#define CFG_VCONN_OCS_DEBOUNCE_IN_MS      2U
 #define CFG_MAX_VBUS_POWER_FAULT_COUNT	  3U
 #define CFG_MAX_VCONN_FAULT_COUNT		  3U
 #define CFG_POWER_GOOD_TIMER_MS			  10000U
-#define CFG_MAX_PORT_CURRENT_IN_10mA       300U 
+#define CFG_MAX_PORT_CURRENT_IN_10mA      300U 
 
 /*********************************************************************************/
 /*********************************PDO Configuration ******************************/

@@ -152,9 +152,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Defines for PIO Overridex Source Select Register (PIO_OVRx_SRC_SEL)*/
 /* defines for Override Select[4:0]*/
-#define UPD_PIO_OVR_SRC_SEL_VBUS_THR	0x11
+#define UPD_PIO_OVR_SRC_SEL_VBUS_THR                0x11
+#define UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET    0x12 
 /* define for VBUS Threshold Select [7:5] field*/											  
-#define UPD_PIO_OVR_VBUS_THR_SEL_POS	5
+#define UPD_PIO_OVR_VBUS_THR_SEL_POS                5
 
 #define UPD_PIO_OVR_VSAFE0V_THR_MATCH		(0 << UPD_PIO_OVR_VBUS_THR_SEL_POS)
 #define UPD_PIO_OVR_VBUS0_THR_MATCH			(1 << UPD_PIO_OVR_VBUS_THR_SEL_POS)
@@ -734,7 +735,7 @@ void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnTyp
 
 /**************************************************************************************************
     Function:
-        void UPD_GPIOInit(UINT8 u8PortNum)
+        void UPD_InitGPIO(UINT8 u8PortNum)
 
     Summary:
         This API initialize the GPIO module based on port number passed.
@@ -760,7 +761,7 @@ void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnTyp
 		to initialize the GPIO module for the port.
 
 **************************************************************************************************/
-void UPD_GPIOInit(UINT8 u8PortNum);
+void UPD_InitGPIO (UINT8 u8PortNum);
 
 /*****************************************************************************************************
 	Function:
@@ -791,7 +792,7 @@ void UPD_PIOHandleISR (UINT8 u8PortNum);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_FaultInInit (UINT8 u8PortNum)
+		void UPD_InitFaultInPIO (UINT8 u8PortNum)
 
 	Summary:
 		API to configure the fault in pin of the UPD350
@@ -813,7 +814,7 @@ void UPD_PIOHandleISR (UINT8 u8PortNum);
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_FaultInInit (UINT8 u8PortNum);
+void UPD_InitFaultInPIO (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1078,16 +1079,16 @@ void UPD_EnableFaultIn(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
+        void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum)
 
     Summary:
-        This API configures PIO override functionality.
+        API to configure PIO override functionality for power fault conditions
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-        This API is to configures UPD350's PIO override feature for undervoltage, overvoltage and 
+        This API is to configure UPD350's PIO override feature for under-voltage, overvoltage and 
         Fault_In OCS.
 
     Conditions:
@@ -1103,8 +1104,7 @@ void UPD_EnableFaultIn(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum);
-
+void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1204,7 +1204,7 @@ void UPD_HPDInit(UINT8 u8PortNum);
 
     Description:
         If an HPD_QUEUE_NOT_EMPTY event occurs, this API will read the HPD queue interrupt status register
- *      and will record those events in gu16HPDStsISR[u8PortNum] variable.
+        and will record those events in gu16HPDStsISR[u8PortNum] variable.
 
     Conditions:
         This is applicable only when INCLUDE_UPD_HPD is enabled.
@@ -1221,6 +1221,60 @@ void UPD_HPDInit(UINT8 u8PortNum);
 **************************************************************************************************/
 void UPD_HPDHandleISR(UINT8 u8PortNum);
 
-void UPD_FRSRequestPIOInit (UINT8 u8PortNum); 
+/*****************************************************************************************************
+	Function:
+		void UPD_InitFRSRequestPIO (UINT8 u8PortNum)
+
+	Summary:
+		API to configure the FRS Request pin of the UPD350
+	
+	Devices Supported:
+		UPD350 REV A
+
+	Description:
+		This API initializes the FRS Request pin for the port.
+		
+	Precondition:
+		None.
+
+	Parameters:
+		u8PortNum -  Corresponding port number
+ 
+	Return:
+		None.
+
+	Remarks:
+		None.
+**************************************************************************************************/
+void UPD_InitFRSRequestPIO (UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
+
+    Summary:
+        API to configure PIO override functionality for Fast Role Swap events
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is used to configure UPD350's PIO override feature for 
+        FRS Request PIO assertion and FRS signal detected events 
+ 
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum); 
 
 #endif /*_UPD_HW_H_*/
