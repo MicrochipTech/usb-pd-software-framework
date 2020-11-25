@@ -1924,7 +1924,6 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                 gasTypeCcontrol[u8PortNum].u8CC2MatchISR = (UINT8)HIBYTE(u16Data);            
             }
         }
-
     }
     
     /*Check for power interrupt*/
@@ -2844,7 +2843,7 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
     if(TRUE == (gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_DRP_DONE_INTERRUPT))
     {
         /*Get the state being advertised from DRP_CTL_HIGH register*/
-        UPD_RegisterRead( u8PortNum, TYPEC_DRP_CTL_HIGH, &u8Data, BYTE_LEN_1); 
+        UPD_RegisterRead(u8PortNum, TYPEC_DRP_CTL_HIGH, &u8Data, BYTE_LEN_1); 
 
         if(TRUE == (u8Data & TYPEC_DRP_ADVERTISING_STATE))
         {
@@ -2866,8 +2865,7 @@ void TypeC_DrpIntrHandler (UINT8 u8PortNum)
         /* Protocol Layer initialization based on power being advertised*/
         PRL_Init (u8PortNum);
                 
-        gasTypeCcontrol[u8PortNum].u8DRPStsISR &= (~TYPEC_DRP_DONE_INTERRUPT);
-        
+        gasTypeCcontrol[u8PortNum].u8DRPStsISR &= (~TYPEC_DRP_DONE_INTERRUPT);        
     }
 #if(TRUE == INCLUDE_PD_FR_SWAP)
     else if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_FRS_XMT_RCV_STS_INTERRUPT)
@@ -3590,10 +3588,9 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
         {
            /* Corresponding VBUS sample enable */
            u8SampleEn = (TYPEC_VSAFE0V_MAX_THR_MATCH | TYPEC_VSINKDISCONNECT_THR0_MATCH |
-                      TYPEC_DESIRED_MIN_V_THR1_MATCH);
+                            TYPEC_DESIRED_MIN_V_THR1_MATCH);
         }
-      }
-                      
+      }                      
 	} /* end of u8PowerFaultThrConfig else*/
 				
 	/*Enabling VBUS sample*/
