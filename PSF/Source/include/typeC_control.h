@@ -235,16 +235,19 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Bit definitions of TYPEC_EXT_INT_EN register */
 #define TYPEC_CFG_SEL_DONE          BIT(0)
+/* Bit 1 is reserved */
 #define TYPEC_VBUS_DISCH            BIT(2)
 #define TYPEC_VCONN_DISCH_STS       BIT(3)
 #define TYPEC_VBUS_DB_TO            BIT(4)
 #define TYPEC_FRS_RCV_STS           BIT(5)
 #define TYPEC_FRS_XMT_STS           BIT(6)
+/* Bit 7 is reserved */
 
 /*Bit definitions of TYPEC_FRS_CTL_LOW register*/
 #define TYPEC_FRS_CC_SEL_CC1        0
 #define TYPEC_FRS_CC_SEL_CC2        BIT(4)
 #define TYPEC_FRS_CC_SEL_CC1_CC2    BIT(5)
+#define TYPEC_FRS_CC_SEL            (BIT(4) | BIT(5))
 
 /*Bit definitions of TYPEC_FRS_CTL_HIGH register*/
 #define TYPEC_FRS_PD_MAC_OVR        BIT(0)
@@ -690,6 +693,10 @@ from u8PortSts variable*/
 #define TYPEC_FRS_VBUS_DEB_30US               0x0F 
 
 #define TYPEC_FRS_THRESHOLD                   0x00 
+
+#define TYPEC_FRS_TX_LEN_90US                 90            
+
+#define TYPEC_FRS_REQ_PIO_SEL_POS             4 
 /*************************************************************************************/
 
 // *****************************************************************************
@@ -1600,5 +1607,32 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void TypeC_FRSSignalDetectInit (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void TypeC_FRSSignalTransmitInit (UINT8 u8PortNum)
+
+    Summary:
+        API to enable transmission of FRS signal 
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is used to initialize UPD350 to enable it to transmit FRS signal. 
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void TypeC_FRSSignalTransmitInit (UINT8 u8PortNum);
 
 #endif /*_TYPECCONTROL_H_*/

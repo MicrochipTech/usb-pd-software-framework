@@ -307,9 +307,14 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     #endif
     #endif 
      
-#if(TRUE == INCLUDE_UPD_HPD)
+    #if(TRUE == INCLUDE_UPD_HPD)
     pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
-#endif
+    #endif
+
+    #if (TRUE == INCLUDE_PD_FR_SWAP)
+    pasCfgStatusData->sPerPortData[PORT0].u8Pio_FRSRequest = (UINT8)CFG_PORT_0_UPD_FRS_REQ_PIO_NO;
+    pasCfgStatusData->sPerPortData[PORT0].u8Mode_FRSRequest = (UINT8)CFG_PORT_0_UPD_FRS_REQ_PIO_MODE;
+    #endif 
 
     /*Per port configuration for Port 1*/      
 #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
@@ -381,6 +386,11 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     #if(TRUE == INCLUDE_UPD_HPD)
     pasCfgStatusData->sPerPortData[PORT1].u8PIO_HPD = CFG_PORT_1_HPD_IO;
     #endif
+
+    #if (TRUE == INCLUDE_PD_FR_SWAP)
+    pasCfgStatusData->sPerPortData[PORT1].u8Pio_FRSRequest = (UINT8)CFG_PORT_1_UPD_FRS_REQ_PIO_NO;
+    pasCfgStatusData->sPerPortData[PORT1].u8Mode_FRSRequest = (UINT8)CFG_PORT_1_UPD_FRS_REQ_PIO_MODE;
+    #endif     
     
 #endif
     

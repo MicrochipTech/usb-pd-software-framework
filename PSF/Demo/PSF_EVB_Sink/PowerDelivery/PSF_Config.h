@@ -1097,12 +1097,10 @@ typedef enum
                                                                       * To disable the pin 
 																	    functionality from the 
 																		stack, the user can define a
-																		value of 0xFF. It is 
-																		applicable only for Source 
-                                                                        operation only.
+																		value of 0xFF.
                                                                       * By defining     
 																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
-																		as '1', The PIO Override 
+																		as '1', the PIO Override 
 																		feature of the UPD350 shall 
 																		be utilized in this
                                                                         pin to ensure that fast and 
@@ -1137,7 +1135,7 @@ typedef enum
 	u8Mode_FAULT_IN                 1         R/W          R         * Defines the PIO mode of the 
 																	    UPD350 PIO FAULT_IN defined 
 																	    in u8Pio_FAULT_IN. 
-																	  * It takes only values from 
+																	  * It takes values only from 
 																		enum eFAULT_IN_MODE_TYPE.
 	u8Pio_EN_SINK                   1         R/W          R         * Defines the UPD350 PIO 
 																		number used for EN_SINK pin.
@@ -1167,7 +1165,7 @@ typedef enum
                                                                         UPD350 PIO0 to PIO15.
                                                                       * By defining     
 																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
-																		as '1', The PIO Override 
+																		as '1', the PIO Override 
 																		feature of the UPD350 shall 
 																		be utilized in this
                                                                         pin to ensure that fast and 
@@ -1211,13 +1209,47 @@ typedef enum
                                                                         in u16HPDStatus variable.
 																	  * This is applicable only when
 																		INCLUDE_UPD_HPD is enabled.
+    u8Pio_FRSRequest                1         R/W          R       	 * Defines the UPD350 PIO 
+																		number used for FRS Request
+                                                                        pin functionality for the 
+                                                                        port
+                                                                      * This PIO is used to trigger 
+                                                                        FRS request signaling upon
+                                                                        detection of loss of power 
+                                                                        when the port is operating
+                                                                        as a Dual Role Source  
+                                                                      * This variable is applicable
+                                                                        only when 
+                                                                        INCLUDE_PD_FR_SWAP is enabled                                                                       
+                                                                      * The range of valid values is
+ 																	    0 to 15 which correspond to
+                                                                        UPD350 PIO0 to PIO15 
+                                                                      * By defining     
+																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
+																		as '1', the PIO Override 
+																		feature of the UPD350 shall 
+																		be utilized in this
+                                                                        pin to ensure that fast and 
+																		autonomous action is taken 
+																		by the UPD350 in a Fast Role 
+																		Swap condition.   
+    u8Mode_FRSRequest               1         R/W          R         * Defines the PIO mode of the 
+																		UPD350 PIO FRS_Request
+																		defined in u8Pio_FRSRequest 
+                                                                      * This variable is applicable 
+                                                                        only when INCLUDE_PD_FR_SWAP
+                                                                        is enabled
+																	  * It takes values only from 
+																	    enum 
+																		eUPD_OUTPUT_PIN_MODES_TYPE  
 	u8aReserved2  					3								 Reserved	
 	u8aReserved3  					3								 Reserved	  
 	u8aReserved4  					2								 Reserved	  
     u8aReserved5  					3								 Reserved	    
- 	u8aReservedPortPadBytes[32]	    32	                              * Reserved bytes included
-                                                                         based on configuration macro 
-                                                                         INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
+    u8aReserved8  					2								 Reserved	      
+ 	u8aReservedPortPadBytes[32]	    32	                             * Reserved bytes included
+                                                                        based on configuration macro 
+                                                                        INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION 	 		
     </table>
     
     
@@ -1833,6 +1865,11 @@ typedef struct _PortCfgStatus
     UINT8 u8PIO_HPD;
     UINT8 u8aReserved5[3];
 #endif
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+    UINT8 u8Pio_FRSRequest; 
+    UINT8 u8Mode_FRSRequest; 
+    UINT8 u8aReserved8[2]; 
+#endif 
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)
     UINT8 u8aReservedPortPadBytes[32];
 #endif
