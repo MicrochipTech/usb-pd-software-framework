@@ -917,6 +917,142 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
 }
 #endif /*INCLUDE_PD_PR_SWAP*/
 
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+
+void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
+{
+	/* Transmit Message Header */
+	UINT32 u32TransmitHeader = SET_TO_ZERO;
+
+	/* Transmit Call back set to PE_StateChange_TransmitCB */
+	PRLTxCallback pfnTransmitCB = PE_StateChange_TransmitCB;
+
+	/* Transmit Call back variables */
+	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
+
+	/* Transmit Flag */
+	UINT8 u8IsTransmit = FALSE;
+    
+    /* Current Power Role */
+    UINT8 u8CurrPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum); 
+    
+    ePolicyState eTxDoneSt;
+    ePolicySubState eTxDoneSS;
+    
+    if (PD_ROLE_SOURCE == u8CurrPwrRole)
+    {
+        eTxDoneSt = ePE_SRC_READY;
+        eTxDoneSS = ePE_SRC_READY_END_AMS_SS;
+    }
+    else
+    {
+        eTxDoneSt = ePE_SNK_READY;
+        eTxDoneSS = ePE_SNK_READY_END_AMS_SS;
+    }          
+    
+    switch(gasPolicyEngine[u8PortNum].ePEState)
+    {
+        case ePE_FRS_SRC_SNK_EVALUATE_SWAP:
+        {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_EVALUATE_SWAP\r\n");
+            
+            /*Evaluate whether FRS signal has been transmitted*/
+            if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_FRS_XMT_RCV_STS_INTERRUPT)
+            {
+                gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ACCEPT_SWAP;
+            }
+            else
+            {
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET; 
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
+            }
+
+            break; 
+        }
+        
+        case ePE_FRS_SRC_SNK_ACCEPT_SWAP:
+        {
+            switch(gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_FRS_SRC_SNK_ACCEPT_SWAP_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_ACCEPT_SWAP_ENTRY_SS\r\n");
+					/* Send the Accept message */
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
+                                            PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+      
+                    /* Move to Transition to Off state */
+                    eTxDoneSt = ePE_FRS_SRC_SNK_TRANSITION_TO_OFF;
+                    eTxDoneSS = SET_TO_ZERO;
+                    
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
+                                                eTxDoneSS, ePE_SRC_SEND_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
+
+                    u8IsTransmit = TRUE;
+                    
+                    /* Move the Policy engine to Idle state*/
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SRC_SNK_ACCEPT_SWAP_IDLE_SS;
+                    break;
+                }
+                case ePE_FRS_SRC_SNK_ACCEPT_SWAP_IDLE_SS:
+                {
+                    /* Idle state to wait for accept message transmit completion */
+                    
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
+                    break;
+                }
+                default:
+                    break;
+            }
+            break;
+        }
+        case ePE_FRS_SRC_SNK_TRANSITION_TO_OFF:
+        {
+            /*Wait until VBUS discharges to vSafe5V*/
+            if(TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum))
+            {
+                /* The Policy Engine determines its power supply is no longer 
+                   supplying VBUS */
+                DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_FRS_SRC_SNK_TRANSITION_TO_OFF\r\n");                        
+
+                /* Drive the DC_DC_EN pin to low since it is not needed for Sink functionality */
+                PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
+
+                /* Move the Policy Engine to ePE_FRS_SRC_SNK_ASSERT_RD state */
+                gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ASSERT_RD;                     
+            }       
+            else
+            {
+                /* Hook to notify PE state machine entry into idle sub-state */
+                MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
+            }
+            break; 
+        }
+        case ePE_FRS_SRC_SNK_ASSERT_RD:
+        {
+            /* Policy Engine enters this state when the source power supply 
+               has been turned off. There are no sub-states involved in this state*/
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_ASSERT_RD\r\n");
+            /* The Policy Engine requests the Device Policy Manager to assert the Rd 
+               pull down on the CC wire.*/
+            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SRC, TYPEC_ATTACHED_SRC_PRS_TRANS_TO_SNK_SS);
+            
+            gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_WAIT_SOURCE_ON; 
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS;
+            
+            break; 
+        }
+        default:
+        {
+            break; 
+        }
+
+    }
+}
+#endif /*INCLUDE_PD_FR_SWAP*/
+
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
 void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 {
