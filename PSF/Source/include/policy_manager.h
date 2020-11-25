@@ -153,7 +153,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_SWAP_INIT_STS_MASK                   0x7E00
 #define DPM_AME_TIMER_DONE                       BIT(16)
 #define DPM_VCONN_SRC_RESPONSIBILITY             BIT(17)
-#define DPM_FRS_CONDITIONS_SUPPORTED             BIT(18)
+#define DPM_FRS_CRITERIA_SUPPORTED             BIT(18)
 
 /*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS                     0
@@ -197,6 +197,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum) \
     (gasDPM[u8PortNum].u32DPMStatus ^= DPM_VCONN_SRC_RESPONSIBILITY)
 
+#define DPM_ENABLE_FRS_REQ_PIO(u8PortNum) \
+ UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO)
+
+#define DPM_DISABLE_FRS_REQ_PIO(u8PortNum) \
+ UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO)
 /**************************************************************************************************/
 
 /*******************************************************************************/
@@ -1729,16 +1734,21 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_HandleVCONNSwapForFRS(UINT8 u8PortNum); 
+        void DPM_EvaluateFRSCriteria(UINT8 u8PortNum); 
     Summary:
-        API to handle VCONN_Swap if FR_Swap is supported.
+        API to evaluate the criteria required to support FR_Swap.
     Description:
-        If FR_Swap is supported by both partners, this API registers internal event to 
-        initiate VCONN swap such that the current sink partner sources VCONN. If FR_Swap is not 
-        supported by both partners, this API registers internal event to initiate VCONN swap
-        based on the policy bits defined by user configuration.
+        This API evaluates whether the criteria required to support FR_Swap are met.
+        The criteria are : 
+        1. The FRS current advertised by both partners are non-zero
+        2. The FRS current advertised by initial sink is greater than or equal to
+           that advertised by initial source.
+        3. PD contract is negotiated for a voltage greater than 5V.
+        If all the above criteria are met, this API sets DPM_FRS_CRITERIA_SUPPORTED bit
+        in gasDPM[u8PortNum].u32DPMStatus.
+
     Conditions:
-        This API is applicable only when both INCLUDE_PD_FR_SWAP and INCLUDE_PD_VCONN_SWAP is enabled.
+        This API is applicable only when both INCLUDE_PD_FR_SWAP is enabled.
     Input:
         u8PortNum - Port number.
     Return:
@@ -1746,7 +1756,30 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_HandleVCONNSwapForFRS(UINT8 u8PortNum);
+void DPM_EvaluateFRSCriteria(UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_GearUpForFRSwap(UINT8 u8PortNum); 
+    Summary:
+        API to do necessary steps to support FR_Swap.
+    Description:
+        If the criteria to support FR_Swap are met by both partners, this API 
+        registers internal event to initiate VCONN swap such that the current 
+        sink partner sources VCONN and also enables UPD350 to support FR_Swap. 
+        If FR_Swap is not supported by both partners, this API disables UPD350
+        from supporting FR_Swap and also registers internal event to initiate 
+        VCONN swap based on the policy bits defined by user configuration.
+    Conditions:
+        This API is applicable only when both INCLUDE_PD_FR_SWAP is enabled.
+    Input:
+        u8PortNum - Port number.
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_GearUpForFRSwap(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

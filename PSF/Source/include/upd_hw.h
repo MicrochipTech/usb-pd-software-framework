@@ -1220,4 +1220,7 @@ void UPD_HPDInit(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void UPD_HPDHandleISR(UINT8 u8PortNum);
+
+void UPD_FRSRequestPIOInit (UINT8 u8PortNum); 
+
 #endif /*_UPD_HW_H_*/
