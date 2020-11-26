@@ -683,6 +683,8 @@ Source/Sink Power delivery objects*/
 #define DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
 #define DPM_INT_EVT_PORT_DISABLE            		BIT(8)
 #define DPM_INT_EVT_PORT_ENABLE             		BIT(9)
+#define DPM_INT_EVT_INITIATE_FR_SWAP                BIT(10)
+
 /**********************************************************************************/                                   
 // *****************************************************************************
 // *****************************************************************************

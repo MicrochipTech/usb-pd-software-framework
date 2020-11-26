@@ -168,15 +168,17 @@ Summary:
 Description:
     PIO override is UPD350 specific feature which changes the state of a PIO without software
     intervention. PSF uses this feature to disable EN_VBUS(in case of source operation) or  
-	EN_SINK(in case of sink operation) instantly on detection of a Power Fault Condition.
-	Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature. Users can set this
-	define to 0 to reduce code size of PSF if PIO override based power fault handling 
-    is not required.
+	EN_SINK(in case of sink operation) instantly on detection of a Power Fault or Fast Role Swap
+    Condition. Setting the INCLUDE_UPD_PIO_OVERRIDE_SUPPORT as 1 enables this feature. Users can 
+    set this define to 0 to reduce code size of PSF if PIO override based power fault handling 
+    is not required. It is recommended that this define shall be set when Fast Role Swap feature
+    is enabled since Fast Role Swap is tightly coupled with PIO Override feature. 
 Remarks:
-    To use this feature, EN_VBUS or EN_SINK and FAULT_IN pins of the system should be UPD350 PIOs.
-	It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus INCLUDE_POWER_FAULT_HANDLING
-	should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define to be effective. 
-	Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS, EN_SINK and FAULT_IN.
+    To use this feature, EN_VBUS or EN_SINK, FAULT_IN and FRS_Request pins of the system should be
+    UPD350 PIOs. It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus 
+    INCLUDE_POWER_FAULT_HANDLING should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
+    define to be effective. Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS, 
+    EN_SINK and FAULT_IN.
 Example:
     <code>
     #define INCLUDE_UPD_PIO_OVERRIDE_SUPPORT	1(Include UPD350 PIO Override support for Power 
@@ -381,7 +383,7 @@ Description:
     if none of the DRP ports in the system require Fast Role Swap functionality.
 Remarks: 
     Recommended default value is 1 for DRP application. For INCLUDE_PD_FR_SWAP to be 1, 
-    INCLUDE_PD_DRP and INCLUDE_PD_3_0 shall be set to 1. 
+    INCLUDE_PD_DRP, INCLUDE_PD_3_0 and INCLUDE_UPD_PIO_OVERRIDE_SUPPORT defines shall be set to 1. 
 Example:
     <code>
     #define INCLUDE_PD_FR_SWAP	1(Include FR_SWAP functionality in PSF)
