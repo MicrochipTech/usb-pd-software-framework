@@ -306,6 +306,12 @@ typedef enum
     eMCHP_PSF_UPD_IRQ_HPD                
 } eMCHP_UPD_HPD_EVENT;
 
+typedef enum
+{
+    eUPDFAULT_IN_PIO,
+    eUPDFRS_REQ_PIO
+} eUPD_INPUT_PIO;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Routines
@@ -818,65 +824,6 @@ void UPD_InitGPIO (UINT8 u8PortNum);
 **************************************************************************************************/
 void UPD_PIOHandleISR (UINT8 u8PortNum);
 
-/*****************************************************************************************************
-	Function:
-		void UPD_InitFaultInPIO (UINT8 u8PortNum)
-
-	Summary:
-		API to configure the fault in pin of the UPD350
-	
-	Devices Supported:
-		UPD350 REV A
-
-	Description:
-		This API enables the fault in pin configured for the port passed.
-		
-	Precondition:
-		None.
-
-	Parameters:
-		u8PortNum		-  Corresponding port number
-	Return:
-		None.
-
-	Remarks:
-		None.
-**************************************************************************************************/
-void UPD_InitFaultInPIO (UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
-        void UPD_ConfigPIOOvrforPwrFault (UINT8 u8PortNum)
-
-    Summary:
-        This API initialize PIO override on power fault for the port.
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        This API initialize PIO override on power fault for the port.
-
-    Conditions:
-        confined to INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define.
-        PIO Override concept is applicable only if the EN_VBUS and FAULT_IN pin are UPD's PIO
-        in case of Source. EN_SINK and FAULT_IN in case of Sink.
-
-    Input:
-        u8PortNum - Port number of the device.
-					Value passed will be less than CONFIG_PD_PORT_COUNT.
-
-    Return:
-        None.
-
-    Remarks:
-        Fault_IN for the port is obtained from gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN 
-        EN_VBUS for the port is obtained from gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS
-        EN_SINK for the port is obtained from gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK
-
-**************************************************************************************************/
-void UPD_ConfigPIOOvrforPwrFault (UINT8 u8PortNum);
-
 /**************************************************************************************************
     Function:
         void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
@@ -1079,34 +1026,6 @@ void UPD_FindVBusCorrectionFactor(void);
 
 /**************************************************************************************************
     Function:
-        void UPD_EnableFaultInPIO (UINT8 u8PortNum)
-
-    Summary:
-        This API enables Fault_In. 
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        This API is to enable the Fault_In to detect OCS.
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port number of the device.
-					Value passed will be less than CONFIG_PD_PORT_COUNT.
-        
-    Return:
-        None.
-
-    Remarks:
-        None.
-**************************************************************************************************/
-void UPD_EnableFaultInPIO (UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
         void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum)
 
     Summary:
@@ -1249,33 +1168,6 @@ void UPD_HPDInit(UINT8 u8PortNum);
 **************************************************************************************************/
 void UPD_HPDHandleISR(UINT8 u8PortNum);
 
-/*****************************************************************************************************
-	Function:
-		void UPD_InitFRSRequestPIO (UINT8 u8PortNum)
-
-	Summary:
-		API to configure the FRS Request pin of the UPD350
-	
-	Devices Supported:
-		UPD350 REV A
-
-	Description:
-		This API initializes the FRS Request pin for the port.
-		
-	Precondition:
-		None.
-
-	Parameters:
-		u8PortNum -  Corresponding port number
- 
-	Return:
-		None.
-
-	Remarks:
-		None.
-**************************************************************************************************/
-void UPD_InitFRSRequestPIO (UINT8 u8PortNum); 
-
 /**************************************************************************************************
     Function:
         void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
@@ -1304,5 +1196,64 @@ void UPD_InitFRSRequestPIO (UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum); 
+
+/*****************************************************************************************************
+	Function:
+		void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
+
+	Summary:
+		API to initialize input pin of the UPD350
+	
+	Devices Supported:
+		UPD350 REV A
+
+	Description:
+		This API initializes the UPD350's input PIOs - Fault_In and FRS_Request 
+        based on the user configured PIO number and PIO mode 
+		
+	Precondition:
+		None.
+
+	Parameters:
+		u8PortNum -  Corresponding port number
+        eUPD_INPUT_PIO - enum to specify the input PIO
+ 
+	Return:
+		None.
+
+	Remarks:
+		None.
+**************************************************************************************************/
+void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio);
+
+/**************************************************************************************************
+    Function:
+        void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
+
+    Summary:
+        This API enables input PIOs. 
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is to enable the Fault_In to detect OCS and FRS_Request to 
+        detect FRS event 
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        eUPD_INPUT_PIO - enum to specify the input PIO
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio); 
 
 #endif /*_UPD_HW_H_*/
