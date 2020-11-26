@@ -673,7 +673,7 @@ Example:
   Description:
     eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes
     applicable for UPD350 GPIO in output mode. This is applicable only for
-    EN_SINK and EN_VBUS unctionality.
+    EN_SINK and EN_VBUS pin functionalities.
   Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -688,20 +688,20 @@ typedef enum
 }eUPD_OUTPUT_PIN_MODES_TYPE;
 /**************************************************************************************************
 Summary:
-    UPD350 Fault_IN GPIO mode enum.
+    UPD350 GPIO Input mode enum.
 Description:
-	eFAULT_IN_MODE_TYPE enum defines the various combination modes applicable for UPD350 GPIO
-    in input mode.
+	eUPD_INPUT_PIN_MODES_TYPE enum defines the various combination modes applicable for UPD350 GPIO
+    in input mode. This is applicable only for FAULT_IN and FRS_REQUEST pin functionalities.
 Remarks:
     None
 **************************************************************************************************/
 typedef enum
 {
-    eFAULT_IN_ACTIVE_LOW         = 0x20U,   //Active low input signal
-    eFAULT_IN_ACTIVE_HIGH        = 0x10U,   //Active high input signal
-    eFAULT_IN_ACTIVE_LOW_PU      = 0xA0U,   //Active low signal with internal pull up
-    eFAULT_IN_ACTIVE_HIGH_PD     = 0x50U    //Active high signal with internal pull down
-}eFAULT_IN_MODE_TYPE;
+    eINPUT_ACTIVE_LOW         = 0x20U,   //Active low input signal
+    eINPUT_ACTIVE_HIGH        = 0x10U,   //Active high input signal
+    eINPUT_ACTIVE_LOW_PU      = 0xA0U,   //Active low signal with internal pull up
+    eINPUT_ACTIVE_HIGH_PD     = 0x50U    //Active high signal with internal pull down
+}eUPD_INPUT_PIN_MODES_TYPE;
 
 /***************************************************************************************************************************************
   Section:
@@ -1139,7 +1139,8 @@ typedef enum
 																	    UPD350 PIO FAULT_IN defined 
 																	    in u8Pio_FAULT_IN. 
 																	  * It takes values only from 
-																		enum eFAULT_IN_MODE_TYPE.
+																		enum 
+                                                                        eUPD_INPUT_PIN_MODES_TYPE
 	u8Pio_EN_SINK                   1         R/W          R         * Defines the UPD350 PIO 
 																		number used for EN_SINK pin.
 																	  * This is applicable only for
@@ -1226,7 +1227,10 @@ typedef enum
                                                                         INCLUDE_PD_FR_SWAP is enabled                                                                       
                                                                       * The range of valid values is
  																	    0 to 15 which correspond to
-                                                                        UPD350 PIO0 to PIO15 
+                                                                        UPD350 PIO0 to PIO15 and to
+																		disable the pin 
+																		functionality, user can
+																		define it as 0xFF
                                                                       * By defining     
 																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
 																		as '1', the PIO Override 
@@ -1244,7 +1248,7 @@ typedef enum
                                                                         is enabled
 																	  * It takes values only from 
 																	    enum 
-																		eUPD_OUTPUT_PIN_MODES_TYPE  
+																		eUPD_INPUT_PIN_MODES_TYPE  
 	u8aReserved2  					3								 Reserved	
 	u8aReserved3  					3								 Reserved	  
 	u8aReserved4  					2								 Reserved	  

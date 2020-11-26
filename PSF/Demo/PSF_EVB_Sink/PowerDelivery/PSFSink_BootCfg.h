@@ -63,28 +63,28 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Port Enable - 0- Port Disable; 1- Port Enable*/
 #define CFG_PORT_0_ENABLE       (1U << 5)
 
-/*VCONN OCS Enable - 0- Disbale, 1-Enable*/
+/*VCONN OCS Enable - 0- Disable, 1-Enable*/
 #define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
 
 /********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 
-#define CFG_PORT_0_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
+#define CFG_PORT_0_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
 
 #define CFG_PORT_0_UPD_EN_SNK                eUPD_PIO6
 #define CFG_PORT_0_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 
-#define CFG_PORT_0_HPD_IO                   eUPD_PIO9
+#define CFG_PORT_0_HPD_IO                    eUPD_PIO9
 
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
 #define CFG_UNDER_VOLTAGE_FACTOR		  85U
-#define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5U
-#define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2U
+#define CFG_FAULT_IN_OCS_DEBOUNCE_MS      5U
+#define CFG_VCONN_OCS_DEBOUNCE_IN_MS      2U
 #define CFG_MAX_VBUS_POWER_FAULT_COUNT	  3U
 #define CFG_MAX_VCONN_FAULT_COUNT		  3U
 #define CFG_POWER_GOOD_TIMER_MS			  10000U
-#define CFG_MAX_PORT_CURRENT_IN_10mA       300U 
+#define CFG_MAX_PORT_CURRENT_IN_10mA      300U 
 
 /*********************************************************************************/
 /*********************************PDO Configuration ******************************/
@@ -120,7 +120,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /********************************Sink Specific Configuration********************************/
 /*u8SinkConfigSel configuration*/
 /*Sink Mode A - 0x00, Mode B - 0x01*/
-#define CFG_PORT_0_SINK_MODE            0x00
+#define CFG_PORT_0_SINK_MODE                0x00
 /*Sink Give Back Flag - 0 - Disabled, 1 - Enabled*/
 #define CFG_PORT_0_SINK_GIVE_BACK_FLAG      (0U << 2)
 /*Sink USB Suspend support - 0- Disabled, 1-Enabled*/
