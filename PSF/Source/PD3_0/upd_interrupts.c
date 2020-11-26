@@ -75,8 +75,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
             
             u16Data &= ~UPDINTR_RDY_INT; 
             
-            UPD_RegisterWriteISR (u8PortNum, UPDINTR_INT_EN, (UINT8 *)&u16Data, BYTE_LEN_2);
-            
+            UPD_RegisterWriteISR (u8PortNum, UPDINTR_INT_EN, (UINT8 *)&u16Data, BYTE_LEN_2);            
         }
 
         #if(TRUE == INCLUDE_UPD_HPD)

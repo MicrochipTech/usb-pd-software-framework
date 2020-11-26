@@ -560,7 +560,7 @@ void UPD_RegByteClearBit (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8BitMsk);
         disabling the interrupts.
 		
 	Precondition:
-		It should be used only ISR.
+		It should be used only in ISR.
 
 	Parameters:
 		u8PortNum		- Corresponding port number
@@ -591,7 +591,7 @@ void UPD_RegisterWriteISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteD
         disabling the interrupts.
 		
 	Precondition:
-		It should be used only ISR.
+		It should be used only in ISR.
 
 	Parameters:
 		u8PortNum		-  Corresponding port number
@@ -606,6 +606,34 @@ void UPD_RegisterWriteISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteD
 		None.
 **************************************************************************************************/
 void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen);
+
+/*****************************************************************************************************
+	Function:
+		void UPD_DisablePIOOutputISR (UINT8 u8PortNum);
+
+	Summary:
+        API to disable the output of EN_VBUS and EN_SINK PIOs 
+	
+	Devices Supported:
+		UPD350 REV A
+
+	Description:
+		This API is used in ISR to disable the EN_VBUS or EN_SINK PIOs based on 
+        the current power role. 
+		
+	Precondition:
+		It should be used only in ISR.
+
+	Parameters:
+		u8PortNum  -  Corresponding port number
+
+	Return:
+		None.
+
+	Remarks:
+        This API can be used when INCLUDE_UPD_PIO_OVERRIDE_SUPPORT is set to 0.
+**************************************************************************************************/
+void UPD_DisablePIOOutputISR (UINT8 u8PortNum);
 
 /*****************************************************************************************************
 	Function:
@@ -1051,7 +1079,7 @@ void UPD_FindVBusCorrectionFactor(void);
 
 /**************************************************************************************************
     Function:
-        void UPD_EnableFaultIn(UINT8 u8PortNum)
+        void UPD_EnableFaultInPIO (UINT8 u8PortNum)
 
     Summary:
         This API enables Fault_In. 
@@ -1075,7 +1103,7 @@ void UPD_FindVBusCorrectionFactor(void);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_EnableFaultIn(UINT8 u8PortNum);
+void UPD_EnableFaultInPIO (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
