@@ -186,9 +186,9 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				 ((TYPEC_UNATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState)))
     {
 		/* Enable Fault PIO to detect OCS as it would have been disabled as part of
-         Power fault handling*/
-        UPD_EnableFaultInPIO (u8PortNum);
-		
+         Power fault handling*/        
+		UPD_EnableInputPIO (u8PortNum, eUPDFAULT_IN_PIO);
+        
 		/* Kill the timer*/
         PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
 		
@@ -270,7 +270,8 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             {
                 /* Enable Fault PIO to detect OCS as it would have been disabled as part of
                     Power fault handling*/
-                UPD_EnableFaultInPIO (u8PortNum);
+                UPD_EnableInputPIO (u8PortNum, eUPDFAULT_IN_PIO);
+                
                 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                 /*On completion Hard Reset mechanism for VBUS fault initiate an alert message*/
                 if (gasDPM[u8PortNum].u8AlertType & (DPM_ALERT_TYPE_OVP | DPM_ALERT_TYPE_OCP))
