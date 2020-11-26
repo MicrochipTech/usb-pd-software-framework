@@ -2807,17 +2807,23 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
     }
 #if(TRUE == INCLUDE_PD_FR_SWAP)
     else if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_FRS_XMT_RCV_STS_INTERRUPT)
-    {
-        UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
-        
-        if(PD_ROLE_SOURCE == u8CurrentPwrRole)
+    {       
+        if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
-            #if (TRUE == INCLUDE_PD_3_0)                    
-            PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
+            /* Set Rp value to SinkTxOK, so that sink partner can initiate
+               FR_Swap message */            
+            #if (TRUE == INCLUDE_PD_3_0)    
+                PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
             #endif 
         }
+        else
         {
-            /*To-do Handle for sink*/
+            /* When PIO override is disabled, disable EN_SINK of the port */               
+            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+                UPD_DisablePIOOutputISR (u8PortNum);            
+            #endif     
+            /* Initiate internal event to start FR_Swap AMS */
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);    
         }
     }
 #endif

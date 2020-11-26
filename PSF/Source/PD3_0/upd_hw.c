@@ -402,18 +402,18 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
 void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
 {
 	UINT8 u8PIONum = SET_TO_ZERO;	
-    UINT8 u8FaultInMode = SET_TO_ZERO;
+    UINT8 u8PIOMode = SET_TO_ZERO;
  
     if (eUPDFAULT_IN_PIO == eUPDInputPio)
     {
         u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
-        u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
+        u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
     }
 #if (TRUE == INCLUDE_PD_FR_SWAP)
     else if (eUPDFRS_REQ_PIO == eUPDInputPio)
     {
         u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FRSRequest;
-        u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FRSRequest;        
+        u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FRSRequest;        
     }
 #endif     
     else
@@ -431,14 +431,14 @@ void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
     UINT16 u16PIOIntrEnPos;
     
     /* Clear bits 3:0 from user input.*/
-    u8FaultInMode &= (UPD_CFG_PIO_PULL_UP_ENABLE | UPD_CFG_PIO_PULL_DOWN_ENABLE | \
+    u8PIOMode &= (UPD_CFG_PIO_PULL_UP_ENABLE | UPD_CFG_PIO_PULL_DOWN_ENABLE | \
                         UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
     
     /* Set direction to input and enable GPIO.*/
-    u8FaultInMode |= UPD_CFG_PIO_GPIO_ENABLE;
+    u8PIOMode |= UPD_CFG_PIO_GPIO_ENABLE;
     
     /* Write the value to the PIO config register.*/
-    UPD_RegWriteByte(u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), u8FaultInMode);
+    UPD_RegWriteByte(u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), u8PIOMode);
     
     if (eUPDFAULT_IN_PIO == eUPDInputPio)
     {
@@ -473,18 +473,18 @@ void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
 void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
 {
 	UINT8 u8PIONum = SET_TO_ZERO;	
-    UINT8 u8FaultInMode = SET_TO_ZERO;
+    UINT8 u8PIOMode = SET_TO_ZERO;
  
     if (eUPDFAULT_IN_PIO == eUPDInputPio)
     {
         u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
-        u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
+        u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
     }
 #if (TRUE == INCLUDE_PD_FR_SWAP)    
     else if (eUPDFRS_REQ_PIO == eUPDInputPio)
     {
         u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FRSRequest;
-        u8FaultInMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FRSRequest;        
+        u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FRSRequest;        
     }
 #endif 
     else
@@ -495,11 +495,11 @@ void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
     UINT16 u16IntrSts = BIT(u8PIONum);
     
     /* Get the edge type from the user input.*/
-    u8FaultInMode &= (UPD_CFG_PIO_RISING_ALERT | UPD_CFG_PIO_FALLING_ALERT);
+    u8PIOMode &= (UPD_CFG_PIO_RISING_ALERT | UPD_CFG_PIO_FALLING_ALERT);
 
 	/* Fault-in interrupt configuration*/
 	UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
-	UPD_GPIOSetIntrAlert (u8PortNum, u8PIONum, u8FaultInMode);	
+	UPD_GPIOSetIntrAlert (u8PortNum, u8PIONum, u8PIOMode);	
 }
 
 #endif 
