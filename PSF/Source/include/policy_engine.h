@@ -225,7 +225,7 @@ typedef enum {
     ePE_PRS_SNK_SRC_ASSERT_RP,
     ePE_PRS_SNK_SRC_SOURCE_ON,
             
-    //--------------------------PR_Swap States-----------------------------------// 
+    //--------------------------FR_Swap States-----------------------------------// 
     ePE_FRS_SRC_SNK_EVALUATE_SWAP,
     ePE_FRS_SRC_SNK_ACCEPT_SWAP,
     ePE_FRS_SRC_SNK_TRANSITION_TO_OFF,

@@ -405,7 +405,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
         if (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
         {
             /* Enable transmission of FRS signal */
-            TypeC_FRSSignalTransmitInit (u8PortNum);
+            TypeC_EnableFRSSignalTransmission (u8PortNum);
         }        
         #endif 
         /*Setting the VBUS to vSafe0V before entering the State machine*/
@@ -418,7 +418,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
         if (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
         {
             /* Enable detection of FRS signal */
-            TypeC_FRSSignalDetectInit (u8PortNum);
+            TypeC_EnableFRSSignalDetection (u8PortNum);
         }
         #endif 
         /*Disable the Sink circuitry to stop sinking the power from source*/
@@ -2048,7 +2048,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             }
         }
         
-        #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         if (TRUE == u8HandleUV)
         {   
             u16Data = SET_TO_ZERO;
@@ -2057,40 +2057,11 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             /* Verifying whether under voltage is enabled */
             if (TYPEC_UNDER_VOLT_THR3_MATCH & u16Data)
             {
-                #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)     
-                    /*When PIO override is disabled; EN_VBUS/EN_SINK is disabled by FW on Power fault*/
-                    UINT8 u8PioNum = SET_TO_ZERO;
-                    UINT16 u16PIORegVal;
-#if (TRUE == INCLUDE_PD_SOURCE)
-                    if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                    {
-                        u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
-                        
-                        UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                        u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                        UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                    }
-                    else 
-#endif
-#if (TRUE == INCLUDE_PD_SINK)
-                        if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                    {
-                        u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
-
-                        UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                        u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                        UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                        
-                    }
-                    else
-#endif                        
-                    {
-                        /*Execution should not hit here ideally*/
-                    }
+                /*When PIO override is disabled, EN_VBUS/EN_SINK is disabled by FW on Power fault*/
+                #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)                         
+                    UPD_DisablePIOOutputISR (u8PortNum);
                 #endif   
+
                /* under voltage is considered if VBUS not lowered as part of Over voltage*/
                 if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
                 {
@@ -2103,47 +2074,14 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             /* Over voltage is checked before desired voltage as TYPEC_VBUS_MATCH_OVER_V 
                 checks for only over voltage bit being set are not*/
             gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_OVP;
-            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                /*When PIO override is disabled; EN_VBUS/EN_SINK is disabled by FW on Power fault*/
-                UINT8 u8PioNum = SET_TO_ZERO;
-                UINT16 u16PIORegVal;
-#if (TRUE == INCLUDE_PD_SOURCE)                
-                if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                {
-
-                    u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
-
-                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                    u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                
-                }
-                else 
-#endif                    
-#if (TRUE == INCLUDE_PD_SINK)                    
-                    if(PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                {
-                    u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
-
-                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                    u16PIORegVal &= ~ UPD_CFG_PIO_DATAOUTPUT;
-                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
-                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                    
-                }
-                else
-#endif                    
-                {
-                    /*Execution should not hit here ideally*/
-                }
-
-
+            
+            /*When PIO override is disabled, EN_VBUS/EN_SINK is disabled by FW on Power fault*/
+            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)                
+                UPD_DisablePIOOutputISR (u8PortNum);  
             #endif
         }
         else
-        #endif /* endif for INCLUDE_POWER_FAULT_HANDLING*/       
+#endif /* endif for INCLUDE_POWER_FAULT_HANDLING*/       
         if((TYPEC_VBUS_DESIRED_V_MATCH_VAL == u8Data) || \
                         (TYPEC_VBUS_DESIRED_N_UNDER_MATCH_VAL == u8Data))
         {
@@ -2749,7 +2687,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
     avoid variable corruption*/
 
 #if(TRUE == INCLUDE_PD_DRP)
-    TypeC_DrpIntrHandler(u8PortNum);
+    TypeC_DRPIntrHandler(u8PortNum);
 #endif
 
     
@@ -2836,7 +2774,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
 }
 
 #if(TRUE == INCLUDE_PD_DRP)
-void TypeC_DrpIntrHandler (UINT8 u8PortNum)
+void TypeC_DRPIntrHandler (UINT8 u8PortNum)
 {
  	UINT8 u8Data = SET_TO_ZERO;
     
@@ -3238,8 +3176,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
 /*INCLUDE_PD_SINK*/
 
 void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
-{
-    
+{    
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE COMPLETED\r\n");
     
     /*Power down the CC comparator*/
@@ -3738,7 +3675,7 @@ UINT16 TypeC_ObtainCurrentValueFrmRp (UINT8 u8PortNum)
 /*******************************************************************************************/
 #if (TRUE == INCLUDE_PD_FR_SWAP)
 
-void TypeC_FRSSignalDetectInit (UINT8 u8PortNum)
+void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
 {      
     /* Ensure at minimum that pwr_sw_clk_gate_en, cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
        pio_clk_gate_en, and i2c_clk_gate_en (or spi_clk_gate_en) are cleared in Clock Gate Register */    
@@ -3790,7 +3727,7 @@ void TypeC_FRSSignalDetectInit (UINT8 u8PortNum)
     UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
 }
 
-void TypeC_FRSSignalTransmitInit (UINT8 u8PortNum)
+void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
 {
     /* Ensure at minimum that cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
        pio_clk_gate_en, and i2c_clk_gate_en (or spi_clk_gate_en) are cleared in Clock Gate Register */    
