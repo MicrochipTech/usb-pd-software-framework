@@ -2810,6 +2810,8 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
     {       
         if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS XMT STS INTR\r\n");
+            
             /* Set Rp value to SinkTxOK, so that sink partner can initiate
                FR_Swap message */            
             #if (TRUE == INCLUDE_PD_3_0)    
@@ -2818,12 +2820,15 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         }
         else
         {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV STS INTR\r\n");
+            
             /* When PIO override is disabled, disable EN_SINK of the port */               
             #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                 UPD_DisablePIOOutputISR (u8PortNum);            
             #endif     
+
             /* Initiate internal event to start FR_Swap AMS */
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);    
+            DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);    
         }
     }
 #endif
@@ -3101,7 +3106,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 {
                     /*Kill the TCC Debounce timer running previously attach event*/
                     TypeC_KillTypeCTimer(u8PortNum);
-                    u8TypeCSubState  = TYPEC_ATTACHWAIT_SNK_START_PD_DEB_SS;
+                    u8TypeCSubState = TYPEC_ATTACHWAIT_SNK_START_PD_DEB_SS;
                 }
                 /*Source detach occurs before the VBUS drops below VSinkdisconnect */
                 else if ((TYPEC_ATTACHED_SNK == u8TypeCState) && \
@@ -3731,6 +3736,8 @@ void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
     
     /* Set FRS_DET_EN bit in FRS_CTL register */
     UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
+    
+    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Detection Enabled\r\n");             
 }
 
 void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
@@ -3768,6 +3775,8 @@ void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
     /* Clear FRS_REQ_PIO bit in FRS_CTL register. It will be enabled in PE_SRC_READY state 
        where power negotiation is stable */
     UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO);
+    
+    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Transmission Enabled\r\n");             
 }
 
 #endif /* INCLUDE_PD_FR_SWAP */ 
