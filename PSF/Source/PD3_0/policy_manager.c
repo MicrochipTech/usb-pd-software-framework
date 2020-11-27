@@ -1368,7 +1368,6 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum)
             (FALSE == DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[INDEX_0]))))
         {
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
-
         }   
     }     
     

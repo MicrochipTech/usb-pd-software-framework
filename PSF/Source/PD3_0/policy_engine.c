@@ -761,7 +761,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 case PE_DATA_SINK_CAP:
                 {
                     /* Once response for Get_Sink_Cap is received, kill the Sender 
-                       Response Timer and change the PE sub-state as  ePE_SRC_GET_SINK_CAP_RESPONSE_RCVD_SS */
+                       Response Timer and change the PE sub-state as  ePE_GET_SINK_CAP_RESPONSE_RCVD_SS */
                     if ((ePE_GET_SINK_CAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState) || \
                         (ePE_GET_SINK_CAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {                       
@@ -2025,7 +2025,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 
                 case ePE_GET_SINK_CAP_MSG_DONE_SS: 
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GET_SINK_CAP_GOODCRC_RCVD_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GET_SINK_CAP_MSG_DONE_SS\r\n"); 
                     
                     /* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_GET_SINK_CAP_TIMER_TIMEDOUT sub state if timeout happens */
@@ -2042,25 +2042,16 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                 case ePE_GET_SINK_CAP_NO_RESPONSE_SS:
                 {
                    /* Sink caps not received within tSenderResponse. Send 
-                      SINK_CAPS_NOT_RECEIVED notification and move to 
-                      PE_SRC_READY state */ 
-                   DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GET_SINK_CAP_NO_RESPONSE_SS\r\n"); 
+                      eMCHP_PSF_SINK_CAPS_NOT_RCVD notification and move to 
+                      READY state */ 
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GET_SINK_CAP_NO_RESPONSE_SS\r\n"); 
                    
-                   if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                   {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;                       
-                   }
-                   else
-                   {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY; 
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
-                   }
-
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                        
                    
-                   (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_CAPS_NOT_RCVD);
+                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_CAPS_NOT_RCVD);
                    
-                   break;  
+                    break;  
                 }   
                 
                 case ePE_GET_SINK_CAP_RESPONSE_RCVD_SS:
@@ -2072,16 +2063,9 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO, pu8DataBuf,
                                  (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt * BYTE_LEN_4));           
                     
-                    if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                    {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;                       
-                    }
-                    else
-                    {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY; 
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
-                    }
+                    /* Move to Ready state */
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;  
                     
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_SINK_CAPS_RCVD);
                     

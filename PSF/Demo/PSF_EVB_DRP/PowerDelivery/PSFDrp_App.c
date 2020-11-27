@@ -810,10 +810,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             break; 
         }
-    }
-    
-    
-    
+    }            
 }
 
 UINT8 App_PortPowerInit(UINT8 u8PortNum)
