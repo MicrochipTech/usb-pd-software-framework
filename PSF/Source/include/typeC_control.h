@@ -1190,7 +1190,7 @@ void TypeC_SrcIntrHandler(UINT8 u8PortNum);
 
 /**************************************************************************************************
  Function:
-        void TypeC_DrpIntrHandler(UINT8 u8PortNum);
+        void TypeC_DRPIntrHandler(UINT8 u8PortNum);
 
     Summary:
         This API handles the DRP_DONE interrupt.
@@ -1212,7 +1212,7 @@ void TypeC_SrcIntrHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_DrpIntrHandler(UINT8 u8PortNum);
+void TypeC_DRPIntrHandler(UINT8 u8PortNum);
 
 /**************************************************************************************************
  Function:
@@ -1583,7 +1583,7 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void TypeC_FRSSignalDetectInit (UINT8 u8PortNum)
+        void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
 
     Summary:
         API to enable detection of FRS signal 
@@ -1606,11 +1606,11 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_FRSSignalDetectInit (UINT8 u8PortNum);
+void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void TypeC_FRSSignalTransmitInit (UINT8 u8PortNum)
+        void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
 
     Summary:
         API to enable transmission of FRS signal 
@@ -1633,6 +1633,6 @@ void TypeC_FRSSignalDetectInit (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_FRSSignalTransmitInit (UINT8 u8PortNum);
+void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum);
 
 #endif /*_TYPECCONTROL_H_*/

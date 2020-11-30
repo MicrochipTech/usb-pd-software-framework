@@ -56,7 +56,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Data Role supported values 0-Dual Role Data Not supported, 1- Dual Role Date Supported */
 #define CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT    (0U << 2)
-#define CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT     (0U << 2)
+#define CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT    (0U << 2)
 
 /*Rp Value - 0 -Rd(Sink), 1-Default USB Rp, 2- 1.5A Rp, 3-3.0A Rp */
 #define CFG_PORT_0_RP_CURRENT_VALUE          (3U << 3)
@@ -74,26 +74,29 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 #define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 
-#define CFG_PORT_0_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
-#define CFG_PORT_1_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
+#define CFG_PORT_0_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
+#define CFG_PORT_1_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
 
 #define CFG_PORT_0_UPD_EN_VBUS               eUPD_PIO3
 #define CFG_PORT_1_UPD_EN_VBUS               eUPD_PIO3
 #define CFG_PORT_0_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_1_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 
-
-#define CFG_PORT_0_HPD_IO                   eUPD_PIO9
-#define CFG_PORT_1_HPD_IO                   eUPD_PIO9
+/* Note: UPD PIO9 is shared between HPD and VSEL2 pin functionalities. 
+   Hence, INCLUDE_UPD_HPD is disabled by default. If user application
+   wishes to use HPD feature, then VSEL2 functionality has to be mapped
+   with any MCU pin since HPD pin can only be a UPD PIO */
+#define CFG_PORT_0_HPD_IO                    eUPD_PIO9
+#define CFG_PORT_1_HPD_IO                    eUPD_PIO9
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
 #define CFG_UNDER_VOLTAGE_FACTOR		  85U
-#define CFG_FAULT_IN_OCS_DEBOUNCE_MS       5U
-#define CFG_VCONN_OCS_DEBOUNCE_IN_MS       2U
+#define CFG_FAULT_IN_OCS_DEBOUNCE_MS      5U
+#define CFG_VCONN_OCS_DEBOUNCE_IN_MS      2U
 #define CFG_MAX_VBUS_POWER_FAULT_COUNT	  3U
 #define CFG_MAX_VCONN_FAULT_COUNT		  3U
 #define CFG_POWER_GOOD_TIMER_MS			  10000U
-#define CFG_MAX_PORT_CURRENT_IN_10mA       300U 
+#define CFG_MAX_PORT_CURRENT_IN_10mA      300U 
 
 /*********************************************************************************/
 /*********************************PDO Configuration ******************************/

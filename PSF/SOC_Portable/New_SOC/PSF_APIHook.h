@@ -1447,6 +1447,15 @@ Remarks:
                                                  of this functionality is user specific.
                                                * This is applicable only for DRP functionality and it is
                                                  not mandatory, depends on user application.
+    eFRS_ARM_FUNC             \Output         * FRS_ARM indicator functionality is to indicate that both PSF and the port partner 
+                                                 support Fast Role Swap. PSF will request the application to assert the pin
+												 when both PSF and the port partner support Fast Role Swap. PSF will request the 
+                                                 application to de-assert the pin when either PSF or the port partner does not 
+                                                 support Fast Role Swap. The state of GPIO during Init, Assert and De-assert
+                                                 of this functionality is user specific.
+                                               * This is applicable only for Fast Role Swap functionality and is mandatory to arm 
+                                                 the circuitry external to Maverick to support the power requirements innvolved 
+                                                 in Fast Role Swap.
     </table>
   Remarks:
     None                                                                                                       
@@ -1464,7 +1473,8 @@ typedef enum eMCHP_PSF_GPIO_Functionality
     eSNK_1_5A_IND_FUNC,            
     eSNK_3A_IND_FUNC,
     ePOWER_ROLE_FUNC,
-    eDATA_ROLE_FUNC            
+    eDATA_ROLE_FUNC,
+    eFRS_ARM_FUNC
 } eMCHP_PSF_GPIO_FUNCTIONALITY;
 
 /**************************************************************************************************

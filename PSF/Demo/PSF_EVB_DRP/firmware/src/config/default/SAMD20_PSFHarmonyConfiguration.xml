@@ -669,7 +669,7 @@
         </String>
         <String dnOrder="130" id="PIN_17_FUNCTION_NAME">
           <Values dnOrder="0">
-            <User dnOrder="0" value="POWER_ROLE_1"/>
+            <User dnOrder="0" value="FRS_ARM_1"/>
           </Values>
         </String>
         <String dnOrder="131" id="PIN_17_FUNCTION_TYPE">
@@ -1169,7 +1169,7 @@
         </String>
         <String dnOrder="230" id="PIN_7_FUNCTION_NAME">
           <Values dnOrder="0">
-            <User dnOrder="0" value="POWER_ROLE_0"/>
+            <User dnOrder="0" value="FRS_ARM_0"/>
           </Values>
         </String>
         <String dnOrder="231" id="PIN_7_FUNCTION_TYPE">
@@ -2426,7 +2426,8 @@
     </UniqueComponent>
   </Components>
   <UserData>
-    <ComponentGraph dnOrder="0" id="__ROOTVIEW">
+    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
+    <ComponentGraph dnOrder="1" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="cmsis" x="430" y="60"/>
         <ElementPosition dnOrder="1" id="core" x="330" y="60"/>
@@ -2440,6 +2441,5 @@
         <ElementPosition dnOrder="9" id="tc0" x="370" y="102"/>
       </ElementPositions>
     </ComponentGraph>
-    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="1"/>
   </UserData>
 </Configuration>
