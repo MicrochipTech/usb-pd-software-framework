@@ -1057,6 +1057,27 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         }
                     }
 #endif
+                    else if ((PD_ROLE_DRP == DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum)) && 
+                            (PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) &&
+                            ((ePE_GET_SINK_CAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
+                            (ePE_GET_SINK_CAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState))) 
+                    {
+						/*Reject handling for Get_Sink_Cap only when PSF is 
+                          Dual role capable and currently acting as Sink*/
+                        
+                        /* Kill the Sender Response Timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        
+                        if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
+                        {
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_NO_RESPONSE_SS;
+                                                                            
+                        }
+                        else
+                        {
+                            /* Do Nothing */
+                        }
+                    }
                     else
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);
