@@ -2816,6 +2816,8 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS XMT INTR\r\n");            
             
+            gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_SIGNAL_TRANSMITTED;
+            
             /* Set Rp value to SinkTxOK, so that sink partner can initiate
                FR_Swap message */            
             #if (TRUE == INCLUDE_PD_3_0)    

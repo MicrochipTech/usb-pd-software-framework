@@ -957,8 +957,10 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_EVALUATE_SWAP\r\n");
             
             /*Evaluate whether FRS signal has been transmitted*/
-            if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_FRS_XMT_RCV_STS_INTERRUPT)
+            if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_TRANSMITTED)
             {
+                gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_SIGNAL_TRANSMITTED);
+                        
                 gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ACCEPT_SWAP;
             }
             else
