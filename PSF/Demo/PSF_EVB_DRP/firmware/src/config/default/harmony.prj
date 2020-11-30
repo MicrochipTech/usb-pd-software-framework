@@ -387,8 +387,8 @@
           <Name dnOrder="1">plib_port.h</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">64DCDC26E625AA067DE940DE3E0A8E77</GeneratedChecksum>
-          <UserChecksum dnOrder="5">A7EE05A8C5B9A40BA2D856A4DCA90B3B</UserChecksum>
+          <GeneratedChecksum dnOrder="4">2324DCF909CBBF836D1D7E515A9A57C7</GeneratedChecksum>
+          <UserChecksum dnOrder="5">E66F303B396BC99C9EDB0CD5CC1F37AD</UserChecksum>
         </File>
         <File dnOrder="48">
           <Type dnOrder="0">HEADER</Type>
