@@ -986,7 +986,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     eTxDoneSS = SET_TO_ZERO;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                eTxDoneSS, ePE_SRC_SEND_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
+                                                eTxDoneSS, ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;
                     
@@ -1043,6 +1043,141 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS;
             
             break; 
+        }
+        case ePE_FRS_SRC_SNK_WAIT_SOURCE_ON:
+        {
+            switch(gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS:
+                {
+                    if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
+                            (TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS\r\n");
+                        
+                        /* The Policy Engine then directs the Protocol Layer to generate a 
+                           PS_RDY Message, with the Port Power Role bit in the Message 
+                           Header set to Sink, to tell its Port Partner that it 
+                           can begin to Source VBUS. */  
+                        DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SINK); 
+                        
+                        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+                        
+                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
+                                                PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_FRS_SRC_SNK_WAIT_SOURCE_ON, \
+                            ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS, \
+                            ePE_FRS_SRC_SNK_WAIT_SOURCE_ON, ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS);                     
+
+                        u8IsTransmit = TRUE;
+                        /* Move the Policy Engine to Idle sub-state */
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS;
+                    }
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
+                    }
+                    break; 
+                }
+                case ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS\r\n");
+                    
+                    /* PS_RDY Message was successfully sent. At this point the 
+                       Initial Source is ready to be the new Sink.
+                       Start PSSourceOn timer */
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_PS_SOURCE_ON_TIMEOUT_MS),
+                                                            PE_SubStateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS);
+                    
+                    /* Assign an idle state to wait for PS_RDY from Initial Sink */
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS;                                                                                    
+                    break; 
+                }
+                case ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS:
+                {
+                    /* Policy Engine would enter this sub-state in any one of the 
+                       following scenarios:
+                       - PR_RDY not sent after retries 
+                       - PSSourceOn timer expired */
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS\r\n");
+                    
+                    PE_KillPolicyEngineTimer(u8PortNum);
+                    
+                    /* Revert the port's power role to Source and invoke Type C Error Recovery, 
+                       so that Type C SM would move to Unattached Source state after Error 
+                       recovery where the u8DRPLastAttachedState condition would pass and DRP 
+                       Offload would be enabled */
+                    DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
+                    
+                    if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                    {
+                        DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                    }
+                    else
+                    {
+                        /*Do nothing. If User application returns FALSE for 
+                        eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                        the user application will raise a Port disable client request*/
+                    }
+                    
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+
+                    break; 
+                }
+                /* Idle state to wait for PS_RDY message transmit completion */
+                case ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS:
+                {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                    
+                    
+                    break; 
+                }
+                /* Idle state to wait for PS_RDY message from port partner */
+                case ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS:
+                {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
+                    break; 
+                }
+                case ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS:
+                {
+                    /* Policy Engine would enter this sub-state when 
+                       PS_RDY is received from port partner within tPSSourceOn */                    
+                    
+                    /* Move to Sink Startup state after vSafe5V is hit and Type C sink SM 
+                       has reached the TYPEC_ATTACHED_SNK_RUN_SM_SS sub-state */
+                    if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
+                            (TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
+                        
+                        /* Resetting the Protocol Layer would be taken care by the 
+                        ePE_SNK_STARTUP state */
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
+                        
+                        /*To-do De-assert FRS_ARM IO here*/
+                        
+                        /* Send PR_Swap complete notification */
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_FR_SWAP_COMPLETE);                                         
+                    }
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
+                    }
+                    break; 
+                }
+                default:
+                {
+                    break; 
+                }
+            }
         }
         default:
         {
