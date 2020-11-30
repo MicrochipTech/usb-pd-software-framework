@@ -154,7 +154,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_AME_TIMER_DONE                       BIT(16)
 #define DPM_VCONN_SRC_RESPONSIBILITY             BIT(17)
 #define DPM_FRS_CRITERIA_SUPPORTED               BIT(18)
-#define DPM_FRS_SIGNAL_TRANSMITTED               BII(19)
+#define DPM_FRS_SIGNAL_TRANSMITTED               BIT(19)
 
 /*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS                     0

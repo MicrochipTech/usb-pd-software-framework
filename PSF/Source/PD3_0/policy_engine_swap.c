@@ -988,7 +988,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     eTxDoneSS = SET_TO_ZERO;
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                eTxDoneSS, ePE_SRC_SEND_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
+                                                eTxDoneSS, ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;
                     
@@ -1052,6 +1052,13 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
         }
 
     }
+    
+    /* Transmit the message if u8IsTransmit is set */
+    if (TRUE == u8IsTransmit)
+    {
+		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
+                            NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 
+    }    
 }
 #endif /*INCLUDE_PD_FR_SWAP*/
 
