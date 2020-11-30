@@ -193,11 +193,13 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff)
                on the Rp value configured by the user */
             u16CurrentInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
             u16VoltageInmV = TYPEC_VBUS_5V;
+            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM:TURN ON VBUS\r\n");
         }
         else
         {
             u16CurrentInmA = DPM_0mA; 
             u16VoltageInmV = TYPEC_VBUS_0V; 
+            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM:TURN OFF VBUS\r\n");
         }
         
         /* Update power related status registers */
@@ -1508,14 +1510,14 @@ void DPM_GearUpForFRSwap(UINT8 u8PortNum)
 #if(TRUE == INCLUDE_PD_VCONN_SWAP)        
 		/*Initiate VCONN_Swap irrespective of user configured swap policy, 
 		  such that the sink partner sources VCONN */
-        if((PD_ROLE_SINK == u8CurrentPwrRole) && ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
-            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC)))
+        if((PD_ROLE_SINK == u8CurrentPwrRole) && (!((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
+            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC))))
         {
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
         }
-        else if((PD_ROLE_SOURCE == u8CurrentPwrRole) && ((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
-            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC)))
-        {
+        else if((PD_ROLE_SOURCE == u8CurrentPwrRole) && (!((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
+            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC))))
+        {                           
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
         }
         else
@@ -1528,7 +1530,7 @@ void DPM_GearUpForFRSwap(UINT8 u8PortNum)
         {
             if (PD_ROLE_SOURCE == u8CurrentPwrRole)
             {
-                /* Enable FRS Req PIO to enable FRS signal transmission */
+                /* Enable FRS Req PIO to enable FRS signal transmission */                
                 DPM_ENABLE_FRS_REQ_PIO(u8PortNum);
                 DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Enabled\r\n");                            
             }
@@ -1738,8 +1740,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
             {
                 u8RetVal = DPM_REJECT_SWAP;
             }
-            break;
-            
+            break;            
         }
         case eVCONN_SWAP_INITIATE:
         {
@@ -1753,7 +1754,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_VCONN_SRC)) ||
                 ((FALSE == u8IsVCONNSource) && 
                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_NOT_VCONN_SRC))))
-            {
+            {                
                 u8RetVal = DPM_REQUEST_SWAP;
                 
             }
@@ -1761,12 +1762,12 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
             else if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
             {
                 /*Since all FRS conditions are satisfied, PSF stack has initiated VCONN_Swap. 
-                  It has to be accepted*/
+                  It has to be accepted*/                
                 u8RetVal = DPM_REQUEST_SWAP;
             }
 #endif
             else
-            {
+            {                
                 u8RetVal = DPM_IGNORE_INITIATE_SWAP;
             }
             break; 
@@ -1824,8 +1825,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
             {
                 u8RetVal = DPM_REJECT_SWAP;
             }
-            break;
-            
+            break;            
         }
         case ePR_SWAP_INITIATE:
         {

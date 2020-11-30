@@ -2505,7 +2505,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         /*Setting CC Comparator to sample both the CC1 and CC2*/
         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
                 
-        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE initiated\r\n");        
+        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE INITIATED\r\n");        
     }
     else
     {   
@@ -2814,7 +2814,7 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS XMT STS INTR\r\n");            
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS XMT INTR\r\n");            
             
             /* Set Rp value to SinkTxOK, so that sink partner can initiate
                FR_Swap message */            
@@ -2824,16 +2824,18 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         }
         else
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV STS INTR\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV INTR\r\n");
             
             /* When PIO override is disabled, disable EN_SINK of the port */               
             #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                 UPD_DisablePIOOutputISR (u8PortNum);            
             #endif     
 
-            /* Initiate internal event to start FR_Swap AMS */
+            /* Register internal event to start FR_Swap AMS */
             DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);    
         }
+        
+        gasTypeCcontrol[u8PortNum].u8DRPStsISR &= ~(TYPEC_FRS_XMT_RCV_STS_INTERRUPT);
     }
 #endif
 }
@@ -2895,7 +2897,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 		case TYPEC_UFP_ATT_DEF:
         case TYPEC_UFP_ATT_3A0:
 		{
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Sink is Present in CC");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Sink is Present in CC\r\n");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");               
             
             if(TYPEC_UNATTACHED_SRC == u8TypeCState)
@@ -2932,10 +2934,10 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             /*Setting the Powered cable presence in u8PortSts variable*/
             gasTypeCcontrol[u8PortNum].u8PortSts |= TYPEC_PWDCABLE_PRES_MASK;
           
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Sink is Present in CC");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Sink is Present in CC\r\n");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 2 : 1),"\r\n");
             
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Present in CC");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Present in CC\r\n");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");
             
             if(TYPEC_UNATTACHED_SRC == u8TypeCState)
@@ -3607,7 +3609,7 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
         
-        DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SRC Powered OFF state");
+        DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SRC Powered OFF state\r\n");
         
         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
     }
@@ -3739,13 +3741,17 @@ void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
     
     /* Set FRS_DET_EN bit in FRS_CTL register */
-    UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
+    /* To-do: commented for now; set it in a suitable place */
+   // UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
     
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Detection Enabled\r\n");             
 }
 
 void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
 {
+    /* Get the polarity of FRS Request PIO */
+    UINT8 u8FRSReqPol = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FRSRequest;
+
     /* Ensure at minimum that cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
        pio_clk_gate_en, and i2c_clk_gate_en (or spi_clk_gate_en) are cleared in Clock Gate Register */    
     UPD_RegByteClearBit (u8PortNum, UPD_CLK_GATE_LOW, \
@@ -3775,6 +3781,21 @@ void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
     /* PIO which is used to transmit FRS signal is indicated by programming FRS Request PIO Select Register*/
     UPD_RegWriteByte (u8PortNum, TYPEC_FRS_PIO_SEL, \
             (gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FRSRequest << TYPEC_FRS_REQ_PIO_SEL_POS));
+        
+    /* Set PIO value that initiates transmission of FRS signaling
+       based on the polarity of u8Pio_FRSRequest */
+    if (((UINT8)eINPUT_ACTIVE_LOW == u8FRSReqPol) || ((UINT8)eINPUT_ACTIVE_LOW_PU == u8FRSReqPol))
+    {
+        UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_VAL);
+    }
+    else if (((UINT8)eINPUT_ACTIVE_HIGH == u8FRSReqPol) || ((UINT8)eINPUT_ACTIVE_HIGH_PD == u8FRSReqPol))
+    {
+        UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_VAL);
+    }
+    else 
+    {
+        /* Do Nothing */
+    }
     
     /* Clear FRS_REQ_PIO bit in FRS_CTL register. It will be enabled in PE_SRC_READY state 
        where power negotiation is stable */
