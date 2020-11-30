@@ -120,8 +120,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 #define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 
-#define CFG_PORT_0_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
-#define CFG_PORT_1_UPD_FAULT_IN_MODE         eFAULT_IN_ACTIVE_LOW
+#define CFG_PORT_0_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
+#define CFG_PORT_1_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
 
 #define CFG_PORT_0_UPD_EN_VBUS               eUPD_PIO3
 #define CFG_PORT_1_UPD_EN_VBUS               eUPD_PIO3
@@ -133,6 +133,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_1_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 
+/* Note: UPD PIO9 is shared between HPD and VSEL2 pin functionalities. 
+   Hence, INCLUDE_UPD_HPD is disabled by default. If user application
+   wishes to use HPD feature, then VSEL2 functionality has to be mapped
+   with any MCU pin since HPD pin can only be a UPD PIO */
 #define CFG_PORT_0_HPD_IO                    eUPD_PIO9
 #define CFG_PORT_1_HPD_IO                    eUPD_PIO9
 

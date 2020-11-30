@@ -153,7 +153,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_SWAP_INIT_STS_MASK                   0x7E00
 #define DPM_AME_TIMER_DONE                       BIT(16)
 #define DPM_VCONN_SRC_RESPONSIBILITY             BIT(17)
-#define DPM_FRS_CRITERIA_SUPPORTED             BIT(18)
+#define DPM_FRS_CRITERIA_SUPPORTED               BIT(18)
+#define DPM_FRS_SIGNAL_TRANSMITTED               BIT(19)
 
 /*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS                     0
@@ -263,6 +264,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(9)
 #define DPM_PORT_IO_POWER_ROLE_STATUS                BIT(10)
 #define DPM_PORT_IO_DATA_ROLE_STATUS                 BIT(11)
+#define DPM_PORT_IO_FRS_ARM_STATUS                   BIT(12)
 
 /***************************u16SwapPolicy values*****************************/
 #define DPM_AUTO_DR_SWAP_REQ_AS_DFP                  BIT(0)
@@ -683,6 +685,8 @@ Source/Sink Power delivery objects*/
 #define DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
 #define DPM_INT_EVT_PORT_DISABLE            		BIT(8)
 #define DPM_INT_EVT_PORT_ENABLE             		BIT(9)
+#define DPM_INT_EVT_INITIATE_FR_SWAP                BIT(10)
+
 /**********************************************************************************/                                   
 // *****************************************************************************
 // *****************************************************************************
