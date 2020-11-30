@@ -1133,6 +1133,11 @@ Description:
     when a VCONN Swap message has been initiated by PSF and no response has been 
     received from the port partner. 
 
+    <b> eMCHP_PSF_FR_SWAP_COMPLETE</b>: This notification will be posted when the FR Swap
+    is completed and the power roles of the both the partners are changed successfully.
+    Users can know the current power role status through u32PortConnectStatus. This event 
+    is applicable only when PSF is operating as DRP and FR_Swap is supported.
+   
     <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: This notification will be posted when the PR Swap
     is completed and the power roles of the both the partners are changed successfully.
     This notification will also be posted when the PR_Swap initiated by either of the 
@@ -1263,7 +1268,8 @@ eMCHP_PSF_SINK_STATUS_RCVD,            // Sink Status received from Sink Partner
 eMCHP_PSF_SINK_STATUS_NOT_RCVD,        // Sink Status not received from Sink Partner
 eMCHP_PSF_VCONN_SWAP_COMPLETE,         // VCONN Swap completed
 eMCHP_PSF_VCONN_SWAP_RCVD,             // VCONN Swap Received from port partner
-eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD, // No response from port partner for VCONN Swap sent 
+eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD, // No response from port partner for VCONN Swap sent
+eMCHP_PSF_FR_SWAP_COMPLETE,            // Fast Role Swap completed        
 eMCHP_PSF_PR_SWAP_COMPLETE,            // Power Role Swap completed
 eMCHP_PSF_PR_SWAP_RCVD,                // Power Role Swap Received from port partner
 eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for Power Role Swap sent 

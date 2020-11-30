@@ -576,7 +576,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_ASSERT_RD\r\n");
             /* The Policy Engine requests the Device Policy Manager to assert the Rd 
                pull down on the CC wire.*/
-            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SRC, TYPEC_ATTACHED_SRC_PRS_TRANS_TO_SNK_SS);
+            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SRC, TYPEC_ATTACHED_SRC_SWAP_TRANS_TO_SNK_SS);
             
             gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON; 
             gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS;
@@ -591,7 +591,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS:
                 {
                     if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
-                            (TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                            (TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS\r\n");
                         
@@ -777,7 +777,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                turned off and PS_RDY received from original source. There are no 
                sub-states involved in this state. 
                Request DPM to transition Type C Port role from Sink to Source */            
-            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS);             
+            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_SWAP_TRANS_TO_SRC_SS);             
             
             /* Once port role is transitioned to Source, send a PS_RDY message */
             gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SNK_SRC_SOURCE_ON; 
@@ -1037,7 +1037,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_ASSERT_RD\r\n");
             /* The Policy Engine requests the Device Policy Manager to assert the Rd 
                pull down on the CC wire.*/
-            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SRC, TYPEC_ATTACHED_SRC_PRS_TRANS_TO_SNK_SS);
+            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SRC, TYPEC_ATTACHED_SRC_SWAP_TRANS_TO_SNK_SS);
             
             gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_WAIT_SOURCE_ON; 
             gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS;
@@ -1051,7 +1051,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS:
                 {
                     if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
-                            (TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                            (TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS\r\n");
                         

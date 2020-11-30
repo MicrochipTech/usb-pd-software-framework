@@ -515,15 +515,15 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHWAIT_SRC_CC_DEB_TIMEOUT_SS        2
     
 /*Defines for TYPEC_ATTACHED_SRC's substates in TYPE C SM*/
-#define TYPEC_ATTACHED_SRC_PRS_ASSERT_RP_SS           0
-#define TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS      1
+#define TYPEC_ATTACHED_SRC_SWAP_ASSERT_RP_SS           0
+#define TYPEC_ATTACHED_SRC_SWAP_RD_PRES_DETECT_SS      1
 #define TYPEC_ATTACHED_SRC_DRIVE_PWR_SS               2
 #define TYPEC_ATTACHED_SRC_WAIT_FOR_VBUS_ON_SS        3
 #define TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS       4
 #define TYPEC_ATTACHED_SRC_SET_PRL_SS                 5
 #define TYPEC_ATTACHED_SRC_RUN_SM_SS                  6
 #define TYPEC_ATTACHED_SRC_IDLE_SS				      7
-#define TYPEC_ATTACHED_SRC_PRS_TRANS_TO_SNK_SS        8
+#define TYPEC_ATTACHED_SRC_SWAP_TRANS_TO_SNK_SS        8
 
 /*Defines for TYPEC_UNATTACHED_WAIT_SRC's substates in TYPE C SM*/ 
 #define TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS                0
@@ -545,14 +545,14 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHWAIT_SNK_CC_DEB_TIMEOUT_SS        3
 
 /*Defines for TYPEC_ATTACHED_SNK's substates in TYPE C SM*/
-#define TYPEC_ATTACHED_SNK_PRS_ASSERT_RD_SS            0
-#define TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS     1
+#define TYPEC_ATTACHED_SNK_SWAP_ASSERT_RD_SS            0
+#define TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS     1
 #define TYPEC_ATTACHED_SNK_ENTRY_SS                    2
 #define TYPEC_ATTACHED_SNK_RUN_SM_SS                   3
 #define TYPEC_ATTACHED_SNK_START_PD_DEB_SS             4
 #define TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS           5
 #define TYPEC_ATTACHED_SNK_IDLE_SS                     6
-#define TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS         7
+#define TYPEC_ATTACHED_SNK_SWAP_TRANS_TO_SRC_SS         7
 
 /*Defines for TYPEC_ERROR_RECOVERY's substates in TYPE C SM*/ 
 #define TYPEC_ERROR_RECOVERY_ENTRY_SS                   0
