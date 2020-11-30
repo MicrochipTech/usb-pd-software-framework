@@ -493,14 +493,12 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {
             if (PORT0 == u8PortNum)
             {
-                POWER_ROLE_0_Clear();
-                POWER_ROLE_0_OutputEnable();  
+                /*Initialize PIO for Power_Role_0 */  
             }
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)   
             else if (PORT1 == u8PortNum)
             {
-                POWER_ROLE_1_Clear();
-                POWER_ROLE_1_OutputEnable(); 
+                /*Initialize PIO for Power_Role_1 */ 
             }
             #endif  
             else
@@ -528,7 +526,27 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 /*Do nothing*/
             }
             break;
-        } 
+        }
+        case eFRS_ARM_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                FRS_ARM_0_Clear();
+                FRS_ARM_0_OutputEnable();  
+            }
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)   
+            else if (PORT1 == u8PortNum)
+            {
+                FRS_ARM_1_Clear();
+                FRS_ARM_1_OutputEnable(); 
+            }
+            #endif
+            else
+            {
+                /*Do nothing*/
+            }
+            break;
+        }
         default:
         {
             break; 
@@ -748,11 +766,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             {
                 if (eGPIO_ASSERT == eGPIODrive)
                 {
-                    POWER_ROLE_0_Set();
+                    /*Assert Power_role_0 PIO*/
                 }
                 else
                 {
-                    POWER_ROLE_0_Clear();
+                    /*De-assert Power_role_0 PIO*/
                 }
             }
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)   
@@ -760,11 +778,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             {
                 if (eGPIO_ASSERT == eGPIODrive)
                 {
-                    POWER_ROLE_1_Set();
+                    /*Assert Power_role_1 PIO*/
                 }
                 else
                 {
-                    POWER_ROLE_1_Clear();
+                    /*De-assert Power_role_1 PIO*/
                 }            
             }
             #endif
@@ -806,6 +824,38 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             }
             break;
         }
+        case eFRS_ARM_FUNC:
+        {
+            if (PORT0 == u8PortNum)
+            {
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    FRS_ARM_0_Set();
+                }
+                else
+                {
+                    FRS_ARM_0_Clear();
+                }
+            }
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
+            else if (PORT1 == u8PortNum)
+            {
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    FRS_ARM_1_Set();
+                }
+                else
+                {
+                    FRS_ARM_1_Clear();
+                }            
+            }
+            #endif
+            else
+            {
+                /*Do nothing*/
+            }
+            break;
+        }            
         default:
         {
             break; 
