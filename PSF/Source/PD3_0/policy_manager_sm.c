@@ -602,11 +602,12 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         return;
     }
 
+    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    
     /* Check for Port enable/disable and VBUS Fault Handling requests. Policy Engine Idle check 
        is not needed for these requests and they have to be handled with highest priority*/
     if (DPM_CLIENT_REQ_PORT_DISABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
-    {
-        
+    {        
 #if(TRUE == INCLUDE_PD_DRP)
         /*Disable DRP offload as soon as port disable client request is triggered.*/
         UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
@@ -719,8 +720,12 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 
         /*Disable FRS_REQ_PIO as this renegotiation might affect FRS criteria 
           by changing the negotiated PDO*/
-        DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
-        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
+        if (PD_ROLE_SOURCE == u8CurrentPwrRole)
+        {
+            DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
+        }
+        /* To-do: Disable FRS_DET_EN if port is Sink */        
         
         /* Request DPM for renegotiation */
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
@@ -747,8 +752,12 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
                                       ~(DPM_CLIENT_REQ_PR_SWAP); 
         
         /*Disable FRS_REQ_PIO to avoid FRS in between a PR_Swap*/
-        DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
-        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
+        if (PD_ROLE_SOURCE == u8CurrentPwrRole)
+        {
+            DPM_DISABLE_FRS_REQ_PIO(u8PortNum); 
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");            
+        }
+        /* To-do: Disable FRS_DET_EN if port is Sink */        
         
         /* Request DPM for PR swap */
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
