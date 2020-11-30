@@ -1135,6 +1135,29 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                                            (ePolicySubState)SET_TO_ZERO);                                                
                     }
 #endif 
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+                    /* PS_RDY received from Power Role Swap partner */
+                    else if (ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS == \
+                                    gasPolicyEngine[u8PortNum].ePESubState)
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"FR_SWAP: PS_RDY received from Initial Sink\r\n");
+                         /*Kill the PSSourceOn timer*/
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_FRS_SRC_SNK_WAIT_SOURCE_ON,\
+                                           ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS);                                                
+                    }
+                    else if (ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS == \
+                                    gasPolicyEngine[u8PortNum].ePESubState)
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"FR_SWAP: PS_RDY received from Initial Source\r\n");
+                        /*Kill the PSSourceOff timer*/
+                        PE_KillPolicyEngineTimer (u8PortNum);                        
+
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_FRS_SNK_SRC_ASSERT_RP,\
+                                           (ePolicySubState)SET_TO_ZERO);                                                
+                    }
+#endif                     
                     else
                     {
                         PE_HandleUnExpectedMsg (u8PortNum);
