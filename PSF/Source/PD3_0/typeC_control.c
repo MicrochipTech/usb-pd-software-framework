@@ -269,8 +269,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
       
 #if (TRUE == INCLUDE_PD_SOURCE)
         case PD_ROLE_SOURCE:
-		{     
-          
+		{               
             /*Setting Match debounce register value as 4 times the number of thresholds enabled for 
             debouncing*/
             u8MatchDebVal = (BYTE_LEN_4 * TYPEC_SRC_CCTHRES_CNT);
@@ -1715,7 +1714,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                                                 
                         TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_0V,
-                        gasDPM[u8PortNum].u16SinkOperatingCurrInmA , TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                        gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
                                                         
                         /*Disable the Sink circuitry to stop sinking the power from source*/
                         PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, \
@@ -2808,9 +2807,14 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
 #if(TRUE == INCLUDE_PD_FR_SWAP)
     else if(gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_FRS_XMT_RCV_STS_INTERRUPT)
     {       
-        if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        /* FRS PD MAC Override bit is automatically set when FRS signaling is sent/received
+           by the FRS FSM. This bit stays asserted until cleared by FW. Clearing this bit 
+           allows PD MAC communication to resume */
+        UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_PD_MAC_OVR);
+        
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS XMT STS INTR\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS XMT STS INTR\r\n");            
             
             /* Set Rp value to SinkTxOK, so that sink partner can initiate
                FR_Swap message */            

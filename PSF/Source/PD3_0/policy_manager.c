@@ -1343,7 +1343,7 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable)
     }
 }
 
-/*********************************DPM PD negotiation API**************************************/
+/********************* DPM API to initiate Internal Events **************************/
 void DPM_InitiateInternalEvts(UINT8 u8PortNum)
 {
     
@@ -1526,12 +1526,23 @@ void DPM_GearUpForFRSwap(UINT8 u8PortNum)
         /* This check is to wait for VCONN swap if initiated by the above block of code to complete*/
         if(SET_TO_ZERO == gasDPM[u8PortNum].u16DPMInternalEvents)
         {
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Enabled\r\n");
-            DPM_ENABLE_FRS_REQ_PIO(u8PortNum);
+            if (PD_ROLE_SOURCE == u8CurrentPwrRole)
+            {
+                /* Enable FRS Req PIO to enable FRS signal transmission */
+                DPM_ENABLE_FRS_REQ_PIO(u8PortNum);
+                DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Enabled\r\n");                            
+            }
         }
     }
     else
-    {
+    {        
+        if (PD_ROLE_SOURCE == u8CurrentPwrRole)
+        {        
+            /* Disable FRS signal transmission since FRS criteria is not supported */
+            DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");                            
+        }
+        
 #if(TRUE == INCLUDE_PD_VCONN_SWAP)        
         /*Initiate VCONN Swap based on user configured swap policy and only if the swap is 
 		  not already initiated and rejected*/
