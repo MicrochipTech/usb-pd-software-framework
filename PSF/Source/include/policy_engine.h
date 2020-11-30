@@ -224,6 +224,14 @@ typedef enum {
     ePE_PRS_SNK_SRC_TRANSITION_TO_OFF,
     ePE_PRS_SNK_SRC_ASSERT_RP,
     ePE_PRS_SNK_SRC_SOURCE_ON,
+            
+    //--------------------------FR_Swap States-----------------------------------// 
+    ePE_FRS_SRC_SNK_EVALUATE_SWAP,
+    ePE_FRS_SRC_SNK_ACCEPT_SWAP,
+    ePE_FRS_SRC_SNK_TRANSITION_TO_OFF,
+    ePE_FRS_SRC_SNK_ASSERT_RD,
+    ePE_FRS_SRC_SNK_WAIT_SOURCE_ON,
+            
     //---------------------------VDM states---------------------------------------//
     ePE_VDM_INITIATE_VDM, 
     ePE_VDM_EVALUATE_VDM,            
@@ -387,6 +395,17 @@ typedef enum {
     ePE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS,
     ePE_PRS_SNK_SRC_SOURCE_ON_IDLE_SS,
 	ePE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS,
+    //--------------------FR_Swap specific Sub-States---------------------------//
+    /* ePE_FRS_SRC_SNK_ACCEPT_SWAP */
+    ePE_FRS_SRC_SNK_ACCEPT_SWAP_ENTRY_SS,
+    ePE_FRS_SRC_SNK_ACCEPT_SWAP_IDLE_SS,
+    /* ePE_FRS_SRC_SNK_WAIT_SOURCE_ON */
+    ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS,
+    ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_MSG_DONE_SS,
+    ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_ERROR_SS,
+    ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS,
+    ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS,
+    ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS,
     //--------------------VDM Sub States-------------------------------------------------//            
     /* ePE_VDM_INITIATE_VDM */ 
     ePE_VDM_INITIATE_VDM_ENTRY_SS, 
