@@ -952,6 +952,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
     
     switch(gasPolicyEngine[u8PortNum].ePEState)
     {
+        /*Source to Sink FR_Swap States*/
         case ePE_FRS_SRC_SNK_EVALUATE_SWAP:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_EVALUATE_SWAP\r\n");
@@ -1180,6 +1181,97 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     break; 
                 }
             }
+        }
+        
+        /*Sink to Source FR_Swap States*/
+        case ePE_FRS_SNK_SRC_START_AMS:
+        {
+            /*To-do PE variables and timers need to be reset to terminate any pending AMS*/
+            if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
+            {
+                gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_SEND_SWAP;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS;
+            }
+            else
+            {
+                gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+            }
+        }
+        case ePE_FRS_SNK_SRC_SEND_SWAP:
+        {
+            switch(gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS\r\n");                    
+					/* Send the FR_Swap message */
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PR_SWAP,
+                                            PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+      
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_FRS_SNK_SRC_SEND_SWAP, \
+                                                ePE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS , \
+                                                ePE_FRS_HANDLE_ERROR_RECOVERY , SET_TO_ZERO);
+
+                    u8IsTransmit = TRUE;                                        
+                             
+                    /* Assign an idle sub-state to wait for message transmit completion */
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                    
+                    break; 
+                }
+                case ePE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS:
+                {                   
+                    /* Policy Engine would enter this sub-state on reception of GoodCRC 
+                       for the FR_Swap message sent */
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS\r\n");
+                    /* Start Sender Response Timer. Either Accept, Reject or wait would be 
+                       received as response. If no response is received, move to 
+                       ePE_SRC_READY or ePE_SNK_READY state */
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_SENDERRESPONSE_TIMEOUT_MS),
+                                                            PE_SubStateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS);
+                    
+                    /* Assign an idle sub-state to wait for timer expiry */
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                                            
+                    break; 
+                }
+                case ePE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS:
+                {                    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS\r\n");
+                    
+                    /* Response not received within tSenderResponse. Move to 
+                       ePE_SRC_READY/ePE_SNK_READY state */
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+
+                    /* Post PR_SWAP_NO_RESP_RCVD notification*/
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_FR_SWAP_COMPLETE);
+
+                    break; 
+                }
+                /* Idle state to wait for message transmit completion or timer expiry */
+                case ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS:
+                {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
+                    break; 
+                }
+                default:
+                {
+                    break;
+                }
+            }
+            break;
+        }
+        
+        
+        /* Common state  to handle Error recovery*/
+        case ePE_FRS_HANDLE_ERROR_RECOVERY:
+        {
+            
+            break;
         }
         default:
         {
