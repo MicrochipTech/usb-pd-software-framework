@@ -1421,10 +1421,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #if (TRUE == INCLUDE_PD_FR_SWAP)
                 case PE_CTRL_FR_SWAP: 
                 {
-                    /*Accept the Power Role swap if current state is READY State or
-                    any VDM AMS is active*/
-                    if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
+                    /*Accept the Fast Role swap if current state is READY State or
+                    any VDM AMS is active. Fast Role Swap will be received only by Dual Role Source*/
+                    if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (u8PEInVDMState))
                     {
 #if ((TRUE == INCLUDE_PD_SOURCE_PPS) || (TRUE == INCLUDE_PD_VDM))                        
