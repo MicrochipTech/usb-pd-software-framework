@@ -451,8 +451,22 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eORIENTATION_FUNC:
         {
-            /*Init is called when detach happens*/
-            UPDPIO_Disable(u8PortNum, eUPD_PIO2);
+            /* Disable output during Init & Detach since Orientation 
+               functionality is applicable only when in attached state */
+            if (PORT0 == u8PortNum)
+            {
+                ORIENTATION_0_InputEnable();                
+            }
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
+            else if(PORT1 == u8PortNum)
+            {
+                ORIENTATION_1_InputEnable();               
+            }
+            #endif
+            else
+            {
+                /* Do Nothing */
+            }            
             break;
         }
         case eSNK_CAPS_MISMATCH_FUNC:
@@ -496,6 +510,9 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }    
         case ePOWER_ROLE_FUNC:
         {
+            /* Note: Due to unavailability of free GPIOs, Power Role PIO 
+               functionality is not implemented. User Application can implement
+               ePOWER_ROLE_FUNC as per it's needs */               
             if (PORT0 == u8PortNum)
             {
                 /*Initialize PIO for Power_Role_0 */  
@@ -514,16 +531,17 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }     
         case eDATA_ROLE_FUNC:
         {
+            /* Note: Due to unavailability of free GPIOs, Power Role PIO 
+               functionality is not implemented. User Application can implement
+               eDATA_ROLE_FUNC as per it's needs */               
             if (PORT0 == u8PortNum)
             {
-                DATA_ROLE_0_Clear();
-                DATA_ROLE_0_OutputEnable();  
+                /*Initialize PIO for Data_Role_0 */  
             }
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)   
             else if (PORT1 == u8PortNum)
             {
-                DATA_ROLE_1_Clear();
-                DATA_ROLE_1_OutputEnable(); 
+                /*Initialize PIO for Data_Role_1 */  
             }
             #endif
             else
@@ -591,7 +609,6 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     __asm volatile("nop");
                     __asm volatile("nop");
-
                 }                
             }
             else
@@ -694,18 +711,36 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case eORIENTATION_FUNC:  
         {
-            if (eGPIO_ASSERT == eGPIODrive)
+            if (PORT0 == u8PortNum)
             {
-                UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
-                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
-                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    ORIENTATION_0_Set();
+                }
+                else
+                {
+                    ORIENTATION_0_Clear();
+                }         
+                ORIENTATION_0_OutputEnable();
             }
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
+            else if(PORT1 == u8PortNum)
+            {
+                if (eGPIO_ASSERT == eGPIODrive)
+                {
+                    ORIENTATION_1_Set();
+                }
+                else
+                {
+                    ORIENTATION_1_Clear();
+                }    
+                ORIENTATION_1_OutputEnable();
+            }
+            #endif
             else
             {
-                UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);
-                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2); 
-                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
-            }
+                /* Do Nothing */
+            } 
             break;  
         }
         case eSNK_CAPS_MISMATCH_FUNC:
@@ -767,6 +802,9 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case ePOWER_ROLE_FUNC:
         {
+            /* Note: Due to unavailability of free GPIOs, Power Role PIO 
+               functionality is not implemented. User Application can implement
+               ePOWER_ROLE_FUNC as per it's needs */
             if (PORT0 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
@@ -799,15 +837,18 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case eDATA_ROLE_FUNC:
         {
+            /* Note: Due to unavailability of free GPIOs, Power Role PIO 
+               functionality is not implemented. User Application can implement
+               eDATA_ROLE_FUNC as per it's needs */            
             if (PORT0 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
                 {
-                    DATA_ROLE_0_Set();
+                    /*Assert Data_role_0 PIO*/
                 }
                 else
                 {
-                    DATA_ROLE_0_Clear();
+                    /*De-assert Data_role_0 PIO*/
                 }
             }
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
@@ -815,11 +856,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             {
                 if (eGPIO_ASSERT == eGPIODrive)
                 {
-                    DATA_ROLE_1_Set();
+                    /*Assert Data_role_1 PIO*/
                 }
                 else
                 {
-                    DATA_ROLE_1_Clear();
+                    /*De-assert Data_role_1 PIO*/
                 }            
             }
             #endif

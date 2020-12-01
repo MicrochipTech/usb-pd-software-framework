@@ -140,11 +140,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_HPD_IO                    eUPD_PIO9
 #define CFG_PORT_1_HPD_IO                    eUPD_PIO9
 
-/* To-do: Set relevant value for these defines */
-#define CFG_PORT_0_UPD_FRS_REQ_PIO_NO        0
-#define CFG_PORT_1_UPD_FRS_REQ_PIO_NO        0
-#define CFG_PORT_0_UPD_FRS_REQ_PIO_MODE      0
-#define CFG_PORT_1_UPD_FRS_REQ_PIO_MODE      0
+#define CFG_PORT_0_UPD_FRS_REQ_PIO_NO        eUPD_PIO2
+#define CFG_PORT_1_UPD_FRS_REQ_PIO_NO        eUPD_PIO2
+#define CFG_PORT_0_UPD_FRS_REQ_PIO_MODE      eINPUT_ACTIVE_LOW
+#define CFG_PORT_1_UPD_FRS_REQ_PIO_MODE      eINPUT_ACTIVE_LOW
 
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
