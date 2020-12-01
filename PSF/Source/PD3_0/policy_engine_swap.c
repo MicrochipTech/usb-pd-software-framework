@@ -1266,7 +1266,91 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             break;
         }
         
-        
+        case ePE_FRS_SNK_SRC_TRANSITION_TO_OFF:
+        {
+            switch(gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS\r\n");
+                    /* Set FR_Swap in progress Flag. This would prevent PSF Sink from 
+                       detach when VBUS drops below VSinkDisconnect.
+                       PD Spec Reference Note: during the Fast Role Swap process the 
+                       initial Sink does not disconnect even though VBUS drops below vSafe5V */
+                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PR_SWAP_IN_PROGRESS_MASK;
+                                        
+                    /* Transition to Sink Standby.
+                       Configure the Type C VBUS threshold for vSafe0v detection */
+                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA; 
+                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+                    
+                    /*Turn off the Sink circuitry to stop sinking the power from source*/
+                    PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+                    
+                    /* Initialize and run PSSourceOffTimer. 
+                       Note: DPM_VBUSorVCONNOnOff_TimerCB API is reused for PSSourceOff 
+                       timer call back intentionally, as both the time outs invoke
+                       Error Recovery. This would save the usage of code memory.
+                       DPM_CLR_PR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
+                       so that PR_Swap In Progress mask would be cleared on Timeout */
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_PS_SOURCE_OFF_TIMEOUT_MS),
+                                                            DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
+                                                            (UINT8)DPM_CLR_PR_SWAP_IN_PROGRESS_MASK);
+               
+                    /* Assign an idle state to wait for PS_RDY reception */
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS;                                                                                    
+                    break;                     
+                }
+                /* Idle state to wait for PS_RDY from original Source */
+                case ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS:
+                {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
+                    break; 
+                }
+                default:
+                {
+                    break;
+                }
+            }
+            break;
+        }
+        case ePE_FRS_SNK_SRC_VBUS_APPLIED :
+        {
+            if(TYPEC_VBUS_5V_PRES == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
+            {
+                /*Policy Engine enters this state when PS_RDY is received from the original source. 
+                  In this state, VBUS is expected to be at 5V. If 5V does not prevail in VBUS, 
+                  PE waits in this state until 5V is reached.*/
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_VBUS_APPLIED\r\n");
+                
+                gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_ASSERT_RP;
+            }
+            else
+            {
+                /* Hook to notify PE state machine entry into idle sub-state */
+                MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+            }
+            break;
+        }
+        case ePE_FRS_SNK_SRC_ASSERT_RP:
+        {
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_ASSERT_RP\r\n");
+            /* Policy Engine enters this state when the sink circuitry has been 
+               turned off and PS_RDY received from original source. There are no 
+               sub-states involved in this state. 
+               Request DPM to transition Type C Port role from Sink to Source */            
+            DPM_SetTypeCState (u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_SWAP_TRANS_TO_SRC_SS);             
+            
+            /* Once port role is transitioned to Source, send a PS_RDY message */
+            gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_SOURCE_ON; 
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS;
+            
+            break; 
+        }
         /* Common state  to handle Error recovery*/
         case ePE_FRS_HANDLE_ERROR_RECOVERY:
         {

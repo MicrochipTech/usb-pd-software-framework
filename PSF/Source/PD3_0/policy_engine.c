@@ -902,6 +902,19 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         }
                     }
 #endif 
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+                    /* Accept message received for FR_Swap request */
+                    else if ((ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
+                            (ePE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"Accept Received for FR_Swap Sent\r\n");
+                        /* Kill the Sender Response Timer */
+                        PE_KillPolicyEngineTimer (u8PortNum);
+                        
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_FRS_SNK_SRC_TRANSITION_TO_OFF, 
+                                ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS);
+                    }
+#endif                     
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                     /* Accept message received for PR_Swap request */
                     else if ((ePE_PRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
