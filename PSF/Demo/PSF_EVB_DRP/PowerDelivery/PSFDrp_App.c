@@ -451,8 +451,13 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eORIENTATION_FUNC:
         {
-            /* Disable output during Init & Detach since Orientation 
-               functionality is applicable only when in attached state */
+            /* Disable Orientation functionality during Init & Detach since it
+               is applicable only when the port is in attached state.
+               ORIENTATION_0_InputEnable() and ORIENTATION_1_InputEnable()
+               macros clear the direction bit of the respective pins in DIR  
+               register to avoid the the pins being configured as outputs. 
+               At the same time, the pins will not act as inputs 
+               since INEN bit of PORT_PINCFG register is not set */
             if (PORT0 == u8PortNum)
             {
                 ORIENTATION_0_InputEnable();                
@@ -711,6 +716,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case eORIENTATION_FUNC:  
         {
+            /* Configure the Orientation pins as outputs and drive high/low */
             if (PORT0 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
