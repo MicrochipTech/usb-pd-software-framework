@@ -1351,9 +1351,128 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             
             break; 
         }
+        case ePE_FRS_SNK_SRC_SOURCE_ON:
+        {
+            switch(gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_FRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS:
+                {
+                   if ((TYPEC_ATTACHED_SRC == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
+                            (TYPEC_ATTACHED_SRC_SET_PRL_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS\r\n");
+                        /*  Policy Engine, when its power supply is ready to supply power,
+                            tells the Protocol Layer to form a PS_RDY Message */
+                            
+                        /*  The Port Power Role bit used in this and subsequent Message 
+                            Headers is now set to 'Source' */                                                                        
+                        PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+                        
+                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
+                                                PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
+
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_FRS_SNK_SRC_SOURCE_ON, ePE_FRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS , \
+                                                        ePE_FRS_SNK_SRC_SOURCE_ON, ePE_FRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS);                     
+
+                        u8IsTransmit = TRUE;
+                        /* Move the Policy Engine to Idle sub-state */
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SOURCE_ON_IDLE_SS;
+                    }     
+                    else
+                    {
+                        /* Hook to notify PE state machine entry into idle sub-state */
+                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
+                    }
+                    break; 
+                }
+                case ePE_FRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS\r\n");
+                    
+                    /* Start SwapSourceStart timer which must timeout before sending 
+                       any Source_Capabilities Message */
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_SWAP_SOURCE_START_TIMEOUT_MS),
+                                                            PE_SubStateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_FRS_SNK_SRC_SOURCE_ON_EXIT_SS);
+                    
+                    /* Assign an idle state to wait for timer expiry */
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SOURCE_ON_IDLE_SS;                                                                                                        
+                    break; 
+                }
+                case ePE_FRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS\r\n");
+                    /* This sub-state would be entered if PS_Rdy message 
+                       is not sent after retries */
+                    /* Clear the FR_Swap In Progress Flag since PE would come out of Swap 
+                       SM after this and this flag should not cause any issues during the normal 
+                       flow */
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+                    
+                    /* No need to revert the port role to Sink since gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState 
+                       would be PD_ROLE_SOURCE. After Error recovery, Type C SM would enter 
+                       Unattached Source state and DRP offload would be enabled there.
+                       If role is updated as Sink, then Type C SM would move to Unattached 
+                       Sink after Error recovery where the u8DRPLastAttachedState condition would fail
+                       and DRP Offload will not be enabled */
+
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_HANDLE_ERROR_RECOVERY;
+                    
+                    break;
+                }
+                /* Idle state to wait for PS_RDY message transmit completion 
+                   and to wait for SwapSourceStart timer expiry */                
+                case ePE_FRS_SNK_SRC_SOURCE_ON_IDLE_SS:
+                {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
+                    break; 
+                }
+                case ePE_FRS_SNK_SRC_SOURCE_ON_EXIT_SS:
+                {
+                    /* This sub-state would be entered when SwapSourceStart 
+                       timer times out */                    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
+                    
+                    /* Clear the PR_Swap in progress flag since the Swap is complete */
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+                    
+                    /*To-do Clear FRS_ARM IO*/
+                    
+                    /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
+                       and Protocol Layer would be taken care by the startup state */
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
+                    
+                    /* Send PR_Swap complete notification */
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE); 
+                    
+                    break; 
+                }
+                default:
+                {
+                    break;
+                }
+            }
+            break;
+        }
         /* Common state  to handle Error recovery*/
         case ePE_FRS_HANDLE_ERROR_RECOVERY:
         {
+            if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+            {
+                DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+            }
+            else
+            {
+                /*Do nothing. If User application returns FALSE for 
+                eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                the user application will raise a Port disable client request*/
+            }
+            gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
             
             break;
         }
