@@ -728,7 +728,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        detach when VBUS drops below VSinkDisconnect.
                        PD Spec Reference Note: during the Power Role Swap process the 
                        initial Sink does not disconnect even though VBUS drops below vSafe5V */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PR_SWAP_IN_PROGRESS_MASK;
+                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
                                         
                     /* Transition to Sink Standby.
                        Configure the Type C VBUS threshold for vSafe0v detection */
@@ -743,12 +743,12 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        Note: DPM_VBUSorVCONNOnOff_TimerCB API is reused for PSSourceOff 
                        timer call back intentionally, as both the time outs invoke
                        Error Recovery. This would save the usage of code memory.
-                       DPM_CLR_PR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
+                       DPM_CLR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
                        so that PR_Swap In Progress mask would be cleared on Timeout */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_PS_SOURCE_OFF_TIMEOUT_MS),
                                                             DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
-                                                            (UINT8)DPM_CLR_PR_SWAP_IN_PROGRESS_MASK);
+                                                            (UINT8)DPM_CLR_SWAP_IN_PROGRESS_MASK);
                
                     /* Assign an idle state to wait for PS_RDY reception */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS;                                                                                    
@@ -843,7 +843,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* Clear the PR_Swap In Progress Flag since PE would come out of Swap 
                        SM after this and this flag should not cause any issues during the normal 
                        flow */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
                     
                     /* No need to revert the port role to Sink since gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState 
                        would be PD_ROLE_SOURCE. After Error recovery, Type C SM would enter 
@@ -882,7 +882,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
                     
                     /* Clear the PR_Swap in progress flag since the Swap is complete */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
                     
                     /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
                        and Protocol Layer would be taken care by the startup state */
@@ -1264,7 +1264,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        detach when VBUS drops below VSinkDisconnect.
                        PD Spec Reference Note: during the Fast Role Swap process the 
                        initial Sink does not disconnect even though VBUS drops below vSafe5V */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PR_SWAP_IN_PROGRESS_MASK;
+                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
                                         
                     /* Transition to Sink Standby.
                        Configure the Type C VBUS threshold for vSafe0v detection */
@@ -1279,12 +1279,12 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        Note: DPM_VBUSorVCONNOnOff_TimerCB API is reused for PSSourceOff 
                        timer call back intentionally, as both the time outs invoke
                        Error Recovery. This would save the usage of code memory.
-                       DPM_CLR_PR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
+                       DPM_CLR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
                        so that FR_Swap In Progress mask would be cleared on Timeout */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_PS_SOURCE_OFF_TIMEOUT_MS),
                                                             DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
-                                                            (UINT8)DPM_CLR_PR_SWAP_IN_PROGRESS_MASK);
+                                                            (UINT8)DPM_CLR_SWAP_IN_PROGRESS_MASK);
                
                     /* Assign an idle state to wait for PS_RDY reception */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS;                                                                                    
@@ -1395,7 +1395,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     /* Clear the FR_Swap In Progress Flag since PE would come out of Swap 
                        SM after this and this flag should not cause any issues during the normal 
                        flow */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
                     
                     /* No need to revert the port role to Sink since gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState 
                        would be PD_ROLE_SOURCE. After Error recovery, Type C SM would enter 
@@ -1424,7 +1424,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
                     
                     /* Clear the PR_Swap in progress flag since the Swap is complete */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_SWAP_IN_PROGRESS_MASK);
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
                     
                     /*To-do Clear FRS_ARM IO*/
                     

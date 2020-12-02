@@ -1149,7 +1149,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     }
 #endif 
 #if (TRUE == INCLUDE_PD_FR_SWAP)
-                    /* PS_RDY received from Power Role Swap partner */
+                    /* PS_RDY received for Fast Role Swap from partner */
                     else if (ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS == \
                                     gasPolicyEngine[u8PortNum].ePESubState)
                     {
