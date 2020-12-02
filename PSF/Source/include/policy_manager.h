@@ -1747,7 +1747,6 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum);
         1. The FRS current advertised by both partners are non-zero
         2. The FRS current advertised by initial sink is greater than or equal to
            that advertised by initial source.
-        3. PD contract is negotiated for a voltage greater than 5V.
         If all the above criteria are met, this API sets DPM_FRS_CRITERIA_SUPPORTED bit
         in gasDPM[u8PortNum].u32DPMStatus.
 
