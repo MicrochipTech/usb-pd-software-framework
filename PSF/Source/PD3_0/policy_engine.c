@@ -1167,7 +1167,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         /*Kill the PSSourceOff timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);                        
 
-                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_FRS_SNK_SRC_ASSERT_RP,\
+                        PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_FRS_SNK_SRC_VBUS_APPLIED,\
                                            (ePolicySubState)SET_TO_ZERO);                                                
                     }
 #endif                     
