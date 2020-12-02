@@ -212,11 +212,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 ((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_HARDRESET_PROGRESS_MASK) >> \
     PE_HARDRESET_PROGRESS_POS)
 
-/*Define to check if PR_SWAP is in progress ****/
-#define DPM_PR_SWAP_IN_PROGRESS(u8PortNum)  ((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PR_SWAP_IN_PROGRESS_MASK) >> \
-                                                                       PE_PR_SWAP_IN_PROGRESS_POS)
-/*Define to clear PR_Swap In Progress mask during PSSourceOff Timer expiry */
-#define DPM_CLR_PR_SWAP_IN_PROGRESS_MASK    0xFF 
+/*Define to check if PR_Swap/FR_Swap is in progress ****/
+#define DPM_IS_SWAP_IN_PROGRESS(u8PortNum)  ((gasPolicyEngine[u8PortNum].u8PEPortSts & PE_SWAP_IN_PROGRESS_MASK) >> \
+                                                                       PE_SWAP_IN_PROGRESS_POS)
+/*Define to clear PR_Swap/FR_Swap In Progress mask during PSSourceOff Timer expiry */
+#define DPM_CLR_SWAP_IN_PROGRESS_MASK    0xFF 
 
 // *****************************************************************************
 // *****************************************************************************

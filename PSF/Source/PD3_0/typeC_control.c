@@ -668,9 +668,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
         {          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
             {   
-#if (TRUE == INCLUDE_PD_PR_SWAP)
+#if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
                 /* This sub-state will be entered from 
-                   Attached Sink state during Sink to Source PR_Swap */
+                   Attached Sink state during Sink to Source PR_Swap/FR_Swap */
                 case TYPEC_ATTACHED_SRC_SWAP_ASSERT_RP_SS:
                 {
                     /* Initial Source would have turned off VBUS.
@@ -758,9 +758,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     } 
 		   
                     /*Enable VCONN FETs if Powered cable is present. Do not 
-                      disturb VCONN when a Power role swap is in progress */
+                      disturb VCONN when a PR_Swap/FR_Swap is in progress */
                     if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) && 
-                            (FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum)))
+                            (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum)))
                     {                                        
                         /*Powered cable attached in CC1*/
                         if (u8CC1MatchISR > u8CC2MatchISR)
@@ -792,7 +792,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         TypeC_KillTypeCTimer (u8PortNum);
                                                               
                         if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK)
-                                && (FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum)))
+                                && (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum)))
                         {
                             /*Start the VCONN ON timer for monitoring the time taken for 
                             VCONN to reach its Min value*/
@@ -836,7 +836,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_ATTACHED_SRC_SET_PRL_SS:
                 {                    
-                    if(FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum))
+                    if(FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))
                     {
                         DPM_SET_VCONN_SRC_RESPONSIBILITY(u8PortNum);
                     }
@@ -887,7 +887,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 }
                     
-#if (TRUE == INCLUDE_PD_PR_SWAP)                
+#if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))                
                 case TYPEC_ATTACHED_SRC_SWAP_TRANS_TO_SNK_SS:
                 {
                     /* This sub-state would be entered only during 
@@ -901,7 +901,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                        Rd only in the connected CC pin. 
                        Type C Spec Reference: 
                        Note: If the port has entered this state from the Attached.SRC state as 
-                       the result of a USB PD PR_Swap, the port shall terminate the 
+                       the result of a USB PD PR_Swap/FR_Swap, the port shall terminate the 
                        connected CC pin to ground through Rd and monitor its state */                                        
                     if (TYPEC_ORIENTATION_CC1 == TYPEC_GET_CC_ORIENTATION_STS(u8PortNum))
                     {
@@ -1247,9 +1247,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
         {          
             switch (gasTypeCcontrol[u8PortNum].u8TypeCSubState)
             {
-#if (TRUE == INCLUDE_PD_PR_SWAP)
+#if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
                 /* This sub-state would be entered from 
-                   Attached Source state during Source to Sink PR_Swap */
+                   Attached Source state during Source to Sink PR_Swap/FR_Swap */
                 case TYPEC_ATTACHED_SNK_SWAP_ASSERT_RD_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_SWAP_ASSERT_RD_SS\r\n");
@@ -1447,7 +1447,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     break;
                 }
                     
-#if (TRUE == INCLUDE_PD_PR_SWAP)                
+#if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))                
                 case TYPEC_ATTACHED_SNK_SWAP_TRANS_TO_SRC_SS:
                 {
                     /* This sub-state would be entered only during 
@@ -1463,7 +1463,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                        Rp only in the connected CC pin. 
                        Type C Spec Reference: 
                        Note: If the port has entered this state from the Attached.SNK state as 
-                       the result of a USB PD PR_Swap, the port shall source current on the 
+                       the result of a USB PD PR_Swap/FR_Swap, the port shall source current on the 
                        connected CC pin and monitor its state */
                     if (TYPEC_ORIENTATION_CC1 == TYPEC_GET_CC_ORIENTATION_STS(u8PortNum))
                     {
@@ -1987,7 +1987,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 				/* Verifies whether VBUS Drop is due to Source detach*/
 	            if((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) &&
 	                  (!DPM_IS_HARDRESET_IN_PROGRESS(u8PortNum)) && 
-                      (FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum))) 
+                      (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))) 
 	            {
 	                /*Setting the flag that VBUS has gone below VSinkDisconnect*/
 	                u8IntStsISR |= TYPEC_VSINKDISCONNECT_STATUS_MASK;
@@ -2010,7 +2010,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                 if((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) &&
                       (!DPM_IS_HARDRESET_IN_PROGRESS(u8PortNum)))                       
                 {                                                              
-                    if (FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum))
+                    if (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))
                     {
                         /*Setting the flag that VBUS has gone below VSinkDisconnect*/
                         u8IntStsISR |= TYPEC_VSINKDISCONNECT_STATUS_MASK;
@@ -2867,10 +2867,10 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n"); 
             
             /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is TYPEC_ATTACHED_SRC. 
-              A PR_Swap from Sink to Source should not be considered 
+              A PR_Swap/FR_Swap from Sink to Source should not be considered 
               as a detach. So, don't do anything */
             if ((TYPEC_ATTACHED_SRC == u8TypeCState)
-                #if (TRUE == INCLUDE_PD_PR_SWAP)
+                #if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
                     && (u8TypeCSubState != TYPEC_ATTACHED_SRC_SWAP_RD_PRES_DETECT_SS)
                 #endif
                     )
@@ -2911,11 +2911,11 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 /*Clearing the Powered cable presence in u16PortSts variable*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
             } 
-#if (TRUE == INCLUDE_PD_PR_SWAP)
+#if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
             else if ((TYPEC_ATTACHED_SRC == u8TypeCState) && 
                          (TYPEC_ATTACHED_SRC_SWAP_RD_PRES_DETECT_SS == u8TypeCSubState))
             {                
-                /* This condition would be hit during Sink to Source PR_Swap */
+                /* This condition would be hit during Sink to Source PR_Swap/FR_Swap */
                 u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;                                
                 /*Clearing the Powered cable presence in u16PortSts variable*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
@@ -2948,7 +2948,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 u8TypeCState = TYPEC_ATTACHWAIT_SRC;
                 u8TypeCSubState = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;                
             } 
-#if (TRUE == INCLUDE_PD_PR_SWAP)
+#if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
             else if ((TYPEC_ATTACHED_SRC == u8TypeCState) &&
                             (TYPEC_ATTACHED_SRC_SWAP_RD_PRES_DETECT_SS == u8TypeCSubState))
             {                
@@ -2999,13 +2999,13 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                     u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;                              
                 }
                 else if ((TYPEC_ATTACHED_SRC == u8TypeCState)
-                #if (TRUE == INCLUDE_PD_PR_SWAP)
+                #if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
                     && (u8TypeCSubState != TYPEC_ATTACHED_SRC_SWAP_RD_PRES_DETECT_SS)
                 #endif
                         )
                 {
                     /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is 
-                    TYPEC_ATTACHED_SRC. A PR_Swap from Sink to Source should 
+                    TYPEC_ATTACHED_SRC. A PR_Swap/FR_Swap from Sink to Source should 
                     not be considered as a detach. So, don't do anything */
                     u8TypeCState = TYPEC_UNATTACHED_WAIT_SRC;
                     u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS; 
@@ -3071,7 +3071,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 TypeC_KillTypeCTimer(u8PortNum);                    
             }
             else if ((TYPEC_ATTACHED_SNK == u8TypeCState) && ((((UINT8)TYPEC_ATTACHED_SNK_RUN_SM_SS) == u8TypeCSubState) 
-                        #if (TRUE == INCLUDE_PD_PR_SWAP)
+                        #if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
                         || (((UINT8)TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS) == u8TypeCSubState)
                         #endif 
                         ))
@@ -3120,11 +3120,11 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 else if ((TYPEC_ATTACHED_SNK == u8TypeCState) && \
                          (TYPEC_ATTACHED_SNK_RUN_SM_SS == u8TypeCSubState))
                 {
-                    /*During Sink to Source PR_Swap, this condition would be hit when PS_RDY
+                    /*During Sink to Source PR_Swap/FR_Swap, this condition would be hit when PS_RDY
                       is not received and PSSourceOf timer expires. At that point, both the partners 
                       might have Rd in CC wire. As a result of which, CC debounce thresholds 
                       will not match. This condition shall not be treated as a detach */
-                    if (FALSE == DPM_PR_SWAP_IN_PROGRESS(u8PortNum))
+                    if (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))
                     {
                         /* Go to TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state for starting tPDDebounce */
                         u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
@@ -3132,10 +3132,10 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 }
                 /* This condition occurs if VCONN Discharge is enabled in 
                    Attached Sink State or Source detach occurs after VBUS drops 
-                   below VSinkdisconnect. A PR_Swap from Source to Sink should 
+                   below VSinkdisconnect. A PR_Swap/FR_Swap from Source to Sink should 
                    not be considered as a detach. So, don't do anything */ 
                 else if ((TYPEC_ATTACHED_SNK == u8TypeCState) 
-                #if (TRUE == INCLUDE_PD_PR_SWAP)
+                #if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
                     && (u8TypeCSubState != TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS)
                 #endif 
                         )

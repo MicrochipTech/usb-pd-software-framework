@@ -718,7 +718,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_RENEGOTIATE);  
 
-        /*Disable FRS_REQ_PIO as power transition due to this renegotiation might affect FRS+/
+        /*Disable FRS_REQ_PIO as power transition due to this renegotiation might affect FRS*/
         if (PD_ROLE_SOURCE == u8CurrentPwrRole)
         {
             DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
