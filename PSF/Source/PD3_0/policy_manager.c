@@ -1480,12 +1480,6 @@ void DPM_EvaluateFRSCriteria(UINT8 u8PortNum)
         }
     }
     
-    if(TYPEC_VBUS_5V >= gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV)
-    {
-        /*Negotiated voltage needs to be greater than 5V*/
-        u8IsFRSSupported = FALSE;
-    }
-    
     if(TRUE == u8IsFRSSupported)
     {
         DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_FRS_CRITERIA_SUPPORTED\r\n");
