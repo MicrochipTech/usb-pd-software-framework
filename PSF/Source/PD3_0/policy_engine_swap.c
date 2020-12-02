@@ -1116,19 +1116,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        Offload would be enabled */
                     DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
                     
-                    if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
-                    {
-                        DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
-                    }
-                    else
-                    {
-                        /*Do nothing. If User application returns FALSE for 
-                        eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
-                        the user application will raise a Port disable client request*/
-                    }
-                    
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_HANDLE_ERROR_RECOVERY;
 
                     break; 
                 }
@@ -1166,7 +1154,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                         
                         /*To-do De-assert FRS_ARM IO here*/
                         
-                        /* Send PR_Swap complete notification */
+                        /* Send FR_Swap complete notification */
                         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_FR_SWAP_COMPLETE);                                         
                     }
                     else
@@ -1206,7 +1194,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS\r\n");                    
 					/* Send the FR_Swap message */
-                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PR_SWAP,
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_FR_SWAP,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_FRS_SNK_SRC_SEND_SWAP, \
@@ -1224,9 +1212,8 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     /* Policy Engine would enter this sub-state on reception of GoodCRC 
                        for the FR_Swap message sent */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS\r\n");
-                    /* Start Sender Response Timer. Either Accept, Reject or wait would be 
-                       received as response. If no response is received, move to 
-                       ePE_SRC_READY or ePE_SNK_READY state */
+                    /* Start Sender Response Timer. If Accept message is not received as response,
+                       move to ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_SENDERRESPONSE_TIMEOUT_MS),
                                                             PE_SubStateChange_TimerCB,u8PortNum,  
@@ -1241,11 +1228,11 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS\r\n");
                     
                     /* Response not received within tSenderResponse. Move to 
-                       ePE_SRC_READY/ePE_SNK_READY state */
+                       ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
 
-                    /* Post PR_SWAP_NO_RESP_RCVD notification*/
+                    /* Post FR_SWAP_COMPLETE notification*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_FR_SWAP_COMPLETE);
 
                     break; 
@@ -1293,7 +1280,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        timer call back intentionally, as both the time outs invoke
                        Error Recovery. This would save the usage of code memory.
                        DPM_CLR_PR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
-                       so that PR_Swap In Progress mask would be cleared on Timeout */
+                       so that FR_Swap In Progress mask would be cleared on Timeout */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_PS_SOURCE_OFF_TIMEOUT_MS),
                                                             DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
@@ -1446,8 +1433,8 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
                     
-                    /* Send PR_Swap complete notification */
-                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE); 
+                    /* Send FR_Swap complete notification */
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_FR_SWAP_COMPLETE); 
                     
                     break; 
                 }
