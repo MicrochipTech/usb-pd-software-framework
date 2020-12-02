@@ -1500,7 +1500,6 @@ void DPM_GearUpForFRSwap(UINT8 u8PortNum)
     if(u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
     {
         /*Drive FRS arm IO pin and status io bit high*/
-
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_ASSERT);
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_FRS_ARM_STATUS);
         
