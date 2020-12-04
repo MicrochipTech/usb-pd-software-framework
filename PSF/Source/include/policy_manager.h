@@ -1959,5 +1959,25 @@ void DPM_EnableAMEMonitoring (UINT8 u8PortNum);
 **************************************************************************************************/
 void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
 
+/**************************************************************************************************
+    Function:
+        void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum);
+    Summary:
+        API to evaluate capabilities received from partner
+    Description:
+        This API evaluates the Sink Capabilities of partner and prints whether the 
+        partner supports DRD, DRP, FRS and PPS 
+    Conditions:
+        This API shall be used only for debug purpose. It shall be called after the 
+        eMCHP_PSF_SINK_CAPS_RCVD notification is posted. 
+    Input:
+        u8PortNum - Port number
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum);
+
 #endif /*_POLICY_MANAGER_H_*/
 

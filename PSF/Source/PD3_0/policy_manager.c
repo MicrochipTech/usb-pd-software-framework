@@ -2217,3 +2217,53 @@ void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 }
 
 #endif 
+
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+
+void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum)
+{
+    UINT32 u32aPartner5VSinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0];
+            
+    DEBUG_PRINT_PORT_STR (u8PortNum,"PARTNER CAPABILITIES - ");
+    
+    if (DPM_GET_PDO_DUAL_DATA(u32aPartner5VSinkPDO))
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE("DRD: YES; ");
+    }
+    else
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE("DRD: NO; ");
+    }
+    
+    if (DPM_GET_PDO_DUAL_POWER(u32aPartner5VSinkPDO))
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE ("DRP: YES; ");
+    }
+    else
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE ("DRP: NO; ");
+    }    
+    
+    if (DPM_GET_PDO_FRS_CURRENT(u32aPartner5VSinkPDO))
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE ("FRS: YES; ");
+    }
+    else
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE ("FRS: NO; ");
+    }   
+    
+    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt; u8Index++)
+    {
+        if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[u8Index]))
+        {
+            MCHP_PSF_HOOK_PRINT_TRACE ("PPS: YES\r\n");
+            break;
+        }
+        if (u8Index == (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt - BYTE_LEN_1))
+        {
+            MCHP_PSF_HOOK_PRINT_TRACE ("PPS: NO\r\n");
+        }
+    }    
+}
+#endif 
