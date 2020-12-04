@@ -1434,8 +1434,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     }
                     break;                    
                 }
-#endif 
-                
+#endif                 
                 
 #if (TRUE == INCLUDE_PD_FR_SWAP)
                 case PE_CTRL_FR_SWAP: 
