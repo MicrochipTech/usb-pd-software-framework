@@ -62,10 +62,10 @@ Summary:
 Description:
     Setting the INCLUDE_PD_3_0 as 1, enables PSF to include USB Power delivery 3.0 specification
     features(collision avoidance and extended message support via chunking) along with PD 2.0 features
-	at the compile time. Users can set this define to 0 to reduce code size if none of the PD 
+	at compile time. Users can set this define to 0 to reduce code size if none of the PD 
     enabled ports require PD 3.0 specific features.
 Remarks:
-    Recommended default value is '1'.
+    Default value is '1'.
 Example:
     <code>
     #define INCLUDE_PD_3_0	1(Include USB PD 3.0 specific features to PSF)
@@ -82,7 +82,7 @@ Description:
     at the compile time. Users can set this define to 0 to reduce code size if none of the PD 
     enabled ports in the system are configured for Source operation.
 Remarks: 
-    Recommended default value is '1' for Source and DRP Applications.
+    Default value is '1' for Source and DRP Applications.
 Example:
     <code>
     #define INCLUDE_PD_SOURCE	1(Include USB PD Source functionality in PSF)
@@ -99,7 +99,7 @@ Description:
 	compile time. Users can set this define to 0 to reduce code size if none of the PD 
     enabled ports are configured for Sink operation.
 Remarks:
-    Recommended default value is '1' for Sink and DRP Applications.
+    Default value is '1' for Sink and DRP Applications.
 Example:
     <code>
     #define INCLUDE_PD_SINK	1(Include USB PD Sink functionality in PSF)
@@ -116,8 +116,8 @@ Description:
 	compile time. Users can set this define to 0 to reduce code size if none of the PD 
     enabled ports are configured for DRP operation.
 Remarks:
-    Recommended default value is '1' for DRP Application.
-    For INCLUDE_PD_DRP to be 1, both INCLUDE_PD_SOURCE and INCLUDE_PD_SINK shall be set to 1.
+    Default value is '1' for DRP Application. INCLUDE_PD_SOURCE and INCLUDE_PD_SINK should be
+    set to 1 as a prerequisite when INCLUDE_PD_DRP is set to 1.
 Example:
     <code>
     #define INCLUDE_PD_DRP	1(Include USB PD DRP functionality in PSF)
@@ -131,10 +131,10 @@ Summary:
     VCONN_Swap Support code inclusion.
 Description:
     Setting the INCLUDE_PD_VCONN_SWAP as 1 enables PSF to include the VCONN Swap
-	functionality at the compile time. Users can set this define to 0 to reduce code size if none of
+	functionality at compile time. Users can set this define to 0 to reduce code size if none of
 	the PD enabled ports require VCONN Swap functionality.
 Remarks:
-    Recommended default value is 1. For Source and DRP Operation, it is mandatory to define this macro as '1'.
+    Default value is 1. For Source and DRP Operation, it is mandatory to define this macro as '1'.
     When INCLUDE_PD_SOURCE is defined as '1', define this macro as '1'.
 Example:
     <code>
@@ -153,7 +153,7 @@ Description:
 	applicable. Users can set this define to 0 to reduce code size if PSF based power fault handling
 	is not required.
 Remarks:
-    Recommended default value is 1.
+    Default value is 1.
 Example:
     <code>
     #define INCLUDE_POWER_FAULT_HANDLING	1(Include Power Fault handling to PSF)
@@ -199,7 +199,7 @@ Description:
     MCHP_PSF_NOTIFY_CALL_BACK. Users can set this define to 0 to reduce code size of the PSF 
     if low power mode operation of UPD350 is not required for the application.
 Remarks:
-    Recommended default value is 1.
+    Default value is 1.
 Example:
     <code>
     #define INCLUDE_POWER_MANAGEMENT_CTRL	1(Include power management feature)
@@ -216,8 +216,8 @@ Description:
     feature as per USB Power Delivery FW Update Specification v1.0. Users can set this define 
     to 0 to reduce code size if the PSF application does not use Firmware update feature. 
 Remarks:
-    Recommended default value is 0 unless Firmware update feature is used. It is mandatory to have 
-    INCLUDE_PD_3_0 is defined as '1' when INCLUDE_PDFU is '1'.
+    Set to 0 by default. INCLUDE_PD_3_0 should be set to 1 as a prerequisite when INCLUDE_PDFU
+    is set to 1.
 Example:
     <code>
     #define INCLUDE_PDFU    1(Include PDFU feature)
@@ -235,8 +235,8 @@ Description:
     to reduce code size if none of the PD enabled Source ports in the system 
     require Power Balancing functionality.
 Remarks: 
-    Recommended default value is 1 for Source application. For INCLUDE_POWER_BALANCING to be 1, 
-    INCLUDE_PD_SOURCE shall be set to 1. 
+    Default value is 1 for Source application. INCLUDE_PD_SOURCE should be set to 1 as a
+    prerequisite when INCLUDE_POWER_BALANCING is set to 1.
 Example:
     <code>
     #define INCLUDE_POWER_BALANCING	1(Include Power Balancing functionality in PSF)
@@ -254,8 +254,8 @@ Description:
     to reduce code size if none of the Source ports in the system 
     require PT functionality.
 Remarks: 
-    Recommended default value is 1 for Source application. For INCLUDE_POWER_THROTTLING to be 1, 
-    INCLUDE_PD_SOURCE shall be set to 1. 
+    Default value is 1 for Source application. INCLUDE_PD_SOURCE should be set to 1 as a prerequisite
+    when INCLUDE_POWER_THROTTLING is set to 1. 
 Example:
     <code>
     #define INCLUDE_POWER_THROTTLING	1(Include PT functionality in PSF)
@@ -273,8 +273,8 @@ Description:
     to reduce code size if none of the Source ports in the system 
     require PPS functionality.
 Remarks: 
-    Recommended default value is 1 for Source application. For INCLUDE_PD_SOURCE_PPS to be 1, 
-    INCLUDE_PD_SOURCE and INCLUDE_PD_3_0 shall be set to 1. 
+    Default value is 1 for Source application. INCLUDE_PD_SOURCE and INCLUDE_PD_3_0 should be set
+    to 1 as a prerequisite when INCLUDE_PD_SOURCE_PPS is set to 1. 
 Example:
     <code>
     #define INCLUDE_PD_SOURCE_PPS	1(Include Source PPS functionality in PSF)
@@ -292,7 +292,7 @@ Description:
     to reduce code size if none of the ports in the system require DR_SWAP
     functionality.
 Remarks: 
-    Recommended default value is 1. Users can configure it based on the
+    Default value is 1. Users can configure it based on the
     application.
 Example:
     <code>
@@ -311,8 +311,8 @@ Description:
     are configured for DRP operation. Users can set this define to 0 to reduce the code size
     if none of the DRP ports in the system require Power Role Swap functionality.
 Remarks: 
-    Recommended default value is 1 for DRP application. For INCLUDE_PD_PR_SWAP to be 1, 
-    INCLUDE_PD_DRP shall be set to 1. 
+    Default value is 1 for DRP application. INCLUDE_PD_DRP should be set to 1 as a prerequisite
+    when INCLUDE_PD_PR_SWAP is set to 1. 
 Example:
     <code>
     #define INCLUDE_PD_PR_SWAP	1(Include PR_SWAP functionality in PSF)
@@ -329,7 +329,7 @@ Description:
     Message(VDM) feature at the compile time. Users can set this define to 0 to reduce the code size
     if none of the ports in the system require Structured VDM support.
 Remarks: 
-    Recommended default value is 1. 
+    Default value is 1. 
 Example:
     <code>
     #define INCLUDE_PD_VDM	1(Include Structured VDM support in PSF)
@@ -346,8 +346,8 @@ Description:
     feature at the compile time. Users can set this define to 0 to reduce the code size
     if none of the ports in the system require Alternate Mode support.
 Remarks: 
-    Recommended default value is 1. For INCLUDE_PD_ALT_MODE to be 1,
-    INCLUDE_PD_VDM shall be set to 1. 
+    Default value is 1. INCLUDE_PD_VDM should be set to 1 as a prerequisite when
+    INCLUDE_PD_ALT_MODE is set to 1. 
 Example:
     <code>
     #define INCLUDE_PD_ALT_MODE	1(Include Alternate Mode support in PSF)
@@ -364,8 +364,8 @@ Description:
     at the compile time. Users can set this define to 0 to reduce the code size
     if none of the ports in the system require HPD support.
 Remarks: 
-    Recommended default value is 1. 
-    For INCLUDE_UPD_HPD to be set to 1, INCLUDE_PD_ALT_MODE shall also be set to 1.
+    Default value is 1. INCLUDE_PD_ALT_MODE should be set to 1 as a prerequisite when
+    INCLUDE_UPD_HPD is set to 1.    
 Example:
     <code>
     #define INCLUDE_UPD_HPD	1(Include Hot Plug Detect support in PSF)
@@ -383,8 +383,9 @@ Description:
     are configured for DRP operation. Users can set this define to 0 to reduce the code size
     if none of the DRP ports in the system require Fast Role Swap functionality.
 Remarks: 
-    Recommended default value is 1 for DRP application. For INCLUDE_PD_FR_SWAP to be 1, 
-    INCLUDE_PD_DRP, INCLUDE_PD_3_0 and INCLUDE_UPD_PIO_OVERRIDE_SUPPORT defines shall be set to 1. 
+    Default value is 1 for DRP application. INCLUDE_PD_DRP, INCLUDE_PD_3_0 and 
+    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT should be set to 1 as a prerequisite
+    when INCLUDE_PD_FR_SWAP is set to 1.
 Example:
     <code>
     #define INCLUDE_PD_FR_SWAP	1(Include FR_SWAP functionality in PSF)
@@ -512,7 +513,7 @@ Example:
 Note:
     None.
 **************************************************************************/
-#define CONFIG_HOOK_DEBUG_MSG      0                 
+#define CONFIG_HOOK_DEBUG_MSG      1                 
 
 
 // *****************************************************************************
@@ -648,7 +649,7 @@ Example:
 
 /**********************************************************************
 Summary:
-    INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION.
+    Includes reserved bytes in Configuration and Status structure.
 Description:
     INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION will define the reserved bytes in the config and status
     register structure, so that expansion of structure members in future can be handled without change
@@ -675,7 +676,7 @@ Example:
   Description:
     eUPD_OUTPUT_PIN_MODES_TYPE enum defines the various combination modes
     applicable for UPD350 GPIO in output mode. This is applicable only for
-    EN_SINK and EN_VBUS pin functionalities.
+    EN_SINK and EN_VBUS functions.
   Remarks:
     None                                                                                               
   ******************************************************************************************************/
@@ -726,7 +727,7 @@ typedef enum
 	sPerPortData is referred from _GlobalCfgStatusData.	
   Description:
 	This structure contains global configuration and status parameters that are either Integer 
-	Datatypes, Bit-Mapped bytes or another structure.
+	data types, Bit-Mapped bytes or other data structure.
     
 	<b>1. Members that are Integer data types:</b>
 	
@@ -806,7 +807,7 @@ typedef enum
 																		requested by connected port 
 																		partner when acting as 
 																		Source. 
-																	  * Will be blank of no RDO has 
+																	  * Will be blank if no RDO has 
 																		been issued/received. 
                                                                       * This variable is common for 
 																	    Source and Sink.
@@ -1890,8 +1891,8 @@ typedef struct _PortCfgStatus
 	 sPBPerPortData is referred from _GlobalCfgStatusData.
    Description:
 	 This structure contains global configuration and status parameters that are either Integer 
-	 Datatypes, Bit-Mapped bytes or another structure. This structure is used only when either of 
-	 the macros INCLUDE_POWER_BALANCING or INCLUDE_POWER_THROTTLING is set to '1'.
+	 data types, Bit-Mapped bytes or other data structure. This structure is used only when either
+	 of the macros INCLUDE_POWER_BALANCING or INCLUDE_POWER_THROTTLING is set to '1'.
 	
     <b>1. Members that are Integer data types:</b> 
 	
@@ -2147,12 +2148,11 @@ typedef struct _PPSPortCfgStatus
 #endif 
   /**********************************************************************
    Summary:
-	This structure contains the system level, Port specific configurations and Status
-	parameters of PSF for Type C, PD, PB, PT and PPS parameters.
-	gasCfgStatusData is the defined variable of this structure.
+	This structure contains the system level, Port specific configuration and status
+	parameters of PSF. gasCfgStatusData is the defined variable of this structure.
    Description:
      This structure contains global configuration and status parameters that are either Integer 
-	 Datatypes, Bit-Mapped bytes or another structure.
+	 data types, Bit-Mapped bytes or other data structure.
 	
     <b>1. Members that are Integer data types:</b> 
 	
@@ -2361,12 +2361,12 @@ typedef struct _PPSPortCfgStatus
 	<table>
     Structure        \Description     
     ------           --------------------
-	sPerPortData     Includes Type C and PD parameters of a port, say default Source PDOs, default 
+	sPerPortData     Includes Type C and PD parameters of a port, like default Source PDOs, default 
 					  Sink PDOs, currently negotiated voltage and current values, under voltage and 
 					  over voltage threshold values, etc., Tag for this structure is _PortCfgStatus.
-	sPPSPerPortData  Includes PPS parameters of a port, say PPS Enable/Disable option and list of 
-						Augmented PDOs supported. Tag for this structure is _PPSPortCfgStatus. 
-	sPBPerPortData   Includes Power Balancing parameters of a port, say maximum power and maximum 
+	sPPSPerPortData  Includes PPS parameters of a port, like partner alert and status.
+						Tag for this structure is _PPSPortCfgStatus. 
+	sPBPerPortData   Includes Power Balancing parameters of a port, like maximum power and maximum 
 						current. Tag for this structure is _PBPortCfgStatus.						
  									
 	</table>

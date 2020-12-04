@@ -1016,7 +1016,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             {
                 /* The Policy Engine determines its power supply is no longer 
                    supplying VBUS */
-                DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_FRS_SRC_SNK_TRANSITION_TO_OFF\r\n");                        
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_TRANSITION_TO_OFF\r\n");                        
 
                 /* Drive the DC_DC_EN pin to low since it is not needed for Sink functionality */
                 PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
@@ -1255,7 +1255,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             {
                 case ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS\r\n");
                     /* Set FR_Swap in progress Flag. This would prevent PSF Sink from 
                        detach when VBUS drops below VSinkDisconnect.
                        PD Spec Reference Note: during the Fast Role Swap process the 

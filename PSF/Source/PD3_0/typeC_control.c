@@ -2899,7 +2899,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 		case TYPEC_UFP_ATT_DEF:
         case TYPEC_UFP_ATT_3A0:
 		{
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Sink is Present in CC\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Sink is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");               
             
             if(TYPEC_UNATTACHED_SRC == u8TypeCState)
@@ -2936,10 +2936,10 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             /*Setting the Powered cable presence in u8PortSts variable*/
             gasTypeCcontrol[u8PortNum].u8PortSts |= TYPEC_PWDCABLE_PRES_MASK;
           
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Sink is Present in CC\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Sink is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 2 : 1),"\r\n");
             
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Present in CC\r\n");
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Present in CC");
             DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");
             
             if(TYPEC_UNATTACHED_SRC == u8TypeCState)

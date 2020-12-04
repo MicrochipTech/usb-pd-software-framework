@@ -227,8 +227,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 // Section: UPD Idle Timeout configuration
 // *****************************************************************************
- /* UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is put to low power mode by   
-    the power management control if there is no activity or interrupt in UPD350. */
+ /* UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is configured by the power 
+    management control layer to enter low power mode if there is no activity or 
+    interrupt in UPD350. */
 #define UPD_IDLE_TIMEOUT_MS                     MILLISECONDS_TO_TICKS(15000)
 
 #endif /* _TIMER_DEFS_H */
