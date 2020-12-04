@@ -963,6 +963,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                 gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_SIGNAL_TRANSMITTED);
                         
                 gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ACCEPT_SWAP;
+                gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ACCEPT_SWAP_ENTRY_SS;
             }
             else
             {
@@ -985,11 +986,8 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
       
                     /* Move to Transition to Off state */
-                    eTxDoneSt = ePE_FRS_SRC_SNK_TRANSITION_TO_OFF;
-                    eTxDoneSS = SET_TO_ZERO;
-                    
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                eTxDoneSS, ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_FRS_SRC_SNK_TRANSITION_TO_OFF, \
+                                (UNIT8)SET_TO_ZERO, ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;
                     
@@ -1152,6 +1150,9 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_DEASSERT);
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= (~DPM_PORT_IO_FRS_ARM_STATUS);
         
+                        /*Re-enable the PIO interrupts for FRS_Request pin */
+                        UPD_EnableInputPIO (u8PortNum, eUPDFRS_REQ_PIO); 
+                        
                         /* Resetting the Protocol Layer would be taken care by the 
                         ePE_SNK_STARTUP state */
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
@@ -1171,6 +1172,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     break; 
                 }
             }
+            break;
         }
         
         /*Sink to Source FR_Swap States*/
@@ -1187,6 +1189,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                 gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                 gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
             }
+            break;
         }
         case ePE_FRS_SNK_SRC_SEND_SWAP:
         {
@@ -1201,7 +1204,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_FRS_SNK_SRC_SEND_SWAP, \
                                                 ePE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS , \
-                                                ePE_FRS_HANDLE_ERROR_RECOVERY , SET_TO_ZERO);
+                                                ePE_FRS_HANDLE_ERROR_RECOVERY , (UINT8)SET_TO_ZERO);
 
                     u8IsTransmit = TRUE;                                        
                              
@@ -1216,27 +1219,18 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS\r\n");
                     /* Start Sender Response Timer. If Accept message is not received as response,
                        move to ePE_SNK_READY state */
+                    /* Initialize and run PSSourceOffTimer. 
+                       Note: DPM_VBUSorVCONNOnOff_TimerCB API is reused for PSSourceOff 
+                       timer call back intentionally, as both the time outs invoke
+                       Error Recovery. This would save the usage of code memory.
+                       DPM_CLR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
+                       so that FR_Swap In Progress mask would be cleared on Timeout */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            (PE_SENDERRESPONSE_TIMEOUT_MS),
-                                                            PE_SubStateChange_TimerCB,u8PortNum,  
-                                                            (UINT8)ePE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS);
-                    
+                                                            (PE_PS_SOURCE_OFF_TIMEOUT_MS),
+                                                            DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
+                                                            (UINT8)DPM_CLR_SWAP_IN_PROGRESS_MASK);                   
                     /* Assign an idle sub-state to wait for timer expiry */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                                            
-                    break; 
-                }
-                case ePE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS:
-                {                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS\r\n");
-                    
-                    /* Response not received within tSenderResponse. Move to 
-                       ePE_SNK_READY state */
-                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
-                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
-
-                    /* Post FR_SWAP_COMPLETE notification*/
-                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_FR_SWAP_COMPLETE);
-
                     break; 
                 }
                 /* Idle state to wait for message transmit completion or timer expiry */
@@ -1361,7 +1355,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_FRS_SNK_SRC_SOURCE_ON, ePE_FRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS , \
-                                                        ePE_FRS_SNK_SRC_SOURCE_ON, ePE_FRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS);                     
+                                                        ePE_FRS_HANDLE_ERROR_RECOVERY, (UINT8)SET_TO_ZERO);                     
 
                         u8IsTransmit = TRUE;
                         /* Move the Policy Engine to Idle sub-state */
@@ -1388,27 +1382,6 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     /* Assign an idle state to wait for timer expiry */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SOURCE_ON_IDLE_SS;                                                                                                        
                     break; 
-                }
-                case ePE_FRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS:
-                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS\r\n");
-                    /* This sub-state would be entered if PS_Rdy message 
-                       is not sent after retries */
-                    /* Clear the FR_Swap In Progress Flag since PE would come out of Swap 
-                       SM after this and this flag should not cause any issues during the normal 
-                       flow */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
-                    
-                    /* No need to revert the port role to Sink since gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState 
-                       would be PD_ROLE_SOURCE. After Error recovery, Type C SM would enter 
-                       Unattached Source state and DRP offload would be enabled there.
-                       If role is updated as Sink, then Type C SM would move to Unattached 
-                       Sink after Error recovery where the u8DRPLastAttachedState condition would fail
-                       and DRP Offload will not be enabled */
-
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_HANDLE_ERROR_RECOVERY;
-                    
-                    break;
                 }
                 /* Idle state to wait for PS_RDY message transmit completion 
                    and to wait for SwapSourceStart timer expiry */                
@@ -1452,6 +1425,13 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
         /* Common state  to handle Error recovery*/
         case ePE_FRS_HANDLE_ERROR_RECOVERY:
         {
+            DEBUG_PRINT_PORT_STR(u8PortNum, "PE_FRS_HANDLE_ERROR_RECOVERY\r\n");
+            
+            /*PE_SWAP_IN_PROGRESS_MASK needs to be cleared only for sink to src FRS.
+             This bit is not applicable for src to sink FRS. But it is cleared here 
+             commonly for both roles to save code size.*/
+            gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
+            
             if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
             {
                 DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);

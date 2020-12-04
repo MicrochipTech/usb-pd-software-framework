@@ -416,7 +416,6 @@ typedef enum {
     /* ePE_FRS_SNK_SRC_SEND_SWAP */
     ePE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS,
     ePE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS,
-    ePE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS,
     ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS,
     /* ePE_FRS_SNK_SRC_TRANSITION_TO_OFF */
     ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS,
@@ -424,7 +423,6 @@ typedef enum {
     /* ePE_FRS_SNK_SRC_SOURCE_ON */
     ePE_FRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS,
     ePE_FRS_SNK_SRC_SOURCE_ON_MSG_DONE_SS,
-    ePE_FRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS,
     ePE_FRS_SNK_SRC_SOURCE_ON_IDLE_SS,
     ePE_FRS_SNK_SRC_SOURCE_ON_EXIT_SS,
     //--------------------VDM Sub States-------------------------------------------------//            
