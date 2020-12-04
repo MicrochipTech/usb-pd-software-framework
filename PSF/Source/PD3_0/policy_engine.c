@@ -305,6 +305,25 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                     }
                 #endif 
             }
+            else if (PE_CTRL_FR_SWAP == u8MsgType)
+            {
+                /* To ensure the following conditions from PD spec, DPM_FRS_CRITERIA_SUPPORTED
+                   bit is checked here instead of FRS current field from sink PDO.
+                   PD spec: The initial Source Shall Not transmit a Fast Role Swap signal
+                   if Fast Role Swap USB Type-C Current field is set to zero. Initially,
+                   when the new Source applies vSafe5V it will have Rd asserted but Shall
+                   provide the USB Type-C Current indicated by the new Sink in this field.
+                   If the new Source is not able to supply this level of current it Shall 
+                   Not perform a Fast Role Swap.*/              
+                #if (FALSE == INCLUDE_PD_FR_SWAP)
+                    u8RetVal = PE_UNSUPPORTED_MSG; 
+                #else 
+                    if (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED))
+                    {
+                        u8RetVal = PE_UNSUPPORTED_MSG;
+                    }
+                #endif 
+            }
             else if (PE_CTRL_GET_SINK_CAP == u8MsgType)
             {
                 /* Get Sink Caps shall be supported for Sink only and DRP ports */                
