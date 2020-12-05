@@ -987,7 +987,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
       
                     /* Move to Transition to Off state */
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_FRS_SRC_SNK_TRANSITION_TO_OFF, \
-                                (UNIT8)SET_TO_ZERO, ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
+                                (UINT8)SET_TO_ZERO, ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;
                     
