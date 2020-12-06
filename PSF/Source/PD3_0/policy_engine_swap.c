@@ -963,7 +963,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                 gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_SIGNAL_TRANSMITTED);
                         
                 gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ACCEPT_SWAP;
-                gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ACCEPT_SWAP_ENTRY_SS;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SRC_SNK_ACCEPT_SWAP_ENTRY_SS;
             }
             else
             {
@@ -987,7 +987,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
       
                     /* Move to Transition to Off state */
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_FRS_SRC_SNK_TRANSITION_TO_OFF, \
-                                (UNIT8)SET_TO_ZERO, ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
+                                (UINT8)SET_TO_ZERO, ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;
                     
@@ -1226,9 +1226,10 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        DPM_CLR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
                        so that FR_Swap In Progress mask would be cleared on Timeout */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            (PE_PS_SOURCE_OFF_TIMEOUT_MS),
-                                                            DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
-                                                            (UINT8)DPM_CLR_SWAP_IN_PROGRESS_MASK);                   
+                                                            (PE_SENDERRESPONSE_TIMEOUT_MS),
+                                                            PE_StateChange_TimerCB,u8PortNum,  
+                                                            ePE_FRS_HANDLE_ERROR_RECOVERY);    
+                    
                     /* Assign an idle sub-state to wait for timer expiry */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                                            
                     break; 
