@@ -788,6 +788,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {   
                     if(TYPEC_VBUS_5V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {                      
+                        DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_WAIT_FOR_VBUS_ON_SS\r\n");
                         /*Kill the VBUS ON timer since vSafe5V is reached*/
                         TypeC_KillTypeCTimer (u8PortNum);
                                                               
@@ -821,6 +822,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {                          
                     if(u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)
                     {                      
+                        DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS\r\n");
+                        
                           /*Kill the VCONN ON timer since VCONN is turned ON*/
                           TypeC_KillTypeCTimer (u8PortNum); 
                           
@@ -836,6 +839,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_ATTACHED_SRC_SET_PRL_SS:
                 {                    
+                    DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_SET_PRL_SS\r\n");
+                    
                     if(FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))
                     {
                         DPM_SET_VCONN_SRC_RESPONSIBILITY(u8PortNum);

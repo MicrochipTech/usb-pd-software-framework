@@ -200,6 +200,9 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_PR_SWAP)
         PE_RunPRSwapStateMachine (u8PortNum);
 #endif        
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+        PE_RunFRSwapStateMachine (u8PortNum);
+#endif             
 #if (TRUE == INCLUDE_PD_VDM)
         PE_RunVDMStateMachine (u8PortNum, u8aDataBuf, u32Header);
 #endif 

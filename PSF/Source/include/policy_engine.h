@@ -1172,6 +1172,34 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
+        void PE_RunFRSwapStateMachine (UINT8 u8PortNum);
+
+    Summary:
+        FR_Swap Policy Engine State Machine. 
+       
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is called to run the Fast Role Swap Policy Engine State Machine.
+        
+    Conditions:
+        None
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void PE_RunFRSwapStateMachine (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
         void PE_RunDRSwapStateMachine (UINT8 u8PortNum);
 
     Summary:
