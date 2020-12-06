@@ -581,6 +581,13 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             DEBUG_PRINT_PORT_STR (u8PortNum,"***************HARD RESET COMPLETE***********\r\n");
             break; 
         } 
+        case eMCHP_PSF_SINK_CAPS_RCVD:
+        {
+            #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+            DPM_EvaluatePartnerCapabilities (u8PortNum);
+            #endif 
+            break; 
+        }
         default:
             break;
     }
@@ -826,7 +833,7 @@ void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT16 u16EventType)
 
 void DPM_InternalEventHandler(UINT8 u8PortNum)
 {
-    UINT16 u16IsAMSInProgress = FALSE;
+    UINT16 u16AMSInProgress = SET_TO_ZERO;
     UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     
     /*Process port disable/enable internal events irrespective of whether PSF is idle*/
@@ -866,7 +873,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /* Move the Policy Engine to PE_GET_SINK_CAP state */
             gasPolicyEngine[u8PortNum].ePEState = ePE_GET_SINK_CAP; 
             gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_ENTRY_SS;
-            u16IsAMSInProgress = DPM_INT_EVT_INITIATE_GET_SINK_CAPS;
+            u16AMSInProgress = DPM_INT_EVT_INITIATE_GET_SINK_CAPS;
+            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: GET_SINK_CAP INITIATED\r\n");
         }
         else if (DPM_INT_EVT_INITIATE_RENEGOTIATION == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_RENEGOTIATION))
@@ -885,7 +893,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_EVALUATE_CAPABILITY;
             }
-            u16IsAMSInProgress = DPM_INT_EVT_INITIATE_RENEGOTIATION;
+            u16AMSInProgress = DPM_INT_EVT_INITIATE_RENEGOTIATION;
+            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: RENEGOTIATION INITIATED\r\n");
         }
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
         else if (DPM_INT_EVT_INITIATE_VCONN_SWAP == (gasDPM[u8PortNum].u16DPMInternalEvents &\
@@ -898,7 +907,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             {
                 gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_SEND_SWAP;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_SWAP_ENTRY_SS;
-                u16IsAMSInProgress = DPM_INT_EVT_INITIATE_VCONN_SWAP;
+                u16AMSInProgress = DPM_INT_EVT_INITIATE_VCONN_SWAP;
+                DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: VCONN_SWAP INITIATED\r\n");
             }  
         }
 #endif /*INCLUDE_PD_VCONN_SWAP*/
@@ -935,9 +945,9 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_PRS_SEND_SWAP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;
-                    u16IsAMSInProgress = DPM_INT_EVT_INITIATE_PR_SWAP;
+                    u16AMSInProgress = DPM_INT_EVT_INITIATE_PR_SWAP;
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: PR_SWAP INITIATED\r\n");
                 }
-
             }
         }
 #endif /*INCLUDE_PD_PR_SWAP*/
@@ -974,7 +984,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                 {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_DRS_SEND_SWAP;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
-                    u16IsAMSInProgress = DPM_INT_EVT_INITIATE_DR_SWAP;      
+                    u16AMSInProgress = DPM_INT_EVT_INITIATE_DR_SWAP;  
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: DR_SWAP INITIATED\r\n");
                 }
             }
         }
@@ -989,7 +1000,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /* Move the Policy Engine to ePE_INIT_PORT_VDM_IDENTITY_REQUEST state */
             gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_INITIATE_VDM; 
             gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_INITIATE_VDM_ENTRY_SS;
-            u16IsAMSInProgress = DPM_INT_EVT_INITIATE_VDM;            
+            u16AMSInProgress = DPM_INT_EVT_INITIATE_VDM;            
         }
 #endif /* INCLUDE_PD_VDM */
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
@@ -1010,7 +1021,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                     /* Move the Policy Engine to ePE_SRC_SEND_SOURCE_ALERT state */
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_SOURCE_ALERT; 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS;
-                    u16IsAMSInProgress = DPM_INT_EVT_INITIATE_ALERT;
+                    u16AMSInProgress = DPM_INT_EVT_INITIATE_ALERT;
                 }
                 else
                 {
@@ -1040,7 +1051,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
                     /* Move the Policy Engine to ePE_SRC_GET_SINK_STATUS state */
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_GET_SINK_STATUS; 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GET_SINK_STATUS_ENTRY_SS;
-                    u16IsAMSInProgress = DPM_INT_EVT_INITIATE_GET_STATUS;
+                    u16AMSInProgress = DPM_INT_EVT_INITIATE_GET_STATUS;
                 }
                 else
                 {
@@ -1054,11 +1065,10 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
             /* Do Nothing */
         }          
     }
-    if (u16IsAMSInProgress)
-    {
-        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: INTERNAL EVT IN PROGRESS\r\n");
-        
-		gasDPM[u8PortNum].u16InternalEvntInProgress = u16IsAMSInProgress;
+    
+    if (u16AMSInProgress)
+    {                
+		gasDPM[u8PortNum].u16InternalEvntInProgress = u16AMSInProgress;
         #if (TRUE == INCLUDE_PD_3_0)
         if (PD_ROLE_SOURCE == u8DPMPowerRole)
         {

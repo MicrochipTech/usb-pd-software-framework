@@ -267,18 +267,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_IO_FRS_ARM_STATUS                   BIT(12)
 
 /***************************u16SwapPolicy values*****************************/
-#define DPM_AUTO_DR_SWAP_REQ_AS_DFP                  BIT(0)
-#define DPM_AUTO_DR_SWAP_REQ_AS_UFP                  BIT(1)
-#define DPM_AUTO_DR_SWAP_ACCEPT_AS_DFP               BIT(2)
-#define DPM_AUTO_DR_SWAP_ACCEPT_AS_UFP               BIT(3)
-#define DPM_AUTO_PR_SWAP_REQ_AS_SRC                  BIT(4)
-#define DPM_AUTO_PR_SWAP_REQ_AS_SNK                  BIT(5)
-#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SRC               BIT(6)
-#define DPM_AUTO_PR_SWAP_ACCEPT_AS_SNK               BIT(7)
-#define DPM_AUTO_VCONN_SWAP_REQ_AS_VCONN_SRC         BIT(8)
-#define DPM_AUTO_VCONN_SWAP_REQ_AS_NOT_VCONN_SRC     BIT(9)
-#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC      BIT(10)
-#define DPM_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC  BIT(11)
+#define DPM_AUTO_REQ_DR_SWAP_AS_DFP                  BIT(0)
+#define DPM_AUTO_REQ_DR_SWAP_AS_UFP                  BIT(1)
+#define DPM_AUTO_ACCEPT_DR_SWAP_AS_DFP               BIT(2)
+#define DPM_AUTO_ACCEPT_DR_SWAP_AS_UFP               BIT(3)
+#define DPM_AUTO_REQ_PR_SWAP_AS_SRC                  BIT(4)
+#define DPM_AUTO_REQ_PR_SWAP_AS_SNK                  BIT(5)
+#define DPM_AUTO_ACCEPT_PR_SWAP_AS_SRC               BIT(6)
+#define DPM_AUTO_ACCEPT_PR_SWAP_AS_SNK               BIT(7)
+#define DPM_AUTO_REQ_VCONN_SWAP_AS_VCONN_SRC         BIT(8)
+#define DPM_AUTO_REQ_VCONN_SWAP_AS_NOT_VCONN_SRC     BIT(9)
+#define DPM_AUTO_ACCEPT_VCONN_SWAP_AS_VCONN_SRC      BIT(10)
+#define DPM_AUTO_ACCEPT_VCONN_SWAP_AS_NOT_VCONN_SRC  BIT(11)
 
 /*********************u8SinkConfigSel defines******************/
 #define DPM_SINK_CONFIG_SINK_MODE_SEL_MASK  (BIT(0) | BIT(1))
@@ -1958,6 +1958,26 @@ void DPM_EnableAMEMonitoring (UINT8 u8PortNum);
         None. 
 **************************************************************************************************/
 void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum);
+    Summary:
+        API to evaluate capabilities received from partner
+    Description:
+        This API evaluates the Sink Capabilities of partner and prints whether the 
+        partner supports DRD, DRP, FRS and PPS 
+    Conditions:
+        This API shall be used only for debug purpose. It shall be called after the 
+        eMCHP_PSF_SINK_CAPS_RCVD notification is posted. 
+    Input:
+        u8PortNum - Port number
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum);
 
 #endif /*_POLICY_MANAGER_H_*/
 

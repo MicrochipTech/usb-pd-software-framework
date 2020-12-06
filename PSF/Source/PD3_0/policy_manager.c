@@ -1727,9 +1727,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
                 ((TRUE == u8IsVCONNSrcResponsible) || (gasDPM[u8PortNum].u8VCONNGoodtoSupply)) &&
 #endif 
                 (((TRUE == u8IsVCONNSrcResponsible) && 
-                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC)) ||
+                            (u16SwapPolicy & DPM_AUTO_ACCEPT_VCONN_SWAP_AS_VCONN_SRC)) ||
                 ((FALSE == u8IsVCONNSrcResponsible) && 
-                            (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC))))
+                            (u16SwapPolicy & DPM_AUTO_ACCEPT_VCONN_SWAP_AS_NOT_VCONN_SRC))))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
             }
@@ -1748,9 +1748,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
             if ((((PD_ROLE_SOURCE == u8CurrentPwrRole) && u8IsRaCable) || 
                   (PD_ROLE_SINK == u8CurrentPwrRole))&&
                 (((TRUE == u8IsVCONNSource) && 
-                           (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_VCONN_SRC)) ||
+                           (u16SwapPolicy & DPM_AUTO_REQ_VCONN_SWAP_AS_VCONN_SRC)) ||
                 ((FALSE == u8IsVCONNSource) && 
-                           (u16SwapPolicy & DPM_AUTO_VCONN_SWAP_REQ_AS_NOT_VCONN_SRC))))
+                           (u16SwapPolicy & DPM_AUTO_REQ_VCONN_SWAP_AS_NOT_VCONN_SRC))))
             {                
                 u8RetVal = DPM_REQUEST_SWAP;
                 
@@ -1776,9 +1776,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
             /*Evaluate whether received DR_SWAP message can be accepted or rejected
              based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
             if (((PD_ROLE_DFP == u8CurrentDataRole) && 
-                            (u16SwapPolicy & DPM_AUTO_DR_SWAP_ACCEPT_AS_DFP)) ||
+                            (u16SwapPolicy & DPM_AUTO_ACCEPT_DR_SWAP_AS_DFP)) ||
                ((PD_ROLE_UFP == u8CurrentDataRole) && 
-                            (u16SwapPolicy & DPM_AUTO_DR_SWAP_ACCEPT_AS_UFP)))
+                            (u16SwapPolicy & DPM_AUTO_ACCEPT_DR_SWAP_AS_UFP)))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
             }
@@ -1793,9 +1793,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
             /*Evaluate whether to initiate DR_SWAP message 
                 based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
                if (((PD_ROLE_DFP == u8CurrentDataRole) && 
-                               (u16SwapPolicy & DPM_AUTO_DR_SWAP_REQ_AS_DFP)) ||
+                               (u16SwapPolicy & DPM_AUTO_REQ_DR_SWAP_AS_DFP)) ||
                   ((PD_ROLE_UFP == u8CurrentDataRole) && 
-                               (u16SwapPolicy & DPM_AUTO_DR_SWAP_REQ_AS_UFP)))
+                               (u16SwapPolicy & DPM_AUTO_REQ_DR_SWAP_AS_UFP)))
                {
                    u8RetVal = DPM_REQUEST_SWAP;
                }
@@ -1812,9 +1812,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
             /*Evaluate whether received PR_SWAP message can be accepted or rejected
              based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
             if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
-                            (u16SwapPolicy & DPM_AUTO_PR_SWAP_ACCEPT_AS_SRC)) ||
+                            (u16SwapPolicy & DPM_AUTO_ACCEPT_PR_SWAP_AS_SRC)) ||
                ((PD_ROLE_SINK == u8CurrentPwrRole) && 
-                            (u16SwapPolicy & DPM_AUTO_PR_SWAP_ACCEPT_AS_SNK)))
+                            (u16SwapPolicy & DPM_AUTO_ACCEPT_PR_SWAP_AS_SNK)))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
             }
@@ -1829,9 +1829,9 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
             /*Evaluate whether to initiate PR_SWAP message 
             based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
             if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
-                           (u16SwapPolicy & DPM_AUTO_PR_SWAP_REQ_AS_SRC)) ||
+                           (u16SwapPolicy & DPM_AUTO_REQ_PR_SWAP_AS_SRC)) ||
               ((PD_ROLE_SINK == u8CurrentPwrRole) && 
-                           (u16SwapPolicy & DPM_AUTO_PR_SWAP_REQ_AS_SNK)))
+                           (u16SwapPolicy & DPM_AUTO_REQ_PR_SWAP_AS_SNK)))
             {
                 u8RetVal = DPM_REQUEST_SWAP;
             }
@@ -2216,4 +2216,54 @@ void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     gasDPM[u8PortNum].u32DPMStatus |= DPM_AME_TIMER_DONE; 
 }
 
+#endif 
+
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+
+void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum)
+{
+    UINT32 u32aPartner5VSinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0];
+            
+    DEBUG_PRINT_PORT_STR (u8PortNum,"PARTNER CAPABILITIES - ");
+    
+    if (DPM_GET_PDO_DUAL_DATA(u32aPartner5VSinkPDO))
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE("DRD: YES; ");
+    }
+    else
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE("DRD: NO; ");
+    }
+    
+    if (DPM_GET_PDO_DUAL_POWER(u32aPartner5VSinkPDO))
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE ("DRP: YES; ");
+    }
+    else
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE ("DRP: NO; ");
+    }    
+    
+    if (DPM_GET_PDO_FRS_CURRENT(u32aPartner5VSinkPDO))
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE ("FRS: YES; ");
+    }
+    else
+    {
+        MCHP_PSF_HOOK_PRINT_TRACE ("FRS: NO; ");
+    }   
+    
+    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt; u8Index++)
+    {
+        if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[u8Index]))
+        {
+            MCHP_PSF_HOOK_PRINT_TRACE ("PPS: YES\r\n");
+            break;
+        }
+        if (u8Index == (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt - BYTE_LEN_1))
+        {
+            MCHP_PSF_HOOK_PRINT_TRACE ("PPS: NO\r\n");
+        }
+    }    
+}
 #endif 
