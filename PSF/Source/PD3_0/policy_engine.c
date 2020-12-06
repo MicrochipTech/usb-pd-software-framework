@@ -549,7 +549,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
             {
                 case PE_DATA_SOURCE_CAP:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DATA_SOURCE_CAP: Source Cap message received\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"Source Cap message received\r\n");
                     
                     /*Discard the VDM AMS and process the source capability message received*/
                     if ((ePE_SNK_WAIT_FOR_CAPABILITIES == gasPolicyEngine[u8PortNum].ePEState) || \
@@ -587,7 +587,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 
                 case PE_DATA_REQUEST:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DATA_REQUEST: Request message received\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"Request message received\r\n");
                     
                     if ((ePE_SRC_SEND_CAPABILITIES == gasPolicyEngine[u8PortNum].ePEState) || \
                        (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
@@ -878,18 +878,18 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                          gasPolicyEngine[u8PortNum].ePESubState))
                     {
                         /*kill the timer PE_SENDER_RESPONSE_TIMEOUTID*/
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY: Accept Message Received\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"Request accepted by Source\r\n");
                         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= \
                                     DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS;
                         PE_KillPolicyEngineTimer (u8PortNum);
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                     }
-                    /*Accept message received for soft reset sent by Sink*/
+                    /*Accept message received for soft reset sent */
                     else if ((ePE_SEND_SOFT_RESET_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_SEND_SOFT_RESET_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_SOFT_RESET: Accept Message received\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"Accept received for Soft Reset\r\n");
                         /*kill the timer PE_SENDER_RESPONSE_TIMEOUTID*/
                         PE_KillPolicyEngineTimer (u8PortNum);
 
@@ -909,7 +909,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     else if ((ePE_VCS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_VCS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"Accept Received for VCONN_Swap Sent\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"VCONN_SWAP Accepted by partner\r\n");
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         if (DPM_IsPortVCONNSource(u8PortNum))
@@ -929,7 +929,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     else if ((ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"Accept Received for FR_Swap Sent\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"FR_Swap Accepted by partner\r\n");
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
@@ -942,7 +942,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     else if ((ePE_PRS_SEND_SWAP_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_PRS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState)) 
                     {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"Accept Received for PR_Swap Sent\r\n");
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP Accepted by partner\r\n");
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
@@ -962,6 +962,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             (ePE_DRS_SEND_SWAP_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {
 						/*Accept handling for DR_SWAP*/
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"DR_SWAP Accepted by partner\r\n");
                         /* Kill the Sender Response Timer */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_DRS_DFP_UFP_ROLE_CHANGE, 
@@ -1010,6 +1011,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                                             DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS;
                                 gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
                                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
+                                DEBUG_PRINT_PORT_STR (u8PortNum,"Request rejected by Source\r\n");
                             }
                             else
                             {
@@ -1034,6 +1036,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         
                         if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
                         {                            
+                            DEBUG_PRINT_PORT_STR (u8PortNum,"VCONN_SWAP rejected by partner\r\n");
                             /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_SWAP_REJECT_RCVD_SS;                            
                         }
@@ -1057,6 +1060,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         
                         if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
                         {
+                            DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP rejected by partner\r\n");
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_REJECT_RCVD_SS;                            
                         }
                         else if (PE_CTRL_WAIT == (PRL_GET_MESSAGE_TYPE (u32Header)))
@@ -1079,8 +1083,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         
                         if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
                         {
-                            gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_REJECT_RCVD_SS;
-                                                                            
+                            DEBUG_PRINT_PORT_STR (u8PortNum,"DR_SWAP rejected by partner\r\n");
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_REJECT_RCVD_SS;                                                                            
                         }
                         else if (PE_CTRL_WAIT == (PRL_GET_MESSAGE_TYPE (u32Header)))
                         {
@@ -1268,6 +1272,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (u8PEInVDMState))
                     {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"VCONN_Swap Received\r\n");
+                        
 #if ((TRUE == INCLUDE_PD_SOURCE_PPS) || (TRUE == INCLUDE_PD_VDM))                        
                         /* In case of PPS, Kill SourcePPSCommTimer only in ePE_SRC_READY  
                            state if the current explicit contract is for a PPS APDO 
@@ -1368,6 +1374,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #if (TRUE == INCLUDE_PD_DR_SWAP)
                 case PE_CTRL_DR_SWAP:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"DR_Swap Received\r\n");
+                    
                     /* If there are any Active Modes between the Port Partners when a DR_Swap Message 
                        is a received then a Hard Reset Shall be performed*/
                     if (gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)
@@ -1406,6 +1414,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #if (TRUE == INCLUDE_PD_PR_SWAP)
                 case PE_CTRL_PR_SWAP: 
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PR_Swap Received\r\n");
+                    
                     /*Accept the Power Role swap if current state is READY State or
                     any VDM AMS is active*/
                     if ((ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
@@ -1422,8 +1432,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         {
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }  
-#endif                        
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PR_SWAP Received from Partner\r\n");
+#endif                                                
                         /*Kill the tPRSwapWait timer*/
                         PDTimer_Kill(gasDPM[u8PortNum].u8PRSwapWaitTmrID);
                         /* Set the timer Id to Max Concurrent Value*/
