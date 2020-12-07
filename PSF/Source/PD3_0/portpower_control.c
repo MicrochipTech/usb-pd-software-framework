@@ -34,24 +34,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #include <psf_stdinc.h>
 
-static void UPD_GPIOGenericOutputInit(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8PioMode);
-
-static void UPD_GPIOGenericOutputInit(UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8PioMode)
-{
-    if ((UINT8)eUPD_PIO_UN_DEF != u8PIONum)
-    {
-        /*clear bits 6:4 and 1:0 in the read value to avoid invalid combinations.*/
-        u8PioMode &= (UPD_CFG_PIO_PULL_UP_ENABLE | UPD_CFG_PIO_DATAOUTPUT | UPD_CFG_PIO_BUFFER_TYPE);
-        /*enable GPIO and direction as output*/
-        u8PioMode |= (UPD_CFG_PIO_DIRECTION | UPD_CFG_PIO_GPIO_ENABLE);
-        /*de-assert the pin*/
-        u8PioMode ^= UPD_CFG_PIO_DATAOUTPUT;
-        /*update the value to GPIO register.*/
-        UPD_RegWriteByte(u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), u8PioMode);
-    }
-}
-/***********************************************************************************/
-
 UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
 {  
     /* VBUS_DISCHARGE Init */
@@ -64,7 +46,7 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
     #if (TRUE == INCLUDE_PD_SOURCE)
     if(PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
     {
-        UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, \
+        UPD_InitOutputPIO (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, \
                                         gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS);
 
         /* DC_DC_EN Init */
@@ -76,7 +58,7 @@ UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
     #if (TRUE == INCLUDE_PD_SINK)
     if(PD_ROLE_SOURCE != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Sink or DRP*/
     {
-        UPD_GPIOGenericOutputInit(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK, \
+        UPD_InitOutputPIO (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK, \
                                         gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK);
         /*Initialize all the Sink indicator*/
         MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSNK_CAPS_MISMATCH_FUNC);
@@ -126,7 +108,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Cur
 }
 /************************************************************************************/
 void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
-{ 
+{   
     if (TRUE == u8EnaDisVBUSDIS)
     {
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eVBUS_DIS_FUNC, eGPIO_ASSERT);

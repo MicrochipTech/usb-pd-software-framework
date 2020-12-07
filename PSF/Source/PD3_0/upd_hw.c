@@ -305,23 +305,37 @@ void UPD_InitGPIO (UINT8 u8PortNum)
 	/*Enable GPIO interrupt for UPD350*/
 	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, UPDINTR_PIO_INT);	
     
-    #if (TRUE == INCLUDE_PD_FR_SWAP)
-        /* Initialize FRS Request PIO */
-        UPD_InitInputPIO (u8PortNum, eUPDFRS_REQ_PIO);
-        /* Configure PIO Override for FRS conditions */
-        #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-            UPD_ConfigureFRSPIOOverride (u8PortNum);
-        #endif                    
-    #endif /* endif of  INCLUDE_PD_FR_SWAP*/
+#if (TRUE == INCLUDE_PD_FR_SWAP)    
+    /* Initialize EN_FRS PIO based on the configured Power/Data state */
+    if (PD_ROLE_SOURCE_UFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
+    {
+        UPD_InitInputPIO (u8PortNum, eUPDPIO_EN_FRS);
+    }
+    else if (PD_ROLE_SINK_DFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
+    {
+        UPD_InitOutputPIO (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS, \
+                                        gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS);        
+    }
+    else
+    {
+        /* FRS is disabled */
+    }        
+    
+    /* Configure PIO Override for FRS conditions */
+    #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+        UPD_ConfigureFRSPIOOverride (u8PortNum);
+    #endif                    
+#endif /* endif of INCLUDE_PD_FR_SWAP */
             
-    #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-        /* Configure Fault Pin */
-        UPD_InitInputPIO (u8PortNum, eUPDFAULT_IN_PIO);
-        /* Configure PIO override for Fault conditions */
-        #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)		
-            (void)UPD_ConfigPwrFaultPIOOverride (u8PortNum);
-        #endif 		
-    #endif /* endif of INCLUDE_POWER_FAULT_HANDLING */    
+#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+    /* Configure Fault In Pin */
+    UPD_InitInputPIO (u8PortNum, eUPDPIO_FAULT_IN);
+    
+    /* Configure PIO override for Fault conditions */
+    #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)		
+        (void)UPD_ConfigPwrFaultPIOOverride (u8PortNum);
+    #endif 		
+#endif /* endif of INCLUDE_POWER_FAULT_HANDLING */    
 }
 
 /******************************************************************************************************/
@@ -366,31 +380,49 @@ void UPD_PIOHandleISR(UINT8 u8PortNum)
 	
 #if (TRUE == INCLUDE_PD_FR_SWAP)
     
-    UINT8 u8Pio_FRSRequest = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FRSRequest;
+    UINT8 u8Pio_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS;
     
-    if ((BIT(u8Pio_FRSRequest)) & u16PIOIntrSts)
+    if ((BIT(u8Pio_EN_FRS)) & u16PIOIntrSts)
     {
         UINT16 u16PIORegVal;
         
         /* Clear the FRS interrupt Configuration*/
-        UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_FRSRequest),\
+        UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
 									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
         
         u16PIORegVal &= ~(UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
         
-		UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_FRSRequest),\
+		UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
 									(UINT8 *)&u16PIORegVal, BYTE_LEN_1); 
         
         /*When PIO override is disabled, disable EN_VBUS */         
         #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
             UPD_DisablePIOOutputISR (u8PortNum);            
-        #endif         
+        #endif                            
     }
     
 #endif /* INCLUDE_PD_FR_SWAP */    
     
 	/* clear the interrupt status */
 	UPD_RegisterWriteISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntrSts, BYTE_LEN_2);
+}
+
+/*******************************************************************************************/
+/***********************UPD Output PIO Configuration API ***********************************/
+/*******************************************************************************************/
+void UPD_InitOutputPIO (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PIOMode)
+{
+    if ((UINT8)eUPD_PIO_UN_DEF != u8PIONum)
+    {
+        /*clear bits 6:4 and 1:0 in the read value to avoid invalid combinations.*/
+        u8PIOMode &= (UPD_CFG_PIO_PULL_UP_ENABLE | UPD_CFG_PIO_DATAOUTPUT | UPD_CFG_PIO_BUFFER_TYPE);
+        /*enable GPIO and direction as output*/
+        u8PIOMode |= (UPD_CFG_PIO_DIRECTION | UPD_CFG_PIO_GPIO_ENABLE);
+        /*de-assert the pin*/
+        u8PIOMode ^= UPD_CFG_PIO_DATAOUTPUT;
+        /*update the value to GPIO register.*/
+        UPD_RegWriteByte (u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), u8PIOMode);
+    }
 }
 
 /*******************************************************************************************/
@@ -404,16 +436,16 @@ void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
 	UINT8 u8PIONum = SET_TO_ZERO;	
     UINT8 u8PIOMode = SET_TO_ZERO;
  
-    if (eUPDFAULT_IN_PIO == eUPDInputPio)
+    if (eUPDPIO_FAULT_IN == eUPDInputPio)
     {
         u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
         u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
     }
 #if (TRUE == INCLUDE_PD_FR_SWAP)
-    else if (eUPDFRS_REQ_PIO == eUPDInputPio)
+    else if (eUPDPIO_EN_FRS == eUPDInputPio)
     {
-        u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FRSRequest;
-        u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FRSRequest;        
+        u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS;
+        u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;        
     }
 #endif     
     else
@@ -440,7 +472,7 @@ void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
     /* Write the value to the PIO config register.*/
     UPD_RegWriteByte(u8PortNum, UPD_CFG_PIO_REGADDR(u8PIONum), u8PIOMode);
     
-    if (eUPDFAULT_IN_PIO == eUPDInputPio)
+    if (eUPDPIO_FAULT_IN == eUPDInputPio)
     {
         /*Write Debounce count*/
         UPD_ConfigurePIODebounceCount(u8PortNum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS, gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms);
@@ -449,7 +481,7 @@ void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
         UPD_GPIOSetDebounce (u8PortNum, u8PIONum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS);
     }
 #if (TRUE == INCLUDE_PD_FR_SWAP)    
-    else if (eUPDFRS_REQ_PIO == eUPDInputPio)
+    else if (eUPDPIO_EN_FRS == eUPDInputPio)
     {
         /* In order to minimize response time the PIO selected by 
         FRS Request PIO Select should have debouncing disabled */
@@ -475,16 +507,16 @@ void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
 	UINT8 u8PIONum = SET_TO_ZERO;	
     UINT8 u8PIOMode = SET_TO_ZERO;
  
-    if (eUPDFAULT_IN_PIO == eUPDInputPio)
+    if (eUPDPIO_FAULT_IN == eUPDInputPio)
     {
         u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
         u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FAULT_IN;
     }
 #if (TRUE == INCLUDE_PD_FR_SWAP)    
-    else if (eUPDFRS_REQ_PIO == eUPDInputPio)
+    else if (eUPDPIO_EN_FRS == eUPDInputPio)
     {
-        u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FRSRequest;
-        u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FRSRequest;        
+        u8PIONum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS;
+        u8PIOMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;        
     }
 #endif 
     else
@@ -579,54 +611,82 @@ void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum)
 void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
 {
 	/* Override 2:0 - used for Power Fault conditions 
-       Override 3 - FRS Request PIO assertion 
-  	   Override 4 - FRS Signal Detected */  
+       Override 3 - EN_FRS PIO assertion in case of Source UFP;
+                    FRS Signal Detected and VBUS falling below 
+                    vSafe5V (upper threshold) in case of Sink DFP */ 
+    
+    /* Get the PIO positions of EN_VBUS, EN_SINK and EN_FRS PIOs */
     UINT16 u16EnVBUSPIOPos = BIT(gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS);    
-    UINT16 u16EnSinkPIOPos = BIT(gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK);    
+    UINT16 u16EnSinkPIOPos = BIT(gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK);  
+    UINT16 u16EnFRSPIOPos = BIT(gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS);
     
-    /* Get the polarity of FRS Request PIO */
-    UINT8 u8FRSReqPol = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FRSRequest;
-    
-    /* Set Override Monitor value for Override 3 based on the polarity of u8Pio_FRSRequest */
-    if (((UINT8)eINPUT_ACTIVE_LOW == u8FRSReqPol) || ((UINT8)eINPUT_ACTIVE_LOW_PU == u8FRSReqPol))
+    /* Get the polarity of EN_FRS PIO */
+    UINT8 u8Mode_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;
+
+    /* PIO Override Configuration for Source UFP type of Port */
+    if (PD_ROLE_SOURCE_UFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
     {
+        /* Set Override Monitor value for Override 3 based on the polarity of u8Pio_EN_FRS */
+        if (((UINT8)eINPUT_ACTIVE_LOW == u8Mode_EN_FRS) || ((UINT8)eINPUT_ACTIVE_LOW_PU == u8Mode_EN_FRS))
+        {
+            UPD_RegByteClearBit (u8PortNum, UPD_PIO_MON_VAL, (UINT8)UPD_PIO_OVR_3);
+        }
+        else if (((UINT8)eINPUT_ACTIVE_HIGH == u8Mode_EN_FRS) || ((UINT8)eINPUT_ACTIVE_HIGH_PD == u8Mode_EN_FRS))
+        {
+            UPD_RegByteSetBit (u8PortNum, UPD_PIO_MON_VAL, (UINT8)UPD_PIO_OVR_3);
+        }
+        else 
+        {
+            /* Do Nothing */
+        }       
+        /* Configure the Source for override 3 as FRS_Request pin */
+        UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS);        
+        
+        /* Set PIO Override output as low */
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO); 
+    
+        /* Configure EN_VBUS as override pin in output mode */
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, u16EnVBUSPIOPos);         
+        
+        /* Override 3 Output Enable */
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR3_OUT_EN, u16EnVBUSPIOPos);        
+        
+        /* Enable PIO Override for Override 3 */
+        UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3); 
+    }
+    /* PIO Override Configuration for Sink DFP type of Port */
+    else if (PD_ROLE_SINK_DFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
+    {
+        /* UPD DOS Reference: 
+           PIO override source select must be set to 0x12 in PIO Overridex Source 
+           Select Register. The respective PIO_OVR_MON must be set to 0x0, in PIO 
+           Overridex Monitor Value Register to trip on VBUS falling below 
+           vSAFE5v (upper) per VBUS Threshold Select */
+        
         UPD_RegByteClearBit (u8PortNum, UPD_PIO_MON_VAL, (UINT8)UPD_PIO_OVR_3);
+        
+        UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, \
+                (UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET | UPD_PIO_OVR_VBUS4_THR_MATCH));
+        
+        /* Set PIO Override output as low */
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO); 
+        
+        /* Configure EN_FRS and EN_SINK as override pins in output mode
+           De-asserting EN_SINK will stop the sink circuitry from sinking power
+           De-asserting EN_FRS will turn on the internal MOSFET of Load switch, so
+           that 5V will be driven in VBUS */
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, (u16EnFRSPIOPos | u16EnSinkPIOPos));        
+        
+        /* Override 3 Output Enable */
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR3_OUT_EN, (u16EnFRSPIOPos | u16EnSinkPIOPos));
+        
+        /* Enable PIO Override for Override 3 and 4 */
+        UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_4);            
     }
-    else if (((UINT8)eINPUT_ACTIVE_HIGH == u8FRSReqPol) || ((UINT8)eINPUT_ACTIVE_HIGH_PD == u8FRSReqPol))
+    else
     {
-        UPD_RegByteSetBit (u8PortNum, UPD_PIO_MON_VAL, (UINT8)UPD_PIO_OVR_3);
+        /* FRS is disabled for the port */
     }
-    else 
-    {
-        /* Do Nothing */
-    }
-    
-    /* Configure the Source for override 3 as FRS_Request pin */
-    UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FRSRequest);
-    
-    /* Set Override Monitor value for Override 4. 
-       UPD DOS Reference: For typical FRS operation it should be programmed
-       to 0b to track VBUS falling below vSafe5V */
-    UPD_RegByteClearBit (u8PortNum, UPD_PIO_MON_VAL, (UINT8)UPD_PIO_OVR_4);
-    
-    /* Configure the Source for Override 4 as FRS Signal Detected */
-    UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR4_SRC_SEL, \
-      (UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET | UPD_PIO_OVR_VBUS4_THR_MATCH));    
-    
-    /* Set PIO Override output as low */
-    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO); 
-    
-    /* EN_VBUS and EN_SINK are configured as override pins in output mode */
-    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, (u16EnVBUSPIOPos | u16EnSinkPIOPos));    
-    
-    /* Override 3 Output Enable */
-    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR3_OUT_EN, u16EnVBUSPIOPos);
-
-    /* Override 4 Output Enable */
-    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR4_OUT_EN, u16EnSinkPIOPos);
-
-    /* Enable PIO Override for Override 3 and 4 */
-    UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UPD_PIO_OVR_3 | UPD_PIO_OVR_4));    
 }
 
 #endif

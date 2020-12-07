@@ -555,26 +555,6 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             }
             break;
         }
-        case eFRS_ARM_FUNC:
-        {
-            if (PORT0 == u8PortNum)
-            {
-                FRS_ARM_0_Clear();
-                FRS_ARM_0_OutputEnable();  
-            }
-            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)   
-            else if (PORT1 == u8PortNum)
-            {
-                FRS_ARM_1_Clear();
-                FRS_ARM_1_OutputEnable(); 
-            }
-            #endif
-            else
-            {
-                /*Do nothing*/
-            }
-            break;
-        }
         default:
         {
             break; 
@@ -875,39 +855,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 /*Do nothing*/
             }
             break;
-        }
-        case eFRS_ARM_FUNC:
-        {
-            if (PORT0 == u8PortNum)
-            {
-                if (eGPIO_ASSERT == eGPIODrive)
-                {
-                    FRS_ARM_0_Set();
-                }
-                else
-                {
-                    FRS_ARM_0_Clear();
-                }
-            }
-            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
-            else if (PORT1 == u8PortNum)
-            {
-                if (eGPIO_ASSERT == eGPIODrive)
-                {
-                    FRS_ARM_1_Set();
-                }
-                else
-                {
-                    FRS_ARM_1_Clear();
-                }            
-            }
-            #endif
-            else
-            {
-                /*Do nothing*/
-            }
-            break;
-        }            
+        }           
         default:
         {
             break; 

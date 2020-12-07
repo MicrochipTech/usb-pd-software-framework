@@ -77,21 +77,24 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CFG_DATA_ROLE_MASK              (BIT(2))
 #define DPM_CFG_RPVAL_MASK                  (BIT(4) | BIT(3))
 #define DPM_CFG_PORT_ENDIS_MASK             (BIT(5))
+#define DPM_CFG_FRS_POWER_DATA_STATE_MASK   (BIT(11) | BIT(12))
 
-/*Bit Pos for gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData */
+/*Bit Position for gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData */
 #define DPM_CFG_POWER_ROLE_POS                  0
 #define DPM_CFG_DUAL_ROLE_DATA_POS              2
 #define DPM_CFG_RPVAL_POS                       3
 #define DPM_CFG_PORT_ENDIS_POS                  5
 #define DPM_CFG_VCONN_OCS_EN_POS                9
 #define DPM_CFG_NEGOTIATE_USING_NEW_PDOS_POS    10
+#define DPM_CFG_FRS_POWER_DATA_STATE_POS        11 
+
 /*Enable defines for gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData */
 #define DPM_CFG_PORT_ENABLE                     (1 << DPM_CFG_PORT_ENDIS_POS)
 #define DPM_CFG_VCONN_OCS_ENABLE                (1 << DPM_CFG_VCONN_OCS_EN_POS)
-#define DPM_CFG_NEGOTIATE_USING_NEW_PDOS    (1 << DPM_CFG_NEGOTIATE_USING_NEW_PDOS_POS)
+#define DPM_CFG_NEGOTIATE_USING_NEW_PDOS        (1 << DPM_CFG_NEGOTIATE_USING_NEW_PDOS_POS)
 
-/*Defines for getting default values configured to a port from 
- gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable*/
+/**********Defines for getting default values configured to a port from 
+        gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable***********/
 /*DPM_GET_CONFIGURED_POWER_ROLE(u8PortNum) will return one of the following values
 	- PD_ROLE_SINK
 	- PD_ROLE_SOURCE
@@ -132,6 +135,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Define to set whether new PDOs should be used for negotiation*/
 #define DPM_SET_CONFIGURED_NEW_PDO_STATUS(u8PortNum)\
 (gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS)
+
+/*Define to get default FRS power/data state */
+/*DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum) will return one of the following values
+	- PD_ROLE_SINK_DFP        
+	- PD_ROLE_SOURCE_UFP */
+#define DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum)  \
+    ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & DPM_CFG_FRS_POWER_DATA_STATE_MASK) \
+                                >> DPM_CFG_FRS_POWER_DATA_STATE_POS)
 /*************************************************************************************************/
 
 /**************************************************************************************************/
@@ -203,6 +214,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define DPM_DISABLE_FRS_REQ_PIO(u8PortNum) \
  UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO)
+
+#define DPM_ENABLE_FRS_DET_EN(u8PortNum) \
+ UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN)    
+
+#define DPM_DISABLE_FRS_DET_EN(u8PortNum) \
+ UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN)    
 /**************************************************************************************************/
 
 /*******************************************************************************/
@@ -264,7 +281,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(9)
 #define DPM_PORT_IO_POWER_ROLE_STATUS                BIT(10)
 #define DPM_PORT_IO_DATA_ROLE_STATUS                 BIT(11)
-#define DPM_PORT_IO_FRS_ARM_STATUS                   BIT(12)
+#define DPM_PORT_IO_EN_FRS_STATUS                    BIT(12)
 
 /***************************u16SwapPolicy values*****************************/
 #define DPM_AUTO_REQ_DR_SWAP_AS_DFP                  BIT(0)
@@ -687,6 +704,10 @@ Source/Sink Power delivery objects*/
 #define DPM_INT_EVT_PORT_ENABLE             		BIT(9)
 #define DPM_INT_EVT_INITIATE_FR_SWAP                BIT(10)
 
+/******************** Port Power/Data State used for initiating FRS ******************/
+#define PD_ROLE_SINK_DFP        1 
+#define PD_ROLE_SOURCE_UFP      2 
+
 /**********************************************************************************/                                   
 // *****************************************************************************
 // *****************************************************************************
@@ -715,6 +736,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bits 14:13 - DR Swap Initiate Status 
                                         // Bit 15 - VDM Response (ACK/NAK)
                                         // Bit 16 - AME Timer Done Status 
+                                        // Bit 17 - VCONN Source Responsibility Status
+                                        // Bit 18 - FRS Criteria Supported Status 
+                                        // Bit 19 - FRS Signal Transmitted Status
   UINT16 u16DPMInternalEvents;      //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
                                     //DPM_INT_EVT_INITIATE_RENEGOTIATION  BIT(1)
                                     //DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
@@ -725,7 +749,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                     //DPM_INT_EVT_INITIATE_GET_STATUS     BIT(7)
                                     //DPM_INT_EVT_PORT_DISABLE            BIT(8)
                                     //DPM_INT_EVT_PORT_ENABLE             BIT(9)
-
+                                    //DPM_INT_EVT_INITIATE_FR_SWAP        BIT(10)
   UINT8 u8DPMConfigData;    //Bit  1:0 - Default Port Power Role
                             //Bit  3:2 - Default Port Data Role
                             //Bits 5:4 - Default PD Spec Revision
@@ -1738,7 +1762,7 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_EvaluateFRSCriteria(UINT8 u8PortNum); 
+        void DPM_EvaluateFRSCriteria (UINT8 u8PortNum); 
     Summary:
         API to evaluate the criteria required to support FR_Swap.
     Description:
@@ -1747,6 +1771,9 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum);
         1. The FRS current advertised by both partners are non-zero
         2. The FRS current advertised by initial sink is greater than or equal to
            that advertised by initial source.
+        3. Power, Data and VCONN roles of the port is in one of the following states
+           - Source/UFP/Not VCONN Source
+           - Sink/DFP/VCONN Source 
         If all the above criteria are met, this API sets DPM_FRS_CRITERIA_SUPPORTED bit
         in gasDPM[u8PortNum].u32DPMStatus.
 
@@ -1759,20 +1786,18 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_EvaluateFRSCriteria(UINT8 u8PortNum);
+void DPM_EvaluateFRSCriteria (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_GearUpForFRSwap(UINT8 u8PortNum); 
+        void DPM_GearUpForFRSwap (UINT8 u8PortNum); 
     Summary:
-        API to do necessary steps to support FR_Swap.
+        API to enable UPD350 to handle FR_Swap.
     Description:
         If the criteria to support FR_Swap are met by both partners, this API 
-        registers internal event to initiate VCONN swap such that the current 
-        sink partner sources VCONN and also enables UPD350 to support FR_Swap. 
+        enables UPD350 to support FR_Swap. 
         If FR_Swap is not supported by both partners, this API disables UPD350
-        from supporting FR_Swap and also registers internal event to initiate 
-        VCONN swap based on the policy bits defined by user configuration.
+        from supporting FR_Swap.
     Conditions:
         This API is applicable only when both INCLUDE_PD_FR_SWAP is enabled.
     Input:
@@ -1782,7 +1807,7 @@ void DPM_EvaluateFRSCriteria(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_GearUpForFRSwap(UINT8 u8PortNum);
+void DPM_GearUpForFRSwap (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

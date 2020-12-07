@@ -397,32 +397,35 @@ void TypeC_InitPort (UINT8 u8PortNum)
     /*Setting CC Comparator ON*/
     TypeC_ConfigCCComp (u8PortNum,TYPEC_CC_COMP_CTL_CC1_CC2);
     
+#if (TRUE == INCLUDE_PD_FR_SWAP)  
+    /* Enable transmission/detection of FRS signal based on the configured 
+       Power/Data state of the port */
+    if (PD_ROLE_SOURCE_UFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
+    {        
+        TypeC_EnableFRSSignalTransmission (u8PortNum);
+    }
+    else if (PD_ROLE_SINK_DFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
+    {
+        TypeC_EnableFRSSignalDetection (u8PortNum);    
+    }
+    else
+    {
+        /* FRS is disabled */
+    } 
+#endif 
+    
     /*Setting the Power Module as per the port role*/
     if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
-        #if (TRUE == INCLUDE_PD_FR_SWAP)        
-        if (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
-        {
-            /* Enable transmission of FRS signal */
-            TypeC_EnableFRSSignalTransmission (u8PortNum);
-        }        
-        #endif 
         /*Setting the VBUS to vSafe0V before entering the State machine*/
         DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
     }
     else
     {
-#if (TRUE == INCLUDE_PD_SINK)
-        #if (TRUE == INCLUDE_PD_FR_SWAP)        
-        if (DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]))
-        {
-            /* Enable detection of FRS signal */
-            TypeC_EnableFRSSignalDetection (u8PortNum);
-        }
-        #endif 
+        #if (TRUE == INCLUDE_PD_SINK)
         /*Disable the Sink circuitry to stop sinking the power from source*/
         PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
-#endif
+        #endif
     }
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: TypeC Port initialization completed\r\n");             
 }
@@ -1313,6 +1316,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Check for VBUS Presence before moving to Attached SNK state */
                     if(TYPEC_VBUS_5V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {
+                        /* If VSink_Disconnect interrupt had occurred, VBUS_DIS would have been 
+                           turned on TypeC_HandleISR(). Since this interrupt will not be handled
+                           during a Role Swap, turning off the VBUS Discharge here*/
+                        PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
+                        
                         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS\r\n");                    
                         
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_ENTRY_SS;
@@ -1995,8 +2003,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                       (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))) 
 	            {
 	                /*Setting the flag that VBUS has gone below VSinkDisconnect*/
-	                u8IntStsISR |= TYPEC_VSINKDISCONNECT_STATUS_MASK;
-                    
+	                u8IntStsISR |= TYPEC_VSINKDISCONNECT_STATUS_MASK;                    
 	            }		
             }
         }
@@ -3745,11 +3752,7 @@ void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
     
     /* Program the CC Comparator Control in CC Control 1 Register to enable detection on the
        connected CC pin.*/     
-    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
-    
-    /* Set FRS_DET_EN bit in FRS_CTL register */
-    /* To-do: commented for now; set it in a suitable place */
-   // UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
+    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);       
     
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Detection Enabled\r\n");             
 }
@@ -3757,7 +3760,7 @@ void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
 void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
 {
     /* Get the polarity of FRS Request PIO */
-    UINT8 u8FRSReqPol = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_FRSRequest;
+    UINT8 u8EN_FRSPol = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;
 
     /* Ensure at minimum that cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
        pio_clk_gate_en, and i2c_clk_gate_en (or spi_clk_gate_en) are cleared in Clock Gate Register */    
@@ -3787,15 +3790,15 @@ void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
     
     /* PIO which is used to transmit FRS signal is indicated by programming FRS Request PIO Select Register*/
     UPD_RegWriteByte (u8PortNum, TYPEC_FRS_PIO_SEL, \
-            (gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FRSRequest << TYPEC_FRS_REQ_PIO_SEL_POS));
+            (gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS << TYPEC_FRS_REQ_PIO_SEL_POS));
         
     /* Set PIO value that initiates transmission of FRS signaling
-       based on the polarity of u8Pio_FRSRequest */
-    if (((UINT8)eINPUT_ACTIVE_LOW == u8FRSReqPol) || ((UINT8)eINPUT_ACTIVE_LOW_PU == u8FRSReqPol))
+       based on the polarity of u8Pio_EN_FRS */
+    if (((UINT8)eINPUT_ACTIVE_LOW == u8EN_FRSPol) || ((UINT8)eINPUT_ACTIVE_LOW_PU == u8EN_FRSPol))
     {
         UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_VAL);
     }
-    else if (((UINT8)eINPUT_ACTIVE_HIGH == u8FRSReqPol) || ((UINT8)eINPUT_ACTIVE_HIGH_PD == u8FRSReqPol))
+    else if (((UINT8)eINPUT_ACTIVE_HIGH == u8EN_FRSPol) || ((UINT8)eINPUT_ACTIVE_HIGH_PD == u8EN_FRSPol))
     {
         UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_VAL);
     }

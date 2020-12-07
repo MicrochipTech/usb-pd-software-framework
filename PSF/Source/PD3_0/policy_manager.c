@@ -1352,10 +1352,14 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum)
 #if ((TRUE == INCLUDE_PD_VCONN_SWAP) || (TRUE == INCLUDE_PD_DR_SWAP) || (TRUE == INCLUDE_PD_PR_SWAP))
     UINT32 u32DPMStatus = gasDPM[u8PortNum].u32DPMStatus;    
 #endif
-
+#if (TRUE == INCLUDE_PD_FR_SWAP)    
+    UINT8 u8CfgFRSPwrDataSt = DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum);
+#endif
+    
 	UINT8 u8DefaultPwrRole = DPM_GET_DEFAULT_POWER_ROLE(u8PortNum);  
     UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
 
+            /**************** GET_SINK_CAP Initiation **************/
     /* Initiate Get Sink Caps if the PartnerSinkPDO array is null. If it is not 
        null, it means that Get Sink Caps has been already initiated. In case of 
        PB enabled, Get Sink caps is initiated by PB layer 
@@ -1371,14 +1375,10 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum)
         {
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
         }   
-    }     
-    
-    /*Evaluate swap and register internal event*/
-#if(FALSE == INCLUDE_PD_FR_SWAP)
-    /*If INCLUDE_PD_FR_SWAP macro is enabled, VCONN swap will be handled by stack  
-      in DPM_GearUpForFRSwap() API, irrespective of user configured swap policy bits.*/
+    }         
+            /*************** VCONN_SWAP Initiation ***********/
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-    /*Initiate VCONN Swap only if the swap is not already initiated and rejected*/
+    /*Initiate VCONN_Swap only if the swap is not already initiated and rejected*/        
     if (!(((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
                             (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC)) ||
                ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
@@ -1388,10 +1388,11 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum)
         {
             DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
         }
-    }
-#endif /* INCLUDE_PD_VCONN_SWAP */
-#endif /* INCLUDE_PD_FR_SWAP */
+    }        
     
+#endif /* INCLUDE_PD_VCONN_SWAP */
+    
+            /*************** DR_SWAP Initiation *************/
 #if (TRUE == INCLUDE_PD_DR_SWAP)
     /*Initiate DR Swap only if the swap is not already initiated and rejected*/
     if (!(((PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) && \
@@ -1406,6 +1407,7 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum)
     }
 #endif /*INCLUDE_PD_DR_SWAP*/
     
+            /*************** PR_SWAP Initiation *************/
 #if (TRUE == INCLUDE_PD_PR_SWAP)
     if (!(((PD_ROLE_SOURCE == u8CurrentPwrRole) && \
                             (u32DPMStatus & DPM_PR_SWAP_INIT_STS_AS_SRC)) ||\
@@ -1419,31 +1421,36 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum)
     }
 #endif /*INCLUDE_PD_PR_SWAP*/
 
+            /*************** FR_SWAP Evaluation *************/
 #if(TRUE == INCLUDE_PD_FR_SWAP)
+    /* Wait until all internal events raised by PSF is complete */
     if(SET_TO_ZERO == gasDPM[u8PortNum].u16DPMInternalEvents)    
-    {
-        /*This check is done to wait until all internal events raised by PSF is complete*/
+    {        
+        if ((PD_ROLE_SOURCE_UFP == u8CfgFRSPwrDataSt) || (PD_ROLE_SINK_DFP == u8CfgFRSPwrDataSt))
+        {            
+            DPM_EvaluateFRSCriteria (u8PortNum);
         
-        DPM_EvaluateFRSCriteria(u8PortNum);
-        
-        DPM_GearUpForFRSwap(u8PortNum);
+            DPM_GearUpForFRSwap (u8PortNum);
+        }
     }
-#endif
+#endif /*INCLUDE_PD_FR_SWAP*/
 
 }
 
 /********************DPM API to handle VCONN_Swap if FRS is supported************************/
 #if(TRUE == INCLUDE_PD_FR_SWAP)
 
-void DPM_EvaluateFRSCriteria(UINT8 u8PortNum)
+void DPM_EvaluateFRSCriteria (UINT8 u8PortNum)
 {
-    UINT8 u8ConfiguredFRSCurrent, u8PartnerFRSCurrent, u8CurrentPwrRole;
-    UINT8 u8IsFRSSupported = TRUE;
-
+    UINT8 u8CurrPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    UINT8 u8CurrDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
+    UINT8 u8ConfiguredFRSCurrent, u8PartnerFRSCurrent;
+    UINT8 u8IsFRSSupported = TRUE;        
+    
     u8PartnerFRSCurrent = DPM_GET_PDO_FRS_CURRENT( \
         gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0]);
 
-    if(DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
+    if (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
     {
         u8ConfiguredFRSCurrent = DPM_GET_PDO_FRS_CURRENT( \
         gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO[INDEX_0]);
@@ -1453,15 +1460,34 @@ void DPM_EvaluateFRSCriteria(UINT8 u8PortNum)
         u8ConfiguredFRSCurrent = DPM_GET_PDO_FRS_CURRENT( \
         gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]);               
     }
-
-    u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     
-    if((!u8ConfiguredFRSCurrent) || (!u8PartnerFRSCurrent))
+    /* FRS is possible only if the Power/Data/VCONN role of the port is 
+       Source/UFP/Not VCONN Source (or) Sink/DFP/VCONN Source */
+    if (PD_ROLE_SOURCE_UFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
+    {
+        if (!((PD_ROLE_SOURCE == u8CurrPwrRole) && \
+                    (PD_ROLE_UFP == u8CurrDataRole) && \
+                        (FALSE == DPM_IsPortVCONNSource(u8PortNum))))
+        {
+            u8IsFRSSupported = FALSE;
+        }
+    }
+    else /* PD_ROLE_SINK_DFP */ 
+    {
+        if (!((PD_ROLE_SINK == u8CurrPwrRole) && \
+                    (PD_ROLE_DFP == u8CurrDataRole) && \
+                        (DPM_IsPortVCONNSource(u8PortNum))))
+        {
+            u8IsFRSSupported = FALSE;
+        }        
+    }
+    
+    if ((!u8ConfiguredFRSCurrent) || (!u8PartnerFRSCurrent))
     {
         u8IsFRSSupported = FALSE;
     }
     
-    if(PD_ROLE_SINK == u8CurrentPwrRole)
+    if (PD_ROLE_SINK == u8CurrPwrRole)
     {
         /*If PSF acts as initial sink, u8ConfiguredFRSCurrent needs to be 
           greater than or equal to u8PartnerFRSCurrent*/
@@ -1480,82 +1506,49 @@ void DPM_EvaluateFRSCriteria(UINT8 u8PortNum)
         }
     }
     
-    if(TRUE == u8IsFRSSupported)
+    if (u8IsFRSSupported)
     {
-        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_FRS_CRITERIA_SUPPORTED\r\n");
         gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_CRITERIA_SUPPORTED;
+        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_FRS_CRITERIA_SUPPORTED\r\n");        
     }
     else
     {
-        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_FRS_CRITERIA_NOT_SUPPORTED\r\n");
         gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_CRITERIA_SUPPORTED);
+        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_FRS_CRITERIA_NOT_SUPPORTED\r\n");        
     }
 }
 
-void DPM_GearUpForFRSwap(UINT8 u8PortNum)
-{
-    UINT32 u32DPMStatus = gasDPM[u8PortNum].u32DPMStatus;    
-    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
-    
-    if(u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
-    {
-        /*Drive FRS arm IO pin and status io bit high*/
-        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_ASSERT);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_FRS_ARM_STATUS);
-        
-
-#if(TRUE == INCLUDE_PD_VCONN_SWAP)        
-		/*Initiate VCONN_Swap irrespective of user configured swap policy, 
-		  such that the sink partner sources VCONN */
-        if((PD_ROLE_SINK == u8CurrentPwrRole) && (!((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
-            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC))))
+void DPM_GearUpForFRSwap (UINT8 u8PortNum)
+{        
+    if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
+    {    
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
-        }
-        else if((PD_ROLE_SOURCE == u8CurrentPwrRole) && (!((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
-            (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC))))
-        {                           
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
-        }
-        else
+            /* Enable FRS Req PIO to enable FRS signal transmission */                
+            DPM_ENABLE_FRS_REQ_PIO(u8PortNum);
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Enabled\r\n");                            
+        }        
+        else /* PD_ROLE_SINK */
         {
-            /*Do nothing*/
-        }
-#endif        
-        /* This check is to wait for VCONN swap if initiated by the above block of code to complete*/
-        if(SET_TO_ZERO == gasDPM[u8PortNum].u16DPMInternalEvents)
-        {
-            if (PD_ROLE_SOURCE == u8CurrentPwrRole)
-            {
-                /* Enable FRS Req PIO to enable FRS signal transmission */                
-                DPM_ENABLE_FRS_REQ_PIO(u8PortNum);
-                DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Enabled\r\n");                            
-            }
+            /* Enable FRS Signal Detection */
+            DPM_ENABLE_FRS_DET_EN(u8PortNum);
+            
+            /* Assert the EN_FRS pin to enable the FRS control circuitry
+               of the Load Switch */
+            UPD_GPIOUpdateOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS, \
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS, (UINT8)UPD_GPIO_ASSERT);
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_EN_FRS_STATUS);
+ 
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Enabled\r\n"); 
         }
     }
-    else
-    {        
-        if (PD_ROLE_SOURCE == u8CurrentPwrRole)
-        {        
-            /* Disable FRS signal transmission since FRS criteria is not supported */
-            DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");                            
-        }
-        
-#if(TRUE == INCLUDE_PD_VCONN_SWAP)        
-        /*Initiate VCONN Swap based on user configured swap policy and only if the swap is 
-		  not already initiated and rejected*/
-        if (!(((TRUE == DPM_IsPortVCONNSource(u8PortNum)) && 
-                                (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC)) ||
-                   ((FALSE == DPM_IsPortVCONNSource(u8PortNum)) && 
-                                (u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC))))
-        {
-            if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE))
-            {
-                DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
-            }
-        }
-#endif        
+    else  /* FRS Criteria Not Supported for the port */
+    {               
+        /* Disable FRS signal transmission and detection */
+        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);        
+        DPM_DISABLE_FRS_DET_EN(u8PortNum);  
+        DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO and FRS_DET_EN Disabled\r\n");
+        /* To-do: How to disable FRS detection circuitry of load switch ? */        
     }
 }
 #endif
@@ -1755,14 +1748,6 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
                 u8RetVal = DPM_REQUEST_SWAP;
                 
             }
-#if(TRUE == INCLUDE_PD_FR_SWAP)            
-            else if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
-            {
-                /*Since all FRS conditions are satisfied, PSF stack has initiated VCONN_Swap. 
-                  It has to be accepted*/                
-                u8RetVal = DPM_REQUEST_SWAP;
-            }
-#endif
             else
             {                
                 u8RetVal = DPM_IGNORE_INITIATE_SWAP;

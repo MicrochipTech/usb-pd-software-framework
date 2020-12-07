@@ -96,25 +96,33 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /***********************************Port Specific configuration***********************/    
 /*Configuration value for u32CfgData*/
-/*Power Role values 0 - Sink, 1 - Source, 2 - DRP*/
+/*Power Role values: 0 - Sink, 1 - Source, 2 - DRP*/
 #define CFG_PORT_0_POWER_ROLE                2
 #define CFG_PORT_1_POWER_ROLE                2
 
-/*Data Role supported values 0-Dual Role Data Not supported, 1- Dual Role Date Supported */
+/*Data Role supported values: 0 - Dual Role Data Not supported, 1 - Dual Role Date Supported */
 #define CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT    (1U << 2)
 #define CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT    (1U << 2)
 
-/*Rp Value - 0 -Rd(Sink), 1-Default USB Rp, 2- 1.5A Rp, 3-3.0A Rp */
+/*Rp Value: 0 - Rd(Sink), 1 - Default USB Rp, 2 - 1.5A Rp, 3 - 3.0A Rp */
 #define CFG_PORT_0_RP_CURRENT_VALUE          (3U << 3)
 #define CFG_PORT_1_RP_CURRENT_VALUE          (3U << 3)
 
-/*Port Enable - 0- Port Disable; 1- Port Enable*/
+/*Port Enable: 0 - Port Disable; 1 - Port Enable*/
 #define CFG_PORT_0_ENABLE       (1U << 5)
 #define CFG_PORT_1_ENABLE       (1U << 5)
 
-/*VCONN OCS Enable - 0-Disable, 1-Enable*/
+/*VCONN OCS Enable: 0 - Disable, 1 - Enable*/
 #define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
 #define CFG_PORT_1_VCONN_OCS_ENABLE     (1U << 9)  
+
+/* Power/Data state for initiating FRS: 
+ * 0 - Disabled; 
+ * 1 - Power Sink/Data Host; 
+ * 2 - Power Source/Data Device; 
+ * 3 - Reserved  */
+#define CFG_PORT_0_FRS_POWER_DATA_STATE  (0U << 11) /* To-do: Set this to 1 */
+#define CFG_PORT_1_FRS_POWER_DATA_STATE  (0U << 11) /* To-do: Set this to 2 */
 
 /********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
@@ -140,10 +148,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_HPD_IO                    eUPD_PIO9
 #define CFG_PORT_1_HPD_IO                    eUPD_PIO9
 
-#define CFG_PORT_0_UPD_FRS_REQ_PIO_NO        eUPD_PIO2
-#define CFG_PORT_1_UPD_FRS_REQ_PIO_NO        eUPD_PIO2
-#define CFG_PORT_0_UPD_FRS_REQ_PIO_MODE      eINPUT_ACTIVE_LOW
-#define CFG_PORT_1_UPD_FRS_REQ_PIO_MODE      eINPUT_ACTIVE_LOW
+/* Port 0 is configured as Power Sink/Data Host. So, EN_FRS acts an output pin */
+#define CFG_PORT_0_UPD_EN_FRS_PIO_NO        eUPD_PIO2
+#define CFG_PORT_0_UPD_EN_FRS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
+
+/* Port 0 is configured as Power Source/Data Device. So, EN_FRS acts an input pin */
+#define CFG_PORT_1_UPD_EN_FRS_PIO_NO        eUPD_PIO2
+#define CFG_PORT_1_UPD_EN_FRS_PIO_MODE      eINPUT_ACTIVE_LOW
 
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
@@ -323,10 +334,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_AS_SNK_REQUEST_PR_SWAP             1
 #define CFG_PORT_1_AS_SRC_ACCEPT_PR_SWAP              0
 #define CFG_PORT_1_AS_SNK_ACCEPT_PR_SWAP              1
-#define CFG_PORT_1_AS_VCONN_SRC_REQ_VCONN_SWAP        0
+#define CFG_PORT_1_AS_VCONN_SRC_REQ_VCONN_SWAP        1
 #define CFG_PORT_1_AS_NOT_VCONN_SRC_REQ_VCONN_SWAP    0
 #define CFG_PORT_1_AS_VCONN_SRC_ACCEPT_VCONN_SWAP     1
-#define CFG_PORT_1_AS_NOT_VCONN_SRC_ACCEPT_VCONN_SWAP 1
+#define CFG_PORT_1_AS_NOT_VCONN_SRC_ACCEPT_VCONN_SWAP 0
 
 /*********************** Feature Select Defines *************************************/
 #define CFG_PORT_0_ENABLE_VDM_SUPPORT                 (0U << 1)
