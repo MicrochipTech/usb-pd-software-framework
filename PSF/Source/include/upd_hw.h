@@ -308,8 +308,8 @@ typedef enum
 
 typedef enum
 {
-    eUPDFAULT_IN_PIO,
-    eUPDFRS_REQ_PIO
+    eUPDPIO_FAULT_IN,
+    eUPDPIO_EN_FRS
 } eUPD_INPUT_PIO;
 
 // *****************************************************************************
@@ -1255,5 +1255,35 @@ void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio);
         None.
 **************************************************************************************************/
 void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio); 
+
+/*****************************************************************************************************
+	Function:
+		void UPD_InitOutputPIO (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode)
+
+	Summary:
+		API to initialize output pin of the UPD350
+	
+	Devices Supported:
+		UPD350 REV A
+
+	Description:
+		This API initializes the UPD350's output PIOs - EN_VBUS, EN_SINK and 
+        EN_FRS based on the user configured PIO number and PIO mode 
+		
+	Precondition:
+		None.
+
+	Parameters:
+		u8PortNum -  Corresponding port number
+        u8PIONum - PIO number
+        u8PioMode - PIO mode
+  
+	Return:
+		None.
+
+	Remarks:
+		None.
+**************************************************************************************************/
+void UPD_InitOutputPIO (UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8PIOMode);
 
 #endif /*_UPD_HW_H_*/

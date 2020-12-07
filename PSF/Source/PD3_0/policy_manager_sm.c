@@ -187,7 +187,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
     {
 		/* Enable Fault PIO to detect OCS as it would have been disabled as part of
          Power fault handling*/        
-		UPD_EnableInputPIO (u8PortNum, eUPDFAULT_IN_PIO);
+		UPD_EnableInputPIO (u8PortNum, eUPDPIO_FAULT_IN);
         
 		/* Kill the timer*/
         PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
@@ -270,7 +270,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
             {
                 /* Enable Fault PIO to detect OCS as it would have been disabled as part of
                     Power fault handling*/
-                UPD_EnableInputPIO (u8PortNum, eUPDFAULT_IN_PIO);
+                UPD_EnableInputPIO (u8PortNum, eUPDPIO_FAULT_IN);
                 
                 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                 /*On completion Hard Reset mechanism for VBUS fault initiate an alert message*/
@@ -576,6 +576,40 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
             #endif
             break; 
         }
+        case eMCHP_PSF_VCONN_SWAP_COMPLETE:
+        {
+            #if (TRUE == INCLUDE_PD_VCONN_SWAP)
+            if ((DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE)) || \
+                        (gasDPM[u8PortNum].u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC))
+            {
+                /* Clear VCONN Swap internal event due to mismatch of policy */
+                gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VCONN_SWAP);
+            }
+            #endif
+            break; 
+        }
+        case eMCHP_PSF_PR_SWAP_COMPLETE:
+        {
+            #if (TRUE == INCLUDE_PD_PR_SWAP)
+            if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
+            {
+                /* Clear PR Swap internal event due to mismatch of policy */
+                gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_PR_SWAP);
+            }
+            #endif
+            break; 
+        }        
+        case eMCHP_PSF_DR_SWAP_COMPLETE:
+        {
+            #if (TRUE == INCLUDE_PD_DR_SWAP)
+            if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
+            {
+                /* Clear DR Swap internal event due to mismatch of policy */
+                gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_DR_SWAP);
+            }
+            #endif
+            break; 
+        }         
         case eMCHP_PSF_HARD_RESET_COMPLETE:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"***************HARD RESET COMPLETE***********\r\n");
@@ -899,7 +933,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
         else if (DPM_INT_EVT_INITIATE_VCONN_SWAP == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_VCONN_SWAP))
-        {
+        {            
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VCONN_SWAP);
             
@@ -915,7 +949,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_PR_SWAP)
         else if (DPM_INT_EVT_INITIATE_PR_SWAP == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_PR_SWAP))
-        {
+        { 
             UINT32 u32PartnerPDO = SET_TO_ZERO;
             
             /*Clear the Internal event since it is processed*/

@@ -102,15 +102,6 @@
 #define DC_DC_EN_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 5)
 #define DC_DC_EN_0_PIN                  PORT_PIN_PA05
 
-/*** Macros for FRS_ARM_0 pin ***/
-#define FRS_ARM_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 6)
-#define FRS_ARM_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 6)
-#define FRS_ARM_0_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 6)
-#define FRS_ARM_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 6)) & 0x01)
-#define FRS_ARM_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 6)
-#define FRS_ARM_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 6)
-#define FRS_ARM_0_PIN                  PORT_PIN_PA06
-
 /*** Macros for SPI_SS_0 pin ***/
 #define SPI_SS_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 10)
 #define SPI_SS_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 10)
@@ -119,15 +110,6 @@
 #define SPI_SS_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 10)
 #define SPI_SS_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 10)
 #define SPI_SS_0_PIN                  PORT_PIN_PA10
-
-/*** Macros for FRS_ARM_1 pin ***/
-#define FRS_ARM_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 16)
-#define FRS_ARM_1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 16)
-#define FRS_ARM_1_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 16)
-#define FRS_ARM_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 16)) & 0x01)
-#define FRS_ARM_1_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 16)
-#define FRS_ARM_1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 16)
-#define FRS_ARM_1_PIN                  PORT_PIN_PA16
 
 /*** Macros for ORIENTATION_1 pin ***/
 #define ORIENTATION_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 17)

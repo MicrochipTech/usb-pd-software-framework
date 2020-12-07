@@ -1147,11 +1147,11 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
                           
                         /*Drive FRS arm IO pin and status io bit low*/
-                        MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_DEASSERT);
-                        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= (~DPM_PORT_IO_FRS_ARM_STATUS);
+                       // MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_DEASSERT);
+                        //gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= (~DPM_PORT_IO_FRS_ARM_STATUS);
         
                         /*Re-enable the PIO interrupts for FRS_Request pin */
-                        UPD_EnableInputPIO (u8PortNum, eUPDFRS_REQ_PIO); 
+                        UPD_EnableInputPIO (u8PortNum, eUPDPIO_EN_FRS); 
                         
                         /* Resetting the Protocol Layer would be taken care by the 
                         ePE_SNK_STARTUP state */
@@ -1403,8 +1403,8 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
                     
                     /*Drive FRS arm IO pin and status io bit low*/
-                    MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_DEASSERT);
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= (~DPM_PORT_IO_FRS_ARM_STATUS);
+                   // MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_DEASSERT);
+                    //gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= (~DPM_PORT_IO_FRS_ARM_STATUS);
                     
                     /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
                        and Protocol Layer would be taken care by the startup state */
