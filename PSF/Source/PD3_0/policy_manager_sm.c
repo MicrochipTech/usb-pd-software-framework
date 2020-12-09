@@ -759,17 +759,22 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_RENEGOTIATE);  
 
-        /*Disable FRS_REQ_PIO as power transition due to this renegotiation might affect FRS*/
+        /* Request DPM for renegotiation */
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
+
+#if (TRUE == INCLUDE_PD_FR_SWAP)        
+        /*Disable FRS_REQ_PIO/FRS_DET_EN as power transition due to this renegotiation might affect FRS*/
         if (PD_ROLE_SOURCE == u8CurrentPwrRole)
         {
             DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
         }
-        /* To-do: Disable FRS_DET_EN if port is Sink */        
-        
-        /* Request DPM for renegotiation */
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
-        
+        else
+        {
+            DPM_DISABLE_FRS_DET_EN(u8PortNum);
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Disabled\r\n");
+        }
+#endif                                 
     } /*DPM_CLIENT_REQ_RENEGOTIATE*/    
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
         /* Check for DPM_CLIENT_REQ_VCONN_SWAP request */
@@ -791,16 +796,22 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
                                       ~(DPM_CLIENT_REQ_PR_SWAP); 
         
-        /*Disable FRS_REQ_PIO to avoid FRS in between a PR_Swap*/
-        if (PD_ROLE_SOURCE == u8CurrentPwrRole)
-        {
-            DPM_DISABLE_FRS_REQ_PIO(u8PortNum); 
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");            
-        }
-        /* To-do: Disable FRS_DET_EN if port is Sink */        
-        
         /* Request DPM for PR swap */
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
+        
+#if (TRUE == INCLUDE_PD_FR_SWAP)        
+        /*Disable FRS_REQ_PIO/FRS_DET_EN to avoid FRS between a PR_Swap */
+        if (PD_ROLE_SOURCE == u8CurrentPwrRole)
+        {
+            DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
+        }
+        else
+        {
+            DPM_DISABLE_FRS_DET_EN(u8PortNum);
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Disabled\r\n");
+        }
+#endif                 
     } /*DPM_CLIENT_REQ_PR_SWAP*/
 #endif     
 #if (TRUE == INCLUDE_PD_DR_SWAP)
@@ -893,12 +904,21 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
     {
         /*Clear the Internal event since it is processed*/
         gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_FR_SWAP);
-        
+                
         gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_START_AMS;
         u16AMSInProgress = DPM_INT_EVT_INITIATE_FR_SWAP;
         DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: FR_SWAP INITIATED\r\n");
         /* To-do: This process can occur at any time, even during a Non-interruptible AMS in 
-           which case error handling such as Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.*/
+           which case error handling such as Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.
+           if (PE_IsPolicyEngineIdle(u8PortNum))
+           {
+                // Change the PE state to send FR Swap message
+           }
+           else
+           {
+               // Send Hard Reset
+           }
+         */
     }
 #endif 
 #if (TRUE == INCLUDE_PD_3_0)

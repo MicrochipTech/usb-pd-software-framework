@@ -1395,13 +1395,9 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        timer times out */                    
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
                     
-                    /* Clear the PR_Swap in progress flag since the Swap is complete */
+                    /* Clear the Swap in progress flag since the Swap is complete */
                     gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
-                    
-                    /*To-do: Drive FRS arm IO pin and status io bit low*/
-                   // MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_DEASSERT);
-                    //gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= (~DPM_PORT_IO_FRS_ARM_STATUS);
-                    
+                                        
                     /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
                        and Protocol Layer would be taken care by the startup state */
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
