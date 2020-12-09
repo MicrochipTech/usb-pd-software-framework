@@ -380,9 +380,9 @@ Description:
     are configured for DRP operation. Users can set this define to 0 to reduce the code size
     if none of the DRP ports in the system require Fast Role Swap functionality.
 Remarks: 
-    Default value is 1 for DRP application. INCLUDE_PD_DRP, INCLUDE_PD_3_0 and 
-    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT should be set to 1 as a prerequisite
-    when INCLUDE_PD_FR_SWAP is set to 1.
+    Default value is 1 for DRP application. INCLUDE_PD_DRP, INCLUDE_PD_3_0, INCLUDE_PD_VCONN_SWAP
+    INCLUDE_PD_DR_SWAP, INCLUDE_PD_PR_SWAP and INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
+    should be set to 1 as a prerequisite when INCLUDE_PD_FR_SWAP is set to 1.
 Example:
     <code>
     #define INCLUDE_PD_FR_SWAP	1(Include FR_SWAP functionality in PSF)
@@ -1021,7 +1021,7 @@ typedef enum
 																		PD specification, desired 
 																		range for fixed PDO voltage 
 																		is (0.95 &#42; PDO Voltage) 
-																		to (1.05 &#42; PDO Volatge),
+																		to (1.05 &#42; PDO Voltage),
 																		So u8UVThresholdPercentage 
 																		should be less than the 
 																		desired range.
@@ -1095,8 +1095,8 @@ typedef enum
 																		stack requires VBUS to 
 																		driven high as well as low.
                                                                       * The range of valid values is
- 																	    0 to 15 which correspond to
-                                                                        UPD350 PIO0 to PIO15.
+ 																	    0 to 9 which correspond to
+                                                                        UPD350 PIO0 to PIO9.
                                                                       * To disable the pin 
 																	    functionality from the 
 																		stack, the user can define a
@@ -1165,8 +1165,8 @@ typedef enum
 																	    hard reset, a power fault recovery
 																		or a detach.
                                                                       * The range of valid values is
- 																	    0 to 15 which correspond to
-                                                                        UPD350 PIO0 to PIO15.
+ 																	    0 to 9 which correspond to
+                                                                        UPD350 PIO0 to PIO9.
                                                                       * By defining     
 																	    INCLUDE_UPD_PIO_OVERRIDE_SUPPORT 
 																		as '1', the PIO Override 
@@ -1213,21 +1213,33 @@ typedef enum
                                                                         in u16HPDStatus variable.
 																	  * This is applicable only when
 																		INCLUDE_UPD_HPD is enabled.
-    u8Pio_FRSRequest                1         R/W          R       	 * Defines the UPD350 PIO 
-																		number used for FRS Request
+    u8Pio_EN_FRS                    1         R/W          R       	 * Defines the UPD350 PIO 
+																		number used for FRS Enable
                                                                         pin functionality for the 
                                                                         port
-                                                                      * This PIO is used to trigger 
-                                                                        FRS request signaling upon
-                                                                        detection of loss of power 
-                                                                        when the port is operating
-                                                                        as a Dual Role Source  
+                                                                      * When the power/data state
+                                                                        of the port is configured
+                                                                        as Power Source/Data Device,
+                                                                        this PIO acts an input pin 
+                                                                        to UPD350 and is used to 
+                                                                        trigger FRS request 
+                                                                        signaling upon detection of
+                                                                        loss of power in the port
+                                                                      * When the power/data state
+                                                                        of the port is configured
+                                                                        as Power Sink/Data Host,
+                                                                        this PIO acts an output pin 
+                                                                        to UPD350 and is used to 
+                                                                        arm external circuitry for
+                                                                        FRS operation (such as a
+                                                                        smart load switch with
+                                                                        FRS capability)  
                                                                       * This variable is applicable
                                                                         only when 
                                                                         INCLUDE_PD_FR_SWAP is enabled                                                                       
                                                                       * The range of valid values is
- 																	    0 to 15 which correspond to
-                                                                        UPD350 PIO0 to PIO15 and to
+ 																	    0 to 9 which correspond to
+                                                                        UPD350 PIO0 to PIO9 and to
 																		disable the pin 
 																		functionality, user can
 																		define it as 0xFF
@@ -1240,15 +1252,20 @@ typedef enum
 																		autonomous action is taken 
 																		by the UPD350 in a Fast Role 
 																		Swap condition.   
-    u8Mode_FRSRequest               1         R/W          R         * Defines the PIO mode of the 
-																		UPD350 PIO FRS_Request
-																		defined in u8Pio_FRSRequest 
+    u8Mode_EN_FRS                   1         R/W          R         * Defines the PIO mode of the 
+																		UPD350 PIO EN_FRS
+																		defined in u8Pio_EN_FRS 
                                                                       * This variable is applicable 
                                                                         only when INCLUDE_PD_FR_SWAP
                                                                         is enabled
-																	  * It takes values only from 
-																	    enum 
-																		eUPD_INPUT_PIN_MODES_TYPE  
+																	  * When u8Pio_EN_FRS is 
+                                                                        configured as an input pin,
+                                                                        it takes values from enum
+																		eUPD_INPUT_PIN_MODES_TYPE 
+																	  * When u8Pio_EN_FRS is 
+                                                                        configured as an output pin,
+                                                                        it takes values from enum
+																		eUPD_OUTPUT_PIN_MODES_TYPE  
 	u8aReserved2  					3								 Reserved	
 	u8aReserved3  					3								 Reserved	  
 	u8aReserved4  					2								 Reserved	  
@@ -1314,7 +1331,24 @@ typedef enum
 									After power negotiation with new PDOs, if user wants further PD negotiations
 									to happen with default PDOs (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
                                     or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO), this bit can be cleared.
-    32:11                          Reserved
+    12:11     RW           R       Power/Data State for initiating FRS
+                                    * '00' FRS is disabled for the port
+                                    * '01' FRS will be initiated only when the Power/Data state
+                                      of the port is Power Sink/Data Host
+                                    * '10' FRS will be initiated only when the Power/Data state
+                                      of the port is Power Source/Data Device
+                                    * '11' Reserved 
+                                    * Note: These bits are applicable only when the Port Power Role
+                                      is set to DRP and INCLUDE_PD_FR_SWAP is set to 1
+                                    * User Application shall ensure that the 'Fast Role Swap 
+                                      required USB Type-C current' field (Bits 23 and 24) is not
+                                      set to 0 in 
+                                      gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[0]
+                                      and VCONN Swap, PR Swap DR Swap Policy bits in                                       
+                                      gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy
+                                      variable are configured in alignment with the FRS
+                                      Power/Data State bits
+    32:13                          Reserved
     </table>
 	
 	<b>b. u32PortConnectStatus</b>: 
@@ -1450,7 +1484,11 @@ typedef enum
                                     * '1' Asserted if DFP
                                     * '0' De-asserted if UFP
 									* Applicable only for DRP configuration	
-    31:12                          Reserved 
+    12      R            R         EN_FRS Status
+                                    * '1' Asserted 
+                                    * '0' De-asserted
+									* Applicable only if EN_FRS is configured as output  
+    31:13                          Reserved 
 	</table>
 	
 	<b>d. u32PortStatusChange</b>: 
@@ -1785,19 +1823,28 @@ typedef enum
                                     * '0' Disable Auto Power Role Accept When Power Role is Sink
                                     * '1' Enable Auto Power Role Accept when Power Role is Sink 
     8       R/W          R/W       EN_AUTO_VCONN_SWAP_REQ_AS_VCONN_SRC
-                                    * '0' Disable Auto VCONN Swap Request When working as VCONN Source
-                                    * '1' Enable Auto VCONN Swap Request When working as VCONN Source
+                                    * '0' Disable Auto VCONN Swap Request When acting as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Request When acting as VCONN Source
+                                    * Note: This bit shall be set to 1 when Power/Data state of the
+                                      FRS port is set to Power Source/Data UFP to enable PSF 
+                                      in initiating a VCONN Swap before an FRS 
     9       R/W          R/W       EN_AUTO_VCONN_SWAP_REQ_AS_NOT_VCONN_SRC
-                                    * '0' Disable Auto VCONN Swap Request When not working as VCONN Source
-                                    * '1' Enable Auto VCONN Swap Request When not working as VCONN Source
+                                    * '0' Disable Auto VCONN Swap Request When not acting as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Request When not acting as VCONN Source
+                                    * Note: This bit shall be set to 1 when Power/Data state of the
+                                      FRS port is set to Power Sink/Data DFP to enable PSF 
+                                      in initiating a VCONN Swap before an FRS   
     10      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_VCONN_SRC
-                                    * '0' Disable Auto VCONN Swap Accept When working as VCONN Source
-                                    * '1' Enable Auto VCONN Swap Accept When working as VCONN Source
+                                    * '0' Disable Auto VCONN Swap Accept When acting as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Accept When acting as VCONN Source
                                     * Note: This bit shall be set to 1 always to comply with the PD spec for 
                                       VCONN Swap request									
     11      R/W          R/W       EN_AUTO_VCONN_SWAP_ACCEPT_AS_NOT_VCONN_SRC
-                                    * '0' Disable Auto VCONN Swap Accept When not working as VCONN Source
-                                    * '1' Enable Auto VCONN Swap Accept When not working as VCONN Source 
+                                    * '0' Disable Auto VCONN Swap Accept When not acting as VCONN Source
+                                    * '1' Enable Auto VCONN Swap Accept When not acting as VCONN Source 
+                                    * Note: This bit shall be set to 1 when Power/Data state of the
+                                      FRS port is set to Power Sink/Data DFP to enable PSF 
+                                      in accepting a VCONN Swap before an FRS  
     15:12  						   Reserved 									
 	</table> 
 
@@ -1873,8 +1920,8 @@ typedef struct _PortCfgStatus
     UINT8 u8aReserved5[3];
 #endif
 #if (TRUE == INCLUDE_PD_FR_SWAP)
-    UINT8 u8Pio_FRSRequest; 
-    UINT8 u8Mode_FRSRequest; 
+    UINT8 u8Pio_EN_FRS; 
+    UINT8 u8Mode_EN_FRS; 
     UINT8 u8aReserved8[2]; 
 #endif 
 #if (TRUE == INCLUDE_CFG_STRUCT_MEMORY_PAD_REGION)

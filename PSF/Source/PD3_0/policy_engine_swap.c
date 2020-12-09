@@ -1146,11 +1146,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
                           
-                        /*Drive FRS arm IO pin and status io bit low*/
-                       // MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_DEASSERT);
-                        //gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= (~DPM_PORT_IO_FRS_ARM_STATUS);
-        
-                        /*Re-enable the PIO interrupts for FRS_Request pin */
+                        /*Re-enable the PIO interrupts for EN_FRS pin */
                         UPD_EnableInputPIO (u8PortNum, eUPDPIO_EN_FRS); 
                         
                         /* Resetting the Protocol Layer would be taken care by the 
@@ -1402,7 +1398,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     /* Clear the PR_Swap in progress flag since the Swap is complete */
                     gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
                     
-                    /*Drive FRS arm IO pin and status io bit low*/
+                    /*To-do: Drive FRS arm IO pin and status io bit low*/
                    // MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eFRS_ARM_FUNC, eGPIO_DEASSERT);
                     //gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= (~DPM_PORT_IO_FRS_ARM_STATUS);
                     

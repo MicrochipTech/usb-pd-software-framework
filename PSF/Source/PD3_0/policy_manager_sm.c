@@ -887,7 +887,20 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
 
         DPM_EnablePort(u8PortNum, TRUE);
     }
-            
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+    else if ((gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_INITIATE_FR_SWAP) &&\
+                PRL_IsAMSInitiatable(u8PortNum))
+    {
+        /*Clear the Internal event since it is processed*/
+        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_FR_SWAP);
+        
+        gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_START_AMS;
+        u16AMSInProgress = DPM_INT_EVT_INITIATE_FR_SWAP;
+        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: FR_SWAP INITIATED\r\n");
+        /* To-do: This process can occur at any time, even during a Non-interruptible AMS in 
+           which case error handling such as Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.*/
+    }
+#endif 
 #if (TRUE == INCLUDE_PD_3_0)
     /* Process internal events only when the Policy Engine is in PS_RDY state*/
     else if ((gasDPM[u8PortNum].u16DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)) &&\

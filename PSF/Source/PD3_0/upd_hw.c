@@ -680,8 +680,8 @@ void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
         /* Override 3 Output Enable */
         UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR3_OUT_EN, (u16EnFRSPIOPos | u16EnSinkPIOPos));
         
-        /* Enable PIO Override for Override 3 and 4 */
-        UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_4);            
+        /* Enable PIO Override for Override 3 */
+        UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);            
     }
     else
     {
