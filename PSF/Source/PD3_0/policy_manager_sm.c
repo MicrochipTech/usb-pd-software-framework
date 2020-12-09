@@ -641,9 +641,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     if (DPM_NO_CLIENT_REQ_PENDING == gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
         return;
-    }
-
-    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    }    
     
     /* Check for Port enable/disable and VBUS Fault Handling requests. Policy Engine Idle check 
        is not needed for these requests and they have to be handled with highest priority*/
@@ -764,7 +762,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 
 #if (TRUE == INCLUDE_PD_FR_SWAP)        
         /*Disable FRS_REQ_PIO/FRS_DET_EN as power transition due to this renegotiation might affect FRS*/
-        if (PD_ROLE_SOURCE == u8CurrentPwrRole)
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
             DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
@@ -801,7 +799,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         
 #if (TRUE == INCLUDE_PD_FR_SWAP)        
         /*Disable FRS_REQ_PIO/FRS_DET_EN to avoid FRS between a PR_Swap */
-        if (PD_ROLE_SOURCE == u8CurrentPwrRole)
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
             DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
