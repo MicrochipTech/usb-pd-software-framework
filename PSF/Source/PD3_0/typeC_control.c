@@ -2838,15 +2838,28 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         }
         else
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV INTR\r\n");
-            
-            /* When PIO override is disabled, disable EN_SINK of the port */               
-            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                UPD_DisablePIOOutputISR (u8PortNum);            
-            #endif     
+            /* Spec Reference: 5.8.6.3 Fast Role Swap Detection - The initial Sink shall respond 
+               to the FRS signal only if all the conditions mentioned in this section are met */
+            if (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
+            {
+                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV INTR\r\n");
 
-            /* Register internal event to start FR_Swap AMS */
-            DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);    
+                /* When PIO override is disabled, disable EN_FRS and EN_SINK */               
+                #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+                    UINT16 u16PIORegVal;  
+                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS),\
+                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+                    u16PIORegVal &= ~UPD_CFG_PIO_DATAOUTPUT;
+                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS),\
+                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+
+                    /* This API will turn off EN_SINK */
+                    UPD_DisablePIOOutputISR (u8PortNum);            
+                #endif     
+
+                /* Register internal event to start FR_Swap AMS */
+                DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);    
+            }
         }
         
         gasTypeCcontrol[u8PortNum].u8DRPStsISR &= ~(TYPEC_FRS_XMT_RCV_STS_INTERRUPT);

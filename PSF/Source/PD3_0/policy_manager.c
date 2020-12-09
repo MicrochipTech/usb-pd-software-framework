@@ -1529,26 +1529,53 @@ void DPM_GearUpForFRSwap (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Enabled\r\n");                            
         }        
         else /* PD_ROLE_SINK */
-        {
-            /* Enable FRS Signal Detection */
-            DPM_ENABLE_FRS_DET_EN(u8PortNum);
-            
+        {            
             /* Assert the EN_FRS pin to enable the FRS control circuitry
                of the Load Switch */
             UPD_GPIOUpdateOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS, \
                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS, (UINT8)UPD_GPIO_ASSERT);
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_EN_FRS_STATUS);
  
+            /* Spec Reference: An initial Sink Shall disable its VBUS Disconnect 
+               Threshold detection circuitry while Fast Role Swap detection is active */                           
+            /*Setting VBUS Comparator OFF*/
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);    
+            
+            UPD_RegByteClearBit (u8PortNum, TYPEC_VBUS_SAMP_EN, 
+                    (UINT8)(TYPEC_VSINKDISCONNECT_THR0_MATCH | TYPEC_VSAFE0V_MAX_THR_MATCH));                        
+            
+            /*Setting VBUS Comparator ON*/
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);            
+            
+            /* Enable FRS Signal Detection */
+            DPM_ENABLE_FRS_DET_EN(u8PortNum);
+            
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Enabled\r\n"); 
         }
     }
     else  /* FRS Criteria Not Supported for the port */
     {               
         /* Disable FRS signal transmission and detection */
-        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);        
-        DPM_DISABLE_FRS_DET_EN(u8PortNum);  
-        DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO and FRS_DET_EN Disabled\r\n");
-        /* To-do: How to disable FRS detection circuitry of load switch ? */        
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        {
+            DPM_DISABLE_FRS_REQ_PIO(u8PortNum); 
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
+        }
+        else /* PD_ROLE_SINK */
+        {
+            DPM_DISABLE_FRS_DET_EN(u8PortNum);  
+            /* Re-enable the VBUS Disconnect Threshold detection circuitry */
+            /*Setting VBUS Comparator OFF*/
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);    
+            
+            UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_SAMP_EN, 
+                    (UINT8)(TYPEC_VSINKDISCONNECT_THR0_MATCH | TYPEC_VSAFE0V_MAX_THR_MATCH));                        
+            
+            /*Setting VBUS Comparator ON*/
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);  
+            
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Disabled\r\n");
+        }        
     }
 }
 #endif

@@ -80,7 +80,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                             DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS |
                             DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS);
             
-            gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_DISCOVERY;
+            /* Disable FRS signal Detection. It will be enabled in the 
+               Ready state */
+            #if (TRUE == INCLUDE_PD_FR_SWAP)            
+                DPM_DISABLE_FRS_DET_EN(u8PortNum); 
+            #endif             
             
             #if (FALSE != INCLUDE_PDFU)
             if((FALSE!=gsPdfuInfo.u8IsPDFUActive) && (u8PortNum == gsPdfuInfo.u8PDFUPortNum))
@@ -88,6 +92,9 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 PE_FwUpdtInitialize();
             }
             #endif
+
+            gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_DISCOVERY;
+            
             break;
         }            
 
