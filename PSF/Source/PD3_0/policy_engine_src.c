@@ -138,11 +138,15 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     /*Reset collision avoidance set*/
                     #if (TRUE == INCLUDE_PD_3_0)                    
-                    PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
-                    #endif 
-
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_IDLE_SS;
+                        PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
+                    #endif                     
                     
+                    /* Disable FRS PIO Request. It will be enabled in the 
+                    Ready state */                    
+                    #if (TRUE == INCLUDE_PD_FR_SWAP)    
+                        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);                    
+                    #endif  
+
                     #if (FALSE != INCLUDE_PDFU)
                     if((FALSE!=gsPdfuInfo.u8IsPDFUActive) && (u8PortNum == gsPdfuInfo.u8PDFUPortNum))
                     {
@@ -150,6 +154,8 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     }
                     #endif
                     
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_IDLE_SS;
+                        
                     break;
                 }
                 
