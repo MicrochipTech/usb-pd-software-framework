@@ -302,8 +302,6 @@ void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnTyp
 /******************************************************************************************************/
 void UPD_InitGPIO (UINT8 u8PortNum)
 {
-	/*Enable GPIO interrupt for UPD350*/
-	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, UPDINTR_PIO_INT);	
     
 #if (TRUE == INCLUDE_PD_FR_SWAP)    
     /* Initialize EN_FRS PIO based on the configured Power/Data state */
@@ -323,6 +321,7 @@ void UPD_InitGPIO (UINT8 u8PortNum)
     
     /* Configure PIO Override for FRS conditions */
     #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+        /* To-do: Optimize this function */
         UPD_ConfigureFRSPIOOverride (u8PortNum);
     #endif                    
 #endif /* endif of INCLUDE_PD_FR_SWAP */
@@ -574,8 +573,10 @@ void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum)
     UPD_RegByteSetBit (u8PortNum, UPD_PIO_MON_VAL, (UINT8)UPD_PIO_OVR_0);
 
     /* PIO override output is set as low */
-    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO);
-
+    UINT16 u16PIOOvrOut = UPD_RegReadWord (u8PortNum, UPD_PIO_OVR_OUT);
+    u16PIOOvrOut &= ~u16PIOPos; 
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, u16PIOOvrOut); 
+        
     /* Configure the Source for override 0 as OverVoltage Threshold 2*/
     UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR0_SRC_SEL, \
       (UPD_PIO_OVR_SRC_SEL_VBUS_THR | UPD_PIO_OVR_VBUS2_THR_MATCH));
@@ -588,8 +589,10 @@ void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum)
     UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR2_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN);
 
     /* EN_VBUS is configured as override Pin in output mode */
-    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, u16PIOPos);
-
+    UINT16 u16PIOOvrDir = UPD_RegReadWord (u8PortNum, UPD_PIO_OVR_DIR);
+    u16PIOOvrDir |= u16PIOPos; 
+    UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, u16PIOOvrDir);   
+        
     /* Override 0*/
     UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR0_OUT_EN, u16PIOPos);
 
@@ -643,10 +646,14 @@ void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
         UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS);        
         
         /* Set PIO Override output as low */
-        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO); 
+        UINT16 u16PIOOvrOut = UPD_RegReadWord (u8PortNum, UPD_PIO_OVR_OUT);
+        u16PIOOvrOut &= ~u16EnVBUSPIOPos; 
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, u16PIOOvrOut); 
     
         /* Configure EN_VBUS as override pin in output mode */
-        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, u16EnVBUSPIOPos);         
+        UINT16 u16PIOOvrDir = UPD_RegReadWord (u8PortNum, UPD_PIO_OVR_DIR);
+        u16PIOOvrDir |= u16EnVBUSPIOPos; 
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, u16PIOOvrDir);         
         
         /* Override 3 Output Enable */
         UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR3_OUT_EN, u16EnVBUSPIOPos);        
@@ -665,20 +672,27 @@ void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
         
         UPD_RegByteClearBit (u8PortNum, UPD_PIO_MON_VAL, (UINT8)UPD_PIO_OVR_3);
         
+        /* To-do: Override source varies depending on the negotiated 
+           voltage i.e between vSafe5V and other higher voltages */
         UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, \
                 (UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET | UPD_PIO_OVR_VBUS4_THR_MATCH));
         
-        /* Set PIO Override output as low */
-        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, SET_TO_ZERO); 
+        /* Set PIO Override output as low */        
+        UINT16 u16PIOOvrOut = UPD_RegReadWord (u8PortNum, UPD_PIO_OVR_OUT);
+        u16PIOOvrOut &= ~(u16EnSinkPIOPos); 
+        u16PIOOvrOut |= u16EnFRSPIOPos; 
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_OUT, u16PIOOvrOut);        
         
         /* Configure EN_FRS and EN_SINK as override pins in output mode
            De-asserting EN_SINK will stop the sink circuitry from sinking power
            De-asserting EN_FRS will turn on the internal MOSFET of Load switch, so
-           that 5V will be driven in VBUS */
-        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, (u16EnFRSPIOPos | u16EnSinkPIOPos));        
+           that 5V will be driven in VBUS */        
+        UINT16 u16PIOOvrDir = UPD_RegReadWord (u8PortNum, UPD_PIO_OVR_DIR);
+        u16PIOOvrDir |= (u16EnFRSPIOPos | u16EnSinkPIOPos); 
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR_DIR, u16PIOOvrDir);        
         
         /* Override 3 Output Enable */
-        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR3_OUT_EN, (u16EnFRSPIOPos | u16EnSinkPIOPos));
+        UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR3_OUT_EN, (u16EnFRSPIOPos | u16EnSinkPIOPos));        
         
         /* Enable PIO Override for Override 3 */
         UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);            

@@ -112,6 +112,10 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         /* Spec Rev is updated by PRL*/
         PRL_UpdateSpecAndDeviceRoles (u8PortNum);
     }
+    else
+    {
+        /* Do Nothing */
+    }
      
     /* Source Policy Engine State Machine */
     switch(gasPolicyEngine[u8PortNum].ePEState)
