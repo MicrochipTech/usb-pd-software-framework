@@ -1528,12 +1528,15 @@ void DPM_EvaluateFRSCriteria (UINT8 u8PortNum)
     }
 }
 
+/* To-do: Can this function be moved to TypeC layer ? */
 void DPM_GearUpForFRSwap (UINT8 u8PortNum)
 {        
     if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
-    {    
+    {                    
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
+            UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
+            
             /* Enable FRS Req PIO to enable FRS signal transmission */                
             DPM_ENABLE_FRS_REQ_PIO(u8PortNum);
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Enabled\r\n");                            
@@ -1554,6 +1557,21 @@ void DPM_GearUpForFRSwap (UINT8 u8PortNum)
             
             /*Setting VBUS Comparator ON*/
             TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);            
+            
+            UINT8 u8PIOOvrSrc = UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET;
+            
+            if (gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV > TYPEC_VBUS_5V)
+            {
+                u8PIOOvrSrc |= UPD_PIO_OVR_VBUS4_THR_MATCH;
+            }
+            else
+            {
+                u8PIOOvrSrc |= UPD_PIO_OVR_VBUS1_THR_MATCH;
+            }
+            
+            UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, u8PIOOvrSrc);
+            
+            UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
             
             /* Enable FRS Signal Detection */
             DPM_ENABLE_FRS_DET_EN(u8PortNum);
