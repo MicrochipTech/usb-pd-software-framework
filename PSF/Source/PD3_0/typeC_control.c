@@ -1867,7 +1867,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
     UINT8 u8IntStsISR = gasTypeCcontrol[u8PortNum].u8IntStsISR;
     
     /*Check for EXT_INT*/
-    if(u16InterruptStatus & UPDINTR_EXT_INT)
+    if (u16InterruptStatus & UPDINTR_EXT_INT)
     {
         UPD_RegisterReadISR (u8PortNum, TYPEC_EXT_INT_STS, &u8Data, BYTE_LEN_1);
 #if(TRUE == INCLUDE_PD_FR_SWAP)        
@@ -1877,6 +1877,15 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             UPD_RegisterWriteISR (u8PortNum, TYPEC_EXT_INT_STS, &u8Data, BYTE_LEN_1);
             
             gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_FRS_XMT_RCV_STS_INTERRUPT;
+        }
+        if (u8Data & TYPEC_FRS_RCV_STS)
+        {            
+            /* UPD DOS Reference: After being cleared by FW this bit will not be set again 
+               by HW until the FRS Detect Enable (FRS_DET_EN) is cleared. This is
+               irrespective of the reception of additional FRS signaling.*/
+            UPD_RegisterReadISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
+            u8Data &= ~(TYPEC_FRS_DET_EN);
+            UPD_RegisterWriteISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
         }
 #endif
     }
@@ -1918,7 +1927,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 
             /*Setting the CC interrupt flag in "u8IntStsISR" variable*/
             u8IntStsISR |= TYPEC_CCINT_STATUS_MASK;
-            UPD_RegisterReadISR( u8PortNum, TYPEC_CC_MATCH, (UINT8 *)&u16Data, BYTE_LEN_2); 
+            UPD_RegisterReadISR (u8PortNum, TYPEC_CC_MATCH, (UINT8 *)&u16Data, BYTE_LEN_2); 
 
             /*For Source Port*/
             if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
@@ -1959,8 +1968,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             u8IntStsISR &= ~TYPEC_VCONN_SOURCE_MASK; 
             
             /* Inform DPM about the power fault*/
-            gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VCONN_OCS;
-    
+            gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VCONN_OCS;    
         }
         #endif
         
@@ -2838,28 +2846,23 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         }
         else
         {
-            /* Spec Reference: 5.8.6.3 Fast Role Swap Detection - The initial Sink shall respond 
-               to the FRS signal only if all the conditions mentioned in this section are met */
-            if (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
-            {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV INTR\r\n");
-
-                /* When PIO override is disabled, disable EN_FRS and EN_SINK */               
-                #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                    UINT16 u16PIORegVal;  
-                    UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS),\
-                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                    u16PIORegVal &= ~UPD_CFG_PIO_DATAOUTPUT;
-                    UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS),\
-                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-
-                    /* This API will turn off EN_SINK */
-                    UPD_DisablePIOOutputISR (u8PortNum);            
-                #endif     
-
-                /* Register internal event to start FR_Swap AMS */
-                DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);    
-            }
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV INTR\r\n");
+                
+            /* When PIO override is disabled, turn on EN_FRS and disable EN_SINK */               
+            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+                UINT16 u16PIORegVal;  
+                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS),\
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+                u16PIORegVal |= UPD_CFG_PIO_DATAOUTPUT;
+                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS),\
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+                
+                /* This API will turn off EN_SINK */
+                UPD_DisablePIOOutputISR (u8PortNum);  
+            #endif     
+                
+            /* Register internal event to start FR_Swap AMS */
+            DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);                
         }
         
         gasTypeCcontrol[u8PortNum].u8DRPStsISR &= ~(TYPEC_FRS_XMT_RCV_STS_INTERRUPT);
@@ -3740,6 +3743,11 @@ void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
     /* Program FRS Threshold Select Register with its default value to point to the FRSWAP threshold */
     UPD_RegWriteByte (u8PortNum, TYPEC_FRS_THR_SEL, TYPEC_FRS_THRESHOLD);
     
+    /* Enable the UPD350 high level Extended interrupt*/ 
+    UINT16 u16Data = UPD_RegReadWord (u8PortNum, UPDINTR_INT_EN);
+    u16Data |= UPDINTR_EXT_INT;
+	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, u16Data); 
+    
     /* Enable FRS_RCV_STS interrupt in Extended Interrupt Enable Register */
     UPD_RegByteSetBit (u8PortNum, TYPEC_EXT_INT_EN, (UINT8)TYPEC_FRS_RCV_STS);	
     
@@ -3759,13 +3767,17 @@ void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
     /* Program VBUS Sample Clock Register to enable >= 250KHz sampling rate */    
 	UPD_RegWriteByte (u8PortNum, UPD_VBUS_SAMP_CLK, \
                     (UINT8)(UPD_VBUS_SAMP_GEN_250_KS | UPD_VBUS_CLK_48_KHZ));    
-          
+    
+    /* Clear FRS_DET_EN bit in FRS_CTL register. It will be enabled in PE_SNK_READY state 
+       where power is stable */          
+    UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
+            
     /* Enable the VBUS debouncer */
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
     
     /* Program the CC Comparator Control in CC Control 1 Register to enable detection on the
        connected CC pin.*/     
-    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);       
+    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);         
     
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Detection Enabled\r\n");             
 }
@@ -3798,6 +3810,11 @@ void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
         UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_LOW, (UINT8)TYPEC_FRS_CC_SEL_CC2);    
     }
     
+    /* Enable the UPD350 high level Extended interrupt*/ 
+    UINT16 u16Data = UPD_RegReadWord (u8PortNum, UPDINTR_INT_EN);
+    u16Data |= UPDINTR_EXT_INT;
+	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, u16Data);
+    
     /* Enable FRS_XMT_STS interrupt in Extended Interrupt Enable Register */
     UPD_RegByteSetBit (u8PortNum, TYPEC_EXT_INT_EN, (UINT8)TYPEC_FRS_XMT_STS);	
     
@@ -3821,7 +3838,7 @@ void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
     }
     
     /* Clear FRS_REQ_PIO bit in FRS_CTL register. It will be enabled in PE_SRC_READY state 
-       where power negotiation is stable */
+       where power is stable */
     UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO);
     
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Transmission Enabled\r\n");             

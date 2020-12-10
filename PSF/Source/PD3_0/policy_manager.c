@@ -1461,50 +1461,60 @@ void DPM_EvaluateFRSCriteria (UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0]);               
     }
     
-    /* FRS is possible only if the Power/Data/VCONN role of the port is 
-       Source/UFP/Not VCONN Source (or) Sink/DFP/VCONN Source */
-    if (PD_ROLE_SOURCE_UFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
+    /* FRS is possible only if 
+       i.   the Power/Data/VCONN role of the port is 
+            Source/UFP/Not VCONN Source (or) Sink/DFP/VCONN Source 
+       ii.  FRS Current field in PSF Sink PDO and Partner Sink PDO 
+            are non-zero
+       iii. If PSF acts as initial sink, u8ConfiguredFRSCurrent needs to be 
+            greater than or equal to u8PartnerFRSCurrent 
+            If PSF acts as initial source, u8ConfiguredFRSCurrent needs to be 
+            less than or equal to u8PartnerFRSCurrent */    
+    do
     {
-        if (!((PD_ROLE_SOURCE == u8CurrPwrRole) && \
-                    (PD_ROLE_UFP == u8CurrDataRole) && \
-                        (FALSE == DPM_IsPortVCONNSource(u8PortNum))))
+        if (PD_ROLE_SOURCE_UFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
+        {
+            if (!((PD_ROLE_SOURCE == u8CurrPwrRole) && \
+                        (PD_ROLE_UFP == u8CurrDataRole) && \
+                            (FALSE == DPM_IsPortVCONNSource(u8PortNum))))
+            {
+                u8IsFRSSupported = FALSE;
+                break; 
+            }
+        }
+        else /* PD_ROLE_SINK_DFP */ 
+        {
+            if (!((PD_ROLE_SINK == u8CurrPwrRole) && \
+                        (PD_ROLE_DFP == u8CurrDataRole) && \
+                            (DPM_IsPortVCONNSource(u8PortNum))))
+            {
+                u8IsFRSSupported = FALSE;
+                break; 
+            }        
+        }
+
+        if ((!u8ConfiguredFRSCurrent) || (!u8PartnerFRSCurrent))
         {
             u8IsFRSSupported = FALSE;
+            break; 
+        }
+
+        if (PD_ROLE_SINK == u8CurrPwrRole)
+        {
+            if(u8ConfiguredFRSCurrent < u8PartnerFRSCurrent)
+            {
+                u8IsFRSSupported = FALSE;
+            }
+        }
+        else
+        {
+            if(u8ConfiguredFRSCurrent > u8PartnerFRSCurrent)
+            {
+                u8IsFRSSupported = FALSE;
+            }
         }
     }
-    else /* PD_ROLE_SINK_DFP */ 
-    {
-        if (!((PD_ROLE_SINK == u8CurrPwrRole) && \
-                    (PD_ROLE_DFP == u8CurrDataRole) && \
-                        (DPM_IsPortVCONNSource(u8PortNum))))
-        {
-            u8IsFRSSupported = FALSE;
-        }        
-    }
-    
-    if ((!u8ConfiguredFRSCurrent) || (!u8PartnerFRSCurrent))
-    {
-        u8IsFRSSupported = FALSE;
-    }
-    
-    if (PD_ROLE_SINK == u8CurrPwrRole)
-    {
-        /*If PSF acts as initial sink, u8ConfiguredFRSCurrent needs to be 
-          greater than or equal to u8PartnerFRSCurrent*/
-        if(u8ConfiguredFRSCurrent < u8PartnerFRSCurrent)
-        {
-            u8IsFRSSupported = FALSE;
-        }
-    }
-    else
-    {
-        /*If PSF acts as initial source, u8ConfiguredFRSCurrent needs to be 
-          less than or equal to u8PartnerFRSCurrent*/
-        if(u8ConfiguredFRSCurrent > u8PartnerFRSCurrent)
-        {
-            u8IsFRSSupported = FALSE;
-        }
-    }
+    while (FALSE);     
     
     if (u8IsFRSSupported)
     {
@@ -1530,12 +1540,10 @@ void DPM_GearUpForFRSwap (UINT8 u8PortNum)
         }        
         else /* PD_ROLE_SINK */
         {            
-            /* Assert the EN_FRS pin to enable the FRS control circuitry
-               of the Load Switch */
-            UPD_GPIOUpdateOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS, \
-                    gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS, (UINT8)UPD_GPIO_ASSERT);
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= (DPM_PORT_IO_EN_FRS_STATUS);
- 
+ 			 /* Enable non-Power fault thresholds for TYPEC_VBUS_5V */
+            TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+
             /* Spec Reference: An initial Sink Shall disable its VBUS Disconnect 
                Threshold detection circuitry while Fast Role Swap detection is active */                           
             /*Setting VBUS Comparator OFF*/
