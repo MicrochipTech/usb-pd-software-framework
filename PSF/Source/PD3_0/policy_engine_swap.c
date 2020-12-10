@@ -196,12 +196,27 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DRS_SEND_SWAP_NO_RESPONSE_SS\r\n");
                     
+                    /* Set Swap Init status so that DR_Swap will not be 
+                       re-initiated on moving to eTxDoneSS sub-state. No need 
+                       to set this bit for accept case since policy will not
+                       match in that case */                    
+                    if (PD_ROLE_DFP == u8CurrentDataRole)
+                    {
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_DFP;
+                    }
+                    else 
+                    {
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_UFP;
+                    }
+                    
                     /* Response not received within tSenderResponse. Assign
                      * PE_SRC_READY/PE_SNK_READY state*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    
                     /* Notify no response has been received for the DR_SWAP message sent*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD);
+                    
                     break; 
                 }
                 case ePE_DRS_SEND_SWAP_WAIT_RCVD_SS:
@@ -231,15 +246,18 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                     {
                         gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_DFP;
                     }
-                    else if (PD_ROLE_UFP == u8CurrentDataRole)
+                    else 
                     {
                         gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_UFP;
                     }
+                   
                     /*SRC_READY/SNK_READY state is set*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    
                     /* Notify DR_SWAP is completed*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_DR_SWAP_COMPLETE);
+                    
                     break;
                 }
                 case ePE_DRS_SEND_SWAP_IDLE_SS:
@@ -347,6 +365,19 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_PRS_SEND_SWAP_NO_RESPONSE_SS:
                 {                    
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SEND_SWAP_NO_RESPONSE_SS\r\n");
+                    
+                    /* Set Swap Init status so that PR_Swap will not be 
+                       re-initiated on moving to eTxDoneSS sub-state. No need 
+                       to set this bit for accept case since policy will not
+                       match in that case */
+                    if (PD_ROLE_SOURCE == u8CurrPwrRole)
+                    {
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC;
+                    }
+                    else
+                    {
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SNK;
+                    }
                     
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
@@ -1530,6 +1561,18 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 case ePE_VCS_SEND_SWAP_NO_RESPONSE_SS:
                 { 
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_SWAP_NO_RESPONSE_SS\r\n");
+                    
+                    /* Set Swap Init status so that VCONN Swap will not be 
+                       re-initiated on moving to eTxDoneSS sub-state */                    
+                    if (TRUE == DPM_IsPortVCONNSource(u8PortNum))
+                    {
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
+                    }
+                    else
+                    {
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC;
+                    }
+                    
                     /* Response not received within tSenderResponse. Move to 
                        ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -1568,8 +1611,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_SWAP_WAIT_RCVD_SS\r\n");
                     /* Policy Engine would enter this sub-state on reception of 
                        Wait response from the port partner. Start VCONN Swap Wait timer
-                       and move to ePE_SRC_READY or ePE_SNK_READY state. On PR_Swap
-                       wait timer expiry, re-initiate PR_Swap transmission if not 
+                       and move to ePE_SRC_READY or ePE_SNK_READY state. On VCONN_Swap
+                       wait timer expiry, re-initiate VCONN_Swap transmission if not 
                        done by the port partner */
                     gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = PDTimer_Start (
                                                           (PE_VCONN_SWAP_WAIT_TIMEOUT_MS),
