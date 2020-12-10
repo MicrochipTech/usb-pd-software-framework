@@ -1569,11 +1569,15 @@ void DPM_GearUpForFRSwap (UINT8 u8PortNum)
                 u8PIOOvrSrc |= UPD_PIO_OVR_VBUS1_THR_MATCH;
             }
             
+            /* Configure PIO Override Source */
             UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, u8PIOOvrSrc);
             
+            /* Enable PIO Override */
             UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
             
             /* Enable FRS Signal Detection */
+            /* To-do: If this function is moved to TypeC, use UPD write APIs 
+               instead of DPM defines */
             DPM_ENABLE_FRS_DET_EN(u8PortNum);
             
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Enabled\r\n"); 
@@ -1601,7 +1605,9 @@ void DPM_GearUpForFRSwap (UINT8 u8PortNum)
             TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);  
             
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Disabled\r\n");
-        }        
+        }      
+        /* Disable PIO Override since FRS transmission/detection is disabled */
+        UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
     }
 }
 #endif
