@@ -678,7 +678,18 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     /* Initial Source would have turned off VBUS.
                        Before placing Rp, check if VBUS is at 0V */
-                    if (TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
+                    UINT8 u8VBUSValueToCheck;
+                    
+					/* To-do handle this if check properly to differentiate between a PR and FR swap */
+                    if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
+                    {
+                        u8VBUSValueToCheck = TYPEC_VBUS_5V_PRES;
+                    }
+                    else
+                    {
+                        u8VBUSValueToCheck = TYPEC_VBUS_0V_PRES;
+                    }
+                    if (u8VBUSValueToCheck == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {        
                         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC_SWAP_ASSERT_RP_SS\r\n");
                         
