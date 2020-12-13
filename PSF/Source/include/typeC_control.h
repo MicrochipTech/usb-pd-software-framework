@@ -738,7 +738,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
                                 BIT[6:4] -> VBUS_PRESENCE
                                 BIT 7 -> VCONNONERROR */
 #if(TRUE == INCLUDE_PD_DRP)
-  UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status*/
+  UINT8 u8DRPStsISR ;           /*BIT 0 -> DRP_DONE interrupt status
+                                  BIT 1 -> FRS XMT or RCV Status */
   UINT8 u8DRPLastAttachedState; /*BIT[1:0] -> Previous DRP attached power role*/
 #endif
   float fVBUSCorrectionFactor;
@@ -1583,7 +1584,7 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
+        void TypeC_ConfigureFRSSignalDET (UINT8 u8PortNum)
 
     Summary:
         API to enable detection of FRS signal 
@@ -1592,7 +1593,7 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        This API is used to initialize UPD350 to enable it to detect FRS signal. 
+        This API is used to configure UPD350 to enable it to detect FRS signal. 
 
     Conditions:
         None.
@@ -1606,11 +1607,11 @@ UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum);
+void TypeC_ConfigureFRSSignalDET (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
+        void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum)
 
     Summary:
         API to enable transmission of FRS signal 
@@ -1619,7 +1620,7 @@ void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        This API is used to initialize UPD350 to enable it to transmit FRS signal. 
+        This API is used to configure UPD350 to enable it to transmit FRS signal. 
 
     Conditions:
         None.
@@ -1633,6 +1634,29 @@ void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum);
+void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum); 
+    Summary:
+        API to enable UPD350 to handle FR_Swap.
+    Description:
+        If the criteria to support FR_Swap are met by both partners, this API 
+        enables UPD350 to support FR_Swap. 
+        If FR_Swap is not supported by both partners, this API disables UPD350
+        from supporting FR_Swap.
+    Conditions:
+        This API is applicable only when INCLUDE_PD_FR_SWAP is enabled.
+    Input:
+        u8PortNum - Port number
+        u8IsFRSSupported - TRUE - FRS Criteria is supported 
+                           FALSE - FRS Criteria is not supported 
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported);
 
 #endif /*_TYPECCONTROL_H_*/

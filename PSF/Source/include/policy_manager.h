@@ -164,7 +164,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_SWAP_INIT_STS_MASK                   0x7E00
 #define DPM_AME_TIMER_DONE                       BIT(16)
 #define DPM_VCONN_SRC_RESPONSIBILITY             BIT(17)
-#define DPM_FRS_CRITERIA_SUPPORTED               BIT(18)
+#define DPM_FRS_XMT_OR_DET_ENABLED               BIT(18)
 #define DPM_FRS_SIGNAL_TRANSMITTED               BIT(19)
 
 /*Bit position for u32DPMStatus variable*/
@@ -737,7 +737,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bit 15 - VDM Response (ACK/NAK)
                                         // Bit 16 - AME Timer Done Status 
                                         // Bit 17 - VCONN Source Responsibility Status
-                                        // Bit 18 - FRS Criteria Supported Status 
+                                        // Bit 18 - FRS XMT or DET Enabled Status 
                                         // Bit 19 - FRS Signal Transmitted Status
   UINT16 u16DPMInternalEvents;      //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
                                     //DPM_INT_EVT_INITIATE_RENEGOTIATION  BIT(1)
@@ -1762,23 +1762,21 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_EvaluateFRSCriteria (UINT8 u8PortNum); 
+        void DPM_EvaluateAndGearUpForFRS (UINT8 u8PortNum); 
     Summary:
         API to evaluate the criteria required to support FR_Swap.
     Description:
-        This API evaluates whether the criteria required to support FR_Swap are met.
+        This API evaluates whether the criteria required to support FR_Swap are met
+        and calls TypeC_EnableFRSXMTOrDET() to prepare UPD350 to be ready for FRS 
         The criteria are : 
         1. The FRS current advertised by both partners are non-zero
         2. The FRS current advertised by initial sink is greater than or equal to
            that advertised by initial source.
         3. Power, Data and VCONN roles of the port is in one of the following states
            - Source/UFP/Not VCONN Source
-           - Sink/DFP/VCONN Source 
-        If all the above criteria are met, this API sets DPM_FRS_CRITERIA_SUPPORTED bit
-        in gasDPM[u8PortNum].u32DPMStatus.
-
+           - Sink/DFP/VCONN Source         
     Conditions:
-        This API is applicable only when both INCLUDE_PD_FR_SWAP is enabled.
+        This API is applicable only when INCLUDE_PD_FR_SWAP is enabled.
     Input:
         u8PortNum - Port number.
     Return:
@@ -1786,28 +1784,7 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_EvaluateFRSCriteria (UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
-        void DPM_GearUpForFRSwap (UINT8 u8PortNum); 
-    Summary:
-        API to enable UPD350 to handle FR_Swap.
-    Description:
-        If the criteria to support FR_Swap are met by both partners, this API 
-        enables UPD350 to support FR_Swap. 
-        If FR_Swap is not supported by both partners, this API disables UPD350
-        from supporting FR_Swap.
-    Conditions:
-        This API is applicable only when both INCLUDE_PD_FR_SWAP is enabled.
-    Input:
-        u8PortNum - Port number.
-    Return:
-        None.
-    Remarks:
-        None. 
-**************************************************************************************************/
-void DPM_GearUpForFRSwap (UINT8 u8PortNum);
+void DPM_EvaluateAndGearUpForFRS (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

@@ -1424,13 +1424,11 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum)
             /*************** FR_SWAP Evaluation *************/
 #if(TRUE == INCLUDE_PD_FR_SWAP)
     /* Wait until all internal events raised by PSF is complete */
-    if(SET_TO_ZERO == gasDPM[u8PortNum].u16DPMInternalEvents)    
+    if (SET_TO_ZERO == gasDPM[u8PortNum].u16DPMInternalEvents)    
     {        
         if ((PD_ROLE_SOURCE_UFP == u8CfgFRSPwrDataSt) || (PD_ROLE_SINK_DFP == u8CfgFRSPwrDataSt))
         {            
-            DPM_EvaluateFRSCriteria (u8PortNum);
-        
-            DPM_GearUpForFRSwap (u8PortNum);
+            DPM_EvaluateAndGearUpForFRS (u8PortNum);        
         }
     }
 #endif /*INCLUDE_PD_FR_SWAP*/
@@ -1440,7 +1438,7 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum)
 /********************DPM API to handle VCONN_Swap if FRS is supported************************/
 #if(TRUE == INCLUDE_PD_FR_SWAP)
 
-void DPM_EvaluateFRSCriteria (UINT8 u8PortNum)
+void DPM_EvaluateAndGearUpForFRS (UINT8 u8PortNum)
 {
     UINT8 u8CurrPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     UINT8 u8CurrDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
@@ -1516,100 +1514,10 @@ void DPM_EvaluateFRSCriteria (UINT8 u8PortNum)
     }
     while (FALSE);     
     
-    if (u8IsFRSSupported)
-    {
-        gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_CRITERIA_SUPPORTED;
-        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_FRS_CRITERIA_SUPPORTED\r\n");        
-    }
-    else
-    {
-        gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_CRITERIA_SUPPORTED);
-        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_FRS_CRITERIA_NOT_SUPPORTED\r\n");        
-    }
+    /* Enable/Disable UPD350 for FRS transmission/detection */
+    TypeC_EnableFRSXMTOrDET (u8PortNum, u8IsFRSSupported);    
 }
 
-/* To-do: Can this function be moved to TypeC layer ? */
-void DPM_GearUpForFRSwap (UINT8 u8PortNum)
-{        
-    if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
-    {                    
-        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-        {
-            UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
-            
-            /* Enable FRS Req PIO to enable FRS signal transmission */                
-            DPM_ENABLE_FRS_REQ_PIO(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Enabled\r\n");                            
-        }        
-        else /* PD_ROLE_SINK */
-        {            
- 			 /* Enable non-Power fault thresholds for TYPEC_VBUS_5V */
-            TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-
-            /* Spec Reference: An initial Sink Shall disable its VBUS Disconnect 
-               Threshold detection circuitry while Fast Role Swap detection is active */                           
-            /*Setting VBUS Comparator OFF*/
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);    
-            
-            UPD_RegByteClearBit (u8PortNum, TYPEC_VBUS_SAMP_EN, 
-                    (UINT8)(TYPEC_VSINKDISCONNECT_THR0_MATCH | TYPEC_VSAFE0V_MAX_THR_MATCH));                        
-            
-            /*Setting VBUS Comparator ON*/
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);            
-            
-            UINT8 u8PIOOvrSrc = UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET;
-            
-            if (gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV > TYPEC_VBUS_5V)
-            {
-                u8PIOOvrSrc |= UPD_PIO_OVR_VBUS4_THR_MATCH;
-            }
-            else
-            {
-                u8PIOOvrSrc |= UPD_PIO_OVR_VBUS1_THR_MATCH;
-            }
-            
-            /* Configure PIO Override Source */
-            UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, u8PIOOvrSrc);
-            
-            /* Enable PIO Override */
-            UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
-            
-            /* Enable FRS Signal Detection */
-            /* To-do: If this function is moved to TypeC, use UPD write APIs 
-               instead of DPM defines */
-            DPM_ENABLE_FRS_DET_EN(u8PortNum);
-            
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Enabled\r\n"); 
-        }
-    }
-    else  /* FRS Criteria Not Supported for the port */
-    {               
-        /* Disable FRS signal transmission and detection */
-        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-        {
-            DPM_DISABLE_FRS_REQ_PIO(u8PortNum); 
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
-        }
-        else /* PD_ROLE_SINK */
-        {
-            DPM_DISABLE_FRS_DET_EN(u8PortNum);  
-            /* Re-enable the VBUS Disconnect Threshold detection circuitry */
-            /*Setting VBUS Comparator OFF*/
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);    
-            
-            UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_SAMP_EN, 
-                    (UINT8)(TYPEC_VSINKDISCONNECT_THR0_MATCH | TYPEC_VSAFE0V_MAX_THR_MATCH));                        
-            
-            /*Setting VBUS Comparator ON*/
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);  
-            
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Disabled\r\n");
-        }      
-        /* Disable PIO Override since FRS transmission/detection is disabled */
-        UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
-    }
-}
 #endif
 /*********************************DPM TypeC Detach API**************************************/
 void DPM_OnTypeCDetach(UINT8 u8PortNum)
@@ -1685,7 +1593,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
                                             & DPM_INT_EVT_INITIATE_ALERT);
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
-    gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_FRS_CRITERIA_SUPPORTED |\
+    gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_FRS_XMT_OR_DET_ENABLED |\
                                         DPM_PORT_IN_MODAL_OPERATION);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();

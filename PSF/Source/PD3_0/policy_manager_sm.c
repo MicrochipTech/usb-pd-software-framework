@@ -765,12 +765,12 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
             DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS REQ Disabled\r\n");
         }
         else
         {
             DPM_DISABLE_FRS_DET_EN(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Disabled\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
         }
 #endif                                 
     } /*DPM_CLIENT_REQ_RENEGOTIATE*/    
@@ -802,12 +802,12 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
             DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_REQ_PIO Disabled\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS REQ Disabled\r\n");
         }
         else
         {
             DPM_DISABLE_FRS_DET_EN(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS_DET_EN Disabled\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
         }
 #endif                 
     } /*DPM_CLIENT_REQ_PR_SWAP*/
@@ -844,6 +844,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         
         UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE); 
         gu8HPDNextIndex[u8PortNum] = SET_TO_ZERO; 
+        /* To-do: Critical section entry/exit needed before this ? */
         gu16HPDStsISR[u8PortNum] = SET_TO_ZERO;
                                       
         DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Disabled\r\n");

@@ -656,7 +656,7 @@ void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
            Select Register. The respective PIO_OVR_MON must be set to 0x0, in PIO 
            Overridex Monitor Value Register to trip on VBUS falling below 
            vSAFE5v (upper) per VBUS Threshold Select */               
-        /* PIO Override source for Sink port will be set in DPM_GearUpForFRSwap() 
+        /* PIO Override source for Sink port will be set in TypeC_EnableFRSXMTOrDET() 
            depending on the negotiated voltage */
         
         /* PIO Override output is low for EN_SINK and high for EN_FRS */                

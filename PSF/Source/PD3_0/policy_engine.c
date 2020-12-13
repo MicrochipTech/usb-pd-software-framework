@@ -310,7 +310,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             }
             else if (PE_CTRL_FR_SWAP == u8MsgType)
             {
-                /* To ensure the following conditions from PD spec, DPM_FRS_CRITERIA_SUPPORTED
+                /* To ensure the following conditions from PD spec, DPM_FRS_SIGNAL_TRANSMITTED
                    bit is checked here instead of FRS current field from sink PDO.
                    PD spec: The initial Source Shall Not transmit a Fast Role Swap signal
                    if Fast Role Swap USB Type-C Current field is set to zero. Initially,
@@ -320,8 +320,9 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                    Not perform a Fast Role Swap.*/              
                 #if (FALSE == INCLUDE_PD_FR_SWAP)
                     u8RetVal = PE_UNSUPPORTED_MSG; 
-                #else 
-                    if (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED))
+                #else                     
+                    if ((PD_ROLE_SINK == u8CurrentPwrRole) || \
+                            (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_TRANSMITTED)))
                     {
                         u8RetVal = PE_UNSUPPORTED_MSG;
                     }
