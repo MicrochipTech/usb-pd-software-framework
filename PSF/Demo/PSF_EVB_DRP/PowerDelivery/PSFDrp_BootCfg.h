@@ -121,8 +121,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  * 1 - Power Sink/Data Host; 
  * 2 - Power Source/Data Device; 
  * 3 - Reserved  */
-#define CFG_PORT_0_FRS_POWER_DATA_STATE  (0U << 11) /* To-do: Set this to 1 */
-#define CFG_PORT_1_FRS_POWER_DATA_STATE  (0U << 11) /* To-do: Set this to 2 */
+#define CFG_PORT_0_FRS_POWER_DATA_STATE  (1U << 11) 
+#define CFG_PORT_1_FRS_POWER_DATA_STATE  (2U << 11) 
 
 /********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
@@ -200,8 +200,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_0_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_0_SINK_USB_COMM             0U
-/* To-do: Set relevant current value */
-#define CFG_PORT_0_SINK_FRS_CURRENT          0U
+#define CFG_PORT_0_SINK_FRS_CURRENT          3U
 
 #define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
                                     CFG_PORT_0_SINK_FRS_CURRENT, \
@@ -253,8 +252,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_1_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_1_SINK_USB_COMM             0U
-/* To-do: Set relevant current value */
-#define CFG_PORT_1_SINK_FRS_CURRENT          0U 
+#define CFG_PORT_1_SINK_FRS_CURRENT          3U 
 
 #define CFG_PORT_1_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 0,\
                                     CFG_PORT_1_SINK_FRS_CURRENT, \

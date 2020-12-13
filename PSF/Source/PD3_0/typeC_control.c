@@ -395,18 +395,18 @@ void TypeC_InitPort (UINT8 u8PortNum)
 #endif
 
     /*Setting CC Comparator ON*/
-    TypeC_ConfigCCComp (u8PortNum,TYPEC_CC_COMP_CTL_CC1_CC2);
+    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
     
 #if (TRUE == INCLUDE_PD_FR_SWAP)  
     /* Enable transmission/detection of FRS signal based on the configured 
        Power/Data state of the port */
     if (PD_ROLE_SOURCE_UFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
     {        
-        TypeC_EnableFRSSignalTransmission (u8PortNum);
+        TypeC_ConfigureFRSSignalXMT (u8PortNum);
     }
     else if (PD_ROLE_SINK_DFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
     {
-        TypeC_EnableFRSSignalDetection (u8PortNum);    
+        TypeC_ConfigureFRSSignalDET (u8PortNum);    
     }
     else
     {
@@ -681,7 +681,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     UINT8 u8VBUSValueToCheck;
                     
 					/* To-do handle this if check properly to differentiate between a PR and FR swap */
-                    if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
+                    if (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED)
                     {
                         u8VBUSValueToCheck = TYPEC_VBUS_5V_PRES;
                     }
@@ -1423,8 +1423,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     break;
                 }
-                   
-                
+                                   
                 /*Sink enters this sub-state after the tPDDeounce timer is expired or VBUS drops below 
                 vSinkDisconnect*/
                 case TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS:
@@ -3196,9 +3195,12 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                port is Sink and VCONN role is Source */
             if ((TYPEC_ATTACHED_SNK == u8TypeCState) && \
                          (TYPEC_ATTACHED_SNK_RUN_SM_SS == u8TypeCSubState))
-            {
-                /* Go to TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state for starting tPDDebounce */
-                u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
+            {			
+                if (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))
+                {                    
+                    /* Go to TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state for starting tPDDebounce */
+                    u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
+                }
             }
             else if((TYPEC_UNATTACHED_SNK == u8TypeCState) || (TYPEC_ATTACHWAIT_SNK == u8TypeCState))
             {               
@@ -3733,7 +3735,7 @@ UINT16 TypeC_ObtainCurrentValueFrmRp (UINT8 u8PortNum)
 /*******************************************************************************************/
 #if (TRUE == INCLUDE_PD_FR_SWAP)
 
-void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
+void TypeC_ConfigureFRSSignalDET (UINT8 u8PortNum)
 {      
     /* Ensure at minimum that pwr_sw_clk_gate_en, cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
        pio_clk_gate_en, and i2c_clk_gate_en (or spi_clk_gate_en) are cleared in Clock Gate Register */    
@@ -3793,7 +3795,7 @@ void TypeC_EnableFRSSignalDetection (UINT8 u8PortNum)
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Detection Enabled\r\n");             
 }
 
-void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
+void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum)
 {
     /* Get the polarity of FRS Request PIO */
     UINT8 u8EN_FRSPol = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;
@@ -3853,6 +3855,99 @@ void TypeC_EnableFRSSignalTransmission (UINT8 u8PortNum)
     UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO);
     
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Transmission Enabled\r\n");             
+}
+
+void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
+{        
+    if (u8IsFRSSupported)
+    {                    
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        {
+            /* Enable PIO Override */
+            UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
+            
+            /* Enable FRS Req PIO for FRS signal transmission */                
+            UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO);
+                    
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Enabled\r\n");                            
+        }        
+        else /* PD_ROLE_SINK */
+        {            
+ 			/* Enable non-Power fault thresholds for TYPEC_VBUS_5V */
+            /* To-do: instead of calling TypeC_ConfigureVBUSThr() API, set  
+               5V thresholds manually. In this case, fault handling gets disabled */
+            TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+
+            /* Spec Reference: An initial Sink Shall disable its VBUS Disconnect 
+               Threshold detection circuitry while Fast Role Swap detection is active */                           
+            /* To-do: Check if disconnect detection can be handled this way or 
+               we can enable it always and block it in TypeC_HandleISR() */
+            /*Setting VBUS Comparator OFF*/
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);    
+            
+            UPD_RegByteClearBit (u8PortNum, TYPEC_VBUS_SAMP_EN, 
+                    (UINT8)(TYPEC_VSINKDISCONNECT_THR0_MATCH | TYPEC_VSAFE0V_MAX_THR_MATCH));                        
+            
+            /*Setting VBUS Comparator ON*/
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);            
+            
+            UINT8 u8PIOOvrSrc = UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET;
+            
+            if (gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV > TYPEC_VBUS_5V)
+            {
+                u8PIOOvrSrc |= UPD_PIO_OVR_VBUS4_THR_MATCH;
+            }
+            else
+            {
+                u8PIOOvrSrc |= UPD_PIO_OVR_VBUS1_THR_MATCH;
+            }
+            
+            /* Configure PIO Override Source */
+            UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, u8PIOOvrSrc);
+            
+            /* Enable PIO Override */
+            UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
+            
+            /* Enable FRS Signal Detection */
+            UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
+            
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Enabled\r\n"); 
+        }
+        /* Set FRS XMT or DET Enabled status */
+        gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_XMT_OR_DET_ENABLED;
+    }
+    else  /* FRS Criteria Not Supported for the port */
+    {               
+        /* Disable FRS signal transmission and detection */
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        {
+            UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO);
+            
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Disabled\r\n");
+        }
+        else /* PD_ROLE_SINK */
+        {            
+            UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);
+            
+            /* Re-enable the VBUS Disconnect Threshold detection circuitry */
+            /*Setting VBUS Comparator OFF*/
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);    
+            
+            UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_SAMP_EN, 
+                    (UINT8)(TYPEC_VSINKDISCONNECT_THR0_MATCH | TYPEC_VSAFE0V_MAX_THR_MATCH));                        
+            
+            /*Setting VBUS Comparator ON*/
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);  
+            
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
+        }      
+        /* Disable PIO Override since FRS transmission/detection is disabled */
+        UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
+        
+        /* Clear FRS XMT or DET Enabled status */
+        gasDPM[u8PortNum].u32DPMStatus &= ~DPM_FRS_XMT_OR_DET_ENABLED;         
+    }       
 }
 
 #endif /* INCLUDE_PD_FR_SWAP */ 

@@ -1206,7 +1206,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
         case ePE_FRS_SNK_SRC_START_AMS:
         {
             /*To-do PE variables and timers need to be reset to terminate any pending AMS*/
-            if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_CRITERIA_SUPPORTED)
+            if (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED)
             {
                 gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_SEND_SWAP;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS;
@@ -1245,13 +1245,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        for the FR_Swap message sent */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS\r\n");
                     /* Start Sender Response Timer. If Accept message is not received as response,
-                       move to ePE_SNK_READY state */
-                    /* Initialize and run PSSourceOffTimer. 
-                       Note: DPM_VBUSorVCONNOnOff_TimerCB API is reused for PSSourceOff 
-                       timer call back intentionally, as both the time outs invoke
-                       Error Recovery. This would save the usage of code memory.
-                       DPM_CLR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
-                       so that FR_Swap In Progress mask would be cleared on Timeout */
+                       invoke TypeC Error Recovery */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_SENDERRESPONSE_TIMEOUT_MS),
                                                             PE_StateChange_TimerCB,u8PortNum,  
@@ -1291,7 +1285,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
                                         
                     /* Transition to Sink Standby.
-                       Configure the Type C VBUS threshold for vSafe0v detection */
+                       Configure the Type C VBUS threshold for vSafe5v detection */
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA; 
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
