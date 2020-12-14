@@ -484,14 +484,19 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
       
-                    /* Move to Transition to Off state based on the current power role */
+                    /* Disable FRS and move to Transition to Off state 
+                       based on the current power role */
                     if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
+                        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
+                        
                         eTxDoneSt = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF;
                         eTxDoneSS = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS;
                     }
                     else
                     {
+                        DPM_DISABLE_FRS_DET_EN(u8PortNum);
+                        
                         eTxDoneSt = ePE_PRS_SNK_SRC_TRANSITION_TO_OFF;
                         eTxDoneSS = ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS;
                     }
