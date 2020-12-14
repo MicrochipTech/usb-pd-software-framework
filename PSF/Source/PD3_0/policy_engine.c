@@ -80,7 +80,6 @@ void PE_InitPort (UINT8 u8PortNum)
 /************************************************************************************/
 void PE_RunStateMachine (UINT8 u8PortNum)
 {
-
     /* Receive Data Buffer */
     UINT8 u8aDataBuf[PRL_MAX_EXTN_MSG_LEN_IN_BYTES] = {SET_TO_ZERO};
     /*Received message type*/
@@ -310,7 +309,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             }
             else if (PE_CTRL_FR_SWAP == u8MsgType)
             {
-                /* To ensure the following conditions from PD spec, DPM_FRS_SIGNAL_TRANSMITTED
+                /* To ensure the following conditions from PD spec, DPM_FRS_XMT_OR_DET_ENABLED
                    bit is checked here instead of FRS current field from sink PDO.
                    PD spec: The initial Source Shall Not transmit a Fast Role Swap signal
                    if Fast Role Swap USB Type-C Current field is set to zero. Initially,
@@ -322,7 +321,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                     u8RetVal = PE_UNSUPPORTED_MSG; 
                 #else                     
                     if ((PD_ROLE_SINK == u8CurrentPwrRole) || \
-                            (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_TRANSMITTED)))
+                            (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED)))
                     {
                         u8RetVal = PE_UNSUPPORTED_MSG;
                     }

@@ -1886,16 +1886,23 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             /*Clearing the FRS_XMT_STS/FRS_RCV_STS interrupt */
             UPD_RegisterWriteISR (u8PortNum, TYPEC_EXT_INT_STS, &u8Data, BYTE_LEN_1);
             
-            gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_FRS_XMT_RCV_STS_INTERRUPT;
-        }
-        if (u8Data & TYPEC_FRS_RCV_STS)
-        {            
             /* UPD DOS Reference: After being cleared by FW this bit will not be set again 
                by HW until the FRS Detect Enable (FRS_DET_EN) is cleared. This is
-               irrespective of the reception of additional FRS signaling.*/
-            UPD_RegisterReadISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
-            u8Data &= ~(TYPEC_FRS_DET_EN);
+               irrespective of the reception of additional FRS signaling */                             
+            if (u8Data & TYPEC_FRS_XMT_STS)
+            {
+                /* Same u8Data variable is used for EXT INT STS and FRS CTL HIGH registers */
+                UPD_RegisterReadISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
+                u8Data &= ~(TYPEC_FRS_REQ_PIO);                
+            }   
+            else
+            {
+                UPD_RegisterReadISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
+                u8Data &= ~(TYPEC_FRS_DET_EN); 
+            }            
             UPD_RegisterWriteISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
+            /* Set FRS XMT/RCV status mask in u8DRPStsISR */
+            gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_FRS_XMT_RCV_STS_INTERRUPT;
         }
 #endif
     }
@@ -2116,7 +2123,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         {
             u8IntStsISR &= ~TYPEC_VBUS_PRESENCE_MASK;
             UPD_RegisterReadISR (u8PortNum, TYPEC_VBUS_THR1, (UINT8 *)&u16Data, BYTE_LEN_2);
-            u16Data =(UINT16)((u16Data * TYPEC_VBUS_THRX_UNITS_MILLI_V)
+            u16Data = (UINT16)((u16Data * TYPEC_VBUS_THRX_UNITS_MILLI_V)
                               /gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor);
 
             if (u16Data <= gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV)
@@ -3797,7 +3804,7 @@ void TypeC_ConfigureFRSSignalDET (UINT8 u8PortNum)
 
 void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum)
 {
-    /* Get the polarity of FRS Request PIO */
+    /* Get the polarity of EN_FRS PIO */
     UINT8 u8EN_FRSPol = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;
 
     /* Ensure at minimum that cable_plug_clk_gate_en, pd_mac_clk_gate_en, 
@@ -3908,6 +3915,9 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             
             /* Enable PIO Override */
             UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
+            
+            /* Enable DC/DC pin function */
+            PWRCTRL_ConfigDCDCEn (u8PortNum, TRUE);  
             
             /* Enable FRS Signal Detection */
             UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    

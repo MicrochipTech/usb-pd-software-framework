@@ -765,7 +765,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
             DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS REQ Disabled\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Disabled\r\n");
         }
         else
         {
@@ -802,7 +802,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
             DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS REQ Disabled\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Disabled\r\n");
         }
         else
         {
