@@ -909,7 +909,7 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum)
 #if (TRUE == INCLUDE_PD_SINK)
 /****************************** DPM Sink related APIs*****************************************/
 /**************************************************************************************************/
-void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj)
+void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj)
 {   
     if (DPM_GET_CONFIGURED_NEW_PDO_STATUS(u8PortNum))
     {
@@ -925,6 +925,14 @@ void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *pu8SinkPDOCnt, UINT32 *pu32D
         (void)MCHP_PSF_HOOK_MEMCPY (pu32DataObj, gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO, \
                     DPM_4BYTES_FOR_EACH_PDO_OF(*pu8SinkPDOCnt));        
     }    
+
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+    /* Clear the FRS current field if current negotiated PD Spec Rev is not 3.0 */
+    if (DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum) != PD_SPEC_REVISION_3_0)
+    {
+        pu32DataObj[INDEX_0] &= ~(DPM_FRS_CURR_MASK);
+    }
+#endif 
 }
 
 void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2], UINT8 u8SinkMode)
@@ -1429,7 +1437,7 @@ void DPM_InitiateInternalEvts(UINT8 u8PortNum)
         if ((PD_ROLE_SOURCE_UFP == u8CfgFRSPwrDataSt) || (PD_ROLE_SINK_DFP == u8CfgFRSPwrDataSt))
         {            
             DPM_EvaluateAndGearUpForFRS (u8PortNum);        
-        }
+        }        
     }
 #endif /*INCLUDE_PD_FR_SWAP*/
 
@@ -1460,16 +1468,23 @@ void DPM_EvaluateAndGearUpForFRS (UINT8 u8PortNum)
     }
     
     /* FRS is possible only if 
-       i.   the Power/Data/VCONN role of the port is 
+       i.   the current negotiated PD Spec Rev is 3.0
+       ii.  the Power/Data/VCONN role of the port is 
             Source/UFP/Not VCONN Source (or) Sink/DFP/VCONN Source 
-       ii.  FRS Current field in PSF Sink PDO and Partner Sink PDO 
+       iii. FRS Current field in PSF Sink PDO and Partner Sink PDO 
             are non-zero
-       iii. If PSF acts as initial sink, u8ConfiguredFRSCurrent needs to be 
+       iV.  If PSF acts as initial sink, u8ConfiguredFRSCurrent needs to be 
             greater than or equal to u8PartnerFRSCurrent 
             If PSF acts as initial source, u8ConfiguredFRSCurrent needs to be 
             less than or equal to u8PartnerFRSCurrent */    
     do
     {
+        if (DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum) != PD_SPEC_REVISION_3_0)
+        {
+            u8IsFRSSupported = FALSE;
+            break; 
+        }
+        
         if (PD_ROLE_SOURCE_UFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
         {
             if (!((PD_ROLE_SOURCE == u8CurrPwrRole) && \

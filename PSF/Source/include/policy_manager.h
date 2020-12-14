@@ -376,6 +376,9 @@ Source/Sink Power delivery objects*/
 /* Capability max current check */
 #define DPM_MAX_CURR_MASK                 0x1FF
 
+/* FRS Current Mask */
+#define DPM_FRS_CURR_MASK                 (BIT(23) | BIT(24))
+
 #define DPM_GET_PDO_TYPE(X)   					((X & 0xC0000000) >> 30)
 #define DPM_GET_PDO_CURRENT(X)                  ((X & 0x000003FF))
 #define DPM_GET_PDO_VOLTAGE(X)                  ((X & 0x000FFC00) >> 10)	/*in 50mv units*/
