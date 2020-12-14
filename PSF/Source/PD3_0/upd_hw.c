@@ -451,7 +451,7 @@ void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
         /* Do Nothing */
     }    
     
-    /* Return without initializing the pin if FRS request pin functionality 
+    /* Return without initializing the pin if EN_FRS/FAULT_IN pin functionality 
        is disabled by the user */
     if ((UINT8)eUPD_PIO_UN_DEF == u8PIONum)
     {
