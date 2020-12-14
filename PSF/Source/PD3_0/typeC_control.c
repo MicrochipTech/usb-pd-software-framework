@@ -2101,7 +2101,11 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                /* under voltage is considered if VBUS not lowered as part of Over voltage*/
                 if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
                 {
-                    gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_UV;
+                    /* To-do: UV Fault to be handled properly when FRS is enabled */
+                    if (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED))
+                    {
+                        gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_UV;
+                    }
                 }
             }      
         }

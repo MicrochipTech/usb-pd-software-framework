@@ -795,21 +795,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
                                       ~(DPM_CLIENT_REQ_PR_SWAP); 
         
         /* Request DPM for PR swap */
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
-        
-#if (TRUE == INCLUDE_PD_FR_SWAP)        
-        /*Disable FRS_REQ_PIO/FRS_DET_EN to avoid FRS between a PR_Swap */
-        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-        {
-            DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Disabled\r\n");
-        }
-        else
-        {
-            DPM_DISABLE_FRS_DET_EN(u8PortNum);
-            DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
-        }
-#endif                 
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);                        
     } /*DPM_CLIENT_REQ_PR_SWAP*/
 #endif     
 #if (TRUE == INCLUDE_PD_DR_SWAP)
