@@ -3817,19 +3817,6 @@ void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum)
     /* Program FRS Transmission Length register with a value of 90us */
     UPD_RegWriteByte (u8PortNum, TYPEC_FRS_TX_LEN, TYPEC_FRS_TX_LEN_90US);
     
-    /* Program the CC pin which has sink attached in FRS_CC_SEL in FRS Control Register */
-        /* 5:4  Description 
-           00b: CC1 pin
-           01b: CC2 pin
-           1xb: CC1 and CC2 pin */
-    /* In case of CC1 attach, clear both the bits */
-    UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_LOW, (UINT8)TYPEC_FRS_CC_SEL);
-    /* In case of CC2 attach, set Bit 4 */
-    if(gasTypeCcontrol[u8PortNum].u8CC2MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
-    {
-        UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_LOW, (UINT8)TYPEC_FRS_CC_SEL_CC2);    
-    }
-    
     /* Enable the UPD350 high level Extended interrupt*/ 
     UINT16 u16Data = UPD_RegReadWord (u8PortNum, UPDINTR_INT_EN);
     u16Data |= UPDINTR_EXT_INT;
@@ -3870,6 +3857,20 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
     {                    
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
+            /* Program the CC pin which has sink attached in FRS_CC_SEL in FRS Control Register */
+            /* 5:4  Description 
+               00b: CC1 pin
+               01b: CC2 pin
+               1xb: CC1 and CC2 pin */
+            /* In case of CC1 attach, clear both the bits */
+            UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_LOW, (UINT8)TYPEC_FRS_CC_SEL);
+            
+            if (TYPEC_ORIENTATION_CC2 == TYPEC_GET_CC_ORIENTATION_STS(u8PortNum))
+            {
+                /* In case of CC2 attach, set Bit 4 */
+                UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_LOW, (UINT8)TYPEC_FRS_CC_SEL_CC2);    
+            }
+    
             /* Enable PIO Override */
             UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
             
