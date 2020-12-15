@@ -1056,6 +1056,10 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                    supplying VBUS */
                 DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_TRANSITION_TO_OFF\r\n");                        
 
+                /*Setting swap in progress bit in u8PEPortSts during source to sink FRS
+                  is used to turn off VBUS discharge*/
+                gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
+                
                 /* Drive the DC_DC_EN pin to low since it is not needed for Sink functionality */
                 PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
 
@@ -1184,6 +1188,8 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
                           
+                        gasPolicyEngine[u8PortNum].u8PEPortSts &= (~PE_SWAP_IN_PROGRESS_MASK);
+                        
                         /*Re-enable the PIO interrupts for EN_FRS pin */
                         UPD_EnableInputPIO (u8PortNum, eUPDPIO_EN_FRS); 
                         
