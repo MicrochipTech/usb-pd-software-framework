@@ -680,9 +680,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                        Before placing Rp, check if VBUS is at 0V */
                     UINT8 u8VBUSValueToCheck;
                     
-                    /* If DPM_FRS_XMT_OR_DET_ENABLED bit is set in u32DPMStatus,
-                       the swap is an FR_Swap. */
-                    if (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED)
+                    /*If DPM_IS_FRS_XMT_OR_DET_ENABLED returns TRUE, and a swap is in progress,
+                      the swap is an FR_Swap. */
+                    if (TRUE == DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum))
                     {
                         u8VBUSValueToCheck = TYPEC_VBUS_5V_PRES;
                     }
@@ -2103,7 +2103,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                 if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
                 {
                     /* To-do: UV Fault to be handled properly when FRS is enabled */
-                    if (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED))
+                    if (FALSE == DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum))
                     {
                         gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_UV;
                     }
