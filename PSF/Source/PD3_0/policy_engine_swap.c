@@ -486,6 +486,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
       
                     /* Disable FRS and move to Transition to Off state 
                        based on the current power role */
+                    DPM_DISABLE_FRS_SUPPORT(u8PortNum);
+                    
                     if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
                         DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
@@ -1210,7 +1212,6 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
         /*Sink to Source FR_Swap States*/
         case ePE_FRS_SNK_SRC_START_AMS:
         {
-            /*To-do PE variables and timers need to be reset to terminate any pending AMS*/
             if (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED)
             {
                 gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_SEND_SWAP;

@@ -772,6 +772,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             DPM_DISABLE_FRS_DET_EN(u8PortNum);
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
         }
+        
+        DPM_DISABLE_FRS_SUPPORT(u8PortNum);
 #endif                                 
     } /*DPM_CLIENT_REQ_RENEGOTIATE*/    
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
@@ -890,20 +892,37 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         /*Clear the Internal event since it is processed*/
         gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_FR_SWAP);
                 
-        gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_START_AMS;
-        u16AMSInProgress = DPM_INT_EVT_INITIATE_FR_SWAP;
-        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: FR_SWAP INITIATED\r\n");
-        /* To-do: This process can occur at any time, even during a Non-interruptible AMS in 
-           which case error handling such as Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.
-           if (PE_IsPolicyEngineIdle(u8PortNum))
-           {
-                // Change the PE state to send FR Swap message
-           }
-           else
-           {
-               // Send Hard Reset
-           }
-         */
+        /* PD Spec reference regarding FR_Swap: This process can occur at any time,
+           even during a Non-interruptible AMS in which case error handling such as
+           Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.*/
+        if (PE_IsPolicyEngineIdle(u8PortNum))
+        {
+            gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_START_AMS;
+            u16AMSInProgress = DPM_INT_EVT_INITIATE_FR_SWAP;
+            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: FR_SWAP INITIATED\r\n");
+        }
+        else
+        {
+            if(PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+            {
+                if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                {
+                    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                }
+                else
+                {
+                    /*Do nothing. If User application returns FALSE for 
+                     eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                     the user application will raise a Port disable client request*/
+                }
+            }  
+            else
+            {
+                /* The current power role would be sink since only a sink can initiate an FR_Swap*/
+                gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_HARD_RESET;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_HARD_RESET_SEND_SS;
+            }
+        }
     }
 #endif 
 #if (TRUE == INCLUDE_PD_3_0)

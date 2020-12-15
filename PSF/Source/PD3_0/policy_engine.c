@@ -1458,23 +1458,52 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 {
                     /*Accept the Fast Role swap if current state is READY State or
                     any VDM AMS is active. Fast Role Swap will be received only by Dual Role Source*/
-                    if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
-                        (u8PEInVDMState))
+                    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {
-#if ((TRUE == INCLUDE_PD_SOURCE_PPS) || (TRUE == INCLUDE_PD_VDM))                        
-                        /* In case of PPS, Kill SourcePPSCommTimer only in ePE_SRC_READY  
-                           state if the current explicit contract is for a PPS APDO 
-                           Kill VDM Response timer if PE is waiting for a VDM response, but
-                           the AMS is interrupted by DR Swap AMS */
-                        if(((u8IsPPSContract) && (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState)) || 
-                           (ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState))
+                        
+                        if(((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) &&
+                            (ePE_SRC_READY_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))  || \
+                            (u8PEInVDMState))
                         {
-                            PE_KillPolicyEngineTimer (u8PortNum);
-                        }  
+                            #if ((TRUE == INCLUDE_PD_SOURCE_PPS) || (TRUE == INCLUDE_PD_VDM))                        
+                            /* In case of PPS, Kill SourcePPSCommTimer only in ePE_SRC_READY  
+                            state if the current explicit contract is for a PPS APDO 
+                            Kill VDM Response timer if PE is waiting for a VDM response, but
+                            the AMS is interrupted by DR Swap AMS */
+                            if(((u8IsPPSContract) && (ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState)) || 
+                               (ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState))
+                            {
+                                PE_KillPolicyEngineTimer (u8PortNum);
+                            }  
 #endif                        
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"FR_SWAP Received from Partner\r\n");
+                            DEBUG_PRINT_PORT_STR (u8PortNum,"FR_SWAP Received from Partner\r\n");
 
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_EVALUATE_SWAP; 
+                            gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_EVALUATE_SWAP; 
+                        }
+                        else
+                        {
+                            if(PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+                           {
+                               if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                               {
+                                   DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                               }
+                               else
+                               {
+                                   /*Do nothing. If User application returns FALSE for 
+                                    eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                                    the user application will raise a Port disable client request*/
+                               }
+                           }  
+                           else
+                           {
+                               /* The current power role would be source since only a source can receive an FR_Swap*/
+                               gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
+                               gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
+                           }
+                        }
+                                                        
+
                     }
                     else
                     {
