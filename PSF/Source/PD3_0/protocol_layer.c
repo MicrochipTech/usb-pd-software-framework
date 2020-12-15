@@ -459,12 +459,16 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	
 	/* Tx_Discard handling*/
 	
-	if ((gasPRL[u8PortNum].u8RxRcvdISR) &&                			/* Checks whether a message is received */
+	if (((gasPRL[u8PortNum].u8RxRcvdISR) &&                			/* Checks whether a message is received */
             (PRL_SOP_TYPE == gasPRLRecvBuff[u8PortNum].u8SOPtype))     /* Checks whether received message is PRL_SOP_TYPE type*/
+            || (TRUE == DPM_GET_FRS_SIGNAL_XMT_RCV_STS(u8PortNum))) /* Checks whether FRS signal is transmitted or received */
 	{
-	  	/* Spec Ref: PRL_Tx_Discard_Message - If any message is currently awaiting tranmission discard and Increment MessageID Counter
-									It is entered on "Protocol Layer message reception in PRL_RX_STORE_MESSAGEID state" */
-	  
+	  	/* Spec Ref: Protocol Layer Message transmission Shall enter the PRL_Tx_Discard_Message state whenever:
+                -> Protocol Layer Message reception receives an incoming Message or
+                -> The Fast Role Swap signal is being transmitted (see Section 5.8.5.6)
+                -> The Fast Role Swap signal is detected (see Section 5.8.6.3). */
+         
+        
 	  	/* According to Message Discarding Rules, if SOP packet is received. Tx Packet in queue is discarded*/
 	  	/* And Message ID Counter is incremented*/
 	  	PRL_IncrementMsgID (u8PortNum);
@@ -473,7 +477,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 						Entered on condition "discarding Complete" */
 		PRL_PHYLayerReset (u8PortNum);
         
-        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg Discarded on Recv\r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg Discarded\r\n");
 		
 		return PRL_RET_TX_MSG_DISCARD_ON_RCV;
 	}

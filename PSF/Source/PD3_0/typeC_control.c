@@ -2857,8 +2857,6 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS XMT INTR\r\n");            
             
-            gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_SIGNAL_TRANSMITTED;
-            
             /* Set Rp value to SinkTxOK, so that sink partner can initiate
                FR_Swap message */            
             #if (TRUE == INCLUDE_PD_3_0)    
@@ -2885,6 +2883,12 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
             /* Register internal event to start FR_Swap AMS */
             DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);                
         }
+        
+        /* When a Fast Role Swap signal is transmitted in received, any active 
+           transmission shall be overridden and any pending messages shall be discarded */
+        PE_ResetParams(u8PortNum);
+        
+        gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_SIGNAL_XMT_OR_RCV_DONE;
         
         gasTypeCcontrol[u8PortNum].u8DRPStsISR &= ~(TYPEC_FRS_XMT_RCV_STS_INTERRUPT);
     }

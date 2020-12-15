@@ -978,7 +978,10 @@ void PRL_EnableRx (UINT8 u8PortNum, UINT8 u8Enable);
 
     Return:
 		The return value can be the following,
-			PRL_RET_TX_MSG_DISCARD_ON_RCV(0x00)		-	Message transmission aborted as SOP type Message is received
+			PRL_RET_TX_MSG_DISCARD_ON_RCV(0x00)		-	Message transmission aborted due to one of the following condtions:
+ *                                                        1. SOP type Message is received
+ *                                                        2. FRS signal is transmitted
+ *                                                        3. FRS signal is received
 			PRL_RET_TX_MSG_TRANSMITTED_ON_LINE(0x01)-	Message transmitted on line
 			PRL_RET_TX_MSG_BUFFERED(0x02)			-	Message is buffered for CA & will be sent later
 			PRL_RET_TX_MSG_CHUNKING_ENABLED(0x03)	- 	Message is tranmitted via Chunking SM

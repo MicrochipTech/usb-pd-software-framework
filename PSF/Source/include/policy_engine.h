@@ -589,6 +589,34 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
         None.
 **************************************************************************************************/
 void PE_InitPort (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void PE_ResetParams (UINT8 u8PortNum);
+
+    Summary:
+        This API resets policy engine parameters for a given port.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API resets policy engine parameters for a given port.
+ 
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void PE_ResetParams (UINT8 u8PortNum);
+
 /**************************************************************************************************
     Function:
         void PE_RunStateMachine (UINT8 u8PortNum);

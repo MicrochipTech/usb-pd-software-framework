@@ -994,9 +994,9 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_EVALUATE_SWAP\r\n");
             
             /*Evaluate whether FRS signal has been transmitted*/
-            if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_TRANSMITTED)
+            if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_XMT_OR_RCV_DONE)
             {
-                gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_SIGNAL_TRANSMITTED);
+                gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_SIGNAL_XMT_OR_RCV_DONE);
                         
                 gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ACCEPT_SWAP;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SRC_SNK_ACCEPT_SWAP_ENTRY_SS;
@@ -1240,6 +1240,8 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
 
                     u8IsTransmit = TRUE;                                        
                              
+                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_SIGNAL_XMT_OR_RCV_DONE);
+                    
                     /* Assign an idle sub-state to wait for message transmit completion */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                    
                     break; 

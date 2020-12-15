@@ -36,6 +36,27 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 void PE_InitPort (UINT8 u8PortNum)
 {
+    PE_ResetParams(u8PortNum);
+    
+    if (PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
+    {
+        /*Setting Initial Source Policy Engine State as Startup State*/
+        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
+
+        /*Setting No Response TimerID to Max Value */
+        gasPolicyEngine[u8PortNum].u8PENoResponseTimerID = MAX_CONCURRENT_TIMERS;
+    }
+    else
+    {
+        /*Setting Initial Sink Policy Engine State as Startup State*/
+        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+    }
+}
+
+void PE_ResetParams(UINT8 u8PortNum)
+{
     /*Setting the HardResetCounter to 0 */
     gasPolicyEngine[u8PortNum].u8HardResetCounter = SET_TO_ZERO;
 
@@ -55,24 +76,8 @@ void PE_InitPort (UINT8 u8PortNum)
     gasPolicyEngine[u8PortNum].u32MsgHeader = SET_TO_ZERO;
     gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = SET_TO_ZERO;
     
-    if (PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
-    {
-        /*Setting the CapsCounter to 0 */
-        gasPolicyEngine[u8PortNum].u8CapsCounter = SET_TO_ZERO;
-
-        /*Setting Initial Source Policy Engine State as Startup State*/
-        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
-        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_STARTUP_ENTRY_SS;
-
-        /*Setting No Response TimerID to Max Value */
-        gasPolicyEngine[u8PortNum].u8PENoResponseTimerID = MAX_CONCURRENT_TIMERS;
-    }
-    else
-    {
-        /*Setting Initial Sink Policy Engine State as Startup State*/
-        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
-        gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
-    }
+    /*Setting the CapsCounter to 0 */
+    gasPolicyEngine[u8PortNum].u8CapsCounter = SET_TO_ZERO;
 }
 /***********************************************************************************/
 /***********************************************************************************/
