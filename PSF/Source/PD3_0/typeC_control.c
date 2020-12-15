@@ -680,7 +680,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                        Before placing Rp, check if VBUS is at 0V */
                     UINT8 u8VBUSValueToCheck;
                     
-					/* To-do handle this if check properly to differentiate between a PR and FR swap */
+                    /* If DPM_FRS_XMT_OR_DET_ENABLED bit is set in u32DPMStatus,
+                       the swap is an FR_Swap. */
                     if (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED)
                     {
                         u8VBUSValueToCheck = TYPEC_VBUS_5V_PRES;
@@ -3933,6 +3934,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Enabled\r\n"); 
         }
+        
         /* Set FRS XMT or DET Enabled status */
         gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_XMT_OR_DET_ENABLED;
     }
