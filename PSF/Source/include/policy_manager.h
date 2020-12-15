@@ -165,7 +165,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_AME_TIMER_DONE                       BIT(16)
 #define DPM_VCONN_SRC_RESPONSIBILITY             BIT(17)
 #define DPM_FRS_XMT_OR_DET_ENABLED               BIT(18)
-#define DPM_FRS_SIGNAL_TRANSMITTED               BIT(19)
+#define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE           BIT(19)
 
 /*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS                     0
@@ -174,6 +174,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_IN_MODAL_OPERATION_POS             6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS         7
 #define DPM_VCONN_SRC_RESPONSIBILITY_POS            17
+#define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE_POS          19
 
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u32DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
@@ -220,6 +221,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define DPM_DISABLE_FRS_DET_EN(u8PortNum) \
  UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN)    
+
+#define DPM_GET_FRS_SIGNAL_XMT_RCV_STS(u8PortNum)         \
+   ((gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_XMT_OR_RCV_DONE) >> DPM_FRS_SIGNAL_XMT_OR_RCV_DONE_POS)
 /**************************************************************************************************/
 
 /*******************************************************************************/
@@ -741,7 +745,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bit 16 - AME Timer Done Status 
                                         // Bit 17 - VCONN Source Responsibility Status
                                         // Bit 18 - FRS XMT or DET Enabled Status 
-                                        // Bit 19 - FRS Signal Transmitted Status
+                                        // Bit 19 - FRS Signal Transmitted Or Received Status
   UINT16 u16DPMInternalEvents;      //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
                                     //DPM_INT_EVT_INITIATE_RENEGOTIATION  BIT(1)
                                     //DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
