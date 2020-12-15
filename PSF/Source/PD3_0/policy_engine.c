@@ -326,7 +326,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                     u8RetVal = PE_UNSUPPORTED_MSG; 
                 #else                     
                     if ((PD_ROLE_SINK == u8CurrentPwrRole) || \
-                            (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED)))
+                            (FALSE == DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum)))
                     {
                         u8RetVal = PE_UNSUPPORTED_MSG;
                     }
@@ -1456,11 +1456,11 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #if (TRUE == INCLUDE_PD_FR_SWAP)
                 case PE_CTRL_FR_SWAP: 
                 {
-                    /*Accept the Fast Role swap if current state is READY State or
-                    any VDM AMS is active. Fast Role Swap will be received only by Dual Role Source*/
+                    /*Fast Role Swap will be received only by Dual Role Source*/
                     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {
-                        
+                        /*Accept the Fast Role swap if current state is READY State or
+                          any VDM AMS is active.  */
                         if(((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) &&
                             (ePE_SRC_READY_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))  || \
                             (u8PEInVDMState))
@@ -1482,6 +1482,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         }
                         else
                         {
+                            /* PD Spec reference regarding FR_Swap: This process can occur at any time,
+                               even during a Non-interruptible AMS in which case error handling such as
+                               Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.*/
                             if(PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
                            {
                                if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
@@ -1502,8 +1505,6 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
                            }
                         }
-                                                        
-
                     }
                     else
                     {

@@ -174,7 +174,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_IN_MODAL_OPERATION_POS             6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS         7
 #define DPM_VCONN_SRC_RESPONSIBILITY_POS            17
-#define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE_POS          19
+#define DPM_FRS_XMT_OR_DET_ENABLED_POS              18
 
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u32DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
@@ -222,11 +222,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_DISABLE_FRS_DET_EN(u8PortNum) \
  UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN)    
 
-#define DPM_DISABLE_FRS_SUPPORT(u8PortNum) \
-gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_XMT_OR_DET_ENABLED);
+#define DPM_DISABLE_FRS_XMT_OR_DET(u8PortNum) \
+(gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_XMT_OR_DET_ENABLED))
 
-#define DPM_GET_FRS_SIGNAL_XMT_RCV_STS(u8PortNum)         \
-   ((gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_XMT_OR_RCV_DONE) >> DPM_FRS_SIGNAL_XMT_OR_RCV_DONE_POS)
+#define DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum) \
+((gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED) >> DPM_FRS_XMT_OR_DET_ENABLED_POS)
 /**************************************************************************************************/
 
 /*******************************************************************************/
