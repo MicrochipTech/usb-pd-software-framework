@@ -113,6 +113,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_CFG_PIO_OUT_HIGH	    (UPD_SYSTEM_CSR_BASE_ADDR + 0x5A)
 #define UPD_CFG_PIO_OUT_UPD_LOW	    (UPD_SYSTEM_CSR_BASE_ADDR + 0x5B)
 #define UPD_CFG_PIO_OUT_UPD_HIGH	(UPD_SYSTEM_CSR_BASE_ADDR + 0x5C)
+#define UPD_FRS_PIO_OVR_EN_MSK      (UPD_SYSTEM_CSR_BASE_ADDR + 0x5D)
 												  
 #define UPD_PIO_OVR_OUT				(UPD_SYSTEM_CSR_BASE_ADDR + 0x68)
 #define UPD_PIO_OVR_DIR				(UPD_SYSTEM_CSR_BASE_ADDR + 0x6A)
@@ -799,22 +800,23 @@ void UPD_InitGPIO (UINT8 u8PortNum);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_PIOHandleISR (UINT8 u8PortNum)
+		void UPD_PIOHandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 
 	Summary:
-        UPD's GPIO interrupt Handler
+        UPD's GPIO and PIO Override interrupt Handler
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-		This API is called to process UPD's GPIO interrupt.
+		This API is called to process UPD's GPIO and PIO Override interrupt.
 		
 	Precondition:
 		None.
 
 	Parameters:
-		u8PortNum		-  Corresponding port number
+		u8PortNum -  Corresponding port number
+        u16InterruptStatus - Value of the Interrupt Status Register
 
 	Return:
 		None.
@@ -822,7 +824,7 @@ void UPD_InitGPIO (UINT8 u8PortNum);
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_PIOHandleISR (UINT8 u8PortNum);
+void UPD_PIOHandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
 
 /**************************************************************************************************
     Function:

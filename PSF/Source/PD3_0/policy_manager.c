@@ -53,6 +53,7 @@ void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
         if (DPM_CLR_SWAP_IN_PROGRESS_MASK == u8DummyVariable)
         {
             gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
+            DEBUG_PRINT_PORT_STR(u8PortNum,"PS_SOURCE_OFF TMR EXPIRED\r\n");
         }
         #endif 
     }

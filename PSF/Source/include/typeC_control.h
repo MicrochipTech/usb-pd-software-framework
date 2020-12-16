@@ -1146,8 +1146,8 @@ void TypeC_CCVBUSIntrHandler(UINT8 u8PortNum);
     Description:
         This API handles the interrupt generated from UPD350 device if the interrupt source is 
         Cable Plug Control and Status Registers. Source of interrupt is found as one of the 
-        following: CC interrupt, VBUS interrupt and power interrupt.Interrupt is cleared by writing 
-        the read value in the register which has generated the interrupt.
+        following: CC interrupt, VBUS interrupt, Extended interrupt and power interrupt.Interrupt
+        is cleared by writing the read value in the register which has generated the interrupt.
 
     Conditions:
         None.

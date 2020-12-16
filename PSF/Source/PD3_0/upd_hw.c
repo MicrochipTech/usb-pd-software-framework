@@ -337,72 +337,101 @@ void UPD_InitGPIO (UINT8 u8PortNum)
 }
 
 /******************************************************************************************************/
-void UPD_PIOHandleISR(UINT8 u8PortNum)
+void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
 {
-	UINT16 u16PIOIntrSts = SET_TO_ZERO;
+	UINT16 u16IntrSts = SET_TO_ZERO;
 	
- 	/* Read the interrupt status*/
-	UPD_RegisterReadISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntrSts, BYTE_LEN_2);
-	
-#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-    
-    UINT8 u8Pio_FAULT_IN = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
-    
-	if ((BIT(u8Pio_FAULT_IN)) & u16PIOIntrSts)
-	{	
-        UINT16 u16PIORegVal;
-        
-        /* Clear the OCS interrupt Configuration*/
-        UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_FAULT_IN),\
-									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-        
-        u16PIORegVal &= ~(UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
-        
-		UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_FAULT_IN),\
-										(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-        
-        /*Notify Power fault to DPM only none of the Power fault recovery is not in progress*/
-        if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
-        {
-            /* Notify DPM about the power fault*/
-            gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
-        }
-    
-        /*When PIO override is disabled; disable EN_VBUS/EN_SINK 
-          based on the power role of the port */        
-        #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-            UPD_DisablePIOOutputISR (u8PortNum);            
-        #endif 
-	}
-#endif /*INCLUDE_POWER_FAULT_HANDLING*/
-	
-#if (TRUE == INCLUDE_PD_FR_SWAP)
-    
-    UINT8 u8Pio_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS;
-    
-    if ((BIT(u8Pio_EN_FRS)) & u16PIOIntrSts)
+    /* Check for PIO Interrupt */
+    if (u16InterruptStatus & UPDINTR_PIO_INT)
     {
-        UINT16 u16PIORegVal;
-        
-        /* Clear the FRS interrupt Configuration*/
-        UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
-									(UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-        
-        u16PIORegVal &= ~(UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
-        
-		UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
-									(UINT8 *)&u16PIORegVal, BYTE_LEN_1); 
-        
-        /*When PIO override is disabled, disable EN_VBUS */         
-        #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-            UPD_DisablePIOOutputISR (u8PortNum);            
-        #endif                            
+        /* Read the interrupt status*/
+        UPD_RegisterReadISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
+
+    #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+
+        UINT8 u8Pio_FAULT_IN = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN;
+
+        if ((BIT(u8Pio_FAULT_IN)) & u16IntrSts)
+        {	
+            UINT16 u16PIORegVal;
+
+            /* Clear the OCS interrupt Configuration*/
+            UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_FAULT_IN),\
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+
+            u16PIORegVal &= ~(UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
+
+            UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_FAULT_IN),\
+                                            (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+
+            /*Notify Power fault to DPM only none of the Power fault recovery is not in progress*/
+            if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
+            {
+                /* Notify DPM about the power fault*/
+                gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_VBUS_OCS;
+            }
+
+            /*When PIO override is disabled; disable EN_VBUS/EN_SINK 
+              based on the power role of the port */        
+            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+                UPD_DisablePIOOutputISR (u8PortNum);            
+            #endif 
+        }
+    #endif /*INCLUDE_POWER_FAULT_HANDLING*/
+
+    #if (TRUE == INCLUDE_PD_FR_SWAP)
+
+        UINT8 u8Pio_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS;
+
+        if ((BIT(u8Pio_EN_FRS)) & u16IntrSts)
+        {
+            UINT16 u16PIORegVal;
+
+            /* Clear the FRS interrupt Configuration*/
+            UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
+
+            u16PIORegVal &= ~(UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
+
+            UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1); 
+
+            /*When PIO override is disabled, disable EN_VBUS */         
+            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
+                UPD_DisablePIOOutputISR (u8PortNum);            
+            #endif                            
+        }
+
+    #endif /* INCLUDE_PD_FR_SWAP */    
+
+        /* Clear the interrupt status */
+        UPD_RegisterWriteISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
     }
     
-#endif /* INCLUDE_PD_FR_SWAP */    
-    
-	/* clear the interrupt status */
-	UPD_RegisterWriteISR (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16PIOIntrSts, BYTE_LEN_2);
+    /* Check for PIO Override Interrupt */
+    if (u16InterruptStatus & UPDINTR_PIO_OVERRIDE_INT)
+    {
+        /* Read the Interrupt status */
+        UPD_RegisterReadISR (u8PortNum, UPD_PIO_OVR_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_1);            
+        
+        #if (TRUE == INCLUDE_PD_FR_SWAP)
+            
+            /* UPD DOS Reference: After being cleared by FW this bit will not be set again 
+               by HW until the FRS Detect Enable (FRS_DET_EN) is cleared. This is
+               irrespective of the reception of additional FRS signaling */             
+            UINT8 u8Data; 
+            
+            if (u16IntrSts & UPD_PIO_OVR_3)
+            {                                 
+                UPD_RegisterReadISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
+                u8Data &= ~(TYPEC_FRS_DET_EN); 
+                UPD_RegisterWriteISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);                                                
+            }                 
+        #endif 
+
+        /* Clear the interrupt status */
+        UPD_RegisterWriteISR (u8PortNum, UPD_PIO_OVR_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_1);        
+    }
 }
 
 /*******************************************************************************************/
@@ -619,7 +648,7 @@ void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
     
     /* Get the PIO positions of EN_VBUS, EN_SINK and EN_FRS PIOs */
     UINT8 u8Mode_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;
-    UINT8 u8PIOMonVal = FALSE;  
+    UINT8 u8PIOMonVal = FALSE, u8PIOOvrIntEn = FALSE;  
     UINT16 u16PIOPos;  
     UINT16 u16EnVBUSPIOPos = BIT(gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS);    
     UINT16 u16EnSinkPIOPos = BIT(gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK);  
@@ -670,7 +699,11 @@ void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
         u16PIOOvrDir |= (u16EnFRSPIOPos | u16EnSinkPIOPos);        
         
         /* Override 3 Output Enable */
-        u16PIOPos = (u16EnFRSPIOPos | u16EnSinkPIOPos);               
+        u16PIOPos = (u16EnFRSPIOPos | u16EnSinkPIOPos);   
+        
+        /* PIO Override Interrupt is needed for Sink to Source FRS 
+           to disable FRS_DET_EN on override completion */
+        u8PIOOvrIntEn = TRUE; 
     }
     
     if (u8PIOMonVal)
@@ -688,8 +721,14 @@ void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
     /* Set Override 3 Output Enable */
     UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR3_OUT_EN, u16PIOPos);  
     
-    /* PIO Override will be enabled in the Ready state when FRS criteria
-       is determined to be supported for the port */
+    if (u8PIOOvrIntEn)
+    {        
+        /* Enable PIO Override Interrupt */
+        UPD_RegByteSetBit (u8PortNum, UPDINTR_INT_EN, UPDINTR_PIO_OVERRIDE_INT);
+    }      
+    
+    /* PIO Override and PIO Override Interrupt Enable Mask will be enabled
+       in the Ready state when it is discovered that port partners are FRS capable */
 }
 
 #endif
