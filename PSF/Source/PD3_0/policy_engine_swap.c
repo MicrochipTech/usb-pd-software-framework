@@ -1094,7 +1094,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS:
                 {
                     if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
-                            (TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                            (TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_SEND_PSRDY_SS\r\n");
                         

@@ -1318,8 +1318,19 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR); 
 
-                    /* Wait for vSafe5V from Original Sink */
-                    gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS; 
+                    if(TRUE == DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum))
+                    {
+                        /* During FR_Swap, 5V will have already been present in VBUS. 
+                           Again checking for 5V presence is not necessary. Therefore, 
+                           wait for CC attach from initial sink */
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS; 
+                    
+                    }
+                    else
+                    {
+                        /* During PR_Swap, wait for vSafe5V from Original Sink */
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS; 
+                    }
                     break; 
                 }                
                 
@@ -1343,6 +1354,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);                        
                     }
                     break; 
+                }
+                
+                case TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS:
+                {
+                    /* Wait for CC attach*/
+                    /* Hook to notify Type C state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE (u8PortNum, eIDLE_TYPEC_NOTIFY);
+                    break;
                 }
 #endif 
                  /*Sink enables the CC Communication channel and notifies the external DPM
@@ -3126,6 +3145,13 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             {                
                 break;
             }
+            else if((TYPEC_ATTACHED_SNK == u8TypeCState) && (TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS == u8TypeCSubState))
+            {
+                u8TypeCState = TYPEC_ATTACHED_SNK;
+                u8TypeCSubState = TYPEC_ATTACHED_SNK_ENTRY_SS;
+                break;
+                
+            }
             else
             {
                  /*Attach event has occurred within the TPD Debounce timeout of previous Detach event
@@ -3183,10 +3209,13 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                    below VSinkdisconnect. A PR_Swap/FR_Swap from Source to Sink should 
                    not be considered as a detach. So, don't do anything */ 
                 else if ((TYPEC_ATTACHED_SNK == u8TypeCState) 
-                #if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
-                    && (u8TypeCSubState != TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS)
+                #if (TRUE == INCLUDE_PD_PR_SWAP )
+                    && ((u8TypeCSubState != TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS)
+                #endif
+                #if (TRUE == INCLUDE_PD_FR_SWAP)
+                    && (u8TypeCSubState != TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS)
                 #endif 
-                        )
+                        ))
                 {
                     u8TypeCState = TYPEC_UNATTACHED_SNK;
                     u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
