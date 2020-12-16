@@ -1486,24 +1486,24 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                                even during a Non-interruptible AMS in which case error handling such as
                                Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.*/
                             if(PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
-                           {
-                               if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
-                               {
-                                   DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
-                               }
-                               else
-                               {
-                                   /*Do nothing. If User application returns FALSE for 
-                                    eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
-                                    the user application will raise a Port disable client request*/
-                               }
-                           }  
-                           else
-                           {
-                               /* The current power role would be source since only a source can receive an FR_Swap*/
-                               gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
-                               gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
-                           }
+                            {
+                                if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                                {
+                                    DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                                }
+                                else
+                                {
+                                    /*Do nothing. If User application returns FALSE for 
+                                     eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                                     the user application will raise a Port disable client request*/
+                                }
+                            }  
+                            else
+                            {
+                                /* The current power role would be source since only a source can receive an FR_Swap*/
+                                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
+                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
+                            }
                         }
                     }
                     else

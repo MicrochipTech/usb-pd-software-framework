@@ -312,7 +312,7 @@ void UPD_InitGPIO (UINT8 u8PortNum)
     else if (PD_ROLE_SINK_DFP == DPM_GET_CONFIGURED_FRS_POWER_DATA_STATE(u8PortNum))
     {
         UPD_InitOutputPIO (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS, \
-                                        gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS);        
+                                        gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS);
     }
     else
     {
@@ -321,7 +321,7 @@ void UPD_InitGPIO (UINT8 u8PortNum)
     
     /* Configure PIO Override for FRS conditions */
     #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-        UPD_ConfigureFRSPIOOverride (u8PortNum);
+    UPD_ConfigureFRSPIOOverride (u8PortNum);
     #endif                    
 #endif /* endif of INCLUDE_PD_FR_SWAP */
             

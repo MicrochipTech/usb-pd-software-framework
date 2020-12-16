@@ -1238,7 +1238,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_SENDERRESPONSE_TIMEOUT_MS),
                                                             PE_StateChange_TimerCB,u8PortNum,  
-                                                            ePE_FRS_HANDLE_ERROR_RECOVERY);    
+                                                            (UINT8)ePE_FRS_HANDLE_ERROR_RECOVERY);    
                     
                     /* Assign an idle sub-state to wait for timer expiry */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                                            
