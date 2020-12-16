@@ -387,19 +387,14 @@ void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
         {
             UINT16 u16PIORegVal;
 
-            /* Clear the FRS interrupt Configuration*/
+            /* Clear the EN_FRS interrupt Configuration*/
             UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
                                         (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
 
             u16PIORegVal &= ~(UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
 
             UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
-                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1); 
-
-            /*When PIO override is disabled, disable EN_VBUS */         
-            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                UPD_DisablePIOOutputISR (u8PortNum);            
-            #endif                            
+                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                             
         }
 
     #endif /* INCLUDE_PD_FR_SWAP */    

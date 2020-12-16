@@ -2860,20 +2860,7 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         }
         else
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV INTR\r\n");
-                
-            /* When PIO override is disabled, turn on EN_FRS and disable EN_SINK */               
-            #if (FALSE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
-                UINT16 u16PIORegVal;  
-                UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS),\
-                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                u16PIORegVal |= UPD_CFG_PIO_DATAOUTPUT;
-                UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS),\
-                                        (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
-                
-                /* This API will turn off EN_SINK */
-                UPD_DisablePIOOutputISR (u8PortNum);  
-            #endif     
+            DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV INTR\r\n");                   
                 
             /* Register internal event to start FR_Swap AMS */
             DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);                
@@ -3883,8 +3870,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Enabled\r\n");                            
         }        
         else /* PD_ROLE_SINK */
-        {                      
-            /* To-do: Untested for 5V FRS case, only tested for 20V */
+        {                                 
  			/* Enable non-Power fault thresholds for TYPEC_VBUS_5V */
             /* Note: Here, TypeC_ConfigureVBUSThr() API is not used for setting the 
                vSafe5V thresholds. This is done intentionally because calling that API
@@ -3920,8 +3906,6 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             /* Turn on the VBUS Comparator */
             TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);	 
             
-            /* To-do: Check if disconnect detection can be handled this way or 
-               we can enable it always and block it in TypeC_HandleISR() */
             UINT8 u8PIOOvrSrc = UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET;
             
             if (gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV > TYPEC_VBUS_5V)
@@ -3968,9 +3952,10 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
         }
         else /* PD_ROLE_SINK */
         {            
-            /* To-do: What and all needs to be reverted back when an FRS event did
-               not occur before a detach say turning off DC/DC_EN ? */
             UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);            
+            
+            /* Disable DC/DC pin function */
+            PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);  
             
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
         }      

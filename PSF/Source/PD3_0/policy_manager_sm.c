@@ -899,7 +899,8 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
            Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.*/
         if (PE_IsPolicyEngineIdle(u8PortNum))
         {
-            gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_START_AMS;
+            gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_SEND_SWAP;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS;
             u16AMSInProgress = DPM_INT_EVT_INITIATE_FR_SWAP;
             DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: FR_SWAP INITIATED\r\n");
         }
