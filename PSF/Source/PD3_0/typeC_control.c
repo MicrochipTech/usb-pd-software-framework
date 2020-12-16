@@ -2093,14 +2093,12 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                     UPD_DisablePIOOutputISR (u8PortNum);
                 #endif   
 
-               /* under voltage is considered if VBUS not lowered as part of Over voltage*/
-                if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
-                {
-                    /* To-do: UV Fault to be handled properly when FRS is enabled */
-                    if (FALSE == DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum))
-                    {
-                        gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_UV;
-                    }
+                /* under voltage is considered if VBUS not lowered as part of Over voltage
+                  Power Loss during an FRS should not be treated as an UV condition */
+                if(FALSE == (gasDPM[u8PortNum].u8PowerFaultFlags & \
+                        (DPM_HR_COMPLETE_WAIT_MASK | DPM_IGNORE_UV_DURING_FRS_MASK)))
+                {                    
+                    gasDPM[u8PortNum].u8PowerFaultISR |= DPM_POWER_FAULT_UV;
                 }
             }      
         }
@@ -2870,8 +2868,18 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
            transmission shall be overridden and any pending messages shall be discarded */
         PE_ResetParams(u8PortNum);
         
+        /* Setting this flag will discard any pending messages in Protocol layer */
         gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_SIGNAL_XMT_OR_RCV_DONE;
         
+        /* Setting this flag will ignore the processing of UV during an FRS event 
+           since VBUS will trip down during an FRS. Also, clear the UV PIO Override */
+        #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)        
+            gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_IGNORE_UV_DURING_FRS_MASK;
+        #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)			
+            UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN, UPD_PIO_OVR_1);
+        #endif         
+        #endif
+
         gasTypeCcontrol[u8PortNum].u8DRPStsISR &= ~(TYPEC_FRS_XMT_RCV_STS_INTERRUPT);
     }
 #endif
