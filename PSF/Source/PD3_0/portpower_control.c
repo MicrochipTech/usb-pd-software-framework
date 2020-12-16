@@ -113,11 +113,13 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
       the swap is an FR_Swap. During FR_Swap Vbus discharge should not be done. */
     /*PD spec reference: The Hub DRP Shall Not enable VBUS discharge circuitry when
       changing operation from initial Source to new Sink. */
+#if (TRUE == INCLUDE_PD_FR_SWAP)    
     if((TRUE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum)) && \
             (TRUE == DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum)))
     {
         u8EnaDisVBUSDIS = FALSE;
     }
+#endif 
     
     if (TRUE == u8EnaDisVBUSDIS)
     {
