@@ -85,7 +85,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         }
         #endif
 
-        /*CC,PWR,VBUS interrupts are handled by the function "TypeC_InterruptHandler"*/
+        /*CC,PWR,VBUS interrupts are handled by the function "TypeC_HandleISR"*/
         if((u16InterruptStatus & UPDINTR_CC_INT) || (u16InterruptStatus & UPDINTR_PWR_INT) || \
                 (u16InterruptStatus & UPDINTR_VBUS_INT) || (u16InterruptStatus & UPDINTR_EXT_INT))
         {
@@ -98,12 +98,13 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
             PRL_HandleISR (u8PortNum);
         }
 		
-		/* Checking for UPD GPIO interrupt */
-        if (u16InterruptStatus & UPDINTR_PIO_INT)
+		/* Checking for UPD GPIO and PIO Override interrupt */
+        if ((u16InterruptStatus & UPDINTR_PIO_INT) || \
+                    (u16InterruptStatus & UPDINTR_PIO_OVERRIDE_INT))
         {
-            UPD_PIOHandleISR (u8PortNum);
+            UPD_PIOHandleISR (u8PortNum, u16InterruptStatus);
         }
-
+        
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)        
         /*Set UPD_STATE_ACTIVE at End of ISR*/
         gau8ISRPortState[u8PortNum] = UPD_STATE_ACTIVE;

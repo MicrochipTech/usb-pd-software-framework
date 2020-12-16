@@ -1298,11 +1298,8 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        initial Sink does not disconnect even though VBUS drops below vSafe5V */
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
                                         
-                    /* Transition to Sink Standby.
-                       Configure the Type C VBUS threshold for vSafe5v detection */
+                    /* Transition to Sink Standby */
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA; 
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V,
-                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
                     
                     /*Turn off the Sink circuitry to stop sinking the power from source*/
                     PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);

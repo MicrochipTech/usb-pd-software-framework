@@ -1886,22 +1886,16 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         {
             /*Clearing the FRS_XMT_STS/FRS_RCV_STS interrupt */
             UPD_RegisterWriteISR (u8PortNum, TYPEC_EXT_INT_STS, &u8Data, BYTE_LEN_1);
-            
-            /* UPD DOS Reference: After being cleared by FW this bit will not be set again 
-               by HW until the FRS Detect Enable (FRS_DET_EN) is cleared. This is
-               irrespective of the reception of additional FRS signaling */                             
+                     
+            /* To-do: Check if it is Ok to clear FRS_REQ_PIO here or
+               should it be moved to somewhere else like FRS_DET_EN ? */
             if (u8Data & TYPEC_FRS_XMT_STS)
             {
                 /* Same u8Data variable is used for EXT INT STS and FRS CTL HIGH registers */
                 UPD_RegisterReadISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
-                u8Data &= ~(TYPEC_FRS_REQ_PIO);                
+                u8Data &= ~(TYPEC_FRS_REQ_PIO);
+                UPD_RegisterWriteISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);                
             }   
-            else
-            {
-                UPD_RegisterReadISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
-                u8Data &= ~(TYPEC_FRS_DET_EN); 
-            }            
-            UPD_RegisterWriteISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
             /* Set FRS XMT/RCV status mask in u8DRPStsISR */
             gasTypeCcontrol[u8PortNum].u8DRPStsISR |= TYPEC_FRS_XMT_RCV_STS_INTERRUPT;
         }
@@ -2885,7 +2879,7 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
             DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);                
         }
         
-        /* When a Fast Role Swap signal is transmitted in received, any active 
+        /* When a Fast Role Swap signal is transmitted or received, any active 
            transmission shall be overridden and any pending messages shall be discarded */
         PE_ResetParams(u8PortNum);
         
@@ -3889,26 +3883,45 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Enabled\r\n");                            
         }        
         else /* PD_ROLE_SINK */
-        {            
+        {                      
+            /* To-do: Untested for 5V FRS case, only tested for 20V */
  			/* Enable non-Power fault thresholds for TYPEC_VBUS_5V */
-            /* To-do: instead of calling TypeC_ConfigureVBUSThr() API, set  
-               5V thresholds manually. In this case, fault handling gets disabled */
-            TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+            /* Note: Here, TypeC_ConfigureVBUSThr() API is not used for setting the 
+               vSafe5V thresholds. This is done intentionally because calling that API
+               with Non Pwr Fault Threshold argument will disable the Power fault detection
+               and hence, we may fail to detect an actual OV/UV fault that
+               could occur while waiting for an FRS event */
+            
+            /* Update the u16ExpectedVBUSVoltageInmV so that gasTypeCcontrol[u8PortNum].u8IntStsISR
+               will be updated with correct VBUS Presence Mask value */
+            gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV = TYPEC_VBUS_5V;     
 
-            /* Spec Reference: An initial Sink Shall disable its VBUS Disconnect 
-               Threshold detection circuitry while Fast Role Swap detection is active */                           
+            /* Clear the VBUS Presence mask bits before configuring the VBUS threshold */    
+            MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+            gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_VBUS_PRESENCE_MASK; 
+            MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
+                           
+            /* Turn off the VBUS Comparator */
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
+
+            /* Configure min and max thresholds of vSafe5V */
+            UINT16 u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor));
+            UINT16 u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor));             
+
+            UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR1, u16MinVoltageThr);
+
+            UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR4, u16MaxVoltageThr);            
+            
+            /* Configure the corresponding VBUS sample enable */
+            UINT8 u8SampleEn = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_SAMP_EN);
+            u8SampleEn |= (TYPEC_DESIRED_MIN_V_THR1_MATCH | TYPEC_PREV_V_DROP_CHK_THR4_MATCH);                        
+            UPD_RegWriteByte (u8PortNum, TYPEC_VBUS_SAMP_EN, u8SampleEn);
+
+            /* Turn on the VBUS Comparator */
+            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);	 
+            
             /* To-do: Check if disconnect detection can be handled this way or 
                we can enable it always and block it in TypeC_HandleISR() */
-            /*Setting VBUS Comparator OFF*/
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);    
-            
-            UPD_RegByteClearBit (u8PortNum, TYPEC_VBUS_SAMP_EN, 
-                    (UINT8)(TYPEC_VSINKDISCONNECT_THR0_MATCH | TYPEC_VSAFE0V_MAX_THR_MATCH));                        
-            
-            /*Setting VBUS Comparator ON*/
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);            
-            
             UINT8 u8PIOOvrSrc = UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET;
             
             if (gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV > TYPEC_VBUS_5V)
@@ -3918,10 +3931,17 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             else
             {
                 u8PIOOvrSrc |= UPD_PIO_OVR_VBUS1_THR_MATCH;
-            }
+            }           
             
             /* Configure PIO Override Source */
             UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, u8PIOOvrSrc);
+            
+            /* Enable interrupt for PIO Override */
+            UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_INT_EN, (UINT8)UPD_PIO_OVR_3);
+            
+            /* Enable PIO Override Interrupt Enable Mask. This will prevent the 
+               PIO Override interrupt from firing when FRS_DET_EN is disabled */
+            UPD_RegByteSetBit (u8PortNum, UPD_FRS_PIO_OVR_EN_MSK, (UINT8)UPD_PIO_OVR_3);
             
             /* Enable PIO Override */
             UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
@@ -3934,7 +3954,6 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Enabled\r\n"); 
         }
-        
         /* Set FRS XMT or DET Enabled status */
         gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_XMT_OR_DET_ENABLED;
     }
@@ -3949,17 +3968,9 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
         }
         else /* PD_ROLE_SINK */
         {            
-            UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);
-            
-            /* Re-enable the VBUS Disconnect Threshold detection circuitry */
-            /*Setting VBUS Comparator OFF*/
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);    
-            
-            UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_SAMP_EN, 
-                    (UINT8)(TYPEC_VSINKDISCONNECT_THR0_MATCH | TYPEC_VSAFE0V_MAX_THR_MATCH));                        
-            
-            /*Setting VBUS Comparator ON*/
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);  
+            /* To-do: What and all needs to be reverted back when an FRS event did
+               not occur before a detach say turning off DC/DC_EN ? */
+            UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);            
             
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
         }      
