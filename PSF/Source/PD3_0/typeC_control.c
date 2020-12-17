@@ -3145,13 +3145,14 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             {                
                 break;
             }
+#if(TRUE == INCLUDE_PD_FR_SWAP)
             else if((TYPEC_ATTACHED_SNK == u8TypeCState) && (TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS == u8TypeCSubState))
             {
                 u8TypeCState = TYPEC_ATTACHED_SNK;
                 u8TypeCSubState = TYPEC_ATTACHED_SNK_ENTRY_SS;
                 break;
-                
             }
+#endif
             else
             {
                  /*Attach event has occurred within the TPD Debounce timeout of previous Detach event
