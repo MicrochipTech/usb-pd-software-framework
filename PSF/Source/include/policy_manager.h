@@ -680,9 +680,11 @@ Source/Sink Power delivery objects*/
 /**************************Defines for u8PowerFaultFlags***********************/
 #define DPM_HR_COMPLETE_WAIT_POS              0
 #define DPM_TYPEC_ERR_RECOVERY_FLAG_POS       1
+#define DPM_IGNORE_UV_DURING_FRS_POS          2 
 #define DPM_HR_COMPLETE_WAIT_MASK             (1 << DPM_HR_COMPLETE_WAIT_POS)
 #define DPM_TYPEC_ERR_RECOVERY_FLAG_MASK      (1 << DPM_TYPEC_ERR_RECOVERY_FLAG_POS)
- 
+#define DPM_IGNORE_UV_DURING_FRS_MASK         (1 << DPM_IGNORE_UV_DURING_FRS_POS)
+
 /************************ Client Request Defines ******************************/
 #define DPM_NO_CLIENT_REQ_PENDING                0x00 
 #define DPM_CLEAR_ALL_CLIENT_REQ                 0x00 
@@ -777,6 +779,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 	  UINT8 u8PowerFaultFlags;        //Flags required for power fault handling
                                       //BIT 0 - Hard Reset complete wait flag
                                       //BIT 1 - Type-C Error Recovery Flag
+                                      //BIT 2 - Ignore UV during FRS
 #endif
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
   UINT8 u8AlertType;

@@ -231,7 +231,6 @@ typedef enum {
     ePE_FRS_SRC_SNK_TRANSITION_TO_OFF,
     ePE_FRS_SRC_SNK_ASSERT_RD,
     ePE_FRS_SRC_SNK_WAIT_SOURCE_ON,
-    ePE_FRS_SNK_SRC_START_AMS,
     ePE_FRS_SNK_SRC_SEND_SWAP,
     ePE_FRS_SNK_SRC_TRANSITION_TO_OFF,
     ePE_FRS_SNK_SRC_VBUS_APPLIED,
@@ -549,7 +548,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                             // Bit 2 - NoResponse timer timeout status <p />
                                             // Bit 3 - NAK received status from E-Cable <p />
                                             // Bit 4 - HardReset In Progress Flag <p />
-                                            // Bit 5 - PR Swap In Progress Flag <p />
+                                            // Bit 5 - PR/FR Swap In Progress Flag <p />
 	UINT8 u8PETimerID;                      // Policy Engine Timer ID
 	UINT8 u8PENoResponseTimerID;            // NoResponse Timer ID
     UINT8 u8HardResetRcvdISR;               // Hard Reset received status  
