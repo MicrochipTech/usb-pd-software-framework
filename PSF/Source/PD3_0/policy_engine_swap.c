@@ -969,28 +969,11 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
 	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
 
 	/* Transmit Flag */
-	UINT8 u8IsTransmit = FALSE;
-    
-    /* Current Power Role */
-    UINT8 u8CurrPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum); 
-    
-    ePolicyState eTxDoneSt;
-    ePolicySubState eTxDoneSS;
-    
-    if (PD_ROLE_SOURCE == u8CurrPwrRole)
-    {
-        eTxDoneSt = ePE_SRC_READY;
-        eTxDoneSS = ePE_SRC_READY_END_AMS_SS;
-    }
-    else
-    {
-        eTxDoneSt = ePE_SNK_READY;
-        eTxDoneSS = ePE_SNK_READY_END_AMS_SS;
-    }          
+	UINT8 u8IsTransmit = FALSE;              
     
     switch(gasPolicyEngine[u8PortNum].ePEState)
     {
-        /*Source to Sink FR_Swap States*/
+            /************** Source to Sink FR_Swap States **********/
         case ePE_FRS_SRC_SNK_EVALUATE_SWAP:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_EVALUATE_SWAP\r\n");
@@ -1188,7 +1171,13 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     {
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
                           
-                        gasPolicyEngine[u8PortNum].u8PEPortSts &= (~PE_SWAP_IN_PROGRESS_MASK);
+                        /* Clear the Swap in progress flag */
+                        gasPolicyEngine[u8PortNum].u8PEPortSts &= (~PE_SWAP_IN_PROGRESS_MASK);                                                
+                        
+                        /* Clear the ignore UV during FRS flag */
+                        #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)   
+                            gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_IGNORE_UV_DURING_FRS_MASK);
+                        #endif 
                         
                         /*Re-enable the PIO interrupts for EN_FRS pin */
                         UPD_EnableInputPIO (u8PortNum, eUPDPIO_EN_FRS); 
@@ -1215,21 +1204,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             break;
         }
         
-        /*Sink to Source FR_Swap States*/
-        case ePE_FRS_SNK_SRC_START_AMS:
-        {
-            if (TRUE == DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum))
-            {
-                gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_SEND_SWAP;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS;
-            }
-            else
-            {
-                gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-                gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
-            }
-            break;
-        }
+                /************** Sink to Source FR_Swap States **********/
         case ePE_FRS_SNK_SRC_SEND_SWAP:
         {
             switch(gasPolicyEngine[u8PortNum].ePESubState)
@@ -1263,7 +1238,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_SENDERRESPONSE_TIMEOUT_MS),
                                                             PE_StateChange_TimerCB,u8PortNum,  
-                                                            ePE_FRS_HANDLE_ERROR_RECOVERY);    
+                                                            (UINT8)ePE_FRS_HANDLE_ERROR_RECOVERY);    
                     
                     /* Assign an idle sub-state to wait for timer expiry */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                                            
@@ -1432,8 +1407,13 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
                     
                     /* Clear the Swap in progress flag since the Swap is complete */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
-                                        
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);                                                          
+                    
+                    /* Clear the ignore UV during FRS flag */
+                    #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)   
+                        gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_IGNORE_UV_DURING_FRS_MASK);
+                    #endif
+                            
                     /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
                        and Protocol Layer would be taken care by the startup state */
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
