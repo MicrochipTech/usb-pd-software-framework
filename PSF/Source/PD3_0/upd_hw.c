@@ -285,18 +285,19 @@ void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8C
 void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType)
 {
     UINT32 u32Data = SET_TO_ZERO;
+    
+    UPD_RegisterRead (u8PortNum, UPD_PIO_DEBOUNCE_EN, (UINT8 *)&u32Data, BYTE_LEN_4);
+    
     if (UPD_PIO_DEBOUNCE_DISABLE == u8DebounceEnType)
-    {        
-        UPD_RegisterRead (u8PortNum, UPD_PIO_DEBOUNCE_EN, (UINT8 *)&u32Data, BYTE_LEN_4);
-        u32Data &= ~(((UINT32)UPD_PIO_DEBOUNCE_DISABLE_MASK) << (u8PIONum * UPD_PIO_DEBOUNCE_FIELD_WIDTH));
-        UPD_RegisterWrite (u8PortNum, UPD_PIO_DEBOUNCE_EN, (UINT8 *)&u32Data, BYTE_LEN_4);
+    {                
+        u32Data &= ~(((UINT32)UPD_PIO_DEBOUNCE_DISABLE_MASK) << (u8PIONum * UPD_PIO_DEBOUNCE_FIELD_WIDTH));        
     }
     else
-    {
-        UPD_RegisterRead (u8PortNum, UPD_PIO_DEBOUNCE_EN, (UINT8 *)&u32Data, BYTE_LEN_4);
-        u32Data |= (((UINT32)u8DebounceEnType) << (u8PIONum * UPD_PIO_DEBOUNCE_FIELD_WIDTH));
-        UPD_RegisterWrite (u8PortNum, UPD_PIO_DEBOUNCE_EN, (UINT8 *)&u32Data, BYTE_LEN_4);
-    }   
+    {     
+        u32Data |= (((UINT32)u8DebounceEnType) << (u8PIONum * UPD_PIO_DEBOUNCE_FIELD_WIDTH));     
+    } 
+    
+    UPD_RegisterWrite (u8PortNum, UPD_PIO_DEBOUNCE_EN, (UINT8 *)&u32Data, BYTE_LEN_4);
 }
 
 /******************************************************************************************************/
