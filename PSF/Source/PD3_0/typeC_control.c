@@ -4009,8 +4009,6 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
         }      
-        /* Disable PIO Override since FRS transmission/detection is disabled */
-        UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
         
         /* Clear FRS XMT or DET Enabled status */
         gasDPM[u8PortNum].u32DPMStatus &= ~DPM_FRS_XMT_OR_DET_ENABLED;         

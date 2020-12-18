@@ -152,7 +152,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_UPD_EN_FRS_PIO_NO        eUPD_PIO2
 #define CFG_PORT_0_UPD_EN_FRS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 
-/* Port 0 is configured as Power Source/Data Device. So, EN_FRS acts an input pin */
+/* Port 1 is configured as Power Source/Data Device. So, EN_FRS acts an input pin */
 #define CFG_PORT_1_UPD_EN_FRS_PIO_NO        eUPD_PIO2
 #define CFG_PORT_1_UPD_EN_FRS_PIO_MODE      eINPUT_ACTIVE_LOW
 
@@ -200,7 +200,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_0_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_0_SINK_USB_COMM             0U
-#define CFG_PORT_0_SINK_FRS_CURRENT          3U
+#define CFG_PORT_0_SINK_FRS_CURRENT          3U /* To-do: Replace with Rp current macro */
 
 #define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
                                     CFG_PORT_0_SINK_FRS_CURRENT, \
@@ -252,7 +252,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_1_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_1_SINK_USB_COMM             0U
-#define CFG_PORT_1_SINK_FRS_CURRENT          3U 
+#define CFG_PORT_1_SINK_FRS_CURRENT          3U /* To-do: Replace with Rp current macro */ 
 
 #define CFG_PORT_1_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 0,\
                                     CFG_PORT_1_SINK_FRS_CURRENT, \
