@@ -192,7 +192,7 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     else
     {
         gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_DISABLED;
-        gasTypeCcontrol[u8PortNum].u8TypeCSubState  = TYPEC_DISABLED_ENTRY_SS; 
+        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_DISABLED_ENTRY_SS; 
         
         /* Change Policy Engine state and sub-state to invalid state */
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
@@ -3881,9 +3881,56 @@ void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum)
 
 void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
 {        
+    UINT8 u8IsSourcePort = ((PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) ? TRUE : FALSE);
+            
     if (u8IsFRSSupported)
-    {                    
-        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+    {              
+ 		/* Enable non-Power fault thresholds for TYPEC_VBUS_5V */
+        /* Note: Here, TypeC_ConfigureVBUSThr() API is not used for setting the 
+           vSafe5V thresholds. This is done intentionally because calling that API
+           with Non Pwr Fault Threshold argument will disable the Power fault detection
+           and hence, we may fail to detect an actual OV/UV fault that
+           could occur while waiting for an FRS event */        
+        /* Update the u16ExpectedVBUSVoltageInmV so that gasTypeCcontrol[u8PortNum].u8IntStsISR
+           will be updated with correct VBUS Presence Mask value */
+        gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV = TYPEC_VBUS_5V;   
+        
+        /* Clear the VBUS Presence mask bits before configuring the VBUS threshold */    
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_VBUS_PRESENCE_MASK; 
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
+                           
+        /* Turn off the VBUS Comparator */
+        TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);        
+        
+        /* Disable Under Voltage for Source role only. Power loss is expected
+           during an FRS. It shall not be treated as an under-voltage */
+        if (u8IsSourcePort)
+        {
+            UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN, UPD_PIO_OVR_1);
+        }
+        
+        /* Configure vSafe5v(min) threshold */        
+        UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR1, \
+                ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor)));
+        
+        /* Configure vSafe5v(max) threshold */        
+        UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR4, \
+                ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor))); 
+        
+        /* Configure the corresponding VBUS sample enable */
+        UINT8 u8SampleEn = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_SAMP_EN);
+        if (u8IsSourcePort)
+        {
+            u8SampleEn &= ~(TYPEC_UNDER_VOLT_THR3_MATCH);
+        }
+        u8SampleEn |= (TYPEC_DESIRED_MIN_V_THR1_MATCH | TYPEC_PREV_V_DROP_CHK_THR4_MATCH);                        
+        UPD_RegWriteByte (u8PortNum, TYPEC_VBUS_SAMP_EN, u8SampleEn);        
+        
+        /* Turn on the VBUS Comparator */
+        TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
+            
+        if (u8IsSourcePort)
         {
             /* Program the CC pin which has sink attached in FRS_CC_SEL in FRS Control Register */
             /* 5:4  Description 
@@ -3898,7 +3945,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
                 /* In case of CC2 attach, set Bit 4 */
                 UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_LOW, (UINT8)TYPEC_FRS_CC_SEL_CC2);    
             }
-    
+                           
             /* Enable PIO Override */
             UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
             
@@ -3908,42 +3955,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Enabled\r\n");                            
         }        
         else /* PD_ROLE_SINK */
-        {                                 
- 			/* Enable non-Power fault thresholds for TYPEC_VBUS_5V */
-            /* Note: Here, TypeC_ConfigureVBUSThr() API is not used for setting the 
-               vSafe5V thresholds. This is done intentionally because calling that API
-               with Non Pwr Fault Threshold argument will disable the Power fault detection
-               and hence, we may fail to detect an actual OV/UV fault that
-               could occur while waiting for an FRS event */
-            
-            /* Update the u16ExpectedVBUSVoltageInmV so that gasTypeCcontrol[u8PortNum].u8IntStsISR
-               will be updated with correct VBUS Presence Mask value */
-            gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV = TYPEC_VBUS_5V;     
-
-            /* Clear the VBUS Presence mask bits before configuring the VBUS threshold */    
-            MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-            gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_VBUS_PRESENCE_MASK; 
-            MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
-                           
-            /* Turn off the VBUS Comparator */
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
-
-            /* Configure min and max thresholds of vSafe5V */
-            UINT16 u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor));
-            UINT16 u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor));             
-
-            UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR1, u16MinVoltageThr);
-
-            UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR4, u16MaxVoltageThr);            
-            
-            /* Configure the corresponding VBUS sample enable */
-            UINT8 u8SampleEn = UPD_RegReadByte (u8PortNum, TYPEC_VBUS_SAMP_EN);
-            u8SampleEn |= (TYPEC_DESIRED_MIN_V_THR1_MATCH | TYPEC_PREV_V_DROP_CHK_THR4_MATCH);                        
-            UPD_RegWriteByte (u8PortNum, TYPEC_VBUS_SAMP_EN, u8SampleEn);
-
-            /* Turn on the VBUS Comparator */
-            TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);	 
-            
+        {                                                         
             UINT8 u8PIOOvrSrc = UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET;
             
             if (gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV > TYPEC_VBUS_5V)
@@ -3982,7 +3994,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
     else  /* FRS Criteria Not Supported for the port */
     {               
         /* Disable FRS signal transmission and detection */
-        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        if (u8IsSourcePort)
         {
             UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO);
             
