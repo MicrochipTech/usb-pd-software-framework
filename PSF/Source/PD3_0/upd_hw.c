@@ -396,6 +396,12 @@ void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
 
             UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
                                         (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                             
+            
+            /* When PIO Override gets disabled, this pin will be automatically
+               driven by UPD based on the previous value stored in CFG_PIO_BASE
+               register. To avoid this, clear the Data Output value 
+               of EN_VBUS pin */              
+            UPD_DisablePIOOutputISR (u8PortNum);
         }
 
     #endif /* INCLUDE_PD_FR_SWAP */    
@@ -412,16 +418,22 @@ void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
         
         #if (TRUE == INCLUDE_PD_FR_SWAP)
             
-            /* UPD DOS Reference: After being cleared by FW this bit will not be set again 
-               by HW until the FRS Detect Enable (FRS_DET_EN) is cleared. This is
-               irrespective of the reception of additional FRS signaling */             
             UINT8 u8Data; 
             
             if (u16IntrSts & UPD_PIO_OVR_3)
-            {                                 
+            {          
+                /* UPD DOS Reference: After being cleared by FW this bit will not be set again 
+                   by HW until the FRS Detect Enable (FRS_DET_EN) is cleared. This is
+                   irrespective of the reception of additional FRS signaling */                             
                 UPD_RegisterReadISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);
                 u8Data &= ~(TYPEC_FRS_DET_EN); 
                 UPD_RegisterWriteISR (u8PortNum, TYPEC_FRS_CTL_HIGH, &u8Data, BYTE_LEN_1);                                                
+                
+                /* When PIO Override gets disabled, this pin will be automatically
+                   driven by UPD based on the previous value stored in CFG_PIO_BASE
+                   register. To avoid this, clear the Data Output value 
+                   of EN_SINK pin */               
+                UPD_DisablePIOOutputISR (u8PortNum);                
             }                 
         #endif 
 
