@@ -1072,21 +1072,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK_ENTRY_SS\r\n");
                     
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
-                    
-                    /* Configure VBUS threshold to detect 5V*/
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
-                            gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR); 
-                        
-                    PWRCTRL_ConfigSinkHW(u8PortNum,TYPEC_VBUS_0V, \
+                                            
+                    PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, \
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
          
-                    PRL_EnableRx (u8PortNum, FALSE);
-                    
-                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &=\
-                                ~(DPM_PORT_RP_VAL_DETECT_MASK_STATUS);
+                    PRL_EnableRx (u8PortNum, FALSE);                    
                     
 #if(TRUE == INCLUDE_PD_DRP)
-                    if((PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) \
+                    if ((PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) \
                             && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Drive DAC_I to 0V if DRP is not sink*/
@@ -1123,7 +1116,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_UNATTACHED_SNK_WAIT_FOR_VSAFE0V_SS:
                 {
-                    if(TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
+                    if (TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     { 
                         DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK_WAIT_FOR_VSAFE0V_SS" \
                                             " - VBUS_0V Present\r\n");
