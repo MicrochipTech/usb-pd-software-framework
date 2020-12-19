@@ -735,12 +735,19 @@ void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
     
     if (u8PIOOvrIntEn)
     {        
-        /* Enable PIO Override Interrupt */
+        /* Enable high level UPD350 PIO Override Interrupt */
         UPD_RegByteSetBit (u8PortNum, UPDINTR_INT_EN, UPDINTR_PIO_OVERRIDE_INT);
+        
+        /* Enable interrupt for PIO Override 3 */
+        UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_INT_EN, (UINT8)UPD_PIO_OVR_3);
+
+        /* Set PIO Override Interrupt Enable Mask. This will prevent the 
+           PIO Override interrupt from firing when FRS_DET_EN is disabled */
+        UPD_RegByteSetBit (u8PortNum, UPD_FRS_PIO_OVR_EN_MSK, (UINT8)UPD_PIO_OVR_3);        
     }      
     
-    /* PIO Override and PIO Override Interrupt Enable Mask will be enabled
-       in the Ready state when it is discovered that port partners are FRS capable */
+    /* PIO Override function will be enabled in the Ready state when 
+       it is discovered that port partners are FRS capable */
 }
 
 #endif

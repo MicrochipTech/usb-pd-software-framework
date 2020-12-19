@@ -3961,14 +3961,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             }           
             
             /* Configure PIO Override Source */
-            UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, u8PIOOvrSrc);
-            
-            /* Enable interrupt for PIO Override */
-            UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_INT_EN, (UINT8)UPD_PIO_OVR_3);
-            
-            /* Enable PIO Override Interrupt Enable Mask. This will prevent the 
-               PIO Override interrupt from firing when FRS_DET_EN is disabled */
-            UPD_RegByteSetBit (u8PortNum, UPD_FRS_PIO_OVR_EN_MSK, (UINT8)UPD_PIO_OVR_3);
+            UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, u8PIOOvrSrc);            
             
             /* Enable PIO Override */
             UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
