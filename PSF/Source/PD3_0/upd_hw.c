@@ -631,6 +631,10 @@ void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum)
     /* Override 2*/
     UPD_RegWriteWord (u8PortNum, UPD_PIO_OVR2_OUT_EN, u16PIOPos);
 
+    /* Set Override Enable Mask for Override 1. This will suppress related
+       events until Under Voltage threshold detection is enabled */
+    UPD_RegByteSetBit (u8PortNum, UPD_FRS_PIO_OVR_EN_MSK, (UINT8)UPD_PIO_OVR_1);     
+    
     /* Enable the override for FAULT_IN*/
     /* Under voltage and overvoltage override is enabled after configuring the
         threshold*/
