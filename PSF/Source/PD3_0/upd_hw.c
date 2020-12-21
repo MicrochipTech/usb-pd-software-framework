@@ -194,12 +194,18 @@ void UPD_DisablePIOOutputISR (UINT8 u8PortNum)
             #if (TRUE == INCLUDE_PD_SOURCE) 
             u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS;
             #endif  
+            /* Clear the Port IO Status of EN_VBUS */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                                            ~(DPM_PORT_IO_EN_VBUS_STATUS);
         }
         else /* u8CurrPwrRole = PD_ROLE_SINK */
         {
             #if (TRUE == INCLUDE_PD_SINK) 
             u8PioNum = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK;
             #endif 
+            /* Clear the Port IO Status of EN_SINK */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+                                            ~(DPM_PORT_IO_EN_SINK_STATUS);
         }    
         UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8PioNum),\
                                     (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
@@ -433,7 +439,10 @@ void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
                    driven by UPD based on the previous value stored in CFG_PIO_BASE
                    register. To avoid this, clear the Data Output value 
                    of EN_SINK pin */               
-                UPD_DisablePIOOutputISR (u8PortNum);                
+                UPD_DisablePIOOutputISR (u8PortNum);
+
+                /* Set the Port IO Status of EN_FRS pin */
+                gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_FRS_STATUS;                
             }                 
         #endif 
 

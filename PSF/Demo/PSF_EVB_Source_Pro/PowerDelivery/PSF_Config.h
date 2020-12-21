@@ -1486,7 +1486,11 @@ typedef enum
                                     * '1' Asserted if DFP
                                     * '0' De-asserted if UFP
 									* Applicable only for DRP configuration	
-    31:12                          Reserved 
+    12      R            R         EN_FRS Status
+                                    * '1' Asserted 
+                                    * '0' De-asserted
+									* Applicable only if EN_FRS is configured as output  
+    31:13                          Reserved 
 	</table>
 	
 	<b>d. u32PortStatusChange</b>: 
