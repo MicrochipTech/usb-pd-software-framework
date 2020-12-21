@@ -288,6 +288,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_IO_CAP_MISMATCH_STATUS              BIT(9)
 #define DPM_PORT_IO_POWER_ROLE_STATUS                BIT(10)
 #define DPM_PORT_IO_DATA_ROLE_STATUS                 BIT(11)
+#define DPM_PORT_IO_EN_FRS_STATUS                    BIT(12)
 
 /***************************u16SwapPolicy values*****************************/
 #define DPM_AUTO_REQ_DR_SWAP_AS_DFP                  BIT(0)

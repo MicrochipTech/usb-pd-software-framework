@@ -78,13 +78,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         ~(DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS |
                             DPM_PORT_AS_SNK_LAST_REQ_PS_RDY_STATUS |
                             DPM_PORT_AS_SNK_LAST_REQ_ACCEPT_STATUS |
-                            DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS);
-            
-            /* Disable FRS signal Detection. It will be enabled in the 
-               Ready state */
-            #if (TRUE == INCLUDE_PD_FR_SWAP)            
-                DPM_DISABLE_FRS_DET_EN(u8PortNum); 
-            #endif             
+                            DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS);           
             
             #if (FALSE != INCLUDE_PDFU)
             if((FALSE!=gsPdfuInfo.u8IsPDFUActive) && (u8PortNum == gsPdfuInfo.u8PDFUPortNum))
@@ -481,6 +475,14 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 					                                                 
                case ePE_SNK_TRANSITION_TO_DEFAULT_RESETHW_SS:
                {    
+                    #if (TRUE == INCLUDE_PD_FR_SWAP)
+                    /* Disable FRS Signal Detection */
+                    DPM_DISABLE_FRS_DET_EN(u8PortNum);
+                    
+                    /* De-assert EN_FRS pin */
+                    PWRCTRL_DisableEnFRS (u8PortNum);
+                    #endif 
+
                     /* Configuring VBUS threshold to detect VSafe0V and VSafe5V
                      as on reception of HardReset Source will transition to VSafe0V*/
                     TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \

@@ -1218,7 +1218,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_FRS_SNK_SRC_SEND_SWAP, \
                                                 ePE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS , \
-                                                ePE_FRS_HANDLE_ERROR_RECOVERY , (UINT8)SET_TO_ZERO);
+                                                ePE_FRS_SNK_SRC_SEND_SWAP, ePE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS);
 
                     u8IsTransmit = TRUE;                                        
                              
@@ -1242,6 +1242,26 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     
                     /* Assign an idle sub-state to wait for timer expiry */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                                            
+                    break; 
+                }
+                case ePE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS:
+                {
+                    /* Policy Engine would enter this sub-state when GOOD_CRC is not received
+                       for the FR_Swap message sent */                    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS\r\n");
+                    
+                    /* Disable FRS_DET_EN. This will prevent the PIO Override
+                       from asserting the EN_FRS if not done before entering this state */
+                    DPM_DISABLE_FRS_DET_EN(u8PortNum);
+                    
+                    /* If EN_FRS was asserted as a result of PIO Override before
+                       entering this state, the load switch would have put out 5V
+                       in VBUS. So, disable the load switch i.e drive 0V in VBUS */                                            
+                    PWRCTRL_DisableEnFRS (u8PortNum);
+                    
+                    /* Assign PE state as ePE_FRS_HANDLE_ERROR_RECOVERY to invoke Error Recovery */
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_HANDLE_ERROR_RECOVERY;
+                    
                     break; 
                 }
                 /* Idle state to wait for message transmit completion or timer expiry */
