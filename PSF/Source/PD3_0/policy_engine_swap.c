@@ -1259,8 +1259,16 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        in VBUS. So, disable the load switch i.e drive 0V in VBUS */                                            
                     PWRCTRL_DisableEnFRS (u8PortNum);
                     
-                    /* Assign PE state as ePE_FRS_HANDLE_ERROR_RECOVERY to invoke Error Recovery */
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_HANDLE_ERROR_RECOVERY;
+                    /* Start a timer for 5ms to wait for a TypeC Detach interrupt. 
+                       If it is not detach, then invoke Error Recovery. This timer
+                       will be killed in TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state */
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_FRS_DETACH_WAIT_TIMEOUT_MS),
+                                                            PE_StateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_FRS_HANDLE_ERROR_RECOVERY);    
+                    
+                    /* Assign an idle sub-state to wait for timer expiry */
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;
                     
                     break; 
                 }
