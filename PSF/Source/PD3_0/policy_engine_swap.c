@@ -1441,7 +1441,15 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)   
                         gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_IGNORE_UV_DURING_FRS_MASK);
                     #endif
-                            
+                          
+                    /* Set DPM_PR_SWAP_INIT_STS_AS_SRC flag in u32DPMStatus to 
+                       block initiation of PR_Swap after an FRS. During this time, partner
+                       will not have it's external power supply and hence, it cannot provide
+                       power. Therefore, even though our swap policy matches, we should not
+                       initiate a PR_Swap. Partner will initiate a PR_Swap when he 
+                       regains the power. We will accept it */
+                    gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC;
+                        
                     /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
                        and Protocol Layer would be taken care by the startup state */
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;
