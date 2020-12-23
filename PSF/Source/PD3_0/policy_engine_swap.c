@@ -1089,6 +1089,15 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                         
                         PRL_UpdateSpecAndDeviceRoles (u8PortNum);
                         
+                        /* After Source to sink FR_Swap, the new role is bus-powered sink.*/
+                        /* Clearing DPM_DEFAULT_POWER_ROLE_MASK in u8DPMConfigData 
+                           to set the configured power role as fixed sink*/
+                        gasDPM[u8PortNum].u8DPMConfigData &= (~DPM_DEFAULT_POWER_ROLE_MASK);
+                        
+                        /* Clearing unconstrained power bit in sink pdo*/
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0] &= (~DPM_PDO_UNCONSTRAINED_POWER);
+                        gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0] &= (~DPM_PDO_UNCONSTRAINED_POWER);
+                        
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
