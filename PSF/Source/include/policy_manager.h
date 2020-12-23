@@ -393,6 +393,7 @@ Source/Sink Power delivery objects*/
 #define DPM_GET_PDO_DUAL_DATA(X)                ((X & 0x02000000) >> 25)
 #define DPM_GET_PDO_DUAL_POWER(X)               ((X & 0x20000000) >> 29)
 #define DPM_MAX_PDO_CNT                          7
+#define DPM_PDO_UNCONSTRAINED_POWER             BIT(27)
 
 /*********************Fixed Supply RDO Defines ******************/ 
 #define DPM_RDO_OBJ_MASK            0x70
