@@ -1313,8 +1313,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /* During FR_Swap, 5V will have already been present in VBUS. 
                            Again checking for 5V presence is not necessary. Therefore, 
                            wait for CC attach from initial sink */
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS; 
-                    
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS;                     
                     }
                     else
                     {
