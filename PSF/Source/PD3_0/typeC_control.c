@@ -1059,33 +1059,47 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, \
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
          
-                    PRL_EnableRx (u8PortNum, FALSE);                    
-                    
-#if(TRUE == INCLUDE_PD_DRP)
-                    if ((PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) \
-                            && (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
+                    PRL_EnableRx (u8PortNum, FALSE);      
+                                        
+                    if(PD_ROLE_SINK == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
                     {
-                        /*Drive DAC_I to 0V if DRP is not sink*/
-                        MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, SET_TO_ZERO);
-                        
                         /*Setting CC Comparator OFF*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
-    
-                        /*Mask CC match interrupts to avoid interrupts due to Ra/Open termination*/
-                        UPD_RegByteClearBit (u8PortNum,  TYPEC_CC_INT_EN,\
-                        (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
-                            
-                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
-                        
-                        /*Set power and data role status*/
-                        DPM_UpdatePowerRole(u8PortNum, PD_ROLE_DRP);
-                        DPM_UpdateDataRole(u8PortNum, PD_ROLE_TOGGLING);
-                        
-                        /*Enable DRP offload.*/
-                        UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+
+                        /*Setting the CC Debounce register to detect both the sink and powered cable on CC1 and CC2*/
+                        TypeC_SetCCSampleEnable (u8PortNum, TYPEC_ENABLE_CC1_CC2);
+
+                        /*Setting CC Comparator ON*/
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
                     }
+                    else 
+                    {
+                        /*Default power role here is PD_ROLE_DRP*/
+#if(TRUE == INCLUDE_PD_DRP)
+                        if (PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) 
+                        {
+                            /*Drive DAC_I to 0V if DRP is not sink*/
+                            MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, SET_TO_ZERO);
+
+                            /*Setting CC Comparator OFF*/
+                            TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+
+                            /*Mask CC match interrupts to avoid interrupts due to Ra/Open termination*/
+                            UPD_RegByteClearBit (u8PortNum,  TYPEC_CC_INT_EN,\
+                            (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
+
+                            gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
+
+                            /*Set power and data role status*/
+                            DPM_UpdatePowerRole(u8PortNum, PD_ROLE_DRP);
+                            DPM_UpdateDataRole(u8PortNum, PD_ROLE_TOGGLING);
+
+                            /*Enable DRP offload.*/
+                            UPD_RegByteSetBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+                        }
 #endif
-                    
+                    }
+
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_WAIT_FOR_VSAFE0V_SS;
                     
                     /* Notify external DPM of Port enabled event through a user defined call back*/
