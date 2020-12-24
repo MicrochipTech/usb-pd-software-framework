@@ -173,7 +173,7 @@ Description:
     is not required. It is recommended that this define shall be set when Fast Role Swap feature
     is enabled since Fast Role Swap is tightly coupled with PIO Override feature. 
 Remarks:
-    To use this feature, EN_VBUS or EN_SINK, FAULT_IN and FRS_Request pins of the system should be
+    To use this feature, EN_VBUS or EN_SINK, FAULT_IN and EN_FRS pins of the system should be
     UPD350 PIOs. It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus 
     INCLUDE_POWER_FAULT_HANDLING should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
     define to be effective. Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS, 

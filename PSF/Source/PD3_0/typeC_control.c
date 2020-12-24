@@ -1900,8 +1900,6 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
             /*Clearing the FRS_XMT_STS/FRS_RCV_STS interrupt */
             UPD_RegisterWriteISR (u8PortNum, TYPEC_EXT_INT_STS, &u8Data, BYTE_LEN_1);
                      
-            /* To-do: Check if it is Ok to clear FRS_REQ_PIO here or
-               should it be moved to somewhere else like FRS_DET_EN ? */
             if (u8Data & TYPEC_FRS_XMT_STS)
             {
                 /* Same u8Data variable is used for EXT INT STS and FRS CTL HIGH registers */
@@ -2868,8 +2866,6 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
             #if (TRUE == INCLUDE_PD_3_0)    
                 PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
             #endif 
-            /* To-do: What if Sink partner does not send FR_Swap message within 
-               15ms? */
         }
         else
         {
