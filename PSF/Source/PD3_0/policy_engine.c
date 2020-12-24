@@ -472,8 +472,8 @@ void PE_HandleUnExpectedMsg (UINT8 u8PortNum)
 {
     DEBUG_PRINT_PORT_STR (u8PortNum,"PE: Handle UnExpected Msg\r\n");
     
-    DEBUG_PRINT_PORT_STR (gasPolicyEngine[u8PortNum].ePEState,"PE State\r\n");
-    DEBUG_PRINT_PORT_STR (gasPolicyEngine[u8PortNum].ePESubState,"PE Substate\r\n");
+    DEBUG_PRINT_PORT_STR ((UINT32)gasPolicyEngine[u8PortNum].ePEState,"PE State\r\n");
+    DEBUG_PRINT_PORT_STR ((UINT32)gasPolicyEngine[u8PortNum].ePESubState,"PE Substate\r\n");
         
     /*Send Hard reset if Current State is in power transition*/
     if ((ePE_SRC_TRANSITION_SUPPLY == gasPolicyEngine[u8PortNum].ePEState) || \
