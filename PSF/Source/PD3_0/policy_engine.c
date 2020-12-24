@@ -1114,8 +1114,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         
                         if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
                         {
-                            gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_NO_RESPONSE_SS;
-                                                                            
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_NO_RESPONSE_SS;                                                                            
                         }
                         else
                         {

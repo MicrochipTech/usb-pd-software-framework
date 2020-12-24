@@ -1075,9 +1075,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     else 
                     {
                         /*Default power role here is PD_ROLE_DRP*/
-#if(TRUE == INCLUDE_PD_DRP)
+#if(TRUE == INCLUDE_PD_DRP)                    
                         if (PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) 
                         {
+                            /*Disable DC_DC_EN which was turned on when enabling FRS detection */
+                            #if (TRUE == INCLUDE_PD_FR_SWAP)
+                                PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
+                            #endif  
+                                
                             /*Drive DAC_I to 0V if DRP is not sink*/
                             MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, SET_TO_ZERO);
 
@@ -3196,13 +3201,13 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                    below VSinkdisconnect. A PR_Swap/FR_Swap from Source to Sink should 
                    not be considered as a detach. So, don't do anything */ 
                 else if ((TYPEC_ATTACHED_SNK == u8TypeCState) 
-                #if (TRUE == INCLUDE_PD_PR_SWAP )
-                    && ((u8TypeCSubState != TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS)
+                #if (TRUE == INCLUDE_PD_PR_SWAP)
+                    && (u8TypeCSubState != TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS)
                 #endif
                 #if (TRUE == INCLUDE_PD_FR_SWAP)
                     && (u8TypeCSubState != TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS)
                 #endif 
-                        ))
+                        )
                 {
                     u8TypeCState = TYPEC_UNATTACHED_SNK;
                     u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
