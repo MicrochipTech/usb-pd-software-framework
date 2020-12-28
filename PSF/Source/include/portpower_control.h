@@ -209,4 +209,25 @@ void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Curr
 **************************************************************************************************/
 void PWRCTRL_DriveDAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent);
 
+/****************************************************************************
+    Function:
+        void PWRCTRL_DisableEnFRS (UINT8 u8PortNum)
+    Summary:
+        API to disable EN_FRS pin as required
+    Description:
+        This API disables EN_FRS pin of the FRS capable load switch. It 
+        will be enabled by the PIO Override feature of UPD350.
+        Also, updates the disable status in Port I/O Status register. 
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Corresponding Port Number. Value passed will be less than CONFIG_PD_PORT_COUNT.
+    Return:
+      None.
+    Remarks:
+      None.
+
+**************************************************************************************************/
+void PWRCTRL_DisableEnFRS (UINT8 u8PortNum);
+
 #endif /*_PORTPOWER_CONTROL_H_*/

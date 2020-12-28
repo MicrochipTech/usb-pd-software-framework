@@ -1689,6 +1689,10 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
     UINT8 u8CurrentDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
 #endif    
     
+#if (TRUE == INCLUDE_PD_PR_SWAP)
+    UINT8 u8DefaultPwrRole = DPM_GET_DEFAULT_POWER_ROLE(u8PortNum);
+#endif 
+    
     switch (eRoleSwapMsg)
     {
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
@@ -1722,7 +1726,7 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
             Also the Swap shall be accepted only if powered cable is present and Port role
             is source */
             if ((((PD_ROLE_SOURCE == u8CurrentPwrRole) && u8IsRaCable) || 
-                  (PD_ROLE_SINK == u8CurrentPwrRole))&&
+                  (PD_ROLE_SINK == u8CurrentPwrRole)) &&
                 (((TRUE == u8IsVCONNSource) && 
                            (u16SwapPolicy & DPM_AUTO_REQ_VCONN_SWAP_AS_VCONN_SRC)) ||
                 ((FALSE == u8IsVCONNSource) && 
@@ -1779,10 +1783,11 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
         {
             /*Evaluate whether received PR_SWAP message can be accepted or rejected
              based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
+            if ((PD_ROLE_DRP == u8DefaultPwrRole) && 
+                    (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
                             (u16SwapPolicy & DPM_AUTO_ACCEPT_PR_SWAP_AS_SRC)) ||
-               ((PD_ROLE_SINK == u8CurrentPwrRole) && 
-                            (u16SwapPolicy & DPM_AUTO_ACCEPT_PR_SWAP_AS_SNK)))
+                    ((PD_ROLE_SINK == u8CurrentPwrRole) && 
+                            (u16SwapPolicy & DPM_AUTO_ACCEPT_PR_SWAP_AS_SNK))))
             {
                 u8RetVal = DPM_ACCEPT_SWAP;
             }
@@ -1796,10 +1801,11 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
         {
             /*Evaluate whether to initiate PR_SWAP message 
             based on gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy configuration*/
-            if (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
+            if ((PD_ROLE_DRP == u8DefaultPwrRole) &&
+                    (((PD_ROLE_SOURCE == u8CurrentPwrRole) && 
                            (u16SwapPolicy & DPM_AUTO_REQ_PR_SWAP_AS_SRC)) ||
-              ((PD_ROLE_SINK == u8CurrentPwrRole) && 
-                           (u16SwapPolicy & DPM_AUTO_REQ_PR_SWAP_AS_SNK)))
+                    ((PD_ROLE_SINK == u8CurrentPwrRole) && 
+                           (u16SwapPolicy & DPM_AUTO_REQ_PR_SWAP_AS_SNK))))
             {
                 u8RetVal = DPM_REQUEST_SWAP;
             }

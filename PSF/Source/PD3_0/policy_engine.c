@@ -343,7 +343,8 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             else if (PE_CTRL_GET_SOURCE_CAP == u8MsgType)
             {
                 /* Get Source Caps shall be supported for Source only and DRP ports */
-                if (PD_ROLE_SINK == u8DefaultPwrRole)
+                if ((PD_ROLE_SINK == u8DefaultPwrRole) && \
+                        (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE)))
                 {
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 }                
@@ -472,8 +473,8 @@ void PE_HandleUnExpectedMsg (UINT8 u8PortNum)
 {
     DEBUG_PRINT_PORT_STR (u8PortNum,"PE: Handle UnExpected Msg\r\n");
     
-    DEBUG_PRINT_PORT_STR (gasPolicyEngine[u8PortNum].ePEState,"PE State\r\n");
-    DEBUG_PRINT_PORT_STR (gasPolicyEngine[u8PortNum].ePESubState,"PE Substate\r\n");
+    DEBUG_PRINT_PORT_STR ((UINT32)gasPolicyEngine[u8PortNum].ePEState,"PE State\r\n");
+    DEBUG_PRINT_PORT_STR ((UINT32)gasPolicyEngine[u8PortNum].ePESubState,"PE Substate\r\n");
         
     /*Send Hard reset if Current State is in power transition*/
     if ((ePE_SRC_TRANSITION_SUPPLY == gasPolicyEngine[u8PortNum].ePEState) || \
@@ -1114,8 +1115,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         
                         if (PE_CTRL_REJECT == (PRL_GET_MESSAGE_TYPE(u32Header)))
                         {
-                            gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_NO_RESPONSE_SS;
-                                                                            
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_NO_RESPONSE_SS;                                                                            
                         }
                         else
                         {
@@ -1230,8 +1230,18 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #if (TRUE == INCLUDE_PD_DRP)
                     else if (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState)
                     {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_GIVE_CAP;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_GIVE_CAP_ENTRY_SS;                                                
+                        #if (TRUE == INCLUDE_PD_FR_SWAP)
+                        if (gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE)
+                        {
+                            gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT;
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;
+                        }
+                        else
+                        #endif 
+                        {
+                            gasPolicyEngine[u8PortNum].ePEState = ePE_GIVE_CAP;
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_GIVE_CAP_ENTRY_SS;                                                                            
+                        }
                     }
 #endif 
                     else

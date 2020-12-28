@@ -1227,7 +1227,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_FRS_SNK_SRC_SEND_SWAP, \
                                                 ePE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS , \
-                                                ePE_FRS_HANDLE_ERROR_RECOVERY , (UINT8)SET_TO_ZERO);
+                                                ePE_FRS_SNK_SRC_SEND_SWAP, ePE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS);
 
                     u8IsTransmit = TRUE;                                        
                              
@@ -1251,6 +1251,34 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     
                     /* Assign an idle sub-state to wait for timer expiry */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                                            
+                    break; 
+                }
+                case ePE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS:
+                {
+                    /* Policy Engine would enter this sub-state when GOOD_CRC is not received
+                       for the FR_Swap message sent */                    
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SEND_SWAP_NO_RESPONSE_SS\r\n");
+                    
+                    /* Disable FRS_DET_EN. This will prevent the PIO Override
+                       from asserting the EN_FRS if not done before entering this state */
+                    DPM_DISABLE_FRS_DET_EN(u8PortNum);
+                    
+                    /* If EN_FRS was asserted as a result of PIO Override before
+                       entering this state, the load switch would have put out 5V
+                       in VBUS. So, disable the load switch i.e drive 0V in VBUS */                                            
+                    PWRCTRL_DisableEnFRS (u8PortNum);
+                    
+                    /* Start a timer for 5ms to wait for a TypeC Detach interrupt. 
+                       If it is not detach, then invoke Error Recovery. This timer
+                       will be killed in TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state */
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            (PE_FRS_DETACH_WAIT_TIMEOUT_MS),
+                                                            PE_StateChange_TimerCB,u8PortNum,  
+                                                            (UINT8)ePE_FRS_HANDLE_ERROR_RECOVERY);    
+                    
+                    /* Assign an idle sub-state to wait for timer expiry */
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;
+                    
                     break; 
                 }
                 /* Idle state to wait for message transmit completion or timer expiry */
@@ -1422,7 +1450,15 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)   
                         gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_IGNORE_UV_DURING_FRS_MASK);
                     #endif
-                            
+                          
+                    /* Set DPM_PR_SWAP_INIT_STS_AS_SRC flag in u32DPMStatus to 
+                       block initiation of PR_Swap after an FRS. During this time, partner
+                       will not have it's external power supply and hence, it cannot provide
+                       power. Therefore, even though our swap policy matches, we should not
+                       initiate a PR_Swap. Partner will initiate a PR_Swap when he 
+                       regains the power. We will accept it */
+                    gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC;
+                        
                     /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
                        and Protocol Layer would be taken care by the startup state */
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_STARTUP;

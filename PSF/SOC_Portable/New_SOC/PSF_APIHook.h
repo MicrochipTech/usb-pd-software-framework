@@ -282,9 +282,9 @@ Summary:
 Description :
     MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER can be defined as either 1 or 0 to set the timeout counter in PSF 
     to unsigned 16bit or unsigned 32bit correspondingly. When set as 1, maximum timeout that can be 
-    set will be 65535 ticks.(Ticks = Resolution of the Hardware timer used). When set as 0 , maximum 
+    set will be 65535 ticks.(Ticks = Resolution of the Hardware timer used). When set as 0, maximum 
     timeout that can be set will be 4294967296 ticks. Default value of MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER is 
-    set as 1. With Hardware timer resolution set as 1ms , PSF will be capable of handling timeouts 
+    set as 1. With Hardware timer resolution set as 1ms, PSF will be capable of handling timeouts 
     upto 65.535 Seconds.
 Remarks :
     None
@@ -1529,17 +1529,17 @@ Function:
 Summary:
     Hook to initialize all the GPIO functionality pins in application layer.
 Description:
-    PSF calls this API to initialize the ePSF_GPIO_Functionality pins in 
-    application layer.User has to define an appropriate function with UINT8 and 
-    eMCHP_PSF_GPIO_FUNCTIONALITY as argument.User can assign any PIO either from 
-    UDP350 or MCU for any GPIO functionality defined.
-    Drive of this API will be controlled by API MCHP_PSF_HOOK_GPIO_FUNC_DRIVE.
+    PSF calls this API to initialize the eMCHP_PSF_GPIO_FUNCTIONALITY pins in the
+    application layer. Users has to define an appropriate function with UINT8 and 
+    eMCHP_PSF_GPIO_FUNCTIONALITY as argument. Users can assign any PIO either from 
+    UDP350 or MCU for any GPIO functionality defined. Drive of this API will be 
+    controlled by the hook MCHP_PSF_HOOK_GPIO_FUNC_DRIVE.
 Conditions:
     None.
 Input:
     u8PortNum - Port number of the device. It takes value between 0 to 
                 (CONFIG_PD_PORT_COUNT-1).
-    eGPIOFunc-  Passes the GPIO functionality type that has to be initialized by the application. 
+    eGPIOFunc - Passes the GPIO functionality type that has to be initialized by the application. 
 Return:
     None.
 Example:
@@ -1578,15 +1578,15 @@ Summary:
     Hook to drive GPIOs assigned to GPIO functionality pins in application layer.
 Description:
     PSF calls this API to drive the ePSF_GPIO_Functionality pins in application 
-    layer as per  drive value ePSF_GPIO_DriveVal. User has to define an 
+    layer as per  drive value ePSF_GPIO_DriveVal. Users has to define an 
     appropriate function with UINT8, eMCHP_PSF_GPIO_FUNCTIONALITY, eMCHP_PSF_GPIO_DRIVE_VAL 
-    as argument. User can assign any PIO either from UDP350 or MCU for any GPIO 
+    as argument. Users can assign any PIO either from UDP350 or MCU for any GPIO 
     functionality defined.
 Conditions:
     None.
 Input:
     u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    eGPIOFunc-  Passes the GPIO functionality type that has to be initialized by 
+    eGPIOFunc - Passes the GPIO functionality type that has to be initialized by 
                 the application. 
     eDriveVal - Drive value for the pin
 Return:
@@ -1786,8 +1786,7 @@ Description:
         3. 2.0A > DAC_I = 1.67V
         4. 3.0A > DAC_I = 2.5V
         5. 4.0A > DAC_I = 2.5V
-        6. 5.0A > DAC_I = 2.5V
-    This is applicable only for Sink operation.
+        6. 5.0A > DAC_I = 2.5V    
 
     A suitable function that initializes DAC from SoC may be 
     implemented in this hook. 
@@ -1811,7 +1810,7 @@ Example:
     </code>
 Remarks:
     This hook is applicable only if INCLUDE_PD_SINK macro is 1. Definition of this
-    hook is not mandatory.
+    hook is not mandatory. This is applicable only for Sink operation.
 *******************************************************************************/ 
 #define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)  
 
