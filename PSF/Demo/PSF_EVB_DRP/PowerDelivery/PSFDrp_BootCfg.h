@@ -152,7 +152,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_UPD_EN_FRS_PIO_NO        eUPD_PIO2
 #define CFG_PORT_0_UPD_EN_FRS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 
-/* Port 1 is configured as Power Source/Data Device. So, EN_FRS acts an input pin */
+/* Port 1 is configured as Power Source/Data Device. So, EN_FRS acts an input pin.
+   The falling edge of this pin indicates external power to the system is lost 
+   and FRS signal will be triggered by PSF and it will turn into bus-powered sink. 
+   Once power is back, that is, on the rising edge of this pin, PSF will resume 
+   its operation as DRP (acting as sink) followed by PR_Swap based on user configuration
+   of u16SwapPolicy field.
+ 
+   Even though, this pin is initially configured to be active low, after an FR_Swap
+   is complete, this pin will be configured to detect rising edge to indicate that 
+   power is back. */
 #define CFG_PORT_1_UPD_EN_FRS_PIO_NO        eUPD_PIO2
 #define CFG_PORT_1_UPD_EN_FRS_PIO_MODE      eINPUT_ACTIVE_LOW
 

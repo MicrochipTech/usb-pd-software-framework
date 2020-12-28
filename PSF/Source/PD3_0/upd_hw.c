@@ -383,7 +383,9 @@ void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
     #if (TRUE == INCLUDE_PD_FR_SWAP)
 
         UINT8 u8Pio_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS;
-
+        UINT8 u8Mode_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;
+        UINT8 u8PwrBackDetectionEdge;
+        
         if ((BIT(u8Pio_EN_FRS)) & u16IntrSts)
         {
             UINT16 u16PIORegVal;
@@ -392,10 +394,29 @@ void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
             UPD_RegisterReadISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
                                         (UINT8 *)&u16PIORegVal, BYTE_LEN_1);
 
+            if (((UINT8)eINPUT_ACTIVE_LOW == u8Mode_EN_FRS) || ((UINT8)eINPUT_ACTIVE_LOW_PU == u8Mode_EN_FRS))
+            {
+                u8PwrBackDetectionEdge = UPD_CFG_PIO_RISING_ALERT;
+            }
+            else
+            {
+                u8PwrBackDetectionEdge = UPD_CFG_PIO_FALLING_ALERT;
+            }
+            
+            if(u16PIORegVal & UPD_CFG_PIO_RISING_EDGE)
+            {
+                DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_SYSTEM_POWER_BACK);
+            }
+            /*System power loss event (DPM_INT_EVT_SYSTEM_POWER_LOST) is not handled here.
+              It will be done after source to sink FR_Swap is complete.*/
+            
             u16PIORegVal &= ~(UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);
 
             UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
                                         (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                             
+            
+            /*To-do check if falling edge is detected here, when power loss occurs second time.
+             (i.e) after a falling edge and a rising edge, check if rising edge is detected.*/
             
             /* When PIO Override gets disabled, this pin will be automatically
                driven by UPD based on the previous value stored in CFG_PIO_BASE
@@ -564,7 +585,7 @@ void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
     /* Get the edge type from the user input.*/
     u8PIOMode &= (UPD_CFG_PIO_RISING_ALERT | UPD_CFG_PIO_FALLING_ALERT);
 
-	/* Fault-in interrupt configuration*/
+	/* Clear the interrupt and configure the edge type*/
 	UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
 	UPD_GPIOSetIntrAlert (u8PortNum, u8PIONum, u8PIOMode);	
 }

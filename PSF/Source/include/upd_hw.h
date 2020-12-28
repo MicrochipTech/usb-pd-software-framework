@@ -288,6 +288,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_QUEUE_NOT_EMPTY_EN           BIT(3)
 
 #define UPD_CFG_PIO_ENABLE               BIT(0)
+#define UPD_CFG_PIO_RISING_EDGE          BIT(4)
 
 #define UPD_HPD_ENABLE                   BIT(0)
 #define UPD_HPD_CFG                      BIT(1)
