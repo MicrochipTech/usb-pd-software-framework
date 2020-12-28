@@ -174,6 +174,124 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_AS_VCONN_SRC_ACCEPT_VCONN_SWAP     1
 #define CFG_PORT_1_AS_NOT_VCONN_SRC_ACCEPT_VCONN_SWAP 1
 
+/*********************** Feature Select Defines *************************************/
+#define CFG_PORT_0_ENABLE_VDM_SUPPORT                 (0U << 1)
+#define CFG_PORT_1_ENABLE_VDM_SUPPORT                 (0U << 1)
+
+#define CFG_PORT_0_ENABLE_AME_MONITORING              (0U << 2)
+#define CFG_PORT_1_ENABLE_AME_MONITORING              (0U << 2)
+
+/* Note: VDM defines are set to 0 by default. Users shall input necessary
+   data relevant to their application. Refer section 6.4.4.3.1 of USB
+   Power Delivery Specification v3.0 for detailed information on
+   Discover Identity */
+/******************* PD Identity Count Defines **************************/
+#define CFG_PORT_0_PD_IDENTITY_COUNT                   0U
+#define CFG_PORT_1_PD_IDENTITY_COUNT                   0U
+
+/**************** ID Header VDO Defines *********************************/
+#define CFG_PORT_0_ID_HEADER_VDO_USB_HOST_CAPABLE         0U
+#define CFG_PORT_0_ID_HEADER_VDO_USB_DEVICE_CAPABLE       0U
+#define CFG_PORT_0_ID_HEADER_VDO_PROD_TYPE_UFP            0U
+#define CFG_PORT_0_ID_HEADER_VDO_MODAL_OPR_SUPPORTED      0U
+#define CFG_PORT_0_ID_HEADER_VDO_PROD_TYPE_DFP            0U
+#define CFG_PORT_0_ID_HEADER_VDO_CONNECTOR_TYPE           0U
+#define CFG_PORT_0_ID_HEADER_VDO_USB_VENDOR_ID            0U 
+
+#define CFG_PORT_1_ID_HEADER_VDO_USB_HOST_CAPABLE         0U
+#define CFG_PORT_1_ID_HEADER_VDO_USB_DEVICE_CAPABLE       0U
+#define CFG_PORT_1_ID_HEADER_VDO_PROD_TYPE_UFP            0U
+#define CFG_PORT_1_ID_HEADER_VDO_MODAL_OPR_SUPPORTED      0U
+#define CFG_PORT_1_ID_HEADER_VDO_PROD_TYPE_DFP            0U
+#define CFG_PORT_1_ID_HEADER_VDO_CONNECTOR_TYPE           0U
+#define CFG_PORT_1_ID_HEADER_VDO_USB_VENDOR_ID            0U 
+
+/**************** Cert Stat VDO Defines *********************************/
+#define CFG_PORT_0_CERT_STAT_VDO_XID                  0U
+
+#define CFG_PORT_1_CERT_STAT_VDO_XID                  0U
+
+/******************* Product VDO Defines *********************************/
+#define CFG_PORT_0_PROD_VDO_USB_PRODUCT_ID            0U
+#define CFG_PORT_0_PROD_VDO_BCD_DEVICE                0U 
+
+#define CFG_PORT_1_PROD_VDO_USB_PRODUCT_ID            0U
+#define CFG_PORT_1_PROD_VDO_BCD_DEVICE                0U 
+
+/******************* Product Type VDO Defines ****************************/
+                /*************** UFP VDO 1 *************/
+#define CFG_PORT_0_UFP_VDO_1_UFP_VDO_VERSION          0U
+#define CFG_PORT_0_UFP_VDO_1_DEVICE_CAPABILITY        0U
+#define CFG_PORT_0_UFP_VDO_1_CONNECTOR_TYPE           0U
+#define CFG_PORT_0_UFP_VDO_1_ALTERNATE_MODES          0U
+#define CFG_PORT_0_UFP_VDO_1_USB_HIGHEST_SPEED        0U 
+
+#define CFG_PORT_1_UFP_VDO_1_UFP_VDO_VERSION          0U
+#define CFG_PORT_1_UFP_VDO_1_DEVICE_CAPABILITY        0U
+#define CFG_PORT_1_UFP_VDO_1_CONNECTOR_TYPE           0U
+#define CFG_PORT_1_UFP_VDO_1_ALTERNATE_MODES          0U
+#define CFG_PORT_1_UFP_VDO_1_USB_HIGHEST_SPEED        0U 
+
+                /*************** UFP VDO 2 *************/
+#define CFG_PORT_0_UFP_VDO_2_USB4_MIN_PWR             0U
+#define CFG_PORT_0_UFP_VDO_2_USB4_MAX_PWR             0U
+#define CFG_PORT_0_UFP_VDO_2_USB3_MIN_PWR             0U
+#define CFG_PORT_0_UFP_VDO_2_USB3_MAX_PWR             0U
+
+#define CFG_PORT_1_UFP_VDO_2_USB4_MIN_PWR             0U
+#define CFG_PORT_1_UFP_VDO_2_USB4_MAX_PWR             0U
+#define CFG_PORT_1_UFP_VDO_2_USB3_MIN_PWR             0U
+#define CFG_PORT_1_UFP_VDO_2_USB3_MAX_PWR             0U
+
+                /*************** DFP VDO ***************/
+#define CFG_PORT_0_DFP_VDO_DFP_VDO_VERSION            0U
+#define CFG_PORT_0_DFP_VDO_DFP_HOST_CAPABILITY        0U
+#define CFG_PORT_0_DFP_VDO_DFP_CONNECTOR_TYPE         0U
+#define CFG_PORT_0_DFP_VDO_DFP_PORT_NUMBER            0U
+
+#define CFG_PORT_1_DFP_VDO_DFP_VDO_VERSION            0U
+#define CFG_PORT_1_DFP_VDO_DFP_HOST_CAPABILITY        0U
+#define CFG_PORT_1_DFP_VDO_DFP_CONNECTOR_TYPE         0U
+#define CFG_PORT_1_DFP_VDO_DFP_PORT_NUMBER            0U
+
+/*************************** SVID Defines ****************************/
+                /*************** SVIDs ***************/
+#define CFG_PORT_0_SVID_0                             0U
+#define CFG_PORT_0_SVID_1                             0U
+
+#define CFG_PORT_1_SVID_0                             0U
+#define CFG_PORT_1_SVID_1                             0U
+
+                /************* SVIDs Count ***********/
+#define CFG_PORT_0_SVID_COUNT                         0U
+#define CFG_PORT_1_SVID_COUNT                         0U
+
+/*************************** Mode Defines ****************************/
+                /*************** Modes ***************/
+#define CFG_PORT_0_SVID_0_MODE_0                      0U
+#define CFG_PORT_0_SVID_0_MODE_1                      0U
+#define CFG_PORT_0_SVID_1_MODE_0                      0U
+#define CFG_PORT_0_SVID_1_MODE_1                      0U
+
+#define CFG_PORT_1_SVID_0_MODE_0                      0U
+#define CFG_PORT_1_SVID_0_MODE_1                      0U
+#define CFG_PORT_1_SVID_1_MODE_0                      0U
+#define CFG_PORT_1_SVID_1_MODE_1                      0U
+
+                /*************** Modes Count ***************/
+#define CFG_PORT_0_SVID_0_MODES_COUNT                 0U
+#define CFG_PORT_0_SVID_1_MODES_COUNT                 0U
+
+#define CFG_PORT_1_SVID_0_MODES_COUNT                 0U
+#define CFG_PORT_1_SVID_1_MODES_COUNT                 0U
+
+                /************ Start Mode Index **************/
+#define CFG_PORT_0_SVID_0_START_MODE_INDEX            (0U << 3)
+#define CFG_PORT_0_SVID_1_START_MODE_INDEX            (0U << 3)
+
+#define CFG_PORT_1_SVID_0_START_MODE_INDEX            (0U << 3)
+#define CFG_PORT_1_SVID_1_START_MODE_INDEX            (0U << 3) 
+
 
 /*****************Defines to form PDOs ****************************************/
 /* Macro used to form Fixed PDO 1 */
@@ -241,6 +359,123 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     ((objPos) << 8) | \
     ((cmdType) << 6) | \
     (cmd))
+
+/****************** Defines to configure Discover Identity ****************/
+/***************************** ID HEADER VDO*************************/
+/* ID Header VDO (From Table 6-29 ID Header VDO of PD 3.0 Spec)
+   B31     - USB Commn Capable as USB Host
+   B30     - USB Commn Capable as USB Device 
+   B29-27  - Product Type (UFP/Cable Plug)
+   B26     - Modal Operation Supported
+   B25-23  - Product Type (DFP)
+   B22-21  - Connector Type 
+   B20-16  - Reserved 
+   B15-0   - USB Vendor ID */
+
+#define CFG_FORM_ID_HEADER_VDO(host,device,prodTypeUFP,modalOpr,prodTypeDFP,connectorType,vendorID) \
+    (((host) << 31) | \
+    ((device) << 30) | \
+    ((prodTypeUFP) << 27) | \
+    ((modalOpr) << 26) | \
+    ((prodTypeDFP) << 23) | \
+    ((connectorType) << 21) | \
+    (vendorID))
+
+#define CFG_PORT_0_ID_HEADER_VDO   CFG_FORM_ID_HEADER_VDO(CFG_PORT_0_ID_HEADER_VDO_USB_HOST_CAPABLE, \
+        CFG_PORT_0_ID_HEADER_VDO_USB_DEVICE_CAPABLE, CFG_PORT_0_ID_HEADER_VDO_PROD_TYPE_UFP, \
+        CFG_PORT_0_ID_HEADER_VDO_MODAL_OPR_SUPPORTED, CFG_PORT_0_ID_HEADER_VDO_PROD_TYPE_DFP, \
+        CFG_PORT_0_ID_HEADER_VDO_CONNECTOR_TYPE, CFG_PORT_0_ID_HEADER_VDO_USB_VENDOR_ID)
+
+#define CFG_PORT_1_ID_HEADER_VDO   CFG_FORM_ID_HEADER_VDO(CFG_PORT_1_ID_HEADER_VDO_USB_HOST_CAPABLE, \
+        CFG_PORT_1_ID_HEADER_VDO_USB_DEVICE_CAPABLE, CFG_PORT_1_ID_HEADER_VDO_PROD_TYPE_UFP, \
+        CFG_PORT_1_ID_HEADER_VDO_MODAL_OPR_SUPPORTED, CFG_PORT_1_ID_HEADER_VDO_PROD_TYPE_DFP, \
+        CFG_PORT_1_ID_HEADER_VDO_CONNECTOR_TYPE, CFG_PORT_1_ID_HEADER_VDO_USB_VENDOR_ID)
+
+/***************************** PRODUCT VDO*************************/
+/* Product VDO (From Table 6-34 ID Product VDO of PD 3.0 Spec)
+   B31-16     - USB Product ID
+   B15-0      - bcd Device */
+
+#define CFG_FORM_PRODUCT_VDO(productID,bcdDevice) \
+    (((productID) << 16) | \
+    (bcdDevice))
+
+#define CFG_PORT_0_PRODUCT_VDO   CFG_FORM_PRODUCT_VDO(CFG_PORT_0_PROD_VDO_USB_PRODUCT_ID, \
+                                 CFG_PORT_0_PROD_VDO_BCD_DEVICE)
+
+#define CFG_PORT_1_PRODUCT_VDO   CFG_FORM_PRODUCT_VDO(CFG_PORT_1_PROD_VDO_USB_PRODUCT_ID, \
+                                 CFG_PORT_1_PROD_VDO_BCD_DEVICE)
+
+/******************* PRODUCT TYPE VDO - UFP VDO 1 *********************/
+/* UFP VDO 1 (From Table 6-35 UFP VDO 1 of PD 3.0 Spec)
+   B31-29  - UFP VDO Version 
+   B28     - Reserved 
+   B27-24  - Device Capability 
+   B23-22  - Connector Type 
+   B21-6   - Reserved  
+   B5-3    - Alternate Modes
+   B2-0    - USB Highest Speed */
+
+#define CFG_FORM_UFP_VDO_1(vdoVer,devCapability,connectorType,altModes,usbSpeed) \
+    (((vdoVer) << 29) | \
+    ((devCapability) << 24) | \
+    ((connectorType) << 22) | \
+    ((altModes) << 3) | \
+    (usbSpeed))
+
+#define CFG_PORT_0_UFP_VDO_1    CFG_FORM_UFP_VDO_1(CFG_PORT_0_UFP_VDO_1_UFP_VDO_VERSION, \
+        CFG_PORT_0_UFP_VDO_1_DEVICE_CAPABILITY, CFG_PORT_0_UFP_VDO_1_CONNECTOR_TYPE, \
+        CFG_PORT_0_UFP_VDO_1_ALTERNATE_MODES, CFG_PORT_0_UFP_VDO_1_USB_HIGHEST_SPEED)
+
+#define CFG_PORT_1_UFP_VDO_1    CFG_FORM_UFP_VDO_1(CFG_PORT_1_UFP_VDO_1_UFP_VDO_VERSION, \
+        CFG_PORT_1_UFP_VDO_1_DEVICE_CAPABILITY, CFG_PORT_1_UFP_VDO_1_CONNECTOR_TYPE, \
+        CFG_PORT_1_UFP_VDO_1_ALTERNATE_MODES, CFG_PORT_1_UFP_VDO_1_USB_HIGHEST_SPEED)
+
+/******************* PRODUCT TYPE VDO - UFP VDO 2 *********************/
+/* UFP VDO 2 (From Table 6-36 UFP VDO 2 of PD 3.0 Spec)
+   B31-30  - Reserved
+   B29-23  - USB4 Min Power
+   B22-16  - USB4 Max Power 
+   B15-14  - Reserved
+   B13-7   - USB3 Min Power
+   B6-0    - USB3 Max Power */
+
+#define CFG_FORM_UFP_VDO_2(usb4MinPwr,usb4MaxPwr,usb3MinPwr,usb3MaxPwr) \
+    (((usb4MinPwr) << 23) | \
+    ((usb4MaxPwr) << 16) | \
+    ((usb3MinPwr) << 7) | \
+    (usb3MaxPwr))
+
+#define CFG_PORT_0_UFP_VDO_2    CFG_FORM_UFP_VDO_2(CFG_PORT_0_UFP_VDO_2_USB4_MIN_PWR, \
+        CFG_PORT_0_UFP_VDO_2_USB4_MAX_PWR, CFG_PORT_0_UFP_VDO_2_USB3_MIN_PWR, \
+        CFG_PORT_0_UFP_VDO_2_USB3_MAX_PWR)
+
+#define CFG_PORT_1_UFP_VDO_2    CFG_FORM_UFP_VDO_2(CFG_PORT_1_UFP_VDO_2_USB4_MIN_PWR, \
+        CFG_PORT_1_UFP_VDO_2_USB4_MAX_PWR, CFG_PORT_1_UFP_VDO_2_USB3_MIN_PWR, \
+        CFG_PORT_1_UFP_VDO_2_USB3_MAX_PWR)
+
+/******************* PRODUCT TYPE VDO - DFP VDO *********************/
+/* DFP VDO (From Table 6-37 DFP VDO of PD 3.0 Spec)
+   B31-29  - DFP VDO Version
+   B28-27  - Reserved
+   B26-24  - Host Capability
+   B23-22  - Connector Type
+   B21-5   - Reserved
+   B4-0    - Port Number */
+
+#define CFG_FORM_DFP_VDO(vdoVersion,hostCapability,connectorType,portNum) \
+    (((vdoVersion) << 29) | \
+    ((hostCapability) << 24) | \
+    ((connectorType) << 22) | \
+    (portNum))
+
+#define CFG_PORT_0_DFP_VDO    CFG_FORM_DFP_VDO(CFG_PORT_0_DFP_VDO_DFP_VDO_VERSION, \
+        CFG_PORT_0_DFP_VDO_DFP_HOST_CAPABILITY, CFG_PORT_0_DFP_VDO_DFP_CONNECTOR_TYPE, \
+        CFG_PORT_0_DFP_VDO_DFP_PORT_NUMBER)
+
+#define CFG_PORT_1_DFP_VDO    CFG_FORM_DFP_VDO(CFG_PORT_1_DFP_VDO_DFP_VDO_VERSION, \
+        CFG_PORT_1_DFP_VDO_DFP_HOST_CAPABILITY, CFG_PORT_1_DFP_VDO_DFP_CONNECTOR_TYPE, \
+        CFG_PORT_1_DFP_VDO_DFP_PORT_NUMBER)
 
 void PSF_LoadConfig(); 
 

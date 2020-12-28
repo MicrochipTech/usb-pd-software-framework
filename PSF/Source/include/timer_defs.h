@@ -215,6 +215,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    USB PD Specification. Default value of PE_VDM_BUSY_TIMEOUT_MS is 
    set as 50 milliseconds. */
 #define PE_VDM_BUSY_TIMEOUT_MS                  MILLISECONDS_TO_TICKS(50)
+
+/* PE_FRS_DETACH_WAIT_TIMEOUT_MS defines the amount of time Policy Engine 
+   shall wait before invoking TypeC Error Recovery on failure to receive Good_CRC   
+   for the FR_SWAP message sent. This timeout is implemented out of Type C and
+   PD Specification to wait for a TypeC Detach event. */
+#define PE_FRS_DETACH_WAIT_TIMEOUT_MS           MILLISECONDS_TO_TICKS(5)
+
 // *****************************************************************************
 // Section: DPM Timeout configuration
 // *****************************************************************************

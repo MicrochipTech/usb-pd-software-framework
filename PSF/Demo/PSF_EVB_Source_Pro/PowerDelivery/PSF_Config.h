@@ -174,7 +174,7 @@ Description:
     is not required. It is recommended that this define shall be set when Fast Role Swap feature
     is enabled since Fast Role Swap is tightly coupled with PIO Override feature. 
 Remarks:
-    To use this feature, EN_VBUS or EN_SINK, FAULT_IN and FRS_Request pins of the system should be
+    To use this feature, EN_VBUS or EN_SINK, FAULT_IN and EN_FRS pins of the system should be
     UPD350 PIOs. It is also confined to INCLUDE_POWER_FAULT_HANDLING define, thus 
     INCLUDE_POWER_FAULT_HANDLING should be declared as 1 for INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
     define to be effective. Recommended default value is 1 if UPD350 PIOs are used for EN_VBUS, 
@@ -1486,7 +1486,11 @@ typedef enum
                                     * '1' Asserted if DFP
                                     * '0' De-asserted if UFP
 									* Applicable only for DRP configuration	
-    31:12                          Reserved 
+    12      R            R         EN_FRS Status
+                                    * '1' Asserted 
+                                    * '0' De-asserted
+									* Applicable only if EN_FRS is configured as output  
+    31:13                          Reserved 
 	</table>
 	
 	<b>d. u32PortStatusChange</b>: 
@@ -2087,7 +2091,7 @@ typedef struct _VDMPortCfgStatus
                                                                         during an Enter Mode
                                                                         request and other SVID 
                                                                         specific commands.
-                                                                     * Application can make use of
+                                                                      * Application can make use of
                                                                         this array to send the VDOs
                                                                         to partner while initiating
                                                                         or responding to Enter Mode
@@ -2102,9 +2106,9 @@ typedef struct _VDMPortCfgStatus
                                                                         the port
     u8aSVIDEntryTable               16        R/W          R         * SVID Entry table where 
                                                                         in every index, 
-                                                                        Bits 2:0 ? No of Modes for
+                                                                      * Bits 2:0 - No of Modes for
                                                                         an SVID
-                                                                        Bits 6:3 ? Start Mode Index
+                                                                      * Bits 6:3 - Start Mode Index
                                                                         The index into the mode 
                                                                         table for the first mode
                                                                         for this SVID. The 
@@ -2112,7 +2116,7 @@ typedef struct _VDMPortCfgStatus
                                                                         table starts from this 
                                                                         field up to the value in No
                                                                         of Modes.
-                                                                        Bit 7 ? Reserved 
+                                                                      * Bit 7 - Reserved 
     u8SVIDsCnt                      1         R/W          R         * Number of entries stored in
                                                                         u16aSVIDsTable                  
     u8VDOCnt                        1         R/W          R/W       * Number of VDOs to be sent  

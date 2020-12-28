@@ -89,6 +89,12 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Cur
             /* Clear the status of EN_VBUS */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
                                             ~(DPM_PORT_IO_EN_VBUS_STATUS); 
+            
+            /* The occurrence of a falling edge in EN_VBUS disables EN_FRS.
+               Therefore, clear the EN_FRS IO Status */
+            #if (TRUE == INCLUDE_PD_FR_SWAP)
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_FRS_STATUS);    
+            #endif            
         }
         else
         {
@@ -291,3 +297,22 @@ void PWRCTRL_DriveDAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
 }
 #endif /* #if (TRUE == INCLUDE_PD_SINK) */
 
+#if (TRUE == INCLUDE_PD_FR_SWAP)
+void PWRCTRL_DisableEnFRS (UINT8 u8PortNum)
+{
+    /* This is achieved by asserting and de-asserting the EN_VBUS pin
+       for a short time. As per the DPS1133 Load switch Data sheet, 
+       "The occurrence of a falling edge in EN_VBUS pin disables the device" */
+    
+    if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus & DPM_PORT_IO_EN_FRS_STATUS)
+    {                                                
+        UPD_GPIOUpdateOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
+                gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_ASSERT); 
+
+        UPD_GPIOUpdateOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
+                gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_DE_ASSERT);                                            
+
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_FRS_STATUS);
+    }                 
+}
+#endif 
