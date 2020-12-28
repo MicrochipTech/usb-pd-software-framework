@@ -166,6 +166,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VCONN_SRC_RESPONSIBILITY             BIT(17)
 #define DPM_FRS_XMT_OR_DET_ENABLED               BIT(18)
 #define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE           BIT(19)
+#define DPM_DRP_IN_SINK_MODE                     BIT(20)
 
 /*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS                     0

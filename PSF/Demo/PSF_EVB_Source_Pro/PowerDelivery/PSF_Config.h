@@ -2091,7 +2091,7 @@ typedef struct _VDMPortCfgStatus
                                                                         during an Enter Mode
                                                                         request and other SVID 
                                                                         specific commands.
-                                                                     * Application can make use of
+                                                                      * Application can make use of
                                                                         this array to send the VDOs
                                                                         to partner while initiating
                                                                         or responding to Enter Mode
@@ -2106,9 +2106,9 @@ typedef struct _VDMPortCfgStatus
                                                                         the port
     u8aSVIDEntryTable               16        R/W          R         * SVID Entry table where 
                                                                         in every index, 
-                                                                        Bits 2:0 ? No of Modes for
+                                                                      * Bits 2:0 - No of Modes for
                                                                         an SVID
-                                                                        Bits 6:3 ? Start Mode Index
+                                                                      * Bits 6:3 - Start Mode Index
                                                                         The index into the mode 
                                                                         table for the first mode
                                                                         for this SVID. The 
@@ -2116,7 +2116,7 @@ typedef struct _VDMPortCfgStatus
                                                                         table starts from this 
                                                                         field up to the value in No
                                                                         of Modes.
-                                                                        Bit 7 ? Reserved 
+                                                                      * Bit 7 - Reserved 
     u8SVIDsCnt                      1         R/W          R         * Number of entries stored in
                                                                         u16aSVIDsTable                  
     u8VDOCnt                        1         R/W          R/W       * Number of VDOs to be sent  

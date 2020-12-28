@@ -343,7 +343,8 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             else if (PE_CTRL_GET_SOURCE_CAP == u8MsgType)
             {
                 /* Get Source Caps shall be supported for Source only and DRP ports */
-                if (PD_ROLE_SINK == u8DefaultPwrRole)
+                if ((PD_ROLE_SINK == u8DefaultPwrRole) && \
+                        (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE)))
                 {
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 }                
@@ -1229,8 +1230,18 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #if (TRUE == INCLUDE_PD_DRP)
                     else if (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState)
                     {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_GIVE_CAP;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_GIVE_CAP_ENTRY_SS;                                                
+                        #if (TRUE == INCLUDE_PD_FR_SWAP)
+                        if (gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE)
+                        {
+                            gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT;
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;
+                        }
+                        else
+                        #endif 
+                        {
+                            gasPolicyEngine[u8PortNum].ePEState = ePE_GIVE_CAP;
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_GIVE_CAP_ENTRY_SS;                                                                            
+                        }
                     }
 #endif 
                     else
