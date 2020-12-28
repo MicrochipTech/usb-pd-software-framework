@@ -888,6 +888,102 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         DPM_EnablePort(u8PortNum, TRUE);
     }
 #if (TRUE == INCLUDE_PD_FR_SWAP)
+    else if(DPM_INT_EVT_SYSTEM_POWER_LOST == (gasDPM[u8PortNum].u16DPMInternalEvents &\
+                                            DPM_INT_EVT_SYSTEM_POWER_LOST))
+    {
+        /*Clear the Internal event since it is processed*/
+        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_SYSTEM_POWER_LOST);
+        
+        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_SYSTEM_POWER_IS_LOST\r\n");
+         /* After Source to sink FR_Swap, the new role is bus-powered sink.*/
+        /* Clearing DPM_DEFAULT_POWER_ROLE_MASK in u8DPMConfigData 
+           to set the configured power role as fixed sink*/
+        gasDPM[u8PortNum].u8DPMConfigData &= (~DPM_DEFAULT_POWER_ROLE_MASK);
+
+        /* Clearing unconstrained power bit in sink pdo*/
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0] &= (~DPM_PDO_UNCONSTRAINED_POWER);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0] &= (~DPM_PDO_UNCONSTRAINED_POWER);
+
+        UINT8 u8Pio_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS;
+        UINT8 u8Mode_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;
+        UINT16 u16IntrSts = BIT(u8Pio_EN_FRS);
+        UINT8 u8PwrBackDetectionEdge;
+
+        /* Clear EN_FRS interrupt by writing status register*/
+        UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
+
+        /*Initially, disable detection of interrupt on both edges.*/
+        UPD_GPIOSetIntrAlert (u8PortNum, u8Pio_EN_FRS, FALSE);	
+
+        /*If u8Pio_EN_FRS is configured as Active low, falling egde will
+          indicate system power loss event and rising edge will indicate
+          power back event. 
+
+          Since FR_Swap has completed after detecting a power loss event,
+          it is now configured to detect power back event.*/
+        if (((UINT8)eINPUT_ACTIVE_LOW == u8Mode_EN_FRS) || ((UINT8)eINPUT_ACTIVE_LOW_PU == u8Mode_EN_FRS))
+        {
+            u8PwrBackDetectionEdge = UPD_CFG_PIO_RISING_ALERT;
+        }
+        else
+        {
+            u8PwrBackDetectionEdge = UPD_CFG_PIO_FALLING_ALERT;
+        }
+
+        UPD_GPIOSetIntrAlert (u8PortNum, u8Pio_EN_FRS, u8PwrBackDetectionEdge);
+
+    }
+    
+    else if(DPM_INT_EVT_SYSTEM_POWER_BACK == (gasDPM[u8PortNum].u16DPMInternalEvents &\
+                                            DPM_INT_EVT_SYSTEM_POWER_BACK))
+    {
+        UINT8 u8Pio_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS;
+        UINT8 u8Mode_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_FRS;
+        UINT16 u16IntrSts = BIT(u8Pio_EN_FRS);
+        UINT8 u8PwrLossDetectionEdge;
+        
+        /*Clear the Internal event since it is processed*/
+        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_SYSTEM_POWER_BACK);
+        
+        DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_SYSTEM_POWER_IS_BACK\r\n");
+
+        /*Transition to DRP role (acting as sink) since power is back*/
+        gasDPM[u8PortNum].u8DPMConfigData &= (~DPM_DEFAULT_POWER_ROLE_MASK);
+        gasDPM[u8PortNum].u8DPMConfigData |= (PD_ROLE_DRP << DPM_DEFAULT_POWER_ROLE_POS);
+
+         /* Set unconstrained power bit in sink pdo since power supply is back*/
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0] |= DPM_PDO_UNCONSTRAINED_POWER;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0] |= DPM_PDO_UNCONSTRAINED_POWER;
+        
+        /*To-do handle this pr_swap appropriately*/
+        gasCfgStatusData.sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
+        gasCfgStatusData.sPerPortData[PORT1].u16SwapPolicy = CFG_PORT_1_ROLE_SWAP_POLICY;
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
+        
+        /* Clear EN_FRS interrupt by writing status register*/
+        UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
+
+        /*Initially, disable detection of interrupt on both edges.*/
+        UPD_GPIOSetIntrAlert (u8PortNum, u8Pio_EN_FRS, FALSE);	
+
+        /*If u8Pio_EN_FRS is configured as Active low, falling egde will
+          indicate system power loss event and rising edge will indicate
+          power back event. 
+
+          Since FR_Swap has completed after detecting a power loss event,
+          it is now configured to detect power back event.*/
+        if (((UINT8)eINPUT_ACTIVE_LOW == u8Mode_EN_FRS) || ((UINT8)eINPUT_ACTIVE_LOW_PU == u8Mode_EN_FRS))
+        {
+            u8PwrLossDetectionEdge = UPD_CFG_PIO_FALLING_ALERT;
+        }
+        else
+        {
+            u8PwrLossDetectionEdge = UPD_CFG_PIO_RISING_ALERT;
+        }
+
+        UPD_GPIOSetIntrAlert (u8PortNum, u8Pio_EN_FRS, u8PwrLossDetectionEdge);
+    }
+    
     else if ((gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_INITIATE_FR_SWAP) &&\
                 PRL_IsAMSInitiatable(u8PortNum))
     {
