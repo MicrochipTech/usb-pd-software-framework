@@ -353,6 +353,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_ENABLE_AME_MONITORING              (0U << 2)
 #define CFG_PORT_1_ENABLE_AME_MONITORING              (0U << 2)
 
+/* Note: VDM defines are set to 0 by default. Users shall input necessary
+   data relevant to their application. Refer section 6.4.4.3.1 of USB
+   Power Delivery Specification v3.0 for detailed information on
+   Discover Identity */
 /******************* PD Identity Count Defines **************************/
 #define CFG_PORT_0_PD_IDENTITY_COUNT                   0U
 #define CFG_PORT_1_PD_IDENTITY_COUNT                   0U

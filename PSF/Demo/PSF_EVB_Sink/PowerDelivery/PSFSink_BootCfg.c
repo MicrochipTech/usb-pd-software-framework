@@ -137,6 +137,35 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     /*Configure role swap policy for note type port*/
     pasCfgStatusData->sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
 
+    #if (TRUE == INCLUDE_PD_VDM)
+    /* PD Identity Configuration for Port 0 */
+    pasCfgStatusData->sVDMPerPortData[PORT0].u8PDIdentityCnt = CFG_PORT_0_PD_IDENTITY_COUNT;
+    
+    pasCfgStatusData->sVDMPerPortData[PORT0].u32aPDIdentity[INDEX_0] = CFG_PORT_0_ID_HEADER_VDO;
+    pasCfgStatusData->sVDMPerPortData[PORT0].u32aPDIdentity[INDEX_1] = CFG_PORT_0_CERT_STAT_VDO_XID;
+    pasCfgStatusData->sVDMPerPortData[PORT0].u32aPDIdentity[INDEX_2] = CFG_PORT_0_PRODUCT_VDO;    
+    /* Note: Application shall configure the Product Type VDOs in indices 3-5
+       depending upon the product type */
+    #if (TRUE == INCLUDE_PD_ALT_MODE)
+    /* SVIDs Configuration for Port 0 */
+    pasCfgStatusData->sAltModePerPortData[PORT0].u8SVIDsCnt = CFG_PORT_0_SVID_COUNT;
+    
+    pasCfgStatusData->sAltModePerPortData[PORT0].u16aSVIDsTable[INDEX_0] = CFG_PORT_0_SVID_0;
+    pasCfgStatusData->sAltModePerPortData[PORT0].u16aSVIDsTable[INDEX_1] = CFG_PORT_0_SVID_1;
+    
+    /* Modes Configuration for Port 0 */
+    pasCfgStatusData->sAltModePerPortData[PORT0].u32aModesTable[INDEX_0] = CFG_PORT_0_SVID_0_MODE_0;
+    pasCfgStatusData->sAltModePerPortData[PORT0].u32aModesTable[INDEX_1] = CFG_PORT_0_SVID_0_MODE_1;
+    pasCfgStatusData->sAltModePerPortData[PORT0].u32aModesTable[INDEX_2] = CFG_PORT_0_SVID_1_MODE_0;
+    pasCfgStatusData->sAltModePerPortData[PORT0].u32aModesTable[INDEX_3] = CFG_PORT_0_SVID_1_MODE_1;
+    
+    pasCfgStatusData->sAltModePerPortData[PORT0].u8aSVIDEntryTable[INDEX_0] = \
+                      (CFG_PORT_0_SVID_0_MODES_COUNT | CFG_PORT_0_SVID_0_START_MODE_INDEX);
+    pasCfgStatusData->sAltModePerPortData[PORT0].u8aSVIDEntryTable[INDEX_1] = \
+                      (CFG_PORT_0_SVID_1_MODES_COUNT | CFG_PORT_0_SVID_1_START_MODE_INDEX);    
+    #endif
+    #endif      
+    
 #if(TRUE == INCLUDE_UPD_HPD)
     pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
 #endif
