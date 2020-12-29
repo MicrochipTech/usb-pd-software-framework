@@ -137,6 +137,9 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     /*Configure role swap policy for note type port*/
     pasCfgStatusData->sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
 
+    pasCfgStatusData->sPerPortData[PORT0].u16FeatureSelect = (CFG_PORT_0_ENABLE_VDM_SUPPORT | \
+                                            CFG_PORT_0_ENABLE_AME_MONITORING);
+    
     #if (TRUE == INCLUDE_PD_VDM)
     /* PD Identity Configuration for Port 0 */
     pasCfgStatusData->sVDMPerPortData[PORT0].u8PDIdentityCnt = CFG_PORT_0_PD_IDENTITY_COUNT;
