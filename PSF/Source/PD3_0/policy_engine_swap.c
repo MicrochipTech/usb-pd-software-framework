@@ -484,21 +484,14 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
       
-                    /* Disable FRS and move to Transition to Off state 
-                       based on the current power role */
-                    DPM_DISABLE_FRS_XMT_OR_DET(u8PortNum);
-                    
+                    /* Move to Transition to Off state based on the current power role */                    
                     if (PD_ROLE_SOURCE == u8CurrPwrRole)
-                    {
-                        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
-                        
+                    {                        
                         eTxDoneSt = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF;
                         eTxDoneSS = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS;
                     }
                     else
-                    {
-                        DPM_DISABLE_FRS_DET_EN(u8PortNum);
-                        
+                    {                                                
                         eTxDoneSt = ePE_PRS_SNK_SRC_TRANSITION_TO_OFF;
                         eTxDoneSS = ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS;
                     }
@@ -538,6 +531,13 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        message from port partner or if GoodCRC has been received 
                        for the accept message sent */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS\r\n");
+                    
+                    /* Disable FRS Transmitter */
+                    #if (TRUE == INCLUDE_PD_FR_SWAP)                        
+                        DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
+                        DPM_DISABLE_FRS_XMT_OR_DET(u8PortNum);
+                    #endif 
+
                     /* Start Source transition timer - The time the Source Shall wait before 
                        transitioning the power supply to ensure that the Sink has sufficient time to prepare.*/
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
@@ -767,7 +767,13 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        PD Spec Reference Note: during the Power Role Swap process the 
                        initial Sink does not disconnect even though VBUS drops below vSafe5V */
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
-                                        
+                           
+                    /* Disable FRS Receiver */
+                    #if (TRUE == INCLUDE_PD_FR_SWAP)                        
+                        DPM_DISABLE_FRS_DET_EN(u8PortNum);
+                        DPM_DISABLE_FRS_XMT_OR_DET(u8PortNum);
+                    #endif                     
+
                     /* Transition to Sink Standby.
                        Configure the Type C VBUS threshold for vSafe0v detection */
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA; 
