@@ -209,7 +209,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_0_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_0_SINK_USB_COMM             0U
-#define CFG_PORT_0_SINK_FRS_CURRENT          3U /* To-do: Replace with Rp current macro */
+/* Note: Current value is right shifted by 3 bit positions since CFG_PORT_0_RP_CURRENT_VALUE
+   will have the actual value left shifted by 3 positions */
+#define CFG_PORT_0_SINK_FRS_CURRENT          (CFG_PORT_0_RP_CURRENT_VALUE >> 3)
 
 #define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
                                     CFG_PORT_0_SINK_FRS_CURRENT, \
@@ -261,7 +263,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_1_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_1_SINK_USB_COMM             0U
-#define CFG_PORT_1_SINK_FRS_CURRENT          3U /* To-do: Replace with Rp current macro */ 
+/* Note: Current value is right shifted by 3 bit positions since CFG_PORT_1_RP_CURRENT_VALUE
+   will have the actual value left shifted by 3 positions */
+#define CFG_PORT_1_SINK_FRS_CURRENT          (CFG_PORT_1_RP_CURRENT_VALUE >> 3)
 
 #define CFG_PORT_1_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 0,\
                                     CFG_PORT_1_SINK_FRS_CURRENT, \

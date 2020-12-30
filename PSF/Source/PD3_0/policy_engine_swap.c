@@ -1033,7 +1033,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
         case ePE_FRS_SRC_SNK_TRANSITION_TO_OFF:
         {
             /*Wait until VBUS discharges to vSafe5V*/
-            if(TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum))
+            if (TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum))
             {
                 /* The Policy Engine determines its power supply is no longer 
                    supplying VBUS */
@@ -1043,9 +1043,12 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                   is used to turn off VBUS discharge*/
                 gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
                 
-                /* Drive the DC_DC_EN pin to low since it is not needed for Sink functionality */
-                PWRCTRL_ConfigDCDCEn(u8PortNum, FALSE);
+                /* Drive the DC_DC_EN pin to low since it is not needed for Sink operation */
+                PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
 
+                /* Drive the VSEL pins to low since they are not needed for Sink operation */
+                MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS (u8PortNum, TYPEC_VBUS_0V, DPM_0mA);
+                
                 /* Move the Policy Engine to ePE_FRS_SRC_SNK_ASSERT_RD state */
                 gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ASSERT_RD;                     
             }       
