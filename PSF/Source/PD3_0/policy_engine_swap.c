@@ -1186,9 +1186,6 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                         ePE_SNK_STARTUP state */
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
                         
-                        /*To-do handle this pr_swap*/
-                        gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy &= (~(BIT(4)|BIT(5)|BIT(6)|BIT(7)));
-                        
                         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_SYSTEM_POWER_LOST);
                         
                         /* Send FR_Swap complete notification */

@@ -409,7 +409,7 @@ void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
                 u8PwrBackDetectionEdge = UPD_CFG_PIO_FALLING_ALERT;
             }
             
-            if(u16PIORegVal & UPD_CFG_PIO_RISING_EDGE)
+            if(u16PIORegVal & u8PwrBackDetectionEdge)
             {
                 DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_SYSTEM_POWER_BACK);
             }
@@ -420,9 +420,6 @@ void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
 
             UPD_RegisterWriteISR (u8PortNum, (UPD_CFG_PIO_BASE + u8Pio_EN_FRS),\
                                         (UINT8 *)&u16PIORegVal, BYTE_LEN_1);                             
-            
-            /*To-do check if falling edge is detected here, when power loss occurs second time.
-             (i.e) after a falling edge and a rising edge, check if rising edge is detected.*/
             
             /* When PIO Override gets disabled, this pin will be automatically
                driven by UPD based on the previous value stored in CFG_PIO_BASE
