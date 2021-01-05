@@ -513,6 +513,8 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             {
                 case ePE_SRC_CAPABILITY_RESPONSE_ENTRY_SS:
                 {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_CAPABILITY_RESPONSE_ENTRY_SS\r\n");
+                    
 					/* If Explicit Contract already initiated, Send the reject message and set the
 						PE state to PE_SRC_READY*/
                     if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)

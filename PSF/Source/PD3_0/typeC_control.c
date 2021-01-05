@@ -536,9 +536,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #endif
                     {
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;                    
-                    }
-                   
-                    DPM_CLR_VCONN_SRC_RESPONSIBILITY(u8PortNum);
+                    }                                       
                     
                     /* Notify external DPM of Port enabled event through a user defined call back*/
                     (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_ENABLED);
@@ -774,7 +772,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         }
                         
                         /*Enable VCONN for powered cable attached in CC1 or CC2 line */
-                        TypeC_EnabDisVCONN(u8PortNum, TYPEC_VCONN_ENABLE);               
+                        TypeC_EnabDisVCONN(u8PortNum, TYPEC_VCONN_ENABLE);  
+                        
+                        /* Set VCONN Source Responsibility status */
+                        DPM_SET_VCONN_SRC_RESPONSIBILITY(u8PortNum); 
                     }
 
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_WAIT_FOR_VBUS_ON_SS;                   
@@ -837,16 +838,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_ATTACHED_SRC_SET_PRL_SS:
                 {                    
-                    DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_SET_PRL_SS\r\n");
-                    
-                    if(FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))
-                    {
-                        DPM_SET_VCONN_SRC_RESPONSIBILITY(u8PortNum);
-                    }
-                    else
-                    {
-                        /*Do nothing*/
-                    }
+                    DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_SET_PRL_SS\r\n");                    
 
                     /*Sink Attached in CC1 pin*/
                     if(u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
@@ -871,9 +863,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Enable Power Fault Threshold for TYPEC_VBUS_5V */
                     DPM_EnablePowerFaultDetection(u8PortNum);
                     
-                    #if(TRUE == INCLUDE_PD_ALT_MODE)
                     /* Enable AME Monitoring */
-                    DPM_EnableAMEMonitoring (u8PortNum);
+                    #if(TRUE == INCLUDE_PD_ALT_MODE)                    
+                        DPM_EnableAMEMonitoring (u8PortNum);
                     #endif     
                     
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_RUN_SM_SS;

@@ -1548,6 +1548,9 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     }
     #endif
     
+    /* Clear VCONN Source responsibility status for the port */
+    DPM_CLR_VCONN_SRC_RESPONSIBILITY(u8PortNum);
+    
     gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;
     
     /* Clear the DPM variables whose data is no more valid after a Type C detach */
