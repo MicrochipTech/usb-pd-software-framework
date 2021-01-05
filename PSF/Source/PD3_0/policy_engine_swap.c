@@ -1188,11 +1188,11 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                             gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_IGNORE_UV_DURING_FRS_MASK);
                         #endif 
                         
+                        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_SYSTEM_POWER_LOST);
+                            
                         /* Resetting the Protocol Layer would be taken care by the 
                         ePE_SNK_STARTUP state */
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
-                        
-                        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_SYSTEM_POWER_LOST);
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;                                                
                         
                         /* Send FR_Swap complete notification */
                         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_FR_SWAP_COMPLETE);                                         
@@ -1797,6 +1797,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                VCONN Swap will be once again initiated */
             gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
             
+            /* Change the status of VCONN Source responsibility after a swap */
             DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
             
             /* Move to Ready state */
@@ -1881,6 +1882,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     /* Reset the discover identity counter to 0*/
                     gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
                     
+                    /* Change the status of VCONN Source responsibility after a swap */
                     DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
                     
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
