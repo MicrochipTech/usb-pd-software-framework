@@ -2869,7 +2869,7 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         PE_ResetParams(u8PortNum);
         
         /* Setting this flag will discard any pending messages in Protocol layer */
-        gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_SIGNAL_XMT_OR_RCV_DONE;
+        DPM_SET_FRS_SIGNAL_XMT_OR_RCV_DONE_STS(u8PortNum);
         
         /* Setting this flag will ignore the processing of UV during an FRS event 
            since VBUS will trip down during an FRS. Also, clear the UV PIO Override */
@@ -3961,7 +3961,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Enabled\r\n"); 
         }
         /* Set FRS XMT or DET Enabled status */
-        gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_XMT_OR_DET_ENABLED;
+        DPM_ENABLE_FRS_XMT_OT_DET(u8PortNum);
     }
     else  /* FRS Criteria Not Supported for the port */
     {               
@@ -3994,7 +3994,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
         UPD_RegByteClearBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
         
         /* Clear FRS XMT or DET Enabled status */
-        gasDPM[u8PortNum].u32DPMStatus &= ~DPM_FRS_XMT_OR_DET_ENABLED;         
+        DPM_DISABLE_FRS_XMT_OR_DET(u8PortNum);        
     }       
 }
 

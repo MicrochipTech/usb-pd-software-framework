@@ -910,7 +910,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0] &= (~DPM_PDO_UNCONSTRAINED_POWER);
 
         /* Set DPMStatus bit to indicate that DRP port is currently operating as Sink */
-        gasDPM[u8PortNum].u32DPMStatus |= DPM_DRP_IN_SINK_MODE;
+        DPM_SET_DRP_SWITCHED_TO_SINK_STS(u8PortNum);
         
         /* Clear EN_FRS interrupt by writing status register*/
         UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
@@ -960,7 +960,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);
         
         /* Clear DPMStatus bit which indicates DRP port is currently operating as Sink */
-        gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_DRP_IN_SINK_MODE);
+        DPM_CLR_DRP_SWITCHED_TO_SINK_STS(u8PortNum);
         
         /* Clear EN_FRS interrupt by writing status register*/
         UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
@@ -1135,7 +1135,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
               and the port is not in modal operation */
             if ((DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE)) &&\
                     (DPM_GET_PDO_DUAL_DATA(gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[INDEX_0])) &&\
-                            (!(gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)))                     
+                            (FALSE == DPM_IS_MODAL_OPERATION_ACTIVE(u8PortNum)))                     
             {
                 if(PD_ROLE_DRP == u8DPMPowerRole)
                 {
@@ -1304,9 +1304,9 @@ void DPM_AltModeEventHandler(UINT8 u8PortNum)
 #endif 
     
     /* Post eMCHP_PSF_ALT_MODE_ENTRY_FAILED notification */
-    if (gasDPM[u8PortNum].u32DPMStatus & DPM_AME_TIMER_DONE)
+    if (DPM_IS_AME_TIMER_DONE(u8PortNum))
     {
-        gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_AME_TIMER_DONE);
+        DPM_CLR_AME_TIMER_DONE_STS(u8PortNum);
         
         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_ALT_MODE_ENTRY_FAILED);        
     }

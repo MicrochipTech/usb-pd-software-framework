@@ -461,7 +461,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	
 	if (((gasPRL[u8PortNum].u8RxRcvdISR) &&                			/* Checks whether a message is received */
             (PRL_SOP_TYPE == gasPRLRecvBuff[u8PortNum].u8SOPtype))     /* Checks whether received message is PRL_SOP_TYPE type*/
-            || ((gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_XMT_OR_RCV_DONE))) /* Checks whether FRS signal is transmitted or received */
+            || (DPM_IS_FRS_SIG_XMT_OR_RCV_DONE(u8PortNum))) /* Checks whether FRS signal is transmitted or received */
 	{
 	  	/* Spec Ref: Protocol Layer Message transmission Shall enter the PRL_Tx_Discard_Message state whenever:
                 -> Protocol Layer Message reception receives an incoming Message or

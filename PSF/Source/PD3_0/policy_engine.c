@@ -344,7 +344,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
             {
                 /* Get Source Caps shall be supported for Source only and DRP ports */
                 if ((PD_ROLE_SINK == u8DefaultPwrRole) && \
-                        (FALSE == (gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE)))
+                        (FALSE == DPM_IS_DRP_SWITCHED_TO_SINK_ROLE(u8PortNum)))
                 {
                     u8RetVal = PE_UNSUPPORTED_MSG;
                 }                
@@ -1231,7 +1231,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     else if (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState)
                     {
                         #if (TRUE == INCLUDE_PD_FR_SWAP)
-                        if (gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE)
+                        if (DPM_IS_DRP_SWITCHED_TO_SINK_ROLE(u8PortNum))
                         {
                             gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_REJECT;
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_REJECT_ENTRY_SS;
@@ -1393,7 +1393,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                     
                     /* If there are any Active Modes between the Port Partners when a DR_Swap Message 
                        is a received then a Hard Reset Shall be performed*/
-                    if (gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)
+                    if (DPM_IS_MODAL_OPERATION_ACTIVE(u8PortNum))
                     {
                         PE_SendHardReset(u8PortNum);
                     }

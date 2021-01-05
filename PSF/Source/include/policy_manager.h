@@ -146,7 +146,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*************************************************************************************************/
 
 /**************************************************************************************************/
-/***************************Define to get DPM current status data*****************************************/
+/***************************Define to access DPM current status data*****************************************/
 /************************************************************************************************************/
 /*Bit definition for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_MASK                (BIT(0)|BIT(1))
@@ -174,8 +174,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CURR_PD_SPEC_REV_POS                    4
 #define DPM_PORT_IN_MODAL_OPERATION_POS             6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS         7
+#define DPM_AME_TIMER_DONE_POS                      16 
 #define DPM_VCONN_SRC_RESPONSIBILITY_POS            17
 #define DPM_FRS_XMT_OR_DET_ENABLED_POS              18
+#define DPM_FRS_SIG_XMT_OR_RCV_DONE_POS             19 
+#define DPM_DRP_IN_SINK_MODE_POS                    20 
 
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u32DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
@@ -194,9 +197,53 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)       \
     ((gasDPM[u8PortNum].u32DPMStatus & DPM_CURR_PD_SPEC_REV_MASK) >> DPM_CURR_PD_SPEC_REV_POS)
+
 #define DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum) \
     ((gasDPM[u8PortNum].u32DPMStatus & DPM_CURR_EXPLICIT_CONTRACT_TYPE_MASK) >> \
     DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS)
+
+#define DPM_SET_MODAL_OPR_ACTIVE_STATUS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_PORT_IN_MODAL_OPERATION)
+
+#define DPM_CLR_MODAL_OPR_ACTIVE_STATUS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_PORT_IN_MODAL_OPERATION))
+
+#define DPM_IS_MODAL_OPERATION_ACTIVE(u8PortNum) \
+    ((gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION) >> \
+    DPM_PORT_IN_MODAL_OPERATION_POS)
+
+#define DPM_SET_VCONN_SWAP_INIT_STS_AS_VCONN_SRC(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC)
+
+#define DPM_SET_VCONN_SWAP_INIT_STS_AS_NOT_VCONN_SRC(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC)
+
+#define DPM_SET_PR_SWAP_INIT_STS_AS_SRC(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC)
+
+#define DPM_SET_PR_SWAP_INIT_STS_AS_SNK(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SNK)
+
+#define DPM_SET_DR_SWAP_INIT_STS_AS_DFP(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_DFP)
+
+#define DPM_SET_DR_SWAP_INIT_STS_AS_UFP(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_UFP)
+
+#define DPM_SET_VDM_RESPONSE_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_VDM_RESPONSE_MASK)
+
+#define DPM_CLR_VDM_RESPONSE_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VDM_RESPONSE_MASK))
+
+#define DPM_SET_AME_TIMER_DONE_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_AME_TIMER_DONE)
+
+#define DPM_CLR_AME_TIMER_DONE_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_AME_TIMER_DONE))
+
+#define DPM_IS_AME_TIMER_DONE(u8PortNum) \
+    ((gasDPM[u8PortNum].u32DPMStatus & DPM_AME_TIMER_DONE) >> DPM_AME_TIMER_DONE_POS)
 
 #define DPM_IS_VCONN_SRC_RESPONSIBLE(u8PortNum) \
     ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONN_SRC_RESPONSIBILITY) >> \
@@ -211,23 +258,33 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum) \
     (gasDPM[u8PortNum].u32DPMStatus ^= DPM_VCONN_SRC_RESPONSIBILITY)
 
-#define DPM_ENABLE_FRS_REQ_PIO(u8PortNum) \
- UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO)
-
-#define DPM_DISABLE_FRS_REQ_PIO(u8PortNum) \
- UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO)
-
-#define DPM_ENABLE_FRS_DET_EN(u8PortNum) \
- UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN)    
-
-#define DPM_DISABLE_FRS_DET_EN(u8PortNum) \
- UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN)    
+#define DPM_ENABLE_FRS_XMT_OT_DET(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_XMT_OR_DET_ENABLED)
 
 #define DPM_DISABLE_FRS_XMT_OR_DET(u8PortNum) \
 (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_XMT_OR_DET_ENABLED))
 
 #define DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum) \
 ((gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_XMT_OR_DET_ENABLED) >> DPM_FRS_XMT_OR_DET_ENABLED_POS)
+
+#define DPM_SET_FRS_SIGNAL_XMT_OR_RCV_DONE_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_FRS_SIGNAL_XMT_OR_RCV_DONE)
+
+#define DPM_CLR_FRS_SIGNAL_XMT_OR_RCV_DONE_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_SIGNAL_XMT_OR_RCV_DONE))
+
+#define DPM_IS_FRS_SIG_XMT_OR_RCV_DONE(u8PortNum) \
+((gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_XMT_OR_RCV_DONE) >> DPM_FRS_SIG_XMT_OR_RCV_DONE_POS)
+
+#define DPM_SET_DRP_SWITCHED_TO_SINK_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_DRP_IN_SINK_MODE)
+
+#define DPM_CLR_DRP_SWITCHED_TO_SINK_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_DRP_IN_SINK_MODE))
+
+#define DPM_IS_DRP_SWITCHED_TO_SINK_ROLE(u8PortNum) \
+((gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE) >> DPM_DRP_IN_SINK_MODE_POS)
+
 /**************************************************************************************************/
 
 /*******************************************************************************/
@@ -600,9 +657,6 @@ Source/Sink Power delivery objects*/
 #define DPM_RESPOND_VDM_ACK                        1 
 #define DPM_RESPOND_VDM_NAK                        0 
 
-/*Funtion defines to Enable HPD peripheral*/
-#define DPM_ENABLE_HPD(u8PortNum)      UPD_RegByteSetBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE)
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: constants
@@ -723,6 +777,22 @@ Source/Sink Power delivery objects*/
 /******************** Port Power/Data State used for initiating FRS ******************/
 #define PD_ROLE_SINK_DFP        1 
 #define PD_ROLE_SOURCE_UFP      2 
+
+/******************** Defines for enable/disable of UPD APIs ******************/
+#define DPM_ENABLE_HPD(u8PortNum)      \
+ UPD_RegByteSetBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE)
+
+#define DPM_ENABLE_FRS_REQ_PIO(u8PortNum) \
+ UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO)
+
+#define DPM_DISABLE_FRS_REQ_PIO(u8PortNum) \
+ UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO)
+
+#define DPM_ENABLE_FRS_DET_EN(u8PortNum) \
+ UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN)    
+
+#define DPM_DISABLE_FRS_DET_EN(u8PortNum) \
+ UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN)    
 
 /**********************************************************************************/                                   
 // *****************************************************************************

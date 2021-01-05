@@ -202,11 +202,11 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                        match in that case */                    
                     if (PD_ROLE_DFP == u8CurrentDataRole)
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_DFP;
+                        DPM_SET_DR_SWAP_INIT_STS_AS_DFP(u8PortNum);
                     }
                     else 
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_UFP;
+                        DPM_SET_DR_SWAP_INIT_STS_AS_UFP(u8PortNum);
                     }
                     
                     /* Response not received within tSenderResponse. Assign
@@ -244,11 +244,11 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                        match in that case */                    
                     if (PD_ROLE_DFP == u8CurrentDataRole)
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_DFP;
+                        DPM_SET_DR_SWAP_INIT_STS_AS_DFP(u8PortNum);
                     }
                     else 
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_DR_SWAP_INIT_STS_AS_UFP;
+                        DPM_SET_DR_SWAP_INIT_STS_AS_UFP(u8PortNum);
                     }
                    
                     /*SRC_READY/SNK_READY state is set*/
@@ -372,11 +372,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        match in that case */
                     if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC;
+                        DPM_SET_PR_SWAP_INIT_STS_AS_SRC(u8PortNum);
                     }
                     else
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SNK;
+                        DPM_SET_PR_SWAP_INIT_STS_AS_SNK(u8PortNum);
                     }
                     
                     /* Response not received within tSenderResponse. Move to 
@@ -399,11 +399,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        match in that case */
                     if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC;
+                        DPM_SET_PR_SWAP_INIT_STS_AS_SRC(u8PortNum);
                     }
                     else
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SNK;
+                        DPM_SET_PR_SWAP_INIT_STS_AS_SNK(u8PortNum);
                     }
                     /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
@@ -985,9 +985,9 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_EVALUATE_SWAP\r\n");
             
             /*Evaluate whether FRS signal has been transmitted*/
-            if(gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_XMT_OR_RCV_DONE)
+            if (DPM_IS_FRS_SIG_XMT_OR_RCV_DONE(u8PortNum))
             {
-                gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_SIGNAL_XMT_OR_RCV_DONE);
+                DPM_CLR_FRS_SIGNAL_XMT_OR_RCV_DONE_STS(u8PortNum);
                         
                 gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_ACCEPT_SWAP;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SRC_SNK_ACCEPT_SWAP_ENTRY_SS;
@@ -1230,7 +1230,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
 
                     u8IsTransmit = TRUE;                                        
                              
-                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_FRS_SIGNAL_XMT_OR_RCV_DONE);
+                    DPM_CLR_FRS_SIGNAL_XMT_OR_RCV_DONE_STS(u8PortNum);
                     
                     /* Assign an idle sub-state to wait for message transmit completion */
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_IDLE_SS;                    
@@ -1456,7 +1456,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        power. Therefore, even though our swap policy matches, we should not
                        initiate a PR_Swap. Partner will initiate a PR_Swap when he 
                        regains the power. We will accept it */
-                    gasDPM[u8PortNum].u32DPMStatus |= DPM_PR_SWAP_INIT_STS_AS_SRC;
+                    DPM_SET_PR_SWAP_INIT_STS_AS_SRC(u8PortNum);
                         
                     /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
                        and Protocol Layer would be taken care by the startup state */
@@ -1595,11 +1595,11 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                        re-initiated on moving to eTxDoneSS sub-state */                    
                     if (TRUE == DPM_IsPortVCONNSource(u8PortNum))
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
+                        DPM_SET_VCONN_SWAP_INIT_STS_AS_VCONN_SRC(u8PortNum);
                     }
                     else
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC;
+                        DPM_SET_VCONN_SWAP_INIT_STS_AS_NOT_VCONN_SRC(u8PortNum);
                     }
                     
                     /* Response not received within tSenderResponse. Move to 
@@ -1619,11 +1619,11 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                        re-initiated on moving to eTxDoneSS sub-state */                    
                     if (TRUE == DPM_IsPortVCONNSource(u8PortNum))
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
+                        DPM_SET_VCONN_SWAP_INIT_STS_AS_VCONN_SRC(u8PortNum);
                     }
                     else
                     {
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_NOT_VCONNSRC;
+                        DPM_SET_VCONN_SWAP_INIT_STS_AS_NOT_VCONN_SRC(u8PortNum);
                     }
                     
                     /* Response not received within tSenderResponse. Move to 
@@ -1795,7 +1795,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                needed here because the port will now be discharging VCONN and hence
                TYPEC_VCONN_SOURCE_MASK will be TRUE. If this bit is not set, 
                VCONN Swap will be once again initiated */
-            gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC;
+            DPM_SET_VCONN_SWAP_INIT_STS_AS_VCONN_SRC(u8PortNum);
             
             /* Change the status of VCONN Source responsibility after a swap */
             DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
