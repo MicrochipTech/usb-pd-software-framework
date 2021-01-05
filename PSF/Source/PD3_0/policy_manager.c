@@ -2012,15 +2012,15 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
        modal operation active status in this API itself */      
     if (DPM_RESPOND_VDM_ACK == u8DPMResponse)
     {
-        gasDPM[u8PortNum].u32DPMStatus |= DPM_VDM_RESPONSE_MASK; 
+        DPM_SET_VDM_RESPONSE_STS(u8PortNum); 
         
         if (eSVDM_ENTER_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u32DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;            
+            DPM_SET_MODAL_OPR_ACTIVE_STATUS(u8PortNum);            
         }
         else if (eSVDM_EXIT_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u32DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;            
+            DPM_CLR_MODAL_OPR_ACTIVE_STATUS(u8PortNum);            
         }
         else
         {
@@ -2029,15 +2029,15 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
     }
     else if (DPM_RESPOND_VDM_NAK == u8DPMResponse)
     {
-        gasDPM[u8PortNum].u32DPMStatus &= ~DPM_VDM_RESPONSE_MASK;        
+        DPM_CLR_VDM_RESPONSE_STS(u8PortNum);        
         
         if (eSVDM_ENTER_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u32DPMStatus &= ~DPM_PORT_IN_MODAL_OPERATION;            
+            DPM_CLR_MODAL_OPR_ACTIVE_STATUS(u8PortNum);            
         }
         else if (eSVDM_EXIT_MODE == eVDMCmd)
         {
-            gasDPM[u8PortNum].u32DPMStatus |= DPM_PORT_IN_MODAL_OPERATION;            
+            DPM_SET_MODAL_OPR_ACTIVE_STATUS(u8PortNum);            
         }
         else
         {
@@ -2051,7 +2051,7 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
     
 #if (TRUE == INCLUDE_PD_ALT_MODE)   
     
-    if (gasDPM[u8PortNum].u32DPMStatus & DPM_PORT_IN_MODAL_OPERATION)
+    if (DPM_IS_MODAL_OPERATION_ACTIVE(u8PortNum))
     {
         /* Port will enter modal operation. So, Kill the AME timer */
         PDTimer_Kill(gasDPM[u8PortNum].u8AMETmrID);
@@ -2190,7 +2190,7 @@ void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     gasDPM[u8PortNum].u8AMETmrID = MAX_CONCURRENT_TIMERS;    
     
     /* Set the Timer Done status to post notification in the foreground */
-    gasDPM[u8PortNum].u32DPMStatus |= DPM_AME_TIMER_DONE; 
+    DPM_SET_AME_TIMER_DONE_STS(u8PortNum);
 }
 
 #endif 
