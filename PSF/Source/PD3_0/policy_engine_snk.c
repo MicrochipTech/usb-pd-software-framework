@@ -441,7 +441,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         VCONN Turn OFF error*/
                         gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                                   PE_VCONNOFF_TIMEOUT_MS,\
-                                                                  DPM_VBUSorVCONNOnOff_TimerCB,\
+                                                                  DPM_VBUSOnOffOrVCONNOff_TimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO); 
                     

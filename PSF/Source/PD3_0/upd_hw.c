@@ -981,7 +981,6 @@ UINT8 UPD_CheckUPDsActive()
 			IDLE for now*/
              (((gau8PortIdleTimerID[u8PortNum]< MAX_CONCURRENT_TIMERS) && \
              (gasPDTimers[gau8PortIdleTimerID[u8PortNum]].u8TimerStPortNum & PDTIMER_STATE ) == PDTIMER_ACTIVE)))
-
 			{
 				u8IsAllUPDsActive = TRUE;
 				break;
@@ -995,7 +994,6 @@ UINT8 UPD_CheckUPDsActive()
 /******************************************************************************************************/
 void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
- 
 	/*Invalidate this Timer ID since it is stored in global*/
     gau8PortIdleTimerID[u8PortNum] = MAX_CONCURRENT_TIMERS;
 	
@@ -1019,8 +1017,7 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
         DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE\r\n");
                 
 		gu8SetMCUIdle = UPD_MCU_IDLE;
-	}
-	
+	}	
 }
 
 /******************************************************************************************************/

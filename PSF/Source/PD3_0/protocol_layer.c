@@ -845,7 +845,6 @@ void PRL_HandleISR (UINT8 u8PortNum)
 		
 		/* Txstate is set back to idle after callback*/
 		gasPRL [u8PortNum].u8TxStateISR =  PRL_TX_IDLE_ST;
-
 	}
 
 	if (u8MACIRQSTAT & PRL_MAC_IRQ_RX)
@@ -937,9 +936,7 @@ void PRL_ProcessRxFIFOISR (UINT8 u8PortNum)
     {
         /* Received bit is set */
         gasPRL[u8PortNum].u8RxRcvdISR = TRUE;
-    }
-	
-
+    }	
 }
 
 /******************************************************************************************************/
@@ -973,8 +970,7 @@ void PRL_TxRxMsgID_Reset(UINT8 u8PortNum, UINT8 u8SOPType)
 		u8RxSOPSelect |= PRL_RX_MSG_ID_STORED_SOP_PP;
 	}
 	
-	UPD_RegWriteByte (u8PortNum, PRL_RX_MSG_ID_STORED, u8RxSOPSelect);
-   
+	UPD_RegWriteByte (u8PortNum, PRL_RX_MSG_ID_STORED, u8RxSOPSelect);   
 }
 
 
@@ -1530,9 +1526,7 @@ void PRL_ChunkStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8ChunkState)
 	 /* setting the Timer ID to Max value*/
     gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
 	
-	DEBUG_PRINT_PORT_STR (u8PortNum, "PRL: ChunkTimer time out \r\n");
-	
-	
+	DEBUG_PRINT_PORT_STR (u8PortNum, "PRL: ChunkTimer time out \r\n");		
 }
 
 /******************************************************************************************************/
@@ -1593,8 +1587,7 @@ void PRL_TxOriginalCBfromCH (UINT8 u8PortNum, UINT8 u8TxStateforCB)
 /******************************************************************************************************/
 
 void PRL_RunChunkStateMachine (UINT8 u8PortNum)
-{
-	
+{	
     if (!gasChunkSM [u8PortNum].u8EnableChunkSM)
     {
 	  	/* if Chunk SM is not enabled, Return*/
@@ -1602,8 +1595,7 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
     }
 	
 	switch (gasChunkSM [u8PortNum].u8ChunkState)
-	{
-	  
+	{	  
 		case PRL_CH_CHUNK_IDLE_ST:
 		/* Common Idle state for RCH & TCH */
 		  
@@ -1762,10 +1754,8 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 		default:
 		{
 			break;
-		}
-	  
-	}
-	
+		}	  
+	}	
 }
 
 /******************************************************************************************************/
@@ -1855,8 +1845,7 @@ void PRL_ProtocolReset(UINT8 u8PortNum)
     gasPRL[u8PortNum].u8RxDisable = FALSE; 
     
     /* Reset the PHY layer*/
-    PRL_PHYLayerReset (u8PortNum);
-        
+    PRL_PHYLayerReset (u8PortNum);        
 }
 
 /******************************************************************************************************/

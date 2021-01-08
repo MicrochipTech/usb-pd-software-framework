@@ -1502,62 +1502,6 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
 
 /**************************************************************************************************
     Function:
-       void TypeC_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
-
-    Summary:
-        This API is Timer call back for PowerGoodTimer.
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        It is a callback for PowerGoodTimer
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port Number.
-        u8DummyVariable - It is used as the Dummy variable.
-
-    Return:
-        None.
-
-    Remarks:
-        None.
-**************************************************************************************************/
-void TypeC_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
-
-/**************************************************************************************************
-    Function:
-       void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
-
-    Summary:
-        This API is Timer call back for VCONNErrorTimer.
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        It is a callback for VCONNErrorTimer.
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port Number.
-        u8DummyVariable - It is used as the Dummy variable.
-
-    Return:
-        None.
-
-    Remarks:
-        None.
-**************************************************************************************************/
-void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
-
-/**************************************************************************************************
-    Function:
        UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
 
     Summary:

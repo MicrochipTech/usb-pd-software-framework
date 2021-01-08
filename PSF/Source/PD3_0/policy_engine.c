@@ -1475,7 +1475,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                             (ePE_SRC_READY_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))  || \
                             (u8PEInVDMState))
                         {
-                            #if ((TRUE == INCLUDE_PD_SOURCE_PPS) || (TRUE == INCLUDE_PD_VDM))                        
+#if ((TRUE == INCLUDE_PD_SOURCE_PPS) || (TRUE == INCLUDE_PD_VDM))                        
                             /* In case of PPS, Kill SourcePPSCommTimer only in ePE_SRC_READY  
                             state if the current explicit contract is for a PPS APDO 
                             Kill VDM Response timer if PE is waiting for a VDM response, but
@@ -2259,7 +2259,6 @@ void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8Tx
         {
             break;
         }
-
     }
 }
 /************************************************************************************/
@@ -2336,7 +2335,6 @@ void PE_KillPolicyEngineTimer (UINT8 u8PortNum)
     /*Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
     TimerID does not hold any valid timer IDs anymore*/
     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-
 }
 
 /*******************************************************************************/
