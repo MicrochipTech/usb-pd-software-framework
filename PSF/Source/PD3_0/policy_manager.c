@@ -33,82 +33,107 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <psf_stdinc.h>
 
 /*************************************VBUS & VCONN on/off Timer APIS*********************************/
-void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+void DPM_VBUSOnOffOrVCONNOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
-    if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
-    {
-        DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
-   
-        gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-        gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+    /* Set timer ID to MAX_CONCURRENT_TIMERS to indicate that
+       TimerID does not hold any valid timer IDs anymore */     
+    gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 
-        gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
-
-        #if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
-        /* Clear the PR_Swap/FR_Swap In Progress Flag during PSSourceOff Timer expiry.
-           This scenario would get hit only when PS_RDY is not received from the 
-           Original Source during Sink to Source role swap.
-           Note: During normal scenarios other than PR_Swap/FR_Swap, value of u8DummyVariable
-           would be registered as 0 */
-        if (DPM_CLR_SWAP_IN_PROGRESS_MASK == u8DummyVariable)
-        {
-            gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
-            DEBUG_PRINT_PORT_STR(u8PortNum,"PS_SOURCE_OFF TMR EXPIRED\r\n");
-        }
-        #endif 
-    }
-    else
+    #if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
+    /* Clear the PR_Swap/FR_Swap In Progress Flag during PSSourceOff Timer expiry.
+       This scenario would get hit only when PS_RDY is not received from the 
+       Original Source during Sink to Source role swap.
+       Note: During normal scenarios other than PR_Swap/FR_Swap, value of u8DummyVariable
+       would be registered as 0 */
+    if (DPM_CLR_SWAP_IN_PROGRESS_MASK == u8DummyVariable)
     {
-        /*Do nothing. If User application returns FALSE for 
-        eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
-        the user application will raise a Port disable client request*/
+        gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);            
     }
+    #endif 
+    
+    /* Set VBUS On/Off or VCONN Off Error status to handle the error in the foreground */
+    DPM_SET_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_STS(u8PortNum);    
 }
 
-void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
+void DPM_VCONNONError_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 { 
+    /* Clear VCONN ON Request mask */
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
+    
+    /* Set timer ID to MAX_CONCURRENT_TIMERS to indicate that
+       TimerID does not hold any valid timer IDs anymore */    
     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
     
-    if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
-    {      
+    /* Set VCONN ON Error status to handle the error in the foreground */
+    DPM_SET_VCONN_ON_ERROR_STS(u8PortNum);            
+}
+
+void DPM_HandleVCONNONError (UINT8 u8PortNum)
+{
+    if (gasDPM[u8PortNum].u8VCONNOnErrorCount > gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt)
+    {
+        /* Reset VCONN On Error counter */
+        gasDPM[u8PortNum].u8VCONNOnErrorCount = RESET_TO_ZERO;
+
         /*Disable the receiver*/
         PRL_EnableRx (u8PortNum, FALSE);
-        
+
         /*Kill all the Port timers*/
         PDTimer_KillPortTimers (u8PortNum);
-        
+
         /*Disable VCONN by switching off the VCONN FETS which was enabled previously*/
         TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);
-        
+
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {		          
             /*Disable VBUS by driving to vSafe0V if port role is a source*/
-            DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
-        
+            DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
+
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
-            
+
             DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SRC Powered OFF state\r\n");
         }
         else
         { 
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
-            
+
             DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SNK Powered OFF state\r\n");
         }       
+
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
-        
-        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
+
+        /* Notify users of the entry into powered off state */
+        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);            
     }
     else
     {
-        gasDPM[u8PortNum].u8VCONNErrCounter++;    
-        PE_SendHardReset(u8PortNum);    
+        /* Increment VCONN ON Error Count */
+        gasDPM[u8PortNum].u8VCONNOnErrorCount++; 
+
+        if (PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+        {
+            if (TRUE == DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+            {
+                /* Set it to Type C Error Recovery */
+                DPM_SetTypeCState (u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+            }
+            else
+            {
+                /*Do nothing. If User application returns FALSE for 
+                eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                the user application will raise a Port disable client request*/
+            }                
+        }
+        else  /* PE_EXPLICIT_CONTRACT */ 
+        {
+            PE_SendHardReset (u8PortNum); 
+        }
     }    
 }
+
 /****************************** DPM APIs Accessing Type C Port Control Module*********************/
 void DPM_GetTypeCStates(UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSubState)
 {
@@ -1551,7 +1576,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     /* Clear VCONN Source responsibility status for the port */
     DPM_CLR_VCONN_SRC_RESPONSIBILITY(u8PortNum);
     
-    gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;
+    gasDPM[u8PortNum].u8VCONNOnErrorCount = SET_TO_ZERO;
     
     /* Clear the DPM variables whose data is no more valid after a Type C detach */
     gasDPM[u8PortNum].u8NegotiatedPDOIndex = RESET_TO_ZERO;
@@ -2192,6 +2217,58 @@ void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     /* Set the Timer Done status to post notification in the foreground */
     DPM_SET_AME_TIMER_DONE_STS(u8PortNum);
 }
+
+#if (TRUE == INCLUDE_UPD_HPD) 
+
+void DPM_HandleHPDEvents (UINT8 u8PortNum)
+{
+    UINT16 u16HPDStsISR;
+    UINT8 u8HPDCurrentIndex = gu8HPDNextIndex[u8PortNum];
+    UINT8 u8Data;
+    
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+    u16HPDStsISR = gu16HPDStsISR[u8PortNum];
+    gu16HPDStsISR[u8PortNum] &= (~UPD_HPD_INTERRUPT_OCCURRED);
+    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+    
+    if(u16HPDStsISR & UPD_HPD_INTERRUPT_OCCURRED)
+    {
+        /*Lower byte of u16HPDStsISR is copied to u8Data*/
+        u8Data = u16HPDStsISR;
+        
+        for(UINT8 u8QueueEvtNo = SET_TO_ZERO; u8QueueEvtNo < UPD_HPD_QUEUE_SIZE; u8QueueEvtNo++)
+       {
+           UINT8 u8QueueEntry = ((u8Data >> (UPD_HPD_EVENT_SIZE*u8HPDCurrentIndex)) & UPD_HPD_EVENT_MASK);
+           if(u8QueueEntry)
+           {
+               u8HPDCurrentIndex++;
+               u8HPDCurrentIndex = (u8HPDCurrentIndex % UPD_HPD_QUEUE_SIZE);
+               switch(u8QueueEntry)
+               { 
+                   case eMCHP_PSF_UPD_HPD_HIGH: 
+                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
+                       break; 
+                   case eMCHP_PSF_UPD_HPD_LOW: 
+                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
+                       break; 
+                   case eMCHP_PSF_UPD_IRQ_HPD: 
+                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
+                       break; 
+                   default: 
+                       break; 
+               }
+           }
+           else
+           { 
+               break; 
+           }
+       }
+       gu8HPDNextIndex[u8PortNum] = u8HPDCurrentIndex;
+    }
+    
+}
+
+#endif 
 
 #endif 
 

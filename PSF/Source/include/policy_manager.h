@@ -167,6 +167,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_FRS_XMT_OR_DET_ENABLED               BIT(18)
 #define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE           BIT(19)
 #define DPM_DRP_IN_SINK_MODE                     BIT(20)
+#define DPM_VCONN_ON_ERROR_MASK                  BIT(21)
+#define DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK  BIT(22)
 
 /*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS                     0
@@ -179,6 +181,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_FRS_XMT_OR_DET_ENABLED_POS              18
 #define DPM_FRS_SIG_XMT_OR_RCV_DONE_POS             19 
 #define DPM_DRP_IN_SINK_MODE_POS                    20 
+#define DPM_VCONN_ON_ERROR_POS                      21 
+#define DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_POS      22
 
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u32DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
@@ -284,6 +288,24 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define DPM_IS_DRP_SWITCHED_TO_SINK_ROLE(u8PortNum) \
 ((gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE) >> DPM_DRP_IN_SINK_MODE_POS)
+
+#define DPM_SET_VCONN_ON_ERROR_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_ON_ERROR_MASK)
+
+#define DPM_CLR_VCONN_ON_ERROR_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONN_ON_ERROR_MASK))
+
+#define DPM_IS_ERROR_IN_VCONN_ON(u8PortNum) \
+((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONN_ON_ERROR_MASK) >> DPM_VCONN_ON_ERROR_POS)
+
+#define DPM_SET_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK)
+
+#define DPM_CLR_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK))
+
+#define DPM_IS_ERROR_IN_VBUS_ON_OFF_OR_VCONN_OFF(u8PortNum) \
+((gasDPM[u8PortNum].u32DPMStatus & DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK) >> DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_POS)
 
 /**************************************************************************************************/
 
@@ -737,9 +759,14 @@ Source/Sink Power delivery objects*/
 #define DPM_HR_COMPLETE_WAIT_POS              0
 #define DPM_TYPEC_ERR_RECOVERY_FLAG_POS       1
 #define DPM_IGNORE_UV_DURING_FRS_POS          2 
+#define DPM_VBUS_POWER_GOOD_TMR_DONE_POS      3
+#define DPM_VCONN_POWER_GOOD_TMR_DONE_POS     4 
+
 #define DPM_HR_COMPLETE_WAIT_MASK             (1 << DPM_HR_COMPLETE_WAIT_POS)
 #define DPM_TYPEC_ERR_RECOVERY_FLAG_MASK      (1 << DPM_TYPEC_ERR_RECOVERY_FLAG_POS)
 #define DPM_IGNORE_UV_DURING_FRS_MASK         (1 << DPM_IGNORE_UV_DURING_FRS_POS)
+#define DPM_VBUS_POWER_GOOD_TIMER_DONE        (1 << DPM_VBUS_POWER_GOOD_TMR_DONE_POS)
+#define DPM_VCONN_POWER_GOOD_TIMER_DONE       (1 << DPM_VCONN_POWER_GOOD_TMR_DONE_POS)
 
 /************************ Client Request Defines ******************************/
 #define DPM_NO_CLIENT_REQ_PENDING                0x00 
@@ -808,7 +835,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
   UINT16 u16SinkOperatingCurrInmA;    //Operating current
   UINT16 u16PrevVBUSVoltageInmV;      // Previous VBUS Voltage in terms of mV
   UINT16 u16ExpectedVBUSVoltageInmV;  // Expected VBUS Voltage in terms of mV
-  UINT32 u32DPMStatus;                 //Bits 1:0 - Status of Port Role <p />
+  UINT32 u32DPMStatus;                  //Bits 1:0 - Status of Power Role <p />
                                         //Bits 3:2 - Status of Data Role <p />
                                         //Bits 5:4 - Status of PD Spec Revision <p />
                                         //Bit 6 - Modal Operation Active Status
@@ -825,22 +852,26 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bit 17 - VCONN Source Responsibility Status
                                         // Bit 18 - FRS XMT or DET Enabled Status 
                                         // Bit 19 - FRS Signal Transmitted Or Received Status
-  UINT16 u16DPMInternalEvents;      //DPM_INT_EVT_INITIATE_GET_SINK_CAPS  BIT(0)
-                                    //DPM_INT_EVT_INITIATE_RENEGOTIATION  BIT(1)
-                                    //DPM_INT_EVT_INITIATE_VCONN_SWAP     BIT(2)
-                                    //DPM_INT_EVT_INITIATE_PR_SWAP        BIT(3)
-                                    //DPM_INT_EVT_INITIATE_DR_SWAP        BIT(4)
-                                    //DPM_INT_EVT_INITIATE_VDM            BIT(5)
-                                    //DPM_INT_EVT_INITIATE_ALERT          BIT(6)
-                                    //DPM_INT_EVT_INITIATE_GET_STATUS     BIT(7)
-                                    //DPM_INT_EVT_PORT_DISABLE            BIT(8)
-                                    //DPM_INT_EVT_PORT_ENABLE             BIT(9)
-                                    //DPM_INT_EVT_INITIATE_FR_SWAP        BIT(10)
+                                        // Bit 20 - DRP transitioned to Sink Role after an FRS
+                                        // Bit 21 - VCONN On Error Status 
+  UINT16 u16DPMInternalEvents;          // BIT(0) - DPM_INT_EVT_INITIATE_GET_SINK_CAPS  
+                                        // BIT(1) - DPM_INT_EVT_INITIATE_RENEGOTIATION  
+                                        // BIT(2) - DPM_INT_EVT_INITIATE_VCONN_SWAP     
+                                        // BIT(3) - DPM_INT_EVT_INITIATE_PR_SWAP        
+                                        // BIT(4) - DPM_INT_EVT_INITIATE_DR_SWAP        
+                                        // BIT(5) - DPM_INT_EVT_INITIATE_VDM            
+                                        // BIT(6) - DPM_INT_EVT_INITIATE_ALERT          
+                                        // BIT(7) - DPM_INT_EVT_INITIATE_GET_STATUS     
+                                        // BIT(8) - DPM_INT_EVT_PORT_DISABLE            
+                                        // BIT(9) - DPM_INT_EVT_PORT_ENABLE             
+                                        // BIT(10) - DPM_INT_EVT_INITIATE_FR_SWAP        
+                                        // BIT(11) - DPM_INT_EVT_SYSTEM_POWER_LOST       
+                                        // BIT(12) - DPM_INT_EVT_SYSTEM_POWER_BACK       
   UINT8 u8DPMConfigData;    //Bit  1:0 - Default Port Power Role
                             //Bit  3:2 - Default Port Data Role
                             //Bits 5:4 - Default PD Spec Revision
-  UINT8 u8VCONNErrCounter;
-  UINT8 u8NegotiatedPDOIndex;
+  UINT8 u8VCONNOnErrorCount;  // VCONN ON Error Counter
+  UINT8 u8NegotiatedPDOIndex; // Index of the Negotiated PDO 
   UINT16 u16InternalEvntInProgress; //carries internal event that is currently in progress  
   eMCHP_PSF_NOTIFICATION eDPMNotification; // DPM Notification 
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
@@ -854,6 +885,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                       //BIT 0 - Hard Reset complete wait flag
                                       //BIT 1 - Type-C Error Recovery Flag
                                       //BIT 2 - Ignore UV during FRS
+                                      //BIT 3 - VBUS Power Good Timer Done 
+                                      //BIT 4 - VCONN Power Good Timer Done 
 #endif
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
   UINT8 u8AlertType;
@@ -1130,6 +1163,34 @@ void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
+       void DPM_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+
+    Summary:
+        This API is Timer call back for VBUSPowerGoodTimer.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        It is a callback for VBUSPowerGoodTimer
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number.
+        u8DummyVariable - It is used as the Dummy variable.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void DPM_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+
+/**************************************************************************************************
+    Function:
         void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
     Summary:
         This API is used to turn on/off the VCONN supply of a given port
@@ -1314,15 +1375,15 @@ void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8 *pu8SinkPDOCnt, UINT32 *pu32
 
 /**************************************************************************************************
     Function:
-        void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+        void DPM_VBUSOnOffOrVCONNOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Summary:
-        This API is given as the timer call back API when starting the VBUSOnOff Timer from 
-        Type-C and source policy engine state machines.
+        This API is given as the timer call back API when starting the VBUSOn, VBUSOff and
+        VCONN Off timers from Type-C and source policy engine state machines.
     Devices Supported:
         UPD350 REV A
     Description:
-        This API is given as the timer call back API when starting the VBUSOnOff Timer from 
-        Type-C and source policy engine state machines.  
+        This API is given as the timer call back API when starting the VBUSOn, VBUSOff and
+        VCONN Off timers from Type-C and source policy engine state machines.
     Conditions:
         None
     Input:
@@ -1334,7 +1395,7 @@ void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8 *pu8SinkPDOCnt, UINT32 *pu32
         None.
 
 **************************************************************************************************/
-void DPM_VBUSorVCONNOnOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+void DPM_VBUSOnOffOrVCONNOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
@@ -1475,19 +1536,17 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_AltModeEventHandler(UINT8 u8PortNum);
+        void DPM_GenericEventHandler (UINT8 u8PortNum);
     Summary:
-        This API handles the AltMode events. 
+        This API handles the generic events like VBUS and VCONN On/Off errors, 
+        HPD, AME timeout, etc.,
     Devices Supported:
         UPD350 REV A
     Description:
-        In case of HPD event, this API posts notifications to User_application that an 
-        HPD event has occurred. eMCHP_PSF_HPD_EVENT_HIGH, eMCHP_PSF_HPD_EVENT_LOW and 
-        eMCHP_PSF_HPD_EVENT_IRQ_HPD notifications are posted respectively when HPD_HIGH, 
-        HPD_LOW and IRQ_HPD events occur. In case of AME event, this API notifies the 
-        User application of AME failure. 
+        This API handles the generic events like VBUS and VCONN On/Off errors, 
+        HPD, AME timeout, etc.,
     Conditions:
-        This API is applicable only when INCLUDE_PD_ALT_MODE is enabled.
+        None.
     Input:
         u8PortNum - Port number of the device. Value passed will be less than CONFIG_PD_PORT_COUNT.
     Return:
@@ -1495,7 +1554,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void DPM_AltModeEventHandler(UINT8 u8PortNum); 
+void DPM_GenericEventHandler (UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:
@@ -2067,6 +2126,46 @@ void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
         None. 
 **************************************************************************************************/
 void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void DPM_HandleVCONNONError (UINT8 u8PortNum);
+    Summary:
+        API to handle VCONN On Error
+    Description:
+        This API handles VCONN Turn On error by invoking error recovery
+        or Hard Reset based on the present PD contract type.  
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_HandleVCONNONError (UINT8 u8PortNum); 
+
+/**************************************************************************************************
+    Function:
+        void DPM_HandleHPDEvents (UINT8 u8PortNum);
+    Summary:
+        API to handle Hot Plug Detect events
+    Description:
+        In case of HPD event, this API posts notifications to User_application that an 
+        HPD event has occurred. eMCHP_PSF_HPD_EVENT_HIGH, eMCHP_PSF_HPD_EVENT_LOW and 
+        eMCHP_PSF_HPD_EVENT_IRQ_HPD notifications are posted respectively when HPD_HIGH, 
+        HPD_LOW and IRQ_HPD events occur.   
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_HandleHPDEvents (UINT8 u8PortNum);
 
 #endif /*_POLICY_MANAGER_H_*/
 

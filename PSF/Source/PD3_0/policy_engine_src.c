@@ -429,7 +429,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                          /* Start tSrcReady timer */
                         gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (PE_SRC_READY_TIMEOUT_MS),
-                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOffOrVCONNOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_SUPPLY_EXIT_SS;  
                     }
@@ -844,7 +844,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     power module to reach vSafe0V*/
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
-                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOffOrVCONNOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_OFF_SS;
@@ -864,7 +864,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                         VCONN Turn OFF error*/
                         gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                                   PE_VCONNOFF_TIMEOUT_MS,\
-                                                                  DPM_VBUSorVCONNOnOff_TimerCB,\
+                                                                  DPM_VBUSOnOffOrVCONNOff_TimerCB,\
                                                                   u8PortNum,\
                                                                   (UINT8)SET_TO_ZERO);
                         
@@ -943,7 +943,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     power module to reach vSafe5V*/
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_ON_TIMER_MS),
-                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOffOrVCONNOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                     
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_ON_SS;

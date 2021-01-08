@@ -737,7 +737,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     power module to reach vSafe5V*/
                     gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_ON_TIMER_MS),
-                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOffOrVCONNOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
 					
 					/*Sink Attached in CC1 pin*/
@@ -799,7 +799,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             /*Failure to reach the VCONN Min will result in Error Recovery state*/
                             gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start (
                                                          TYPEC_VCONNON_TIMEOUT_MS,
-                                                         TypeC_VCONNONError_TimerCB, u8PortNum,  
+                                                         DPM_VCONNONError_TimerCB, u8PortNum,  
                                                          (UINT8)SET_TO_ZERO);
                             
                             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS;
@@ -958,7 +958,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 power module to reach vSafe0V*/
                 gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
-                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOffOrVCONNOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);                		
                  
                 /*Enabling the VCONN Discharge if we are supplying VCONN or VCONN Req was ON*/
@@ -2469,13 +2469,11 @@ void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum)
         default:
         {
             break;
-        }
-         
+        }         
     }
     
     gasTypeCcontrol[u8PortNum].u8PortSts = u8PortSts; 
-    gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = u8CCSrcSnkMatch;
-    
+    gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = u8CCSrcSnkMatch;    
 }
 #endif/*INCLUDE_PD_SINK*/
 /*******************************************************************************************/
@@ -2533,7 +2531,6 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
             UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, (TYPEC_CC2_RP_VAL));
 
             TypeC_SetCCSampleEnable (u8PortNum,TYPEC_ENABLE_CC2);
-
         }
            
         /*Setting CC Comparator to sample both the CC1 and CC2*/
@@ -2545,12 +2542,11 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
     {   
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         /*Start the VCONN power good timer if VCONN OCS fault counter is not zero*/
-        if(gasDPM[u8PortNum].u8VCONNPowerFaultCount!= SET_TO_ZERO)
+        if (gasDPM[u8PortNum].u8VCONNPowerFaultCount != SET_TO_ZERO)
         {
             PDTimer_Kill (gasDPM[u8PortNum].u8VCONNPowerGoodTmrID);
             gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = PDTimer_Start (gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimerInms,\
-                                                      DPM_VCONNPowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
-                  
+                                                      DPM_VCONNPowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);                  
         }
         #endif
             
@@ -2723,7 +2719,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
     TypeC_DRPIntrHandler(u8PortNum);
 #endif
 
-    
+#if (TRUE == INCLUDE_PD_SINK)
     if (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VSINKDISCONNECT_STATUS_MASK)
     {
         /*Voltage dropped to vSinkDisconnect in Attached Sink State before the Source CC detach 
@@ -2732,7 +2728,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
         which is a violation of specification*/
         /*This is done for easy handling*/
         if((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && \
-		(TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
+                (TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
         {
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS;
         }
@@ -2740,6 +2736,7 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
         /*Clearing the VsinkDisconnect interrupt Status set*/
         gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_VSINKDISCONNECT_STATUS_MASK;         
     }    
+#endif 
     
     if (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_CCINT_STATUS_MASK)
     {        
@@ -2795,13 +2792,11 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
                 default:
                 {
                     break;
-                }
-                                
+                }                                
             }
             /*Clearing the CC interrupt status in u8IntStsISR variable*/
             gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_CCINT_STATUS_MASK;        
-        }
-		        
+        }		        
     }
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 }
@@ -3472,7 +3467,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
                 PDO voltage is attained. Hence started here.*/
             PDTimer_Kill (gasDPM[u8PortNum].u8VBUSPowerGoodTmrID);
             gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = PDTimer_Start (gasCfgStatusData.sPerPortData[u8PortNum].u16PowerGoodTimerInms,\
-                                                          TypeC_VBUSPowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
+                                                          DPM_VBUSPowerGood_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
         }
         
         /* Over voltage threshold is set in TypeC_ConfigureVBUSThr */
@@ -3616,90 +3611,28 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
 /*******************************************************************************************/
 /*********************************TypeC Timer CB**************************************/
 /*******************************************************************************************/
-	
-#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-								   
-void TypeC_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
-{
-	/* Set the timer Id to Max Concurrent Value*/
- 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
-	
-	/* Reset the fault Count*/
-	gasDPM[u8PortNum].u8VBUSPowerFaultCount = RESET_TO_ZERO;
-    
-    /*Notify that port is recovered from VBUS fault*/
-    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT);
-}
-#endif /*INCLUDE_POWER_FAULT_HANDLING endif*/
-
-/*********************************************************************/
-/*Generic timer call back routine for device policy manager*/
 void TypeC_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCSubState)
 {	
 	gasTypeCcontrol[u8PortNum].u8TypeCSubState = u8TypeCSubState;
     gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
 }
 
-
 void TypeC_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState)
 {
     gasTypeCcontrol[u8PortNum].u8TypeCState = u8TypeCState;
-    gasTypeCcontrol[u8PortNum].u8TypeCSubState  = SET_TO_ZERO;
-    gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
-  
+    gasTypeCcontrol[u8PortNum].u8TypeCSubState = SET_TO_ZERO;
+    gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;  
 }
 
-void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
-{
-    gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_ON_REQ_MASK;
-    
-    if(gasDPM[u8PortNum].u8VCONNErrCounter > (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
-    {   
-        gasDPM[u8PortNum].u8VCONNErrCounter = SET_TO_ZERO;
-        
-        /*Disable VBUS by driving to vSafe0V*/
-        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
-        
-        /*Disable VCONN by switching off the VCONN FETS which was enabled previously*/
-        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);
-        
-        /* Assign an idle state wait for detach*/
-        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;       
-        gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-        gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
-        
-        DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SRC Powered OFF state\r\n");
-        
-        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
-    }
-    else
-    {
-        gasDPM[u8PortNum].u8VCONNErrCounter++;
-        if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
-        {
-            /* Set it to Type C Error Recovery */
-            DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
-        }
-        else
-        {
-            /*Do nothing. If User application returns FALSE for 
-            eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
-            the user application will raise a Port disable client request*/
-        }
-    }
-    
-    gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
-   
-}
 void TypeC_KillTypeCTimer (UINT8 u8PortNum)
 {
     PDTimer_Kill (gasTypeCcontrol[u8PortNum].u8TypeCTimerID);
     
     /*Setting the u8PETimerID to MAX_CONCURRENT_TIMERS to indicate that
     TimerID does not hold any valid timer IDs anymore*/
-    gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;
-    
+    gasTypeCcontrol[u8PortNum].u8TypeCTimerID = MAX_CONCURRENT_TIMERS;    
 }
+
 /*******************************************************************************************/
 /*********************************TypeC Common Support APIs**************************************/
 /*******************************************************************************************/

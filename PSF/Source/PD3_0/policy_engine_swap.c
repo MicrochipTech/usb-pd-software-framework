@@ -562,7 +562,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        power module to reach vSafe0V*/
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                               (TYPEC_VBUS_OFF_TIMER_MS),
-                                                              DPM_VBUSorVCONNOnOff_TimerCB, u8PortNum,  
+                                                              DPM_VBUSOnOffOrVCONNOff_TimerCB, u8PortNum,  
                                                               (UINT8)SET_TO_ZERO);
                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS;                    
@@ -784,14 +784,14 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                     
                     /* Initialize and run PSSourceOffTimer. 
-                       Note: DPM_VBUSorVCONNOnOff_TimerCB API is reused for PSSourceOff 
+                       Note: DPM_VBUSOnOffOrVCONNOff_TimerCB API is reused for PSSourceOff 
                        timer call back intentionally, as both the time outs invoke
                        Error Recovery. This would save the usage of code memory.
                        DPM_CLR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
                        so that PR_Swap In Progress mask would be cleared on Timeout */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_PS_SOURCE_OFF_TIMEOUT_MS),
-                                                            DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
+                                                            DPM_VBUSOnOffOrVCONNOff_TimerCB,u8PortNum,  
                                                             (UINT8)DPM_CLR_SWAP_IN_PROGRESS_MASK);
                
                     /* Assign an idle state to wait for PS_RDY reception */
@@ -1316,14 +1316,14 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                     PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                     
                     /* Initialize and run PSSourceOffTimer. 
-                       Note: DPM_VBUSorVCONNOnOff_TimerCB API is reused for PSSourceOff 
+                       Note: DPM_VBUSOnOffOrVCONNOff_TimerCB API is reused for PSSourceOff 
                        timer call back intentionally, as both the time outs invoke
                        Error Recovery. This would save the usage of code memory.
                        DPM_CLR_SWAP_IN_PROGRESS_MASK is passed as the argument for CB
                        so that FR_Swap In Progress mask would be cleared on Timeout */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             (PE_PS_SOURCE_OFF_TIMEOUT_MS),
-                                                            DPM_VBUSorVCONNOnOff_TimerCB,u8PortNum,  
+                                                            DPM_VBUSOnOffOrVCONNOff_TimerCB,u8PortNum,  
                                                             (UINT8)DPM_CLR_SWAP_IN_PROGRESS_MASK);
                
                     /* Assign an idle state to wait for PS_RDY reception */

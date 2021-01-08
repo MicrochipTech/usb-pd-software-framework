@@ -147,10 +147,8 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
 		DPM_PowerFaultHandler (u8PortNum);
 	#endif
         
-    /* Handle AltMode events if any */
-    #if(TRUE == INCLUDE_PD_ALT_MODE)    
-        DPM_AltModeEventHandler (u8PortNum);
-    #endif
+    /* Handle Generic events if any */  
+    DPM_GenericEventHandler (u8PortNum);
     
     /* Handle Power Throttling Bank Switch */
     #if (TRUE == INCLUDE_POWER_THROTTLING)
@@ -171,6 +169,7 @@ void DPM_RunStateMachine (UINT8 u8PortNum)
 
 /*********************************************************************************/
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
+
 static void DPM_ClearPowerFaultFlags(UINT8 u8PortNum)
 {
     /*ISR flag is cleared by disabling the interrupt*/
@@ -178,6 +177,7 @@ static void DPM_ClearPowerFaultFlags(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 }
+
 void DPM_PowerFaultHandler(UINT8 u8PortNum)
 {
   	/* Incase detach reset the Power Fault handling variables*/
@@ -232,14 +232,14 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 				 (ePE_SNK_STARTUP == gasPolicyEngine[u8PortNum].ePEState))
         {
             /*Checks whether VCONN max power fault count exceeds*/
-            if(gasDPM[u8PortNum].u8VCONNPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
+            if (gasDPM[u8PortNum].u8VCONNPowerFaultCount >= gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt)
             {            
                 /*Setting the VCONN Good to Supply Flag as False*/
-                gasDPM[u8PortNum].u8VCONNGoodtoSupply = FALSE;
+                gasDPM[u8PortNum].u8VCONNGoodtoSupply = FALSE;                
             }
             
             /*Checks whether VBUS max power fault count exceeds*/
-            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= (gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt))
+            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt)
             {
 				/* Disable the receiver*/
                 PRL_EnableRx (u8PortNum, FALSE);
@@ -262,8 +262,10 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
                 }
 				/* Assign an idle state wait for detach*/
                 gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
-                DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
                 
+                DEBUG_PRINT_PORT_STR (u8PortNum, "VBUS PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
+                
+                /* Notify the entry to Powered Off state */
                 (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
             }/*end of if condition of VBUS max count exceed check*/
             else
@@ -457,16 +459,46 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
 		/*Clear the Power fault flag*/
         DPM_ClearPowerFaultFlags(u8PortNum);
     }
+    
+    /*Notify that port is recovered form VCONN fault*/
+    if (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_VCONN_POWER_GOOD_TIMER_DONE)
+    {
+        gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_VCONN_POWER_GOOD_TIMER_DONE);
+        
+        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT);
+    }
+    
+    /*Notify that port is recovered from VBUS fault*/
+    if (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_VBUS_POWER_GOOD_TIMER_DONE)
+    {
+        gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_VBUS_POWER_GOOD_TIMER_DONE);
+        
+        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT);
+    }
 }
+
 void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
 	/* Set the timer Id to Max Value*/
  	gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;	
-	/* Resetting the VCONN fault Count*/
+	
+    /* Resetting the VCONN fault Count*/
 	gasDPM[u8PortNum].u8VCONNPowerFaultCount = RESET_TO_ZERO;
     
-    /*Notify that port is recovered form VCONN fault*/
-    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT);
+    /* Set Timer done status to post notification in the foreground */
+    gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_VCONN_POWER_GOOD_TIMER_DONE;            
+}
+
+void DPM_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+{
+	/* Set the timer Id to Max Concurrent Value*/
+ 	gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
+	
+	/* Reset the fault Count*/
+	gasDPM[u8PortNum].u8VBUSPowerFaultCount = RESET_TO_ZERO;
+    
+    /* Set Timer done status to post notification in the foreground */
+    gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_VBUS_POWER_GOOD_TIMER_DONE;            
 }
 
 void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType)
@@ -1252,65 +1284,57 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();           
     }
 }
-
-#if (TRUE == INCLUDE_PD_ALT_MODE) 
-    
-void DPM_AltModeEventHandler(UINT8 u8PortNum)
-{    
-#if (TRUE == INCLUDE_UPD_HPD)    
-    UINT16 u16HPDStsISR;
-    UINT8 u8HPDCurrentIndex = gu8HPDNextIndex[u8PortNum];
-    UINT8 u8Data;
-    
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    u16HPDStsISR = gu16HPDStsISR[u8PortNum];
-    gu16HPDStsISR[u8PortNum] &= (~UPD_HPD_INTERRUPT_OCCURRED);
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
-    
-    if(u16HPDStsISR & UPD_HPD_INTERRUPT_OCCURRED)
+                
+/************************DPM Generic Event Handler API *******************************/       
+void DPM_GenericEventHandler (UINT8 u8PortNum)
+{
+    /* Handle VCONN ON Error, if any */
+    if (DPM_IS_ERROR_IN_VCONN_ON(u8PortNum))
     {
-        /*Lower byte of u16HPDStsISR is copied to u8Data*/
-        u8Data = u16HPDStsISR;
+        /* Clear the VCONN ON Error status */
+        DPM_CLR_VCONN_ON_ERROR_STS(u8PortNum); 
         
-        for(UINT8 u8QueueEvtNo = SET_TO_ZERO; u8QueueEvtNo < UPD_HPD_QUEUE_SIZE; u8QueueEvtNo++)
-       {
-           UINT8 u8QueueEntry = ((u8Data >> (UPD_HPD_EVENT_SIZE*u8HPDCurrentIndex)) & UPD_HPD_EVENT_MASK);
-           if(u8QueueEntry)
-           {
-               u8HPDCurrentIndex++;
-               u8HPDCurrentIndex = (u8HPDCurrentIndex % UPD_HPD_QUEUE_SIZE);
-               switch(u8QueueEntry)
-               { 
-                   case eMCHP_PSF_UPD_HPD_HIGH: 
-                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
-                       break; 
-                   case eMCHP_PSF_UPD_HPD_LOW: 
-                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
-                       break; 
-                   case eMCHP_PSF_UPD_IRQ_HPD: 
-                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
-                       break; 
-                   default: 
-                       break; 
-               }
-           }
-           else
-           { 
-               break; 
-           }
-       }
-       gu8HPDNextIndex[u8PortNum] = u8HPDCurrentIndex;
+        DPM_HandleVCONNONError (u8PortNum);
     }
-#endif 
     
+    /* Handle VBUS On/Off or VCONN Off Errors, if any */
+    if (DPM_IS_ERROR_IN_VBUS_ON_OFF_OR_VCONN_OFF(u8PortNum))
+    {
+        /* Clear the VBUS_ON_OFF_OR_VCONN_OFF Error status */
+        DPM_CLR_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_STS(u8PortNum);
+        
+        /* Invoke Type C Error Recovery after notifying the user application */
+        if (TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+        {
+            DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+
+            gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
+        }
+        else
+        {
+            /*Do nothing. If User application returns FALSE for 
+            eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+            the user application will raise a Port disable client request*/
+        }        
+    }
+    
+    /* Handle Alt Mode Events, if any */    
+    #if (TRUE == INCLUDE_PD_ALT_MODE) 
+    
+    #if (TRUE == INCLUDE_UPD_HPD) 
+        DPM_HandleHPDEvents (u8PortNum);
+    #endif 
+
     /* Post eMCHP_PSF_ALT_MODE_ENTRY_FAILED notification */
     if (DPM_IS_AME_TIMER_DONE(u8PortNum))
     {
         DPM_CLR_AME_TIMER_DONE_STS(u8PortNum);
-        
+
         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_ALT_MODE_ENTRY_FAILED);        
     }
+        
+    #endif    
 }    
 
-#endif
 /*************************************************************************************/
