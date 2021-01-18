@@ -70,8 +70,11 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 
 void DPM_HandleVCONNONError (UINT8 u8PortNum)
 {
-    if (gasDPM[u8PortNum].u8VCONNOnErrorCount > gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt)
-    {
+    /*Checks whether u8VCONNPowerFaultCount exceeds the configured VCONN max power fault count.
+    If u8VCONNMaxFaultCnt is configured to 0xFF, port should not be shutdown.*/
+    if ((gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt != SET_TO_255) &&
+           (gasDPM[u8PortNum].u8VCONNPowerFaultCount >= gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
+    {   
         /* Reset VCONN On Error counter */
         gasDPM[u8PortNum].u8VCONNOnErrorCount = RESET_TO_ZERO;
 

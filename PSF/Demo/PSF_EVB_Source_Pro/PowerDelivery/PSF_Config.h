@@ -1046,16 +1046,16 @@ typedef enum
 																		before reacting and entering
                                                                         fault recovery routine.
     u8VBUSMaxFaultCnt               1         R/W          R         * The maximum number 
-																		of back&#45;to&#45;back VBUS 
+																		of back to back VBUS 
 																		faults allowed before 
 																		permanent shut down of the 
-																		port. A back&#45;to&#45;back
+																		port. A back to back 
 																		fault is a second fault 
 																		which occurs
                                                                         within the 
 																		u16PowerGoodTimerInms after 
 																		a port is automatically 
-																		reenabled from a previous 
+																		re-enabled from a previous 
 																		fault condition.
                                                                       * During port shutdown due to 
 																	    over current fault, the 
@@ -1064,23 +1064,33 @@ typedef enum
 																		port partner to get detached
 																		physically from the port to 
 																		resume its normal operation.
+                                                                      * To keep a port alive 
+                                                                        irrespective of the number of
+                                                                        back to back faults, this field 
+                                                                        needs to be written with a value
+                                                                        of 0xFF.
     u8VCONNMaxFaultCnt              1         R/W          R         * The maximum number of 
-																		back&#45;to&#45;back VCONN 
+																		back to back VCONN 
 																		faults allowed before it 
 																		permanently disables the 
 																		VCONN. A 
-																		back&#45;to&#45;back fault 
+																		back to back fault 
 																		is a second fault which 
 																		occurs within the 
 																		u16PowerGoodTimerInms after 
 																		a port is automatically 
-																		reenabled from a previous 
+																		re-enabled from a previous 
 																		fault condition.
                                                                       * If VCONN is disabled due to 
 																	    over current VCONN power
                                                                         fault, VCONN will be enabled
 																		only after a physical detach
-                                                                        and reattach.
+                                                                        and re-attach.
+                                                                      * To keep a port alive 
+                                                                        irrespective of the number of
+                                                                        back to back faults, this field 
+                                                                        needs to be written with a value
+                                                                        of 0xFF.
     u8Pio_EN_VBUS                   1         R/W          R         * Defines the UPD350 PIO number
 																		used for EN_VBUS pin 
 																		functionality for the Port.

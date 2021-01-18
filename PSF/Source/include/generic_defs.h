@@ -117,6 +117,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define RESET_TO_ZERO									0
 #define SET_TO_ZERO									    0  
 #define SET_TO_ONE                                      1
+#define SET_TO_255                                      0xFF
 /********************************************************************************************/
 /* Defines for Port reference*/
 #define PORT0       0
