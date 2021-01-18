@@ -231,15 +231,19 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         if((ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS == gasPolicyEngine[u8PortNum].ePESubState) ||
 				 (ePE_SNK_STARTUP == gasPolicyEngine[u8PortNum].ePEState))
         {
-            /*Checks whether VCONN max power fault count exceeds*/
-            if (gasDPM[u8PortNum].u8VCONNPowerFaultCount >= gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt)
+             /*Checks whether u8VCONNPowerFaultCount exceeds the configured VCONN max power fault count.
+             If u8VCONNMaxFaultCnt is configured to 0xFF, port should not be shutdown.*/
+            if ((gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt != SET_TO_255) &&
+                    (gasDPM[u8PortNum].u8VCONNPowerFaultCount >= gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt))
             {            
                 /*Setting the VCONN Good to Supply Flag as False*/
                 gasDPM[u8PortNum].u8VCONNGoodtoSupply = FALSE;                
             }
             
-            /*Checks whether VBUS max power fault count exceeds*/
-            if (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt)
+            /*Checks whether u8VBUSPowerFaultCount exceeds the configured VBUS max power fault count.
+             If u8VBUSMaxFaultCnt is configured to 0xFF, port should not be shutdown.*/
+            if ((gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt != SET_TO_255) &&
+                    (gasDPM[u8PortNum].u8VBUSPowerFaultCount >= gasCfgStatusData.sPerPortData[u8PortNum].u8VBUSMaxFaultCnt))
             {
 				/* Disable the receiver*/
                 PRL_EnableRx (u8PortNum, FALSE);
