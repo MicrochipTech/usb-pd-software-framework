@@ -228,6 +228,19 @@ void PE_RunDRSwapStateMachine(UINT8 u8PortNum)
                                                           (PE_DR_SWAP_WAIT_TIMEOUT_MS),
                                                           DPM_SwapWait_TimerCB,u8PortNum,  
                                                           (UINT8)eDR_SWAP_INITIATE);
+                    
+                    /* Set Swap Init status so that DR_Swap will not be immediately
+                       re-initiated on moving to eTxDoneSS sub-state. It has to be initiated
+                       only after wait timer expiry */                    
+                    if (PD_ROLE_DFP == u8CurrentDataRole)
+                    {
+                        DPM_SET_DR_SWAP_INIT_STS_AS_DFP(u8PortNum);
+                    }
+                    else 
+                    {
+                        DPM_SET_DR_SWAP_INIT_STS_AS_UFP(u8PortNum);
+                    }
+                    
                     /*PE_SRC_READY/PE_SNK_READY state is set*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
@@ -427,6 +440,19 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                                                           (PE_PR_SWAP_WAIT_TIMEOUT_MS),
                                                           DPM_SwapWait_TimerCB,u8PortNum,  
                                                           (UINT8)ePR_SWAP_INITIATE);
+                    
+                    /* Set Swap Init status so that PR_Swap will not be immediately
+                       re-initiated on moving to eTxDoneSS sub-state. It has to be initiated
+                       only after wait timer expiry  */
+                    if (PD_ROLE_SOURCE == u8CurrPwrRole)
+                    {
+                        DPM_SET_PR_SWAP_INIT_STS_AS_SRC(u8PortNum);
+                    }
+                    else
+                    {
+                        DPM_SET_PR_SWAP_INIT_STS_AS_SNK(u8PortNum);
+                    }
+                    
                     /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
@@ -1647,6 +1673,19 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                                                           (PE_VCONN_SWAP_WAIT_TIMEOUT_MS),
                                                           DPM_SwapWait_TimerCB,u8PortNum,  
                                                           (UINT8)eVCONN_SWAP_INITIATE);
+                    
+                    /* Set Swap Init status so that VCONN Swap will not be immediately
+                       re-initiated on moving to eTxDoneSS sub-state. It has to be initiated
+                       only after wait timer expiry */                    
+                    if (TRUE == DPM_IsPortVCONNSource(u8PortNum))
+                    {
+                        DPM_SET_VCONN_SWAP_INIT_STS_AS_VCONN_SRC(u8PortNum);
+                    }
+                    else
+                    {
+                        DPM_SET_VCONN_SWAP_INIT_STS_AS_NOT_VCONN_SRC(u8PortNum);
+                    }                    
+                    
                     /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
