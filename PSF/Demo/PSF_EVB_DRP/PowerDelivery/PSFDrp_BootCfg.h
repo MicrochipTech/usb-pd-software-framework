@@ -144,7 +144,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Note: UPD PIO9 is shared between HPD and VSEL2 pin functionalities. 
    Hence, INCLUDE_UPD_HPD is disabled by default. If user application
    wishes to use HPD feature, then VSEL2 functionality has to be mapped
-   with any MCU pin since HPD pin can only be a UPD PIO */
+   with any MCU pin since HPD pin can only be an UPD PIO */
 #define CFG_PORT_0_HPD_IO                    eUPD_PIO9
 #define CFG_PORT_1_HPD_IO                    eUPD_PIO9
 

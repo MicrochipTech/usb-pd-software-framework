@@ -749,27 +749,33 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS:
                 {
                     /* Policy Engine would enter this sub-state when 
-                       PS_RDY is received from port partner within tPSSourceOn */                    
+                       PS_RDY is received from port partner within tPSSourceOn */                                        
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
+
+                    /* To-do: Check if this timer impl is needed for Src to Sink FRS */
+                    /* The Sink Shall be ready to receive a Source_Capabilities Message tSwapSinkReady 
+                       after having sent the last bit of the EOP of GoodCRC Message sent in response to
+                       the PS_RDY Message sent by the new Source indicating that its power supply is ready.*/
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                        (PE_SWAP_SINK_READY_TIMEOUT_MS),
+                                                        PE_SubStateChange_TimerCB,u8PortNum,  
+                                                        (UINT8)ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_EXIT_SS);
+
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS;                        
+
+                    break; 
+                }
+                case ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_EXIT_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_WAIT_SOURCE_ON_EXIT_SS\r\n");
                     
-                    /* Move to Sink Startup state after vSafe5V is hit and Type C sink SM 
-                       has reached the TYPEC_ATTACHED_SNK_RUN_SM_SS sub-state */
-                    if ((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) && 
-                            (TYPEC_ATTACHED_SNK_RUN_SM_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
-                    {
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS\r\n");
-                        
-                        /* Resetting the Protocol Layer would be taken care by the 
-                        ePE_SNK_STARTUP state */
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
-                        
-                        /* Send PR_Swap complete notification */
-                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE);                                         
-                    }
-                    else
-                    {
-                        /* Hook to notify PE state machine entry into idle sub-state */
-                        MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);                        
-                    }
+                    /* Resetting the Protocol Layer will be taken care by the 
+                    ePE_SNK_STARTUP state */
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
+
+                    /* Send PR_Swap complete notification */
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PR_SWAP_COMPLETE);                                                             
+                    
                     break; 
                 }
                 default:
