@@ -52,11 +52,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 static void CFG_Port_0_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_0_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
 #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
 
 static void CFG_Port_1_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_1_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
 static void CFG_Port_1_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
@@ -66,6 +68,7 @@ static void CFG_Port_1_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
         {
             CFG_Port_1_SourcePDOs(pasCfgStatusData);
             CFG_Port_1_SinkPDOs(pasCfgStatusData);
+            CFG_Port_1_SinkCapsExtd(pasCfgStatusData);
             break;
         }
         case PD_ROLE_SOURCE:
@@ -76,6 +79,7 @@ static void CFG_Port_1_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
         case PD_ROLE_SINK:
         {
             CFG_Port_1_SinkPDOs(pasCfgStatusData);
+            CFG_Port_1_SinkCapsExtd(pasCfgStatusData);
             break;
         }
         default:
@@ -116,8 +120,53 @@ static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             CFG_PORT_1_SINK_MIN_OPERATING_CURRENT_InmA;
     
 	pasCfgStatusData->sPerPortData[PORT1].u8SinkConfigSel = ((CFG_PORT_1_SINK_MODE)| \
-            (CFG_PORT_1_SINK_USB_SUSP) | (CFG_PORT_1_SINK_GIVE_BACK_FLAG));
-    
+            (CFG_PORT_1_SINK_USB_SUSP) | (CFG_PORT_1_SINK_GIVE_BACK_FLAG));    
+}
+
+static void CFG_Port_1_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+{
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_0] = \
+                            LOBYTE(CFG_PORT_1_SINK_CAPS_EXTD_VID); 
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_1] = \
+                            HIBYTE(CFG_PORT_1_SINK_CAPS_EXTD_VID); 
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_2] = \
+                            LOBYTE(CFG_PORT_1_SINK_CAPS_EXTD_PID); 
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_3] = \
+                            HIBYTE(CFG_PORT_1_SINK_CAPS_EXTD_PID); 
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_4] = \
+                            LOBYTE(LOWORD(CFG_PORT_1_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_5] = \
+                            HIBYTE(LOWORD(CFG_PORT_1_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_6] = \
+                            LOBYTE(HIWORD(CFG_PORT_1_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_7] = \
+                            LOBYTE(HIWORD(CFG_PORT_1_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_8] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_FW_VERSION;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_9] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_HW_VERSION;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_10] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_SKEDB_VERSION;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_11] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_LOAD_STEP;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_12] = \
+                            LOBYTE(CFG_PORT_1_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS);
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_13] = \
+                            HIBYTE(CFG_PORT_1_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS);
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_14] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_COMPLIANCE;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_15] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_TOUCH_TEMP;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_16] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_BATTERY_INFO;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_17] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_SINK_MODES;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_18] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_MIN_PDP_In_WATT;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_19] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_OPERATIONAL_PDP_In_WATT;
+    pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_20] = \
+                            CFG_PORT_1_SINK_CAPS_EXTD_MAX_PDP_In_WATT;
 }
 
 #endif /* (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) */
@@ -130,6 +179,7 @@ static void CFG_Port_0_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
         {
             CFG_Port_0_SourcePDOs(pasCfgStatusData);
             CFG_Port_0_SinkPDOs(pasCfgStatusData);
+            CFG_Port_0_SinkCapsExtd(pasCfgStatusData);
             break;
         }
         case PD_ROLE_SOURCE:
@@ -140,6 +190,7 @@ static void CFG_Port_0_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
         case PD_ROLE_SINK:
         {
             CFG_Port_0_SinkPDOs(pasCfgStatusData);
+            CFG_Port_0_SinkCapsExtd(pasCfgStatusData);
             break;
         }
         default:
@@ -165,7 +216,7 @@ static void CFG_Port_0_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
-            (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
+            (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG));
     
     /*Assigning PDOs*/
     pasCfgStatusData->sPerPortData[PORT0].u8SinkPDOCnt = CFG_PORT_0_SINK_NUM_OF_PDOS;
@@ -204,6 +255,51 @@ static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             CFG_PORT_0_SINK_DAC_I_DIR;
 }
 
+static void CFG_Port_0_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+{
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_0] = \
+                            LOBYTE(CFG_PORT_0_SINK_CAPS_EXTD_VID); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_1] = \
+                            HIBYTE(CFG_PORT_0_SINK_CAPS_EXTD_VID); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_2] = \
+                            LOBYTE(CFG_PORT_0_SINK_CAPS_EXTD_PID); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_3] = \
+                            HIBYTE(CFG_PORT_0_SINK_CAPS_EXTD_PID); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_4] = \
+                            LOBYTE(LOWORD(CFG_PORT_0_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_5] = \
+                            HIBYTE(LOWORD(CFG_PORT_0_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_6] = \
+                            LOBYTE(HIWORD(CFG_PORT_0_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_7] = \
+                            LOBYTE(HIWORD(CFG_PORT_0_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_8] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_FW_VERSION;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_9] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_HW_VERSION;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_10] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_SKEDB_VERSION;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_11] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_LOAD_STEP;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_12] = \
+                            LOBYTE(CFG_PORT_0_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS);
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_13] = \
+                            HIBYTE(CFG_PORT_0_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS);
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_14] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_COMPLIANCE;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_15] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_TOUCH_TEMP;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_16] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_BATTERY_INFO;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_17] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_SINK_MODES;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_18] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_MIN_PDP_In_WATT;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_19] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_OPERATIONAL_PDP_In_WATT;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_20] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_MAX_PDP_In_WATT;
+}
 
 /* ************************************************************************** */
 /* ************************************************************************** */

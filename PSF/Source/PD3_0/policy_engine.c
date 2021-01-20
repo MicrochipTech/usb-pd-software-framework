@@ -332,7 +332,8 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                     }
                 #endif 
             }
-            else if (PE_CTRL_GET_SINK_CAP == u8MsgType)
+            else if ((PE_CTRL_GET_SINK_CAP == u8MsgType) || \
+                        (PE_CTRL_GET_SINK_CAP_EXTENDED == u8MsgType))
             {
                 /* Get Sink Caps shall be supported for Sink only and DRP ports */                
                 if (PD_ROLE_SOURCE == u8DefaultPwrRole)
@@ -1646,7 +1647,7 @@ void PE_SendSoftResetMsg (UINT8 u8PortNum)
     gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_SOP_SS;
 }
 /***************************************************************************************/
-void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
+void PE_RunCommonStateMachine(UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPType, UINT32 u32Header)
 {
     UINT8 u8TransmitSOP = PRL_SOP_TYPE;
     UINT32 u32TransmitHeader = SET_TO_ZERO;
@@ -1674,6 +1675,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
 #endif   
     UINT32 u32aDataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
     UINT8 u8DataObjCnt = SET_TO_ZERO;
+    UINT8 u8MessageType = PRL_GET_MESSAGE_TYPE (u32Header);
 
     switch (gasPolicyEngine[u8PortNum].ePEState)
     {
@@ -2072,36 +2074,49 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
             switch(gasPolicyEngine[u8PortNum].ePESubState)
             {
                 case ePE_GIVE_CAP_ENTRY_SS:
-                {                                                      
-                    /*Request Device Policy Manager for the Capability Message*/
-                    if (PE_CTRL_GET_SINK_CAP == PRL_GET_MESSAGE_TYPE (u32Header))
-                    {
-#if (TRUE == INCLUDE_PD_SINK)                        
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP RCVD\r\n");                        
-                        
-                        DPM_GetSinkCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);                    
-                                              
-                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SINK_CAP,\
-                                                         u8DataObjCnt, PE_NON_EXTENDED_MSG);                                                               
-#endif
-                    }
-                    else if (PE_CTRL_GET_SOURCE_CAP == PRL_GET_MESSAGE_TYPE (u32Header))
+                {             
+                    if (PE_CTRL_GET_SOURCE_CAP == u8MessageType)
                     {
 #if (TRUE == INCLUDE_PD_SOURCE)                         
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SOURCE_CAP RCVD\r\n");
                                                
                         DPM_GetSourceCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);                        
 
+                        u32pTransmitDataObj = u32aDataObj;
+                        
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,\
                                                          u8DataObjCnt, PE_NON_EXTENDED_MSG);                                                                                       
 #endif 
+                    }         
+#if (TRUE == INCLUDE_PD_SINK)                     
+                    /*Request Device Policy Manager for the Capability Message*/
+                    else if (PE_CTRL_GET_SINK_CAP == u8MessageType)
+                    {                 
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP RCVD\r\n");                        
+                        
+                        DPM_GetSinkCapabilities(u8PortNum, &u8DataObjCnt, u32aDataObj);                    
+                                             
+                        u32pTransmitDataObj = u32aDataObj;
+                        
+                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SINK_CAP,\
+                                                         u8DataObjCnt, PE_NON_EXTENDED_MSG);                                                               
                     }
+                    else if (PE_CTRL_GET_SINK_CAP_EXTENDED == u8MessageType)
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP_EXTD RCVD\r\n");                        
+                        
+                        u32pTransmitDataObj = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u8aSinkCapsExtd[INDEX_0];                          
+                        
+                        u32TransmitHeader =  /* Combined Message Header */
+                            PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & PE_SINK_CAP_EXTD_DATA_BLOCK_SIZE_IN_BYTES)), /* Extended Msg Header*/
+                                    PRL_FormSOPTypeMsgHeader(u8PortNum,PE_EXT_SINK_CAPS_EXTD,PE_SINK_CAP_EXTD_DATA_DATA_OBJ_CNT, /* Standard Msg Header */
+                                                PE_EXTENDED_MSG));                                                                         
+                    }
+#endif                    
                     else
                     {
                         /* Do Nothing */
-                    }
-                    
-                    u32pTransmitDataObj = u32aDataObj;
+                    }                                        
                     
                     /*Set the transmitter callback to transition to Soft reset state if
                     message transmission fails*/

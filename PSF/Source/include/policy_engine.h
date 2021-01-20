@@ -169,6 +169,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES 4
 #define PE_PPS_STATUS_DATA_OBJ_CNT             2 
 
+/* Sink Caps Extd message defines */
+#define PE_SINK_CAP_EXTD_DATA_BLOCK_SIZE_IN_BYTES     21 
+#define PE_SINK_CAP_EXTD_DATA_DATA_OBJ_CNT            2
+
 typedef enum {
     //--------------------------Source States-----------------------------------//
 	ePE_SRC_STARTUP,
@@ -521,6 +525,7 @@ typedef enum {
 #define PE_EXT_FW_UPDATE_REQUEST    10
 #define PE_EXT_FW_UPDATE_RESPONSE   11
 #define PE_EXT_PPS_STATUS           12 
+#define PE_EXT_SINK_CAPS_EXTD       15 
 
 /*Defines to be used in PRL_FormSOPTypeMsgHeader*/
 #define PE_OBJECT_COUNT_1            1
