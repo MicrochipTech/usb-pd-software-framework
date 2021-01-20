@@ -1254,6 +1254,8 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                 }
 
                 case PE_CTRL_GET_SINK_CAP:
+                    /* fallthrough */
+                case PE_CTRL_GET_SINK_CAP_EXTENDED:
                 {
                     if ((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) || \
                         (ePE_SNK_READY == gasPolicyEngine[u8PortNum].ePEState) || \
