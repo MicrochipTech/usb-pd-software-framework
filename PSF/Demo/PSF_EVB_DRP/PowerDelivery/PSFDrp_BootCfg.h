@@ -323,6 +323,59 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*0 - High amperage = Max Voltage, 1- High amperage = Min Voltage*/
 #define CFG_PORT_0_SINK_DAC_I_DIR      0U
 
+/**************************Sink Caps Extd defines*****************************/
+/*Sink Capabilities Extended Data Block (From Table 6-60 of USB PD Spec 3.0) 
+  Offset  Field               Size 
+    0     VID                 2
+    2     PID                 2
+    4     XID                 4
+    8     FW Version          1 
+    9     HW Version          1 
+    10    SKEDB Version       1 
+    11    Load Step           1 
+    12    Sink Load           2
+          Characteristics
+    14    Compliance          1 
+    15    Touch Temp          1
+    16    Battery Info        1 
+    17    Sink Modes          1 
+    18    Sink Minimum PDP    1
+    19    Sink Operational    1 
+          PDP
+    20    Sink Maximum PDP    1
+  */
+#define CFG_PORT_0_SINK_CAPS_EXTD_VID                       CFG_VENDOR_ID
+#define CFG_PORT_0_SINK_CAPS_EXTD_PID                       CFG_PRODUCT_ID
+#define CFG_PORT_0_SINK_CAPS_EXTD_XID                       0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_FW_VERSION                0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_HW_VERSION                CFG_HW_VERSION
+#define CFG_PORT_0_SINK_CAPS_EXTD_SKEDB_VERSION             1U
+#define CFG_PORT_0_SINK_CAPS_EXTD_LOAD_STEP                 0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS      0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_COMPLIANCE                0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_TOUCH_TEMP                0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_BATTERY_INFO              0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_SINK_MODES                4U
+#define CFG_PORT_0_SINK_CAPS_EXTD_MIN_PDP_In_WATT           5U
+#define CFG_PORT_0_SINK_CAPS_EXTD_OPERATIONAL_PDP_In_WATT   60U
+#define CFG_PORT_0_SINK_CAPS_EXTD_MAX_PDP_In_WATT           60U 
+
+#define CFG_PORT_1_SINK_CAPS_EXTD_VID                       CFG_VENDOR_ID
+#define CFG_PORT_1_SINK_CAPS_EXTD_PID                       CFG_PRODUCT_ID
+#define CFG_PORT_1_SINK_CAPS_EXTD_XID                       0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_FW_VERSION                0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_HW_VERSION                CFG_HW_VERSION
+#define CFG_PORT_1_SINK_CAPS_EXTD_SKEDB_VERSION             1U
+#define CFG_PORT_1_SINK_CAPS_EXTD_LOAD_STEP                 0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS      0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_COMPLIANCE                0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_TOUCH_TEMP                0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_BATTERY_INFO              0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_SINK_MODES                4U
+#define CFG_PORT_1_SINK_CAPS_EXTD_MIN_PDP_In_WATT           0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_OPERATIONAL_PDP_In_WATT   0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_MAX_PDP_In_WATT           0U 
+
 /**************************Role Swap Policy defines*****************************/
 #define CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP             0 
 #define CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP             1
