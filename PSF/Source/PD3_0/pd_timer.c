@@ -162,7 +162,7 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
 	#endif
     
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-    gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+    gasDPM[u8PortNum].u8PPSFaultPersistTmrID = MAX_CONCURRENT_TIMERS;
     #endif
 
     #if (TRUE == INCLUDE_PD_VCONN_SWAP)

@@ -1350,9 +1350,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS;                      
                         
                         /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
-                        PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
+                        PDTimer_Kill(gasDPM[u8PortNum].u8PPSFaultPersistTmrID);
                         /* Set the timer Id to Max Concurrent Value*/
-                        gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+                        gasDPM[u8PortNum].u8PPSFaultPersistTmrID = MAX_CONCURRENT_TIMERS;
                     }
                     else
                     {

@@ -349,7 +349,7 @@ event for UFP*/
 #define TYPEC_MAX_VSAFE_0V_MATCH_VAL       TYPEC_VSAFE0V_MAX_THR_MATCH
         
 /* VBUS Match bit set when overvoltage is detected*/        
-#define TYPEC_VBUS_OVERVOLT_MATCH_BIT   TYPEC_OVER_VOLT_THR2_MATCH
+#define TYPEC_VBUS_OVERVOLT_MATCH_BIT      TYPEC_OVER_VOLT_THR2_MATCH
 
 /**************************VBUS Match redefines as per usage*******************/
 #define TYPEC_VSAFE0V_MAX_THR_MATCH              TYPEC_VBUS_VSAFE0V_MATCH             
@@ -623,29 +623,26 @@ from u8PortSts variable*/
 #define TYPEC_VSINKDISCONNECT_STATUS_MASK	   BIT(0)
 
 /*Masks used For getting CC interrupt status from u8IntStsISR variable*/ 
-#define TYPEC_CCINT_STATUS_MASK	         BIT(1)
+#define TYPEC_CCINT_STATUS_MASK                BIT(1)
 
 /*Masks used For getting VCONN status from u8IntStsISR variable*/
-#define TYPEC_VCONN_SOURCE_CC1          BIT(2)
-#define TYPEC_VCONN_SOURCE_CC2          BIT(3)
+#define TYPEC_VCONN_SOURCE_CC1                 BIT(2)
+#define TYPEC_VCONN_SOURCE_CC2                 BIT(3)
 
-#define TYPEC_VCONN_SOURCE_POS         2
-#define TYPEC_VCONN_SOURCE_MASK	       (BIT(3) | BIT(2))
-#define TYPEC_VCONN_DISABLED            0
+#define TYPEC_VCONN_SOURCE_POS                 2
+#define TYPEC_VCONN_SOURCE_MASK                (BIT(3) | BIT(2))
+#define TYPEC_VCONN_DISABLED                   0
 
 /*Masks used For getting VBUS value(0V or 5V) status from u8IntStsISR variable*/ 
-#define TYPEC_VBUS_PRESENCE_MASK	    (BIT(4) | BIT(5) | BIT(6))
-#define TYPEC_VBUS_PRESENCE_POS         4
+#define TYPEC_VBUS_PRESENCE_MASK               (BIT(4) | BIT(5) | BIT(6))
+#define TYPEC_VBUS_PRESENCE_POS                4
 
-#define TYPEC_VBUS_0V_PRES       0
-#define TYPEC_VBUS_5V_PRES       BIT(4)
+#define TYPEC_VBUS_0V_PRES                     0
+#define TYPEC_VBUS_5V_PRES                     BIT(4)
                 
-#define TYPEC_VBUS_0V           0
-#define TYPEC_VBUS_5V           5000
+#define TYPEC_VBUS_0V                          0
+#define TYPEC_VBUS_5V                          5000
 
-/*Masks used For getting VCONNON Error status from u8IntStsISR variable*/ 
-#define TYPEC_VCONNONERROR_MASK	       BIT(7)
-#define TYPEC_VCONNONERROR_POS         7
 /*************************************************************************************/
 
 /**********************VSAFE5V range for Source and Sink*******************/
@@ -736,8 +733,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
                                 BIT1 -> CCINT_STATUS
                                 BIT2 -> VCONN_SOURCE_CC1
                                 BIT3 -> VCONN_SOURCE_CC2
-                                BIT[6:4] -> VBUS_PRESENCE
-                                BIT 7 -> VCONNONERROR */
+                                BIT[6:4] -> VBUS_PRESENCE */
 #if(TRUE == INCLUDE_PD_DRP)
   UINT8 u8DRPStsISR ;           /*BIT 0 -> DRP_DONE interrupt status
                                   BIT 1 -> FRS XMT or RCV Status */

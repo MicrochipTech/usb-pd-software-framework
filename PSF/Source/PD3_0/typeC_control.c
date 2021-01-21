@@ -1431,19 +1431,19 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS:
                 {    
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS\r\n");
-                    
-                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
-                    /*Disable the Sink circuitry to stop sinking the power from source*/
-                    PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
-                     
-                    if((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) != (TYPEC_VBUS_0V_PRES))
+                                         
+                    if ((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) != TYPEC_VBUS_0V_PRES)
                     {
                         /*Enabling the VBUS discharge functionality for VBUS to go to vSafe0V*/                  
                         PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);
                     }
 
+                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
+                    /*Disable the Sink circuitry to stop sinking the power from source*/
+                    PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+                    
                     /*Enabling the VCONN Discharge if we are supplying VCONN or VCONN ON Req is set*/
-                    if(((u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) != TYPEC_VCONN_DISABLED) || \
+                    if (((u8IntStsISR & TYPEC_VCONN_SOURCE_MASK) != TYPEC_VCONN_DISABLED) || \
                        (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_ON_REQ_MASK))
                     {                       
                         /*Disable VCONN by switching off the VCONN FETS*/
@@ -2114,7 +2114,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
         }
         else
 #endif /* endif for INCLUDE_POWER_FAULT_HANDLING*/       
-        if((TYPEC_VBUS_DESIRED_V_MATCH_VAL == u8Data) || \
+        if ((TYPEC_VBUS_DESIRED_V_MATCH_VAL == u8Data) || \
                         (TYPEC_VBUS_DESIRED_N_UNDER_MATCH_VAL == u8Data))
         {
             u8IntStsISR &= ~TYPEC_VBUS_PRESENCE_MASK;
