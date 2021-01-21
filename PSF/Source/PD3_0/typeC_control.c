@@ -754,7 +754,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Enable VCONN FETs if Powered cable is present. Do not 
                       disturb VCONN when a PR_Swap/FR_Swap is in progress */
                     if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK) && 
-                            (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum)))
+                            (FALSE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum)))
                     {                                        
                         /*Powered cable attached in CC1*/
                         if (u8CC1MatchISR > u8CC2MatchISR)
@@ -790,7 +790,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         TypeC_KillTypeCTimer (u8PortNum);
                                                               
                         if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK)
-                                && (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum)))
+                                && (FALSE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum)))
                         {
                             /*Start the VCONN ON timer for monitoring the time taken for 
                             VCONN to reach its Min value*/
@@ -2019,7 +2019,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 				/* Verifies whether VBUS Drop is due to Source detach*/
 	            if((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) &&
 	                  (!DPM_IS_HARDRESET_IN_PROGRESS(u8PortNum)) && 
-                      (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))) 
+                      (FALSE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum))) 
 	            {
 	                /*Setting the flag that VBUS has gone below VSinkDisconnect*/
 	                u8IntStsISR |= TYPEC_VSINKDISCONNECT_STATUS_MASK;                    
@@ -2041,7 +2041,7 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
                 if((TYPEC_ATTACHED_SNK == gasTypeCcontrol[u8PortNum].u8TypeCState) &&
                       (!DPM_IS_HARDRESET_IN_PROGRESS(u8PortNum)))                       
                 {                                                              
-                    if (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))
+                    if (FALSE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum))
                     {
                         /*Setting the flag that VBUS has gone below VSinkDisconnect*/
                         u8IntStsISR |= TYPEC_VSINKDISCONNECT_STATUS_MASK;
@@ -3169,7 +3169,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                       is not received and PSSourceOf timer expires. At that point, both the partners 
                       might have Rd in CC wire. As a result of which, CC debounce thresholds 
                       will not match. This condition shall not be treated as a detach */
-                    if (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))
+                    if (FALSE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum))
                     {
                         /* Go to TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state for starting tPDDebounce */
                         u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;
@@ -3206,7 +3206,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             if ((TYPEC_ATTACHED_SNK == u8TypeCState) && \
                          (TYPEC_ATTACHED_SNK_RUN_SM_SS == u8TypeCSubState))
             {			
-                if (FALSE == DPM_IS_SWAP_IN_PROGRESS(u8PortNum))
+                if (FALSE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum))
                 {                    
                     /* Go to TYPEC_ATTACHED_SNK_START_PD_DEB_SS sub-state for starting tPDDebounce */
                     u8TypeCSubState = TYPEC_ATTACHED_SNK_START_PD_DEB_SS;

@@ -148,8 +148,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_HARDRESET_PROGRESS_MASK     BIT(4)
 #define PE_HARDRESET_PROGRESS_POS      4
 
-#define PE_SWAP_IN_PROGRESS_MASK    BIT(5)
-#define PE_SWAP_IN_PROGRESS_POS     5
+#define PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK    BIT(5)
+#define PE_PR_OR_FR_SWAP_IN_PROGRESS_POS     5
 
 /*Mask used for getting the present contract type from u8PEPortSts variable*/ 
 #define PE_EXPLICIT_CONTRACT        1
