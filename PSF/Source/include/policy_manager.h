@@ -146,7 +146,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*************************************************************************************************/
 
 /**************************************************************************************************/
-/***************************Define to access DPM current status data*****************************************/
+/***************************Defines to access DPM current status data*****************************************/
 /************************************************************************************************************/
 /*Bit definition for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_MASK                (BIT(0)|BIT(1))
@@ -162,13 +162,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_DR_SWAP_INIT_STS_AS_UFP             (BIT(14))
 #define DPM_VDM_RESPONSE_MASK                    BIT(15)
 #define DPM_SWAP_INIT_STS_MASK                   0x7E00
-#define DPM_AME_TIMER_DONE                       BIT(16)
+#define DPM_DRP_IN_SINK_MODE                     BIT(16)
 #define DPM_VCONN_SRC_RESPONSIBILITY             BIT(17)
 #define DPM_FRS_XMT_OR_DET_ENABLED               BIT(18)
 #define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE           BIT(19)
-#define DPM_DRP_IN_SINK_MODE                     BIT(20)
-#define DPM_VCONN_ON_ERROR_MASK                  BIT(21)
-#define DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK  BIT(22)
 
 /*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS                     0
@@ -176,13 +173,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CURR_PD_SPEC_REV_POS                    4
 #define DPM_PORT_IN_MODAL_OPERATION_POS             6
 #define DPM_CURR_EXPLICIT_CONTRACT_TYPE_POS         7
-#define DPM_AME_TIMER_DONE_POS                      16 
+#define DPM_DRP_IN_SINK_MODE_POS                    16
 #define DPM_VCONN_SRC_RESPONSIBILITY_POS            17
 #define DPM_FRS_XMT_OR_DET_ENABLED_POS              18
 #define DPM_FRS_SIG_XMT_OR_RCV_DONE_POS             19 
-#define DPM_DRP_IN_SINK_MODE_POS                    20 
-#define DPM_VCONN_ON_ERROR_POS                      21 
-#define DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_POS      22
 
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u32DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
@@ -240,14 +234,14 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_CLR_VDM_RESPONSE_STS(u8PortNum) \
     (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VDM_RESPONSE_MASK))
 
-#define DPM_SET_AME_TIMER_DONE_STS(u8PortNum) \
-    (gasDPM[u8PortNum].u32DPMStatus |= DPM_AME_TIMER_DONE)
+#define DPM_SET_DRP_SWITCHED_TO_SINK_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus |= DPM_DRP_IN_SINK_MODE)
 
-#define DPM_CLR_AME_TIMER_DONE_STS(u8PortNum) \
-    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_AME_TIMER_DONE))
+#define DPM_CLR_DRP_SWITCHED_TO_SINK_STS(u8PortNum) \
+    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_DRP_IN_SINK_MODE))
 
-#define DPM_IS_AME_TIMER_DONE(u8PortNum) \
-    ((gasDPM[u8PortNum].u32DPMStatus & DPM_AME_TIMER_DONE) >> DPM_AME_TIMER_DONE_POS)
+#define DPM_IS_DRP_SWITCHED_TO_SINK_ROLE(u8PortNum) \
+((gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE) >> DPM_DRP_IN_SINK_MODE_POS)
 
 #define DPM_IS_VCONN_SRC_RESPONSIBLE(u8PortNum) \
     ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONN_SRC_RESPONSIBILITY) >> \
@@ -280,32 +274,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_IS_FRS_SIG_XMT_OR_RCV_DONE(u8PortNum) \
 ((gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_XMT_OR_RCV_DONE) >> DPM_FRS_SIG_XMT_OR_RCV_DONE_POS)
 
-#define DPM_SET_DRP_SWITCHED_TO_SINK_STS(u8PortNum) \
-    (gasDPM[u8PortNum].u32DPMStatus |= DPM_DRP_IN_SINK_MODE)
+/**************************************************************************************************/
 
-#define DPM_CLR_DRP_SWITCHED_TO_SINK_STS(u8PortNum) \
-    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_DRP_IN_SINK_MODE))
-
-#define DPM_IS_DRP_SWITCHED_TO_SINK_ROLE(u8PortNum) \
-((gasDPM[u8PortNum].u32DPMStatus & DPM_DRP_IN_SINK_MODE) >> DPM_DRP_IN_SINK_MODE_POS)
-
-#define DPM_SET_VCONN_ON_ERROR_STS(u8PortNum) \
-    (gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONN_ON_ERROR_MASK)
-
-#define DPM_CLR_VCONN_ON_ERROR_STS(u8PortNum) \
-    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONN_ON_ERROR_MASK))
-
-#define DPM_IS_ERROR_IN_VCONN_ON(u8PortNum) \
-((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONN_ON_ERROR_MASK) >> DPM_VCONN_ON_ERROR_POS)
-
-#define DPM_SET_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_STS(u8PortNum) \
-    (gasDPM[u8PortNum].u32DPMStatus |= DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK)
-
-#define DPM_CLR_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_STS(u8PortNum) \
-    (gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK))
-
-#define DPM_IS_ERROR_IN_VBUS_ON_OFF_OR_VCONN_OFF(u8PortNum) \
-((gasDPM[u8PortNum].u32DPMStatus & DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK) >> DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_POS)
+/**************************************************************************************************/
+/***************************Defines to access u8DPMStsISR *****************************************/
+/************************************************************************************************************/
+#define DPM_VCONN_ON_ERROR_MASK                  BIT(0)
+#define DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK  BIT(1)
+#define DPM_VCONN_POWER_GOOD_TMR_DONE_MASK       BIT(2)
+#define DPM_VBUS_POWER_GOOD_TMR_DONE_MASK        BIT(3)
+#define DPM_AME_TMR_DONE_MASK                    BIT(4)
 
 /**************************************************************************************************/
 
@@ -759,14 +737,10 @@ Source/Sink Power delivery objects*/
 #define DPM_HR_COMPLETE_WAIT_POS              0
 #define DPM_TYPEC_ERR_RECOVERY_FLAG_POS       1
 #define DPM_IGNORE_UV_DURING_FRS_POS          2 
-#define DPM_VBUS_POWER_GOOD_TMR_DONE_POS      3
-#define DPM_VCONN_POWER_GOOD_TMR_DONE_POS     4 
 
 #define DPM_HR_COMPLETE_WAIT_MASK             (1 << DPM_HR_COMPLETE_WAIT_POS)
 #define DPM_TYPEC_ERR_RECOVERY_FLAG_MASK      (1 << DPM_TYPEC_ERR_RECOVERY_FLAG_POS)
 #define DPM_IGNORE_UV_DURING_FRS_MASK         (1 << DPM_IGNORE_UV_DURING_FRS_POS)
-#define DPM_VBUS_POWER_GOOD_TIMER_DONE        (1 << DPM_VBUS_POWER_GOOD_TMR_DONE_POS)
-#define DPM_VCONN_POWER_GOOD_TIMER_DONE       (1 << DPM_VCONN_POWER_GOOD_TMR_DONE_POS)
 
 /************************ Client Request Defines ******************************/
 #define DPM_NO_CLIENT_REQ_PENDING                0x00 
@@ -830,16 +804,16 @@ Source/Sink Power delivery objects*/
 /*Structure of Device Policy Manager*/
 typedef struct MCHP_PSF_STRUCT_PACKED_START
 {
-  UINT32 u32NegotiatedPDO;            //NegotiatedPDO
-  UINT16 u16SrcMaxSupportedCurrInmA;   // Maximum current supported by Source port 
-  UINT16 u16SinkOperatingCurrInmA;    //Operating current
-  UINT16 u16PrevVBUSVoltageInmV;      // Previous VBUS Voltage in terms of mV
-  UINT16 u16ExpectedVBUSVoltageInmV;  // Expected VBUS Voltage in terms of mV
-  UINT32 u32DPMStatus;                  //Bits 1:0 - Status of Power Role <p />
-                                        //Bits 3:2 - Status of Data Role <p />
-                                        //Bits 5:4 - Status of PD Spec Revision <p />
-                                        //Bit 6 - Modal Operation Active Status
-                                        //Bits 8:7 - Type of current Explicit Contract 
+  UINT32 u32NegotiatedPDO;              // Negotiated PDO
+  UINT16 u16SrcMaxSupportedCurrInmA;    // Maximum current supported by Source port 
+  UINT16 u16SinkOperatingCurrInmA;      // Sink Operating current
+  UINT16 u16PrevVBUSVoltageInmV;        // Previous VBUS Voltage in terms of mV
+  UINT16 u16ExpectedVBUSVoltageInmV;    // Expected VBUS Voltage in terms of mV
+  UINT32 u32DPMStatus;                  // Bits 1:0 - Status of Power Role <p />
+                                        // Bits 3:2 - Status of Data Role <p />
+                                        // Bits 5:4 - Status of PD Spec Revision <p />
+                                        // Bit 6 - Modal Operation Active Status
+                                        // Bits 8:7 - Type of current Explicit Contract 
                                         //      00 - Fixed  
                                         //      01 - Variable
                                         //      10 - Battery
@@ -848,12 +822,10 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bits 12:11 - PR Swap Initiate Status
                                         // Bits 14:13 - DR Swap Initiate Status 
                                         // Bit 15 - VDM Response (ACK/NAK)
-                                        // Bit 16 - AME Timer Done Status 
+                                        // Bit 16 - DRP transitioned to Sink Role after an FRS  
                                         // Bit 17 - VCONN Source Responsibility Status
                                         // Bit 18 - FRS XMT or DET Enabled Status 
-                                        // Bit 19 - FRS Signal Transmitted Or Received Status
-                                        // Bit 20 - DRP transitioned to Sink Role after an FRS
-                                        // Bit 21 - VCONN On Error Status 
+                                        // Bit 19 - FRS Signal Transmitted Or Received Status                                  
   UINT16 u16DPMInternalEvents;          // BIT(0) - DPM_INT_EVT_INITIATE_GET_SINK_CAPS  
                                         // BIT(1) - DPM_INT_EVT_INITIATE_RENEGOTIATION  
                                         // BIT(2) - DPM_INT_EVT_INITIATE_VCONN_SWAP     
@@ -867,48 +839,56 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // BIT(10) - DPM_INT_EVT_INITIATE_FR_SWAP        
                                         // BIT(11) - DPM_INT_EVT_SYSTEM_POWER_LOST       
                                         // BIT(12) - DPM_INT_EVT_SYSTEM_POWER_BACK       
-  UINT8 u8DPMConfigData;    //Bit  1:0 - Default Port Power Role
-                            //Bit  3:2 - Default Port Data Role
-                            //Bits 5:4 - Default PD Spec Revision
-  UINT8 u8VCONNOnErrorCount;  // VCONN ON Error Counter
-  UINT8 u8NegotiatedPDOIndex; // Index of the Negotiated PDO 
-  UINT16 u16InternalEvntInProgress; //carries internal event that is currently in progress  
+  UINT8 u8DPMConfigData;                // Bit  1:0 - Default Port Power Role
+                                        // Bit  3:2 - Default Port Data Role
+                                        // Bits 5:4 - Default PD Spec Revision
+  UINT8 u8DPMStsISR;                    // DPM Status ISR Flags 
+                                        // BIT 0 - VCONN On Error Status
+                                        // BIT 1 - VBUS On/Off or VCONN Off Error Status 
+                                        // BIT 2 - VCONN Power Good Timer Done
+                                        // BIT 3 - VBUS Power Good Timer Done 
+                                        // BIT 4 - AME Timer Done Status 
+  UINT8 u8VCONNOnErrorCount;            // VCONN ON Error Counter
+  UINT8 u8NegotiatedPDOIndex;           // Index of the Negotiated PDO 
+  UINT16 u16InternalEvntInProgress;     // carries internal event that is currently in progress  
   eMCHP_PSF_NOTIFICATION eDPMNotification; // DPM Notification 
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-      UINT8 u8PowerFaultISR;          //Power fault ISR flag
-	  UINT8 u8VBUSPowerGoodTmrID;     //VBUS PowerGood Timer ID
-      UINT8 u8VCONNPowerGoodTmrID;    //VConn PowerGood Timer ID
-	  UINT8 u8VBUSPowerFaultCount;      //VBUS Power fault count
-      UINT8 u8VCONNPowerFaultCount;     //VCONN Power fault count     
-      UINT8 u8VCONNGoodtoSupply;        //VCONN good to supply
-	  UINT8 u8PowerFaultFlags;        //Flags required for power fault handling
-                                      //BIT 0 - Hard Reset complete wait flag
-                                      //BIT 1 - Type-C Error Recovery Flag
-                                      //BIT 2 - Ignore UV during FRS
-                                      //BIT 3 - VBUS Power Good Timer Done 
-                                      //BIT 4 - VCONN Power Good Timer Done 
+      UINT8 u8PowerFaultISR;          // Power Fault ISR Flags
+                                      // BIT 0 - OVP Power Fault
+                                      // BIT 1 - UV Power Fault      
+                                      // BIT 2 - VBUS OCS Power Fault
+                                      // BIT 3 - VCONN OCS Power Fault                                      
+	  UINT8 u8VBUSPowerGoodTmrID;     // VBUS PowerGood Timer ID
+      UINT8 u8VCONNPowerGoodTmrID;    // VCONN PowerGood Timer ID
+	  UINT8 u8VBUSPowerFaultCount;    // VBUS Power fault count
+      UINT8 u8VCONNPowerFaultCount;   // VCONN Power fault count     
+      UINT8 u8VCONNGoodtoSupply;      // VCONN good to supply
+	  UINT8 u8PowerFaultFlags;        // Flags required for Power Fault Handling
+                                      // BIT 0 - Hard Reset complete wait flag
+                                      // BIT 1 - Type-C Error Recovery Flag
+                                      // BIT 2 - Ignore UV during FRS
 #endif
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-  UINT8 u8AlertType;
-  UINT8 u8StatusEventFlags;
-  UINT8 u8RealTimeFlags;
-  UINT8 u8StsClearTmrID;
+  UINT8 u8AlertType;                  // Type of Alert field in Alert Data Object 
+  UINT8 u8StatusEventFlags;           // Event Flags field in Status Data Block
+  UINT8 u8RealTimeFlags;              // Real Time Flags field in PPS Status Data Block
+  UINT8 u8PPSFaultPersistTmrID;       // Fault Persist Timer ID 
 #endif
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-  UINT8 u8VCONNSwapWaitTmrID;      // VCONN_Swap Wait Timer ID
+  UINT8 u8VCONNSwapWaitTmrID;         // VCONN_Swap Wait Timer ID
 #endif
 #if (TRUE == INCLUDE_PD_PR_SWAP)
-  UINT8 u8PRSwapWaitTmrID;         // PR_Swap Wait Timer ID
+  UINT8 u8PRSwapWaitTmrID;            // PR_Swap Wait Timer ID
 #endif 
 #if (TRUE == INCLUDE_PD_DR_SWAP)
-  UINT8 u8DRSwapWaitTmrID;         // DR_Swap Wait Timer ID  
+  UINT8 u8DRSwapWaitTmrID;            // DR_Swap Wait Timer ID  
 #endif
 #if (TRUE == INCLUDE_PD_VDM)
-  UINT8 u8VDMBusyTmrID;            // VDM Busy Timer ID 
-  UINT8 u8CurrSVIDIndex;           // Current SVID Index 
+  UINT8 u8VDMBusyTmrID;               // VDM Busy Timer ID 
+  UINT8 u8CurrSVIDIndex;              // Current SVID Index 
 #endif 
 #if (TRUE == INCLUDE_PD_ALT_MODE)
-  UINT8 u8AMETmrID;               // AME Timer ID 
+  UINT8 u8AMETmrID;                   // AME Timer ID 
 #endif   
 }MCHP_PSF_STRUCT_PACKED_END DEVICE_POLICY_MANAGER;
 

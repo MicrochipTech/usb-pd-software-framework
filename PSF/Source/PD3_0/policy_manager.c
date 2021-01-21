@@ -52,7 +52,7 @@ void DPM_VBUSOnOffOrVCONNOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     #endif 
     
     /* Set VBUS On/Off or VCONN Off Error status to handle the error in the foreground */
-    DPM_SET_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_STS(u8PortNum);    
+    gasDPM[u8PortNum].u8DPMStsISR |= DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK;    
 }
 
 void DPM_VCONNONError_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
@@ -65,7 +65,7 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
     
     /* Set VCONN ON Error status to handle the error in the foreground */
-    DPM_SET_VCONN_ON_ERROR_STS(u8PortNum);            
+    gasDPM[u8PortNum].u8DPMStsISR |= DPM_VCONN_ON_ERROR_MASK;           
 }
 
 void DPM_HandleVCONNONError (UINT8 u8PortNum)
@@ -766,7 +766,7 @@ UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum)
 void DPM_StatusFaultPersist_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
 	/* Set the timer Id to Max Concurrent Value*/
- 	gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+ 	gasDPM[u8PortNum].u8PPSFaultPersistTmrID = MAX_CONCURRENT_TIMERS;
 	
 	/* Reset the status variable*/
     gasDPM[u8PortNum].u8StatusEventFlags = RESET_TO_ZERO;	
@@ -1622,9 +1622,9 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     }
     
     /*Kill the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS timer*/
-    PDTimer_Kill(gasDPM[u8PortNum].u8StsClearTmrID);
+    PDTimer_Kill(gasDPM[u8PortNum].u8PPSFaultPersistTmrID);
     /* Set the timer Id to Max Concurrent Value*/
-    gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+    gasDPM[u8PortNum].u8PPSFaultPersistTmrID = MAX_CONCURRENT_TIMERS;
     /* Note: It is recognized that it is possible to send an alert to another 
        partner if the current partner is disconnected and a new partner is
        connected. So, no need to clear the other variables - 
@@ -2218,7 +2218,7 @@ void DPM_AME_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     gasDPM[u8PortNum].u8AMETmrID = MAX_CONCURRENT_TIMERS;    
     
     /* Set the Timer Done status to post notification in the foreground */
-    DPM_SET_AME_TIMER_DONE_STS(u8PortNum);
+    gasDPM[u8PortNum].u8DPMStsISR |= DPM_AME_TMR_DONE_MASK;
 }
 
 #if (TRUE == INCLUDE_UPD_HPD) 

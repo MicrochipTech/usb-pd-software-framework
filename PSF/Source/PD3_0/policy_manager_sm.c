@@ -72,7 +72,7 @@ void DPM_Init(UINT8 u8PortNum)
     gasDPM[u8PortNum].u8AlertType = SET_TO_ZERO;
     gasDPM[u8PortNum].u8StatusEventFlags = SET_TO_ZERO;;
     gasDPM[u8PortNum].u8RealTimeFlags = SET_TO_ZERO;
-    gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+    gasDPM[u8PortNum].u8PPSFaultPersistTmrID = MAX_CONCURRENT_TIMERS;
     #endif
 
     #if (TRUE == INCLUDE_PD_VCONN_SWAP)
@@ -220,10 +220,7 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
         gasDPM[u8PortNum].u8VCONNPowerFaultCount = SET_TO_ZERO;
         
         /*ISR flag for OVP,UVP,OCP,VCONN OCS is cleared by disabling the interrupt*/
-        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-        gasDPM[u8PortNum].u8PowerFaultISR = SET_TO_ZERO;
-        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
-        
+        DPM_ClearPowerFaultFlags (u8PortNum);        
     } /*end of if detach check*/
 	
     if(TRUE == (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_HR_COMPLETE_WAIT_MASK))
@@ -465,17 +462,21 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum)
     }
     
     /*Notify that port is recovered form VCONN fault*/
-    if (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_VCONN_POWER_GOOD_TIMER_DONE)
+    if (gasDPM[u8PortNum].u8DPMStsISR & DPM_VCONN_POWER_GOOD_TMR_DONE_MASK)
     {
-        gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_VCONN_POWER_GOOD_TIMER_DONE);
-        
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        gasDPM[u8PortNum].u8DPMStsISR &= ~DPM_VCONN_POWER_GOOD_TMR_DONE_MASK;
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
+                
         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT);
     }
     
     /*Notify that port is recovered from VBUS fault*/
-    if (gasDPM[u8PortNum].u8PowerFaultFlags & DPM_VBUS_POWER_GOOD_TIMER_DONE)
+    if (gasDPM[u8PortNum].u8DPMStsISR & DPM_VBUS_POWER_GOOD_TMR_DONE_MASK)
     {
-        gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_VBUS_POWER_GOOD_TIMER_DONE);
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        gasDPM[u8PortNum].u8DPMStsISR &= ~DPM_VBUS_POWER_GOOD_TMR_DONE_MASK;
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
         
         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT);
     }
@@ -490,7 +491,7 @@ void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	gasDPM[u8PortNum].u8VCONNPowerFaultCount = RESET_TO_ZERO;
     
     /* Set Timer done status to post notification in the foreground */
-    gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_VCONN_POWER_GOOD_TIMER_DONE;            
+    gasDPM[u8PortNum].u8DPMStsISR |= DPM_VCONN_POWER_GOOD_TMR_DONE_MASK;            
 }
 
 void DPM_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
@@ -502,7 +503,7 @@ void DPM_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	gasDPM[u8PortNum].u8VBUSPowerFaultCount = RESET_TO_ZERO;
     
     /* Set Timer done status to post notification in the foreground */
-    gasDPM[u8PortNum].u8PowerFaultFlags |= DPM_VBUS_POWER_GOOD_TIMER_DONE;            
+    gasDPM[u8PortNum].u8DPMStsISR |= DPM_VBUS_POWER_GOOD_TMR_DONE_MASK;            
 }
 
 void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType)
@@ -1238,7 +1239,7 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
 
             /*start the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS to clear the status flag
               on timeout if there is no request for status*/
-            gasDPM[u8PortNum].u8StsClearTmrID = PDTimer_Start (DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS,\
+            gasDPM[u8PortNum].u8PPSFaultPersistTmrID = PDTimer_Start (DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS,\
                                                       DPM_StatusFaultPersist_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
 
         } /* DPM_INT_EVT_INITIATE_ALERT */ 
@@ -1293,19 +1294,23 @@ void DPM_InternalEventHandler(UINT8 u8PortNum)
 void DPM_GenericEventHandler (UINT8 u8PortNum)
 {
     /* Handle VCONN ON Error, if any */
-    if (DPM_IS_ERROR_IN_VCONN_ON(u8PortNum))
+    if (gasDPM[u8PortNum].u8DPMStsISR & DPM_VCONN_ON_ERROR_MASK)
     {
         /* Clear the VCONN ON Error status */
-        DPM_CLR_VCONN_ON_ERROR_STS(u8PortNum); 
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        gasDPM[u8PortNum].u8DPMStsISR &= ~DPM_VCONN_ON_ERROR_MASK;  
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
         
         DPM_HandleVCONNONError (u8PortNum);
     }
     
     /* Handle VBUS On/Off or VCONN Off Errors, if any */
-    if (DPM_IS_ERROR_IN_VBUS_ON_OFF_OR_VCONN_OFF(u8PortNum))
+    if (gasDPM[u8PortNum].u8DPMStsISR & DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK)
     {
         /* Clear the VBUS_ON_OFF_OR_VCONN_OFF Error status */
-        DPM_CLR_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_STS(u8PortNum);
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        gasDPM[u8PortNum].u8DPMStsISR &= ~DPM_VBUS_ON_OFF_OR_VCONN_OFF_ERROR_MASK;
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
         
         /* Invoke Type C Error Recovery after notifying the user application */
         if (TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
@@ -1331,10 +1336,13 @@ void DPM_GenericEventHandler (UINT8 u8PortNum)
     #endif 
 
     /* Post eMCHP_PSF_ALT_MODE_ENTRY_FAILED notification */
-    if (DPM_IS_AME_TIMER_DONE(u8PortNum))
+    if (gasDPM[u8PortNum].u8DPMStsISR & DPM_AME_TMR_DONE_MASK)
     {
-        DPM_CLR_AME_TIMER_DONE_STS(u8PortNum);
-
+        /* Clear the AME Timer Done status */
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+        gasDPM[u8PortNum].u8DPMStsISR &= ~DPM_AME_TMR_DONE_MASK;
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
+        
         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_ALT_MODE_ENTRY_FAILED);        
     }
         
