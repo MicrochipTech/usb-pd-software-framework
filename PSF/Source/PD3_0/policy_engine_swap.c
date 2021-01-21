@@ -793,11 +793,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS\r\n");
-                    /* Set PR_Swap in progress Flag. This would prevent PSF Sink from 
+                    /* Set PE_PR_OR_FR_SWAP_IN_PROGRESS Flag. This would prevent PSF Sink from 
                        detach when VBUS drops below VSinkDisconnect.
                        PD Spec Reference Note: during the Power Role Swap process the 
                        initial Sink does not disconnect even though VBUS drops below vSafe5V */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
+                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK;
                            
                     /* Disable FRS Receiver */
                     #if (TRUE == INCLUDE_PD_FR_SWAP)                        
@@ -915,10 +915,10 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_SOURCE_ON_MSG_ERROR_SS\r\n");
                     /* This sub-state would be entered if PS_Rdy message 
                        is not sent after retries */
-                    /* Clear the PR_Swap In Progress Flag since PE would come out of Swap 
+                    /* Clear the PE_PR_OR_FR_SWAP_IN_PROGRESS Flag since PE would come out of Swap 
                        SM after this and this flag should not cause any issues during the normal 
                        flow */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK);
                     
                     /* No need to revert the port role to Sink since gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState 
                        would be PD_ROLE_SOURCE. After Error recovery, Type C SM would enter 
@@ -956,8 +956,8 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        timer times out */                    
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
                     
-                    /* Clear the PR_Swap in progress flag since the Swap is complete */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
+                    /* Clear the PE_PR_OR_FR_SWAP_IN_PROGRESS flag since the Swap is complete */
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK);
                     
                     /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
                        and Protocol Layer would be taken care by the startup state */
@@ -1076,9 +1076,9 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                    supplying VBUS */
                 DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_TRANSITION_TO_OFF\r\n");                        
 
-                /*Setting swap in progress bit in u8PEPortSts during source to sink FRS
+                /*Setting PE_PR_OR_FR_SWAP_IN_PROGRESS in u8PEPortSts during source to sink FRS
                   is used to turn off VBUS discharge*/
-                gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
+                gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK;
                 
                 /* Drive the DC_DC_EN pin to low since it is not needed for Sink operation */
                 PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
@@ -1222,8 +1222,8 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SRC_SNK_WAIT_SOURCE_ON_EXIT_SS\r\n");
                     
-                    /* Clear the Swap in progress flag */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= (~PE_SWAP_IN_PROGRESS_MASK);                                                
+                    /* Clear the PE_PR_OR_FR_SWAP_IN_PROGRESS flag */
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= (~PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK);                                                
 
                     /* Clear the ignore UV during FRS flag */
                     #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)   
@@ -1340,11 +1340,11 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                 case ePE_FRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS\r\n");
-                    /* Set FR_Swap in progress Flag. This would prevent PSF Sink from 
+                    /* Set PE_PR_OR_FR_SWAP_IN_PROGRESS Flag. This would prevent PSF Sink from 
                        detach when VBUS drops below VSinkDisconnect.
                        PD Spec Reference Note: during the Fast Role Swap process the 
                        initial Sink does not disconnect even though VBUS drops below vSafe5V */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_SWAP_IN_PROGRESS_MASK;
+                    gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK;
                                         
                     /* Transition to Sink Standby */
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA; 
@@ -1479,8 +1479,8 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                        timer times out */                    
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_FRS_SNK_SRC_SOURCE_ON_EXIT_SS\r\n");
                     
-                    /* Clear the Swap in progress flag since the Swap is complete */
-                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);                                                          
+                    /* Clear the PE_PR_OR_FR_SWAP_IN_PROGRESS flag since the Swap is complete */
+                    gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK);                                                          
                     
                     /* Clear the ignore UV during FRS flag */
                     #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)   
@@ -1517,10 +1517,10 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
         {
             DEBUG_PRINT_PORT_STR(u8PortNum, "PE_FRS_HANDLE_ERROR_RECOVERY\r\n");
             
-            /*PE_SWAP_IN_PROGRESS_MASK needs to be cleared only for sink to src FRS.
+            /*PE_PR_OR_FR_SWAP_IN_PROGRESS needs to be cleared only for sink to src FRS.
              This bit is not applicable for src to sink FRS. But it is cleared here 
              commonly for both roles to save code size.*/
-            gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_SWAP_IN_PROGRESS_MASK);
+            gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK);
             
             if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
             {
