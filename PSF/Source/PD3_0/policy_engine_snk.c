@@ -496,8 +496,11 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                case ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS:
                {                     
                     /*Transition only after the VBUS from Source has gone down to 0V*/
-                    if(TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
-                    {  						
+                    if (TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
+                    {
+                        /*Disable the VBUS discharge functionality since VBUS has reached vSafe0V*/                  
+                        PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
+  						
                         /*Inform Protocol Layer about Hard Reset Complete */
                         PRL_OnHardResetComplete(u8PortNum);
                         

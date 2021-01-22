@@ -460,14 +460,19 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 {
                     /* If the voltage reached the driven voltage level send the PS_RDY message 
                        Checking VBUS Voltage is not needed for PPS */
-                    if(((DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)) && 
+                    if (((DPM_PD_FIXED_SUPPLY_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)) && 
                             (DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO) == DPM_GetVBUSVoltage(u8PortNum))) || 
                             (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)))
                     {
+                        /* Turn off VBUS Discharge */                        
+                        PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
+                        
                         /* Kill tSrcReady timer in case of Fixed supply. 
                            tPpsSrcTransSmall or tPpsSrcTransLarge Timer in case of PPS. */
                         PE_KillPolicyEngineTimer (u8PortNum);
+                        
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_SUPPLY-EXIT_SS\r\n");
+                        
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
@@ -854,8 +859,11 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_OFF_SS:
                 {                                  
-                    if(TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
+                    if (TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
                     {
+                        /*Disable the VBUS discharge functionality since VBUS has reached vSafe0V*/                  
+                        PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
+                        
                         /*Kill the VBUS ON timer since vSafe0V is reached*/
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
@@ -880,7 +888,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                 
                 case ePE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS:
                 {                    
-                    if(!DPM_IsPortVCONNSource(u8PortNum))
+                    if (!DPM_IsPortVCONNSource(u8PortNum))
                     {                       
                        /*Stop the VCONN_OFF timer*/
                        PE_KillPolicyEngineTimer (u8PortNum);

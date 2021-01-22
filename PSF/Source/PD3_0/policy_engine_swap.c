@@ -596,12 +596,16 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 }
                 case ePE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS:
                 {                              
-                    if(TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
+                    if (TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
                     {
                         /* The Policy Engine determines its power supply is no longer 
                            supplying VBUS */
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS\r\n");                        
-                        /*Kill the VBUS Off timer since vSafe0V is reached*/
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_TRANSITION_TO_OFF_EXIT_SS\r\n");   
+
+                        /* Disable the VBUS discharge functionality since VBUS has reached vSafe0V */                  
+                        PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
+                        
+                        /* Kill the VBUS Off timer since vSafe0V is reached */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
                         /* Drive the DC_DC_EN pin to low since it is not needed for Sink functionality */
@@ -663,7 +667,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                            PS_RDY Message, with the Port Power Role bit in the Message 
                            Header set to Sink, to tell its Port Partner that it 
                            can begin to Source VBUS. */  
-                        DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SINK); 
+                        DPM_UpdatePowerRole (u8PortNum, PD_ROLE_SINK); 
                         
                         PRL_UpdateSpecAndDeviceRoles (u8PortNum);
                         
@@ -712,11 +716,11 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        so that Type C SM would move to Unattached Source state after Error 
                        recovery where the u8DRPLastAttachedState condition would pass and DRP 
                        Offload would be enabled */
-                    DPM_UpdatePowerRole(u8PortNum, PD_ROLE_SOURCE);
+                    DPM_UpdatePowerRole (u8PortNum, PD_ROLE_SOURCE);
                     
-                    if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                    if(TRUE == DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
                     {
-                        DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                        DPM_SetTypeCState (u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                     }
                     else
                     {
@@ -808,7 +812,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     /* Transition to Sink Standby.
                        Configure the Type C VBUS threshold for vSafe0v detection */
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA; 
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_0V,
+                    TypeC_ConfigureVBUSThr (u8PortNum, TYPEC_VBUS_0V,
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
                     
                     /*Turn off the Sink circuitry to stop sinking the power from source*/
