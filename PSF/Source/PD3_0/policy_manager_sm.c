@@ -1313,9 +1313,9 @@ void DPM_GenericEventHandler (UINT8 u8PortNum)
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
         
         /* Invoke Type C Error Recovery after notifying the user application */
-        if (TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+        if (TRUE == DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
         {
-            DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+            DPM_SetTypeCState (u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
 
             gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
             gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE;
@@ -1343,7 +1343,7 @@ void DPM_GenericEventHandler (UINT8 u8PortNum)
         gasDPM[u8PortNum].u8DPMStsISR &= ~DPM_AME_TMR_DONE_MASK;
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
         
-        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_ALT_MODE_ENTRY_FAILED);        
+        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_ALT_MODE_ENTRY_FAILED);        
     }
         
     #endif    
