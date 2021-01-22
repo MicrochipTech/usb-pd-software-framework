@@ -116,14 +116,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
 #define CFG_PORT_1_VCONN_OCS_ENABLE     (1U << 9)  
 
-/* Power/Data state for initiating FRS: 
- * 0 - Disabled; 
- * 1 - Power Sink/Data Host; 
- * 2 - Power Source/Data Device; 
- * 3 - Reserved  */
-#define CFG_PORT_0_FRS_POWER_DATA_STATE  (1U << 11) 
-#define CFG_PORT_1_FRS_POWER_DATA_STATE  (2U << 11) 
-
 /********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 #define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
@@ -147,23 +139,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    with any MCU pin since HPD pin can only be an UPD PIO */
 #define CFG_PORT_0_HPD_IO                    eUPD_PIO9
 #define CFG_PORT_1_HPD_IO                    eUPD_PIO9
-
-/* Port 0 is configured as Power Sink/Data Host. So, EN_FRS acts an output pin */
-#define CFG_PORT_0_UPD_EN_FRS_PIO_NO        eUPD_PIO2
-#define CFG_PORT_0_UPD_EN_FRS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
-
-/* Port 1 is configured as Power Source/Data Device. So, EN_FRS acts an input pin.
-   The falling edge of this pin indicates external power to the system is lost 
-   and FRS signal will be triggered by PSF and it will turn into bus-powered sink. 
-   Once power is back, that is, on the rising edge of this pin, PSF will resume 
-   its operation as DRP (acting as sink) followed by PR_Swap based on user configuration
-   of u16SwapPolicy field.
- 
-   Even though, this pin is initially configured to be active low, after an FR_Swap
-   is complete, this pin will be configured to detect rising edge to indicate that 
-   power is back. */
-#define CFG_PORT_1_UPD_EN_FRS_PIO_NO        eUPD_PIO2
-#define CFG_PORT_1_UPD_EN_FRS_PIO_MODE      eINPUT_ACTIVE_LOW
 
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
@@ -209,9 +184,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_0_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_0_SINK_USB_COMM             0U
-/* Note: Current value is right shifted by 3 bit positions since CFG_PORT_0_RP_CURRENT_VALUE
-   will have the actual value left shifted by 3 positions */
-#define CFG_PORT_0_SINK_FRS_CURRENT          (CFG_PORT_0_RP_CURRENT_VALUE >> 3)
+#define CFG_PORT_0_SINK_FRS_CURRENT          0U
 
 #define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
                                     CFG_PORT_0_SINK_FRS_CURRENT, \
@@ -263,9 +236,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_1_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_1_SINK_USB_COMM             0U
-/* Note: Current value is right shifted by 3 bit positions since CFG_PORT_1_RP_CURRENT_VALUE
-   will have the actual value left shifted by 3 positions */
-#define CFG_PORT_1_SINK_FRS_CURRENT          (CFG_PORT_1_RP_CURRENT_VALUE >> 3)
+#define CFG_PORT_1_SINK_FRS_CURRENT          0U
 
 #define CFG_PORT_1_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 0,\
                                     CFG_PORT_1_SINK_FRS_CURRENT, \

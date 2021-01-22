@@ -380,7 +380,7 @@ Description:
     are configured for DRP operation. Users can set this define to 0 to reduce the code size
     if none of the DRP ports in the system require Fast Role Swap functionality.
 Remarks: 
-    Default value is 1 for DRP application. INCLUDE_PD_DRP, INCLUDE_PD_3_0, INCLUDE_PD_VCONN_SWAP
+    Default value is 1 for FRS application. INCLUDE_PD_DRP, INCLUDE_PD_3_0, INCLUDE_PD_VCONN_SWAP
     INCLUDE_PD_DR_SWAP, INCLUDE_PD_PR_SWAP and INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
     should be set to 1 as a prerequisite when INCLUDE_PD_FR_SWAP is set to 1.
 Example:

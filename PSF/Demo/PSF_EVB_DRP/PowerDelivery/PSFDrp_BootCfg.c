@@ -340,7 +340,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     /*Per port configuration for Port 0*/    
     pasCfgStatusData->sPerPortData[PORT0].u32CfgData =       
         ((CFG_PORT_0_VCONN_OCS_ENABLE) | (CFG_PORT_0_ENABLE) | (CFG_PORT_0_RP_CURRENT_VALUE)| \
-        (CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_0_POWER_ROLE) | (CFG_PORT_0_FRS_POWER_DATA_STATE));
+        (CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_0_POWER_ROLE));
     
     pasCfgStatusData->sPerPortData[PORT0].u8Pio_FAULT_IN = (UINT8)CFG_PORT_0_UPD_FAULT_IN_PIO_NO;
     pasCfgStatusData->sPerPortData[PORT0].u8Mode_FAULT_IN = (UINT8)CFG_PORT_0_UPD_FAULT_IN_MODE;
@@ -407,16 +407,11 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
     #endif
 
-    #if (TRUE == INCLUDE_PD_FR_SWAP)
-    pasCfgStatusData->sPerPortData[PORT0].u8Pio_EN_FRS = (UINT8)CFG_PORT_0_UPD_EN_FRS_PIO_NO;
-    pasCfgStatusData->sPerPortData[PORT0].u8Mode_EN_FRS = (UINT8)CFG_PORT_0_UPD_EN_FRS_PIO_MODE;
-    #endif 
-
     /*Per port configuration for Port 1*/      
 #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
     pasCfgStatusData->sPerPortData[PORT1].u32CfgData =       
         ((CFG_PORT_1_VCONN_OCS_ENABLE) | (CFG_PORT_1_ENABLE) | (CFG_PORT_1_RP_CURRENT_VALUE)| \
-        (CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_1_POWER_ROLE) | (CFG_PORT_1_FRS_POWER_DATA_STATE));
+        (CFG_PORT_1_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_1_POWER_ROLE));
         
     pasCfgStatusData->sPerPortData[PORT1].u8Pio_FAULT_IN = (UINT8)CFG_PORT_1_UPD_FAULT_IN_PIO_NO;
     pasCfgStatusData->sPerPortData[PORT1].u8Mode_FAULT_IN = (UINT8)CFG_PORT_1_UPD_FAULT_IN_MODE;
@@ -481,11 +476,6 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 
     #if(TRUE == INCLUDE_UPD_HPD)
     pasCfgStatusData->sPerPortData[PORT1].u8PIO_HPD = CFG_PORT_1_HPD_IO;
-    #endif
-
-    #if (TRUE == INCLUDE_PD_FR_SWAP)
-    pasCfgStatusData->sPerPortData[PORT1].u8Pio_EN_FRS = (UINT8)CFG_PORT_1_UPD_EN_FRS_PIO_NO;
-    pasCfgStatusData->sPerPortData[PORT1].u8Mode_EN_FRS = (UINT8)CFG_PORT_1_UPD_EN_FRS_PIO_MODE;
     #endif     
     
 #endif
