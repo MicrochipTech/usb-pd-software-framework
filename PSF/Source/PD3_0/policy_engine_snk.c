@@ -173,17 +173,17 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
         {            
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY\r\n");
               
-            if(DPM_INT_EVT_INITIATE_RENEGOTIATION != gasDPM[u8PortNum].u16InternalEvntInProgress)
+            if (DPM_INT_EVT_INITIATE_RENEGOTIATION != gasDPM[u8PortNum].u16InternalEvntInProgress)
             {
                 /* Notify the new source capability is received*/
                 (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
             }
 
             /*Reset the HardResetCounter*/
-            gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	
+            gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	                        
             
             /*Ask the Device policy manager to evaluate the received source capability message*/
-            DPM_EvaluateReceivedSrcCaps(u8PortNum,(UINT16) u32Header ,(UINT32*)pu8DataBuf );
+            DPM_EvaluateReceivedSrcCaps (u8PortNum, (UINT16) u32Header, (UINT32*)pu8DataBuf);
 
             /*Invalid Source Capability Message results in Sink request object count to be 0*/
             if (SET_TO_ZERO == gasCfgStatusData.sPerPortData[u8PortNum].u32RDO)
@@ -285,11 +285,17 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             {
                 case ePE_SNK_TRANSITION_SINK_ENTRY_SS:
                 {                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK_ENTRY_SS\r\n");                                                       
                     
+                    /* Configure VBUS Threshold for the requested PDO */
+                    TypeC_ConfigureVBUSThr (u8PortNum, \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV, \
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, \
+                                    TYPEC_CONFIG_NON_PWR_FAULT_THR);                    
+                
                     /* Requested current controlling */
-                    PWRCTRL_ConfigSinkHW(u8PortNum, \
-                            DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO),\
+                    PWRCTRL_ConfigSinkHW (u8PortNum, \
+                            DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO), \
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                     
                     /*Initialize and run PE_PSTRANSITION_TIMEOUT_MS*/
@@ -330,18 +336,18 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_ENTRY_SS\r\n");
 					
                     /* Configure threshold to detect faults*/
-                   	DPM_EnablePowerFaultDetection(u8PortNum);
+                   	DPM_EnablePowerFaultDetection (u8PortNum);
 					
                     /*Setting the explicit contract as True*/
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= (PE_EXPLICIT_CONTRACT);                    
                                     
                     /*Set EN_SINK*/
-                    PWRCTRL_ConfigEnSink(u8PortNum, TRUE);
+                    PWRCTRL_ConfigEnSink (u8PortNum, TRUE);
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
                     
                     /*Notify that contract is established*/
-                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                                         
                     if (DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS & \
                             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus)
@@ -358,7 +364,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_END_AMS_SS\r\n");
                     
                     /*On PD negotiation complete and sink is in ready state, inform DPM to initiate internal events*/
-                    DPM_InitiateInternalEvts(u8PortNum);
+                    DPM_InitiateInternalEvts (u8PortNum);
                     
                     gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;                        
 

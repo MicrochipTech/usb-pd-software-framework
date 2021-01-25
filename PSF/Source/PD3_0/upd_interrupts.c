@@ -69,7 +69,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         UPD_RegisterReadISR (u8PortNum,UPDINTR_INT_STS,(UINT8 *)&u16InterruptStatus,BYTE_LEN_2);
         
         /*Checking for Device ready Interrupt*/
-        if(u16InterruptStatus & UPDINTR_RDY_INT)
+        if (u16InterruptStatus & UPDINTR_RDY_INT)
         {                
             UPD_RegisterReadISR (u8PortNum, UPDINTR_INT_EN, (UINT8 *)&u16Data, BYTE_LEN_2);
             
@@ -79,14 +79,14 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         }
 
         #if(TRUE == INCLUDE_UPD_HPD)
-        if(u16InterruptStatus & UPDINTR_HPD_INT)
+        if (u16InterruptStatus & UPDINTR_HPD_INT)
         {
             UPD_HPDHandleISR(u8PortNum);
         }
         #endif
 
         /*CC,PWR,VBUS interrupts are handled by the function "TypeC_HandleISR"*/
-        if((u16InterruptStatus & UPDINTR_CC_INT) || (u16InterruptStatus & UPDINTR_PWR_INT) || \
+        if ((u16InterruptStatus & UPDINTR_CC_INT) || (u16InterruptStatus & UPDINTR_PWR_INT) || \
                 (u16InterruptStatus & UPDINTR_VBUS_INT) || (u16InterruptStatus & UPDINTR_EXT_INT))
         {
             TypeC_HandleISR (u8PortNum, u16InterruptStatus);
