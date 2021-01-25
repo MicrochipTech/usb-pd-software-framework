@@ -972,27 +972,6 @@ void DPM_Init(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void DPM_RunStateMachine (UINT8 u8PortNum);
-/****************************** DPM APIs Accessing Type C Port Control Module*********************/
-
-/**************************************************************************************************
-    Function:
-        void DPM_SetPortPower(UINT8 u8PortNum);
-    Summary:
-        This API is used to drive the VBUS for requested power.
-    Devices Supported:
-        UPD350 REV A
-    Description:
-        This API is used to drive the VBUS for requested power.
-    Conditions:
-        None.
-    Input:
-        u8PortNum - Port Number for power to be driven
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void DPM_SetPortPower(UINT8 u8PortNum);
 
 /****************************** DPM Source related APIs*****************************************/
 /**************************************************************************************************

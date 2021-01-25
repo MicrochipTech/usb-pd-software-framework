@@ -180,70 +180,6 @@ UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum)
 /*******************************************************************************/
 
 /**************************DPM APIs for VBUS* *********************************/
-void DPM_SetPortPower (UINT8 u8PortNum)
-{
-    UINT16 u16VoltageInmV = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV;
-    UINT16 u16CurrentInmA = SET_TO_ZERO;
-    
-    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-    {
-#if (TRUE == INCLUDE_PD_SOURCE)        
-        u16CurrentInmA = gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA;
-                
-        TypeC_ConfigureVBUSThr (u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);            
-        
-        PWRCTRL_SetPortPower (u8PortNum, u16VoltageInmV, u16CurrentInmA);
-#endif 
-    }
-    else
-    {
-#if (TRUE == INCLUDE_PD_SINK)        
-        u16CurrentInmA = gasDPM[u8PortNum].u16SinkOperatingCurrInmA;
-        
-        TypeC_ConfigureVBUSThr (u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-#endif 
-    }
-}
-
-void DPM_TypeCSrcVBus5VOnOff (UINT8 u8PortNum, UINT8 u8VbusOnorOff)
-{
-#if (TRUE == INCLUDE_PD_SOURCE)    
-	UINT16 u16CurrentInmA, u16VoltageInmV;
-    
-	if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-	{		
-        if (DPM_VBUS_ON == u8VbusOnorOff)
-        {
-            /* This API with DPM_VBUS_ON argument will be called from 
-               i.  Type C Attached Src state
-               ii. PE Transition to default state(after a Hard Reset)
-               During both these scenarios, the port will not be in an 
-               explicit contract. Therefore, set the current limit based 
-               on the Rp value configured by the user */
-            u16CurrentInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
-            u16VoltageInmV = TYPEC_VBUS_5V;
-            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM:TURN ON VBUS\r\n");
-        }
-        else
-        {
-            u16CurrentInmA = DPM_0mA; 
-            u16VoltageInmV = TYPEC_VBUS_0V; 
-            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM:TURN OFF VBUS\r\n");
-        }
-        
-        /* Update power related status registers */
-        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = u16CurrentInmA; 
-        gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = u16VoltageInmV; 
-        gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = ((u16CurrentInmA * u16VoltageInmV) / DPM_250mW); 
-        
-        /* Configure VBUS threshold as per the voltage value */
-        TypeC_ConfigureVBUSThr (u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
-        /* Drive the VBUS as per the voltage value */
-        PWRCTRL_SetPortPower (u8PortNum, u16VoltageInmV, u16CurrentInmA);        
-    }
-#endif 
-}
-
 UINT16 DPM_GetVBUSVoltage (UINT8 u8PortNum)
 {
     UINT8 u8VBUSPresence = SET_TO_ZERO; 
@@ -673,6 +609,41 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
     }     
 }
 
+/* Turn On or Off VBUS */
+void DPM_TypeCSrcVBus5VOnOff (UINT8 u8PortNum, UINT8 u8VbusOnorOff)
+{   
+	UINT16 u16CurrentInmA, u16VoltageInmV;
+    	
+    if (DPM_VBUS_ON == u8VbusOnorOff)
+    {
+        /* This API with DPM_VBUS_ON argument will be called from 
+           i.  Type C Attached Src state
+           ii. PE Transition to default state(after a Hard Reset)
+           During both these scenarios, the port will not be in an 
+           explicit contract. Therefore, set the current limit based 
+           on the Rp value configured by the user */
+        u16CurrentInmA = TypeC_ObtainCurrentValueFrmRp (u8PortNum);
+        u16VoltageInmV = TYPEC_VBUS_5V;
+        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM:TURN ON VBUS\r\n");
+    }
+    else
+    {
+        u16CurrentInmA = DPM_0mA; 
+        u16VoltageInmV = TYPEC_VBUS_0V; 
+        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM:TURN OFF VBUS\r\n");
+    }
+
+    /* Update power related status registers */
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = u16CurrentInmA; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = u16VoltageInmV; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u16AllocatedPowerIn250mW = ((u16CurrentInmA * u16VoltageInmV) / DPM_250mW); 
+
+    /* Configure VBUS threshold as per the voltage value */
+    TypeC_ConfigureVBUSThr (u8PortNum, u16VoltageInmV, u16CurrentInmA, TYPEC_CONFIG_NON_PWR_FAULT_THR);
+    /* Drive the VBUS as per the voltage value */
+    PWRCTRL_SetPortPower (u8PortNum, u16VoltageInmV, u16CurrentInmA);            
+}
+
 /**********************************************************************************/
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
 
@@ -1059,7 +1030,7 @@ void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
     UINT8 u8SinkNoUSBSusp = ((gasCfgStatusData.sPerPortData[u8PortNum].u8SinkConfigSel & \
             DPM_SINK_CONFIG_NO_USB_SUSP_MASK) >> DPM_SINK_CONFIG_NO_USB_SUSP_POS);
     
-    if (DPM_INT_EVT_INITIATE_RENEGOTIATION != gasDPM[u8PortNum].u16InternalEvntInProgress)
+    if (gasDPM[u8PortNum].u16InternalEvntInProgress != DPM_INT_EVT_INITIATE_RENEGOTIATION)
     {
         /*PDO Count of the source derived from received src caps*/
         UINT8 u8RcvdSrcPDOCnt =  PRL_GET_OBJECT_COUNT(u16RecvdSrcCapsHeader);
@@ -1127,18 +1098,17 @@ void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
                             u8SinkNoUSBSusp, DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO),\
                                                 DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO));
                 }
-           
-                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO)*DPM_10mA;
+                           
+                gasDPM[u8PortNum].u16SinkOperatingCurrInmA = (DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO) * DPM_10mA);
                 /*Updating the globals with Sink PDO selected */
                 gasDPM[u8PortNum].u32NegotiatedPDO = u32SinkAdvertisedPDO;
                 /*Updating the globals for Sink */
-                gasDPM[u8PortNum].u8NegotiatedPDOIndex = u8SinkAdvertisedPDOIndex+1; 
+                gasDPM[u8PortNum].u8NegotiatedPDOIndex = (u8SinkAdvertisedPDOIndex + BYTE_LEN_1); 
                 /*Update Negotiated value*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = (DPM_GET_PDO_VOLTAGE(u32SinkAdvertisedPDO) * DPM_PDO_VOLTAGE_UNIT);
                 /*Update Negotiated value*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = (DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO) * DPM_10mA);
-                /*VBUS Threshold are configured for the requested PDO*/
-                DPM_SetPortPower (u8PortNum);                
+                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = (DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO) * DPM_10mA);               
+                
                 return;
             }
         }
@@ -1190,13 +1160,11 @@ void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
                 /*Updating the globals with Sink PDO selected */
                 gasDPM[u8PortNum].u32NegotiatedPDO = u32RcvdSrcPDO;
                 /*Updating the globals with Sink PDO index selected*/
-                gasDPM[u8PortNum].u8NegotiatedPDOIndex = (u8SinkAdvertisedPDOIndex+1);
+                gasDPM[u8PortNum].u8NegotiatedPDOIndex = (u8SinkAdvertisedPDOIndex + BYTE_LEN_1);
                 /*Update Negotiated value*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV = (DPM_GET_PDO_VOLTAGE(u32SinkAdvertisedPDO) * DPM_PDO_VOLTAGE_UNIT);
                 /*Update Negotiated value*/
-                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = (u16SinkRDOCurIn10mA * DPM_10mA);              
-                
-                DPM_SetPortPower (u8PortNum);
+                gasCfgStatusData.sPerPortData[u8PortNum].u16NegoCurrentInmA = (u16SinkRDOCurIn10mA * DPM_10mA);                                              
                 
                 return;
             }
@@ -1250,8 +1218,7 @@ void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
                 
                 /*Set the capability mismatch status*/
                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS;
-                
-                DPM_SetPortPower (u8PortNum);                
+                                                
                 return;
             }
         }

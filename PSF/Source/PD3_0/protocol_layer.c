@@ -282,8 +282,7 @@ UINT16 PRL_FormNonSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 
 
 UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8 *pu8DataBuffer, 
 					   PRLTxCallback pfnTxCallback, UINT32  u32PkdPEstOnTxStatus)
-{
-  
+{  
 	UINT8 u8MsgId, u8PktLen, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = SET_TO_ZERO;
     /* PD3_Auto_Decode and RX_SOP_ENABLE_SOP are enabled by default */
     UINT8 u8RxCtlBRegVal = (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP); 
@@ -326,8 +325,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 			for (u16MsgDataIndex = SET_TO_ZERO; 
 					u16MsgDataIndex <= PRL_GET_DATA_SIZE(gasExtendedMsgBuff [u8PortNum].u16ExtendedMsgHeader); 
 						u16MsgDataIndex++)
-			{
-				
+			{				
 				gasExtendedMsgBuff [u8PortNum].u8Data [u16MsgDataIndex] =  pu8DataBuffer [u16MsgDataIndex];
 			}
 		}
@@ -916,15 +914,12 @@ void PRL_IncrementMsgID (UINT8 u8PortNum)
 			break;
 		}
 	}
-
 }
-
 
 /*******************************************************************************************************/
 
-
 void PRL_ProcessRxFIFOISR (UINT8 u8PortNum)
-{
+{        
 	UINT8* u8pFIFOBuffer = (UINT8 *) &gasPRLRecvBuff[u8PortNum];
     
 	/*Receiver packet is read from Rx FIFO*/
@@ -997,8 +992,7 @@ void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum)
 /******************************************************************************************************/
 
 void PRL_OnHardResetComplete (UINT8 u8PortNum)
-{
-    
+{    
     /* gasPRL [u8PortNum].u8RxHRRcvdISR is cleared as Hard Reset is processed*/
     /* gasPRL [u8PortNum].u8RxHRRcvdISR is ISR & foreground sync variable. 
         Interrupt is disabled to prevent variable corruption */
@@ -1038,7 +1032,6 @@ void PRL_PHYLayerReset (UINT8 u8PortNum)
 
 	/* clear the reset register */
 	UPD_RegWriteByte (u8PortNum, PRL_RESET_CTL, CLR_VAL);
-
 }
 
 /******************************************************************************************************/
@@ -1303,7 +1296,7 @@ UINT32 PRL_IsAnyMsgPendinginPRL (UINT8 u8PortNum)
 void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 {
     /*If the current spec role is not 3.0 return or default configured Rp value is not 3A*/
-    if((PD_SPEC_REVISION_3_0 != DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) ||\
+    if ((PD_SPEC_REVISION_3_0 != DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) ||\
             (TYPEC_DFP_3A0_CURRENT != DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)))
     {
         return;
@@ -1312,7 +1305,7 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 	{
 	  	/* Spec Reference: PRL_Tx_Src_Source_Tx - Set Rp = SinkTxNG */
 		/* Rp = SinkTxNG 1.5A @ 5v is set */
-		TypeC_SetRpCollAvoidance(u8PortNum, TYPEC_SINK_TXNG);
+		TypeC_SetRpCollAvoidance (u8PortNum, TYPEC_SINK_TXNG);
 		
 		/* Spec Reference: PRL_Tx_Src_Pending - Start sinkTxTimer*/
         /* SinkTxTimer is started. */
@@ -1328,7 +1321,7 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 	{
 	  	/* Spec Reference: PRL_tx_Src_Sink_Tx - Set Rp = SinkTxOK */
 		/* Rp = SinkTxOk 3A @ 5v is set*/
-		TypeC_SetRpCollAvoidance(u8PortNum, TYPEC_SINK_TXOK);
+		TypeC_SetRpCollAvoidance (u8PortNum, TYPEC_SINK_TXOK);
 	}
 }
 
@@ -1400,8 +1393,7 @@ void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum)
         /* PRL_TX_IDLE_ST is assigned to PRL state*/
         gasPRL [u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;
         
-        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_MSG_DISCARD_ON_RCV: Tx Msg Discarded on Recv\r\n");
-		
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_MSG_DISCARD_ON_RCV: Tx Msg Discarded on Rcv\r\n");		
     }
     else if (PRL_TX_MSG_BUFFERED_ON_CA_ST == gasPRL [u8PortNum].u8TxStateISR)
     {

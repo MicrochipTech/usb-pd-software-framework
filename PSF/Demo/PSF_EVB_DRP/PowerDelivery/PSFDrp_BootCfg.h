@@ -109,12 +109,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_RP_CURRENT_VALUE          (3U << 3)
 
 /*Port Enable: 0 - Port Disable; 1 - Port Enable*/
-#define CFG_PORT_0_ENABLE       (1U << 5)
-#define CFG_PORT_1_ENABLE       (1U << 5)
+#define CFG_PORT_0_ENABLE                    (1U << 5)
+#define CFG_PORT_1_ENABLE                    (1U << 5)
 
 /*VCONN OCS Enable: 0 - Disable, 1 - Enable*/
-#define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
-#define CFG_PORT_1_VCONN_OCS_ENABLE     (1U << 9)  
+#define CFG_PORT_0_VCONN_OCS_ENABLE          (1U << 9)
+#define CFG_PORT_1_VCONN_OCS_ENABLE          (1U << 9)  
 
 /********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5

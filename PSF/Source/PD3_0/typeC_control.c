@@ -171,11 +171,11 @@ void TypeC_InitDRPPort(UINT8 u8PortNum)
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
 	
     /*Setting the VBUS to vSafe0V before entering the Source State machine*/
-    DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+    DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
     
     gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
     
-    if(FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
+    if (FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
     {
         gasTypeCcontrol[u8PortNum].u8TypeCState = (UINT8)TYPEC_UNATTACHED_SRC;
         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_WAIT_DRPDONE_SS;
@@ -280,7 +280,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             					
             /*Write CCx Debounce clear enable register, CCx Match Enable register, 
             CCx sample enable register*/            
-            TypeC_SetCCDebounceVariable(u8PortNum, DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum));
+            TypeC_SetCCDebounceVariable (u8PortNum, DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum));
             
             /*Setting Port Role as DFP in TYPEC_CC_HW_CTL register*/
             TypeC_SetCCDeviceRole (u8PortNum,PD_ROLE_DFP);
@@ -288,7 +288,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             /* Clear TypeC Current Rp Val bits in u8PortSts*/
             gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
             
-            if(FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
+            if (FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
             {      
 	            /*Setting Rp Current Source as user given and Rd as Open disconnect in both CC1 and 
 	            CC2*/ 
@@ -332,12 +332,12 @@ void TypeC_InitPort (UINT8 u8PortNum)
             thresholds enabled for debouncing */
             u8VBUSDebVal = (BYTE_LEN_4 * TYPEC_SNK_VBUSTHRES_CNT);
           	
-			TypeC_SetCCDebounceVariable(u8PortNum, TYPEC_UFP); 
+			TypeC_SetCCDebounceVariable (u8PortNum, TYPEC_UFP); 
             
 			/*Setting Port Role as UFP in TYPEC_CC_HW_CTL register */
             TypeC_SetCCDeviceRole (u8PortNum, PD_ROLE_UFP);
             
-            if(FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
+            if (FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
             {
 	            /*Setting the Rd Value */ 
 	            TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
@@ -401,16 +401,16 @@ void TypeC_InitPort (UINT8 u8PortNum)
     if(PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
         /*Setting the VBUS to vSafe0V before entering the State machine*/
-        DPM_TypeCSrcVBus5VOnOff(u8PortNum, DPM_VBUS_OFF);
+        DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
     }
     else
     {
         #if (TRUE == INCLUDE_PD_SINK)
         /*Disable the Sink circuitry to stop sinking the power from source*/
-        PWRCTRL_ConfigSinkHW(u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
+        PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
         #endif
     }
-    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: TypeC Port initialization completed\r\n");             
+    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Port initialization completed\r\n");             
 }
 /*******************************************************************************************/
 /*********************************TypeC State machine**************************************/
@@ -503,31 +503,29 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
               		TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);                     
                     
 #if(TRUE == INCLUDE_PD_DRP)
-                    if (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
-                    {
-                        /*Disable DC_DC_EN if DRP does not act as source*/
-                        PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
+                    /*Disable DC_DC_EN if DRP does not act as source*/
+                    PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
                         
-                        if (PD_ROLE_SOURCE == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState)
-                        {
-                            /*Setting CC Comparator OFF*/
-                            TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+                    if ((PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) && \
+                         (PD_ROLE_SOURCE == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState))
+                    {                        
+                        /*Setting CC Comparator OFF*/
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
 
-                            /*Mask CC match interrupts to avoid interrupts due to Ra/Open termination*/
-                            UPD_RegByteClearBit (u8PortNum, TYPEC_CC_INT_EN,\
-                            (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
+                        /*Mask CC match interrupts to avoid interrupts due to Ra/Open termination*/
+                        UPD_RegByteClearBit (u8PortNum, TYPEC_CC_INT_EN,\
+                        (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
 
-                            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
-                            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
-                            gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
+                        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
+                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
 
-                            /*Set power and data role status*/
-                            DPM_UpdatePowerRole (u8PortNum, PD_ROLE_DRP);
-                            DPM_UpdateDataRole (u8PortNum, PD_ROLE_TOGGLING);
+                        /*Set power and data role status*/
+                        DPM_UpdatePowerRole (u8PortNum, PD_ROLE_DRP);
+                        DPM_UpdateDataRole (u8PortNum, PD_ROLE_TOGGLING);
 
-                            /*Enable DRP offload.*/
-                            UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
-                        }                        
+                        /*Enable DRP offload.*/
+                        UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);                                               
                     }
                     else
 #endif
@@ -3294,7 +3292,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
     
     /*Rp value as 1.5A@5V */
-    if(TYPEC_SINK_TXNG == u8RpValue)
+    if (TYPEC_SINK_TXNG == u8RpValue)
     {
         gasTypeCcontrol[u8PortNum].u8CCDebMatch = (TYPEC_CC_THRES1_MATCH | TYPEC_CC_THRES5_MATCH);
         gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch = (TYPEC_CC_THRES5_MATCH);
@@ -3327,7 +3325,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC1; 
     }
     /*Sink Attached in CC2 since VCONN is enabled in CC1*/
-    else if(TYPEC_VCONN_SOURCE_CC1 == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
+    else if (TYPEC_VCONN_SOURCE_CC1 == (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_VCONN_SOURCE_MASK))
     {                        
         u8CCEnablePin = TYPEC_ENABLE_CC2; 
         u8CCCompCtrl = TYPEC_CC_COMP_CTL_CC2;         
@@ -3413,13 +3411,13 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
     float fVBUSCorrFactor = gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor; 
 
     /* Get the Previous VBUS voltage based on the type of contract established */
-    if(gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT) 
-    {
+    if (gasPolicyEngine[u8PortNum].u8PEPortSts & PE_EXPLICIT_CONTRACT)
+    {        
         u16PrevVoltInmV = gasDPM[u8PortNum].u16PrevVBUSVoltageInmV; 
     }
     else
     {
-        u16PrevVoltInmV = DPM_GetVBUSVoltage(u8PortNum);
+        u16PrevVoltInmV = DPM_GetVBUSVoltage (u8PortNum);
     }
                
     /* Set the voltage value that is expected in VBUS once power is driven.
@@ -3427,7 +3425,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
        for which threshold was configured is driven in VBUS.
        For PPS, this variable needs to be 0 since a PPS Source shall not 
        rely on VBUS voltage for sending PS_RDY */
-    if(u8IsPPSContract)
+    if (u8IsPPSContract)
     {
         gasDPM[u8PortNum].u16ExpectedVBUSVoltageInmV = SET_TO_ZERO; 
     }
@@ -3515,7 +3513,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
             /* Corresponding VSafe0V VBUS sample enable */
             u8SampleEn = TYPEC_VSAFE0V_MAX_THR_MATCH;
 			
-            if(u8IsSourcePort)
+            if (u8IsSourcePort)
             {
                 /* Enable VBUS discharge only if the port role is source*/
                 PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);            
@@ -3528,7 +3526,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
 		{
             /* Minimum valid Vsafe5V threshold is configured in u16MinVoltageThr*/
             /* Maximum Vsafe5V threshold is configured in u16MaxVoltageThr*/
-            if(u8IsSourcePort)
+            if (u8IsSourcePort)
             {
                 u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor));
                 u16MaxVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR * fVBUSCorrFactor)); 
@@ -3544,7 +3542,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
 		
 	  	default:
 		{
-            if(u8IsPPSContract)
+            if (u8IsPPSContract)
             {
                 /* Minimum valid PDO voltage is configured in u16MinVoltageThr*/
                 u16MinVoltageThr = ROUND_OFF_FLOAT_TO_INT(((float)TYPEC_GET_DESIRED_MIN_VBUS_THR(DPM_GET_APDO_MIN_VOLTAGE_IN_mV(gasDPM[u8PortNum].u32NegotiatedPDO)) * fVBUSCorrFactor)); 
@@ -3574,7 +3572,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
 
         if (u16PrevVoltInmV > u16Voltage)
         {
-            if(u8IsSourcePort)
+            if (u8IsSourcePort)
             {
                /* Enable VBUS discharge only if the port role is source*/
                 PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);            
