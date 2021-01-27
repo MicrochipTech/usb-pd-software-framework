@@ -935,7 +935,7 @@ typedef enum {
 // *****************************************************************************
 /**************************************************************************************************
     Function:
-        void DPM_Init(UINT8 u8PortNum);
+        void DPM_Init (UINT8 u8PortNum);
     Summary:
         This API initializes a given Port to the Power Role and Data role based on the port's global variable
     Devices Supported:
@@ -952,7 +952,7 @@ typedef enum {
     Remarks:
         None.
 **************************************************************************************************/
-void DPM_Init(UINT8 u8PortNum);
+void DPM_Init (UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
         void DPM_RunStateMachine (UINT8 u8PortNum);
@@ -976,7 +976,7 @@ void DPM_RunStateMachine (UINT8 u8PortNum);
 /****************************** DPM Source related APIs*****************************************/
 /**************************************************************************************************
     Function:
-        void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
+        void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
     Summary:
         This API is used to get the port source capabilities from the DPM.
     Devices Supported:
@@ -994,11 +994,11 @@ void DPM_RunStateMachine (UINT8 u8PortNum);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
+void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
+        UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
     Summary:
         This API is used to validate the received request message from the sink port partner.
     Devices Supported:
@@ -1016,11 +1016,11 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32Dat
     Remarks:
         None
 **************************************************************************************************/
-UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
+UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole)
+        void DPM_UpdatePowerRole (UINT8 u8PortNum, UINT8 u8NewPowerRole)
     Summary:
         This API is used to set power role in gasDPM[u8PortNum].u32DPMStatus
         variable, Port Connect Status register and Port IO Status register.
@@ -1044,11 +1044,11 @@ UINT8 DPM_ValidateRequest(UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole);
+void DPM_UpdatePowerRole (UINT8 u8PortNum, UINT8 u8NewPowerRole);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole)
+        void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8NewDataRole)
     Summary:
         This API is used to set data role in gasDPM[u8PortNum].u32DPMStatus
         variable, Port Connect Status register and Port IO Status register.
@@ -1072,11 +1072,11 @@ void DPM_UpdatePowerRole(UINT8 u8PortNum, UINT8 u8NewPowerRole);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole);
+void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8NewDataRole);
 
 /**************************************************************************************************
     Function:
-        DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
+        DPM_StoreCableIdentity (UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
     Summary:
         This API is used to store the capabilities received from the E-Marked cable.
     Devices Supported:
@@ -1095,7 +1095,7 @@ void DPM_UpdateDataRole(UINT8 u8PortNum, UINT8 u8NewDataRole);
     Remarks:
         None
 **************************************************************************************************/
-UINT8 DPM_StoreCableIdentity(UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
+UINT8 DPM_StoreCableIdentity (UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
 
 /**************************************************************************************************
     Function:
@@ -1150,7 +1150,7 @@ void DPM_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
+        void DPM_VCONNOnOff (UINT8 u8PortNum, UINT8 u8VConnEnable);
     Summary:
         This API is used to turn on/off the VCONN supply of a given port
     Devices Supported:
@@ -1169,11 +1169,11 @@ void DPM_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
+void DPM_VCONNOnOff (UINT8 u8PortNum, UINT8 u8VConnEnable);
 
 /**************************************************************************************************
     Function:
-        UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum);
+        UINT16 DPM_GetVBUSVoltage (UINT8 u8PortNum);
     Summary:
         This API returns the VBUS level of a given port
     Devices Supported:
@@ -1189,10 +1189,10 @@ void DPM_VCONNOnOff(UINT8 u8PortNum, UINT8 u8VConnEnable);
     Remarks:
         None
 **************************************************************************************************/
-UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum);
+UINT16 DPM_GetVBUSVoltage (UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
-        void DPM_GetTypeCStates(UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSubState);
+        void DPM_GetTypeCStates (UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSubState);
     Summary:
         This API is used to get the present Type C state and Type C sub state for a given port
     Devices Supported:
@@ -1210,11 +1210,11 @@ UINT16 DPM_GetVBUSVoltage(UINT8 u8PortNum);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_GetTypeCStates(UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSubState);
+void DPM_GetTypeCStates (UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSubState);
 
 /**************************************************************************************************
     Function:
-        void DPM_SetTypeCState(UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubState);
+        void DPM_SetTypeCState (UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubState);
     Summary:
         This API is used to set the state and sub state of Type C State machine for a given port
     Devices Supported:
@@ -1232,11 +1232,11 @@ void DPM_GetTypeCStates(UINT8 u8PortNum, UINT8 *pu8TypeCState, UINT8 *pu8TypeCSu
     Remarks:
         None
 **************************************************************************************************/
-void DPM_SetTypeCState(UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubState);
+void DPM_SetTypeCState (UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubState);
 
 /**************************************************************************************************
     Function:
-        void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+        void DPM_TypeCSrcVBus5VOnOff (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Summary:
         This API drives the VBUS line of a given port to either 0V or 5V.
     Devices Supported:
@@ -1256,11 +1256,11 @@ void DPM_SetTypeCState(UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubStat
     Remarks:
         None
 **************************************************************************************************/
-void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+void DPM_TypeCSrcVBus5VOnOff (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum);
+        UINT8 DPM_IsPortVCONNSource (UINT8 u8PortNum);
     Summary:
         This API is used find whether the port is currently sourcing VCONN or not
     Devices Supported:
@@ -1278,11 +1278,11 @@ void DPM_TypeCSrcVBus5VOnOff(UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Remarks:
         None
 **************************************************************************************************/
-UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum);
+UINT8 DPM_IsPortVCONNSource (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
+        void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
 
     Summary:
         Device Policy Manager evaluates the received source capability against the sink capability and 
@@ -1306,11 +1306,11 @@ UINT8 DPM_IsPortVCONNSource(UINT8 u8PortNum);
     Remarks:
     None
 **************************************************************************************************/
-void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
+void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
 
 /**************************************************************************************************
     Function:
-        void DPM_GetSinkCapabilities(UINT8 u8PortNum,UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj);
+        void DPM_GetSinkCapabilities (UINT8 u8PortNum,UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj);
     Summary:
         Device Policy Manager updates the policy engine about the sink capability for a given port
     Devices Supported:
@@ -1330,7 +1330,7 @@ void DPM_EvaluateReceivedSrcCaps(UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, 
     Remarks:
         None
 **************************************************************************************************/
-void DPM_GetSinkCapabilities(UINT8 u8PortNum, UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj);
+void DPM_GetSinkCapabilities (UINT8 u8PortNum, UINT8 *pu8SinkPDOCnt, UINT32 *pu32DataObj);
 
 /**************************************************************************************************
     Function:
@@ -1399,11 +1399,11 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
         None.
 
 **************************************************************************************************/
-void DPM_StateMachineInit(void);
+void DPM_StateMachineInit (void);
 
 /**************************************************************************************************
     Function:
-        void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2]);
+        void DPM_CalculateAndSortPower (UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2]);
     Summary:
         This API refers to calculate and sort the power.
     Devices Supported:
@@ -1423,12 +1423,12 @@ void DPM_StateMachineInit(void);
         None.
 
 **************************************************************************************************/
-void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2], UINT8 u8SinkMode);
+void DPM_CalculateAndSortPower (UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2], UINT8 u8SinkMode);
 
 /****************************** DPM Fault handling related APIs*****************************************/
 /**************************************************************************************************
     Function:
-        void DPM_PowerFaultHandler(UINT8 u8PortNum)
+        void DPM_PowerFaultHandler (UINT8 u8PortNum)
     Summary:
         This API handles the VBUS and VCONN fault occurred 
     Devices Supported:
@@ -1445,11 +1445,11 @@ void DPM_CalculateAndSortPower(UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 
         None.
 
 **************************************************************************************************/
-void DPM_PowerFaultHandler(UINT8 u8PortNum);
+void DPM_PowerFaultHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_EnablePowerFaultDetection(UINT8 u8PortNum)
+        void DPM_EnablePowerFaultDetection (UINT8 u8PortNum)
     Summary:
         This API enables VBUS Power fault under voltage and over voltage detection. 
     Devices Supported:
@@ -1469,11 +1469,11 @@ void DPM_PowerFaultHandler(UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void DPM_EnablePowerFaultDetection(UINT8 u8PortNum);
+void DPM_EnablePowerFaultDetection (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_ClientRequestHandler(UINT8 u8PortNum);
+        void DPM_ClientRequestHandler (UINT8 u8PortNum);
     Summary:
         API handles client request from Application layer. 
     Devices Supported:
@@ -1491,7 +1491,7 @@ void DPM_EnablePowerFaultDetection(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void DPM_ClientRequestHandler(UINT8 u8PortNum); 
+void DPM_ClientRequestHandler (UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:
@@ -1517,7 +1517,7 @@ void DPM_GenericEventHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum); 
+        void DPM_UpdateAdvertisedPDOParam (UINT8 u8PortNum); 
     Summary:
         Updates the Advertised PDO registers and status bits once PDOs are advertised. 
     Description:
@@ -1534,11 +1534,11 @@ void DPM_GenericEventHandler (UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 
-void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum); 
+void DPM_UpdateAdvertisedPDOParam (UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
+        UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
     Summary:
         Notifies client of the PD Events from stack. 
     Description:
@@ -1558,11 +1558,11 @@ void DPM_UpdateAdvertisedPDOParam(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification);
+UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification);
 
 /**************************************************************************************************
     Function:
-        UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
+        UINT32 DPM_ReturnPPSSrcTransTmrVal (UINT8 u8PortNum);
     Summary:
         Determines if PS_RDY needs to be sent within tPpsSrcTransLarge 
         or tPpsSrcTransSmall in case of PPS contract.  
@@ -1583,11 +1583,11 @@ UINT8 DPM_NotifyClient(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification)
         None.
 **************************************************************************************************/
 
-UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
+UINT32 DPM_ReturnPPSSrcTransTmrVal (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType); 
+        void DPM_HandleExternalVBUSFault (UINT8 u8PortNum, UINT8 u8FaultType); 
     Summary:
         Enables DPM to handle the VBUS Fault.   
     Description:
@@ -1607,7 +1607,7 @@ UINT32 DPM_ReturnPPSSrcTransTmrVal(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 
-void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType); 
+void DPM_HandleExternalVBUSFault (UINT8 u8PortNum, UINT8 u8FaultType); 
 
 /**************************************************************************************************
     Function:
@@ -1635,11 +1635,11 @@ void DPM_HandleExternalVBUSFault(UINT8 u8PortNum, UINT8 u8FaultType);
         None. 
 
 **************************************************************************************************/
-void DPM_UpdateNewPDOFrmSrcPwr(UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
+void DPM_UpdateNewPDOFrmSrcPwr (UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
 
 /**************************************************************************************************
     Function:
-        void DPM_InternalEventHandler(UINT8 u8PortNum); 
+        void DPM_InternalEventHandler (UINT8 u8PortNum); 
     Summary:
         This API handles the internal events posted to DPM
     Description:
@@ -1653,11 +1653,11 @@ void DPM_UpdateNewPDOFrmSrcPwr(UINT8 u8PortNum, UINT16 u16PowerIn250mW);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_InternalEventHandler(UINT8 u8PortNum);
+void DPM_InternalEventHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT16 u16EventType)
+        void DPM_RegisterInternalEvent (UINT8 u8PortNum, UINT16 u16EventType)
     Summary:
         This API to register an internal events to DPM layer
     Description:
@@ -1673,11 +1673,11 @@ void DPM_InternalEventHandler(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT16 u16EventType);
+void DPM_RegisterInternalEvent (UINT8 u8PortNum, UINT16 u16EventType);
 
 /**************************************************************************************************
     Function:
-        UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum)
+        UINT32 DPM_ObtainAlertDO (UINT8 u8PortNum)
     Summary:
         Returns Alert Data Object
     Description:
@@ -1691,11 +1691,11 @@ void DPM_RegisterInternalEvent(UINT8 u8PortNum, UINT16 u16EventType);
     Remarks:
         None. 
 **************************************************************************************************/
-UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum);
+UINT32 DPM_ObtainAlertDO (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pau8StatusDO);
+        DPM_ObtainStatusDB (UINT8 u8PortNum, UINT8 *pau8StatusDO);
     Summary:
         Updates Status Data Block in the input array passed
     Description:
@@ -1710,7 +1710,7 @@ UINT32 DPM_ObtainAlertDO(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_ObtainStatusDB(UINT8 u8PortNum, UINT8 *pu8StatusDO);
+void DPM_ObtainStatusDB (UINT8 u8PortNum, UINT8 *pu8StatusDO);
 
 /**************************************************************************************************
     Function:
@@ -1790,7 +1790,7 @@ UINT8 DPM_ReturnTemperatureStatus (void);
 
 /**************************************************************************************************
     Function:
-        void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable); 
+        void DPM_EnablePort (UINT8 u8PortNum, UINT8 u8Enable); 
     Summary:
         API to enable/disable a port 
     Description:
@@ -1806,11 +1806,11 @@ UINT8 DPM_ReturnTemperatureStatus (void);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable); 
+void DPM_EnablePort (UINT8 u8PortNum, UINT8 u8Enable); 
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum);  
+        UINT8 DPM_IsAPDOAdvertised (UINT8 u8PortNum);  
     Summary:
         API to know if at least one APDO is advertised.
     Description:
@@ -1826,11 +1826,11 @@ void DPM_EnablePort(UINT8 u8PortNum, UINT8 u8Enable);
     Remarks:
         None. 
 **************************************************************************************************/
-UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum); 
+UINT8 DPM_IsAPDOAdvertised (UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:
-        void DPM_OnTypeCDetach(UINT8 u8PortNum); 
+        void DPM_OnTypeCDetach (UINT8 u8PortNum); 
     Summary:
         API to clear the variables that are applicable during a type c detach event. 
     Description:
@@ -1845,11 +1845,11 @@ UINT8 DPM_IsAPDOAdvertised(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_OnTypeCDetach(UINT8 u8PortNum);
+void DPM_OnTypeCDetach (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_InitiateInternalEvts(UINT8 u8PortNum); 
+        void DPM_InitiateInternalEvts (UINT8 u8PortNum); 
     Summary:
         API to initiate internal events on entering the Ready state
     Description:
@@ -1863,7 +1863,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum);
     Remarks:
         None. 
 **************************************************************************************************/
-void DPM_InitiateInternalEvts(UINT8 u8PortNum);
+void DPM_InitiateInternalEvts (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1959,7 +1959,7 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev)
+        void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev)
     Summary:
         This API is used to set the negotiated PD Spec Rev value in 
         gasDPM[u8PortNum].u32DPMStatus variable and 
@@ -1978,7 +1978,7 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Remarks:
         None
 **************************************************************************************************/
-void DPM_UpdatePDSpecRev(UINT8 u8PortNum, UINT8 u8PDSpecRev); 
+void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev); 
 
 /**************************************************************************************************
     Function:
