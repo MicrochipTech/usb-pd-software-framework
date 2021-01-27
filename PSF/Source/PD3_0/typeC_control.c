@@ -108,7 +108,7 @@ void TypeC_InitDRPPort (UINT8 u8PortNum)
     
     /*FW shall mask the CC1_MATCH_CHG, CC2_MATCH_CHG and CC_MATCH_VLD interrupts to
     prevent an interrupt due to Ra/Open or Open/Ra detection.*/  
-    UPD_RegByteClearBit (u8PortNum,  TYPEC_CC_INT_EN,\
+    UPD_RegByteClearBit (u8PortNum, TYPEC_CC_INT_EN,\
                       (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
     
     /*Setting VBUS Debounce enable clear register and VBUS Match Enable Register */
@@ -390,7 +390,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
 
 #if(TRUE == INCLUDE_PD_DRP)
     /*Disable DRP offload.*/
-    UPD_RegByteClearBit(u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
+    UPD_RegByteClearBit (u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
 #endif
 
     /*Setting CC Comparator ON*/
@@ -823,10 +823,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {                      
                         DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS\r\n");
                         
-                          /*Kill the VCONN ON timer since VCONN is turned ON*/
-                          TypeC_KillTypeCTimer (u8PortNum); 
+                        /*Kill the VCONN ON timer since VCONN is turned ON*/
+                        TypeC_KillTypeCTimer (u8PortNum); 
                           
-                          gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_SET_PRL_SS;                     
+                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_SET_PRL_SS;                     
                     }  
                     else
                     {
@@ -1395,9 +1395,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     TypeC_ConfigureVBUSThr (u8PortNum, TYPEC_VBUS_5V,
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_PWR_FAULT_THR);
                     
-                    #if(TRUE == INCLUDE_PD_ALT_MODE)
-                    /* Enable AME Monitoring  */                                        
-                    DPM_EnableAMEMonitoring (u8PortNum);                    
+                    /* Enable AME Monitoring  */ 
+                    #if(TRUE == INCLUDE_PD_ALT_MODE)                                                           
+                        DPM_EnableAMEMonitoring (u8PortNum);                    
                     #endif 
 
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_RUN_SM_SS; 
@@ -1565,7 +1565,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
 #if (TRUE == INCLUDE_PD_SINK)                        
                         /*Kill active timers if any*/
-                        PDTimer_KillPortTimers(u8PortNum);
+                        PDTimer_KillPortTimers (u8PortNum);
                         
                         gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                         
@@ -1671,9 +1671,9 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Enable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                         PWRCTRL_ConfigDCDCEn (u8PortNum, TRUE);
                         
-                        #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
                         /*Enable PIO override enable*/
-                        UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
+                        #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)                        
+                            UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN,  UPD_PIO_OVR_2);
                         #endif
 #endif
                     }
@@ -2878,8 +2878,7 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
 
 #if (TRUE == INCLUDE_PD_SOURCE)
 void TypeC_SrcIntrHandler (UINT8 u8PortNum)
-{
- 	 
+{	 
     /*Assigning the structure variables to local variables to reduce the code size as
     accessing the structure members takes lot of code*/  
   
@@ -3069,8 +3068,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 		break;			
 	}    
     gasTypeCcontrol[u8PortNum].u8TypeCState = u8TypeCState;
-    gasTypeCcontrol[u8PortNum].u8TypeCSubState = u8TypeCSubState;
-         
+    gasTypeCcontrol[u8PortNum].u8TypeCSubState = u8TypeCSubState;         
 }
 
 #endif /*INCLUDE_PD_SOURCE*/
@@ -3235,7 +3233,6 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
     
     gasTypeCcontrol[u8PortNum].u8TypeCState = u8TypeCState;
     gasTypeCcontrol[u8PortNum].u8TypeCSubState = u8TypeCSubState;
-
 }
 #endif
 /*INCLUDE_PD_SINK*/

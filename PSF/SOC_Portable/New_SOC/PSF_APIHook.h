@@ -931,11 +931,11 @@ Remarks:
     took maximum of 3.488ms and 6.182ms execution time for 1 and 2 port Source only solution 
     respectively. </b>
 **************************************************************************************************/
-UINT8 MchpPSF_Init(void);
+UINT8 MchpPSF_Init (void);
 
 /**************************************************************************************************
 Function:
-	void MchpPSF_RUN(void)
+	void MchpPSF_RUN (void)
 Summary:
     PSF state machine run API
 Description:
@@ -955,11 +955,11 @@ Remarks:
     configured for 48MHz environment, MchpPSF_RUN can be called for
     every 1ms to 5ms for Successful 2-Port Source only operation.                
   *************************************************************************/
-void MchpPSF_RUN(void);
+void MchpPSF_RUN (void);
 
 /**************************************************************************************************
 Function:
-    void MchpPSF_UPDIrqHandler(UINT8 u8PortNum)
+    void MchpPSF_UPDIrqHandler (UINT8 u8PortNum)
 Summary:
     UPD350 IRQ Interrupt Handler 
 Description:
@@ -976,11 +976,11 @@ Remarks:
     With SAMD20 environment configured for CPU frequency 48MHZ, this API took maximum of 3.98us and
 	5.8us execution time for 1 and 2 port solution respectively.
 **************************************************************************************************/
-void MchpPSF_UPDIrqHandler(UINT8 u8PortNum);
+void MchpPSF_UPDIrqHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
 Function:
-    void MchpPSF_PDTimerHandler(void)
+    void MchpPSF_PDTimerHandler (void)
 Summary:
     PD Timer Interrupt Handler 
 Description:
@@ -996,7 +996,7 @@ Remarks:
     With SAMD20 environment configured for CPU frequency 48MHZ, this API took maximum of 262us  
 	execution time for both 1 and 2 port solution.
 **************************************************************************************************/
-void MchpPSF_PDTimerHandler(void);
+void MchpPSF_PDTimerHandler (void);
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1301,21 +1301,20 @@ Summary:
     Notifies the USER_APPLICATION about various PD events from PSF.
 Description:
     This hook is used by the various modules of PSF to notify the USER_APPLICATION about different 
-    PD events such as Type-C Attach and Detach , Type-C Orientation. USER_APPLICATION can define 
-    this hook function if it wants external handling of the PD events. Define relevant function that 
-    has  UINT8, eMCHP_PSF_NOTIFICATION argument without return type.
+    PD events such as Type-C Attach and Detach, Type-C Orientation. USER_APPLICATION can define 
+    this hook function if it wants external handling of the PD events. This hook is assigned to a 
+    function that takes an argument of type UINT8 and has a return type of UINT8.
 Conditions:
     None.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    ePSFNotification -   Type of Notification occurred inside the stack. This argument can take 
-                        one of the values from enum eMCHP_PSF_NOTIFICATION.                   
+    ePSFNotification - Type of Notification occurred inside the stack. This argument can take 
+                       one of the values from enum eMCHP_PSF_NOTIFICATION.                   
 Return:
-    UINT8 - Except for eMCHP_PSF_VCONN_PWR_FAULT and eMCHP_PSF_VBUS_PWR_FAULT the return value is 
-            ignored by PSF. For eMCHP_PSF_VCONN_PWR_FAULT and eMCHP_PSF_VBUS_PWR_FAULT event, 
-			user can return 
-             TRUE - if the Power fault shall be handled by PSF
-             FALSE - if the Power fault occurrence is ignored.
+    UINT8 - Except for eMCHP_PSF_VCONN_PWR_FAULT, eMCHP_PSF_VBUS_PWR_FAULT, 
+            eMCHP_PSF_TYPEC_ERROR_RECOVERY and eMCHP_PSF_VDM_REQUEST_RCVD the return value is 
+            ignored by PSF. For these events, user can return TRUE or FALSE depending on whether
+            the relevant action is required to be taken by PSF or not.
 Example:
     <code>
         #define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)\
@@ -1654,8 +1653,8 @@ Conditions:
     API implementation must make sure that the Port Power(VBUS) of all ports is set to 0V.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Return:
-    None.
+Return:    
+    UINT8 - Return TRUE if initialization was successful or else return FALSE. 
 Example:
     <code>
         #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)       hw_portpower_init(u8PortNum)
@@ -1828,7 +1827,8 @@ Description:
 Conditions:
     Output voltage shall be returned in terms of milliVolts.
 Return:
-    None.
+    UINT32 - Output voltage in terms of mV if the DC_DC controller have the capability to 
+    measure output voltage. Else, return 0xFFFFFFFF.
 Example:
     <code>
         #define MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV(u8PortNum)   DCDC_GetOutVoltage(u8PortNum)
@@ -1856,9 +1856,10 @@ Remarks:
     does not have the capability to measure output current, return 0xFFFFFFFF to denote
     the feature is not supported.
   Conditions:
-    \Output Current shall be returned in terms of mA.
+    Output Current shall be returned in terms of mA.
   Return:
-    None.
+    UINT32 - Output current in terms of mA if the DC_DC controller have the capability to 
+    measure output current. Else, return 0xFFFFFFFF.
   Example:
     <code>
         \#define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mV(u8PortNum)   DCDC_GetOutCurrent(u8PortNum)
@@ -1903,7 +1904,7 @@ Conditions:
     None.
 Input:
     u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    eIDLESubState- Defines the idle notification of Policy Engine(eIDLE_PE_NOTIFY) or   
+    eIDLESubState - Defines the idle notification of Policy Engine(eIDLE_PE_NOTIFY) or   
                    Type C State machine(eIDLE_TYPEC_NOTIFY) 
 Return:
     None.

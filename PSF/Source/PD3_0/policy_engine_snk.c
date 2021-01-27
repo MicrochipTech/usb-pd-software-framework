@@ -175,7 +175,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             if (DPM_INT_EVT_INITIATE_RENEGOTIATION != gasDPM[u8PortNum].u16InternalEvntInProgress)
             {
                 /* Notify the new source capability is received*/
-                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
+                (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
             }
 
             /*Reset the HardResetCounter*/

@@ -150,7 +150,7 @@ Remarks:
     User definition of this Hook function is mandatory                                        
 *********************************************************************************************/
 #define MCHP_PSF_HOOK_UPD_WRITE(u8PortNum,pu8WriteBuf,u8WriteLen)\
-            SAMD20_SPIWritedriver(u8PortNum,pu8WriteBuf,u8WriteLen)
+            SAMD20_SPIWritedriver (u8PortNum,pu8WriteBuf,u8WriteLen)
 
 /***************************************************************************************
 Function:
@@ -222,7 +222,7 @@ Remarks:
     User definition of this Hook function is mandatory.                                 
 ***************************************************************************************/
 #define MCHP_PSF_HOOK_UPD_READ(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)\
-            SAMD20_SPIReaddriver(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)
+            SAMD20_SPIReaddriver (u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)
 
 
 // *****************************************************************************
@@ -392,7 +392,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                   
 ************************************************************************/
-#define MCHP_PSF_HOOK_MEMCMP(pObj1, pObj2, iLength) SAMD20_MemCmp(pObj1, pObj2, iLength)                          
+#define MCHP_PSF_HOOK_MEMCMP(pObj1, pObj2, iLength) SAMD20_MemCmp (pObj1, pObj2, iLength)                          
 
 /**************************************************************************
 Function:
@@ -418,7 +418,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                     
 **************************************************************************/
-#define MCHP_PSF_HOOK_MEMCPY(pDest, pSrc, iLen) SAMD20_MemCpy(pDest, pSrc, iLen)
+#define MCHP_PSF_HOOK_MEMCPY(pDest, pSrc, iLen) SAMD20_MemCpy (pDest, pSrc, iLen)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -497,7 +497,7 @@ Example:
   Remarks:
     User definition of this Hook function is mandatory                                          
   *********************************************************************************************/
-#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData)       PSF_LoadConfig(pasCfgStatusData)
+#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData)       PSF_LoadConfig (pasCfgStatusData)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -593,7 +593,7 @@ Remarks:
     This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
 ***********************************************************************/  
 
-#define MCHP_PSF_HOOK_PRINT_CHAR(byData)    SAMD20_UART_Write_Char(byData);
+#define MCHP_PSF_HOOK_PRINT_CHAR(byData)    SAMD20_UART_Write_Char (byData);
 
 
 /***********************************************************************
@@ -622,7 +622,7 @@ Example:
 Remarks:
     This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
 ***********************************************************************/  
-#define MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)    SAMD20_UART_Write_Int(dwWriteInt, byWidth);
+#define MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)    SAMD20_UART_Write_Int (dwWriteInt, byWidth);
 
 
 /***********************************************************************
@@ -650,7 +650,7 @@ Example:
 Remarks:
     This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
 ***********************************************************************/ 
-#define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)  SAMD20_UART_Write_String(pbyMessage);
+#define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)  SAMD20_UART_Write_String (pbyMessage);
 
 #else
     #define MCHP_PSF_HOOK_DEBUG_INIT() 
@@ -936,11 +936,11 @@ Remarks:
     took maximum of 3.488ms and 6.182ms execution time for 1 and 2 port Source only solution 
     respectively. </b>
 **************************************************************************************************/
-UINT8 MchpPSF_Init(void);
+UINT8 MchpPSF_Init (void);
 
 /**************************************************************************************************
 Function:
-	void MchpPSF_RUN(void)
+	void MchpPSF_RUN (void)
 Summary:
     PSF state machine run API
 Description:
@@ -960,11 +960,11 @@ Remarks:
     configured for 48MHz environment, MchpPSF_RUN can be called for
     every 1ms to 5ms for Successful 2-Port Source only operation.                
   *************************************************************************/
-void MchpPSF_RUN(void);
+void MchpPSF_RUN (void);
 
 /**************************************************************************************************
 Function:
-    void MchpPSF_UPDIrqHandler(UINT8 u8PortNum)
+    void MchpPSF_UPDIrqHandler (UINT8 u8PortNum)
 Summary:
     UPD350 IRQ Interrupt Handler 
 Description:
@@ -981,11 +981,11 @@ Remarks:
     With SAMD20 environment configured for CPU frequency 48MHZ, this API took maximum of 3.98us and
 	5.8us execution time for 1 and 2 port solution respectively.
 **************************************************************************************************/
-void MchpPSF_UPDIrqHandler(UINT8 u8PortNum);
+void MchpPSF_UPDIrqHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
 Function:
-    void MchpPSF_PDTimerHandler(void)
+    void MchpPSF_PDTimerHandler (void)
 Summary:
     PD Timer Interrupt Handler 
 Description:
@@ -1001,7 +1001,7 @@ Remarks:
     With SAMD20 environment configured for CPU frequency 48MHZ, this API took maximum of 262us  
 	execution time for both 1 and 2 port solution.
 **************************************************************************************************/
-void MchpPSF_PDTimerHandler(void);
+void MchpPSF_PDTimerHandler (void);
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1306,21 +1306,20 @@ Summary:
     Notifies the USER_APPLICATION about various PD events from PSF.
 Description:
     This hook is used by the various modules of PSF to notify the USER_APPLICATION about different 
-    PD events such as Type-C Attach and Detach , Type-C Orientation. USER_APPLICATION can define 
-    this hook function if it wants external handling of the PD events. Define relevant function that 
-    has  UINT8, eMCHP_PSF_NOTIFICATION argument without return type.
+    PD events such as Type-C Attach and Detach, Type-C Orientation. USER_APPLICATION can define 
+    this hook function if it wants external handling of the PD events. This hook is assigned to a 
+    function that takes an argument of type UINT8 and has a return type of UINT8.
 Conditions:
     None.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    ePSFNotification -   Type of Notification occurred inside the stack. This argument can take 
-                        one of the values from enum eMCHP_PSF_NOTIFICATION.                   
+    ePSFNotification - Type of Notification occurred inside the stack. This argument can take 
+                       one of the values from enum eMCHP_PSF_NOTIFICATION.                   
 Return:
-    UINT8 - Except for eMCHP_PSF_VCONN_PWR_FAULT and eMCHP_PSF_VBUS_PWR_FAULT the return value is 
-            ignored by PSF. For eMCHP_PSF_VCONN_PWR_FAULT and eMCHP_PSF_VBUS_PWR_FAULT event, 
-			user can return 
-             TRUE - if the Power fault shall be handled by PSF
-             FALSE - if the Power fault occurrence is ignored.
+    UINT8 - Except for eMCHP_PSF_VCONN_PWR_FAULT, eMCHP_PSF_VBUS_PWR_FAULT, 
+            eMCHP_PSF_TYPEC_ERROR_RECOVERY and eMCHP_PSF_VDM_REQUEST_RCVD the return value is 
+            ignored by PSF. For these events, user can return TRUE or FALSE depending on whether
+            the relevant action is required to be taken by PSF or not.
 Example:
     <code>
         #define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)\
@@ -1336,7 +1335,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                                                
 ****************************************************************************************************/
-#define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   App_HandlePSFEvents(u8PortNum, ePSFNotification)
+#define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   App_HandlePSFEvents (u8PortNum, ePSFNotification)
  
 /**************************************************************************************************************
   Section:
@@ -1574,7 +1573,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory as well as it is mandatory to define functionality for ePSF_GPIO_Functionality.
  **************************************************************************/
-#define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc) App_GPIOControl_Init(u8PortNum, eGPIOFunc)
+#define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc) App_GPIOControl_Init (u8PortNum, eGPIOFunc)
 
 /**************************************************************************
 Function:
@@ -1637,7 +1636,7 @@ Remarks:
     to define functionality for eMCHP_PSF_GPIO_FUNCTIONALITY.
  *************************************************************************/
 #define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eGPIOFunc, eDriveVal) \
-App_GPIOControl_Drive(u8PortNum, eGPIOFunc, eDriveVal)
+App_GPIOControl_Drive (u8PortNum, eGPIOFunc, eDriveVal)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1660,8 +1659,8 @@ Conditions:
     API implementation must make sure that the Port Power(VBUS) of all ports is set to 0V.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Return:
-    None.
+Return:    
+    UINT8 - Return TRUE if initialization was successful or else return FALSE. 
 Example:
     <code>
         #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)       hw_portpower_init(u8PortNum)
@@ -1676,7 +1675,7 @@ Remarks:
     A DAC may initialized under this hook if PSF is configured as SINK.                        
 *****************************************************************************/
 
-#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  App_PortPowerInit(u8PortNum)
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  App_PortPowerInit (u8PortNum)
                                                    
 /****************************************************************************
 Function:
@@ -1711,7 +1710,7 @@ Remarks:
 ****************************************************************************/
 
 #define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u16VBUSVoltage,u16Current)   \
-        App_PortPowerSetPower(u8PortNum, u16VBUSVoltage, u16Current)
+        App_PortPowerSetPower (u8PortNum, u16VBUSVoltage, u16Current)
 
 /*******************************************************************************************
 Function:
@@ -1820,7 +1819,7 @@ Remarks:
     This hook is applicable only if INCLUDE_PD_SINK macro is 1. Definition of this
     hook is not mandatory. This is applicable only for Sink operation.
 *******************************************************************************/ 
-#define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)  App_DriveDAC_I(u8PortNum, u16DACData)
+#define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)  App_DriveDAC_I (u8PortNum, u16DACData)
 
 /*******************************************************************************
 Function:
@@ -1836,7 +1835,8 @@ Description:
 Conditions:
     Output voltage shall be returned in terms of milliVolts.
 Return:
-    None.
+    UINT32 - Output voltage in terms of mV if the DC_DC controller have the capability to 
+    measure output voltage. Else, return 0xFFFFFFFF.
 Example:
     <code>
         #define MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV(u8PortNum)   DCDC_GetOutVoltage(u8PortNum)
@@ -1864,9 +1864,10 @@ Remarks:
     does not have the capability to measure output current, return 0xFFFFFFFF to denote
     the feature is not supported.
   Conditions:
-    \Output Current shall be returned in terms of mA.
+    Output Current shall be returned in terms of mA.
   Return:
-    None.
+    UINT32 - Output current in terms of mA if the DC_DC controller have the capability to 
+    measure output current. Else, return 0xFFFFFFFF.
   Example:
     <code>
         \#define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mV(u8PortNum)   DCDC_GetOutCurrent(u8PortNum)
@@ -1911,7 +1912,7 @@ Conditions:
     None.
 Input:
     u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    eIDLESubState- Defines the idle notification of Policy Engine(eIDLE_PE_NOTIFY) or   
+    eIDLESubState - Defines the idle notification of Policy Engine(eIDLE_PE_NOTIFY) or   
                    Type C State machine(eIDLE_TYPEC_NOTIFY) 
 Return:
     None.

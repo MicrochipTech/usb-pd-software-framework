@@ -230,7 +230,7 @@ void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT
     if ((UINT8)eUPD_PIO_UN_DEF != u8PIONum)
     {
         /*read the GPIO register*/
-        UINT8 u8PioData = UPD_RegReadByte(u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum));
+        UINT8 u8PioData = UPD_RegReadByte (u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum));
         
         /*clear the data output in the register*/
         u8PioData &= ~UPD_CFG_PIO_DATAOUTPUT;
@@ -239,7 +239,7 @@ void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT
         u8PioData |= ((u8PioMode ^ u8DriveType) & UPD_CFG_PIO_DATAOUTPUT);
         
         /*write the value to the GPIO register*/
-        UPD_RegWriteByte(u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum), u8PioData);
+        UPD_RegWriteByte (u8PortNum, (UPD_CFG_PIO_BASE + u8PIONum), u8PioData);
     }
 }
 
@@ -560,7 +560,7 @@ void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
     
 	/* Enable the PIO interrupt*/
 	u16PIOIntrEnPos |= UPD_RegReadWord(u8PortNum, UPD_PIO_INT_EN);
-	UPD_RegWriteWord(u8PortNum, UPD_PIO_INT_EN, u16PIOIntrEnPos);
+	UPD_RegWriteWord (u8PortNum, UPD_PIO_INT_EN, u16PIOIntrEnPos);
 }
 
 /*******************************************************************************************/
@@ -832,7 +832,7 @@ void UPD_CheckAndDisablePorts (void)
              
                     /*Verify the default values*/
                     if ((UPD_VID_LSB == u8ReadData[INDEX_0]) && (UPD_VID_MSB == u8ReadData[INDEX_1]) && \
-                      (UPD_PID_LSB == u8ReadData[INDEX_2]) && (UPD_PID_MSB == u8ReadData[INDEX_3])) 
+                        (UPD_PID_LSB == u8ReadData[INDEX_2]) && (UPD_PID_MSB == u8ReadData[INDEX_3])) 
                     {  
                         /*Value read from this port is right, so enable the ports, Set SPI 
                            Communication is active for this port*/

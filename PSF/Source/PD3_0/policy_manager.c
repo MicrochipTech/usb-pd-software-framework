@@ -713,8 +713,7 @@ UINT32 DPM_ObtainPPSStatusDB (UINT8 u8PortNum)
     UINT32 u32OutputVoltageIn20mV = MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV;
     UINT32 u32OutputCurrentIn50mA = MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA;
 
-
-#if (MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA == DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL) 
+#if (MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV == DPM_PPSSDB_OUTPUT_USER_CONFIGURED_UNSUPPORTED_VAL) 
     u32OutputVoltageIn20mV = DPM_PPSSDB_OUTPUT_VOLT_UNSUPPORTED_VAL;
 #else
     u32OutputVoltageIn20mV =  ((MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV) / DPM_20mV);
@@ -903,7 +902,6 @@ void DPM_UpdateAdvertisedPDOParam (UINT8 u8PortNum)
         gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = u8AdvertisedPDOCnt;
 #endif
     }
-
 }
 
 /******************************************************************************/
