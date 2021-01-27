@@ -437,7 +437,7 @@ UINT16 UPD_RegReadWord (UINT8 u8PortNum, UINT16 u16RegOffset);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_RegisterWrite(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen)
+		void UPD_RegisterWrite (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen)
 
 	Summary:
 		To write a buffer to a UPD register address
@@ -463,11 +463,11 @@ UINT16 UPD_RegReadWord (UINT8 u8PortNum, UINT16 u16RegOffset);
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_RegisterWrite(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
+void UPD_RegisterWrite (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_RegisterRead(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT16 u8Readlen)
+		void UPD_RegisterRead (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT16 u8Readlen)
 
 	Summary:
 		To read a buffer from a UPD register address
@@ -493,7 +493,7 @@ void UPD_RegisterWrite(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_RegisterRead(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen);
+void UPD_RegisterRead (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen);
 
 /*****************************************************************************************************
 	Function:
@@ -555,7 +555,7 @@ void UPD_RegByteClearBit (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8BitMsk);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_RegisterWriteISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
+		void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
 
 	Summary:
 		To write a buffer in ISR context to a UPD register address.
@@ -582,11 +582,11 @@ void UPD_RegByteClearBit (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8BitMsk);
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_RegisterWriteISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
+void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen)
+		void UPD_RegisterReadISR (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen)
 
 	Summary:
 		To read a buffer in ISR context from a UPD register address.
@@ -613,7 +613,7 @@ void UPD_RegisterWriteISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteD
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen);
+void UPD_RegisterReadISR (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen);
 
 /*****************************************************************************************************
 	Function:
@@ -645,7 +645,7 @@ void UPD_DisablePIOOutputISR (UINT8 u8PortNum);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
+		void UPD_GPIOUpdateOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
 
 	Summary:
 		API updates the output data of the GPIO.
@@ -673,7 +673,7 @@ void UPD_DisablePIOOutputISR (UINT8 u8PortNum);
 		None.
 **************************************************************************************************/
 
-void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType);
+void UPD_GPIOUpdateOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType);
 
 /*****************************************************************************************************
 	Function:
@@ -708,7 +708,7 @@ void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8CountValue)
+		void UPD_ConfigurePIODebounceCount (UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8CountValue)
 
 	Summary:
 		API configures the debounce count for corresponding debounce type.
@@ -735,7 +735,7 @@ void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType);
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8CountValue);
+void UPD_ConfigurePIODebounceCount (UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8CountValue);
 
 /*****************************************************************************************************
 	Function:
@@ -860,7 +860,7 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void PD_StartIdleTimer(UINT8 u8PortNum)
+        void PD_StartIdleTimer (UINT8 u8PortNum)
 
     Summary:
         This API starts the port Idle timer 
@@ -885,11 +885,11 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Remarks:
         None.
 **************************************************************************************************/
-void PD_StartIdleTimer(UINT8 u8PortNum);
+void PD_StartIdleTimer (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT8 UPD_CheckUPDsActive()
+        UINT8 UPD_CheckUPDsActive ()
 
     Summary:
         This API is to check the active or idle status of UPD350s 
@@ -912,11 +912,11 @@ void PD_StartIdleTimer(UINT8 u8PortNum);
         TRUE - UPD350s are in Active State
         FALSE - All the UPD350s are in Idle State
 **************************************************************************************************/
-UINT8 UPD_CheckUPDsActive();
+UINT8 UPD_CheckUPDsActive ();
 
 /**************************************************************************************************
     Function:
-        UPD_PwrManagementCtrl(UINT8 u8PortNum)
+        UPD_PwrManagementCtrl (UINT8 u8PortNum)
 
     Summary:
         This API is to initiate the Power Management control.
@@ -941,11 +941,11 @@ UINT8 UPD_CheckUPDsActive();
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_PwrManagementCtrl(UINT8 u8PortNum);
+void UPD_PwrManagementCtrl (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UPD_PwrManagementInit(UINT8 u8PortNum)
+        UPD_PwrManagementInit (UINT8 u8PortNum)
 
     Summary:
         This API is to initialize the Power Management control.
@@ -970,11 +970,11 @@ void UPD_PwrManagementCtrl(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_PwrManagementInit(UINT8 u8PortNum);
+void UPD_PwrManagementInit (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UPD_CheckAndDisablePorts()
+        UPD_CheckAndDisablePorts ()
 
     Summary:
         This API is to check the whether the port is working or not.
@@ -1002,7 +1002,7 @@ void UPD_CheckAndDisablePorts (void);
 
 /**************************************************************************************************
     Function:
-        UPD_FindVBusCorrectionFactor()
+        UPD_FindVBusCorrectionFactor ()
 
     Summary:
         This API is to find the VBUS correction factor.
@@ -1025,7 +1025,7 @@ void UPD_CheckAndDisablePorts (void);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_FindVBusCorrectionFactor(void);
+void UPD_FindVBusCorrectionFactor (void);
 
 /**************************************************************************************************
     Function:
@@ -1081,11 +1081,11 @@ void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_ResetThroughGPIO(void);
+void UPD_ResetThroughGPIO (void);
 
 /**************************************************************************************************
     Function:
-        void UPD_RegDump(UINT8 u8PortNum)
+        void UPD_RegDump (UINT8 u8PortNum)
 
     Summary:
         Provides a dump of UPD350 registers.
@@ -1111,11 +1111,11 @@ void UPD_ResetThroughGPIO(void);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_RegDump(UINT8 u8PortNum);
+void UPD_RegDump (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void UPD_HPDInit(UINT8 u8PortNum)
+        void UPD_HPDInit (UINT8 u8PortNum)
 
     Summary:
         Enables UPD350 to detect HPD events.
@@ -1139,11 +1139,11 @@ void UPD_RegDump(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_HPDInit(UINT8 u8PortNum);
+void UPD_HPDInit (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void UPD_HPDHandleISR(UINT8 u8PortNum)
+        void UPD_HPDHandleISR (UINT8 u8PortNum)
 
     Summary:
         If an HPD_QUEUE_NOT_EMPTY event occurs, this API will register the events stored in the queue 
@@ -1169,7 +1169,7 @@ void UPD_HPDInit(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_HPDHandleISR(UINT8 u8PortNum);
+void UPD_HPDHandleISR (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

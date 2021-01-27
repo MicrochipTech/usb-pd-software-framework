@@ -56,7 +56,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 /****************************************************************************
     Function:
-        UINT8 PWRCTRL_Initialization(UINT8 u8PortNum)
+        UINT8 PWRCTRL_Initialization (UINT8 u8PortNum)
     Summary:
         Initializes Port power control
     Description:
@@ -71,7 +71,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     Remarks:
         None
 **************************************************************************************************/
-UINT8 PWRCTRL_Initialization(UINT8 u8PortNum);
+UINT8 PWRCTRL_Initialization (UINT8 u8PortNum);
 
 /****************************************************************************
     Function:
@@ -120,7 +120,7 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS);
 
 /****************************************************************************
     Function:
-        void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
+        void PWRCTRL_ConfigDCDCEn (UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn)
     Summary:
         API to configure DC_DC_EN as required
     Description:
@@ -140,11 +140,11 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS);
       None.
 
 **************************************************************************************************/
-void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn);
+void PWRCTRL_ConfigDCDCEn (UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn);
 
 /****************************************************************************
     Function:
-        void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
+        void PWRCTRL_ConfigEnSink (UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
     Summary:
         API to configure EN_SINK as required
     Description:
@@ -164,11 +164,11 @@ void PWRCTRL_ConfigDCDCEn(UINT8 u8PortNum, UINT8 u8EnaDisDCDCEn);
       None.
 
 **************************************************************************************************/
-void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink);
+void PWRCTRL_ConfigEnSink (UINT8 u8PortNum, UINT8 u8EnaDisEnSink);
 
 /****************************************************************************
     Function:
-        void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
+        void PWRCTRL_ConfigSinkHW (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
     Summary:
         API to configure Sink Hardware
     Description:
@@ -186,11 +186,11 @@ void PWRCTRL_ConfigEnSink(UINT8 u8PortNum, UINT8 u8EnaDisEnSink);
       None.
 
 **************************************************************************************************/
-void PWRCTRL_ConfigSinkHW(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current);
+void PWRCTRL_ConfigSinkHW (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current);
 
 /****************************************************************************
     Function:
-        void PWRCTRL_DriveDAC_I(UINT8 u8PortNum, UINT16 u16VBUSCurrent)
+        void PWRCTRL_DriveDAC_I (UINT8 u8PortNum, UINT16 u16VBUSCurrent)
     Summary:
         API to indicate Sink Hardware about the negotiated current
     Description:

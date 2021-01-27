@@ -242,7 +242,7 @@ void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
   	UINT8 u8HwnRetryCount;
 	
 	/* HW Retry Counter is updated depending on Spec Rev */
-	if(PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
+	if (PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
 	{
 		u8HwnRetryCount = PRL_HW_RETRY_CNT_2_0;
 	}
@@ -254,8 +254,8 @@ void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
 	UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_C, 
 					  	PRL_TX_PARAM_C_UPD_SPEC_REV_2_0 							|	 			/*	Spec Rev */
 						PRL_UPDATE_TX_PARAM_C_N_RETRY_CNT(u8HwnRetryCount)			| 				/* nRetryCount corresponding to spec */
-						PRL_UPDATE_TX_PARAM_C_PORT_DATA_ROLE(DPM_GET_CURRENT_DATA_ROLE(u8PortNum) ) |	/* Data Role*/
-						PRL_UPDATE_TX_PARAM_C_PORT_POWER_ROLE(DPM_GET_CURRENT_POWER_ROLE(u8PortNum) )); 	/* Power Role*/	
+						PRL_UPDATE_TX_PARAM_C_PORT_DATA_ROLE(DPM_GET_CURRENT_DATA_ROLE(u8PortNum)) |	/* Data Role*/
+						PRL_UPDATE_TX_PARAM_C_PORT_POWER_ROLE(DPM_GET_CURRENT_POWER_ROLE(u8PortNum))); 	/* Power Role*/	
 }
 
 /***************************************************************************************************/
@@ -281,7 +281,7 @@ UINT16 PRL_FormNonSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 
 /***************************************************************************************************/
 
 UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8 *pu8DataBuffer, 
-					   PRLTxCallback pfnTxCallback, UINT32  u32PkdPEstOnTxStatus)
+					   PRLTxCallback pfnTxCallback, UINT32 u32PkdPEstOnTxStatus)
 {  
 	UINT8 u8MsgId, u8PktLen, au8TxPkt [PRL_MAX_PD_LEGACY_PKT_LEN], u8OKToTx, u8TxSOPSelect = SET_TO_ZERO;
     /* PD3_Auto_Decode and RX_SOP_ENABLE_SOP are enabled by default */
@@ -383,7 +383,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
             u8HwnRetryCount = PRL_HW_RETRY_CNT_3_0;
         }
     }
-    PRL_UpdateHWRetryCount(u8PortNum, u8HwnRetryCount);
+    PRL_UpdateHWRetryCount (u8PortNum, u8HwnRetryCount);
     
 	/* Depending on the Packet type; MessageID is updated in the Pkt Header and 
 		PD_MAC Reg is updated for Pkt type */
@@ -400,8 +400,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 		{
 			u8MsgId = gasPRL[u8PortNum].u8SOP_P_MsgID;
 			u8TxSOPSelect = PRL_TX_PARAM_A_TX_SOP_SELECT_SOP_P;
-			break;
-			  
+			break;			  
 		}
 
 		case PRL_SOP_PP_TYPE:
@@ -434,7 +433,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	UPD_RegisterWrite (u8PortNum, PRL_PDMAC_TRANSMITTER_BUFF_ADDR, au8TxPkt, u8PktLen);
 	
 	/* Update the PD Pkt length to PD_MAC HW Reg */
-	UPD_RegWriteByte(u8PortNum, PRL_TX_PKT_LEN, u8PktLen);
+	UPD_RegWriteByte (u8PortNum, PRL_TX_PKT_LEN, u8PktLen);
 	
 	/* Update the Tx Param reg */
 	UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_A, (PRL_TX_PARAM_A_EXPECT_GOODCRC | PRL_TX_PARAM_A_EN_FW_TX | u8TxSOPSelect | u8MsgId));
@@ -478,8 +477,8 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
         DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg Discarded\r\n");
 		
 		return PRL_RET_TX_MSG_DISCARD_ON_RCV;
-	}
-	
+	}	
+    
 	do
 	{
 		u8OKToTx = UPD_RegReadByte (u8PortNum, PRL_TX_CTL_B);
@@ -1825,7 +1824,7 @@ void PRL_ChangeTxState(UINT8 u8PortNum, UINT8 u8TxStateISR)
 /******************************************************************************************************/
 
 
-void PRL_ProtocolReset(UINT8 u8PortNum)
+void PRL_ProtocolReset (UINT8 u8PortNum)
 {
     /*Reset the UPD Protocol Layer for all SOPs*/
     PRL_ProtocolResetAllSOPs (u8PortNum);
@@ -1842,7 +1841,7 @@ void PRL_ProtocolReset(UINT8 u8PortNum)
 
 /******************************************************************************************************/
 
-void PRL_UpdateHWRetryCount(UINT8 u8PortNum, UINT8 u8HwnRetryCnt)
+void PRL_UpdateHWRetryCount (UINT8 u8PortNum, UINT8 u8HwnRetryCnt)
 {
     UINT8 u8TxParamC = UPD_RegReadByte (u8PortNum, PRL_TX_PARAM_C); 
     u8TxParamC &= ~PRL_TX_PARAM_C_N_RETRY_CNT_FIELD_MASK;

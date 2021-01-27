@@ -50,36 +50,36 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // Section: Local Functions                                                   */
 /* ************************************************************************** */
 /* ************************************************************************** */
-static void CFG_Port_0_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_Port_0_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_0_SourcePDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_0_SinkPDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_0_SinkCapsExtd (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
 #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
 
-static void CFG_Port_1_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
-static void CFG_Port_1_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_1_SourcePDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_1_SinkPDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
+static void CFG_Port_1_SinkCapsExtd (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData);
 
 static void CFG_Port_1_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-    switch(CFG_GET_CONFIGURED_POWER_ROLE(PORT1))
+    switch (CFG_GET_CONFIGURED_POWER_ROLE(PORT1))
     {
         case PD_ROLE_DRP:
         {
-            CFG_Port_1_SourcePDOs(pasCfgStatusData);
-            CFG_Port_1_SinkPDOs(pasCfgStatusData);
-            CFG_Port_1_SinkCapsExtd(pasCfgStatusData);
+            CFG_Port_1_SourcePDOs (pasCfgStatusData);
+            CFG_Port_1_SinkPDOs (pasCfgStatusData);
+            CFG_Port_1_SinkCapsExtd (pasCfgStatusData);
             break;
         }
         case PD_ROLE_SOURCE:
         {
-            CFG_Port_1_SourcePDOs(pasCfgStatusData);
+            CFG_Port_1_SourcePDOs (pasCfgStatusData);
             break;
         }
         case PD_ROLE_SINK:
         {
-            CFG_Port_1_SinkPDOs(pasCfgStatusData);
-            CFG_Port_1_SinkCapsExtd(pasCfgStatusData);
+            CFG_Port_1_SinkPDOs (pasCfgStatusData);
+            CFG_Port_1_SinkCapsExtd (pasCfgStatusData);
             break;
         }
         default:
@@ -87,7 +87,7 @@ static void CFG_Port_1_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     }
 }
 
-static void CFG_Port_1_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_1_SourcePDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT1].u8SourcePDOCnt = CFG_PORT_1_SOURCE_NUM_OF_PDOS;
     /* PDO Update*/
@@ -100,7 +100,7 @@ static void CFG_Port_1_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT1].u32aSourcePDO[INDEX_6] = CFG_PORT_1_SOURCE_PDO_7;
 }
 
-static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_1_SinkPDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT1].u8SinkPDOCnt = CFG_PORT_1_SINK_NUM_OF_PDOS;
     /*PDO Updated*/
@@ -123,7 +123,7 @@ static void CFG_Port_1_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             (CFG_PORT_1_SINK_USB_SUSP) | (CFG_PORT_1_SINK_GIVE_BACK_FLAG));    
 }
 
-static void CFG_Port_1_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_1_SinkCapsExtd (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT1].u8aSinkCapsExtd[INDEX_0] = \
                             LOBYTE(CFG_PORT_1_SINK_CAPS_EXTD_VID); 
@@ -173,13 +173,13 @@ static void CFG_Port_1_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 
 static void CFG_Port_0_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-    switch(CFG_GET_CONFIGURED_POWER_ROLE(PORT0))
+    switch (CFG_GET_CONFIGURED_POWER_ROLE(PORT0))
     {
         case PD_ROLE_DRP:
         {
-            CFG_Port_0_SourcePDOs(pasCfgStatusData);
-            CFG_Port_0_SinkPDOs(pasCfgStatusData);
-            CFG_Port_0_SinkCapsExtd(pasCfgStatusData);
+            CFG_Port_0_SourcePDOs (pasCfgStatusData);
+            CFG_Port_0_SinkPDOs (pasCfgStatusData);
+            CFG_Port_0_SinkCapsExtd (pasCfgStatusData);
             break;
         }
         case PD_ROLE_SOURCE:
@@ -198,7 +198,7 @@ static void CFG_Port_0_PDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     }
 }
 
-static void CFG_Port_0_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_0_SourcePDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT0].u8SourcePDOCnt = CFG_PORT_0_SOURCE_NUM_OF_PDOS;  
     
@@ -213,7 +213,7 @@ static void CFG_Port_0_SourcePDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     
 }
 
-static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_0_SinkPDOs (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
             (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG));
@@ -255,7 +255,7 @@ static void CFG_Port_0_SinkPDOs(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             CFG_PORT_0_SINK_DAC_I_DIR;
 }
 
-static void CFG_Port_0_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+static void CFG_Port_0_SinkCapsExtd (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_0] = \
                             LOBYTE(CFG_PORT_0_SINK_CAPS_EXTD_VID); 
@@ -306,7 +306,7 @@ static void CFG_Port_0_SinkCapsExtd(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 // Section: Interface Functions                                               */
 /* ************************************************************************** */
 /* ************************************************************************** */
-void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
+void PSF_LoadConfig (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
     UINT8 u8Length = SET_TO_ZERO;
 
