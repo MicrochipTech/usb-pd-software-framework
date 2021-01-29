@@ -2740,11 +2740,11 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
                  
         if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_DISCHARGE_ON_MASK)
         {
-            TypeC_VCONNDisOn_IntrHandler(u8PortNum);
+            TypeC_VCONNDisOn_IntrHandler (u8PortNum);
         }   
         else if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_ON_REQ_MASK)
         {
-            TypeC_VCONNOn_IntrHandler(u8PortNum);
+            TypeC_VCONNOn_IntrHandler (u8PortNum);
         }
         else
         {

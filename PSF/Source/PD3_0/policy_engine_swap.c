@@ -291,7 +291,7 @@ void PE_RunDRSwapStateMachine (UINT8 u8PortNum)
        {
            break;
        }
-   }
+    }
    
    /* Transmit the message if u8IsTransmit is set */
     if (TRUE == u8IsTransmit)

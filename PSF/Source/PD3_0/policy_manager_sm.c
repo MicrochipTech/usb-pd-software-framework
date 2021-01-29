@@ -712,7 +712,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
                                     ~(DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV);
                 
         /* Call the DPM API that sets the VBUS OV flag*/
-        DPM_HandleExternalVBUSFault( u8PortNum, DPM_POWER_FAULT_OVP); 
+        DPM_HandleExternalVBUSFault (u8PortNum, DPM_POWER_FAULT_OVP); 
     }
     else if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
@@ -730,8 +730,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             gasDPM[u8PortNum].u8StatusEventFlags |= DPM_EVENT_TYPE_CL_MODE;
             gasDPM[u8PortNum].u8RealTimeFlags |= DPM_REAL_TIME_FLAG_OMF_IN_CL_MODE;
             /*Initiate Alert message*/
-            DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_ALERT);
-            
+            DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_ALERT);            
         }
         else
         #endif /*INCLUDE_PD_SOURCE_PPS*/
@@ -876,7 +875,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         
         DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Disabled\r\n");
         
-        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_HPD_DISABLED);
+        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_DISABLED);
     }
     else if (DPM_CLIENT_REQ_ENABLE_HPD & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
     {
