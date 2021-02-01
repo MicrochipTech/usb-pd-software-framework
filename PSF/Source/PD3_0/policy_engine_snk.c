@@ -63,7 +63,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_STARTUP\r\n");
  
             /*Reset the Protocol Layer */
-            PRL_ProtocolReset(u8PortNum);
+            PRL_ProtocolReset (u8PortNum);
              
             /*Clearing the Hard Reset IN Progress bit here because source detach
             can occur while waiting in ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS*/
@@ -98,13 +98,13 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             from ePE_SNK_TRANSITION_TO_DEFAULT state*/
     
             /*Query the Device policy manager for VBUS of 5V Presence*/
-            if ((TYPEC_VBUS_5V == DPM_GetVBUSVoltage(u8PortNum)) && \
+            if ((TYPEC_VBUS_5V == DPM_GetVBUSVoltage (u8PortNum)) && \
                 (TYPEC_ATTACHED_SNK == u8TypeCState))
             {
                 DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_DISCOVERY\r\n");
                 
 			  	/* Enable Power fault thresholds for TYPEC_VBUS_5V to detect Power faults*/
-                TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
+                TypeC_ConfigureVBUSThr (u8PortNum, TYPEC_VBUS_5V, \
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA,TYPEC_CONFIG_PWR_FAULT_THR);
 				
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_WAIT_FOR_CAPABILITIES;
@@ -132,7 +132,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         capability message*/
                         /*Set the timer callback to transition to 
                         ePE_SNK_HARD_RESET and ePE_SNK_HARD_RESET_SEND_SS sub state if timeout happens*/
-                        gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start(\
+                        gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                                  PE_SINKWAITCAP_TIMEOUT_MS,\
                                                                  PE_SSChngAndTimeoutValidate_TimerCB,\
                                                                  u8PortNum, \
@@ -144,8 +144,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                         /*Stay in PE_SNK_Wait_for_Capabilities State if HardReset Counter Overflowed*/
                         /*Update EN_SINK based on implicit current from source 
                           and Wait for Source capability message*/
-
-                        PWRCTRL_ConfigEnSink(u8PortNum, TRUE);
+                        PWRCTRL_ConfigEnSink (u8PortNum, TRUE);
                     }
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_WAIT_FOR_CAPABILITIES_WAIT_SS;                    
@@ -173,17 +172,17 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
         {            
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY\r\n");
               
-            if(DPM_INT_EVT_INITIATE_RENEGOTIATION != gasDPM[u8PortNum].u16InternalEvntInProgress)
+            if (DPM_INT_EVT_INITIATE_RENEGOTIATION != gasDPM[u8PortNum].u16InternalEvntInProgress)
             {
                 /* Notify the new source capability is received*/
-                (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
+                (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
             }
 
             /*Reset the HardResetCounter*/
-            gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	
+            gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	                        
             
             /*Ask the Device policy manager to evaluate the received source capability message*/
-            DPM_EvaluateReceivedSrcCaps(u8PortNum,(UINT16) u32Header ,(UINT32*)pu8DataBuf );
+            DPM_EvaluateReceivedSrcCaps (u8PortNum, (UINT16) u32Header, (UINT32*)pu8DataBuf);
 
             /*Invalid Source Capability Message results in Sink request object count to be 0*/
             if (SET_TO_ZERO == gasCfgStatusData.sPerPortData[u8PortNum].u32RDO)
@@ -253,7 +252,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Start the PE_SENDERRESPONSE_TIMEOUT_MS for the Sink Data request message sent*/
                     /*Set the timer callback to transition to 
                     ePE_SNK_HARD_RESET state and ePE_SNK_HARD_RESET_SEND_SS sub state if timeout happens*/
-                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start(\
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                               PE_SENDERRESPONSE_TIMEOUT_MS,\
                                                               PE_SSChngAndTimeoutValidate_TimerCB,\
                                                               u8PortNum,(UINT8) ePE_SNK_HARD_RESET_SEND_SS);
@@ -285,17 +284,23 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
             {
                 case ePE_SNK_TRANSITION_SINK_ENTRY_SS:
                 {                    
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK_ENTRY_SS\r\n");                                                       
                     
+                    /* Configure VBUS Threshold for the requested PDO */
+                    TypeC_ConfigureVBUSThr (u8PortNum, \
+                            gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV, \
+                                gasDPM[u8PortNum].u16SinkOperatingCurrInmA, \
+                                    TYPEC_CONFIG_NON_PWR_FAULT_THR);                    
+                
                     /* Requested current controlling */
-                    PWRCTRL_ConfigSinkHW(u8PortNum, \
-                            DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO),\
+                    PWRCTRL_ConfigSinkHW (u8PortNum, \
+                            DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(gasDPM[u8PortNum].u32NegotiatedPDO), \
                                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
                     
                     /*Initialize and run PE_PSTRANSITION_TIMEOUT_MS*/
                     /*Set the timer callback to transition to 
                     ePE_SNK_HARD_RESET and ePE_SNK_HARD_RESET_SEND_SS sub state if timeout happens*/
-                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start(\
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (\
                                                               PE_PSTRANSITION_TIMEOUT_MS,\
                                                               PE_SSChngAndTimeoutValidate_TimerCB,\
                                                               u8PortNum, (UINT8)ePE_SNK_HARD_RESET_SEND_SS);
@@ -330,24 +335,24 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_ENTRY_SS\r\n");
 					
                     /* Configure threshold to detect faults*/
-                   	DPM_EnablePowerFaultDetection(u8PortNum);
+                   	DPM_EnablePowerFaultDetection (u8PortNum);
 					
                     /*Setting the explicit contract as True*/
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= (PE_EXPLICIT_CONTRACT);                    
                                     
                     /*Set EN_SINK*/
-                    PWRCTRL_ConfigEnSink(u8PortNum, TRUE);
+                    PWRCTRL_ConfigEnSink (u8PortNum, TRUE);
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;
                     
                     /*Notify that contract is established*/
-                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PD_CONTRACT_NEGOTIATED);
                                         
                     if (DPM_PORT_SINK_CAPABILITY_MISMATCH_STATUS & \
                             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus)
                     {
                         /* Notify the capability mismatch*/
-                        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_CAPS_MISMATCH);
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_CAPS_MISMATCH);
                     }
                     
                     break;
@@ -358,7 +363,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_END_AMS_SS\r\n");
                     
                     /*On PD negotiation complete and sink is in ready state, inform DPM to initiate internal events*/
-                    DPM_InitiateInternalEvts(u8PortNum);
+                    DPM_InitiateInternalEvts (u8PortNum);
                     
                     gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;                        
 
@@ -398,7 +403,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_HARDRESET_PROGRESS_MASK;                   
                     
                     /* API to send HardReset is called*/
-                    PRL_SendCableorHardReset(u8PortNum, PRL_SEND_HARD_RESET,\
+                    PRL_SendCableorHardReset (u8PortNum, PRL_SEND_HARD_RESET,\
                                              NULL, SET_TO_ZERO);
                     
                     /*Increment HardReset Counter*/
@@ -432,9 +437,9 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_HARDRESET_PROGRESS_MASK;
                      
                     /*Turn OFF VCONN if it sources currently*/
-                    if (DPM_IsPortVCONNSource(u8PortNum))
+                    if (DPM_IsPortVCONNSource (u8PortNum))
                     {
-                        DPM_VCONNOnOff(u8PortNum,DPM_VCONN_OFF);
+                        DPM_VCONNOnOff (u8PortNum,DPM_VCONN_OFF);
                         
                         /*Start the VCONN_OFF timer*/
                         /*This Timeout is implemented outside of the PD Specification to track 
@@ -457,7 +462,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                
                case ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_FOR_VCONN_OFF_SS:
                {                
-                    if(!DPM_IsPortVCONNSource(u8PortNum))
+                    if(!DPM_IsPortVCONNSource (u8PortNum))
                     {                        
                         /*Stop the VCONN_OFF timer*/
                         PE_KillPolicyEngineTimer (u8PortNum);
@@ -485,7 +490,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
                     /* Configuring VBUS threshold to detect VSafe0V and VSafe5V
                      as on reception of HardReset Source will transition to VSafe0V*/
-                    TypeC_ConfigureVBUSThr(u8PortNum, TYPEC_VBUS_5V, \
+                    TypeC_ConfigureVBUSThr (u8PortNum, TYPEC_VBUS_5V, \
                             gasDPM[u8PortNum].u16SinkOperatingCurrInmA, \
                             TYPEC_CONFIG_NON_PWR_FAULT_THR);
                     
@@ -496,10 +501,13 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                case ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS:
                {                     
                     /*Transition only after the VBUS from Source has gone down to 0V*/
-                    if(TYPEC_VBUS_0V == DPM_GetVBUSVoltage(u8PortNum))
-                    {  						
+                    if (TYPEC_VBUS_0V == DPM_GetVBUSVoltage (u8PortNum))
+                    {
+                        /*Disable the VBUS discharge functionality since VBUS has reached vSafe0V*/                  
+                        PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
+  						
                         /*Inform Protocol Layer about Hard Reset Complete */
-                        PRL_OnHardResetComplete(u8PortNum);
+                        PRL_OnHardResetComplete (u8PortNum);
                         
                         /*Clearing the Hard Reset IN Progress status bit since Hard Reset 
                         is complete after the vSafe0V transition*/
@@ -534,7 +542,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     /*Send PD message if the variable "u8IsTransmit" is set as true inside the state machine*/
 	if (TRUE == u8IsTransmit)
 	{
-		(void) PRL_TransmitMsg(u8PortNum, PRL_SOP_TYPE, u16TransmitHeader, (UINT8 *)u32aDataObj,\
+		(void) PRL_TransmitMsg (u8PortNum, PRL_SOP_TYPE, u16TransmitHeader, (UINT8 *)u32aDataObj,\
                         pfnTransmitCB, u32TransmitTmrIDTxSt);
 	}
 

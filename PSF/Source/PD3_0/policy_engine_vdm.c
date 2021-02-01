@@ -70,12 +70,12 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
         eTxDoneSS = ePE_SNK_READY_END_AMS_SS;
     }          
     
-    switch(gasPolicyEngine[u8PortNum].ePEState)
+    switch (gasPolicyEngine[u8PortNum].ePEState)
     {
         /************************** VDM Initiator State **********************/
         case ePE_VDM_INITIATE_VDM:
         {
-            switch(gasPolicyEngine[u8PortNum].ePESubState)
+            switch (gasPolicyEngine[u8PortNum].ePESubState)
             {
                 case ePE_VDM_INITIATE_VDM_ENTRY_SS: 
                 {
@@ -199,7 +199,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                        6 times. Responder is allowed to send BUSY response for a 
                        maximum of 5 times. To know whether the responder port sends 
                        ACK/NAK after 5 times, initiator port has to retry the 6th time */
-                    if(gasPolicyEngine[u8PortNum].u8VDMBusyCounter < PE_N_BUSY_COUNT)
+                    if (gasPolicyEngine[u8PortNum].u8VDMBusyCounter < PE_N_BUSY_COUNT)
                     {              
                         /* Increment the VDM Busy Counter */
                         gasPolicyEngine[u8PortNum].u8VDMBusyCounter++;
@@ -240,7 +240,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS; 
                     
                     /* Post eMCHP_PSF_VDM_RESPONSE_NOT_RCVD notification */
-                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_RESPONSE_NOT_RCVD); 
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VDM_RESPONSE_NOT_RCVD); 
                                         
                     break; 
                 }
@@ -258,7 +258,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS; 
                     
                     /* Post eMCHP_PSF_VDM_AMS_COMPLETE notification */
-                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_AMS_COMPLETE); 
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VDM_AMS_COMPLETE); 
                     
                     break; 
                 }

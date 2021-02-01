@@ -84,6 +84,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum);
 void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current);
 
 void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData);
+
 #endif /* _PSFDRP_APP_H */
 
 /* *****************************************************************************

@@ -211,6 +211,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    set as 20 milliseconds. */
 #define PE_SWAP_SOURCE_START_TIMEOUT_MS         MILLISECONDS_TO_TICKS(20)
 
+/* PE_SWAP_SINK_READY_TIMEOUT_MS defines the tSwapSinkReady specified in the 
+   USB PD Specification. Default value of PE_SWAP_SINK_READY_TIMEOUT_MS is 
+   set as 12 milliseconds. */
+#define PE_SWAP_SINK_READY_TIMEOUT_MS           MILLISECONDS_TO_TICKS(12)
+
 /* PE_VDM_BUSY_TIMEOUT_MS defines the tVDMBusy specified in the 
    USB PD Specification. Default value of PE_VDM_BUSY_TIMEOUT_MS is 
    set as 50 milliseconds. */

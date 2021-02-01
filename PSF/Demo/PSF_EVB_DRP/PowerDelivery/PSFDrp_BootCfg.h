@@ -109,20 +109,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_RP_CURRENT_VALUE          (3U << 3)
 
 /*Port Enable: 0 - Port Disable; 1 - Port Enable*/
-#define CFG_PORT_0_ENABLE       (1U << 5)
-#define CFG_PORT_1_ENABLE       (1U << 5)
+#define CFG_PORT_0_ENABLE                    (1U << 5)
+#define CFG_PORT_1_ENABLE                    (1U << 5)
 
 /*VCONN OCS Enable: 0 - Disable, 1 - Enable*/
-#define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
-#define CFG_PORT_1_VCONN_OCS_ENABLE     (1U << 9)  
-
-/* Power/Data state for initiating FRS: 
- * 0 - Disabled; 
- * 1 - Power Sink/Data Host; 
- * 2 - Power Source/Data Device; 
- * 3 - Reserved  */
-#define CFG_PORT_0_FRS_POWER_DATA_STATE  (1U << 11) 
-#define CFG_PORT_1_FRS_POWER_DATA_STATE  (2U << 11) 
+#define CFG_PORT_0_VCONN_OCS_ENABLE          (1U << 9)
+#define CFG_PORT_1_VCONN_OCS_ENABLE          (1U << 9)  
 
 /********************************PIO Specific configuration******************************/
 #define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
@@ -144,26 +136,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Note: UPD PIO9 is shared between HPD and VSEL2 pin functionalities. 
    Hence, INCLUDE_UPD_HPD is disabled by default. If user application
    wishes to use HPD feature, then VSEL2 functionality has to be mapped
-   with any MCU pin since HPD pin can only be a UPD PIO */
+   with any MCU pin since HPD pin can only be an UPD PIO */
 #define CFG_PORT_0_HPD_IO                    eUPD_PIO9
 #define CFG_PORT_1_HPD_IO                    eUPD_PIO9
-
-/* Port 0 is configured as Power Sink/Data Host. So, EN_FRS acts an output pin */
-#define CFG_PORT_0_UPD_EN_FRS_PIO_NO        eUPD_PIO2
-#define CFG_PORT_0_UPD_EN_FRS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
-
-/* Port 1 is configured as Power Source/Data Device. So, EN_FRS acts an input pin.
-   The falling edge of this pin indicates external power to the system is lost 
-   and FRS signal will be triggered by PSF and it will turn into bus-powered sink. 
-   Once power is back, that is, on the rising edge of this pin, PSF will resume 
-   its operation as DRP (acting as sink) followed by PR_Swap based on user configuration
-   of u16SwapPolicy field.
- 
-   Even though, this pin is initially configured to be active low, after an FR_Swap
-   is complete, this pin will be configured to detect rising edge to indicate that 
-   power is back. */
-#define CFG_PORT_1_UPD_EN_FRS_PIO_NO        eUPD_PIO2
-#define CFG_PORT_1_UPD_EN_FRS_PIO_MODE      eINPUT_ACTIVE_LOW
 
 /**********************Fault Related configuration**************************/
 #define CFG_OVER_VOLTAGE_FACTOR			  115U
@@ -209,9 +184,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_0_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_0_SINK_USB_COMM             0U
-/* Note: Current value is right shifted by 3 bit positions since CFG_PORT_0_RP_CURRENT_VALUE
-   will have the actual value left shifted by 3 positions */
-#define CFG_PORT_0_SINK_FRS_CURRENT          (CFG_PORT_0_RP_CURRENT_VALUE >> 3)
+#define CFG_PORT_0_SINK_FRS_CURRENT          0U
 
 #define CFG_PORT_0_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 3000U, \
                                     CFG_PORT_0_SINK_FRS_CURRENT, \
@@ -263,9 +236,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_SINK_HIGHER_CAPABILITY    1U
 #define CFG_PORT_1_SINK_UNCONSTRAINED_PWR    1U 
 #define CFG_PORT_1_SINK_USB_COMM             0U
-/* Note: Current value is right shifted by 3 bit positions since CFG_PORT_1_RP_CURRENT_VALUE
-   will have the actual value left shifted by 3 positions */
-#define CFG_PORT_1_SINK_FRS_CURRENT          (CFG_PORT_1_RP_CURRENT_VALUE >> 3)
+#define CFG_PORT_1_SINK_FRS_CURRENT          0U
 
 #define CFG_PORT_1_SINK_PDO_1     CFG_FORM_SINK_FIXED_PDO1(5000U, 0,\
                                     CFG_PORT_1_SINK_FRS_CURRENT, \
@@ -322,6 +293,59 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Configuration value for u8DAC_I_Direction*/
 /*0 - High amperage = Max Voltage, 1- High amperage = Min Voltage*/
 #define CFG_PORT_0_SINK_DAC_I_DIR      0U
+
+/**************************Sink Caps Extd defines*****************************/
+/*Sink Capabilities Extended Data Block (From Table 6-60 of USB PD Spec 3.0) 
+  Offset  Field               Size 
+    0     VID                 2
+    2     PID                 2
+    4     XID                 4
+    8     FW Version          1 
+    9     HW Version          1 
+    10    SKEDB Version       1 
+    11    Load Step           1 
+    12    Sink Load           2
+          Characteristics
+    14    Compliance          1 
+    15    Touch Temp          1
+    16    Battery Info        1 
+    17    Sink Modes          1 
+    18    Sink Minimum PDP    1
+    19    Sink Operational    1 
+          PDP
+    20    Sink Maximum PDP    1
+  */
+#define CFG_PORT_0_SINK_CAPS_EXTD_VID                       CFG_VENDOR_ID
+#define CFG_PORT_0_SINK_CAPS_EXTD_PID                       CFG_PRODUCT_ID
+#define CFG_PORT_0_SINK_CAPS_EXTD_XID                       0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_FW_VERSION                0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_HW_VERSION                CFG_HW_VERSION
+#define CFG_PORT_0_SINK_CAPS_EXTD_SKEDB_VERSION             1U
+#define CFG_PORT_0_SINK_CAPS_EXTD_LOAD_STEP                 0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS      0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_COMPLIANCE                0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_TOUCH_TEMP                0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_BATTERY_INFO              0U
+#define CFG_PORT_0_SINK_CAPS_EXTD_SINK_MODES                4U
+#define CFG_PORT_0_SINK_CAPS_EXTD_MIN_PDP_In_WATT           5U
+#define CFG_PORT_0_SINK_CAPS_EXTD_OPERATIONAL_PDP_In_WATT   60U
+#define CFG_PORT_0_SINK_CAPS_EXTD_MAX_PDP_In_WATT           60U 
+
+#define CFG_PORT_1_SINK_CAPS_EXTD_VID                       CFG_VENDOR_ID
+#define CFG_PORT_1_SINK_CAPS_EXTD_PID                       CFG_PRODUCT_ID
+#define CFG_PORT_1_SINK_CAPS_EXTD_XID                       0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_FW_VERSION                0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_HW_VERSION                CFG_HW_VERSION
+#define CFG_PORT_1_SINK_CAPS_EXTD_SKEDB_VERSION             1U
+#define CFG_PORT_1_SINK_CAPS_EXTD_LOAD_STEP                 0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS      0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_COMPLIANCE                0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_TOUCH_TEMP                0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_BATTERY_INFO              0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_SINK_MODES                4U
+#define CFG_PORT_1_SINK_CAPS_EXTD_MIN_PDP_In_WATT           0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_OPERATIONAL_PDP_In_WATT   0U
+#define CFG_PORT_1_SINK_CAPS_EXTD_MAX_PDP_In_WATT           0U 
 
 /**************************Role Swap Policy defines*****************************/
 #define CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP             0 

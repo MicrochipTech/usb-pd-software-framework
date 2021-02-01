@@ -40,7 +40,6 @@ UINT8 PDTimer_Init()
 	for (UINT8 u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
 	{
 		gasPDTimers[u8TimerID].u8TimerStPortNum = RESET_TO_ZERO;
-
 	}
     
     /*MCHP_PSF_HOOK_HW_PDTIMER_INIT() will configure and start the hardware timer on 
@@ -77,7 +76,6 @@ UINT8 PDTimer_Start (UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, \
 			gasPDTimers[u8TimerID].u8TimerStPortNum &= ~PDTIMER_STATE;
             gasPDTimers[u8TimerID].u8TimerStPortNum |= PDTIMER_ACTIVE;
             break;
-
 		}
 	}
 	return u8TimerID;
@@ -129,7 +127,7 @@ void PDTimer_Kill (UINT8 u8TimerID)
    PDTimer ISR Handler*/       
    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
    
-    if(u8TimerID < MAX_CONCURRENT_TIMERS)
+    if (u8TimerID < MAX_CONCURRENT_TIMERS)
     {       
         /*Setting the PD Software timer to "Non Active"  state will disable the PDTimer 
         ISR Handler from calling the callback function*/
@@ -162,7 +160,7 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
 	#endif
     
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
-    gasDPM[u8PortNum].u8StsClearTmrID = MAX_CONCURRENT_TIMERS;
+    gasDPM[u8PortNum].u8PPSFaultPersistTmrID = MAX_CONCURRENT_TIMERS;
     #endif
 
     #if (TRUE == INCLUDE_PD_VCONN_SWAP)
@@ -245,13 +243,9 @@ void PDTimer_InterruptHandler (void)
 				
 				/*Setting the timer state as "Timer Expired"*/
 				gasPDTimers[u8TimerID].u8TimerStPortNum &= ~PDTIMER_STATE;
-                gasPDTimers[u8TimerID].u8TimerStPortNum |= PDTIMER_EXPIRED;   
-				
-
+                gasPDTimers[u8TimerID].u8TimerStPortNum |= PDTIMER_EXPIRED;   				
 			}
-
 		}
-
 	}
 	
 	MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
