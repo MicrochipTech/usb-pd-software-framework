@@ -382,7 +382,7 @@ Description:
     are configured for DRP operation. Users can set this define to 0 to reduce the code size
     if none of the DRP ports in the system require Fast Role Swap functionality.
 Remarks: 
-    Default value is 1 for DRP application. INCLUDE_PD_DRP, INCLUDE_PD_3_0, INCLUDE_PD_VCONN_SWAP
+    Default value is 1 for FRS application. INCLUDE_PD_DRP, INCLUDE_PD_3_0, INCLUDE_PD_VCONN_SWAP
     INCLUDE_PD_DR_SWAP, INCLUDE_PD_PR_SWAP and INCLUDE_UPD_PIO_OVERRIDE_SUPPORT
     should be set to 1 as a prerequisite when INCLUDE_PD_FR_SWAP is set to 1.
 Example:
@@ -1585,150 +1585,25 @@ typedef enum
     by PSF at a given time. If more than one client request bits are set at the same time, 
     the requests will be queued internally and processed based on the priority of events where
     bit 0 takes the highest priority and bit 31 takes the least priority. If the request is 
-    accepted and processed, a response notification will be posted by PSF as mentioned in the 
-    below table.
+    accepted and processed, a response notification will be posted by PSF. Refer 'Client Requests'
+    section under 'Run Time Configuration' for detailed information on the client requests.
 	<table> 
     Bit     R/W Config   R/W Run   \Description
              time         time      
     ------  -----------  --------  --------------------
-    0       R/W          R/W       Port Disable Request 
-                                    * Set this bit to request PSF to disable a port.
-                                    * This client request will be processed by PSF 
-                                       irrespective of whether it is idle.
-                                    * Once a port is disabled successfully, 
-                                       eMCHP_PSF_PORT_DISABLED notification will be posted
-                                       by PSF to user application.
-    1       R/W          R/W       Port Enable Request 
-                                    * Set this bit to request PSF to enable a port.
-                                    * This client request will be processed by PSF 
-                                       irrespective of whether it is idle.
-                                     * Once a port is disabled successfully, 
-                                       eMCHP_PSF_PORT_ENABLED notification will be posted
-                                       by PSF to user application.
-    2       R/W          R/W       Handle VBUS Power Fault Over voltage Request 
-                                    * Set this bit to request PSF to process externally detected
-                                        over voltage VBUS fault.
-    3       R/W          R/W       Handle VBUS Power Fault Over Current Request   
-                                    * Set this bit to request PSF to process externally detected
-                                        over current VBUS power fault or to inform PSF that Current
-                                        Limit mode is entered by external DC-DC controller.  
-    4       R/W          R/W       Handle VBUS Power Fault Over Current Exit Request 
-                                    * Set this bit to inform PSF that externally detected 
-                                        over current VBUS power fault condition is exited or 
-                                        Constant Voltage mode is entered by external DC-DC controller.
-    5        R/W          R/W      Respond to a Vendor Defined Message 
-                                    * Set this bit to respond to a VDM request received from 
-                                       port partner
-                                    * Reception of a VDM request from partner will be notified 
-                                       through eMCHP_PSF_VDM_REQUEST_RCVD notification. VDM Header,
-                                       received from partner will be stored in u32PartnerVDMHeader 
-                                       variable of sVDMPerPortData structure, VDOs and number of 
-                                       VDOs will be stored in u32aPartnerVDO array and                                        
-                                       u8PartnerVDOCnt variable of sAltModePerPortData structure 
-                                       respectively. 
-                                    * User Application shall ensure that the VDM Header is 
-                                       configured in u32VDMHeader variable of sVDMPerPortData 
-                                       structure and VDOs in the u32aVDO array and VDOs 
-                                       count in u8VDOCnt of sAltModePerPortData structure
-                                       while raising this client request
-                                    * eMCHP_PSF_VDM_AMS_COMPLETE notification will be posted
-                                        when Good CRC is received for the response sent       
-                                    * This client request is supported only when 
-                                       INCLUDE_PD_ALT_MODE is defined as '1'.    
-    6       R/W          R/W       Renegotiation Request 
-                                    * Set this bit to request PSF to trigger renegotiation  
-                                    * User application may request PSF to renegotiate 
-                                       based on default PDOs
-                                       (gasCfgStatusData.sPerPortData[u8PortNum].u32aSourcePDO 
-                                       or gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO)
-                                       or New PDOs 
-                                       (gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
-                                       or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO).
-                                       To renegotiate with default PDOs, user application must ensure 
-                                       that BIT(10) in 
-                                       gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData 
-                                       variable is cleared and then BIT(6) in 
-                                       gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest
-                                       is set. To renegotiate with New PDOs, user application must 
-                                       ensure that the New PDOs                                        
-                                       (gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSourcePDO 
-                                       or gasCfgStatusData.sPerPortData[u8PortNum].u32aNewSinkPDO) 
-                                       are configured, BIT(10) in 
-                                       gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData variable
-                                       is set and BIT(6) in 
-                                       gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest 
-                                       is set
-									* Once the request is processed by PSF, 
-                                       eMCHP_PSF_PD_CONTRACT_NEGOTIATED notification will be posted.
-									* Note: This client request is not applicable when Power 
-                                       Balancing or Power Throttling is enabled. Therefore, the
-									   user application should not trigger this client request 
-                                       when Power Balancing or Power Throttling is enabled.
-    7       R/W          R/W       Initiate a VCONN Swap 
-                                    * Set this bit to request PSF to initiate a VCONN Swap
-                                    * User Application shall ensure that either of the VCONN Swap 
-                                       Policy bits (Bit 8 or Bit 9) is set in  
-                                       gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy
-                                       variable while raising this client request
-                                    * eMCHP_PSF_VCONN_SWAP_COMPLETE notification will be posted 
-                                       for an Accept/Reject response, and 
-                                       eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD will be posted
-                                       when there is no response for VCONN Swap from the partner
-                                    * This client request is supported only when  
-                                       INCLUDE_PD_VCONN_SWAP is defined as '1'. 
-    8       R/W          R/W       Initiate a Power Role Swap 
-                                    * Set this bit to request PSF to initiate a PR_Swap
-                                    * User Application shall ensure that either of the PR_Swap
-                                       Policy bits (Bit 4 or Bit 5) is set in 
-                                       gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy
-                                       variable while raising this client request
-                                    * eMCHP_PSF_PR_SWAP_COMPLETE notification will be posted 
-                                       for an Accept/Reject response, and 
-                                       eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD will be posted
-                                       when there is no response for the PR_Swap from the partner
-                                    * This client request is supported only when  
-                                       INCLUDE_PD_PR_SWAP is defined as '1'. 
-    9       R/W          R/W       Initiate a Data Role Swap 
-                                    * Set this bit to request PSF to initiate a DR_Swap
-                                    * User Application shall ensure that either of the DR_Swap
-                                       policy bits (Bit 0 or Bit 1) is set in 
-                                       gasCfgStatusData.sPerPortData[u8PortNum].u16SwapPolicy
-                                       variable while raising this client request
-                                    * eMCHP_PSF_DR_SWAP_COMPLETE notification will be posted 
-                                       for an Accept/Reject response, and 
-                                       eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD will be posted
-                                       when there is no response for the DR_Swap from the partner
-                                    * This client request is supported only when  
-                                       INCLUDE_PD_DR_SWAP is defined as '1'. 
-    10       R/W          R/W      Initiate a Structured Vendor Defined Message        
-                                    * Set this bit to request PSF to initiate a VDM request 
-                                       to port partner
-                                    * User Application shall ensure that the VDM Header is 
-                                       configured in u32VDMHeader variable of sVDMPerPortData 
-                                       structure and VDOs in the u32aVDO array and VDOs 
-                                       count in u8VDOCnt of sAltModePerPortData structure
-                                       while raising this client request
-                                    * eMCHP_PSF_VDM_RESPONSE_RCVD notification will be posted for
-                                       an ACK/NAK response, and eMCHP_PSF_VDM_RESPONSE_NOT_RCVD
-                                       will be posted when no response is received.
-                                    * eMCHP_PSF_VDM_AMS_COMPLETE notification will be posted 
-                                       when Good CRC is received for the VDM requests that does
-                                       not consist of a command response, say Attention command
-                                    * This client request is supported only when INCLUDE_PD_VDM 
-                                       is defined as '1'. 
-    11       R/W          R/W      Hot Plug Detect (HPD) disable request        
-                                    * Set this bit to request PSF to disable HPD support. 
-                                    * This client request is supported only when INCLUDE_UPD_HPD 
-                                       is defined as '1'. 
-                                    * eMCHP_PSF_HPD_DISABLED notification will be posted once
-                                       HPD peripheral is disabled.
-    12       R/W          R/W      Hot Plug Detect (HPD) enable request        
-                                    * Set this bit to request PSF to enable HPD support. 
-                                    * This client request is supported only when INCLUDE_UPD_HPD 
-                                       is defined as '1'. 
-                                    * eMCHP_PSF_HPD_ENABLED notification will be posted once
-                                       HPD peripheral is enabled.
-
+    0       R/W          R/W       Port Disable Client Request                                     
+    1       R/W          R/W       Port Enable Client Request 
+    2       R/W          R/W       VBUS Over Voltage Power Fault Client Request
+    3       R/W          R/W       VBUS Over Current Power Fault Client Request   
+    4       R/W          R/W       VBUS Power Fault Over Current Exit Client Request
+    5       R/W          R/W       Respond VDM Client Request
+    6       R/W          R/W       Renegotiation Client Request
+    7       R/W          R/W       VCONN Swap Client Request
+    8       R/W          R/W       Power Role Swap Client Request
+    9       R/W          R/W       Data Role Swap Client Request
+    10      R/W          R/W       Initiate VDM Client Request
+    11      R/W          R/W       HPD Disable Client Request        
+    12      R/W          R/W       HPD Enable Client Request         
 	31:13  						   Reserved 									
 	</table> 								
  

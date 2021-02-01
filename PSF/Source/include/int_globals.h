@@ -153,7 +153,7 @@ extern UINT8 gu8HPDNextIndex[CONFIG_PD_PORT_COUNT];
         None
 
 *****************************************************************************/
-void IntGlobals_PDInitialization(void);
+void IntGlobals_PDInitialization (void);
 /*****************************************************************************/
 
  /****************************************************************************
@@ -179,7 +179,7 @@ void IntGlobals_PDInitialization(void);
         None
 
 *****************************************************************************/
+void IntGlobals_StackStructVersion (void);
 
-void IntGlobals_StackStructVersion(void);
 /*****************************************************************************/
 #endif /*_INT_GLOBALS_H_*/

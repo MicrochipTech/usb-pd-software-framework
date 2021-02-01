@@ -148,8 +148,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PE_HARDRESET_PROGRESS_MASK     BIT(4)
 #define PE_HARDRESET_PROGRESS_POS      4
 
-#define PE_SWAP_IN_PROGRESS_MASK    BIT(5)
-#define PE_SWAP_IN_PROGRESS_POS     5
+#define PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK    BIT(5)
+#define PE_PR_OR_FR_SWAP_IN_PROGRESS_POS     5
 
 /*Mask used for getting the present contract type from u8PEPortSts variable*/ 
 #define PE_EXPLICIT_CONTRACT        1
@@ -168,6 +168,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* PPS Status message defines */
 #define PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES 4
 #define PE_PPS_STATUS_DATA_OBJ_CNT             2 
+
+/* Sink Caps Extd message defines */
+#define PE_SINK_CAP_EXTD_DATA_BLOCK_SIZE_IN_BYTES     21 
+#define PE_SINK_CAP_EXTD_DATA_DATA_OBJ_CNT            2
 
 typedef enum {
     //--------------------------Source States-----------------------------------//
@@ -394,6 +398,7 @@ typedef enum {
     ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS,
     ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS,
     ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS,
+    ePE_PRS_SRC_SNK_WAIT_SOURCE_ON_EXIT_SS,
     ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_ENTRY_SS,
     ePE_PRS_SNK_SRC_TRANSITION_TO_OFF_WAIT_FOR_PSRDY_SS,
     ePE_PRS_SNK_SRC_SOURCE_ON_SEND_PSRDY_SS,
@@ -412,6 +417,7 @@ typedef enum {
     ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_IDLE_SS,
     ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_WAIT_FOR_PSRDY_SS,
     ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_PSRDY_RCVD_SS,
+    ePE_FRS_SRC_SNK_WAIT_SOURCE_ON_EXIT_SS, 
     /* ePE_FRS_SNK_SRC_SEND_SWAP */
     ePE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS,
     ePE_FRS_SNK_SRC_SEND_SWAP_MSG_DONE_SS,
@@ -521,6 +527,7 @@ typedef enum {
 #define PE_EXT_FW_UPDATE_REQUEST    10
 #define PE_EXT_FW_UPDATE_RESPONSE   11
 #define PE_EXT_PPS_STATUS           12 
+#define PE_EXT_SINK_CAPS_EXTD       15 
 
 /*Defines to be used in PRL_FormSOPTypeMsgHeader*/
 #define PE_OBJECT_COUNT_1            1
@@ -644,10 +651,10 @@ void PE_ResetParams (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void PE_RunStateMachine(UINT8 u8PortNum);
+void PE_RunStateMachine (UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
-        void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *u8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunCommonStateMachine (UINT8 u8PortNum , UINT8 *u8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 
     Summary:
         This API is called to run the Common state machine of policy engine that handles the
@@ -675,10 +682,10 @@ void PE_RunStateMachine(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunCommonStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
-        void PE_ReceiveMsgHandler(UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf);
+        void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf);
 
     Summary:
         This API is called to process the received PD message and do the state transition in 
@@ -705,10 +712,10 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
     Remarks:
         None.
 **************************************************************************************************/
-void PE_ReceiveMsgHandler(UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf);
+void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf);
 /**************************************************************************************************
     Function:
-        UINT8 PE_ValidateMessage(UINT8 u8PortNum, UINT32 u32Header);
+        UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header);
 
     Summary:
         This API is called to validate the received PD message. It can set the policy engine states
@@ -738,7 +745,7 @@ void PE_ReceiveMsgHandler(UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf);
     Remarks:
         None.
 **************************************************************************************************/
-UINT8 PE_ValidateMessage(UINT8 u8PortNum, UINT32 u32Header);
+UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header);
 /**************************************************************************************************
     Function:
         PE_HandleRcvdMsgAndTimeoutEvents (UINT8 u8PortNum, ePolicyState eNextState , ePolicySubState eNextSubState);
@@ -796,10 +803,10 @@ void PE_HandleRcvdMsgAndTimeoutEvents (UINT8 u8PortNum, ePolicyState eNextState 
         None.
 
 **************************************************************************************************/
-void PE_HandleUnExpectedMsg(UINT8 u8PortNum);
+void PE_HandleUnExpectedMsg (UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
-        UINT8 PE_IsMsgUnsupported(UINT8 u8PortNum, UINT16 u16Header);
+        UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header);
 
     Summary:
         This API is called inside the PE_ValidateMessage API to find out whether the received 
@@ -809,7 +816,8 @@ void PE_HandleUnExpectedMsg(UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        
+        This API is called inside the PE_ValidateMessage API to find out whether the received 
+        message is supported by the port or not.
 
     Conditions:
         None
@@ -826,20 +834,21 @@ void PE_HandleUnExpectedMsg(UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-UINT8 PE_IsMsgUnsupported(UINT8 u8PortNum, UINT16 u16Header);
+UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header);
 /**************************************************************************************************
     Function:
-       This API is called inside the timer module once the software timer times out to change the
-       policy engine state to a given value
+       void PE_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PEState);
 
     Summary:
+        This API is called inside the timer module once the software timer times out to change the
+        policy engine state to a given value
        
     Devices Supported:
         UPD350 REV A
 
     Description:
          This API is called inside the timer module once the software timer times out to change the
-       policy engine sub-state to a given value        
+         policy engine sub-state to a given value        
 
     Conditions:
         None
@@ -855,7 +864,7 @@ UINT8 PE_IsMsgUnsupported(UINT8 u8PortNum, UINT16 u16Header);
         None.
 
 **************************************************************************************************/
-void PE_StateChange_TimerCB(UINT8 u8PortNum, UINT8 u8PEState);
+void PE_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PEState);
 /**************************************************************************************************
     Function:
         void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
@@ -888,7 +897,7 @@ void PE_StateChange_TimerCB(UINT8 u8PortNum, UINT8 u8PEState);
 void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
 /**************************************************************************************************
     Function:
-        void PE_SSChngAndTimeoutValidate_TimerCB(UINT8 u8PortNum, UINT8 u8PESubState);
+        void PE_SSChngAndTimeoutValidate_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
 
     Summary:
         This API is set as a timer callback by the policy engine when the PE expects a 
@@ -915,10 +924,10 @@ void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
         None.
 
 **************************************************************************************************/
-void PE_SSChngAndTimeoutValidate_TimerCB(UINT8 u8PortNum, UINT8 u8PESubState);
+void PE_SSChngAndTimeoutValidate_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
 /**************************************************************************************************
     Function:
-        void PE_SendNotSupportedOrRejectMsg(UINT8 u8PortNum);
+        void PE_SendNotSupportedOrRejectMsg (UINT8 u8PortNum);
 
     Summary:
         This API is called to send the Not Supported or Reject message from the policy engine 
@@ -944,7 +953,7 @@ void PE_SSChngAndTimeoutValidate_TimerCB(UINT8 u8PortNum, UINT8 u8PESubState);
         None.
 
 **************************************************************************************************/
-void PE_SendNotSupportedOrRejectMsg(UINT8 u8PortNum);
+void PE_SendNotSupportedOrRejectMsg (UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
         void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8TxDoneSubState, UINT8 u8TxFailedState, UINT8 u8TxFailedSubState);
@@ -1063,7 +1072,7 @@ void PE_SendHardReset (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunSrcStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 
     Summary:
         This API is called to run the policy engine source state machine. 
@@ -1091,10 +1100,10 @@ void PE_SendHardReset (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunSrcStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
-        void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
+        void PE_NoResponse_TimerCB (UINT8 u8PortNum, UINT8 u8DummyPE_State);
 
     Summary:
         This API is given as the timer call back API when starting the NoResponse timer from 
@@ -1121,10 +1130,10 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
         None.
 
 **************************************************************************************************/
-void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
+void PE_NoResponse_TimerCB (UINT8 u8PortNum, UINT8 u8DummyPE_State);
 /**************************************************************************************************
     Function:
-        void PE_RunSnkStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunSnkStateMachine (UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
 
     Summary:
         This API is called to run the policy engine sink state machine.
@@ -1150,10 +1159,10 @@ void PE_NoResponse_TimerCB(UINT8 u8PortNum, UINT8 u8DummyPE_State);
     Remarks:
         None.
 **************************************************************************************************/
-void PE_RunSnkStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunSnkStateMachine (UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
 /**************************************************************************************************
     Function:
-        UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum)
+        UINT8 PE_IsPolicyEngineIdle (UINT8 u8PortNum)
     Summary:
         Checks whether PE is idle.
     Devices Supported:
@@ -1170,7 +1179,7 @@ void PE_RunSnkStateMachine(UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,
     Remarks:
         None.
 **************************************************************************************************/
-UINT8 PE_IsPolicyEngineIdle(UINT8 u8PortNum); 
+UINT8 PE_IsPolicyEngineIdle (UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:

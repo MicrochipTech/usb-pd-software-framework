@@ -59,7 +59,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 {
-
 	UINT8 u8Length = SET_TO_ZERO;
 	
     pasCfgStatusData->u16ProductID = CFG_PRODUCT_ID;
@@ -95,7 +94,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
 	pasCfgStatusData->sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
             (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
 			
-        /*Assigning PDOs*/
+    /*Assigning PDOs*/
     pasCfgStatusData->sPerPortData[PORT0].u8SinkPDOCnt = CFG_PORT_0_SINK_NUM_OF_PDOS;
     
     pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_0] = CFG_PORT_0_SINK_PDO_1;
@@ -105,6 +104,50 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_4] = CFG_PORT_0_SINK_PDO_5;
     pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_5] = CFG_PORT_0_SINK_PDO_6;
     pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_6] = CFG_PORT_0_SINK_PDO_7;
+
+    /* Load Extended Sink Capabilities */
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_0] = \
+                            LOBYTE(CFG_PORT_0_SINK_CAPS_EXTD_VID); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_1] = \
+                            HIBYTE(CFG_PORT_0_SINK_CAPS_EXTD_VID); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_2] = \
+                            LOBYTE(CFG_PORT_0_SINK_CAPS_EXTD_PID); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_3] = \
+                            HIBYTE(CFG_PORT_0_SINK_CAPS_EXTD_PID); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_4] = \
+                            LOBYTE(LOWORD(CFG_PORT_0_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_5] = \
+                            HIBYTE(LOWORD(CFG_PORT_0_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_6] = \
+                            LOBYTE(HIWORD(CFG_PORT_0_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_7] = \
+                            LOBYTE(HIWORD(CFG_PORT_0_SINK_CAPS_EXTD_XID)); 
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_8] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_FW_VERSION;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_9] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_HW_VERSION;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_10] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_SKEDB_VERSION;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_11] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_LOAD_STEP;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_12] = \
+                            LOBYTE(CFG_PORT_0_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS);
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_13] = \
+                            HIBYTE(CFG_PORT_0_SINK_CAPS_EXTD_LOAD_CHARACTERISTICS);
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_14] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_COMPLIANCE;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_15] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_TOUCH_TEMP;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_16] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_BATTERY_INFO;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_17] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_SINK_MODES;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_18] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_MIN_PDP_In_WATT;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_19] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_OPERATIONAL_PDP_In_WATT;
+    pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_20] = \
+                            CFG_PORT_0_SINK_CAPS_EXTD_MAX_PDP_In_WATT;
     
     /*Assigning maximum operating current and minimum operating current for Note
       type port to 3000mA and 1000mA respectively*/
@@ -112,7 +155,6 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             CFG_PORT_0_SINK_MAX_OPERATING_CURRENT_InmA;
     pasCfgStatusData->sPerPortData[PORT0].u16SnkMinOperatingCurInmA = \
             CFG_PORT_0_SINK_MIN_OPERATING_CURRENT_InmA;
-
 
      /*Assigning PDO preferred minimum current*/
     pasCfgStatusData->sPerPortData[PORT0].u16aMinPDOPreferredCurInmA[INDEX_0] = \

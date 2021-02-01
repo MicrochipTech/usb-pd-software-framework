@@ -208,7 +208,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _Timer
 		This API calls MCHP_PSF_HOOK_HW_PDTIMER_INIT() API which is defined by 
         the user to configure and start the Hardware timer.
 **************************************************************************************************/
-UINT8 PDTimer_Init(void);
+UINT8 PDTimer_Init (void);
 /**************************************************************************************************
     Function:
         UINT8 PDTimer_Start (UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, 
@@ -245,7 +245,7 @@ UINT8 PDTimer_Init(void);
     if there are no functions to be executed after the timer expiration
     Similarly, u8PDState parameter is not mandatory.
 **************************************************************************************************/
-UINT8 PDTimer_Start(UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, \
+UINT8 PDTimer_Start (UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, \
                         UINT8 u8PortNum, UINT8 u8PDState);
 /**************************************************************************************************
     Function:
@@ -300,7 +300,7 @@ void PDTimer_WaitforTicks (UINT32 u32TimeoutTicks);
 	Remarks:
 		None
 **************************************************************************************************/
-void PDTimer_Kill(UINT8 u8TimerID);
+void PDTimer_Kill (UINT8 u8TimerID);
 /**************************************************************************************************
 	Function:
         void PDTimer_KillPortTimers (UINT8 u8PortNum)
@@ -327,10 +327,10 @@ void PDTimer_Kill(UINT8 u8TimerID);
 	Remarks:
 		None
 **************************************************************************************************/
-void PDTimer_KillPortTimers(UINT8 u8PortNum);
+void PDTimer_KillPortTimers (UINT8 u8PortNum);
 /*************************************************************************************************
 	Function:
-		void PDTimer_InterruptHandler(void);
+		void PDTimer_InterruptHandler (void);
 
 	Summary:
 		Interrupt Handler for the USB Power delivery Hardware Timer
@@ -355,6 +355,6 @@ void PDTimer_KillPortTimers(UINT8 u8PortNum);
 	Remarks:
         None
 **************************************************************************************************/
-void PDTimer_InterruptHandler(void);
+void PDTimer_InterruptHandler (void);
 /**************************************************************************************************/
 #endif /*_PD_TIMER_H_*/
