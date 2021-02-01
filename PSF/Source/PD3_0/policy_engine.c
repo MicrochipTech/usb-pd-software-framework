@@ -891,7 +891,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_TRANSITION_SINK,\
                                                                    ePE_SNK_TRANSITION_SINK_ENTRY_SS);
                     }
-                    /*Accept message received for soft reset sent */
+                    /*Accept message received for soft reset sent to SOP */
                     else if ((ePE_SEND_SOFT_RESET_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
                             (ePE_SEND_SOFT_RESET_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState))
                     {
@@ -908,6 +908,25 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         {
                             PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_WAIT_FOR_CAPABILITIES,\
                                                                    ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS);                             
+                        }
+                    }
+                    /*Accept message received for soft reset sent to SOP_P */
+                    else if ((ePE_SEND_SOFT_RESET_P_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState) || 
+                            (ePE_SEND_SOFT_RESET_P_MSG_DONE_SS == gasPolicyEngine[u8PortNum].ePESubState))
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"Accept received for SOP' Soft Reset\r\n");
+                        /*kill the timer PE_SENDER_RESPONSE_TIMEOUTID*/
+                        PE_KillPolicyEngineTimer (u8PortNum);
+
+                        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+                        {
+                            PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SRC_READY,\
+                                                                   ePE_SRC_READY_END_AMS_SS);                             
+                        }
+                        else
+                        {
+                            PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum,ePE_SNK_READY,\
+                                                                   ePE_SNK_READY_END_AMS_SS);                             
                         }
                     }
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
@@ -1791,21 +1810,41 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SEND_SOFT_RESET, \
-                                                    ePE_SEND_SOFT_RESET_MSG_DONE_SS, \
+                                                    ePE_SEND_SOFT_RESET_P_MSG_DONE_SS, \
                                                     ePE_SRC_HARD_RESET, ePE_SRC_HARD_RESET_ENTRY_SS);
                     }
                     else
                     {
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SEND_SOFT_RESET, \
-                                                    ePE_SEND_SOFT_RESET_MSG_DONE_SS, \
+                                                    ePE_SEND_SOFT_RESET_P_MSG_DONE_SS, \
                                                     ePE_SNK_HARD_RESET, ePE_SNK_HARD_RESET_SEND_SS);                        
                     }
                     
                     u8IsTransmit = TRUE;
                     
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_IDLE_SS;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_P_IDLE_SS;
                     
                     break;                                       
+               }
+               case ePE_SEND_SOFT_RESET_P_MSG_DONE_SS:
+               {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SEND_SOFT_RESET_P_MSG_DONE_SS\r\n");
+                    
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
+                                                            PE_SSChngAndTimeoutValidate_TimerCB,u8PortNum,  
+                                                            (UINT8)eTxHardRstSS);
+                    
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_P_IDLE_SS;
+                   
+                    break; 
+               }
+               case ePE_SEND_SOFT_RESET_P_IDLE_SS:
+               {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
+                    break; 
                }
                case ePE_SEND_SOFT_RESET_MSG_DONE_SS:
                {
@@ -1826,7 +1865,7 @@ void PE_RunCommonStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPT
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     
                     break; 
-               }
+               }               
                default:
                {
                     break; 
