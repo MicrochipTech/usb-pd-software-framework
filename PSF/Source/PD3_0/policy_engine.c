@@ -1679,6 +1679,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
     ePolicyState eTxDoneSt; 
     ePolicySubState eTxDoneSS, eTxHardRstSS; 
     UINT8 u8CurrPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum); 
+    UINT8 u8CurrDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum); 
     if (PD_ROLE_SOURCE == u8CurrPwrRole)
     {
         eTxDoneSt = ePE_SRC_READY;
@@ -1811,7 +1812,14 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
 																	PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
                     u32pTransmitDataObj = NULL;
                     
-                    if (PD_ROLE_SOURCE == u8CurrPwrRole)
+                    if(PD_ROLE_DFP == u8CurrDataRole)
+                    {
+                        /* When Data role is DFP, if a soft reset fails, cable reset should be sent.*/
+                        u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SEND_SOFT_RESET, \
+                                                    ePE_SEND_SOFT_RESET_P_MSG_DONE_SS, \
+                                                    ePE_SEND_SOFT_RESET, ePE_DFP_SEND_CBL_RESET_SS);
+                    }
+                    else if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SEND_SOFT_RESET, \
                                                     ePE_SEND_SOFT_RESET_P_MSG_DONE_SS, \
@@ -1849,6 +1857,16 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                     MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
                     
                     break; 
+               }
+               case ePE_DFP_SEND_CBL_RESET_SS:
+               {
+                   PRL_SendCableorHardReset (u8PortNum, PRL_SEND_CABLE_RESET, NULL, SET_TO_ZERO);
+                   
+                   gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                   gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                   
+                   break;
+
                }
                case ePE_SEND_SOFT_RESET_MSG_DONE_SS:
                {

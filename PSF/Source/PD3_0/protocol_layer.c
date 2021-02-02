@@ -626,6 +626,8 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
 		
 		/* Tx state variable is set to Cable Reset*/
         PRL_ChangeTxState (u8PortNum, PRL_TX_CABLE_RESET_ST);
+        
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_CABLE_RESET_SENT\r\n");        
 	}
 	else
 	{
@@ -634,9 +636,11 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
 		
 		/* Tx state variable is set to Hard Reset*/
 		PRL_ChangeTxState (u8PortNum, PRL_TX_HARD_RESET_ST);
+
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_HARD_RESET_SENT\r\n");
+
 	}
 	
-	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_HARD_RESET_SENT: Hard Reset sent on line\r\n");
 	
 	/* enable the interrupt for HR */
 	UPD_RegWriteByte (u8PortNum, PRL_TX_IRQ_EN, (PRL_TX_IRQ_TX_EOP | PRL_TX_IRQ_TX_ABORTED | PRL_TX_IRQ_TX_FAILED));
