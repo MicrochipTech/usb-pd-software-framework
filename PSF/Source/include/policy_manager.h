@@ -1909,6 +1909,29 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg);
 
 /**************************************************************************************************
     Function:
+        void DPM_UpdateSwapInitSts (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
+    Summary:
+        This API is used to set Swap Init Status of VCONN_Swap, DR_Swap and PR_Swap
+        in gasDPM[u8PortNum].u32DPMStatus variable.
+    Devices Supported:
+        UPD350 REV A
+    Description:
+        This API is used to set Swap Init Status of VCONN_Swap, DR_Swap and PR_Swap
+        in gasDPM[u8PortNum].u32DPMStatus variable.
+    Conditions:
+        None.
+    Input:
+        u8PortNum      - Port Number for power and data roles need to be assigned
+        eRoleSwapMsgtype - Role Swap message type 
+    Return:
+        None
+    Remarks:
+        None
+**************************************************************************************************/
+void DPM_UpdateSwapInitSts (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg);
+
+/**************************************************************************************************
+    Function:
         void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     Summary:
         Timer callback for PE_VDM_BUSY_TIMEOUT_MS timeout

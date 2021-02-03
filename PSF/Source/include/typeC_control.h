@@ -839,11 +839,12 @@ void TypeC_InitDRPPort(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_ConfigCCComp(UINT8 u8PortNum,UINT8 u8ConfigVal);
+void TypeC_ConfigCCComp (UINT8 u8PortNum,UINT8 u8ConfigVal);
+
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum , UINT8 u8ConfigVal);
+        void TypeC_SetVBUSCompONOFF (UINT8 u8PortNum , UINT8 u8ConfigVal);
 
     Summary:
         This API is used to configure the VBUS Comparator to either ON or OFF State
@@ -871,11 +872,12 @@ void TypeC_ConfigCCComp(UINT8 u8PortNum,UINT8 u8ConfigVal);
         None.
 
 **************************************************************************************************/
-void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum , UINT8 u8ConfigVal);
+void TypeC_SetVBUSCompONOFF (UINT8 u8PortNum , UINT8 u8ConfigVal);
+
 /**************************************************************************************************
 
  Function:
-       void TypeC_SetCCSampleEnable(UINT8 u8PortNum,UINT8 u8CCEnablePins);
+       void TypeC_SetCCSampleEnable (UINT8 u8PortNum,UINT8 u8CCEnablePins);
 
     Summary:
         This API is used to enable CC Comparator to sample for a particular given CC Thresholds
@@ -904,7 +906,7 @@ void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum , UINT8 u8ConfigVal);
         None.
 
 **************************************************************************************************/
-void TypeC_SetCCSampleEnable(UINT8 u8PortNum,UINT8 u8CCEnablePins);
+void TypeC_SetCCSampleEnable (UINT8 u8PortNum,UINT8 u8CCEnablePins);
 
 /**************************************************************************************************
 
@@ -942,7 +944,7 @@ void TypeC_DRPSetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
+        void TypeC_SetCCPowerRole (UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
 
     Summary:
         This API is used to Configure the given Rp or given Rd value for a port for a given
@@ -980,11 +982,12 @@ void TypeC_DRPSetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
+void TypeC_SetCCPowerRole (UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
+
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetCCDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
+        void TypeC_SetCCDeviceRole (UINT8 u8PortNum,UINT8 u8DevRole);
 
     Summary:
         This API is used to set the device role as either DFP or UFP for a given port.
@@ -1010,10 +1013,11 @@ void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, 
         None.
 **************************************************************************************************/
 void TypeC_SetCCDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
+
 /**************************************************************************************************
 
  Function:
-        void TypeC_EnabDisVCONN(UINT8 u8PortNum,UINT8 u8EnableDisable);
+        void TypeC_EnabDisVCONN (UINT8 u8PortNum,UINT8 u8EnableDisable);
 
     Summary:
         This API is used to enable or disable the VCONN FETS for a given port
@@ -1041,11 +1045,12 @@ void TypeC_SetCCDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_EnabDisVCONN(UINT8 u8PortNum,UINT8 u8EnableDisable);
+void TypeC_EnabDisVCONN (UINT8 u8PortNum,UINT8 u8EnableDisable);
+
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetRpCollAvoidance(UINT8 u8PortNum, UINT8 u8RpValue);
+        void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue);
 
     Summary:
         This API is used to Set or reset the collision avoidance for a given source port.
@@ -1073,6 +1078,7 @@ void TypeC_EnabDisVCONN(UINT8 u8PortNum,UINT8 u8EnableDisable);
         None.
 **************************************************************************************************/
 void TypeC_SetRpCollAvoidance(UINT8 u8PortNum, UINT8 u8RpValue);
+
 /**************************************************************************************************
 
  Function:
@@ -1102,10 +1108,11 @@ void TypeC_SetRpCollAvoidance(UINT8 u8PortNum, UINT8 u8RpValue);
         None.
 **************************************************************************************************/
 UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum);
+
 /**************************************************************************************************
 
     Function:
-        void TypeC_CCVBUSIntrHandler(UINT8 u8PortNum);
+        void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum);
 
     Summary:
         This API handles the CC and VBUS interrupts occurred for a given port.
@@ -1114,8 +1121,8 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        This API handles the CC and VBUS interrupts occurred.Based on the Current state of the 
-        Type C State machine , each interrupt is handled differently.
+        This API handles the CC and VBUS interrupts occurred. Based on the current state of the 
+        Type C State machine, each interrupt is handled differently.
 
     Conditions:
         None.
@@ -1129,7 +1136,8 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_CCVBUSIntrHandler(UINT8 u8PortNum);
+void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum);
+
 /**************************************************************************************************
  Function:
         void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
@@ -1160,9 +1168,10 @@ void TypeC_CCVBUSIntrHandler(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
+
 /**************************************************************************************************
  Function:
-        void TypeC_SrcIntrHandler(UINT8 u8PortNum);
+        void TypeC_SrcIntrHandler (UINT8 u8PortNum);
 
     Summary:
         This API handles the CC interrupts generated in the source state machine
@@ -1184,11 +1193,11 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SrcIntrHandler(UINT8 u8PortNum);
+void TypeC_SrcIntrHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
  Function:
-        void TypeC_DRPIntrHandler(UINT8 u8PortNum);
+        void TypeC_DRPIntrHandler (UINT8 u8PortNum);
 
     Summary:
         This API handles the DRP_DONE interrupt.
@@ -1210,11 +1219,11 @@ void TypeC_SrcIntrHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_DRPIntrHandler(UINT8 u8PortNum);
+void TypeC_DRPIntrHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
  Function:
-        void TypeC_SnkIntrHandler(UINT8 u8PortNum);
+        void TypeC_SnkIntrHandler (UINT8 u8PortNum);
 
     Summary:
         This API handles the CC interrupts generated in the sink state machine
@@ -1236,10 +1245,11 @@ void TypeC_DRPIntrHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SnkIntrHandler(UINT8 u8PortNum);
+void TypeC_SnkIntrHandler (UINT8 u8PortNum);
+
 /**************************************************************************************************
  Function:
-        void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum); 
+        void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum); 
 
     Summary:
         This API is called after the VCONN Discharge is completed to reset the settings done for
@@ -1264,10 +1274,11 @@ void TypeC_SnkIntrHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum); 
+void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum); 
+
 /**************************************************************************************************
  Function:
-        void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
+        void TypeC_SetCCDebounceVariable (UINT8 u8PortNum, UINT8 u8Pwrrole);
 
     Summary:
 
@@ -1295,7 +1306,8 @@ void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
+void TypeC_SetCCDebounceVariable (UINT8 u8PortNum, UINT8 u8Pwrrole);
+
 /**************************************************************************************************
  Function:
         void TypeC_SetCCDefaultRpValue (UINT8 u8PortNum); 
@@ -1324,9 +1336,10 @@ void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
         None.
 **************************************************************************************************/
 void TypeC_SetCCDefaultRpValue (UINT8 u8PortNum); 
+
 /**************************************************************************************************
  Function:
-        void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum); 
+        void TypeC_DecodeCCSourceRpValue (UINT8 u8PortNum); 
 
     Summary:
         This API is called by the protocol layer to see whether the source port partner has set the
@@ -1352,10 +1365,11 @@ void TypeC_SetCCDefaultRpValue (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum); 
+void TypeC_DecodeCCSourceRpValue (UINT8 u8PortNum); 
+
 /**************************************************************************************************
  Function:
-        void TypeC_RunStateMachine(UINT8 u8PortNum); 
+        void TypeC_RunStateMachine (UINT8 u8PortNum); 
 
     Summary:
         This API is called to run the Type C State machine for a given port.
@@ -1380,6 +1394,7 @@ void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void TypeC_RunStateMachine (UINT8 u8PortNum);
+
 /**************************************************************************************************
 Function:
         void TypeC_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState);
@@ -1409,6 +1424,7 @@ Function:
         None.
 **************************************************************************************************/
 void TypeC_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState);
+
 /**************************************************************************************************
 Function:
         void TypeC_SubStateChange_TimerCB (UINT8 u8PortNum,UINT8 u8TypeCSubState);
@@ -1438,6 +1454,7 @@ Function:
         None.
 **************************************************************************************************/
 void TypeC_SubStateChange_TimerCB (UINT8 u8PortNum,UINT8 u8TypeCSubState);
+
 /**************************************************************************************************
 Function:
        void TypeC_KillTypeCTimer (UINT8 u8PortNum)
@@ -1464,9 +1481,10 @@ Function:
         None.
 **************************************************************************************************/
 void TypeC_KillTypeCTimer (UINT8 u8PortNum);
+
 /**************************************************************************************************
     Function:
-       void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
+       void TypeC_ConfigureVBUSThr (UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
 
     Summary:
         This API configures the VBUS threshold to detect the VBUS.
@@ -1494,11 +1512,11 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current,  UINT8 u8PowerFaultThrConfig);
+void TypeC_ConfigureVBUSThr (UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current,  UINT8 u8PowerFaultThrConfig);
 
 /**************************************************************************************************
     Function:
-       UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
+       UINT16 TypeC_ObtainCurrentValueFrmRp (UINT8 u8PortNum)
 
     Summary:
         Obtains current value from Rp.
@@ -1521,7 +1539,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
     Remarks:
         None.
 **************************************************************************************************/
-UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
+UINT16 TypeC_ObtainCurrentValueFrmRp (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
