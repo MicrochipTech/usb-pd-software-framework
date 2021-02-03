@@ -294,7 +294,7 @@ void PE_RunDRSwapStateMachine (UINT8 u8PortNum)
     }
    
    /* Transmit the message if u8IsTransmit is set */
-    if (TRUE == u8IsTransmit)
+    if (u8IsTransmit)
     {
 		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
                     (UINT8 *)NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 
@@ -988,7 +988,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
     }
     
    /* Transmit the message if u8IsTransmit is set */
-    if (TRUE == u8IsTransmit)
+    if (u8IsTransmit)
     {
 		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
                             NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 
@@ -1549,7 +1549,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
     }
     
     /* Transmit the message if u8IsTransmit is set */
-    if (TRUE == u8IsTransmit)
+    if (u8IsTransmit)
     {
 		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
                             NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 
@@ -1839,7 +1839,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 
             /* Request DPM to turn off VCONN since PS RDY message is 
                received from VCONN Source partner*/
-            DPM_VCONNOnOff (u8PortNum, DPM_VCONN_OFF);            
+            TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);  
 
             /* Reset the discover identity counter to 0*/
             gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
@@ -1869,7 +1869,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             DEBUG_PRINT_PORT_STR(u8PortNum,"PE_VCS_TURN_ON_VCONN\r\n");
                     
             /* Turn ON VCONN */
-            DPM_VCONNOnOff (u8PortNum, DPM_VCONN_ON);
+            TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_ENABLE); 
                     
             /*Port Partner maintains the tVCONNSourceOn timer, So setting the VCONN_ON_self
             timer greater than tVCONNSourceOn to send Hard reset in case of VCONN ON
@@ -1964,7 +1964,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
     }
 
     /* Transmit the message if u8IsTransmit is set */
-    if (TRUE == u8IsTransmit)
+    if (u8IsTransmit)
     {
 		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
                             NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 

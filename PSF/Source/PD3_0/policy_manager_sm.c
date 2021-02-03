@@ -513,7 +513,7 @@ void DPM_HandleExternalVBUSFault (UINT8 u8PortNum, UINT8 u8FaultType)
     if (!gasDPM[u8PortNum].u8PowerFaultISR)
     {
         #if (TRUE == INCLUDE_PD_SOURCE)
-        if (PD_ROLE_SINK != DPM_GET_CURRENT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
+        if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) != PD_ROLE_SINK) /*Port role is either Source or DRP*/
         {
             /*Disable VBUS_EN on detection of external fault*/
             UPD_GPIOUpdateOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
@@ -671,54 +671,51 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
 /************************DPM Client Request Handling API ******************************/ 
 void DPM_ClientRequestHandler(UINT8 u8PortNum)
 {
+    UINT32 u32ClientRequest = gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest;
+    
     /* Check if at least one request is initiated by any application. This 
        check saves code execution time by letting the control not to check 
        for each if-else condition present inside in case this condition
        is false. */ 
-    if (DPM_NO_CLIENT_REQ_PENDING == gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    if (!u32ClientRequest)
     {
         return;
     }    
     
-    /* Check for Port enable/disable and VBUS Fault Handling requests. Policy Engine Idle check 
-       is not needed for these requests and they have to be handled with highest priority*/
-    if (DPM_CLIENT_REQ_PORT_DISABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    if (u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE)
     {        
+        /* Clear the client request since it is accepted */
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_PORT_DISABLE);
+        
 #if(TRUE == INCLUDE_PD_DRP)
         /*Disable DRP offload as soon as port disable client request is triggered.*/
         UPD_RegByteClearBit (u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
 #endif
-        /* Clear the client request since it is accepted */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                    ~(DPM_CLIENT_REQ_PORT_DISABLE);
         
         /* Request DPM to disable port */
         DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_PORT_DISABLE);
     }
-    else if (DPM_CLIENT_REQ_PORT_ENABLE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_PORT_ENABLE)
     {
         /* Clear the client request since it is accepted */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                    ~(DPM_CLIENT_REQ_PORT_ENABLE);
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_PORT_ENABLE);
         
         /* Request DPM to enable port */
         DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_PORT_ENABLE);
     }
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
-    else if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV)
     {
         /* Clear the client request since it is accepted */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                    ~(DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV);
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV);
                 
         /* Call the DPM API that sets the VBUS OV flag*/
         DPM_HandleExternalVBUSFault (u8PortNum, DPM_POWER_FAULT_OVP); 
     }
-    else if (DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS)
     {
         /* Clear the client request since it is accepted */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &=
-                                    ~(DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS);
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OCS);
                 
         /*Inform DPM to handle VBUS OCS only if it is Fixed supply else it is operating condition
           change in case of PPS supply*/
@@ -740,11 +737,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
             DPM_HandleExternalVBUSFault (u8PortNum, DPM_POWER_FAULT_VBUS_OCS);
         }   
     }
-    else if (DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT)
     {
         /* Clear the client request since it is accepted */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &=
-                                ~(DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT);
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_HANDLE_VBUS_OCS_EXIT);
                 
         #if (TRUE == INCLUDE_PD_SOURCE_PPS)
         if (DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum))
@@ -764,11 +760,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     }
 #endif /*INCLUDE_POWER_FAULT_HANDLING*/       
 #if (TRUE == INCLUDE_PD_ALT_MODE)
-    else if (DPM_CLIENT_REQ_RESPOND_VDM & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_RESPOND_VDM)
     {
         /* Clear the request since the request is accepted and going to be handled */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                  ~(DPM_CLIENT_REQ_RESPOND_VDM);
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_RESPOND_VDM);
             
         /* Assigning the PE states to VDM states directly because this client 
            request is not the start of an AMS. So, no need to handle Collision 
@@ -787,11 +782,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     } /* DPM_CLIENT_REQ_RESPOND_VDM */  
 #endif     
     /* Check for renegotiation request */
-    else if (DPM_CLIENT_REQ_RENEGOTIATE & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_RENEGOTIATE)
     {
         /* Clear the request since the request is accepted and going to be handled */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_RENEGOTIATE);  
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_RENEGOTIATE);  
 
         /* Request DPM for renegotiation */
         DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_RENEGOTIATION);
@@ -814,11 +808,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     } /*DPM_CLIENT_REQ_RENEGOTIATE*/    
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
         /* Check for DPM_CLIENT_REQ_VCONN_SWAP request */
-    else if (DPM_CLIENT_REQ_VCONN_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_VCONN_SWAP)
     {
         /* Clear the request since the request is accepted and going to be handled */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_VCONN_SWAP);   
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_VCONN_SWAP);   
         
         /* Request DPM for VCONN swap */
         DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
@@ -826,11 +819,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 #endif     
 #if (TRUE == INCLUDE_PD_PR_SWAP)
     /* Check for DPM_CLIENT_REQ_PR_SWAP request */
-    else if (DPM_CLIENT_REQ_PR_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_PR_SWAP)
     {   
         /* Clear the request since the request is accepted and going to be handled */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_PR_SWAP); 
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_PR_SWAP); 
         
         /* Request DPM for PR swap */
         DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_PR_SWAP);                        
@@ -838,33 +830,30 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 #endif     
 #if (TRUE == INCLUDE_PD_DR_SWAP)
     /* Check for DPM_CLIENT_REQ_DR_SWAP request */
-    else if (DPM_CLIENT_REQ_DR_SWAP & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_DR_SWAP)
     {            
         /* Clear the request since the request is accepted and going to be handled */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_DR_SWAP); 
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_DR_SWAP); 
         
         /* Request DPM for DR swap */
         DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_DR_SWAP);
     } /*DPM_CLIENT_REQ_DR_SWAP*/
 #endif     
 #if (TRUE == INCLUDE_PD_VDM)
-    else if (DPM_CLIENT_REQ_INITIATE_VDM & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_INITIATE_VDM)
     {
         /* Clear the request since the request is accepted and going to be handled */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_INITIATE_VDM);
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_INITIATE_VDM);
 
         /* Request DPM for initiating a VDM request */
         DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_VDM);                                    
     }  /* DPM_CLIENT_REQ_INITIATE_VDM */
 #endif
 #if(TRUE == INCLUDE_UPD_HPD)
-    else if (DPM_CLIENT_REQ_DISABLE_HPD & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_DISABLE_HPD)
     {
         /* Clear the request since the request is accepted and going to be handled */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_DISABLE_HPD);
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_DISABLE_HPD);
         
         UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE); 
         gu8HPDNextIndex[u8PortNum] = SET_TO_ZERO; 
@@ -877,11 +866,10 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         
         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_DISABLED);
     }
-    else if (DPM_CLIENT_REQ_ENABLE_HPD & gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest)
+    else if (u32ClientRequest & DPM_CLIENT_REQ_ENABLE_HPD)
     {
         /* Clear the request since the request is accepted and going to be handled */
-        gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest &= 
-                                      ~(DPM_CLIENT_REQ_ENABLE_HPD);
+        u32ClientRequest &= ~(DPM_CLIENT_REQ_ENABLE_HPD);
         
         DPM_ENABLE_HPD(u8PortNum);
         DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Enabled\r\n");
@@ -893,6 +881,8 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
     {
         /* Do Nothing */
     } 
+    
+    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest = u32ClientRequest;
 }
 
 /************************DPM Internal Event Handling APIs *******************************/
@@ -913,7 +903,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         /*Clear the Internal event since it is processed*/
         gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_PORT_DISABLE);
 
-        DPM_EnablePort(u8PortNum, FALSE);
+        DPM_EnablePort (u8PortNum, FALSE);
     }
     else if (DPM_INT_EVT_PORT_ENABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                 DPM_INT_EVT_PORT_ENABLE))
@@ -921,7 +911,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         /*Clear the Internal event since it is processed*/
         gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_PORT_ENABLE);
 
-        DPM_EnablePort(u8PortNum, TRUE);
+        DPM_EnablePort (u8PortNum, TRUE);
     }
 #if (TRUE == INCLUDE_PD_FR_SWAP)
     else if (DPM_INT_EVT_SYSTEM_POWER_LOST == (gasDPM[u8PortNum].u16DPMInternalEvents &\
@@ -1139,7 +1129,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
                     /*Execution is not expected to hit here*/
                     /*Do nothing*/
                 }
-                else if(PD_ROLE_SOURCE == u8DPMPowerRole)
+                else if (PD_ROLE_SOURCE == u8DPMPowerRole)
                 {
                     u32PartnerPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0];
                 }

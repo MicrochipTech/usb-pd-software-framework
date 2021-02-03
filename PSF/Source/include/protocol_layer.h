@@ -1233,7 +1233,7 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PRL_ProtocolSpecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType);
+        void PRL_ProtocolSpecificSOPReset (UINT8 u8PortNum, UINT8 u8SOPType);
 
     Summary:
         This API is to reset message ID counter of Tx & Rx SOP type specifically.
@@ -1256,7 +1256,6 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
 							PRL_SOP_P_TYPE (0x1)	- SOP' type
 							PRL_SOP_PP_TYPE (0x2)	- SOP'' type
 
-
     Return:
         None.
 
@@ -1264,36 +1263,7 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
         This API should be called by Policy engine on receiving Soft Reset for specific SOP type.
 
 **************************************************************************************************/
-void PRL_ProtocolSpecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType);
-
-/**************************************************************************************************
-    Function:
-        void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum);
-
-    Summary:
-        This API is to reset message ID counter of Tx & Rx for all SOPs.
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-		This API resets Tx Message ID counter & Rx message ID stored for all SOP types.
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum	- Port number of the device.
-						Value passed will be less than CONFIG_PD_PORT_COUNT.
-
-    Return:
-        None.
-
-    Remarks:
-        This API should be called by Policy engine on receiving Hard reset to reset the protocol layer.
-
-**************************************************************************************************/
-void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum);
+void PRL_ProtocolSpecificSOPReset (UINT8 u8PortNum, UINT8 u8SOPType);
 
 /**************************************************************************************************
     Function:
@@ -1309,8 +1279,8 @@ void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum);
 		This API Completely resets the PHY layer.
 
     Conditions:
-        PRL_ProtocolResetAllSOPs() has to be called along with this API
-			 for complete reset of PHY & protocol layer.
+        Protocol Layer of all SOPs has to be reset along with this API call
+        for complete reset of PHY & protocol layer.
 
     Input:
         u8PortNum	- Port number of the device.

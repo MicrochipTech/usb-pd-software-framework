@@ -926,35 +926,7 @@ void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
 
 **************************************************************************************************/
 void PE_SSChngAndTimeoutValidate_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
-/**************************************************************************************************
-    Function:
-        void PE_SendNotSupportedOrRejectMsg (UINT8 u8PortNum);
 
-    Summary:
-        This API is called to send the Not Supported or Reject message from the policy engine 
-        based on the current PD Specification of the port.
-       
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        This API is called to send the Not Supported or Reject message from the policy engine 
-        based on the current PD Specification of the port.
-       
-    Conditions:
-        None
-
-    Input:
-        u8PortNum - Port Number.
-
-    Return:
-        None.
-
-    Remarks:
-        None.
-
-**************************************************************************************************/
-void PE_SendNotSupportedOrRejectMsg (UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
         void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8TxDoneSubState, UINT8 u8TxFailedState, UINT8 u8TxFailedSubState);
@@ -1016,33 +988,7 @@ void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8Tx
 
 **************************************************************************************************/
 void PE_KillPolicyEngineTimer (UINT8 u8PortNum);
-/**************************************************************************************************
-    Function:
-        void PE_SendSoftResetMsg (UINT8 u8PortNum);
 
-    Summary:
-        This API is called to send the Soft reset message from the policy engine state machine for a port
-       
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        This API is called to send the Soft reset message from the policy engine state machine for a port
-        
-    Conditions:
-        None
-
-    Input:
-        u8PortNum - Port Number.
-
-    Return:
-        None.
-
-    Remarks:
-        None.
-
-**************************************************************************************************/
-void PE_SendSoftResetMsg (UINT8 u8PortNum);
 /**************************************************************************************************
     Function:
         void PE_SendHardReset (UINT8 u8PortNum);
@@ -1073,7 +1019,7 @@ void PE_SendHardReset (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PE_RunSrcStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header);
 
     Summary:
         This API is called to run the policy engine source state machine. 
@@ -1091,7 +1037,6 @@ void PE_SendHardReset (UINT8 u8PortNum);
     Input:
         u8PortNum  - Port Number.
         pu8DataBuf - Pointer to the UINT8 buffer containing the received PD message object
-        u8SOPType  - SOP type of the received PD message
         u32Header  - Header of the received PD message
 
     Return:
@@ -1101,7 +1046,8 @@ void PE_SendHardReset (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PE_RunSrcStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header);
+
 /**************************************************************************************************
     Function:
         void PE_NoResponse_TimerCB (UINT8 u8PortNum, UINT8 u8DummyPE_State);
@@ -1132,9 +1078,10 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
 
 **************************************************************************************************/
 void PE_NoResponse_TimerCB (UINT8 u8PortNum, UINT8 u8DummyPE_State);
+
 /**************************************************************************************************
     Function:
-        void PE_RunSnkStateMachine (UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header);
 
     Summary:
         This API is called to run the policy engine sink state machine.
@@ -1151,7 +1098,6 @@ void PE_NoResponse_TimerCB (UINT8 u8PortNum, UINT8 u8DummyPE_State);
     Input:
         u8PortNum - Port Number.
         pu8DataBuf - Pointer to the UINT8 buffer containing the received PD message object
-        u8SOPType  - SOP type of the received PD message
         u32Header  - Header of the received PD message
 
     Return:
@@ -1160,7 +1106,8 @@ void PE_NoResponse_TimerCB (UINT8 u8PortNum, UINT8 u8DummyPE_State);
     Remarks:
         None.
 **************************************************************************************************/
-void PE_RunSnkStateMachine (UINT8 u8PortNum ,UINT8 *pu8DataBuf ,UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header);
+
 /**************************************************************************************************
     Function:
         UINT8 PE_IsPolicyEngineIdle (UINT8 u8PortNum)

@@ -33,7 +33,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #if (TRUE == INCLUDE_PD_SINK)
 
-void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
+void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header)
 {
     UINT8 u8TypeCState = TYPEC_INVALID_STATE;
     UINT8 u8TypeCSubState = TYPEC_INVALID_SUBSTATE;
@@ -105,7 +105,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                 
 			  	/* Enable Power fault thresholds for TYPEC_VBUS_5V to detect Power faults*/
                 TypeC_ConfigureVBUSThr (u8PortNum, TYPEC_VBUS_5V, \
-                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA,TYPEC_CONFIG_PWR_FAULT_THR);
+                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA, TYPEC_CONFIG_PWR_FAULT_THR);
 				
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_WAIT_FOR_CAPABILITIES;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS;
@@ -439,7 +439,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
                     /*Turn OFF VCONN if it sources currently*/
                     if (DPM_IsPortVCONNSource (u8PortNum))
                     {
-                        DPM_VCONNOnOff (u8PortNum,DPM_VCONN_OFF);
+                        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE); 
                         
                         /*Start the VCONN_OFF timer*/
                         /*This Timeout is implemented outside of the PD Specification to track 
@@ -540,7 +540,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPTyp
     }  
 
     /*Send PD message if the variable "u8IsTransmit" is set as true inside the state machine*/
-	if (TRUE == u8IsTransmit)
+	if (u8IsTransmit)
 	{
 		(void) PRL_TransmitMsg (u8PortNum, PRL_SOP_TYPE, u16TransmitHeader, (UINT8 *)u32aDataObj,\
                         pfnTransmitCB, u32TransmitTmrIDTxSt);

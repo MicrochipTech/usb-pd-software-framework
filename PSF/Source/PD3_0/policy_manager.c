@@ -152,20 +152,6 @@ void DPM_SetTypeCState (UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubSta
 }
 
 /**************************DPM APIs for VCONN *********************************/
-void DPM_VCONNOnOff (UINT8 u8PortNum, UINT8 u8VConnEnable)
-{
-    if (DPM_VCONN_ON == u8VConnEnable)
-    {
-        /*Enable VCONN by switching on the VCONN FETS*/
-        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_ENABLE);              
-    }    
-    else
-    {
-        /*Disable VCONN by switching off the VCONN FETS*/
-        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);     
-    }
-}
-
 UINT8 DPM_IsPortVCONNSource (UINT8 u8PortNum)
 { 
     UINT8 u8IsVCONNSrc;
@@ -293,7 +279,7 @@ void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev)
 /**************************************************************************************************/
 /*********************************DPM VDM Cable APIs**************************************/
 /**************************************************************************************************/
-UINT8 DPM_StoreCableIdentity (UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32 *u32DataBuf)
+UINT8 DPM_StoreCableIdentity (UINT8 u8PortNum, UINT16 u16Header, UINT32 *u32DataBuf)
 {
     UINT32 u32ProductTypeVDO;
     UINT8 u8RetVal = FALSE;
@@ -1229,7 +1215,7 @@ void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
 /************************  DPM Renegotiation APIs **********************/
 #if (TRUE == INCLUDE_POWER_THROTTLING || (TRUE == INCLUDE_POWER_BALANCING))
 
-void DPM_UpdateNewPDOFrmSrcPwr (UINT8 u8PortNum, UINT16 u16PowerIn250mW)
+void DPM_UpdateNewSourcePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW)
 {
     float fVoltageInmV = SET_TO_ZERO; 
     UINT16 u16CurrentIn10mA = SET_TO_ZERO; 
@@ -1265,7 +1251,7 @@ void DPM_EnablePort (UINT8 u8PortNum, UINT8 u8Enable)
     {
         /* Disable the port by changing Type C states to 
            TYPEC_DISABLED and TYPEC_DISABLED_ENTRY_SS */
-        DPM_SetTypeCState(u8PortNum, TYPEC_DISABLED, TYPEC_DISABLED_ENTRY_SS);
+        DPM_SetTypeCState (u8PortNum, TYPEC_DISABLED, TYPEC_DISABLED_ENTRY_SS);
         
         /* Change Policy Engine state and sub-state to invalid state */
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
@@ -1277,10 +1263,10 @@ void DPM_EnablePort (UINT8 u8PortNum, UINT8 u8Enable)
                 (TYPEC_DISABLED_DONE_SS == gasTypeCcontrol[u8PortNum].u8TypeCSubState))
         {
             /*Reset protocol layer*/
-            PRL_Init(u8PortNum);
+            PRL_Init (u8PortNum);
              
             /*Clear Policy Engine internal variables*/
-            PE_InitPort(u8PortNum);
+            PE_InitPort (u8PortNum);
             
             if (PD_ROLE_SOURCE == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
             {
