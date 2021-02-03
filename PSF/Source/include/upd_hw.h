@@ -276,7 +276,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Default UPD VBUS Threshold value */
 #define UPD_VBUS_THRS_DEFAULT    222 
 
-/*Defines used in UPD_HPDInit() API*/
+/*Defines used in UPD_InitHPD() API*/
 #define HPD_IRQ_MIN_TIME_350US           5
 #define HPD_IRQ_MIN_TIME_2_1MS           40
 #define UPD_HPD_HIGH_DET_TIME_100_1MS    2000
@@ -645,7 +645,7 @@ void UPD_DisablePIOOutputISR (UINT8 u8PortNum);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_GPIOUpdateOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
+		void UPD_UpdatePIOOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
 
 	Summary:
 		API updates the output data of the GPIO.
@@ -673,11 +673,11 @@ void UPD_DisablePIOOutputISR (UINT8 u8PortNum);
 		None.
 **************************************************************************************************/
 
-void UPD_GPIOUpdateOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType);
+void UPD_UpdatePIOOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType)
+		void UPD_SetPIOIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType)
 
 	Summary:
 		API sets the alert interrupt for the GPIO.
@@ -704,7 +704,7 @@ void UPD_GPIOUpdateOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UIN
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType);
+void UPD_SetPIOIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType);
 
 /*****************************************************************************************************
 	Function:
@@ -739,7 +739,7 @@ void UPD_ConfigurePIODebounceCount (UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8
 
 /*****************************************************************************************************
 	Function:
-		void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType)
+		void UPD_SetPIODebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType)
 
 	Summary:
 		API enables the debounce for the UPD350 PIO.
@@ -767,7 +767,7 @@ void UPD_ConfigurePIODebounceCount (UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType);
+void UPD_SetPIODebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType);
 
 /**************************************************************************************************
     Function:
@@ -889,7 +889,7 @@ void PD_StartIdleTimer (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT8 UPD_CheckUPDsActive ()
+        UINT8 UPD_ReturnUPDsActiveSts ()
 
     Summary:
         This API is to check the active or idle status of UPD350s 
@@ -912,7 +912,7 @@ void PD_StartIdleTimer (UINT8 u8PortNum);
         TRUE - UPD350s are in Active State
         FALSE - All the UPD350s are in Idle State
 **************************************************************************************************/
-UINT8 UPD_CheckUPDsActive ();
+UINT8 UPD_ReturnUPDsActiveSts ();
 
 /**************************************************************************************************
     Function:
@@ -945,7 +945,7 @@ void UPD_PwrManagementCtrl (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UPD_PwrManagementInit (UINT8 u8PortNum)
+        UPD_InitPwrManagement (UINT8 u8PortNum)
 
     Summary:
         This API is to initialize the Power Management control.
@@ -970,7 +970,7 @@ void UPD_PwrManagementCtrl (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_PwrManagementInit (UINT8 u8PortNum);
+void UPD_InitPwrManagement (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1115,7 +1115,7 @@ void UPD_RegDump (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void UPD_HPDInit (UINT8 u8PortNum)
+        void UPD_InitHPD (UINT8 u8PortNum)
 
     Summary:
         Enables UPD350 to detect HPD events.
@@ -1139,7 +1139,7 @@ void UPD_RegDump (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_HPDInit (UINT8 u8PortNum);
+void UPD_InitHPD (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

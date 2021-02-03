@@ -127,33 +127,33 @@ UINT8 gu8HPDNextIndex[CONFIG_PD_PORT_COUNT];
 /******************* Functions**************************************/
 /*******************************************************************/
 
-void IntGlobals_PDInitialization(void)
+void IntGlobals_PDInitialization (void)
 {
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
-        UPD_PwrManagementInit(u8PortNum);        
+        UPD_InitPwrManagement(u8PortNum);        
 #endif
-        DPM_Init(u8PortNum);
+        DPM_Init (u8PortNum);
 
-        PE_InitPort(u8PortNum);
+        PE_InitPort (u8PortNum);
         
 #if (FALSE != INCLUDE_PDFU)
-        PE_FwUpdtInitialize();
+        PE_FwUpdtInitialize ();
 #endif
         
 #if (TRUE == INCLUDE_POWER_THROTTLING)
-        PT_Init(u8PortNum); 
+        PT_Init (u8PortNum); 
 #endif 
     }
     
 #if (TRUE == INCLUDE_POWER_BALANCING)
     /* Initialize PB System and Port Parameters */
-    PB_Init();     
+    PB_Init ();     
 #endif 
 }
 
-void IntGlobals_StackStructVersion(void)
+void IntGlobals_StackStructVersion (void)
 {
     gasCfgStatusData.u8MinorVersion = STRUCT_MINOR_VERSION;
     gasCfgStatusData.u8MajorVersion = STRUCT_MAJOR_VERSION;

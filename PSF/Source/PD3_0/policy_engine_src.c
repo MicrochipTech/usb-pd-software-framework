@@ -327,7 +327,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PDCONNECTED_STS_MASK;
             
             /* Update Advertised PDO registers */
-            DPM_UpdateAdvertisedPDOParam (u8PortNum); 
+            DPM_UpdateAdvertisedPDO (u8PortNum); 
 
 			/* Validate the received Request message by passing the received message to DPM */
             if (DPM_VALID_REQUEST == DPM_ValidateRequest (u8PortNum, (UINT16)u32Header, pu8DataBuf))
@@ -848,7 +848,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     }
 					
 					/* Turn Off VBUS */
-                    DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
+                    DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
                     
                      /*Start the VBUS OFF timer for monitoring the time taken for 
                     power module to reach vSafe0V*/
@@ -950,7 +950,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     }
 					
 					/* Turn On VBus */
-                    DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_ON);
+                    DPM_DriveVBus (u8PortNum, DPM_VBUS_ON);
                     
                      /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach vSafe5V*/

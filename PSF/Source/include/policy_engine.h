@@ -653,6 +653,7 @@ void PE_ResetParams (UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void PE_RunStateMachine (UINT8 u8PortNum);
+
 /**************************************************************************************************
     Function:
         void PE_RunCommonStateMachine (UINT8 u8PortNum , UINT8 *u8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
@@ -684,6 +685,7 @@ void PE_RunStateMachine (UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void PE_RunCommonStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+
 /**************************************************************************************************
     Function:
         void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf);
@@ -714,6 +716,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOP
         None.
 **************************************************************************************************/
 void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf);
+
 /**************************************************************************************************
     Function:
         UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header);
@@ -747,6 +750,7 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
         None.
 **************************************************************************************************/
 UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header);
+
 /**************************************************************************************************
     Function:
         PE_HandleRcvdMsgAndTimeoutEvents (UINT8 u8PortNum, ePolicyState eNextState , ePolicySubState eNextSubState);
@@ -777,6 +781,7 @@ UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header);
 
 **************************************************************************************************/
 void PE_HandleRcvdMsgAndTimeoutEvents (UINT8 u8PortNum, ePolicyState eNextState , ePolicySubState eNextSubState);
+
 /**************************************************************************************************
     Function:
         void PE_HandleUnExpectedMsg(UINT8 u8PortNum);
@@ -805,6 +810,7 @@ void PE_HandleRcvdMsgAndTimeoutEvents (UINT8 u8PortNum, ePolicyState eNextState 
 
 **************************************************************************************************/
 void PE_HandleUnExpectedMsg (UINT8 u8PortNum);
+
 /**************************************************************************************************
     Function:
         UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header);
@@ -836,6 +842,7 @@ void PE_HandleUnExpectedMsg (UINT8 u8PortNum);
 
 **************************************************************************************************/
 UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header);
+
 /**************************************************************************************************
     Function:
        void PE_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PEState);
@@ -866,6 +873,7 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header);
 
 **************************************************************************************************/
 void PE_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PEState);
+
 /**************************************************************************************************
     Function:
         void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
@@ -896,6 +904,7 @@ void PE_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PEState);
 
 **************************************************************************************************/
 void PE_SubStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);
+
 /**************************************************************************************************
     Function:
         void PE_SSChngAndTimeoutValidate_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState);

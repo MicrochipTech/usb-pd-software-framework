@@ -97,7 +97,7 @@ void DPM_Init (UINT8 u8PortNum)
 }
 /********************************************************************************************/
 
-void DPM_StateMachineInit (void)
+void DPM_InitStateMachine (void)
 {
 	for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{        
@@ -108,7 +108,7 @@ void DPM_StateMachineInit (void)
 			
             #if(TRUE == INCLUDE_UPD_HPD)
             /*Init UPD350 to support HPD*/
-            UPD_HPDInit (u8PortNum);
+            UPD_InitHPD (u8PortNum);
             #endif
 
 #if(TRUE == INCLUDE_PD_DRP)
@@ -516,7 +516,7 @@ void DPM_HandleExternalVBUSFault (UINT8 u8PortNum, UINT8 u8FaultType)
         if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) != PD_ROLE_SINK) /*Port role is either Source or DRP*/
         {
             /*Disable VBUS_EN on detection of external fault*/
-            UPD_GPIOUpdateOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
+            UPD_UpdatePIOOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                     gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_DE_ASSERT);
         }
         #endif
@@ -942,7 +942,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
 
         /*Initially, disable detection of interrupt on both edges.*/
-        UPD_GPIOSetIntrAlert (u8PortNum, u8Pio_EN_FRS, FALSE);	
+        UPD_SetPIOIntrAlert (u8PortNum, u8Pio_EN_FRS, FALSE);	
 
         /*If u8Pio_EN_FRS is configured as Active low, falling egde will
           indicate system power loss event and rising edge will indicate
@@ -959,7 +959,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             u8PwrBackDetectionEdge = UPD_CFG_PIO_FALLING_ALERT;
         }
 
-        UPD_GPIOSetIntrAlert (u8PortNum, u8Pio_EN_FRS, u8PwrBackDetectionEdge);
+        UPD_SetPIOIntrAlert (u8PortNum, u8Pio_EN_FRS, u8PwrBackDetectionEdge);
     }
     
     else if (DPM_INT_EVT_SYSTEM_POWER_BACK == (gasDPM[u8PortNum].u16DPMInternalEvents &\
@@ -992,7 +992,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
 
         /*Initially, disable detection of interrupt on both edges.*/
-        UPD_GPIOSetIntrAlert (u8PortNum, u8Pio_EN_FRS, FALSE);	
+        UPD_SetPIOIntrAlert (u8PortNum, u8Pio_EN_FRS, FALSE);	
 
         /*If u8Pio_EN_FRS is configured as Active low, falling edge will
           indicate system power loss event and rising edge will indicate
@@ -1009,7 +1009,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             u8PwrLossDetectionEdge = UPD_CFG_PIO_RISING_ALERT;
         }
 
-        UPD_GPIOSetIntrAlert (u8PortNum, u8Pio_EN_FRS, u8PwrLossDetectionEdge);
+        UPD_SetPIOIntrAlert (u8PortNum, u8Pio_EN_FRS, u8PwrLossDetectionEdge);
     }
     
     else if ((gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_INITIATE_FR_SWAP) &&\

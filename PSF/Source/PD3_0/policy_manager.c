@@ -91,7 +91,7 @@ void DPM_HandleVCONNONError (UINT8 u8PortNum)
         {	
 #if (TRUE == INCLUDE_PD_SOURCE)            
             /*Disable VBUS by driving to vSafe0V if port role is a source*/
-            DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
+            DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
 
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
@@ -498,7 +498,7 @@ UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
 }
 
 /* Reset the current value in PDO */
-UINT32 DPM_CurrentCutDown (UINT8 u8PortNum, UINT32 u32PDO)
+UINT32 DPM_ResetPDOCurrent (UINT8 u8PortNum, UINT32 u32PDO)
 {
     /* If PDO max current greater than E-Cable supported current, reset the current value */
     if (ePDO_FIXED == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
@@ -539,12 +539,12 @@ void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32S
     for (UINT8 u8PDOindex = SET_TO_ZERO; u8PDOindex < u8pSrcPDOCnt; u8PDOindex++)
     {   
         /* Reset the current value to E-Cable supported current */
-        pu32DataObj[u8PDOindex] = DPM_CurrentCutDown (u8PortNum, pu32SrcCaps[u8PDOindex]);
+        pu32DataObj[u8PDOindex] = DPM_ResetPDOCurrent (u8PortNum, pu32SrcCaps[u8PDOindex]);
     }
 }
 
 /* Get the source capabilities from the port configuration structure */
-void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu32DataObj)
+void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu32DataObj)
 {   
 	UINT32 *u32pSrcCap;
     
@@ -597,7 +597,7 @@ void DPM_GetSourceCapabilities(UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu3
 }
 
 /* Turn On or Off VBUS */
-void DPM_TypeCSrcVBus5VOnOff (UINT8 u8PortNum, UINT8 u8VbusOnorOff)
+void DPM_DriveVBus (UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 {   
 	UINT16 u16CurrentInmA, u16VoltageInmV;
     	
@@ -808,7 +808,7 @@ UINT8 DPM_ReturnPowerStatus (UINT8 u8PortNum)
 #endif /*INCLUDE_PD_SOURCE_PPS*/ 
 #endif /*INCLUDE_PD_SOURCE*/  
 
-void DPM_UpdateAdvertisedPDOParam (UINT8 u8PortNum)
+void DPM_UpdateAdvertisedPDO (UINT8 u8PortNum)
 {
     UINT8 u8AdvertisedPDOCnt;
     
@@ -991,7 +991,7 @@ void DPM_CalculateAndSortPower (UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8
     }
 }
 
-void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
+void DPM_EvaluateRcvdSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
                                      UINT32 *pu32RecvdSrcCapsPayload)
 {
     /* Two dimensional array stores the Power and Original PDO index number for each PDO index*/
@@ -1037,7 +1037,7 @@ void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
     (void)MCHP_PSF_HOOK_MEMCPY(u32aPartnerSourcePDO, gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO, 
             DPM_4BYTES_FOR_EACH_PDO_OF(u8PartnerSourcePDOCnt));
         
-    DPM_UpdateAdvertisedPDOParam (u8PortNum);
+    DPM_UpdateAdvertisedPDO (u8PortNum);
     
     /*PDO Count of the sink*/
 	u8SinkAdvertisedPDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt;

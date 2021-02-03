@@ -182,7 +182,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;	                        
             
             /*Ask the Device policy manager to evaluate the received source capability message*/
-            DPM_EvaluateReceivedSrcCaps (u8PortNum, (UINT16) u32Header, (UINT32*)pu8DataBuf);
+            DPM_EvaluateRcvdSrcCaps (u8PortNum, (UINT16) u32Header, (UINT32*)pu8DataBuf);
 
             /*Invalid Source Capability Message results in Sink request object count to be 0*/
             if (SET_TO_ZERO == gasCfgStatusData.sPerPortData[u8PortNum].u32RDO)
