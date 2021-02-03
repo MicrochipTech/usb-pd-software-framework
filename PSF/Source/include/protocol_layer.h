@@ -1105,7 +1105,6 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
 			PRL_RET_EXT_MSG_RCVD(0x3)	- Extended message is received
 			PRL_RET_RCV_CHUNK_ERROR(0x4)- Receiver Chunk error
 
-
     Remarks:
         None.
 
@@ -1114,7 +1113,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
 
 /**************************************************************************************************
     Function:
-        UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum);
+        UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum);
 
     Summary:
         This API processes raw FIFO data received to Message format.
@@ -1142,7 +1141,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
         It is internal API called by PRL_ReceiveMsg().
 
 **************************************************************************************************/
-UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum);
+UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1233,7 +1232,7 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PRL_ProtocolSpecificSOPReset (UINT8 u8PortNum, UINT8 u8SOPType);
+        void PRL_ResetPRLSpecificSOP (UINT8 u8PortNum, UINT8 u8SOPType);
 
     Summary:
         This API is to reset message ID counter of Tx & Rx SOP type specifically.
@@ -1263,11 +1262,11 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
         This API should be called by Policy engine on receiving Soft Reset for specific SOP type.
 
 **************************************************************************************************/
-void PRL_ProtocolSpecificSOPReset (UINT8 u8PortNum, UINT8 u8SOPType);
+void PRL_ResetPRLSpecificSOP (UINT8 u8PortNum, UINT8 u8SOPType);
 
 /**************************************************************************************************
     Function:
-        void PRL_PHYLayerReset (UINT8 u8PortNum);
+        void PRL_ResetPHYLayer (UINT8 u8PortNum);
 
     Summary:
         This API is to reset the PHY layer completely.
@@ -1293,7 +1292,7 @@ void PRL_ProtocolSpecificSOPReset (UINT8 u8PortNum, UINT8 u8SOPType);
         None.
 
 **************************************************************************************************/
-void PRL_PHYLayerReset (UINT8 u8PortNum);
+void PRL_ResetPHYLayer (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1610,7 +1609,7 @@ void PRL_UpdateTotalChunkNumVar (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT32 PRL_FormRequestChunkMsgHeader(UINT8 u8PortNum);
+        UINT32 PRL_FormRequestChunkMsgHeader (UINT8 u8PortNum);
 
     Summary:
         This API forms & returns Combined header for Chunk request packet.
@@ -1636,7 +1635,7 @@ void PRL_UpdateTotalChunkNumVar (UINT8 u8PortNum);
         This function confined to INCLUDE_PD_3_0 define.
 
 **************************************************************************************************/
-UINT32 PRL_FormRequestChunkMsgHeader(UINT8 u8PortNum);
+UINT32 PRL_FormRequestChunkMsgHeader (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1703,7 +1702,7 @@ void PRL_ConfigureBISTCarrierMode (UINT8 u8PortNum, UINT8 u8BISTCarriermode);
 
 /**************************************************************************************************
     Function:
-        void PRL_ChangeTxState(UINT8 u8PortNum, UINT8 u8TxStateISR);
+        void PRL_ChangeTxState (UINT8 u8PortNum, UINT8 u8TxStateISR);
 
     Summary:
         This API changes the state of the Variable gasPRL[u8PortNum].u8TxStateISR
@@ -1729,7 +1728,7 @@ void PRL_ConfigureBISTCarrierMode (UINT8 u8PortNum, UINT8 u8BISTCarriermode);
         None.
 
 **************************************************************************************************/
-void PRL_ChangeTxState(UINT8 u8PortNum, UINT8 u8TxStateISR);
+void PRL_ChangeTxState (UINT8 u8PortNum, UINT8 u8TxStateISR);
 
 /**************************************************************************************************
     Function:
@@ -1761,7 +1760,7 @@ void PRL_KillCAorChunkSMTimer (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PRL_ProtocolReset(UINT8 u8PortNum);
+        void PRL_ResetProtocolLayer (UINT8 u8PortNum);
 
     Summary:
         This API resets the PRL at Sink & SRC startup
@@ -1785,35 +1784,6 @@ void PRL_KillCAorChunkSMTimer (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PRL_ProtocolReset(UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
-        void PRL_UpdateHWRetryCount(UINT8 u8PortNum, UINT8 u8HwnRetryCnt); 
-
-    Summary:
-        This API sets the hardware retry count in PRL_TX_PARAM_C register
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-		This API sets the hardware retry count in PRL_TX_PARAM_C register
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port number of the device.
-					Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u8HwnRetryCnt - Value of HW Retry count to be set 
-    Return:
-        None.
-
-    Remarks:
-        None.
-
-**************************************************************************************************/
-void PRL_UpdateHWRetryCount(UINT8 u8PortNum, UINT8 u8HwnRetryCnt); 
+void PRL_ResetProtocolLayer (UINT8 u8PortNum);
 
 #endif /*_PROTOCOL_LAYER_H_*/

@@ -63,7 +63,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_STARTUP\r\n");
  
             /*Reset the Protocol Layer */
-            PRL_ProtocolReset (u8PortNum);
+            PRL_ResetProtocolLayer (u8PortNum);
              
             /*Clearing the Hard Reset IN Progress bit here because source detach
             can occur while waiting in ePE_SNK_TRANSITION_TO_DEFAULT_WAIT_SS*/

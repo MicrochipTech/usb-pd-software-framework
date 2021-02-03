@@ -1707,7 +1707,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                     PE_KillPolicyEngineTimer (u8PortNum);
 
 					/* Reset Protocol Layer */
-                    PRL_ProtocolSpecificSOPReset (u8PortNum, PRL_SOP_TYPE);
+                    PRL_ResetPRLSpecificSOP (u8PortNum, PRL_SOP_TYPE);
 
                     /* Send Accept message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
@@ -1762,7 +1762,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                     PE_KillPolicyEngineTimer (u8PortNum);
                    
 					/* Reset the Protocol Layer for SOP type message */
-                    PRL_ProtocolSpecificSOPReset (u8PortNum, (UINT8) PRL_SOP_TYPE);
+                    PRL_ResetPRLSpecificSOP (u8PortNum, (UINT8) PRL_SOP_TYPE);
                     
 					/* Send SoftReset message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_SOFT_RESET, \
@@ -1795,7 +1795,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                     PE_KillPolicyEngineTimer (u8PortNum);
                     
 					/* Reset the Protocol Layer for SOP_P type message */
-                    PRL_ProtocolSpecificSOPReset (u8PortNum, PRL_SOP_P_TYPE);
+                    PRL_ResetPRLSpecificSOP (u8PortNum, PRL_SOP_P_TYPE);
 
                     /* Send Soft Reset Message */
                     u8TransmitSOP = PRL_SOP_P_TYPE;

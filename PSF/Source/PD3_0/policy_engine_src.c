@@ -135,7 +135,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     gasPolicyEngine[u8PortNum].u8PEPortSts &= (~PE_EXPLICIT_CONTRACT);
 					
 					/* Reset the Protocol Layer */
-                    PRL_ProtocolReset (u8PortNum);
+                    PRL_ResetProtocolLayer (u8PortNum);
                     
                     /*Reset collision avoidance set*/
                     #if (TRUE == INCLUDE_PD_3_0)                    
