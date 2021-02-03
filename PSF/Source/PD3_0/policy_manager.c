@@ -1846,6 +1846,59 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
     } 
 }
 
+void DPM_UpdateSwapInitSts (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
+{
+    switch (eRoleSwapMsg)
+    {
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)        
+        case eVCONN_SWAP_INITIATE:
+        {
+            if (TRUE == DPM_IsPortVCONNSource (u8PortNum))
+            {
+                DPM_SET_VCONN_SWAP_INIT_STS_AS_VCONN_SRC(u8PortNum);
+            }
+            else
+            {
+                DPM_SET_VCONN_SWAP_INIT_STS_AS_NOT_VCONN_SRC(u8PortNum);
+            }            
+            break; 
+        }
+#endif /*INCLUDE_PD_VCONN_SWAP*/
+#if (TRUE == INCLUDE_PD_PR_SWAP)                
+        case ePR_SWAP_INITIATE:
+        {
+            if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+            {
+                DPM_SET_PR_SWAP_INIT_STS_AS_SRC(u8PortNum);
+            }
+            else
+            {
+                DPM_SET_PR_SWAP_INIT_STS_AS_SNK(u8PortNum);
+            }
+            break;
+        }
+#endif /*INCLUDE_PD_PR_SWAP*/        
+#if (TRUE == INCLUDE_PD_DR_SWAP)        
+        case eDR_SWAP_INITIATE:
+        {
+            if (PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+            {
+                DPM_SET_DR_SWAP_INIT_STS_AS_DFP(u8PortNum);
+            }
+            else 
+            {
+                DPM_SET_DR_SWAP_INIT_STS_AS_UFP(u8PortNum);
+            }            
+            break;
+        }
+#endif /*INCLUDE_PD_DR_SWAP*/        
+        default:
+        {
+            break; 
+        }
+    }
+}
+
 /************************************************************************************************************************/
 
 /********************* Policy Manager APIs for VDM & AltMode ********************/
