@@ -223,7 +223,7 @@ void PE_FwUpdtProcessTimerEvent(
 {
     if ((UINT8)ePE_PDFU_MODE == u8PdFwUpdtState)
     {
-        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = PRL_IsAnyMsgPendinginPRL(u8PortNum);
+        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = PRL_IsAnyMsgPendinginPRL (u8PortNum);
 
         /* Check for Msg Header is SET_TO_ZERO */
         if (SET_TO_ZERO == gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader)

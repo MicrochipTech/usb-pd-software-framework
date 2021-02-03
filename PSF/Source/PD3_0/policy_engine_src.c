@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /********************************************************************/
 /****************Source Policy Engine State Machine******************/
 /********************************************************************/
-void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header)
+void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header)
 {
     /* Receive VDM Header */
     UINT32 u32VDMHeader = SET_TO_ZERO;
@@ -85,10 +85,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     DPM_GetTypeCStates (u8PortNum, &u8TypeCState, &u8TypeCSubState);
     
     /* Get Powered Cable Presence */
-    u8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK);
-	
-    /* Setting Timeout sub-state to invalid state */
-    gasPolicyEngine[u8PortNum].ePETimeoutSubState = ePE_INVALIDSUBSTATE;
+    u8RaPresence = (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_PWDCABLE_PRES_MASK);	
     
     /* If port partner detached set the Policy Engine State to PE_SRC_STARTUP */
     if (TYPEC_UNATTACHED_WAIT_SRC == u8TypeCState)
@@ -625,18 +622,13 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     
                     /*On PD negotiation complete and source is in ready state, inform DPM to initiate internal events*/
                     DPM_InitiateInternalEvts (u8PortNum);
-                            
-                    if (gasDPM[u8PortNum].u16InternalEvntInProgress)
-                    {                        
-                        gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;    
+                                                  
+                    gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;    
                         
-                        /* Collision avoidance - Set Rp value to TYPEC_SINK_TXOK 
-                           only if it was changed to TYPEC_SINK_TXNG by PSF Source
-                           while initiating an AMS (DPM Internal Event) */
-                        #if (TRUE == INCLUDE_PD_3_0)					
-                            PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
-                        #endif                                                                   
-                    }                   
+                    /* Collision avoidance - Set Rp value to TYPEC_SINK_TXOK */
+                    #if (TRUE == INCLUDE_PD_3_0)					
+                        PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK);
+                    #endif                                                                                       
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS;                                      
 
@@ -852,7 +844,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
 					/* Turn Off VCONN if the port is currently supplying VCONN */
                     if (DPM_IsPortVCONNSource (u8PortNum))
                     {
-                        DPM_VCONNOnOff (u8PortNum, DPM_VCONN_OFF);
+                        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE); 
                     }
 					
 					/* Turn Off VBUS */
@@ -954,7 +946,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
                     if (u8RaPresence)
                     {
 #endif
-                        DPM_VCONNOnOff (u8PortNum, DPM_VCONN_ON);
+                        TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_ENABLE);
                     }
 					
 					/* Turn On VBus */
@@ -1151,7 +1143,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
             
 			/* VDM ACK received from cable */
 			/* Pass the cable data to the DPM */
-            if (DPM_VDM_ACK == DPM_StoreCableIdentity (u8PortNum, u8SOPType, (UINT16) u32Header, (UINT32*) pu8DataBuf))
+            if (DPM_VDM_ACK == DPM_StoreCableIdentity (u8PortNum, (UINT16) u32Header, (UINT32*) pu8DataBuf))
             {
                 DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
@@ -1458,7 +1450,7 @@ void PE_RunSrcStateMachine(UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType
     }
     
 	/* Transmit the message if u8IsTransmit is set */
-    if (TRUE == u8IsTransmit)
+    if (u8IsTransmit)
     {
 		(void) PRL_TransmitMsg (u8PortNum, (UINT8) u8TransmitSOP, u32TransmitHeader, \
                     (UINT8 *)u32pTransmitDataObj, pfnTransmitCB, u32TransmitTmrIDTxSt); 

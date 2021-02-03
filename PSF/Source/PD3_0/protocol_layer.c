@@ -116,8 +116,7 @@ void  PRL_Init (UINT8 u8PortNum)
 	
 	/* Updates Device's Data & Power role, UPD Spec rev & corresponding retry counter*/
 	PRL_UpdateSpecAndDeviceRoles (u8PortNum);
-	
-	
+		
 	/* Rx configurations */
 	/* Set up Rx */
 	/* Configuring Rx Maximum and Minimum Bit-Rate Bit Period Count Registers */
@@ -143,8 +142,7 @@ void  PRL_Init (UINT8 u8PortNum)
 
 	UPD_RegisterWrite (u8PortNum, PRL_BB_TX_FALL0, 
 					   (UINT8 *) u16aBBTxFallDACValues, sizeof(u16aBBTxFallDACValues));
-	
-	
+		
 	/* Baseband Configuration for Rx DAC */
 	UPD_RegWriteByte (u8PortNum, PRL_BB_CC_RX_DAC_FILT, PRL_CC_RX_DAC_FILT_CC_RX_DAC_FILTER_ENABLE);
     
@@ -468,8 +466,8 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
         
 	  	/* According to Message Discarding Rules, if SOP packet is received. Tx Packet in queue is discarded*/
 	  	/* And Message ID Counter is incremented*/
-	  	PRL_IncrementMsgID (u8PortNum);
-		
+	  	PRL_IncrementMsgID (u8PortNum);		        
+        
 		/* Spec Ref: PRL_Tx_PHY_Layer_Reset - Resets Tx PHY Layer
 						Entered on condition "discarding Complete" */
 		PRL_PHYLayerReset (u8PortNum);
@@ -638,9 +636,7 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
 		PRL_ChangeTxState (u8PortNum, PRL_TX_HARD_RESET_ST);
 
         DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_HARD_RESET_SENT\r\n");
-
-	}
-	
+	}	
 	
 	/* enable the interrupt for HR */
 	UPD_RegWriteByte (u8PortNum, PRL_TX_IRQ_EN, (PRL_TX_IRQ_TX_EOP | PRL_TX_IRQ_TX_ABORTED | PRL_TX_IRQ_TX_FAILED));
@@ -933,7 +929,7 @@ void PRL_ProcessRxFIFOISR (UINT8 u8PortNum)
 
 /******************************************************************************************************/
 
-void PRL_TxRxMsgID_Reset(UINT8 u8PortNum, UINT8 u8SOPType)
+void PRL_ProtocolSpecificSOPReset (UINT8 u8PortNum, UINT8 u8SOPType)
 {
   	/* Spec Ref: PRL_Tx_Layer_Reset_for_Transmit - Entered on soft Reset Message request Received from Policy Engine 
 											Reset MessageIDCounter.
@@ -964,27 +960,6 @@ void PRL_TxRxMsgID_Reset(UINT8 u8PortNum, UINT8 u8SOPType)
 	
 	UPD_RegWriteByte (u8PortNum, PRL_RX_MSG_ID_STORED, u8RxSOPSelect);   
 }
-
-
-/******************************************************************************************************/
-
-/******************************************************************************************************/
-
-void PRL_ProtocolSpecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType)
-{
-  	/* Spec Ref: PRL_Rx_Layer_Reset_for_Receive - Entered on condition Soft Reset Message received from PHY */
-	PRL_TxRxMsgID_Reset (u8PortNum, u8SOPType);
-}
-
-/******************************************************************************************************/
-
-void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum)
-{
-  	/* Spec Ref: PRL_HR_Reset_Layer */
-	PRL_TxRxMsgID_Reset (u8PortNum, PRL_SOP_TYPE);
-	PRL_TxRxMsgID_Reset (u8PortNum, (PRL_SOP_P_TYPE | PRL_SOP_PP_TYPE));
-}
-
 
 /******************************************************************************************************/
 
@@ -1033,11 +1008,7 @@ void PRL_PHYLayerReset (UINT8 u8PortNum)
 
 /******************************************************************************************************/
 
-
-/****************************************************************************************************/
-
-
-UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum)
+UINT8 PRL_ProcessRecvdMsg (UINT8 u8PortNum)
 {
     UINT8 u8Return = PRL_RET_NO_MSG_RCVD;
 
@@ -1335,7 +1306,7 @@ void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 }
 /******************************************************************************************************/
 
-UINT8 PRL_IsAMSInitiatable(UINT8 u8PortNum)
+UINT8 PRL_IsAMSInitiatable (UINT8 u8PortNum)
 {
     UINT8 u8ReturnVal = TRUE, u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     /*If the port is 3.0 check whether the port is capable of initiating an AMS*/
@@ -1387,7 +1358,7 @@ void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum)
         /* PRL_TX_IDLE_ST is assigned to PRL state*/
         gasPRL [u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;
         
-        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_MSG_DISCARD_ON_RCV: Tx Msg Discarded on Rcv\r\n");		
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg Discarded on Rcv\r\n");		
     }
     else if (PRL_TX_MSG_BUFFERED_ON_CA_ST == gasPRL [u8PortNum].u8TxStateISR)
     {
@@ -1565,8 +1536,7 @@ void PRL_TxOriginalCBfromCH (UINT8 u8PortNum, UINT8 u8TxStateforCB)
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 			
 	/* Reset the CHUNK SM*/
-    PRL_ResetChunkSM (u8PortNum);
-	
+    PRL_ResetChunkSM (u8PortNum);	
 }				
 /******************************************************************************************************/
 
@@ -1806,7 +1776,7 @@ void PRL_ConfigureBISTCarrierMode (UINT8 u8PortNum, UINT8 u8BISTCarriermode)
 
 /******************************************************************************************************/
 
-void PRL_ChangeTxState(UINT8 u8PortNum, UINT8 u8TxStateISR)
+void PRL_ChangeTxState (UINT8 u8PortNum, UINT8 u8TxStateISR)
 {
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStateISR = u8TxStateISR;
@@ -1819,7 +1789,8 @@ void PRL_ChangeTxState(UINT8 u8PortNum, UINT8 u8TxStateISR)
 void PRL_ProtocolReset (UINT8 u8PortNum)
 {
     /*Reset the UPD Protocol Layer for all SOPs*/
-    PRL_ProtocolResetAllSOPs (u8PortNum);
+	PRL_ProtocolSpecificSOPReset (u8PortNum, PRL_SOP_TYPE);
+	PRL_ProtocolSpecificSOPReset (u8PortNum, (PRL_SOP_P_TYPE | PRL_SOP_PP_TYPE));
      
     /* Disable the Tx interrupt*/
 	UPD_RegWriteByte (u8PortNum, PRL_TX_IRQ_EN, CLR_VAL);

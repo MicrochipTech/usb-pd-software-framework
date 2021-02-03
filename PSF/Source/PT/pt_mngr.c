@@ -34,7 +34,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #if (TRUE == INCLUDE_POWER_THROTTLING)
 
-void PT_Init(UINT8 u8PortNum)
+void PT_Init (UINT8 u8PortNum)
 {
     if (TRUE == DPM_IS_PT_ENABLED)
     {
@@ -42,7 +42,7 @@ void PT_Init(UINT8 u8PortNum)
     }
 }
 
-void PT_HandleBankSwitch(UINT8 u8PortNum)
+void PT_HandleBankSwitch (UINT8 u8PortNum)
 {
     UINT8 u8CurrPTBank = DPM_GET_CURRENT_PT_BANK; 
     UINT8 u8PrevPTBank = gau8PTPrevBank[u8PortNum];
@@ -68,13 +68,13 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
                    Operating Condition Change*/
                 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
                 gasDPM[u8PortNum].u8AlertType  |= DPM_ALERT_TYPE_OPR_COND_CHANGE;
-                DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_ALERT); 
+                DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_ALERT); 
                 #endif 
 
                 if (DPM_PD_THROTTLE_SHUTDOWN_MODE == u8PrevPTBank)
                 {
                     /* Enable the Port which would have been previously disabled */
-                    DPM_EnablePort(u8PortNum, TRUE); 
+                    DPM_EnablePort (u8PortNum, TRUE); 
 
                     /* No need to raise renegotiation request since an 
                        attach interrupt is expected. */
@@ -108,7 +108,7 @@ void PT_HandleBankSwitch(UINT8 u8PortNum)
             case DPM_PD_THROTTLE_SHUTDOWN_MODE:
             {
                 /* Disable the port so that no further Type-C attach can occur */
-                DPM_EnablePort(u8PortNum, FALSE); 
+                DPM_EnablePort (u8PortNum, FALSE); 
                 break; 
             }
             
@@ -150,7 +150,7 @@ void PT_CalculateSrcPDOs(UINT8 u8PortNum)
        sent from u32aNewSourcePDO[7] array */
     DPM_SET_CONFIGURED_NEW_PDO_STATUS(u8PortNum);
     
-    DPM_UpdateNewPDOFrmSrcPwr(u8PortNum, u16PowerIn250mW);
+    DPM_UpdateNewSourcePDO (u8PortNum, u16PowerIn250mW);
 }
 
 #endif 

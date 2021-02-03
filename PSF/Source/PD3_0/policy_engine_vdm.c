@@ -437,7 +437,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
     }
     
 	/* Transmit the message if u8IsTransmit is set */
-    if (TRUE == u8IsTransmit)
+    if (u8IsTransmit)
     {
 		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
                     (UINT8 *)u32pTransmitDataObj, pfnTransmitCB, u32TransmitTmrIDTxSt); 

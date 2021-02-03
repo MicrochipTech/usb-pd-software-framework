@@ -626,10 +626,6 @@ Source/Sink Power delivery objects*/
 #define DPM_VALID_REQUEST            1
 #define DPM_INVALID_REQUEST          0   
 
-/***********Macros for u8VConnEnable argument of DPM_VCONNOnOff API ************/
-#define DPM_VCONN_ON             1
-#define DPM_VCONN_OFF            0
-
 /*********Macros for u8VbusOnorOff argument of DPM_TypeCSrcVBus5VOnOff API*********/
 #define DPM_VBUS_ON              1
 #define DPM_VBUS_OFF             0
@@ -743,9 +739,6 @@ Source/Sink Power delivery objects*/
 #define DPM_IGNORE_UV_DURING_FRS_MASK         (1 << DPM_IGNORE_UV_DURING_FRS_POS)
 
 /************************ Client Request Defines ******************************/
-#define DPM_NO_CLIENT_REQ_PENDING                0x00 
-#define DPM_CLEAR_ALL_CLIENT_REQ                 0x00 
-
 #define DPM_CLIENT_REQ_PORT_DISABLE              BIT(0)
 #define DPM_CLIENT_REQ_PORT_ENABLE               BIT(1)
 #define DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV      BIT(2)
@@ -1076,7 +1069,7 @@ void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8NewDataRole);
 
 /**************************************************************************************************
     Function:
-        DPM_StoreCableIdentity (UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
+        DPM_StoreCableIdentity (UINT8 u8PortNum, UINT16 u16Header, UINT32 *u8DataBuf);
     Summary:
         This API is used to store the capabilities received from the E-Marked cable.
     Devices Supported:
@@ -1087,7 +1080,6 @@ void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8NewDataRole);
         None.
     Input:
         u8PortNum - Port Number for which E-Cable data to be stored
-        u8SOPType - Sop type of received 
         u16Header - Header of received Discover Identity command response
         u8DataBuf - Pointer which holds the data objects of received Discover Identity command response.
     Return:
@@ -1095,7 +1087,7 @@ void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8NewDataRole);
     Remarks:
         None
 **************************************************************************************************/
-UINT8 DPM_StoreCableIdentity (UINT8 u8PortNum, UINT8 u8SOPType, UINT16 u16Header, UINT32* u8DataBuf);
+UINT8 DPM_StoreCableIdentity (UINT8 u8PortNum, UINT16 u16Header, UINT32 *u8DataBuf);
 
 /**************************************************************************************************
     Function:
@@ -1147,29 +1139,6 @@ void DPM_VCONNPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
         None.
 **************************************************************************************************/
 void DPM_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
-
-/**************************************************************************************************
-    Function:
-        void DPM_VCONNOnOff (UINT8 u8PortNum, UINT8 u8VConnEnable);
-    Summary:
-        This API is used to turn on/off the VCONN supply of a given port
-    Devices Supported:
-        UPD350 REV A
-    Description:
-         This API is used to turn on/off the VCONN of a given port
-    Conditions:
-        None.
-    Input:
-        u8PortNum     - Port Number
-        u8VConnEnable - Variable denoting either to turn on or off the VCONN
-                      - DPM_VCONN_ON (Turn on VCONN)
-                      - DPM_VCONN_OFF (Turn off VCONN)
-    Return:
-        None
-    Remarks:
-        None
-**************************************************************************************************/
-void DPM_VCONNOnOff (UINT8 u8PortNum, UINT8 u8VConnEnable);
 
 /**************************************************************************************************
     Function:
@@ -1611,7 +1580,7 @@ void DPM_HandleExternalVBUSFault (UINT8 u8PortNum, UINT8 u8FaultType);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdateNewPDOFrmSrcPwr (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
+        void DPM_UpdateNewSourcePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW);
 
     Summary:
         This API is used to form the PDOs as per power wattage value given.   
@@ -1635,7 +1604,7 @@ void DPM_HandleExternalVBUSFault (UINT8 u8PortNum, UINT8 u8FaultType);
         None. 
 
 **************************************************************************************************/
-void DPM_UpdateNewPDOFrmSrcPwr (UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
+void DPM_UpdateNewSourcePDO (UINT8 u8PortNum, UINT16 u16PowerIn250mW); 
 
 /**************************************************************************************************
     Function:
