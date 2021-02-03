@@ -501,7 +501,7 @@ void PE_HandleUnExpectedMsg (UINT8 u8PortNum)
         gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_SOP_SS;
     }
 }
-/***********************************************************************************/
+
 void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 {
     /* Validate the PD Message and get the status whether the message needs to be processed */
@@ -1640,10 +1640,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
         
     }
 }
+
 /***************************************************************************************/
-/***************************************************************************************/
-/*********************************PE Send Messages APIs********************************/
-/****************************************************************************************/
+
 void PE_SendHardReset (UINT8 u8PortNum)
 {
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
@@ -2384,6 +2383,7 @@ void PE_SSChngAndTimeoutValidate_TimerCB (UINT8 u8PortNum, UINT8 u8PESubState)
     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
 
 }
+
 void PE_NoResponse_TimerCB (UINT8 u8PortNum, UINT8 u8PE_State)
 {
     /* Setting No Response timeout flag */

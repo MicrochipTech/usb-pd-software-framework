@@ -33,7 +33,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <psf_stdinc.h>
 
 /*******************************************************************************/
-UINT8 PDTimer_Init()
+UINT8 PDTimer_Init ()
 {
 	/*Setting all the PD Software timer's state to Non Active during PD stack initialization*/
 
@@ -141,7 +141,6 @@ void PDTimer_Kill (UINT8 u8TimerID)
 /**************************************************************************************/
 void PDTimer_KillPortTimers (UINT8 u8PortNum)
 {
-
 	/*Disabling Global interrupts, So that Timer Variable will not be 
     corrupted by the PDTimer ISR Handler*/
 	MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
@@ -208,7 +207,6 @@ void PDTimer_KillPortTimers (UINT8 u8PortNum)
 
 void PDTimer_InterruptHandler (void)
 {
-
 	MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
 	
 	for (UINT8 u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)

@@ -622,11 +622,11 @@ Source/Sink Power delivery objects*/
 // Section: constants for function return values
 // *****************************************************************************
 // *****************************************************************************
-/********************** Return Values from PE_ValidateMessage API**************/
+/********************** Return Values from DPM_ValidateRequest API**************/
 #define DPM_VALID_REQUEST            1
 #define DPM_INVALID_REQUEST          0   
 
-/*********Macros for u8VbusOnorOff argument of DPM_TypeCSrcVBus5VOnOff API*********/
+/*********Macros for u8VbusOnorOff argument of DPM_DriveVBus API*********/
 #define DPM_VBUS_ON              1
 #define DPM_VBUS_OFF             0
 
@@ -1205,7 +1205,7 @@ void DPM_SetTypeCState (UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubSta
 
 /**************************************************************************************************
     Function:
-        void DPM_TypeCSrcVBus5VOnOff (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+        void DPM_DriveVBus (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Summary:
         This API drives the VBUS line of a given port to either 0V or 5V.
     Devices Supported:
@@ -1225,7 +1225,7 @@ void DPM_SetTypeCState (UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubSta
     Remarks:
         None
 **************************************************************************************************/
-void DPM_TypeCSrcVBus5VOnOff (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+void DPM_DriveVBus (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
 
 /**************************************************************************************************
     Function:
@@ -1251,7 +1251,7 @@ UINT8 DPM_IsPortVCONNSource (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
+        void DPM_EvaluateRcvdSrcCaps (UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
 
     Summary:
         Device Policy Manager evaluates the received source capability against the sink capability and 
@@ -1275,7 +1275,7 @@ UINT8 DPM_IsPortVCONNSource (UINT8 u8PortNum);
     Remarks:
     None
 **************************************************************************************************/
-void DPM_EvaluateReceivedSrcCaps (UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
+void DPM_EvaluateRcvdSrcCaps (UINT8 u8PortNum ,UINT16 u16RecvdSrcCapsHeader, UINT32 *u32RecvdSrcCapsPayload);
 
 /**************************************************************************************************
     Function:
@@ -1350,7 +1350,7 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void DPM_StateMachineInit();
+        void DPM_InitStateMachine ();
     Summary:
         This API refers to initial the Device Policy Manager 
     Devices Supported:
@@ -1368,7 +1368,7 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
         None.
 
 **************************************************************************************************/
-void DPM_StateMachineInit (void);
+void DPM_InitStateMachine (void);
 
 /**************************************************************************************************
     Function:
@@ -1486,7 +1486,7 @@ void DPM_GenericEventHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdateAdvertisedPDOParam (UINT8 u8PortNum); 
+        void DPM_UpdateAdvertisedPDO (UINT8 u8PortNum); 
     Summary:
         Updates the Advertised PDO registers and status bits once PDOs are advertised. 
     Description:
@@ -1503,7 +1503,7 @@ void DPM_GenericEventHandler (UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 
-void DPM_UpdateAdvertisedPDOParam (UINT8 u8PortNum); 
+void DPM_UpdateAdvertisedPDO (UINT8 u8PortNum); 
 
 /**************************************************************************************************
     Function:

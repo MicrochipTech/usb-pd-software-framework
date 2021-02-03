@@ -91,7 +91,7 @@ void UPD_RegisterWrite (UINT8 u8PortNum, UINT16 u16RegOffset, \
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 }
 /******************************************************************************************************/
-void UPD_RegisterRead(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, \
+void UPD_RegisterRead (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, \
         UINT8 u8Readlen)
 {
 	MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
@@ -225,7 +225,7 @@ void UPD_DisablePIOOutputISR (UINT8 u8PortNum)
 /**************************UPD PIO Configuration APIs***************************************/
 /*******************************************************************************************/
 
-void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
+void UPD_UpdatePIOOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
 {
     if ((UINT8)eUPD_PIO_UN_DEF != u8PIONum)
     {
@@ -244,7 +244,7 @@ void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT
 }
 
 /******************************************************************************************************/
-void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType)
+void UPD_SetPIOIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType)
 {
 	if (u8IntrType)
     {
@@ -288,7 +288,7 @@ void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8C
 }
 
 /******************************************************************************************************/
-void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType)
+void UPD_SetPIODebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType)
 {
     UINT32 u32Data = SET_TO_ZERO;
     
@@ -540,14 +540,14 @@ void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
         UPD_ConfigurePIODebounceCount (u8PortNum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS, gasCfgStatusData.sPerPortData[u8PortNum].u8FaultInDebounceInms);
     
         /* Enable Debounce*/
-        UPD_GPIOSetDebounce (u8PortNum, u8PIONum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS);
+        UPD_SetPIODebounce (u8PortNum, u8PIONum, UPD_PIO_DEBOUNCE_CNT_TYP_1_MS);
     }
 #if (TRUE == INCLUDE_PD_FR_SWAP)    
     else if (eUPDPIO_EN_FRS == eUPDInputPio)
     {
         /* In order to minimize response time the PIO selected by 
         FRS Request PIO Select should have debouncing disabled */
-        UPD_GPIOSetDebounce (u8PortNum, u8PIONum, UPD_PIO_DEBOUNCE_DISABLE);
+        UPD_SetPIODebounce (u8PortNum, u8PIONum, UPD_PIO_DEBOUNCE_DISABLE);
     }
 #endif 
     else
@@ -593,7 +593,8 @@ void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
 
 	/* Clear the interrupt and configure the edge type*/
 	UPD_RegisterWrite (u8PortNum, UPD_PIO_INT_STS, (UINT8 *)&u16IntrSts, BYTE_LEN_2);
-	UPD_GPIOSetIntrAlert (u8PortNum, u8PIONum, u8PIOMode);	
+	
+    UPD_SetPIOIntrAlert (u8PortNum, u8PIONum, u8PIOMode);	
 }
 
 #endif 
@@ -891,7 +892,7 @@ void UPD_FindVBusCorrectionFactor(void)
 
 #if(TRUE == INCLUDE_UPD_HPD)
 
-void UPD_HPDInit (UINT8 u8PortNum)
+void UPD_InitHPD (UINT8 u8PortNum)
 {
     UINT16 u16Data;
     
@@ -963,7 +964,7 @@ void UPD_HPDHandleISR (UINT8 u8PortNum)
 
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
 
-UINT8 UPD_CheckUPDsActive ()
+UINT8 UPD_ReturnUPDsActiveSts ()
 {
     UINT8 u8IsAllUPDsActive = FALSE;
     
@@ -1011,7 +1012,7 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	
 	/* Put MCU into IDLE */
 
-	if (FALSE == UPD_CheckUPDsActive())
+	if (FALSE == UPD_ReturnUPDsActiveSts ())
 	{
         DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE\r\n");
                 
@@ -1020,7 +1021,7 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 }
 
 /******************************************************************************************************/
-void PD_StartIdleTimer(UINT8 u8PortNum)
+void PD_StartIdleTimer (UINT8 u8PortNum)
 {
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
                 
@@ -1055,7 +1056,7 @@ void UPD_PwrManagementCtrl (UINT8 u8PortNum)
          gu8SetMCUidle to Active state for next run */
         gu8SetMCUIdle = UPD_MCU_ACTIVE;
 
-        if (FALSE == UPD_CheckUPDsActive())
+        if (FALSE == UPD_ReturnUPDsActiveSts())
         {
             /* Notification CallBack to the Client, to indicate all the
              UPD350s are in idle state */
@@ -1065,7 +1066,7 @@ void UPD_PwrManagementCtrl (UINT8 u8PortNum)
 }
 
 /********************************************************************************************/
-void UPD_PwrManagementInit (UINT8 u8PortNum)
+void UPD_InitPwrManagement (UINT8 u8PortNum)
 {
     /*Set UPD state as Active in the initialization*/
     gau8ISRPortState[u8PortNum] = UPD_STATE_ACTIVE;

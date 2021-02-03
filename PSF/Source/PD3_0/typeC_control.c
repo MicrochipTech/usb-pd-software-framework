@@ -170,7 +170,7 @@ void TypeC_InitDRPPort (UINT8 u8PortNum)
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
 	
     /*Setting the VBUS to vSafe0V before entering the Source State machine*/
-    DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
+    DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
     
     gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
     
@@ -401,7 +401,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
     {
         /*Setting the VBUS to vSafe0V before entering the State machine*/
         #if (TRUE == INCLUDE_PD_SOURCE)
-            DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
+            DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
         #endif 
     }
     else
@@ -731,7 +731,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC_DRIVE_PWR_SS\r\n");
                     
                     /*Drive VBus for vSafe5V*/
-                    DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_ON);
+                    DPM_DriveVBus (u8PortNum, DPM_VBUS_ON);
                     
                     /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach vSafe5V*/
@@ -952,7 +952,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_WAIT_SRC_PD_DEB_TIMEOUT_SS\r\n"); 
                 
                 /*Disable VBUS by driving to vSafe0V*/
-                DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
+                DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
                 
                /*Start the VBUS OFF timer for monitoring the time taken for 
                 power module to reach vSafe0V*/
@@ -1547,7 +1547,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {    
 #if(TRUE == INCLUDE_PD_SOURCE)                        
                         /*Disable VBUS by driving to vSafe0V*/
-                        DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
+                        DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
      
                         /*Disable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                         PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
@@ -1725,7 +1725,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
 #if (TRUE == INCLUDE_PD_SOURCE)                        
                         /*Disable VBUS by driving to vSafe0V*/
-                        DPM_TypeCSrcVBus5VOnOff (u8PortNum, DPM_VBUS_OFF);
+                        DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
                              
                          /*Disable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                         PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);

@@ -34,7 +34,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #include <psf_stdinc.h>
 
-UINT8 PWRCTRL_Initialization (UINT8 u8PortNum)
+UINT8 PWRCTRL_Init (UINT8 u8PortNum)
 {  
     /* VBUS_DISCHARGE Init */
     MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eVBUS_DIS_FUNC);
@@ -44,7 +44,7 @@ UINT8 PWRCTRL_Initialization (UINT8 u8PortNum)
     MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eDATA_ROLE_FUNC);
     
     #if (TRUE == INCLUDE_PD_SOURCE)
-    if (PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
+    if (DPM_GET_DEFAULT_POWER_ROLE(u8PortNum) != PD_ROLE_SINK) /*Port role is either Source or DRP*/
     {
         UPD_InitOutputPIO (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, \
                                         gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS);
@@ -56,7 +56,7 @@ UINT8 PWRCTRL_Initialization (UINT8 u8PortNum)
     #endif
 
     #if (TRUE == INCLUDE_PD_SINK)
-    if (PD_ROLE_SOURCE != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Sink or DRP*/
+    if (DPM_GET_DEFAULT_POWER_ROLE(u8PortNum) != PD_ROLE_SOURCE) /*Port role is either Sink or DRP*/
     {
         UPD_InitOutputPIO (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK, \
                                         gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_SINK);
@@ -76,14 +76,14 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Cur
 {
 #if (TRUE == INCLUDE_PD_SOURCE)
     
-    if (PD_ROLE_SINK != DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) /*Port role is either Source or DRP*/
+    if (DPM_GET_DEFAULT_POWER_ROLE(u8PortNum) != PD_ROLE_SINK) /*Port role is either Source or DRP*/
     {
         UINT8 u8EnVbusMode = gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS;
 
         if (PWRCTRL_VBUS_0V == u16VBUSVoltage)
         {                        
             /*De-assert EN_VBUS if voltage is 0V*/
-            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
+            UPD_UpdatePIOOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                     u8EnVbusMode, (UINT8)UPD_GPIO_DE_ASSERT);
 
             /* Clear the status of EN_VBUS */
@@ -99,7 +99,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Cur
         else
         {
             /*Assert EN_VBUS*/
-            UPD_GPIOUpdateOutput(u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
+            UPD_UpdatePIOOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                     u8EnVbusMode, (UINT8)UPD_GPIO_ASSERT);
 
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_VBUS_STATUS;
@@ -120,7 +120,7 @@ void PWRCTRL_ConfigVBUSDischarge (UINT8 u8PortNum, UINT8 u8EnaDisVBUSDIS)
     /*PD spec reference: The Hub DRP Shall Not enable VBUS discharge circuitry when
       changing operation from initial Source to new Sink. */
 #if (TRUE == INCLUDE_PD_FR_SWAP)    
-    if((TRUE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum)) && \
+    if ((TRUE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum)) && \
             (TRUE == DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum)))
     {
         u8EnaDisVBUSDIS = FALSE;
@@ -179,13 +179,13 @@ void PWRCTRL_ConfigEnSink (UINT8 u8PortNum, UINT8 u8EnaDisEnSink)
     
     if (TRUE == u8EnaDisEnSink) 
     {
-       UPD_GPIOUpdateOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_ASSERT);
+       UPD_UpdatePIOOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_ASSERT);
 
        gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_EN_SINK_STATUS;
     }
     else
     {
-        UPD_GPIOUpdateOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_DE_ASSERT);
+        UPD_UpdatePIOOutput(u8PortNum, u8EnSinkPio, u8EnSinkMode, (UINT8)UPD_GPIO_DE_ASSERT);
 
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_SINK_STATUS);
     }
@@ -306,10 +306,10 @@ void PWRCTRL_DisableEnFRS (UINT8 u8PortNum)
     
     if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus & DPM_PORT_IO_EN_FRS_STATUS)
     {                                                
-        UPD_GPIOUpdateOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
+        UPD_UpdatePIOOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                 gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_ASSERT); 
 
-        UPD_GPIOUpdateOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
+        UPD_UpdatePIOOutput (u8PortNum, gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS, 
                 gasCfgStatusData.sPerPortData[u8PortNum].u8Mode_EN_VBUS, (UINT8)UPD_GPIO_DE_ASSERT);                                            
 
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_FRS_STATUS);
