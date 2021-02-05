@@ -166,6 +166,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VCONN_SRC_RESPONSIBILITY             BIT(17)
 #define DPM_FRS_XMT_OR_DET_ENABLED               BIT(18)
 #define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE           BIT(19)
+#define DPM_CBL_DISC_IDENTITY_STS               (BIT(20) | BIT(21))
 
 /*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS                     0
@@ -177,6 +178,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VCONN_SRC_RESPONSIBILITY_POS            17
 #define DPM_FRS_XMT_OR_DET_ENABLED_POS              18
 #define DPM_FRS_SIG_XMT_OR_RCV_DONE_POS             19 
+#define DPM_CBL_DISC_IDENTITY_POS                   20
+
+/* Cable Discover Identity values used in u32DPMStatus */
+#define DPM_CBL_DISC_IDENTITY_UNTRIED            0
+#define DPM_CBL_DISC_IDENTITY_NAKED              1
+#define DPM_CBL_DISC_IDENTITY_ACKED              2
 
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u32DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
@@ -273,6 +280,13 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define DPM_IS_FRS_SIG_XMT_OR_RCV_DONE(u8PortNum) \
 ((gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_XMT_OR_RCV_DONE) >> DPM_FRS_SIG_XMT_OR_RCV_DONE_POS)
+
+/*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
+- DPM_CBL_DISC_IDENTITY_UNTRIED            
+- DPM_CBL_DISC_IDENTITY_NAKED              
+- DPM_CBL_DISC_IDENTITY_ACKED */              
+#define DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum) \
+((gasDPM[u8PortNum].u32DPMStatus & DPM_CBL_DISC_IDENTITY_STS) >> DPM_CBL_DISC_IDENTITY_POS)
 
 /**************************************************************************************************/
 
