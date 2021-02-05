@@ -37,9 +37,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /********************************************************************/
 void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header)
 {
-    /* Receive VDM Header */
-    UINT32 u32VDMHeader = SET_TO_ZERO;
-
 	/* Source Capabilities PDO Count */
     UINT8 u8SrcPDOCnt = SET_TO_ZERO;
 
@@ -180,8 +177,8 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
 							/* Port partner attached with E-Cable */
                             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_STARTUP-IDLE_SS: E-Cable and Device Attached\r\n");
                             gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_3A_UNIT;
-                            gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_REQUEST;
-                            gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;                            
+                            gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
+                            gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;                            
                         }
                     } 
                     else
@@ -1062,132 +1059,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             break;  
         }
         
-		/*************** PE_SRC_VDM_IDENTITY_REQUEST *****************/
-        case ePE_SRC_VDM_IDENTITY_REQUEST:
-        {            
-            switch(gasPolicyEngine[u8PortNum].ePESubState)
-            {
-                case ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS:
-                {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_VDM_IDENTITY_REQUEST-ENTRY_SS\r\n");
-                    
-                    /* Choosing VDM version as per Current spec revision */
-                    if (PD_SPEC_REVISION_2_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
-                    {
-                        u32VDMHeader = DPM_VDM_HEADER_LOW_VER;
-                    }                    
-                    else
-                    {
-                        u32VDMHeader = DPM_VDM_HEADER_HIGH_VER;
-                    }
-                    
-					/* Send VDM Discover Identity message to E-Cable */
-                    u32TransmitHeader = PRL_FormNonSOPTypeMsgHeader (u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
-                                                                        BYTE_LEN_1, PE_NON_EXTENDED_MSG);
-                    u8TransmitSOP = PRL_SOP_P_TYPE;
-                    u32pTransmitDataObj = &u32VDMHeader;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
-
-                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_VDM_IDENTITY_REQUEST, \
-                                                ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_RCVD_SS, ePE_SRC_VDM_IDENTITY_NAKED, NULL);
-              
-                    gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter++;
-                    u8IsTransmit = TRUE;
-                    
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS;
-                    
-                    break;    
-                }
-            
-                case ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS:
-                {
-                    /* Hook to notify PE state machine entry into idle sub-state */
-                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
-                    
-                    break;
-                }
-                
-                case ePE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_RCVD_SS:
-                {
-					/* GoodCRC received for VDM Identity request */
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_VDM_IDENTITY_REQUEST_GOODCRC_RCVD_SS\r\n");
-                    
-					/* Start the VDMIDentityRequest Sender Response timer, if timed out set the PE
-						sub-state to ePE_SRC_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS */
-                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                            (PE_VDMRESPONSE_TIMEOUT_MS),
-                                                            PE_SSChngAndTimeoutValidate_TimerCB,u8PortNum,  
-                                                            (UINT8)ePE_SRC_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS);
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_IDLE_SS;
-                    break;  
-                }
-                
-                case ePE_SRC_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS:
-                {
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_NAKED; 
-                    break;
-                }
-                
-                default:
-                {
-                    break;
-                }
-            }
-            break;  
-        }
-        
-		/************ PE_SRC_VDM_IDENTITY_ACKED ****************/
-        case ePE_SRC_VDM_IDENTITY_ACKED:
-        {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_VDM_IDENTITY_ACKED\r\n");
-            
-			/* VDM ACK received from cable */
-			/* Pass the cable data to the DPM */
-            if (DPM_VDM_ACK == DPM_StoreCableIdentity (u8PortNum, (UINT16) u32Header, (UINT32*) pu8DataBuf))
-            {
-                DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
-                gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
-                
-                /* Post eMCHP_PSF_CABLE_IDENTITY_DISCOVERED notification */
-                (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_CABLE_IDENTITY_DISCOVERED);
-            }            
-            else
-            {
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_NAKED;
-            }
-            
-            break;  
-        }
-        
-        case ePE_SRC_VDM_IDENTITY_NAKED:
-        {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_VDM_IDENTITY_NAKED\r\n");
-            
-            /* VDM NAK received */
-			/* If DiscoverIdentityCounter reaches nDiscoverIdentityCount change the PE state to	
-				PE_SRC_SEND_CAPABILITIES */
-            if (gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter < PE_N_DISCOVER_IDENTITY_COUNT)
-            {
-                DPM_UpdatePDSpecRev (u8PortNum, PD_SPEC_REVISION_2_0);
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_VDM_IDENTITY_REQUEST;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_VDM_IDENTITY_REQUEST_ENTRY_SS;                                
-            }       
-            else
-            {
-                DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
-                gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_CABLE_RESPOND_NAK;
-                gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;               
-                
-                /* Post eMCHP_PSF_CABLE_IDENTITY_NAKED notification */
-                (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_CABLE_IDENTITY_NAKED);                
-            }
-                        
-            break;  
-        }
+		
         
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)        
         
