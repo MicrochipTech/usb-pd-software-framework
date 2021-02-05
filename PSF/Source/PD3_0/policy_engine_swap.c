@@ -1877,11 +1877,10 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     /* Change the status of VCONN Source responsibility after a swap */
                     DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
                                 
-					/* PD spec reference - After a VCONN Swap the VCONN Source needs
-					   to reset the Cable Plug's Protocol Layer in order to ensure 
-					   MessageID synchronization. */			
-                    gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_SOFT_RESET;
-                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_SOP_P_SS;
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                    
+                    DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET) ;
                     
                     /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);

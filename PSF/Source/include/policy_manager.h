@@ -768,7 +768,7 @@ Source/Sink Power delivery objects*/
 #define DPM_INT_EVT_SYSTEM_POWER_LOST               BIT(11)
 #define DPM_INT_EVT_SYSTEM_POWER_BACK               BIT(12)
 #define DPM_INT_EVT_DISC_CABLE_IDENTITY             BIT(13)
-#define DPM_INT_EVT_INITIATE_SPO_P_SOFT_RESET       BIT(14)
+#define DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET       BIT(14)
 
 /******************** Port Power/Data State used for initiating FRS ******************/
 #define PD_ROLE_SINK_DFP        1 
