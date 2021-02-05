@@ -1779,8 +1779,25 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                 DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
+                if(PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+                {
+                    if(PD_ROLE_SOURCE == u8CurrPwrRole)
+                    {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+                    }
+                    else
+                    {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;                       
+                    }
+                }
+                else
+                {
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
+                }
+
                 
                 /* Post eMCHP_PSF_CABLE_IDENTITY_DISCOVERED notification */
                 (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_CABLE_IDENTITY_DISCOVERED);
@@ -1811,8 +1828,25 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                 DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
                 gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_CABLE_RESPOND_NAK;
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
-                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
-                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;               
+                
+                if(PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+                {
+                    if(PD_ROLE_SOURCE == u8CurrPwrRole)
+                    {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+                    }
+                    else
+                    {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
+                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;                       
+                    }
+                }
+                else
+                {
+                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
+                }            
                 
                 /* Post eMCHP_PSF_CABLE_IDENTITY_NAKED notification */
                 (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_CABLE_IDENTITY_NAKED);                
