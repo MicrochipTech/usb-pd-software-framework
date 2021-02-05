@@ -1266,6 +1266,17 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
                 }
             }
         } /* DPM_INT_EVT_INITIATE_GET_STATUS */
+        else if(DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET == (gasDPM[u8PortNum].u16DPMInternalEvents\
+                                                    & DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET))
+        {
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
+            
+            gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_SOFT_RESET;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_SOP_P_SS;
+            
+            u16AMSInProgress = DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET;  
+        } /*DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET */
 #endif /*INCLUDE_PD_SOURCE_PPS*/
         else
         {
