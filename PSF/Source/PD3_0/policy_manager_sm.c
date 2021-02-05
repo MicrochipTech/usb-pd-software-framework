@@ -1052,6 +1052,16 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         }
     }
 #endif 
+    else if(DPM_INT_EVT_DISC_CABLE_IDENTITY == (gasDPM[u8PortNum].u16DPMInternalEvents\
+                                                & DPM_INT_EVT_DISC_CABLE_IDENTITY))
+    {
+        /*Clear the Internal event since it is processed*/
+        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_DISC_CABLE_IDENTITY);
+
+        gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;
+        u16AMSInProgress = DPM_INT_EVT_DISC_CABLE_IDENTITY;
+    }
 #if (TRUE == INCLUDE_PD_3_0)
     /* Process internal events only when the Policy Engine is in PS_RDY state*/
     else if ((gasDPM[u8PortNum].u16DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)) &&\

@@ -177,8 +177,8 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
 							/* Port partner attached with E-Cable */
                             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_STARTUP-IDLE_SS: E-Cable and Device Attached\r\n");
                             gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_3A_UNIT;
-                            gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
-                            gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;                            
+
+                            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_DISC_CABLE_IDENTITY);
                         }
                     } 
                     else
