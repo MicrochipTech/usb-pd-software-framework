@@ -1778,6 +1778,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
             {
                 DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
+                gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISC_IDENTITY_ACKED << DPM_CBL_DISC_IDENTITY_POS);
                 
                 if(PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
                 {
@@ -1813,6 +1814,8 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
         case ePE_VDM_IDENTITY_NAKED:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_IDENTITY_NAKED\r\n");
+            
+            gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISC_IDENTITY_NAKED << DPM_CBL_DISC_IDENTITY_POS);
             
             /* VDM NAK received */
 			/* If DiscoverIdentityCounter reaches nDiscoverIdentityCount change the PE state to	
