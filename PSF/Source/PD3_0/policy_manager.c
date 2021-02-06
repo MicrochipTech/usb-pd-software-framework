@@ -1421,6 +1421,12 @@ void DPM_InitiateInternalEvts (UINT8 u8PortNum)
         }        
     }
 #endif /*INCLUDE_PD_FR_SWAP*/
+    
+    if((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET) &&
+            (DPM_CBL_DISC_IDENTITY_ACKED == DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum)))
+    {
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
+    }
 
 }
 
@@ -1593,7 +1599,8 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
     gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_FRS_XMT_OR_DET_ENABLED |\
-                                        DPM_PORT_IN_MODAL_OPERATION);    
+                                        DPM_PORT_IN_MODAL_OPERATION | DPM_CBL_DISC_IDENTITY_STS \
+                                        | DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;

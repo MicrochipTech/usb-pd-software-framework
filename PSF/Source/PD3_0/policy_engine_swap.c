@@ -1796,6 +1796,8 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
             gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                
             
+            gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+            
             /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
             
@@ -1880,7 +1882,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                     
-                    DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET) ;
+                    gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET;                              
                     
                     /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
