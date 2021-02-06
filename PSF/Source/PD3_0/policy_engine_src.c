@@ -739,6 +739,10 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     /* Send Hard Reset to Port Partner*/
                     PRL_SendCableorHardReset (u8PortNum, PRL_SEND_HARD_RESET, NULL, SET_TO_ZERO);	
 
+                    /*Hard reset could have been initiated by SOP_P Soft_Reset.
+                      Clear this bit since it is complete */
+                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+                    
                     /* Increment the HardReset Counter */
                     gasPolicyEngine[u8PortNum].u8HardResetCounter++;
                     

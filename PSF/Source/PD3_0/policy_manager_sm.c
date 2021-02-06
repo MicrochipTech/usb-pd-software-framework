@@ -644,6 +644,9 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
                 /* Clear DR Swap internal event due to mismatch of policy */
                 gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_DR_SWAP);
             }
+            
+            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_DISC_CABLE_IDENTITY);
+            
             #endif
             break; 
         }         
@@ -895,6 +898,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
 {
     UINT16 u16AMSInProgress = SET_TO_ZERO;
     UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    UINT8 u8DPMDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
     
     /*Process port disable/enable internal events irrespective of whether PSF is idle*/
     if (DPM_INT_EVT_PORT_DISABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
@@ -1058,9 +1062,16 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         /*Clear the Internal event since it is processed*/
         gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_DISC_CABLE_IDENTITY);
 
-        gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
-        gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;
-        u16AMSInProgress = DPM_INT_EVT_DISC_CABLE_IDENTITY;
+        /* Initiate Cable Discover Identity Only if it is not tried so far and data role is DFP*/
+        if(DPM_CBL_DISC_IDENTITY_UNTRIED == DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum) && \
+                PD_ROLE_DFP == u8DPMDataRole)
+        {
+            gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;
+            
+            u16AMSInProgress = DPM_INT_EVT_DISC_CABLE_IDENTITY;
+        }
+
     }
 #if (TRUE == INCLUDE_PD_3_0)
     /* Process internal events only when the Policy Engine is in PS_RDY state*/

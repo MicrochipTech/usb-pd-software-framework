@@ -1814,9 +1814,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
         case ePE_VDM_IDENTITY_NAKED:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_IDENTITY_NAKED\r\n");
-            
-            gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISC_IDENTITY_NAKED << DPM_CBL_DISC_IDENTITY_POS);
-            
+                       
             /* VDM NAK received */
 			/* If DiscoverIdentityCounter reaches nDiscoverIdentityCount change the PE state to	
 				PE_SRC_SEND_CAPABILITIES */
@@ -1832,6 +1830,8 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                 gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_CABLE_RESPOND_NAK;
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 
+                gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISC_IDENTITY_NAKED << DPM_CBL_DISC_IDENTITY_POS);
+
                 if(PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
                 {
                     if(PD_ROLE_SOURCE == u8CurrPwrRole)
@@ -2003,6 +2003,9 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                                                             PE_SSChngAndTimeoutValidate_TimerCB,u8PortNum,  
                                                             (UINT8)eTxHardRstSS);
                     
+                    /*Clear this bit since SOP_P Soft_Reset is complete */
+                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+                    
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_P_IDLE_SS;
                    
                     break; 
@@ -2020,6 +2023,9 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                    
                    PRL_SendCableorHardReset (u8PortNum, PRL_SEND_CABLE_RESET, NULL, SET_TO_ZERO);
                    
+                   /*Clear this bit since SOP_P Soft_Reset is complete */
+                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+                    
                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                    
