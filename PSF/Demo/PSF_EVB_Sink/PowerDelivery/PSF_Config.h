@@ -1748,6 +1748,7 @@ typedef struct _PortCfgStatus
     UINT32 u32PortStatusChange;
     UINT32 u32PortIOStatus;
     UINT32 u32ClientRequest; 
+    UINT32 u32aCableIdentity[6];
     UINT16 u16AllocatedPowerIn250mW;   
     UINT16 u16NegoVoltageInmV;      
     UINT16 u16NegoCurrentInmA;      
@@ -1775,16 +1776,15 @@ typedef struct _PortCfgStatus
     UINT8 u8VCONNOCSDebounceInms;
     UINT8 u8VBUSMaxFaultCnt;
     UINT8 u8VCONNMaxFaultCnt;
+    UINT8 u8CableIdentityCnt; 
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;  
     UINT8 u8aReserved2[3]; 
 #if (TRUE == INCLUDE_PD_SOURCE)
 	UINT32 u32aSourcePDO[7];
 	UINT32 u32aNewSourcePDO[7];	
-    UINT32 u32aCableIdentity[6];
 	UINT8 u8SourcePDOCnt;
 	UINT8 u8NewSourcePDOCnt;
-    UINT8 u8CableIdentityCnt; 
     UINT8 u8Pio_EN_VBUS;
     UINT8 u8Mode_EN_VBUS;
     UINT8 u8aReserved3[3];
