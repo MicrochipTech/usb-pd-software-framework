@@ -53,6 +53,8 @@ UINT8 PDTimer_Start (UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, \
                                 UINT8 u8PortNum, UINT8 u8PDState)
 {
 	UINT8 u8TimerID;
+    u32TimeoutTicks++;
+    
     /*Find the unused PD Software timer and start the given timeout value with the found timer*/    
 	for (u8TimerID = SET_TO_ZERO; u8TimerID < MAX_CONCURRENT_TIMERS; u8TimerID++)
 	{
