@@ -1139,7 +1139,7 @@ void DPM_EvaluateRcvdSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
                             DPM_FORM_DATA_REQUEST((u8SrcPDOIndex + BYTE_LEN_1), u8CapMismatch,
                             u8SinkGiveBackFlag, DPM_GET_PDO_USB_COMM_CAP(u32SinkAdvertisedPDO),\
                             u8SinkNoUSBSusp, u16SinkRDOCurIn10mA,\
-                                                DPM_GET_PDO_CURRENT(u32SinkAdvertisedPDO));
+                                                DPM_GET_PDO_CURRENT(u32RcvdSrcPDO));
                 }
                 gasDPM[u8PortNum].u16SinkOperatingCurrInmA = (u16SinkRDOCurIn10mA * DPM_PDO_CURRENT_UNIT);
                 /*Updating the globals with Sink PDO selected */
