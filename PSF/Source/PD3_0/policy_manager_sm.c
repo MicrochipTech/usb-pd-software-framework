@@ -1056,23 +1056,6 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         }
     }
 #endif 
-    else if(DPM_INT_EVT_DISC_CABLE_IDENTITY == (gasDPM[u8PortNum].u16DPMInternalEvents\
-                                                & DPM_INT_EVT_DISC_CABLE_IDENTITY))
-    {
-        /*Clear the Internal event since it is processed*/
-        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_DISC_CABLE_IDENTITY);
-
-        /* Initiate Cable Discover Identity Only if it is not tried so far and data role is DFP*/
-        if(DPM_CBL_DISC_IDENTITY_UNTRIED == DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum) && \
-                PD_ROLE_DFP == u8DPMDataRole)
-        {
-            gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
-            gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;
-            
-            u16AMSInProgress = DPM_INT_EVT_DISC_CABLE_IDENTITY;
-        }
-
-    }
 #if (TRUE == INCLUDE_PD_3_0)
     /* Process internal events only when the Policy Engine is in PS_RDY state*/
     else if ((gasDPM[u8PortNum].u16DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)) &&\
@@ -1114,6 +1097,24 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             }
             u16AMSInProgress = DPM_INT_EVT_INITIATE_RENEGOTIATION;
             DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: RENEGOTIATION INITIATED\r\n");
+        }
+        /*To-do check this priority*/
+        else if(DPM_INT_EVT_DISC_CABLE_IDENTITY == (gasDPM[u8PortNum].u16DPMInternalEvents\
+                    & DPM_INT_EVT_DISC_CABLE_IDENTITY))
+        {
+            /*Clear the Internal event since it is processed*/
+            gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_DISC_CABLE_IDENTITY);
+
+            /* Initiate Cable Discover Identity Only if it is not tried so far and data role is DFP*/
+            if(DPM_CBL_DISC_IDENTITY_UNTRIED == DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum) && \
+                    PD_ROLE_DFP == u8DPMDataRole)
+            {
+                gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
+                gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;
+
+                u16AMSInProgress = DPM_INT_EVT_DISC_CABLE_IDENTITY;
+            }
+
         }
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
         else if (DPM_INT_EVT_INITIATE_VCONN_SWAP == (gasDPM[u8PortNum].u16DPMInternalEvents &\
