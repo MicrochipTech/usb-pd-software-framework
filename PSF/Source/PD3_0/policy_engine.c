@@ -1767,7 +1767,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
             break;  
         }
         
-		/************ PE_SRC_VDM_IDENTITY_ACKED ****************/
+		/************ PE_VDM_IDENTITY_ACKED ****************/
         case ePE_VDM_IDENTITY_ACKED:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_IDENTITY_ACKED\r\n");
@@ -1777,28 +1777,21 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
             if (DPM_VDM_ACK == DPM_StoreCableIdentity (u8PortNum, (UINT16) u32Header, (UINT32*) pu8DataBuf))
             {
                 DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
+                
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISC_IDENTITY_ACKED << DPM_CBL_DISC_IDENTITY_POS);
                 
-                if(PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+                if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
                 {
-                    if(PD_ROLE_SOURCE == u8CurrPwrRole)
-                    {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
-                    }
-                    else
-                    {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                        gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;                       
-                    }
+                    /* Move to ePE_SRC_READY/ePE_SNK_READY state */
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                 }
                 else
                 {
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
                 }
-
                 
                 /* Post eMCHP_PSF_CABLE_IDENTITY_DISCOVERED notification */
                 (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_CABLE_IDENTITY_DISCOVERED);
@@ -1821,20 +1814,22 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
             if (gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter < PE_N_DISCOVER_IDENTITY_COUNT)
             {
                 DPM_UpdatePDSpecRev (u8PortNum, PD_SPEC_REVISION_2_0);
+                
                 gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;                                
             }       
             else
             {
                 DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
+                
                 gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_CABLE_RESPOND_NAK;
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 
                 gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISC_IDENTITY_NAKED << DPM_CBL_DISC_IDENTITY_POS);
 
-                if(PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+                if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
                 {
-                    if(PD_ROLE_SOURCE == u8CurrPwrRole)
+                    if (PD_ROLE_SOURCE == u8CurrPwrRole)
                     {
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
@@ -2024,7 +2019,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                    PRL_SendCableorHardReset (u8PortNum, PRL_SEND_CABLE_RESET, NULL, SET_TO_ZERO);
                    
                    /*Clear this bit since SOP_P Soft_Reset is complete */
-                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+                   gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
                     
                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;

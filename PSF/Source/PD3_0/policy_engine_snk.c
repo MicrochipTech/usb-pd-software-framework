@@ -48,8 +48,8 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
     
     /*If the Device is detached, set the Policy Engine State to PE_SNK_STARTUP */
     if (((TYPEC_UNATTACHED_SNK == u8TypeCState) || ((TYPEC_ATTACHWAIT_SNK == u8TypeCState))) && \
-        ((ePE_SNK_STARTUP != gasPolicyEngine[u8PortNum].ePEState) \
-        && (ePE_SNK_DISCOVERY != gasPolicyEngine[u8PortNum].ePEState)))
+        ((gasPolicyEngine[u8PortNum].ePEState != ePE_SNK_STARTUP) \
+        && (gasPolicyEngine[u8PortNum].ePEState != ePE_SNK_DISCOVERY)))
     {
         /*Reset the HardResetCounter*/
         gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;
@@ -81,7 +81,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                             DPM_PORT_AS_SNK_LAST_REQ_REJECT_STATUS);           
             
             #if (FALSE != INCLUDE_PDFU)
-            if((FALSE!=gsPdfuInfo.u8IsPDFUActive) && (u8PortNum == gsPdfuInfo.u8PDFUPortNum))
+            if ((FALSE != gsPdfuInfo.u8IsPDFUActive) && (u8PortNum == gsPdfuInfo.u8PDFUPortNum))
             {
                 PE_FwUpdtInitialize();
             }
@@ -172,7 +172,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
         {            
             DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY\r\n");
               
-            if (DPM_INT_EVT_INITIATE_RENEGOTIATION != gasDPM[u8PortNum].u16InternalEvntInProgress)
+            if (gasDPM[u8PortNum].u16InternalEvntInProgress != DPM_INT_EVT_INITIATE_RENEGOTIATION)
             {
                 /* Notify the new source capability is received*/
                 (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_NEW_SRC_CAPS_RCVD);
@@ -362,7 +362,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {                 
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_END_AMS_SS\r\n");
                     
-                    /*On PD negotiation complete and sink is in ready state, inform DPM to initiate internal events*/
+                    /* Request DPM to initiate internal events*/
                     DPM_InitiateInternalEvts (u8PortNum);
                     
                     gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;                        

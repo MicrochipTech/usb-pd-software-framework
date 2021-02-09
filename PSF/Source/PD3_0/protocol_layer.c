@@ -227,7 +227,7 @@ void  PRL_Init (UINT8 u8PortNum)
 	PRL_ResetChunkSM (u8PortNum);
     #endif
     
-    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Initialization Done\r\n");
+    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL Init Done\r\n");
 }
 
 /***************************************************************************************************/
@@ -720,7 +720,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8 *pu8SOPType, UINT32 *pu32Header, UI
             }
         }
 		
-        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_EXTN_RX_PKT_PASSED_TO_PE: Extended Msg received passed to PE\r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Extd Msg rcvd passed to PE\r\n");
 		
     }
     /*Note: gasPRL [u8PortNum].u8RxError is used only for PRL_RX_CHUNK_RCV_ERROR*/
@@ -731,7 +731,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8 *pu8SOPType, UINT32 *pu32Header, UI
 		/* RxIntrStatus is cleared*/
         gasPRL [u8PortNum].u8RxError &= ~PRL_RX_CHUNK_RCV_ERROR;
 		
-        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_RX_CHUNK_RCV_ERROR: Rx Chunk Error \r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Rx Chunk Error \r\n");
     }
     #endif
     else
@@ -959,7 +959,7 @@ void PRL_OnHardResetComplete (UINT8 u8PortNum)
 	gasPRL [u8PortNum].u8RxHRRcvdISR = FALSE;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 	
-	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_HR_COMPLETE: PRL is informed about HR complete\r\n");
+	DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_HR_COMPLETE\r\n");
     
 	/*If Tx_EOP is enabled at the time of Auto mode response,For Good_CRC sent as auto 
      * response, Tx_EOP interrupt is fired. Thus, Disable the Tx interrupt*/
@@ -1024,7 +1024,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
             if ((PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader) == gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent)
 					&& PRL_IS_MSG_CHUNKED(u16ExtendedMsgHeader))
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_REQUEST_RCV: Chunk Request received\r\n");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Chunk Request received\r\n");
 				
 			  	/* If Chunk number request received and ChunkNumber of next Chunk to be sent is equal,
 				PRL_TCH_SEND_RESPONSE_CHUNK_ST is assigned to send next chunk packet*/
@@ -1032,7 +1032,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
             }
             else
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TCH_ERROR: Request Chunk number mismatch\r\n");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Request Chunk number mismatch\r\n");
 				
 			  	/* Spec Ref: TCH_Report_Error - Report Error to Policy Engine. 
 												Entered on condition 
@@ -1061,7 +1061,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
                /* if Chunk SM Chunk message is already in process & other message is received*/
                 if (gasChunkSM [u8PortNum].u8EnableChunkSM)
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected Chunk msg received\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Unexpected Chunk msg rcvd\r\n");
                      
                     /* Unexpected message received*/
                     if ((PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST == gasChunkSM [u8PortNum].u8ChunkState)
@@ -1137,7 +1137,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
                 }
                 else
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RESPONSE_RCV: Chunk Response Received\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Chunk Response Rcvd\r\n");
 					
                     /* If the received Chunk response is not the last chunk response packet
 						PRL_RCH_SEND_CHUNK_REQUEST_ST is assigned to to request for next chunk*/
@@ -1149,7 +1149,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
             }
             else
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_RECV_ERROR: Response Chunk number mismatch\r\n");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Response Chunk number mismatch\r\n");
 			  	/* PRL_RCH_CHUNK_RECV_ERROR_ST is assigned to indicate PE*/
                 gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
             }
@@ -1169,7 +1169,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
                 || (PRL_RCH_SEND_CHUNK_REQUEST_ST == gasChunkSM [u8PortNum].u8ChunkState)
                 || (PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST == gasChunkSM [u8PortNum].u8ChunkState))
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg\r\n");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Unexpected msg rcvd other than Ping & Chunk msg\r\n");
 			  	
                 /* Chunk SM is reset*/
                 PRL_ResetChunkSM (u8PortNum);
@@ -1179,7 +1179,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
             }
             else
             {
-                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_CHUNK_UNEXPECTED_MSG_RCV: Unexpected msg received other than Ping & Chunk msg\r\n");
+                DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Unexpected msg rcvd other than Ping & Chunk msg\r\n");
 				/* Spec Ref: TCH_Message_Received - Clear Extended Message Buffer. Pass message to Chunked Rx*/
                 PRL_ResetChunkSM (u8PortNum);
             }
@@ -1200,7 +1200,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
            PRL_KillCAorChunkSMTimer (u8PortNum);
            
            /* PRL_TX_IDLE_ST is assigned*/
-            PRL_ChangeTxState (u8PortNum, PRL_TX_IDLE_ST);
+           PRL_ChangeTxState (u8PortNum, PRL_TX_IDLE_ST);
     }
     
     #else
@@ -1245,39 +1245,35 @@ UINT32 PRL_IsAnyMsgPendinginPRL (UINT8 u8PortNum)
 
 void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 {
-    /*If the current spec role is not 3.0 return or default configured Rp value is not 3A*/
-    if ((PD_SPEC_REVISION_3_0 != DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) ||\
-            (TYPEC_DFP_3A0_CURRENT != DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)))
+    /*If the current spec role is not 3.0 return */
+    if (DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum) != PD_SPEC_REVISION_3_0)
     {
         return;
     } 
+    
+    /* Spec Reference: PRL_Tx_Src_Source_Tx - Set Rp = SinkTxNG 
+       Rp = SinkTxNG 1.5A @ 5v is set  
+       Spec Reference: PRL_tx_Src_Sink_Tx - Set Rp = SinkTxOK 
+       Rp = SinkTxOk 3A @ 5v is set */    
+    TypeC_SetRpCollAvoidance (u8PortNum, u8Enable);
+    
 	if (TYPEC_SINK_TXNG == u8Enable)
-	{
-	  	/* Spec Reference: PRL_Tx_Src_Source_Tx - Set Rp = SinkTxNG */
-		/* Rp = SinkTxNG 1.5A @ 5v is set */
-		TypeC_SetRpCollAvoidance (u8PortNum, TYPEC_SINK_TXNG);
-		
+	{				
 		/* Spec Reference: PRL_Tx_Src_Pending - Start sinkTxTimer*/
         /* SinkTxTimer is started. */
 		gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = PDTimer_Start (PRL_SINKTX_TIMEOUT_MS,\
-                                                        PRL_CASinkTxTimerOut_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
+                                                        PRL_CASinkTx_TimerCB, u8PortNum, (UINT8)SET_TO_ZERO);
 		
 		/* u8Txstate is set to PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST*/
 		PRL_ChangeTxState (u8PortNum, PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST);
         		
-        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: CONFIG_PRL_SINK_TX_TIMEOUT_MS is set\r\n");
-	}
-	else
-	{
-	  	/* Spec Reference: PRL_tx_Src_Sink_Tx - Set Rp = SinkTxOK */
-		/* Rp = SinkTxOk 3A @ 5v is set*/
-		TypeC_SetRpCollAvoidance (u8PortNum, TYPEC_SINK_TXOK);
+        DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: SINK_TX_TMR ON\r\n");
 	}
 }
 
 /******************************************************************************************************/
 
-void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+void PRL_CASinkTx_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 {
   	/* Spec Reference: PRL_Tx_Construct_Message or PRL_Tx_Layer_Reset_for_Transmit - Entered on condition
 						Message pending (except Soft Reset) & SinkTxTimer timeout
@@ -1299,12 +1295,10 @@ UINT8 PRL_IsAMSInitiatable (UINT8 u8PortNum)
     if (PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
     {
         /*If Role is Sink, check whether Source Rp capability is 3A*/
-        if ((PD_ROLE_SINK == u8CurrentPwrRole) && (DPM_PORT_RP_VAL_DETECT_3A_STATUS ==\
-                      (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &
-                        DPM_PORT_RP_VAL_DETECT_MASK_STATUS)))
+        if (PD_ROLE_SINK == u8CurrentPwrRole)
         {
             /* Spec Ref: PRL_Tx_Snk_Start_of_AMS */
-            if (TYPEC_SINK_TXNG == TypeC_CheckRpValCollAvoidance(u8PortNum))
+            if (TYPEC_SINK_TXNG == TypeC_CheckRpValCollAvoidance (u8PortNum))
             {
                 /* Spec Ref: PRL_Tx_Snk_Pending*/
                 /* if Rp value is SinkTxNG, PRL_TX_CA_SINK_TXNG_ST is assigned*/
@@ -1317,8 +1311,7 @@ UINT8 PRL_IsAMSInitiatable (UINT8 u8PortNum)
                 /*Sink Tx OK -Return TRUE */
             }
         }
-        else if ((PD_ROLE_SOURCE == u8CurrentPwrRole) &&
-                (TYPEC_DFP_3A0_CURRENT == DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum)))
+        else if (PD_ROLE_SOURCE == u8CurrentPwrRole)
         {
             if (gasPRL [u8PortNum].u8TxStateISR != PRL_TX_IDLE_ST)
             {

@@ -777,13 +777,11 @@ Source/Sink Power delivery objects*/
 #define DPM_INT_EVT_INITIATE_VDM                    BIT(5)
 #define DPM_INT_EVT_INITIATE_ALERT                  BIT(6)
 #define DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
-#define DPM_INT_EVT_PORT_DISABLE            		BIT(8)
-#define DPM_INT_EVT_PORT_ENABLE             		BIT(9)
-#define DPM_INT_EVT_INITIATE_FR_SWAP                BIT(10)
-#define DPM_INT_EVT_SYSTEM_POWER_LOST               BIT(11)
-#define DPM_INT_EVT_SYSTEM_POWER_BACK               BIT(12)
-#define DPM_INT_EVT_DISC_CABLE_IDENTITY             BIT(13)
-#define DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET       BIT(14)
+#define DPM_INT_EVT_INITIATE_FR_SWAP                BIT(8)
+#define DPM_INT_EVT_SYSTEM_POWER_LOST               BIT(9)
+#define DPM_INT_EVT_SYSTEM_POWER_BACK               BIT(10)
+#define DPM_INT_EVT_DISC_CABLE_IDENTITY             BIT(11)
+#define DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET       BIT(12)
 
 /******************** Port Power/Data State used for initiating FRS ******************/
 #define PD_ROLE_SINK_DFP        1 
@@ -836,6 +834,8 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bit 17 - VCONN Source Responsibility Status
                                         // Bit 18 - FRS XMT or DET Enabled Status 
                                         // Bit 19 - FRS Signal Transmitted Or Received Status                                  
+                                        // Bit 20 - Cable Discover Identity Status
+                                        // Bit 21 - VCONN Src SOP' Soft Reset initiate status
   UINT16 u16DPMInternalEvents;          // BIT(0) - DPM_INT_EVT_INITIATE_GET_SINK_CAPS  
                                         // BIT(1) - DPM_INT_EVT_INITIATE_RENEGOTIATION  
                                         // BIT(2) - DPM_INT_EVT_INITIATE_VCONN_SWAP     
@@ -843,12 +843,12 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // BIT(4) - DPM_INT_EVT_INITIATE_DR_SWAP        
                                         // BIT(5) - DPM_INT_EVT_INITIATE_VDM            
                                         // BIT(6) - DPM_INT_EVT_INITIATE_ALERT          
-                                        // BIT(7) - DPM_INT_EVT_INITIATE_GET_STATUS     
-                                        // BIT(8) - DPM_INT_EVT_PORT_DISABLE            
-                                        // BIT(9) - DPM_INT_EVT_PORT_ENABLE             
-                                        // BIT(10) - DPM_INT_EVT_INITIATE_FR_SWAP        
-                                        // BIT(11) - DPM_INT_EVT_SYSTEM_POWER_LOST       
-                                        // BIT(12) - DPM_INT_EVT_SYSTEM_POWER_BACK       
+                                        // BIT(7) - DPM_INT_EVT_INITIATE_GET_STATUS                
+                                        // BIT(8) - DPM_INT_EVT_INITIATE_FR_SWAP        
+                                        // BIT(9) - DPM_INT_EVT_SYSTEM_POWER_LOST       
+                                        // BIT(10) - DPM_INT_EVT_SYSTEM_POWER_BACK
+                                        // BIT(11) - DPM_INT_EVT_DISC_CABLE_IDENTITY             
+                                        // BIT(12) - DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET       
   UINT8 u8DPMConfigData;                // Bit  1:0 - Default Port Power Role
                                         // Bit  3:2 - Default Port Data Role
                                         // Bits 5:4 - Default PD Spec Revision

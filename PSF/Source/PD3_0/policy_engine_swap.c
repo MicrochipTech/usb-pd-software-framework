@@ -1792,11 +1792,11 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             /* Change the status of VCONN Source responsibility after a swap */
             DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
             
+            gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+            
             /* Move to Ready state */
             gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-            gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                
-            
-            gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+            gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                                        
             
             /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);
@@ -1878,11 +1878,12 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     
                     /* Change the status of VCONN Source responsibility after a swap */
                     DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
-                                
-                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
-                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
-                    
+                          
+                    /* Request DPM to initiate SOP' Soft Reset */
                     gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET;                              
+                    
+                    gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                    gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                        
                     
                     /* Post eMCHP_PSF_VCONN_SWAP_COMPLETE notification*/
                     (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VCONN_SWAP_COMPLETE);

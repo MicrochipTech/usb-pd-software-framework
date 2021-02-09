@@ -1357,7 +1357,7 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
 
 /**************************************************************************************************
     Function:
-        void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+        void PRL_CASinkTx_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
     Summary:
         This API is callback for SinTxTimer timeout.
@@ -1386,7 +1386,7 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
         This function confined to INCLUDE_PD_3_0 define.
 
 **************************************************************************************************/
-void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+void PRL_CASinkTx_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
@@ -1413,7 +1413,7 @@ void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
     Remarks:
         This function confined to INCLUDE_PD_3_0 define.
-		It is called by PRL_CASinkTxTimerOut_TimerCB() internally.
+		It is called by PRL_CASinkTx_TimerCB() internally.
 		It is also called when Sink buffers Tx message to send on PHY when Rp value is set to SinkTxOK.
 
 **************************************************************************************************/

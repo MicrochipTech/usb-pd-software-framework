@@ -645,7 +645,7 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
                 gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_DR_SWAP);
             }
             
-            DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_DISC_CABLE_IDENTITY);
+            DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_DISC_CABLE_IDENTITY);
             
             #endif
             break; 
@@ -693,10 +693,9 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
 #if(TRUE == INCLUDE_PD_DRP)
         /*Disable DRP offload as soon as port disable client request is triggered.*/
         UPD_RegByteClearBit (u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);
-#endif
-        
+#endif        
         /* Request DPM to disable port */
-        DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_PORT_DISABLE);
+        DPM_EnablePort (u8PortNum, FALSE);
     }
     else if (u32ClientRequest & DPM_CLIENT_REQ_PORT_ENABLE)
     {
@@ -704,7 +703,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         u32ClientRequest &= ~(DPM_CLIENT_REQ_PORT_ENABLE);
         
         /* Request DPM to enable port */
-        DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_PORT_ENABLE);
+        DPM_EnablePort (u8PortNum, TRUE);
     }
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
     else if (u32ClientRequest & DPM_CLIENT_REQ_HANDLE_FAULT_VBUS_OV)
@@ -900,25 +899,13 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
     UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     UINT8 u8DPMDataRole = DPM_GET_CURRENT_DATA_ROLE(u8PortNum);
     
-    /*Process port disable/enable internal events irrespective of whether PSF is idle*/
-    if (DPM_INT_EVT_PORT_DISABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
-                                                DPM_INT_EVT_PORT_DISABLE))
+    if (!gasDPM[u8PortNum].u16DPMInternalEvents)
     {
-        /*Clear the Internal event since it is processed*/
-        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_PORT_DISABLE);
-
-        DPM_EnablePort (u8PortNum, FALSE);
-    }
-    else if (DPM_INT_EVT_PORT_ENABLE == (gasDPM[u8PortNum].u16DPMInternalEvents &\
-                                                DPM_INT_EVT_PORT_ENABLE))
-    {
-        /*Clear the Internal event since it is processed*/
-        gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_PORT_ENABLE);
-
-        DPM_EnablePort (u8PortNum, TRUE);
-    }
+        return;
+    }   
+    
 #if (TRUE == INCLUDE_PD_FR_SWAP)
-    else if (DPM_INT_EVT_SYSTEM_POWER_LOST == (gasDPM[u8PortNum].u16DPMInternalEvents &\
+    if (DPM_INT_EVT_SYSTEM_POWER_LOST == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                             DPM_INT_EVT_SYSTEM_POWER_LOST))
     {
         UINT8 u8Pio_EN_FRS = gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_FRS;
@@ -964,8 +951,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         }
 
         UPD_SetPIOIntrAlert (u8PortNum, u8Pio_EN_FRS, u8PwrBackDetectionEdge);
-    }
-    
+    }    
     else if (DPM_INT_EVT_SYSTEM_POWER_BACK == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                             DPM_INT_EVT_SYSTEM_POWER_BACK))
     {
@@ -1014,8 +1000,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         }
 
         UPD_SetPIOIntrAlert (u8PortNum, u8Pio_EN_FRS, u8PwrLossDetectionEdge);
-    }
-    
+    }    
     else if ((gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_INITIATE_FR_SWAP) &&\
                 PRL_IsAMSInitiatable(u8PortNum))
     {
@@ -1036,7 +1021,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         {
             if (PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
             {
-                if(TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                if (TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
                 {
                     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                 }
@@ -1055,16 +1040,19 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             }
         }
     }
-#endif 
-#if (TRUE == INCLUDE_PD_3_0)
-    /* Process internal events only when the Policy Engine is in PS_RDY state*/
-    else if ((gasDPM[u8PortNum].u16DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)) &&\
-            PRL_IsAMSInitiatable(u8PortNum))
+    else
     {
-#else
-    else if ((gasDPM[u8PortNum].u16DPMInternalEvents) && (TRUE == PE_IsPolicyEngineIdle(u8PortNum)))
+        /* Do Nothing */
+    }
+#endif 
+
+    /* Process AMS type internal events only when the Policy Engine is in RDY state */
+    if (PE_IsPolicyEngineIdle (u8PortNum) 
+            #if (TRUE == INCLUDE_PD_3_0)
+                && PRL_IsAMSInitiatable (u8PortNum)
+            #endif  
+        )
     {      
-#endif   
         /*If condition is ordered based on the internal event priority*/
         if (DPM_INT_EVT_INITIATE_GET_SINK_CAPS == (gasDPM[u8PortNum].u16DPMInternalEvents &\
                                                     DPM_INT_EVT_INITIATE_GET_SINK_CAPS))
@@ -1193,14 +1181,14 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         }
 #endif/*INCLUDE_PD_DR_SWAP*/
                 /*To-do check this priority*/
-        else if(DPM_INT_EVT_DISC_CABLE_IDENTITY == (gasDPM[u8PortNum].u16DPMInternalEvents\
+        else if (DPM_INT_EVT_DISC_CABLE_IDENTITY == (gasDPM[u8PortNum].u16DPMInternalEvents\
                     & DPM_INT_EVT_DISC_CABLE_IDENTITY))
         {
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_DISC_CABLE_IDENTITY);
 
             /* Initiate Cable Discover Identity Only if it is not tried so far and data role is DFP*/
-            if(DPM_CBL_DISC_IDENTITY_UNTRIED == DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum) && \
+            if (DPM_CBL_DISC_IDENTITY_UNTRIED == DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum) && \
                     PD_ROLE_DFP == u8DPMDataRole)
             {
                 gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
@@ -1208,7 +1196,6 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
 
                 u16AMSInProgress = DPM_INT_EVT_DISC_CABLE_IDENTITY;
             }
-
         }
 #if (TRUE == INCLUDE_PD_VDM)
         else if (DPM_INT_EVT_INITIATE_VDM == (gasDPM[u8PortNum].u16DPMInternalEvents &\
@@ -1279,7 +1266,9 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
                 }
             }
         } /* DPM_INT_EVT_INITIATE_GET_STATUS */
-        else if(DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET == (gasDPM[u8PortNum].u16DPMInternalEvents\
+#endif /*INCLUDE_PD_SOURCE_PPS*/ 
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)        
+        else if (DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET == (gasDPM[u8PortNum].u16DPMInternalEvents\
                                                     & DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET))
         {
             /*Clear the Internal event since it is processed*/
@@ -1288,9 +1277,10 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_SOFT_RESET;
             gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_SOP_P_SS;
             
-            u16AMSInProgress = DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET;  
+            u16AMSInProgress = DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET;
+            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: SOP_P_SOFT_RST INITIATED\r\n");
         } /*DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET */
-#endif /*INCLUDE_PD_SOURCE_PPS*/
+#endif /* INCLUDE_PD_VCONN_SWAP */       
         else
         {
             /* Do Nothing */
