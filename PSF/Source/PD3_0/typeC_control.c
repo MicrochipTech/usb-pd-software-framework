@@ -3446,7 +3446,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
 	#if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
     UINT16 u16aVBUSThrVal[BYTE_LEN_2] = {SET_TO_ZERO}; 
     
-	if ((u8PowerFaultThrConfig) && (TYPEC_VBUS_0V != u16Voltage))
+	if ((u8PowerFaultThrConfig) && (u16Voltage != TYPEC_VBUS_0V))
 	{
         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Set PWR Fault VBUS Threshold\r\n");
         
@@ -3559,7 +3559,7 @@ void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curren
         
 	  }/* end of switch*/
       
-      if (TYPEC_VBUS_0V != u16Voltage)
+      if (u16Voltage != TYPEC_VBUS_0V)
       {
         DEBUG_PRINT_PORT_STR (u16MinVoltageThr,"Min VBUS Threshold\r\n");
         

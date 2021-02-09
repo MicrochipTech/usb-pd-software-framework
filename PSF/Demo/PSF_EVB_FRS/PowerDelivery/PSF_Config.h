@@ -243,7 +243,7 @@ Example:
     #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_BALANCING  		1
+#define INCLUDE_POWER_BALANCING  		0
 
 /**************************************************************************************************
 Summary:
@@ -262,7 +262,7 @@ Example:
     #define INCLUDE_POWER_THROTTLING	0(Exclude PT functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_THROTTLING        1
+#define INCLUDE_POWER_THROTTLING        0
 
 /**************************************************************************************************
 Summary:
@@ -281,7 +281,7 @@ Example:
     #define INCLUDE_PD_SOURCE_PPS	0(Exclude Source PPS functionality from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_SOURCE_PPS           1
+#define INCLUDE_PD_SOURCE_PPS           0
 
 /**************************************************************************************************
 Summary:

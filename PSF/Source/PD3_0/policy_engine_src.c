@@ -621,7 +621,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_READY_END_AMS_SS\r\n");
                     
-                    /*On PD negotiation complete and source is in ready state, inform DPM to initiate internal events*/
+                    /* Request DPM to initiate internal events*/
                     DPM_InitiateInternalEvts (u8PortNum);
                                                   
                     gasDPM[u8PortNum].u16InternalEvntInProgress = RESET_TO_ZERO;    

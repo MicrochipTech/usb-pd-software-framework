@@ -225,7 +225,7 @@ void DPM_UpdatePowerRole (UINT8 u8PortNum, UINT8 u8NewPowerRole)
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_POWER_ROLE_STATUS_MASK);
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8NewPowerRole << DPM_PORT_POWER_ROLE_STATUS_POS); 
 
-#if(TRUE == INCLUDE_PD_DRP)
+#if (TRUE == INCLUDE_PD_DRP)
     /*Set power role in Port X IO Status register*/
     if (PD_ROLE_SOURCE == u8NewPowerRole)
     {
@@ -250,7 +250,7 @@ void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8NewDataRole)
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_DATA_ROLE_STATUS_MASK);
     gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8NewDataRole << DPM_PORT_DATA_ROLE_STATUS_POS); 
 
-#if(TRUE == INCLUDE_PD_DRP)
+#if (TRUE == INCLUDE_PD_DRP)
     if (PD_ROLE_DFP == u8NewDataRole)
     {
         MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eDATA_ROLE_FUNC, eGPIO_ASSERT);
@@ -1377,8 +1377,13 @@ void DPM_InitiateInternalEvts (UINT8 u8PortNum)
         {
             DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_VCONN_SWAP);
         }
-    }        
+    }   
     
+    if ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET) &&
+            (DPM_CBL_DISC_IDENTITY_ACKED == DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum)))
+    {
+        DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
+    }        
 #endif /* INCLUDE_PD_VCONN_SWAP */
     
             /*************** DR_SWAP Initiation *************/
@@ -1420,14 +1425,7 @@ void DPM_InitiateInternalEvts (UINT8 u8PortNum)
             DPM_EvaluateAndGearUpForFRS (u8PortNum);        
         }        
     }
-#endif /*INCLUDE_PD_FR_SWAP*/
-    
-    if((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET) &&
-            (DPM_CBL_DISC_IDENTITY_ACKED == DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum)))
-    {
-        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
-    }
-
+#endif /*INCLUDE_PD_FR_SWAP*/    
 }
 
 /********************DPM API to handle VCONN_Swap if FRS is supported************************/
