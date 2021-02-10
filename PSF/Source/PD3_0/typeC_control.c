@@ -408,6 +408,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
     
     switch (gasTypeCcontrol[u8PortNum].u8TypeCState)
     {      
+        case TYPEC_INIT:
+        {
+            TypeC_InitPort (u8PortNum);
+
+            PRL_UpdatePowerRole(u8PortNum);
+            
+            break;
+        }
       /*-----------------------------------------TypeC Source States------------------------------*/
 #if (TRUE == INCLUDE_PD_SOURCE)
       
@@ -2788,11 +2796,10 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
             DPM_UpdatePowerRole (u8PortNum, PD_ROLE_SOURCE);
             DPM_UpdateDataRole (u8PortNum, PD_ROLE_DFP);
         }   
-            
-        TypeC_InitPort (u8PortNum);
+               
+        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_INIT;
+        gasTypeCcontrol[u8PortNum].u8TypeCSubState = SET_TO_ZERO;
         
-        PRL_UpdatePowerRole(u8PortNum);
-                
         gasTypeCcontrol[u8PortNum].u8DRPStsISR &= (~TYPEC_DRP_DONE_INTERRUPT);        
     }
 #if(TRUE == INCLUDE_PD_FR_SWAP)
