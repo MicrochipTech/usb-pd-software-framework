@@ -544,6 +544,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SRC_ENTRY_SS\r\n");                    
                     
+                    #if(TRUE == INCLUDE_PD_DRP)
+                    if (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
+                    {
+                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_SOURCE;
+                    }
+                    #endif   
+
                     gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start ( \
                                                       (TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_SubStateChange_TimerCB, u8PortNum,\
@@ -817,13 +824,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
                         (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
                     }
-                    
-                    #if(TRUE == INCLUDE_PD_DRP)
-                    if (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
-                    {
-                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_SOURCE;
-                    }
-                    #endif                    
+                                    
                     /* Enabling PRL Rx */
                     PRL_EnableRx (u8PortNum, TRUE);                  
 
