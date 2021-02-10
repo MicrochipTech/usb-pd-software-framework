@@ -754,7 +754,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
         void TypeC_InitPort (UINT8 u8PortNum);
 
     Summary:
-        This API initializes a given Port to the Power Role and Data role based on the port's global variable
+        This API initializes a given Port as Source-DFP or Sink-UFP based on the port's global variable
 
     Devices Supported:
         UPD350 REV A
@@ -777,6 +777,34 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
 
 **************************************************************************************************/
 void TypeC_InitPort (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void TypeC_GenericInitPort (UINT8 u8PortNum);
+
+    Summary:
+        This API does initialization steps which is common to any port role.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API does initialization steps which is common to any port role.
+
+    Conditions:
+        This API is called inside the PD Stack initialization API call .
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void TypeC_GenericInitPort (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:

@@ -92,9 +92,6 @@ const UINT8 u8aBMCEncoderRegValues [] = {
 /***************************************************************************************************/
 void  PRL_Init (UINT8 u8PortNum)
 {
-  	UINT16 u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_NEU_VALUE;
-    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
-	
 	/* Protocol Tx PHY layer is Reset */
 	PRL_ResetPHYLayer (u8PortNum);
 
@@ -113,9 +110,6 @@ void  PRL_Init (UINT8 u8PortNum)
 	UPD_RegWriteByte (u8PortNum, PRL_TX_CTL_A, 
 					  (PRL_TX_CTL_A_RETRY_ON_LINE_BUSY | PRL_TX_CTL_A_DIS_SPCL_SR_GCRC_ACK | PRL_TX_CTL_A_EN_AUTO_RSP_MODE));
 	
-	/* Updates Device's Data & Power role, UPD Spec rev & corresponding retry counter*/
-	PRL_UpdateSpecAndDeviceRoles (u8PortNum);
-		
 	/* Rx configurations */
 	/* Set up Rx */
 	/* Configuring Rx Maximum and Minimum Bit-Rate Bit Period Count Registers */
@@ -144,41 +138,9 @@ void  PRL_Init (UINT8 u8PortNum)
 		
 	/* Baseband Configuration for Rx DAC */
 	UPD_RegWriteByte (u8PortNum, PRL_BB_CC_RX_DAC_FILT, PRL_CC_RX_DAC_FILT_CC_RX_DAC_FILTER_ENABLE);
-    
-    /* Rx DAC value is selected depending upon the Power Role */
-	if (PD_ROLE_SOURCE == u8CurrentPwrRole)
-	{
-		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SRC_VALUE;
-	}
-	else if (PD_ROLE_SINK == u8CurrentPwrRole)
-	{
-		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SNK_VALUE;
-	}
-    else
-    {
-        /* Do Nothing */
-    }
-	
-	UPD_RegWriteWord (u8PortNum, PRL_BB_CC_RX_DAC_CTL, 
-					  (PRL_CC_RX_DAC_CTL_RX_DAC_ENABLE | u16RxDACValue));
-
 
 	/* Tx DAC is filter is enabled */
 	UPD_RegWriteByte (u8PortNum, PRL_BB_CC_TX_DAC_FILT, PRL_CC_TX_DAC_FILT_CC_TX_FILTER_ENABLE);
-
-	/* PD3_AUTO_DECODE is enabled so that HW decodes spec revision from received messages.*/
-	/* At init, Rx SOP type is set to all SOP* type*/
-	if (PD_ROLE_SOURCE == u8CurrentPwrRole)
-    {	  
-		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
-						  (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP |
-						   PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_P | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_PP));
-	}
-	else
-	{
-		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
-						  (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP));
-	}
 
 	/* Enabling PD message Filtering */
 	UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
@@ -231,6 +193,51 @@ void  PRL_Init (UINT8 u8PortNum)
 }
 
 /***************************************************************************************************/
+void PRL_UpdatePowerRole (UINT8 u8PortNum)
+{
+  	UINT16 u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_NEU_VALUE;
+    UINT8 u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+	
+	/* Protocol Tx PHY layer is Reset */
+	PRL_ResetPHYLayer (u8PortNum);
+
+    /* Rx DAC value is selected depending upon the Power Role */
+	if (PD_ROLE_SOURCE == u8CurrentPwrRole)
+	{
+		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SRC_VALUE;
+	}
+	else if (PD_ROLE_SINK == u8CurrentPwrRole)
+	{
+		u16RxDACValue = PRL_BB_CC_RX_DAC_CTL_CC_RX_DAC_SNK_VALUE;
+	}
+    else
+    {
+        /* Do Nothing */
+    }
+	
+	UPD_RegWriteWord (u8PortNum, PRL_BB_CC_RX_DAC_CTL, 
+					  (PRL_CC_RX_DAC_CTL_RX_DAC_ENABLE | u16RxDACValue));
+
+	
+	/* PD3_AUTO_DECODE is enabled so that HW decodes spec revision from received messages.*/
+	/* At init, Rx SOP type is set to all SOP* type*/
+	if (PD_ROLE_SOURCE == u8CurrentPwrRole)
+    {	  
+		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
+						  (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP |
+						   PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_P | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP_PP));
+	}
+	else
+	{
+		UPD_RegWriteByte (u8PortNum, PRL_RX_CTL_B, 
+						  (PRL_RX_CTL_B_PD3_AUTO_DECODE | PRL_RX_CTL_B_RX_SOP_ENABLE_SOP));
+	}
+    
+    /* Updates Device's Data & Power role, UPD Spec rev & corresponding retry counter*/
+	PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+    
+    DEBUG_PRINT_PORT_STR (u8PortNum,"PRL Updated Power Role\r\n");
+}
 
 void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
 {

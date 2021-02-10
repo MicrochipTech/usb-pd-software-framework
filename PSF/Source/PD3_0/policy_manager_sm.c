@@ -111,21 +111,25 @@ void DPM_InitStateMachine (void)
             UPD_InitHPD (u8PortNum);
             #endif
 
+            TypeC_GenericInitPort(u8PortNum);
+            
+            /* Protocol Layer initialization for all the port present */
+            PRL_Init (u8PortNum);
+                
 #if(TRUE == INCLUDE_PD_DRP)
             /*Type-C UPD350 register configuration for a port*/
             if (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
             {
                 TypeC_InitDRPPort (u8PortNum);
 				
-				/*For DRP, PRL_Init will be done once a valid DRP partner is matched*/
+				/*For DRP, PRL_UpdatePowerRole() will be called once a valid DRP partner is matched*/
             }
             else
 #endif
             {
                 TypeC_InitPort (u8PortNum);
-                
-                /* Protocol Layer initialization for all the port present */
-                PRL_Init (u8PortNum);
+                               
+                PRL_UpdatePowerRole(u8PortNum);
             }
         }
     }
