@@ -672,7 +672,6 @@ typedef void(*PRLRxCallback) (UINT8 u8PortNum, UINT8 u8RxRcvStatus);
 #define PRL_TX_HARD_RESET_ST						7
 #define PRL_TX_CABLE_RESET_ST						8
 #define PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST				9
-#define PRL_TX_CA_SINK_TXNG_ST						10
 
 /* Chunk States*/
 #define PRL_CH_CHUNK_IDLE_ST						0
@@ -1445,8 +1444,7 @@ void PRL_CASinkTx_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
     Remarks:
         This function confined to INCLUDE_PD_3_0 define.
-		It is called by PRL_CASinkTx_TimerCB() internally.
-		It is also called when Sink buffers Tx message to send on PHY when Rp value is set to SinkTxOK.
+		It is called by PRL_CASinkTx_TimerCB() internally.		
 
 **************************************************************************************************/
 void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum);

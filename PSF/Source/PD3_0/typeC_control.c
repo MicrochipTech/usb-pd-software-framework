@@ -158,7 +158,7 @@ void TypeC_InitDRPPort (UINT8 u8PortNum)
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
     }
     
-    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: DRP Port initialization completed\r\n");
+    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: DRP Port Init Done\r\n");
 }
 #endif
 /**************************************************************************************/
@@ -334,7 +334,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
         #endif
     }
-    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Port initialization completed\r\n");             
+    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Port Init Done\r\n");             
 }
 
 void TypeC_GenericInitPort (UINT8 u8PortNum)
@@ -2411,11 +2411,11 @@ void TypeC_DecodeCCSourceRpValue (UINT8 u8PortNum)
 		case TYPEC_DFP_1A5_ATT:
         case (TYPEC_DFP_1A5_ATT ^ TYPEC_SNK_CCTHRES_VCONN_ON):   
         {
-              /*Setting the Current Rp Value of Source as 1.5A@5V */
-             u8PortSts |= (TYPEC_RP_CURRENT_15 << TYPEC_CURR_RPVAL_POS); 
+            /*Setting the Current Rp Value of Source as 1.5A@5V */
+            u8PortSts |= (TYPEC_RP_CURRENT_15 << TYPEC_CURR_RPVAL_POS); 
              
-             u8CCSrcSnkMatch = TYPEC_DFP_1A5_ATT;
-             break;          
+            u8CCSrcSnkMatch = TYPEC_DFP_1A5_ATT;             
+            break;          
         }
         
 		case TYPEC_DFP_3A0_ATT:
@@ -2425,21 +2425,8 @@ void TypeC_DecodeCCSourceRpValue (UINT8 u8PortNum)
             u8PortSts |= (TYPEC_RP_CURRENT_30 << TYPEC_CURR_RPVAL_POS);
             
             u8CCSrcSnkMatch = TYPEC_DFP_3A0_ATT;
-             
-             /*Call the Collision avoidance API provided by the PRL if only the Collision avoidance
-             Status is set*/
-             if(u8PortSts & TYPEC_COLLISION_AVOIDANCE_ACT)
-             {
-                 /*Clear the Collision avoidance Status variable*/
-                 u8PortSts &= ~TYPEC_COLLISION_AVOIDANCE_ACT;
-                 
-            #if (TRUE == INCLUDE_PD_3_0)
-                /*Calling the callback API provided by the protocol layer here*/
-                PRL_CommitPendingTxOnCAISR (u8PortNum);
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Collision Avoidance Callback API called\r\n");
-            #endif                      
-             }
-             break;
+                          
+            break;
         }
         
         default:
@@ -2512,7 +2499,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         /*Setting CC Comparator to sample both the CC1 and CC2*/
         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
                 
-        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE INITIATED\r\n");        
+        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN_DISCH INITIATED\r\n");        
     }
     else
     {   
@@ -2580,10 +2567,10 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
 /*******************************************************************************************/
 /*********************************Type C modules Interrupt Functions**************************************/
 /**********************************************************************************************/ 
-void TypeC_VCONNDisOn_IntrHandler (UINT8 u8PortNum)
+void TypeC_VCONNDISCHOnIntrHandler (UINT8 u8PortNum)
 {          
     /*Clearing the CC interrupt status in u8IntStsISR variable at the start of this function to 
-    make this ISR safe as after TypeC_ResetVCONNDISSettings function call,
+    make this ISR safe as after TypeC_OnVCONNDISCHComplete function call,
     Interrupt will immediately be fired*/  
     gasTypeCcontrol[u8PortNum].u8IntStsISR &= ~TYPEC_CCINT_STATUS_MASK;
     
@@ -2597,12 +2584,13 @@ void TypeC_VCONNDisOn_IntrHandler (UINT8 u8PortNum)
     /*VCONN discharge complete can occur while the source is still attached or detached for sink port*/
     
     /*Detach Event occurred during this VCONN Discharge process will be handled since the 
-    TypeC_ResetVCONNDISSettings function will again restart the CC Comparator*/
-    TypeC_ResetVCONNDISSettings (u8PortNum);
+    TypeC_OnVCONNDISCHComplete function will again restart the CC Comparator*/
+    TypeC_OnVCONNDISCHComplete (u8PortNum);
+    
     gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_VCONN_DISCHARGE_ON_MASK;     
 }
 
-void TypeC_VCONNOn_IntrHandler (UINT8 u8PortNum)
+void TypeC_VCONNOnIntrHandler (UINT8 u8PortNum)
 {
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
@@ -2721,11 +2709,11 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
                  
         if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_DISCHARGE_ON_MASK)
         {
-            TypeC_VCONNDisOn_IntrHandler (u8PortNum);
+            TypeC_VCONNDISCHOnIntrHandler (u8PortNum);
         }   
         else if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_ON_REQ_MASK)
         {
-            TypeC_VCONNOn_IntrHandler (u8PortNum);
+            TypeC_VCONNOnIntrHandler (u8PortNum);
         }
         else
         {
@@ -3216,9 +3204,9 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
 #endif
 /*INCLUDE_PD_SINK*/
 
-void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum)
+void TypeC_OnVCONNDISCHComplete (UINT8 u8PortNum)
 {    
-    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN DISCHARGE COMPLETED\r\n");
+    DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN_DISCH COMPLETE\r\n");
     
     /*Power down the CC comparator*/
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
@@ -3319,31 +3307,10 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
     TypeC_ConfigCCComp (u8PortNum, u8CCCompCtrl);    
 }
 
-UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum)
-{     
-     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Check Rp Value API called from PRL\r\n");
-     
-     /*Return TYPEC_SINK_TXNG if the current Rp Value set by source is TYPEC_SINK_TXNG 1.5A Rp*/
-     UINT8 u8RpStatus = TYPEC_SINK_TXNG;
-    
-    /*Setting the collision avoidance active bit in u8PortSts variable*/
-     gasTypeCcontrol[u8PortNum].u8PortSts |= (TYPEC_COLLISION_AVOIDANCE_ACT);
-    
-     /*Return True if the current Rp Value set by source is TYPEC_SINK_TXOK*/
-     if (TYPEC_RP_CURRENT_30 == ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
-         >> TYPEC_CURR_RPVAL_POS))
-     {
-        /*Clear the Collision avoidance Status variable*/
-        gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_COLLISION_AVOIDANCE_ACT;
-        u8RpStatus = TYPEC_SINK_TXOK;            
-     }     
-     
-     return u8RpStatus;
-}
 /*******************************************************************************************/
 /*********************************TypeC VBUS Comparator Support Functions**************************************/
 /*******************************************************************************************/
-void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum, UINT8 u8ConfigVal)
+void TypeC_SetVBUSCompONOFF (UINT8 u8PortNum, UINT8 u8ConfigVal)
 {
     UINT8 u8Data;
     UINT8 u8DesiredDBState;
@@ -3374,7 +3341,7 @@ void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum, UINT8 u8ConfigVal)
     }while((u8Data & TYPEC_VBUS_DB_ACTIVE)  == u8DesiredDBState);
 }
 /**************************************************************/
-void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current, UINT8 u8PowerFaultThrConfig)
+void TypeC_ConfigureVBUSThr (UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current, UINT8 u8PowerFaultThrConfig)
 {         
   	UINT16 u16PrevVoltInmV = SET_TO_ZERO;
     /* Used to check if the port is Source port */

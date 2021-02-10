@@ -155,7 +155,7 @@ void PE_RunStateMachine (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_IDLE_SS; 
                     /* Revert the Rp value to SinkTxOK */
                     #if (TRUE == INCLUDE_PD_3_0)
-                    PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK); 
+                        PRL_SetCollisionAvoidance (u8PortNum, TYPEC_SINK_TXOK); 
                     #endif 
                 }
                 else
