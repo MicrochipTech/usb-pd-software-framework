@@ -1026,6 +1026,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK_ENTRY_SS\r\n");
                     
+#if (TRUE == INCLUDE_PD_DRP)
+                    /*Setting the Rd Value */ 
+                    TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
+#endif
+                    
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;
                                             
                     PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, \
