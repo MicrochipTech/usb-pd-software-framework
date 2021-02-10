@@ -512,6 +512,12 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
           (ePE_VDM_RESPOND_VDM == gasPolicyEngine[u8PortNum].ePEState) || \
             (ePE_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState))? TRUE : FALSE);
     
+    if(ePE_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState)
+    {
+        /*Save DPM_INT_EVT_DISC_CABLE_IDENTITY internal event to process after SOP AMS*/
+        DPM_RegisterInternalEvent(u8PortNum, DPM_INT_EVT_DISC_CABLE_IDENTITY);
+    }
+    
     /* Is PD Contract a PPS contract */
 #if ((TRUE == INCLUDE_PD_SOURCE_PPS) || (TRUE == INCLUDE_PD_VDM))
     UINT8 u8IsPPSContract = ((DPM_PD_PPS_CONTRACT == DPM_GET_CURRENT_EXPLICIT_CONTRACT(u8PortNum)) \
