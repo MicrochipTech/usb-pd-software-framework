@@ -595,24 +595,19 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_RP_DISABLED             0
 #define TYPEC_RP_DEFAULT_CURRENT      1
 #define TYPEC_RP_CURRENT_15           2
-#define TYPEC_RP_CURRENT_30           3
-
-/*Masks used to get the collision avoidance status of policy engine(For Sink Configuration) 
-from u8PortSts variable*/
-#define TYPEC_COLLISION_AVOIDANCE_ACT	BIT(3)
-#define TYPEC_COLLISION_AVOIDANCE_POS    3   
+#define TYPEC_RP_CURRENT_30           3 
             
 /*Masks used for getting whether VCONN discharge is in progress from u8PortSts variable*/ 
-#define TYPEC_VCONN_DISCHARGE_ON_MASK	 BIT(4)
+#define TYPEC_VCONN_DISCHARGE_ON_MASK	 BIT(3)
 
 /*Masks used for getting whether VCONN ON process has initiated from u8PortSts variable*/ 
-#define TYPEC_VCONN1_ON_REQ	         BIT(5)
-#define TYPEC_VCONN2_ON_REQ	         BIT(6)
-#define TYPEC_VCONN_ON_REQ_MASK	    (BIT(6) | BIT(5))
+#define TYPEC_VCONN1_ON_REQ	         BIT(4)
+#define TYPEC_VCONN2_ON_REQ	         BIT(5)
+#define TYPEC_VCONN_ON_REQ_MASK	    (BIT(4) | BIT(5))
 
 /* Mask to indicate current CC pin Orientation in u8PortSts variable */
-#define TYPEC_CC_ATTACHED_ORIENTATION_MASK  BIT(7)
-#define TYPEC_CC_ATTACHED_ORIENTATION_POS   7 
+#define TYPEC_CC_ATTACHED_ORIENTATION_MASK  BIT(6)
+#define TYPEC_CC_ATTACHED_ORIENTATION_POS   6
 
 /* Define for getting the CC orientation status from u8PortSts variable */
 #define TYPEC_GET_CC_ORIENTATION_STS(u8PortNum) ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CC_ATTACHED_ORIENTATION_MASK) \
@@ -725,11 +720,10 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
   UINT8 u8TypeCTimerID;
   UINT8 u8PortSts;              /*BIT0 - > TYPEC_PWDCABLE_PRES Field
                                 BIT[2:1] -> CURR_RPVAL Field
-                                BIT3 -> COLLISION_AVOIDANCE_ACT
-                                BIT4 -> VCONN_DISCHARGE_ON
-                                BIT5 -> VCONN1_ON_REQ
-                                BIT6 -> TYPEC_VCONN2_ON
-                                BIT7 -> CC Pin Orientation */
+                                BIT3 -> VCONN_DISCHARGE_ON
+                                BIT4 -> VCONN1_ON_REQ
+                                BIT5 -> TYPEC_VCONN2_ON
+                                BIT6 -> CC Pin Orientation */
   UINT8 u8IntStsISR;            /*BIT0 -> VSINKDISCONNECT_STATUS
                                 BIT1 -> CCINT_STATUS
                                 BIT2 -> VCONN_SOURCE_CC1
@@ -1110,36 +1104,6 @@ void TypeC_SetRpCollAvoidance(UINT8 u8PortNum, UINT8 u8RpValue);
 
 /**************************************************************************************************
 
- Function:
-        UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum);
-
-    Summary:
-        This API is used to check whether the connected port partner(Source) has  set the collision 
-        avoidance for a given port
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        This API is called by the protocol layer to check whether the source has set the collision 
-        avoidance as SinkTxOk or SinkTxNG.
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port Number.
-
-    Return:
-        None
-
-    Remarks:
-        None.
-**************************************************************************************************/
-UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum);
-
-/**************************************************************************************************
-
     Function:
         void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum);
 
@@ -1278,7 +1242,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
  Function:
-        void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum); 
+        void TypeC_OnVCONNDISCHComplete (UINT8 u8PortNum); 
 
     Summary:
         This API is called after the VCONN Discharge is completed to reset the settings done for
@@ -1303,7 +1267,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_ResetVCONNDISSettings (UINT8 u8PortNum); 
+void TypeC_OnVCONNDISCHComplete (UINT8 u8PortNum); 
 
 /**************************************************************************************************
  Function:

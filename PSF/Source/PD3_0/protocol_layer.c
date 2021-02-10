@@ -446,11 +446,8 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	UPD_RegWriteByte (u8PortNum, PRL_TX_PARAM_A, (PRL_TX_PARAM_A_EXPECT_GOODCRC | PRL_TX_PARAM_A_EN_FW_TX | u8TxSOPSelect | u8MsgId));
 	
     #if (TRUE == INCLUDE_PD_3_0)
-    /* If a Soft_Reset Message is pending, Needn't wait for Rp is set to SinkTxOk.*/
 	/* Tx Buffering on CA*/
-	if ((PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST == gasPRL [u8PortNum].u8TxStateISR) || \
-            ((PRL_TX_CA_SINK_TXNG_ST == gasPRL [u8PortNum].u8TxStateISR) && \
-                (PRL_GET_MESSAGE_TYPE(u32Header) != PE_CTRL_SOFT_RESET)))
+	if (PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST == gasPRL [u8PortNum].u8TxStateISR)
 	{	  
 		/* if Timer SinkTxTimer is ON, Tx Message is just buffered in Tx_FIFO by not setting Go bit*/
 		PRL_ChangeTxState (u8PortNum, PRL_TX_MSG_BUFFERED_ON_CA_ST);
@@ -1080,8 +1077,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
                         gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
                     }
                     else
-                    {
-                    
+                    {                    
                     /* Spec Ref: TCH_Message_Received : Clear the Extended message buffers
                                 Passed the received message to Chunked Rx Engine*/
                     }
@@ -1159,8 +1155,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
                 DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Response Chunk number mismatch\r\n");
 			  	/* PRL_RCH_CHUNK_RECV_ERROR_ST is assigned to indicate PE*/
                 gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
-            }
-			
+            }			
         } /* end of if for IS_REQ_CHUNK_MSG*/
 		
 		/***********************************************************************************************************************************/
@@ -1199,9 +1194,8 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
     
     /* if the message is received in process of Collision avoidance, the pending message is discarded
         by setting the Tx state to PRL_TX_IDLE_ST*/
-    if ((PRL_TX_MSG_BUFFERED_ON_CA_ST == gasPRL [u8PortNum].u8TxStateISR) ||
-           (PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST == gasPRL [u8PortNum].u8TxStateISR) || 
-             (PRL_TX_CA_SINK_TXNG_ST == gasPRL [u8PortNum].u8TxStateISR))
+    if ((PRL_TX_MSG_BUFFERED_ON_CA_ST == gasPRL [u8PortNum].u8TxStateISR) || \
+           (PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST == gasPRL [u8PortNum].u8TxStateISR))
     {
             /* Collision avoidance timer is killed in case active*/
            PRL_KillCAorChunkSMTimer (u8PortNum);
@@ -1289,8 +1283,7 @@ void PRL_CASinkTx_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     PRL_CommitPendingTxOnCAISR (u8PortNum);
     
     /* setting the Timer ID to Max value*/
-    gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
-	
+    gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;	
 }
 
 /******************************************************************************************************/
@@ -1298,25 +1291,19 @@ void PRL_CASinkTx_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 UINT8 PRL_IsAMSInitiatable (UINT8 u8PortNum)
 {
     UINT8 u8ReturnVal = TRUE, u8CurrentPwrRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
+    
     /*If the port is 3.0 check whether the port is capable of initiating an AMS*/
     if (PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum))
-    {
-        /*If Role is Sink, check whether Source Rp capability is 3A*/
+    {        
         if (PD_ROLE_SINK == u8CurrentPwrRole)
         {
-            /* Spec Ref: PRL_Tx_Snk_Start_of_AMS */
-            if (TYPEC_SINK_TXNG == TypeC_CheckRpValCollAvoidance (u8PortNum))
+            /* Check for Rp Value */
+            if (((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
+                    >> TYPEC_CURR_RPVAL_POS) != TYPEC_RP_CURRENT_30)
             {
-                /* Spec Ref: PRL_Tx_Snk_Pending*/
-                /* if Rp value is SinkTxNG, PRL_TX_CA_SINK_TXNG_ST is assigned*/
-                PRL_ChangeTxState (u8PortNum, PRL_TX_CA_SINK_TXNG_ST);
-                /*Sink Tx NG*/
-                u8ReturnVal = FALSE;
-            }
-            else
-            {
-                /*Sink Tx OK -Return TRUE */
-            }
+                /* Rp is not SinkTxOK and hence, AMS cannot be initiated */
+                u8ReturnVal = FALSE;         
+            }    
         }
         else if (PD_ROLE_SOURCE == u8CurrentPwrRole)
         {
