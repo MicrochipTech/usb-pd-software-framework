@@ -207,6 +207,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             /*Setting Port Role as DFP in TYPEC_CC_HW_CTL register*/
             TypeC_SetCCDeviceRole (u8PortNum,PD_ROLE_DFP);
             
+            DEBUG_PRINT_PORT_STR(u8PortNum, "PD_ROLE_DFP 210 #############################\r\n");
             /* Clear TypeC Current Rp Val bits in u8PortSts*/
             gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_CURR_RPVAL_MASK;
             
@@ -259,6 +260,9 @@ void TypeC_InitPort (UINT8 u8PortNum)
 			/*Setting Port Role as UFP in TYPEC_CC_HW_CTL register */
             TypeC_SetCCDeviceRole (u8PortNum, PD_ROLE_UFP);
             
+            DEBUG_PRINT_PORT_STR(u8PortNum, "PD_ROLE_UFP 210 #############################\r\n");
+
+                        
             if (FALSE == (gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest & DPM_CLIENT_REQ_PORT_DISABLE))
             {
 	            /*Setting the Rd Value */ 
@@ -657,6 +661,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {        
                         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC_SWAP_ASSERT_RP_SS\r\n");
                         
+                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_SOURCE;
+
                         /* Disable VBUS Discharge which would have been 
                            enabled while detecting TYPEC_MAX_VSAFE_0V_VAL */
                         PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);  
