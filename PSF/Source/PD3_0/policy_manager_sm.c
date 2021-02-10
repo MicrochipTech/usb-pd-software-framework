@@ -127,9 +127,8 @@ void DPM_InitStateMachine (void)
             else
 #endif
             {
-                TypeC_InitPort (u8PortNum);
-                               
-                PRL_UpdatePowerRole(u8PortNum);
+                gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_INIT;
+                gasTypeCcontrol[u8PortNum].u8TypeCSubState = SET_TO_ZERO;
             }
         }
     }

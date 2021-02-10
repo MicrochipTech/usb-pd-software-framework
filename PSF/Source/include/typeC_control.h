@@ -485,19 +485,20 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_CONFIG_NON_PWR_FAULT_THR	0
 
 /*Defines for TYPE C State machine states*/
-#define TYPEC_UNATTACHED_SRC                    0
-#define TYPEC_ATTACHWAIT_SRC                    1
-#define TYPEC_ATTACHED_SRC                      2
-#define TYPEC_UNATTACHED_WAIT_SRC               3
-#define TYPEC_UNORIENTED_DEBUG_ACCESSORY_SRC    4
-#define TYPEC_UNATTACHED_SNK                    5
-#define TYPEC_ATTACHWAIT_SNK                    6
-#define TYPEC_ATTACHED_SNK                      7
-#define TYPEC_DEBUG_ACCESSORY_SNK               8
-#define TYPEC_ERROR_RECOVERY                    9
-#define TYPEC_AUDIO_ACCESSORY                  10
-#define TYPEC_DISABLED                         11 
-#define TYPEC_INVALID_STATE                    12
+#define TYPEC_INIT                              0
+#define TYPEC_UNATTACHED_SRC                    1
+#define TYPEC_ATTACHWAIT_SRC                    2
+#define TYPEC_ATTACHED_SRC                      3
+#define TYPEC_UNATTACHED_WAIT_SRC               4
+#define TYPEC_UNORIENTED_DEBUG_ACCESSORY_SRC    5
+#define TYPEC_UNATTACHED_SNK                    6
+#define TYPEC_ATTACHWAIT_SNK                    7
+#define TYPEC_ATTACHED_SNK                      8
+#define TYPEC_DEBUG_ACCESSORY_SNK               9
+#define TYPEC_ERROR_RECOVERY                    10
+#define TYPEC_AUDIO_ACCESSORY                   11
+#define TYPEC_DISABLED                          12 
+#define TYPEC_INVALID_STATE                     13
 
 /*Setting invalid Substate as maximum value of UINT8*/
 #define TYPEC_INVALID_SUBSTATE                 255
