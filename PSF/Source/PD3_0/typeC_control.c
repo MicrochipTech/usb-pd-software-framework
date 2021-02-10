@@ -63,33 +63,6 @@ void TypeC_InitDRPPort (UINT8 u8PortNum)
     /*Setting VBUS Comparator OFF*/
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
  
-    /*Clearing BLK_PD_MSG initially. Done in cronus*/
-    UPD_RegByteClearBit (u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
-        
-    /*Setting PM V2I Enable bit to enable the current source*/
-    UPD_RegByteSetBit (u8PortNum, UPD_TRIM_ZTC_BYTE_3, UPD_PM_V2I_ENABLE);
-    
-    /*Setting the MATCH_DB_UNITS bit in CC_HW_CTL register*/
-    UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_MATCH_DB_UNITS);
-    
-    /*Setting the CC_SAMP_CLK bit as 0. Sampling period will be 100us*/
-	UPD_RegWriteByte (u8PortNum, UPD_CC_SAMP_CLK, \
-      (UINT8) (UPD_CC_SAMP_GEN_10_KS | UPD_CC_CLK_20_KHZ));
-    
-    /*Setting the VBUS_DB_UNITS bit in VBUS_CTL1 register*/
-    UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_HIGH, TYPEC_VBUS_DB_UNITS);
-
-    /*Setting the VBUS_SAMP_CLK as 0. Sampling period will be 100us*/
-	UPD_RegWriteByte (u8PortNum, UPD_VBUS_SAMP_CLK,\
-                     (UINT8)(UPD_VBUS_SAMP_GEN_10_KS | UPD_VBUS_CLK_20_KHZ));
-    
-    /*Setting the CC threshold registers for default values given in DOS*/
-    UPD_RegisterWrite (u8PortNum, TYPEC_CC_THR_BASE, (UINT8 *)u16aCCThrVal, BYTE_LEN_16);
-    
-    /*Setting the default threshold values in VBUS VSAFE0V Threshold register*/
-	UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR_VSAFE0V, \
-      (UINT16)((float)TYPEC_VSAFE0V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor));
-    
     /*To check VBUS below vSafe0V*/
     UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_HIGH, TYPEC_DRP_VSAFE0V_EN);
     
@@ -153,19 +126,6 @@ void TypeC_InitDRPPort (UINT8 u8PortNum)
     /*Enabling TYPEC_DRP_DONE interrupt in CC_INT_EN register */   
     UPD_RegByteSetBit (u8PortNum, TYPEC_CC_INT_EN, (UINT8)TYPEC_DRP_DONE);	
     
-    /*Enable the VBUS interrupt (VBUS_MATCH_VLD interrupt) and VCONN OCS interrupt*/
-    UPD_RegByteSetBit (u8PortNum, TYPEC_PWR_INT_EN,\
-                       (TYPEC_VBUS_MATCH_VLD | TYPEC_VCONN_OVER_CURR_ERR));
-    
-    /*Setting the UPD350 high level interrupt register for CC interrupt, VBUS interrupt and Power 
-    interrupt*/
-	u16Data = ((UPD_RegReadWord(u8PortNum, UPDINTR_INT_EN)) | \
-	  			(UPDINTR_CC_INT | UPDINTR_VBUS_INT | UPDINTR_PWR_INT | UPDINTR_PIO_INT)) ; 
-	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, u16Data);
-
-    /*Clearing the TYPEC_MODE bit will set UPD350's Operating Mode as Companion mode */
-    UPD_RegByteClearBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, TYPEC_MODE);
-
     /*Setting VBUS Comparator ON*/
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
 	
@@ -214,47 +174,10 @@ void TypeC_InitPort (UINT8 u8PortNum)
     /*Setting VBUS Comparator OFF*/
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_OFF);
  
-    /*Setting PM V2I Enable bit to enable the current source*/
-    UPD_RegByteSetBit (u8PortNum, UPD_TRIM_ZTC_BYTE_3, UPD_PM_V2I_ENABLE);
-    
-    /*Setting the MATCH_DB_UNITS bit in CC_HW_CTL register*/
-    UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_MATCH_DB_UNITS);
-    
-    /*Setting the CC_SAMP_CLK bit as 0. Sampling period will be 100us*/
-	UPD_RegWriteByte (u8PortNum, UPD_CC_SAMP_CLK, \
-      (UINT8) (UPD_CC_SAMP_GEN_10_KS | UPD_CC_CLK_20_KHZ));
-    
-    /*Setting the VBUS_DB_UNITS bit in VBUS_CTL1 register*/
-    UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_HIGH, TYPEC_VBUS_DB_UNITS);
-
-    /*Setting the VBUS_SAMP_CLK as 0. Sampling period will be 100us*/
-	UPD_RegWriteByte (u8PortNum, UPD_VBUS_SAMP_CLK,\
-                     (UINT8)(UPD_VBUS_SAMP_GEN_10_KS | UPD_VBUS_CLK_20_KHZ));
-         
 	/*Enabling the CC Interrupts in CC_INT_EN register (TYPEC_CC_MATCH_VLD, TYPEC_CC1_MATCH_CHG and 
     TYPEC_CC2_MATCH_CHG interrupt)*/   
     UPD_RegByteSetBit (u8PortNum, TYPEC_CC_INT_EN,\
                       (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
-    
-    /*Enable the VBUS interrupt (VBUS_MATCH_VLD interrupt) and VCONN OCS interrupt*/
-    UPD_RegByteSetBit (u8PortNum, TYPEC_PWR_INT_EN,\
-                       (TYPEC_VBUS_MATCH_VLD | TYPEC_VCONN_OVER_CURR_ERR));
-    
-    /*Setting the UPD350 high level interrupt register for CC interrupt, VBUS interrupt and Power 
-    interrupt*/
-	u16Data = ((UPD_RegReadWord (u8PortNum, UPDINTR_INT_EN)) | \
-	  			(UPDINTR_CC_INT | UPDINTR_VBUS_INT | UPDINTR_PWR_INT | UPDINTR_PIO_INT)) ;
-	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, u16Data);
-		
-	/*Clearing the TYPEC_MODE bit will set UPD350's Operating Mode as Companion mode */
-    UPD_RegByteClearBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, TYPEC_MODE);
-    
-    /*Setting the CC threshold registers for default values given in DOS*/
-    UPD_RegisterWrite (u8PortNum, TYPEC_CC_THR_BASE, (UINT8 *)u16aCCThrVal, BYTE_LEN_16);
-    
-    /*Setting the default threshold values in VBUS VSAFE0V Threshold register*/
-	UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR_VSAFE0V, \
-      (UINT16)((float)TYPEC_VSAFE0V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor));
     
     /* Setting VSinkDisconnect value in VBUS THR0*/
     UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR0, \
@@ -412,6 +335,50 @@ void TypeC_InitPort (UINT8 u8PortNum)
         #endif
     }
     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Port initialization completed\r\n");             
+}
+
+void TypeC_GenericInitPort (UINT8 u8PortNum)
+{
+    UINT16 u16Data;
+    
+    /*Setting PM V2I Enable bit to enable the current source*/
+    UPD_RegByteSetBit (u8PortNum, UPD_TRIM_ZTC_BYTE_3, UPD_PM_V2I_ENABLE);
+    
+    /*Setting the MATCH_DB_UNITS bit in CC_HW_CTL register*/
+    UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_MATCH_DB_UNITS);
+    
+    /*Setting the CC_SAMP_CLK bit as 0. Sampling period will be 100us*/
+	UPD_RegWriteByte (u8PortNum, UPD_CC_SAMP_CLK, \
+      (UINT8) (UPD_CC_SAMP_GEN_10_KS | UPD_CC_CLK_20_KHZ));
+    
+    /*Setting the VBUS_DB_UNITS bit in VBUS_CTL1 register*/
+    UPD_RegByteSetBit (u8PortNum, TYPEC_VBUS_CTL1_HIGH, TYPEC_VBUS_DB_UNITS);
+
+    /*Setting the VBUS_SAMP_CLK as 0. Sampling period will be 100us*/
+	UPD_RegWriteByte (u8PortNum, UPD_VBUS_SAMP_CLK,\
+                     (UINT8)(UPD_VBUS_SAMP_GEN_10_KS | UPD_VBUS_CLK_20_KHZ));
+         
+    
+    /*Enable the VBUS interrupt (VBUS_MATCH_VLD interrupt) and VCONN OCS interrupt*/
+    UPD_RegByteSetBit (u8PortNum, TYPEC_PWR_INT_EN,\
+                       (TYPEC_VBUS_MATCH_VLD | TYPEC_VCONN_OVER_CURR_ERR));
+    
+    /*Setting the UPD350 high level interrupt register for CC interrupt, VBUS interrupt and Power 
+    interrupt*/
+	u16Data = ((UPD_RegReadWord (u8PortNum, UPDINTR_INT_EN)) | \
+	  			(UPDINTR_CC_INT | UPDINTR_VBUS_INT | UPDINTR_PWR_INT | UPDINTR_PIO_INT)) ;
+	UPD_RegWriteWord (u8PortNum, UPDINTR_INT_EN, u16Data);
+		
+	/*Clearing the TYPEC_MODE bit will set UPD350's Operating Mode as Companion mode */
+    UPD_RegByteClearBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, TYPEC_MODE);
+    
+    /*Setting the CC threshold registers for default values given in DOS*/
+    UPD_RegisterWrite (u8PortNum, TYPEC_CC_THR_BASE, (UINT8 *)u16aCCThrVal, BYTE_LEN_16);
+    
+    /*Setting the default threshold values in VBUS VSAFE0V Threshold register*/
+	UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR_VSAFE0V, \
+      (UINT16)((float)TYPEC_VSAFE0V_VBUS_THR * gasTypeCcontrol[u8PortNum].fVBUSCorrectionFactor));
+  
 }
 /*******************************************************************************************/
 /*********************************TypeC State machine**************************************/
@@ -2823,8 +2790,7 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
             
         TypeC_InitPort (u8PortNum);
         
-        /* Protocol Layer initialization based on power being advertised*/
-        PRL_Init (u8PortNum);
+        PRL_UpdatePowerRole(u8PortNum);
                 
         gasTypeCcontrol[u8PortNum].u8DRPStsISR &= (~TYPEC_DRP_DONE_INTERRUPT);        
     }

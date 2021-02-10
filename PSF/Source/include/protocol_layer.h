@@ -796,8 +796,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PRL_EXTENDED_MESSAGE_BUFF
 		UPD_MAC Tx- Rx configurations, Protocol Layer globals and interrupts.
 
     Conditions:
-        This API has to be called only after Type c & DPM init.
-		Protocol Layer init depends on Spec Rev, Data & Power Role global variable updated by above modules.
+        None.
 
     Input:
         u8PortNum - Port number of the device.
@@ -812,6 +811,39 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PRL_EXTENDED_MESSAGE_BUFF
 
 **************************************************************************************************/
 void  PRL_Init (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void  PRL_UpdatePowerRole (UINT8 u8PortNum);
+
+    Summary:
+        This API initialize the UPD_MAC Registers and Protocol Layer variables
+		based on power role of the port.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API initializes UPD_MAC Tx- Rx configurations, Protocol Layer globals 
+        and interrupts based on power role of the port.
+
+    Conditions:
+        This API has to be called only after Type c & DPM init.
+		It depends on Power Role global variable updated by above modules.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+
+    Return:
+        None.
+
+    Remarks:
+        This API has to be called for all the ports (0 to (CONFIG_PD_PORT_COUNT -1))
+		to initialize the Protocol Layer.
+
+**************************************************************************************************/
+void PRL_UpdatePowerRole (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
