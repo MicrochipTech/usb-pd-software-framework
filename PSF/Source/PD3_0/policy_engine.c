@@ -508,8 +508,9 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
     UINT8 u8MsgOperation = PE_ValidateMessage (u8PortNum, u32Header);
     
     /* Is Policy Engine in VDM State */
-    UINT8 u8PEInVDMState = ((ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState) || \
-          (ePE_VDM_RESPOND_VDM == gasPolicyEngine[u8PortNum].ePEState) ? TRUE : FALSE);
+    UINT8 u8PEInVDMState = (((ePE_VDM_INITIATE_VDM == gasPolicyEngine[u8PortNum].ePEState) || \
+          (ePE_VDM_RESPOND_VDM == gasPolicyEngine[u8PortNum].ePEState) || \
+            (ePE_VDM_IDENTITY_REQUEST == gasPolicyEngine[u8PortNum].ePEState))? TRUE : FALSE);
     
     /* Is PD Contract a PPS contract */
 #if ((TRUE == INCLUDE_PD_SOURCE_PPS) || (TRUE == INCLUDE_PD_VDM))
