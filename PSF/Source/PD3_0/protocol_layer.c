@@ -275,7 +275,7 @@ UINT16 PRL_FormSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 u8O
 UINT16 PRL_FormNonSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 u8ObjectCount, UINT8 u8Extended)
 {
 	return ((u8MessageType) 																		|
-  			((UINT16) ((DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum)) << PRL_SPEC_REV_FIELD_START_BIT_POS)) 	|
+  			((UINT16) ((DPM_GET_CURRENT_CBL_PD_SPEC_REV(u8PortNum)) << PRL_SPEC_REV_FIELD_START_BIT_POS)) 	|
 	  		((UINT16)u8ObjectCount << PRL_DATA_OBJECTS_FIELD_START_BIT_POS) 					|
 			((UINT16)u8Extended << PRL_EXTENDED_BIT_POS));
 }
@@ -1684,7 +1684,7 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 
 /******************************************************************************************************/
 
-UINT32 PRL_FormRequestChunkMsgHeader(UINT8 u8PortNum)
+UINT32 PRL_FormRequestChunkMsgHeader (UINT8 u8PortNum)
 {						
 	UINT32 u32CombinedHeader;
   	if (PRL_SOP_TYPE == gasExtendedMsgBuff [u8PortNum].u8SOPtype)
@@ -1701,7 +1701,7 @@ UINT32 PRL_FormRequestChunkMsgHeader(UINT8 u8PortNum)
 									 PRL_REQUEST_CHUNK_DATA_OBJ_CNT, PRL_EXTENDED_MSG);
     }
 	
-    u32CombinedHeader =   PRL_FORM_COMBINED_MSG_HEADER(PRL_FORM_REQUEST_CHUNK_EXT_MSG_HEADER(gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent), 
+    u32CombinedHeader = PRL_FORM_COMBINED_MSG_HEADER(PRL_FORM_REQUEST_CHUNK_EXT_MSG_HEADER(gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent), 
 									(UINT16)u32CombinedHeader);
     return u32CombinedHeader;
 }

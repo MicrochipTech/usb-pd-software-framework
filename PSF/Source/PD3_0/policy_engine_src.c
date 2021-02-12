@@ -101,7 +101,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
         gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;
         
         /* Set spec revision to default spec revision on every detach */
-        DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
+        DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV, PRL_SOP_TYPE);
         
         /* Spec Rev is updated by PRL*/
         PRL_UpdateSpecAndDeviceRoles (u8PortNum);
