@@ -676,7 +676,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8 *pu8SOPType, UINT32 *pu32Header, UI
  
     u8Return = PRL_ProcessRcvdMsg(u8PortNum);
 	
-    if ((u8Return == PRL_RET_NO_MSG_RCVD) && (!gasPRL [u8PortNum].u8RxError) && (!gasPRL [u8PortNum].u8RxHRRcvdISR))
+    if ((PRL_RET_NO_MSG_RCVD == u8Return) && (!gasPRL [u8PortNum].u8RxError) && (!gasPRL [u8PortNum].u8RxHRRcvdISR))
     {
 		/* No Message is received. Return PRL_RET_NO_MSG_RCVD */
         return PRL_RET_NO_MSG_RCVD;

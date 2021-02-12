@@ -230,7 +230,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_SELECT_CAPABILITY,\
                                              ePE_SNK_SELECT_CAPABILITY_REQ_SENT_SS,\
                                              ePE_SEND_SOFT_RESET,\
-                                             ePE_SEND_SOFT_RESET_SOP_SS );
+                                             ePE_SEND_SOFT_RESET_ENTRY_SS );
                     
                     u8IsTransmit = TRUE;
                     

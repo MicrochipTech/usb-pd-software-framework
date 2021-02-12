@@ -104,7 +104,7 @@ void PE_RunDRSwapStateMachine (UINT8 u8PortNum)
                      Power role*/
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_DRS_DFP_UFP_ROLE_CHANGE , \
                                                 NULL, \
-                                               ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
+                                               ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;        
                     /*Wait in a idle state to get a Good_CRC response for Accept*/
@@ -169,7 +169,7 @@ void PE_RunDRSwapStateMachine (UINT8 u8PortNum)
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_DRS_SEND_SWAP , \
                                                 ePE_DRS_SEND_SWAP_MSG_DONE_SS, \
-                                               ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
+                                               ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;
                     
@@ -329,7 +329,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_PRS_SEND_SWAP, \
                                                 ePE_PRS_SEND_SWAP_MSG_DONE_SS, \
-                                                ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
+                                                ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;                                        
                              
@@ -482,7 +482,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     }
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                eTxDoneSS, ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
+                                                eTxDoneSS, ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;
                     
@@ -1531,8 +1531,11 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
 	/* Transmit Flag */
 	UINT8 u8IsTransmit = FALSE;
     
+    /* Transmit SOP type */
+    UINT8 u8TransmitSOP = PRL_SOP_TYPE;        
+    
     ePolicyState eTxDoneSt;
-    ePolicySubState eTxDoneSS,eTxHardRstSS;
+    ePolicySubState eTxDoneSS, eTxHardRstSS;
     
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
@@ -1562,7 +1565,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
       
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VCS_SEND_SWAP, \
                                                 ePE_VCS_SEND_SWAP_MSG_DONE_SS, \
-                                                ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
+                                                ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_ENTRY_SS);
 
                     u8IsTransmit = TRUE;                                        
                              
@@ -1710,7 +1713,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     }
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( eTxDoneSt, \
-                                                eTxDoneSS, ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
+                                                eTxDoneSS, ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_ENTRY_SS);
 
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_ACCEPT_SWAP_IDLE_SS;
                     u8IsTransmit = TRUE;
@@ -1790,9 +1793,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             DPM_SET_VCONN_SWAP_INIT_STS_AS_VCONN_SRC(u8PortNum);
             
             /* Change the status of VCONN Source responsibility after a swap */
-            DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
-            
-            gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+            DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);                        
             
             /* Move to Ready state */
             gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
@@ -1849,7 +1850,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32 (ePE_VCS_SEND_PS_RDY,\
                                              ePE_VCS_SEND_PS_RDY_MSG_DONE_SS,\
                                              ePE_SEND_SOFT_RESET,\
-                                             ePE_SEND_SOFT_RESET_SOP_SS);
+                                             ePE_SEND_SOFT_RESET_ENTRY_SS);
                         
                         u8IsTransmit = TRUE;
                         gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_PS_RDY_IDLE_SS;                        
@@ -1919,6 +1920,103 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             }
              break;
         }
+            /********* VCS SOP' Soft Reset Transmission State **********/ 
+        case ePE_VCS_CBL_SEND_SOFT_RESET:
+        {
+            switch (gasPolicyEngine[u8PortNum].ePESubState)
+            {
+                case ePE_VCS_CBL_SEND_SOFT_RESET_ENTRY_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_CBL_SEND_SOFT_RESET_ENTRY_SS\r\n");
+					
+                    /* Kill Policy Engine Timer */
+                    PE_KillPolicyEngineTimer (u8PortNum);
+                    
+					/* Reset the Protocol Layer for SOP_P type message */
+                    PRL_ResetPRLSpecificSOP (u8PortNum, PRL_SOP_P_TYPE);
+
+                    /* SOP type is SOP_P_TYPE */
+                    u8TransmitSOP = PRL_SOP_P_TYPE;
+                    
+                    u32TransmitHeader = PRL_FormNonSOPTypeMsgHeader (u8PortNum, PE_CTRL_SOFT_RESET, \
+																	PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);                                       
+                        
+                    /* Move to ePE_VCS_CBL_SEND_SOFT_RESET_ERROR_SS sub-state on Tx failure 
+                       to send cable or hard reset depending on the current data role */
+                    u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_VCS_CBL_SEND_SOFT_RESET, \
+                                                ePE_VCS_CBL_SEND_SOFT_RESET_MSG_DONE_SS, \
+                                                ePE_VCS_CBL_SEND_SOFT_RESET, ePE_VCS_CBL_SEND_SOFT_RESET_ERROR_SS);                        
+                                        
+                    u8IsTransmit = TRUE;
+                    
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_CBL_SEND_SOFT_RESET_IDLE_SS;
+                    
+                    break;                                       
+                }
+                case ePE_VCS_CBL_SEND_SOFT_RESET_MSG_DONE_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_CBL_SEND_SOFT_RESET_MSG_DONE_SS\r\n");
+                    
+                    /*Clear status bit since SOP_P Soft_Reset is complete */
+                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+                    
+                    gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
+                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
+                                                            PE_SubStateChange_TimerCB, u8PortNum,  
+                                                            (UINT8)ePE_VCS_CBL_SEND_SOFT_RESET_ERROR_SS);                                                
+                                        
+                    gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_CBL_SEND_SOFT_RESET_IDLE_SS;
+                   
+                    break; 
+                }
+                case ePE_VCS_CBL_SEND_SOFT_RESET_ERROR_SS:
+                {
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_CBL_SEND_SOFT_RESET_ERROR_SS\r\n");
+                    
+                    /*Clear status bit since SOP_P Soft_Reset is complete */
+                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
+                    
+                    /* On Transmission failure/ Sender Response timer timeout, if Data Role is 
+                        - DFP -> Send Cable Reset 
+                        - UFP -> Send Hard Reset */                                                              
+                    if (PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+                    {
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_DFP_VCS_CBL_SEND_CABLE_RESET;                        
+                    }
+                    else
+                    {
+                        PE_SendHardReset (u8PortNum);
+                    }
+                    break; 
+                }
+                case ePE_VCS_CBL_SEND_SOFT_RESET_IDLE_SS:
+                {
+                    /* Hook to notify PE state machine entry into idle sub-state */
+                    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLE_PE_NOTIFY);
+                    
+                    break; 
+                }   
+                default:
+                {
+                    break; 
+                }
+            }
+            break; 
+        }
+                /********** DFP VCS Cable Reset Transmission State ********/ 
+        case ePE_DFP_VCS_CBL_SEND_CABLE_RESET:
+        {            
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_DFP_VCS_CBL_SEND_CABLE_RESET\r\n");
+
+            /* Send Cable Reset */
+            PRL_SendCableorHardReset (u8PortNum, PRL_SEND_CABLE_RESET, NULL, SET_TO_ZERO);
+
+            /* Move to PE_SRC_READY/PE_SNK_READY state */
+            gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+            gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
+                   
+            break; 
+        }        
         default:
         {
             break;
@@ -1928,7 +2026,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
     /* Transmit the message if u8IsTransmit is set */
     if (u8IsTransmit)
     {
-		(void) PRL_TransmitMsg (u8PortNum, (UINT8) PRL_SOP_TYPE, u32TransmitHeader, \
+		(void) PRL_TransmitMsg (u8PortNum, u8TransmitSOP, u32TransmitHeader, \
                             NULL, pfnTransmitCB, u32TransmitTmrIDTxSt); 
     }    
 }
