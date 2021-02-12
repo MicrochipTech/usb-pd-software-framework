@@ -264,15 +264,22 @@ void DPM_UpdateDataRole (UINT8 u8PortNum, UINT8 u8NewDataRole)
 #endif
 }
 
-void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev)
+void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev, UINT8 u8SOPType)
 {
-    /* Set PD Spec Rev in gasDPM[u8PortNum].u32DPMStatus variable */
-    gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
-	gasDPM[u8PortNum].u32DPMStatus |= (u8PDSpecRev << DPM_CURR_PD_SPEC_REV_POS);    
+    /* Spec Ref: Table 6-2 Revision Interoperability during an Explicit Contract         
+       Set PD Spec Rev negotiated with port partner and the cable */
     
-    /* Set PD Spec Rev in Port Connection Status register */
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_PD_SPEC_REV_STATUS_MASK);
-    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8PDSpecRev << DPM_PORT_PD_SPEC_REV_STATUS_POS);    
+    gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CURR_CABLE_PD_SPEC_REV_MASK;
+    gasDPM[u8PortNum].u32DPMStatus |= (u8PDSpecRev << DPM_CURR_CABLE_PD_SPEC_REV_POS);            
+    
+    if (PRL_SOP_TYPE == u8SOPType)
+    {
+        gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
+        gasDPM[u8PortNum].u32DPMStatus |= (u8PDSpecRev << DPM_CURR_PD_SPEC_REV_POS);    
+        
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_PD_SPEC_REV_STATUS_MASK);
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8PDSpecRev << DPM_PORT_PD_SPEC_REV_STATUS_POS);                    
+    }
 }
 
 /**************************************************************************************************/
@@ -1515,7 +1522,7 @@ void DPM_EvaluateAndGearUpForFRS (UINT8 u8PortNum)
 
 #endif
 /*********************************DPM TypeC Detach API**************************************/
-void DPM_OnTypeCDetach(UINT8 u8PortNum)
+void DPM_OnTypeCDetach (UINT8 u8PortNum)
 {
     #if (TRUE == INCLUDE_PD_DR_SWAP)
     

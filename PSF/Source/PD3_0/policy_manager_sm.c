@@ -44,6 +44,9 @@ void DPM_Init (UINT8 u8PortNum)
     
     DPM_UpdateDataRole (u8PortNum, u8CfgPowerRole);
     DPM_UpdatePowerRole (u8PortNum, u8CfgPowerRole); 
+    
+    /*Update PD spec revision in u32DPMStatus*/
+    DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV, PRL_SOP_TYPE);
 #if (TRUE == INCLUDE_PD_SINK)
     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;        
 #endif
@@ -53,8 +56,6 @@ void DPM_Init (UINT8 u8PortNum)
             | (u8CfgPowerRole << DPM_DEFAULT_POWER_ROLE_POS) \
             | (u8CfgPowerRole << DPM_DEFAULT_DATA_ROLE_POS));
    
-    /*Update PD spec revision in u32DPMStatus*/
-    gasDPM[u8PortNum].u32DPMStatus |= (CONFIG_PD_DEFAULT_SPEC_REV << DPM_CURR_PD_SPEC_REV_POS);
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
     gasDPM[u8PortNum].u16DPMInternalEvents = SET_TO_ZERO;
     #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
@@ -578,79 +579,93 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
             break;
         }
+#if (TRUE == INCLUDE_PD_SINK)        
         case eMCHP_PSF_CAPS_MISMATCH:
-        {
-            #if (TRUE == INCLUDE_PD_SINK)
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;
+        {            
             MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_ASSERT);
-            #endif
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_CAP_MISMATCH_STATUS;            
             break;
         }
         case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
         {
-            #if (TRUE == INCLUDE_PD_SINK)
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &=\
-                    ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
-            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);
-            #endif
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eSNK_CAPS_MISMATCH_FUNC, eGPIO_DEASSERT);            
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~DPM_PORT_IO_CAP_MISMATCH_STATUS;
             break;
         }
+#endif   
+#if (TRUE == INCLUDE_PD_SOURCE_PPS)        
         case eMCHP_PSF_SINK_ALERT_RCVD:
-        {
-            #if (TRUE == INCLUDE_PD_SOURCE_PPS)
+        {            
             /* Initiate transmission of Get_Status message on reception of Alert from partner */
-            DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_GET_STATUS);
-            #endif 
+            DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_GET_STATUS);            
             break; 
         }         
+#endif         
         case eMCHP_PSF_PORT_DISABLED:
         {
             DPM_OnTypeCDetach (u8PortNum);
             break;
         }
+#if (TRUE == INCLUDE_PD_VDM)         
         case eMCHP_PSF_VDM_RESPONSE_RCVD:
         case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
         {
-            /* Clear the VDM internal event since the AMS is complete */
-            #if (TRUE == INCLUDE_PD_VDM)            
-            gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VDM);
-            #endif
+            /* Clear the VDM internal event since the AMS is complete */                       
+            gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VDM);            
             break; 
         }
+#endif        
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)        
         case eMCHP_PSF_VCONN_SWAP_COMPLETE:
-        {
-            #if (TRUE == INCLUDE_PD_VCONN_SWAP)
+        {            
             if ((DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eVCONN_SWAP_INITIATE)) || \
                         (gasDPM[u8PortNum].u32DPMStatus & DPM_VCONN_SWAP_INIT_STS_AS_VCONNSRC))
             {
                 /* Clear VCONN Swap internal event due to mismatch of policy */
                 gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VCONN_SWAP);
-            }
-            #endif
+            }            
             break; 
         }
-        case eMCHP_PSF_PR_SWAP_COMPLETE:
+        case eMCHP_PSF_CABLE_IDENTITY_DISCOVERED:
+        case eMCHP_PSF_CABLE_IDENTITY_NAKED:
         {
-            #if (TRUE == INCLUDE_PD_PR_SWAP)
+            if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+            {
+                /* Clear the internal event since the AMS is complete */
+                gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
+                
+                /* Schedule SOP' Soft Reset if requested by VCONN_Swap PE SM */
+                if ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET) && \
+                     ((DPM_CBL_DISCOVERED_AS_PD_CAPABLE == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))))
+                {
+                    DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
+                }        
+            }
+            break; 
+        }        
+#endif   
+#if (TRUE == INCLUDE_PD_PR_SWAP)        
+        case eMCHP_PSF_PR_SWAP_COMPLETE:
+        {            
             if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, ePR_SWAP_INITIATE))
             {
                 /* Clear PR Swap internal event due to mismatch of policy */
                 gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_PR_SWAP);
-            }
-            #endif
+            }            
             break; 
-        }        
+        }    
+#endif   
+#if (TRUE == INCLUDE_PD_DR_SWAP)        
         case eMCHP_PSF_DR_SWAP_COMPLETE:
-        {
-            #if (TRUE == INCLUDE_PD_DR_SWAP)
+        {            
             if (DPM_IGNORE_INITIATE_SWAP == DPM_EvaluateRoleSwap (u8PortNum, eDR_SWAP_INITIATE))
             {
                 /* Clear DR Swap internal event due to mismatch of policy */
                 gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_DR_SWAP);
-            }                                    
-            #endif
+            }                                                
             break; 
         }         
+#endif        
         case eMCHP_PSF_HARD_RESET_COMPLETE:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"***************HARD RESET COMPLETE***********\r\n");
@@ -660,19 +675,6 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
         {
             #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
                 DPM_EvaluatePartnerCapabilities (u8PortNum);
-            #endif 
-            break; 
-        }
-        case eMCHP_PSF_CABLE_IDENTITY_DISCOVERED:
-        case eMCHP_PSF_CABLE_IDENTITY_NAKED:
-        {
-            #if (TRUE == INCLUDE_PD_VCONN_SWAP)
-            /* Schedule SOP' Soft Reset if requested by VCONN_Swap PE SM */
-            if ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET) && \
-                 ((DPM_CBL_DISCOVERED_AS_PD_CAPABLE == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))))
-            {
-                DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
-            }                
             #endif 
             break; 
         }
