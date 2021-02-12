@@ -227,6 +227,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    PD Specification to wait for a TypeC Detach event. */
 #define PE_FRS_DETACH_WAIT_TIMEOUT_MS           MILLISECONDS_TO_TICKS(5)
 
+/* PE_DISCOVER_IDENTITY_TIMEOUT_MS defines the tDiscoverIdentity specified in the 
+   USB PD Specification. Default value of PE_DISCOVER_IDENTITY_TIMEOUT_MS is 
+   set as 40 milliseconds. */
+#define PE_DISCOVER_IDENTITY_TIMEOUT_MS         MILLISECONDS_TO_TICKS(40)
+
 // *****************************************************************************
 // Section: DPM Timeout configuration
 // *****************************************************************************

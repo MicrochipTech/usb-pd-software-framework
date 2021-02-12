@@ -1379,11 +1379,6 @@ void DPM_InitiateInternalEvts (UINT8 u8PortNum)
         }
     }   
     
-    if ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET) &&
-            (DPM_CBL_DISC_IDENTITY_ACKED == DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum)))
-    {
-        DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
-    }        
 #endif /* INCLUDE_PD_VCONN_SWAP */
     
             /*************** DR_SWAP Initiation *************/
@@ -1428,7 +1423,7 @@ void DPM_InitiateInternalEvts (UINT8 u8PortNum)
 #endif /*INCLUDE_PD_FR_SWAP*/    
 }
 
-/********************DPM API to handle VCONN_Swap if FRS is supported************************/
+/********************DPM API to handle Fast Role Swap initiation ************************/
 #if(TRUE == INCLUDE_PD_FR_SWAP)
 
 void DPM_EvaluateAndGearUpForFRS (UINT8 u8PortNum)
@@ -1597,7 +1592,7 @@ void DPM_OnTypeCDetach(UINT8 u8PortNum)
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
     gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_FRS_XMT_OR_DET_ENABLED |\
-                                        DPM_PORT_IN_MODAL_OPERATION | DPM_CBL_DISC_IDENTITY_STS \
+                                        DPM_PORT_IN_MODAL_OPERATION | DPM_CABLE_DISCOVERY_STS \
                                         | DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
@@ -1904,6 +1899,18 @@ void DPM_UpdateSwapInitSts (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
     }
 }
 
+#if (TRUE == INCLUDE_PD_VCONN_SWAP)
+
+void DPM_DiscoverIdentity_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
+{
+    /* Set the timer Id to Max Concurrent Value*/
+    gasDPM[u8PortNum].u8DiscoverIdentityTmrID = MAX_CONCURRENT_TIMERS;
+    
+    /* Re-initiate SOP' Discover Identity on tDiscoverIdentity timeout */    
+    DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_DISCOVER_CABLE_IDENTITY);            
+}
+
+#endif 
 /************************************************************************************************************************/
 
 /********************* Policy Manager APIs for VDM & AltMode ********************/

@@ -166,7 +166,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VCONN_SRC_RESPONSIBILITY               (BIT(17))
 #define DPM_FRS_XMT_OR_DET_ENABLED                 (BIT(18))
 #define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE             (BIT(19))
-#define DPM_CBL_DISC_IDENTITY_STS                  (BIT(20) | BIT(21))
+#define DPM_CABLE_DISCOVERY_STS                    (BIT(20) | BIT(21))
 #define DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET   (BIT(22))
 
 /*Bit position for u32DPMStatus variable*/
@@ -179,12 +179,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VCONN_SRC_RESPONSIBILITY_POS            17
 #define DPM_FRS_XMT_OR_DET_ENABLED_POS              18
 #define DPM_FRS_SIG_XMT_OR_RCV_DONE_POS             19 
-#define DPM_CBL_DISC_IDENTITY_POS                   20
+#define DPM_CABLE_DISCOVERY_STS_POS                 20
 
-/* Cable Discover Identity values used in u32DPMStatus */
-#define DPM_CBL_DISC_IDENTITY_UNTRIED            0
-#define DPM_CBL_DISC_IDENTITY_NAKED              1
-#define DPM_CBL_DISC_IDENTITY_ACKED              2
+/* Cable Discover Identity Status values used in u32DPMStatus */
+#define DPM_CBL_DISCOVERY_UNATTEMPTED            0
+#define DPM_CBL_DISCOVERED_AS_PD_CAPABLE         1
+#define DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE     2
 
 /*Defines for getting current status of a port from gasDPM[u8PortNum].u32DPMStatus using u8PortNum variable*/
 /*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
@@ -282,12 +282,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_IS_FRS_SIG_XMT_OR_RCV_DONE(u8PortNum) \
 ((gasDPM[u8PortNum].u32DPMStatus & DPM_FRS_SIGNAL_XMT_OR_RCV_DONE) >> DPM_FRS_SIG_XMT_OR_RCV_DONE_POS)
 
-/*DPM_GET_CURRENT_POWER_ROLE(u8PortNum) will return one of the following values
-- DPM_CBL_DISC_IDENTITY_UNTRIED            
-- DPM_CBL_DISC_IDENTITY_NAKED              
-- DPM_CBL_DISC_IDENTITY_ACKED */              
-#define DPM_GET_CBL_DISC_IDENTITY_STS(u8PortNum) \
-((gasDPM[u8PortNum].u32DPMStatus & DPM_CBL_DISC_IDENTITY_STS) >> DPM_CBL_DISC_IDENTITY_POS)
+/* DPM_GET_CBL_DISCOVERY_STS(u8PortNum) will return one of the following values
+- DPM_CBL_DISCOVERY_UNATTEMPTED                        
+- DPM_CBL_DISCOVERED_AS_PD_CAPABLE              
+- DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE */              
+#define DPM_GET_CBL_DISCOVERY_STS(u8PortNum) \
+((gasDPM[u8PortNum].u32DPMStatus & DPM_CABLE_DISCOVERY_STS) >> DPM_CABLE_DISCOVERY_STS_POS)
 
 /**************************************************************************************************/
 
@@ -778,9 +778,9 @@ Source/Sink Power delivery objects*/
 #define DPM_INT_EVT_INITIATE_ALERT                  BIT(6)
 #define DPM_INT_EVT_INITIATE_GET_STATUS             BIT(7)
 #define DPM_INT_EVT_INITIATE_FR_SWAP                BIT(8)
-#define DPM_INT_EVT_SYSTEM_POWER_LOST               BIT(9)
-#define DPM_INT_EVT_SYSTEM_POWER_BACK               BIT(10)
-#define DPM_INT_EVT_DISC_CABLE_IDENTITY             BIT(11)
+#define DPM_INT_EVT_HANDLE_SYSTEM_POWER_LOSS        BIT(9)
+#define DPM_INT_EVT_HANDLE_SYSTEM_POWER_RECOVERY    BIT(10)
+#define DPM_INT_EVT_DISCOVER_CABLE_IDENTITY         BIT(11)
 #define DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET       BIT(12)
 
 /******************** Port Power/Data State used for initiating FRS ******************/
@@ -845,9 +845,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // BIT(6) - DPM_INT_EVT_INITIATE_ALERT          
                                         // BIT(7) - DPM_INT_EVT_INITIATE_GET_STATUS                
                                         // BIT(8) - DPM_INT_EVT_INITIATE_FR_SWAP        
-                                        // BIT(9) - DPM_INT_EVT_SYSTEM_POWER_LOST       
-                                        // BIT(10) - DPM_INT_EVT_SYSTEM_POWER_BACK
-                                        // BIT(11) - DPM_INT_EVT_DISC_CABLE_IDENTITY             
+                                        // BIT(9) - DPM_INT_EVT_HANDLE_SYSTEM_POWER_LOSS       
+                                        // BIT(10) - DPM_INT_EVT_HANDLE_SYSTEM_POWER_RECOVERY
+                                        // BIT(11) - DPM_INT_EVT_DISCOVER_CABLE_IDENTITY             
                                         // BIT(12) - DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET       
   UINT8 u8DPMConfigData;                // Bit  1:0 - Default Port Power Role
                                         // Bit  3:2 - Default Port Data Role
@@ -886,6 +886,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
 #endif
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
   UINT8 u8VCONNSwapWaitTmrID;         // VCONN_Swap Wait Timer ID
+  UINT8 u8DiscoverIdentityTmrID;      // Discover Identity Timer ID 
 #endif
 #if (TRUE == INCLUDE_PD_PR_SWAP)
   UINT8 u8PRSwapWaitTmrID;            // PR_Swap Wait Timer ID
@@ -1898,6 +1899,25 @@ void DPM_EvaluateAndGearUpForFRS (UINT8 u8PortNum);
         None. 
 **************************************************************************************************/
 void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType);
+
+/**************************************************************************************************
+    Function:
+        void DPM_DiscoverIdentity_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+    Summary:
+        Timer callback for PE_DISCOVER_IDENTITY_TIMEOUT_MS timeout
+    Description:
+        API to re-initiate the SOP' Discover Identity on timeout during an explicit contract
+    Conditions:
+        None.
+    Input:
+        u8PortNum - Port number.
+        u8DummyVariable - Dummy Variable
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void DPM_DiscoverIdentity_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:

@@ -411,9 +411,9 @@ void UPD_PIOHandleISR(UINT8 u8PortNum, UINT16 u16InterruptStatus)
             
             if (u16PIORegVal & u8PwrBackDetectionEdge)
             {
-                DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_SYSTEM_POWER_BACK);
+                DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_HANDLE_SYSTEM_POWER_RECOVERY);
             }
-            /*System power loss event (DPM_INT_EVT_SYSTEM_POWER_LOST) is not handled here.
+            /*System power loss event (DPM_INT_EVT_HANDLE_SYSTEM_POWER_LOSS) is not handled here.
               It will be done after source to sink FR_Swap is complete.*/
             
             u16PIORegVal &= ~(UPD_CFG_PIO_FALLING_ALERT | UPD_CFG_PIO_RISING_ALERT);

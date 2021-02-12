@@ -785,10 +785,8 @@ void PRL_HandleISR (UINT8 u8PortNum)
 		if (PRL_TX_IRQ_TX_DONE & u8IntrStatus)
 		{
 			gasPRL [u8PortNum].u8TxStateISR = PRL_TX_DONE_ST;
-            if (gasPRL[u8PortNum].u8TxStsDPMSyncISR)
-            {
-                gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
-            }
+            
+            gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;            
 		}
 		
 		/* PD_MAC state variable is updated depending Tx interrupt received */

@@ -1193,7 +1193,7 @@ void PE_RunFRSwapStateMachine (UINT8 u8PortNum)
                         gasDPM[u8PortNum].u8PowerFaultFlags &= ~(DPM_IGNORE_UV_DURING_FRS_MASK);
                     #endif 
 
-                    DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_SYSTEM_POWER_LOST);
+                    DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_HANDLE_SYSTEM_POWER_LOSS);
 
                     /* Resetting the Protocol Layer would be taken care by the 
                     ePE_SNK_STARTUP state */
@@ -1780,7 +1780,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
             TypeC_EnabDisVCONN (u8PortNum, TYPEC_VCONN_DISABLE);  
 
             /* Reset the discover identity counter to 0*/
-            gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
+            gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                     
             /* Set the Swap Init status so that DPM will not re-initiate the
                VCONN Swap on moving to eTxDoneSS sub-state. This is particularly
@@ -1873,15 +1873,37 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_SEND_PS_RDY_MSG_DONE_SS\r\n");
                     
-                    /* Reset the discover identity counter to 0*/
-                    gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = SET_TO_ZERO;
-                    
                     /* Change the status of VCONN Source responsibility after a swap */
                     DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
-                          
-                    /* Request DPM to initiate SOP' Soft Reset */
-                    gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET;                              
                     
+                    /* Reset the discover identity counter to 0*/
+                    gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;                    
+                          
+                    /*  If cable wasn't discovered previously
+                            - initiate Cable Discovery
+                        Else,
+                            - if cable is discovered as PD capable
+                                    - initiate SOP' Soft Reset 
+                            - else if cable is discovered as non PD capable,
+                                    - do not initiate SOP' Soft Reset                       
+                    */                    
+                    if (DPM_CBL_DISCOVERY_UNATTEMPTED == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))
+                    {
+                        DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_DISCOVER_CABLE_IDENTITY);
+                        
+                        /* Request DPM to initiate SOP' Soft Reset if the cable is identified
+                           as PD Capable after the discovery process */
+                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET;                                                      
+                    }
+                    else if (DPM_CBL_DISCOVERED_AS_PD_CAPABLE == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))
+                    {
+                        DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
+                    }
+                    else
+                    {
+                        /* DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE - Do Nothing */
+                    }
+                                        
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                        
                     

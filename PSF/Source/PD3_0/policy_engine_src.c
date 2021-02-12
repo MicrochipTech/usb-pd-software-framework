@@ -179,7 +179,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                             gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_3A_UNIT;
 
                             /*Routing PE states to initiate discover identity is not done
-                              using DPM_INT_EVT_DISC_CABLE_IDENTITY internal event since,
+                              using DPM_INT_EVT_DISCOVER_CABLE_IDENTITY internal event since,
                               PE idle condition cannot be checked during startup state*/
                             gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;
