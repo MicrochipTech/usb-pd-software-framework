@@ -213,6 +213,9 @@ typedef enum {
     ePE_VCS_TURN_OFF_VCONN,
     ePE_VCS_TURN_ON_VCONN,
     ePE_VCS_SEND_PS_RDY,
+    //--------------------------Cable Soft Reset States--------------------------------//            
+    ePE_VCS_CBL_SEND_SOFT_RESET,
+    ePE_DFP_VCS_CBL_SEND_CABLE_RESET,                        
     //--------------------------DR_SWAP States-----------------------------------//
     ePE_DRS_EVALUATE_SWAP,
     ePE_DRS_ACCEPT_SWAP,
@@ -367,7 +370,12 @@ typedef enum {
     ePE_VCS_SEND_PS_RDY_ENTRY_SS,
     ePE_VCS_SEND_PS_RDY_IDLE_SS,
     ePE_VCS_SEND_PS_RDY_MSG_DONE_SS,
-    
+    //----------------------------Cable Soft Reset Sub states-------------------------------//
+    /* ePE_VCS_CBL_SEND_SOFT_RESET */
+    ePE_VCS_CBL_SEND_SOFT_RESET_ENTRY_SS,         
+    ePE_VCS_CBL_SEND_SOFT_RESET_MSG_DONE_SS,
+    ePE_VCS_CBL_SEND_SOFT_RESET_ERROR_SS,
+    ePE_VCS_CBL_SEND_SOFT_RESET_IDLE_SS,                            
     //---------------------DR_SWAP sub states---------------------------------//
     /*ePE_DRS_ACCEPT_SWAP*/        
     ePE_DRS_ACCEPT_SWAP_SEND_ACCEPT_SS,
@@ -457,13 +465,9 @@ typedef enum {
     ePE_SOFT_RESET_ENTRY_SS, 
     ePE_SOFT_RESET_IDLE_SS,
     /* ePE_SEND_SOFT_RESET */
-    ePE_SEND_SOFT_RESET_SOP_SS,
-    ePE_SEND_SOFT_RESET_SOP_P_SS,
+    ePE_SEND_SOFT_RESET_ENTRY_SS,
     ePE_SEND_SOFT_RESET_IDLE_SS,
     ePE_SEND_SOFT_RESET_MSG_DONE_SS,      
-    ePE_SEND_SOFT_RESET_P_MSG_DONE_SS,
-    ePE_SEND_SOFT_RESET_P_IDLE_SS,
-    ePE_DFP_SEND_CBL_RESET_SS,
     /*ePE_SEND_NOT_SUPPORTED*/
     ePE_SEND_NOT_SUPPORTED_ENTRY_SS,
     ePE_SEND_NOT_SUPPORTED_IDLE_SS,

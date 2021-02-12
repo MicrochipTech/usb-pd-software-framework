@@ -1129,8 +1129,8 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             /*Clear the Internal event since it is processed*/
             gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
             
-            gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_SOFT_RESET;
-            gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_SOFT_RESET_SOP_P_SS;
+            gasPolicyEngine[u8PortNum].ePEState = ePE_VCS_CBL_SEND_SOFT_RESET;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_CBL_SEND_SOFT_RESET_ENTRY_SS;
             
             u16AMSInProgress = DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET;
             DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: SOP_P_SOFT_RST INITIATED\r\n");

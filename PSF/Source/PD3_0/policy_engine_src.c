@@ -252,7 +252,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                              Send Soft reset since PD connected presently*/
                             u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_SEND_CAPABILITIES, \
                                                         ePE_SRC_SEND_CAP_GOODCRC_RCVD_SS, \
-                                                          ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);                                                                            
+                                                          ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_ENTRY_SS);                                                                            
                         }
                         else
                         {                          
@@ -531,7 +531,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     {
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
                                                     ePE_SRC_READY_ENTRY_SS, ePE_SEND_SOFT_RESET, \
-                                                    ePE_SEND_SOFT_RESET_SOP_SS);
+                                                    ePE_SEND_SOFT_RESET_ENTRY_SS);
                     }
                     
 					/* If Explicit Contract is not initiated, Send the reject message and set the
@@ -541,7 +541,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
 						/* Change the state to PE_SRC_WAIT_NEW_CAPABILITIES to wait for capabilities change */
                         u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_WAIT_NEW_CAPABILITIES, \
                                                     NULL, ePE_SEND_SOFT_RESET, \
-                                                    ePE_SEND_SOFT_RESET_SOP_SS);
+                                                    ePE_SEND_SOFT_RESET_ENTRY_SS);
                     }
                     
 					/* Send Reject message for Requested Invalid Capability */
@@ -742,10 +742,6 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                  
                     /* Send Hard Reset to Port Partner*/
                     PRL_SendCableorHardReset (u8PortNum, PRL_SEND_HARD_RESET, NULL, SET_TO_ZERO);	
-
-                    /*Hard reset could have been initiated by SOP_P Soft_Reset.
-                      Clear this bit since it is complete */
-                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
                     
                     /* Increment the HardReset Counter */
                     gasPolicyEngine[u8PortNum].u8HardResetCounter++;
@@ -1104,7 +1100,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     pfnTransmitCB = PE_StateChange_TransmitCB;                 
                         
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_SRC_GET_SINK_STATUS, ePE_SRC_GET_SINK_STATUS_MSG_DONE_SS, \
-                                                    ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_SOP_SS);
+                                                    ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_ENTRY_SS);
                                                 
                     u8IsTransmit = TRUE;                                             
                    
@@ -1196,7 +1192,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
                                 ePE_SRC_READY_END_AMS_SS, ePE_SEND_SOFT_RESET, \
-                                ePE_SEND_SOFT_RESET_SOP_SS);
+                                ePE_SEND_SOFT_RESET_ENTRY_SS);
                     
                     u8IsTransmit = TRUE;
                     
@@ -1247,7 +1243,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
                                 ePE_SRC_READY_END_AMS_SS, ePE_SEND_SOFT_RESET, \
-                                ePE_SEND_SOFT_RESET_SOP_SS);
+                                ePE_SEND_SOFT_RESET_ENTRY_SS);
                     
                     u8IsTransmit = TRUE;
                     
@@ -1297,7 +1293,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_SRC_READY, \
                                 ePE_SRC_READY_END_AMS_SS, ePE_SEND_SOFT_RESET, \
-                                ePE_SEND_SOFT_RESET_SOP_SS);
+                                ePE_SEND_SOFT_RESET_ENTRY_SS);
                     
                     u8IsTransmit = TRUE;
                     
