@@ -661,7 +661,7 @@ void PE_RunStateMachine (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PE_RunCommonStateMachine (UINT8 u8PortNum , UINT8 *u8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+        void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *u8DataBuf, UINT32 u32Header);
 
     Summary:
         This API is called to run the Common state machine of policy engine that handles the
@@ -689,7 +689,7 @@ void PE_RunStateMachine (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void PE_RunCommonStateMachine (UINT8 u8PortNum , UINT8 *pu8DataBuf , UINT8 u8SOPType ,UINT32 u32Header);
+void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header);
 
 /**************************************************************************************************
     Function:

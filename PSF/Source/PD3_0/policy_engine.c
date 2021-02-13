@@ -172,44 +172,54 @@ void PE_RunStateMachine (UINT8 u8PortNum)
             }
             
             gasPolicyEngine[u8PortNum].u32MsgHeader = u32Header;
+            
             /* Process the received PD message */
             PE_ReceiveMsgHandler (u8PortNum, u32Header, u8aDataBuf);
         }
         /*Setting Timeout sub-state to invalid state*/
         gasPolicyEngine[u8PortNum].ePETimeoutSubState = ePE_INVALIDSUBSTATE;
         
+            /* Run VCONN_Swap State Machine */
+        #if (TRUE == INCLUDE_PD_VCONN_SWAP)
+            PE_RunVCONNSwapStateMachine (u8PortNum);
+        #endif  
+         
+            /* Run DR_Swap State Machine */
         #if (TRUE == INCLUDE_PD_DR_SWAP)
             PE_RunDRSwapStateMachine (u8PortNum);
-        #endif 
+        #endif
+
+            /* Run PR_Swap State Machine */
+        #if (TRUE == INCLUDE_PD_PR_SWAP)
+            PE_RunPRSwapStateMachine (u8PortNum);
+        #endif        
+
+            /* Run FR_Swap State Machine */
+        #if (TRUE == INCLUDE_PD_FR_SWAP)
+            PE_RunFRSwapStateMachine (u8PortNum);
+        #endif             
+
+        #if (TRUE == INCLUDE_PD_VDM)
+            PE_RunVDMStateMachine (u8PortNum, u8aDataBuf, u32Header);
+        #endif             
+         
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
+            /* Run Source State Machine */
             #if (TRUE == INCLUDE_PD_SOURCE)
                 PE_RunSrcStateMachine (u8PortNum, u8aDataBuf, u32Header);
             #endif
         }
-        else if (PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum))
+        else /* Port Power Role is Sink */
         {
+            /* Run Sink State Machine */
             #if (TRUE == INCLUDE_PD_SINK)
                 PE_RunSnkStateMachine (u8PortNum, u8aDataBuf, u32Header);
             #endif
         }
-        else
-        {
-            /* Do Nothing */
-        }
-#if (TRUE == INCLUDE_PD_VCONN_SWAP)
-        PE_RunVCONNSwapStateMachine (u8PortNum);
-#endif
-#if (TRUE == INCLUDE_PD_PR_SWAP)
-        PE_RunPRSwapStateMachine (u8PortNum);
-#endif        
-#if (TRUE == INCLUDE_PD_FR_SWAP)
-        PE_RunFRSwapStateMachine (u8PortNum);
-#endif             
-#if (TRUE == INCLUDE_PD_VDM)
-        PE_RunVDMStateMachine (u8PortNum, u8aDataBuf, u32Header);
-#endif 
-        PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType, u32Header);        
+        
+        /* Run PE State Machine common to Source and Sink */
+        PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u32Header);        
     }
 #if(TRUE == INCLUDE_PD_DRP)    
     else
@@ -1616,7 +1626,7 @@ void PE_SendHardReset (UINT8 u8PortNum)
 }
 
 /***************************************************************************************/
-void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPType, UINT32 u32Header)
+void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header)
 {
     /* Receive VDM Header */
     UINT32 u32VDMHeader = SET_TO_ZERO;
