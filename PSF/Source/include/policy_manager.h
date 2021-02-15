@@ -168,6 +168,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE             (BIT(19))
 #define DPM_CABLE_DISCOVERY_STS                    (BIT(20) | BIT(21))
 #define DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET   (BIT(22))
+#define DPM_CURR_CABLE_PD_SPEC_REV_MASK            (BIT(23) | BIT(24))
 
 /*Bit position for u32DPMStatus variable*/
 #define DPM_CURR_POWER_ROLE_POS                     0
@@ -180,6 +181,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_FRS_XMT_OR_DET_ENABLED_POS              18
 #define DPM_FRS_SIG_XMT_OR_RCV_DONE_POS             19 
 #define DPM_CABLE_DISCOVERY_STS_POS                 20
+#define DPM_CURR_CABLE_PD_SPEC_REV_POS              23 
 
 /* Cable Discover Identity Status values used in u32DPMStatus */
 #define DPM_CBL_DISCOVERY_UNATTEMPTED            0
@@ -288,6 +290,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 - DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE */              
 #define DPM_GET_CBL_DISCOVERY_STS(u8PortNum) \
 ((gasDPM[u8PortNum].u32DPMStatus & DPM_CABLE_DISCOVERY_STS) >> DPM_CABLE_DISCOVERY_STS_POS)
+
+#define DPM_GET_CURRENT_CBL_PD_SPEC_REV(u8PortNum)       \
+    ((gasDPM[u8PortNum].u32DPMStatus & DPM_CURR_CABLE_PD_SPEC_REV_MASK) >> DPM_CURR_CABLE_PD_SPEC_REV_POS)
 
 /**************************************************************************************************/
 
@@ -834,8 +839,9 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START
                                         // Bit 17 - VCONN Source Responsibility Status
                                         // Bit 18 - FRS XMT or DET Enabled Status 
                                         // Bit 19 - FRS Signal Transmitted Or Received Status                                  
-                                        // Bit 20 - Cable Discover Identity Status
-                                        // Bit 21 - VCONN Src SOP' Soft Reset initiate status
+                                        // Bit 21:20 - Cable Discover Identity Status
+                                        // Bit 22 - VCONN Src SOP' Soft Reset initiate status
+                                        // Bit 23 - Status of Cable PD spec Rev
   UINT16 u16DPMInternalEvents;          // BIT(0) - DPM_INT_EVT_INITIATE_GET_SINK_CAPS  
                                         // BIT(1) - DPM_INT_EVT_INITIATE_RENEGOTIATION  
                                         // BIT(2) - DPM_INT_EVT_INITIATE_VCONN_SWAP     
@@ -1988,26 +1994,29 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev)
+        void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev, UINT8 u8SOPType)
     Summary:
         This API is used to set the negotiated PD Spec Rev value in 
         gasDPM[u8PortNum].u32DPMStatus variable and 
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus.
     Description:
-        This API is used to assign negotiated PD Spec Rev value in 
-        gasDPM[u8PortNum].u32DPMStatus variable and 
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus. 
+        This API is used to assign the PD Spec Rev value negotiated between
+        port partners and the cable plug
     Conditions:
         None.
     Input:
         u8PortNum   - Port Number for which PD Spec Rev need to be assigned
-        u8PDSpecRev - PD Spec Rev to be updated for the port                      
+        u8PDSpecRev - PD Spec Rev to be updated for the port      
+        u8SOPType - PRL_SOP_TYPE - PD Spec Rev of the port partner and the cable
+                                   will be updated 
+                    PRL_SOP_P_TYPE/PRL_SOP_PP_TYPE - PD Spec Rev of the cable alone 
+                                   will be updated 
     Return:
         None
     Remarks:
         None
 **************************************************************************************************/
-void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev); 
+void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev, UINT8 u8SOPType); 
 
 /**************************************************************************************************
     Function:
