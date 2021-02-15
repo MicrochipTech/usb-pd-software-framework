@@ -726,8 +726,11 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         }
                         else /* VDM message is a response */
                         {
-                            PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_VDM_INITIATE_VDM,
-                                    ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS);
+                            if (u8PEInVDMState)
+                            {
+                                PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_VDM_INITIATE_VDM,
+                                        ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS);
+                            }
                         }
                     }        
                     else
