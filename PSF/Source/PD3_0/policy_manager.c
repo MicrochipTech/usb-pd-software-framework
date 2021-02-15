@@ -1604,6 +1604,7 @@ void DPM_OnTypeCDetach (UINT8 u8PortNum)
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
+    gasPRL[u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
     
     /* Disable Orientation LED */
