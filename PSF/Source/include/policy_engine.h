@@ -1285,4 +1285,33 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum);
 **************************************************************************************************/
 void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header); 
 
+/**************************************************************************************************
+    Function:
+        void PE_HandleUnsupportedVDM (UINT8 u8PortNum);
+
+    Summary:
+        API to handle Unsupported VDMs. 
+       
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API handles an unsupported VDM by sending "Not Supported" message if PD Spec revision is 3.0
+        If the Spec Rev is 2.0, it will ignore the VDM by maintaining the PE in ready state
+        
+    Conditions:
+        None
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void PE_HandleUnsupportedVDM (UINT8 u8PortNum);
+
 #endif /*_POLICY_ENGINE_H_*/

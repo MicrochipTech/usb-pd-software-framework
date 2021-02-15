@@ -703,45 +703,33 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
                         {
                             PE_KillPolicyEngineTimer (u8PortNum);
                         }   
-                        if (DPM_VDM_REQ == DPM_GET_VDM_CMD_TYPE (*pu8DataBuf))
+                        if (DPM_VDM_UNSTRUCTURED_VDM == DPM_GET_VDM_TYPE (*(pu8DataBuf + BYTE_LEN_1)))
                         {
-                            /* Respond with appropriate VDO if VDM is supported by the port */                            
-                            if (DPM_IS_VDM_SUPPORTED(u8PortNum))
+                            /* Unstructured VDMs are unsupported by PSF */
+                            PE_HandleUnsupportedVDM (u8PortNum);
+                        }
+                        else /* DPM_VDM_STRUCTURED_VDM */ 
+                        {
+                            if (DPM_VDM_REQ == DPM_GET_VDM_CMD_TYPE (*pu8DataBuf))
                             {
-                                gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_EVALUATE_VDM;  
-                            }
-                            else
-                            {
-                                /*Send "Not Supported" message for any received VDM message if PD Spec revision is 3.0
-                                 If the Spec Rev is 2.0, ignore the VDM. No need to change the state since PE 
-                                 will be in the ready state */
-                                if (PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV (u8PortNum))
+                                /* Respond with appropriate VDO if VDM is supported by the port */                            
+                                if (DPM_IS_VDM_SUPPORTED(u8PortNum))
                                 {
-                                    gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_NOT_SUPPORTED;
-                                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_NOT_SUPPORTED_ENTRY_SS;                    
+                                    gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_EVALUATE_VDM;  
                                 }
                                 else
                                 {
-                                    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                                    {
-                                       gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
-                                       gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
-                                    }
-                                    else
-                                    {
-                                       gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
-                                       gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;                                        
-                                    }                                    
+                                    PE_HandleUnsupportedVDM (u8PortNum);
                                 }
                             }
-                        }
-                        else /* VDM message is a response */
-                        {
-                            if (u8PEInVDMState)
+                            else /* VDM message is a response */
                             {
-                                PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_VDM_INITIATE_VDM,
-                                        ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS);
-                            }
+                                if (u8PEInVDMState)
+                                {
+                                    PE_HandleRcvdMsgAndTimeoutEvents (u8PortNum, ePE_VDM_INITIATE_VDM,
+                                            ePE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS);
+                                }
+                            }                            
                         }
                     }        
                     else
@@ -2587,4 +2575,27 @@ UINT8 PE_IsPolicyEngineIdle (UINT8 u8PortNum)
 }
 /*******************************************************************************/
 
+void PE_HandleUnsupportedVDM (UINT8 u8PortNum)
+{
+    /*Send "Not Supported" message for any received VDM message if PD Spec revision is 3.0
+     If the Spec Rev is 2.0, ignore the VDM */    
+    if (PD_SPEC_REVISION_3_0 == DPM_GET_CURRENT_PD_SPEC_REV (u8PortNum))
+    {
+        gasPolicyEngine[u8PortNum].ePEState = ePE_SEND_NOT_SUPPORTED;
+        gasPolicyEngine[u8PortNum].ePESubState = ePE_SEND_NOT_SUPPORTED_ENTRY_SS;                    
+    }
+    else
+    {
+        if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
+        {
+           gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY;
+           gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
+        }
+        else
+        {
+           gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_READY;
+           gasPolicyEngine[u8PortNum].ePESubState = ePE_SNK_READY_END_AMS_SS;                                        
+        }                                    
+    }                                
+}
 
