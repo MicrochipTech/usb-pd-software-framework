@@ -133,11 +133,11 @@ void PE_RunStateMachine (UINT8 u8PortNum)
              * PD Specification 3.0*/
             if (DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum) > PRL_GET_PD_SPEC_REV (u32Header))
             {
-                DPM_UpdatePDSpecRev (u8PortNum, PRL_GET_PD_SPEC_REV (u32Header));
+                DPM_UpdatePDSpecRev (u8PortNum, PRL_GET_PD_SPEC_REV (u32Header), u8SOPType);
             }
             else
             {
-                DPM_UpdatePDSpecRev (u8PortNum, DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum));
+                DPM_UpdatePDSpecRev (u8PortNum, DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum), u8SOPType);
             }
             /* Spec Rev is updated by PRL*/
             PRL_UpdateSpecAndDeviceRoles (u8PortNum);
@@ -172,44 +172,54 @@ void PE_RunStateMachine (UINT8 u8PortNum)
             }
             
             gasPolicyEngine[u8PortNum].u32MsgHeader = u32Header;
+            
             /* Process the received PD message */
             PE_ReceiveMsgHandler (u8PortNum, u32Header, u8aDataBuf);
         }
         /*Setting Timeout sub-state to invalid state*/
         gasPolicyEngine[u8PortNum].ePETimeoutSubState = ePE_INVALIDSUBSTATE;
         
+            /* Run VCONN_Swap State Machine */
+        #if (TRUE == INCLUDE_PD_VCONN_SWAP)
+            PE_RunVCONNSwapStateMachine (u8PortNum);
+        #endif  
+         
+            /* Run DR_Swap State Machine */
         #if (TRUE == INCLUDE_PD_DR_SWAP)
             PE_RunDRSwapStateMachine (u8PortNum);
-        #endif 
+        #endif
+
+            /* Run PR_Swap State Machine */
+        #if (TRUE == INCLUDE_PD_PR_SWAP)
+            PE_RunPRSwapStateMachine (u8PortNum);
+        #endif        
+
+            /* Run FR_Swap State Machine */
+        #if (TRUE == INCLUDE_PD_FR_SWAP)
+            PE_RunFRSwapStateMachine (u8PortNum);
+        #endif             
+
+        #if (TRUE == INCLUDE_PD_VDM)
+            PE_RunVDMStateMachine (u8PortNum, u8aDataBuf, u32Header);
+        #endif             
+         
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
+            /* Run Source State Machine */
             #if (TRUE == INCLUDE_PD_SOURCE)
                 PE_RunSrcStateMachine (u8PortNum, u8aDataBuf, u32Header);
             #endif
         }
-        else if (PD_ROLE_SINK == DPM_GET_CURRENT_POWER_ROLE (u8PortNum))
+        else /* Port Power Role is Sink */
         {
+            /* Run Sink State Machine */
             #if (TRUE == INCLUDE_PD_SINK)
                 PE_RunSnkStateMachine (u8PortNum, u8aDataBuf, u32Header);
             #endif
         }
-        else
-        {
-            /* Do Nothing */
-        }
-#if (TRUE == INCLUDE_PD_VCONN_SWAP)
-        PE_RunVCONNSwapStateMachine (u8PortNum);
-#endif
-#if (TRUE == INCLUDE_PD_PR_SWAP)
-        PE_RunPRSwapStateMachine (u8PortNum);
-#endif        
-#if (TRUE == INCLUDE_PD_FR_SWAP)
-        PE_RunFRSwapStateMachine (u8PortNum);
-#endif             
-#if (TRUE == INCLUDE_PD_VDM)
-        PE_RunVDMStateMachine (u8PortNum, u8aDataBuf, u32Header);
-#endif 
-        PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u8SOPType, u32Header);        
+        
+        /* Run PE State Machine common to Source and Sink */
+        PE_RunCommonStateMachine (u8PortNum, u8aDataBuf, u32Header);        
     }
 #if(TRUE == INCLUDE_PD_DRP)    
     else
@@ -1616,7 +1626,7 @@ void PE_SendHardReset (UINT8 u8PortNum)
 }
 
 /***************************************************************************************/
-void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPType, UINT32 u32Header)
+void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header)
 {
     /* Receive VDM Header */
     UINT32 u32VDMHeader = SET_TO_ZERO;
@@ -1718,9 +1728,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                 }
                 case ePE_VDM_IDENTITY_REQUEST_MSG_DONE_SS:
                 {					
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_IDENTITY_REQUEST_MSG_DONE_SS\r\n");                    
-                    
-                    gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISCOVERED_AS_PD_CAPABLE << DPM_CABLE_DISCOVERY_STS_POS);
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_IDENTITY_REQUEST_MSG_DONE_SS\r\n");                                                            
                     
 					/* Start the VDMIDentityRequest Sender Response timer, if timed out set the PE
 						sub-state to ePE_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS */
@@ -1742,10 +1750,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                        No more than nDiscoverIdentityCount Discover Identity Messages without 
                        a GoodCRC Message response Shall be sent.*/                                          
                     if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
-                    {
-                        /* Clear the internal event */
-                        gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
-                        
+                    {                        
                         /* When detach happens without GOODCRC being received for the 
                            SOP' Discover Identity, SOP' packet reception would have been 
                            enabled. So, on the next attach, the port will respond to the
@@ -1756,6 +1761,12 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                                                 
                         if (gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter < PE_N_DISCOVER_IDENTITY_COUNT)
                         {
+                            /* Clear the internal event. It has to be initiated only after tDiscoverIdentity */
+                            gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
+                            
+                            /* Update the Cable PD Spec Rev as 2.0 */
+                            DPM_UpdatePDSpecRev (u8PortNum, PD_SPEC_REVISION_2_0, PRL_SOP_P_TYPE);   
+                            
                             /* Start Discover Identity Timer */
                             gasDPM[u8PortNum].u8DiscoverIdentityTmrID = PDTimer_Start (
                                                                   (PE_DISCOVER_IDENTITY_TIMEOUT_MS),
@@ -1767,6 +1778,12 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                             /* Good_CRC not received from cable even after PE_N_DISCOVER_IDENTITY_COUNT times.
                                Hence, considering the cable as Non-PD capable */
                             gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE << DPM_CABLE_DISCOVERY_STS_POS);
+                            
+                            /* Reset Discover Identity Counter to 0 */
+                            gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
+                            
+                            /* Post eMCHP_PSF_CABLE_IDENTITY_NAKED notification */
+                            (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_CABLE_IDENTITY_NAKED);                                                      
                         }                        
                                                 
                         /* Move to ePE_SRC_READY/ePE_SNK_READY state */
@@ -1784,10 +1801,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                     DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS\r\n");
                     
                     if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
-                    {
-                        /* Clear the internal event */
-                        gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
-                        
+                    {                        
                         /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                         gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                         gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                         
@@ -1812,27 +1826,25 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
                 /************ PE_VDM_IDENTITY_ACKED ****************/
         case ePE_VDM_IDENTITY_ACKED:
         {
-            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_IDENTITY_ACKED\r\n");
-            
-            gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISCOVERED_AS_PD_CAPABLE << DPM_CABLE_DISCOVERY_STS_POS);
+            DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_IDENTITY_ACKED\r\n");                        
             
             if (DPM_VDM_ACK == DPM_StoreCableIdentity (u8PortNum, (UINT16) u32Header, (UINT32*) pu8DataBuf))
-            {                                
+            {
+                /* A PD-Capable Cable Plug Shall return a Discover Identity Command ACK in 
+                   response to a Discover Identity Command request sent to SOP? */
+                gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISCOVERED_AS_PD_CAPABLE << DPM_CABLE_DISCOVERY_STS_POS);
+                
+                /* Reset Discover Identity Counter to 0 */
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;
                 
                 if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
-                {
-                    /* Clear the internal event */
-                    gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
-                    
+                {                    
                     /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
                 }
                 else
-                {
-                    DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
-                    
+                {                                        
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;
                 }
@@ -1844,9 +1856,6 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
             {
                 if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
                 {
-                    /* Clear the internal event */
-                    gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
-                    
                     /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;
@@ -1871,15 +1880,14 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT8 u8SOPTy
 				PE_SRC_SEND_CAPABILITIES */
             if (gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter < PE_N_DISCOVER_IDENTITY_COUNT)
             {
-                DPM_UpdatePDSpecRev (u8PortNum, PD_SPEC_REVISION_2_0);
+                /* Update the Cable PD Spec Rev as 2.0 */
+                DPM_UpdatePDSpecRev (u8PortNum, PD_SPEC_REVISION_2_0, PRL_SOP_P_TYPE);            	                
                 
                 gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;                                
             }       
             else
-            {
-                DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV);
-                
+            {                                
                 gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_CABLE_RESPOND_NAK;
                 
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;                
