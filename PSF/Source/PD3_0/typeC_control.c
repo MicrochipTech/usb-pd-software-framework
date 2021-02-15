@@ -925,24 +925,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             {                    
                 DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS\r\n"); 
                 
-                /*Kill all the timers for a port before starting a Type C Debounce timer*/
+                /*Kill all the timers for a port */
                 PDTimer_KillPortTimers (u8PortNum);
-                
-                /* Start a Debounce timer of tPDDebounce for detach event*/
-                gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start ( \
-                                                  (TYPEC_TPDEBOUNCE_TIMEOUT_MS),\
-                                                  TypeC_SubStateChange_TimerCB, u8PortNum,\
-                                                  TYPEC_UNATTACHED_WAIT_SRC_PD_DEB_TIMEOUT_SS);
-                
-                gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_WAIT_SRC_IDLE_SS;
-                
-                break;
-            }    
-            
-            /*Source enters this SubState after the tPDDeounce Software timer expires*/  
-            case TYPEC_UNATTACHED_WAIT_SRC_PD_DEB_TIMEOUT_SS:
-            {         
-                DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_WAIT_SRC_PD_DEB_TIMEOUT_SS\r\n"); 
                 
                 /*Disable VBUS by driving to vSafe0V*/
                 DPM_DriveVBUS (u8PortNum, DPM_VBUS_OFF);
