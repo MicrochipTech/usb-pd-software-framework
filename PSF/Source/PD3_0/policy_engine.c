@@ -475,6 +475,17 @@ UINT8 PE_ValidateMessage (UINT8 u8PortNum, UINT32 u32Header)
             /* Unsupported message received during Non interruptible AMS */
             PE_HandleUnExpectedMsg (u8PortNum);            
         }
+        
+        /* If there are any Active Modes between the Port Partners when a DR_Swap Message 
+           is a received then a Hard Reset Shall be performed. If DR_Swap is supported,
+           this will be handled in PE_ReceiveMsgHandler() */        
+#if (TRUE == INCLUDE_PD_ALT_MODE)        
+        if ((PE_CTRL_DR_SWAP == PRL_GET_MESSAGE_TYPE (u32Header)) && \
+                DPM_IS_MODAL_OPERATION_ACTIVE(u8PortNum))
+        {
+            PE_SendHardReset (u8PortNum);
+        }
+#endif 
         /* Update the return value as the unsupported message is handled */
         u8RetVal = PE_MSG_HANDLED;
     }
