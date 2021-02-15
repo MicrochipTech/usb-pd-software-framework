@@ -1996,6 +1996,12 @@ UINT8 DPM_EvaluateVDMRequest (UINT8 u8PortNum, UINT32 *pu32VDMHeader)
         }
         case eSVDM_EXIT_MODE:
         {
+            /* Exit Mode command must be ACK'ed only when a modal operation 
+               is active ie., an Enter Mode command has been previously received */
+            if (!DPM_IS_MODAL_OPERATION_ACTIVE(u8PortNum))
+            {
+                break; 
+            }
             /* When Object Position is 7, it means Exit All Active Modes.
                This is applicable only for Exit Mode command */
             if (DPM_EXIT_ALL_ACTIVE_MODES == u8ObjPos)
