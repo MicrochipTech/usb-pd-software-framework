@@ -130,7 +130,7 @@ void TypeC_InitDRPPort (UINT8 u8PortNum)
     TypeC_SetVBUSCompONOFF (u8PortNum, TYPEC_VBUSCOMP_ON);
 	
     /*Setting the VBUS to vSafe0V before entering the Source State machine*/
-    DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
+    DPM_DriveVBUS (u8PortNum, DPM_VBUS_OFF);
     
     gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
     
@@ -324,7 +324,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
     {
         /*Setting the VBUS to vSafe0V before entering the State machine*/
         #if (TRUE == INCLUDE_PD_SOURCE)
-            DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
+            DPM_DriveVBUS (u8PortNum, DPM_VBUS_OFF);
         #endif 
     }
     else
@@ -469,13 +469,13 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         
                         /*Setting the user given Rp value since it is changed by collision 
                         avoidance*/
-                        TypeC_SetCCDefaultRpValue (u8PortNum);
-
-                        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: RP Value of Source set to"\
-                                             "User given Value\r\n");  
+                        TypeC_SetCCDefaultRpValue (u8PortNum); 
                         
                         /*Set the CC Comparator to sample both CC1 and CC2*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);   
+                        
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: RP Value of Source set to"\
+                                             "User given Value\r\n");                         
                     }                
                     
 #if(TRUE == INCLUDE_PD_DRP)
@@ -493,14 +493,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
 
                         
-                        if(PD_ROLE_SOURCE == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState)
+                        if (PD_ROLE_SOURCE == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState)
                         {
                             TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
 
                             gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
                             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
                         }
-                        else if(PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState)
+                        else if (PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState)
                         {
                             gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
 
@@ -513,7 +513,10 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                             
                             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;
                         }
-                                              
+                        else
+                        {
+                            /* Do Nothing */
+                        }                                              
                     }
                     else
 #endif
@@ -726,8 +729,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC_DRIVE_PWR_SS\r\n");
                     
-                    /*Drive VBus for vSafe5V*/
-                    DPM_DriveVBus (u8PortNum, DPM_VBUS_ON);
+                    /* Drive VBus for vSafe5V */
+                    DPM_DriveVBUS (u8PortNum, DPM_VBUS_ON);
                     
                     /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach vSafe5V*/
@@ -835,17 +838,6 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 case TYPEC_ATTACHED_SRC_SET_PRL_SS:
                 {                    
                     DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_SET_PRL_SS\r\n");                    
-
-                    /*Sink Attached in CC1 pin*/
-                    if (u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
-                    {
-                        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);
-                    }
-                    /*Sink attached in CC2*/
-                    else
-                    {
-                        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
-                    }
                                     
                     /* Enabling PRL Rx */
                     PRL_EnableRx (u8PortNum, TRUE);                  
@@ -860,6 +852,17 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_RUN_SM_SS;
                        
+                    /*Sink Attached in CC1 pin*/
+                    if (u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
+                    {
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);
+                    }
+                    /*Sink attached in CC2*/
+                    else
+                    {
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
+                    }
+                    
                     break;                  
                 }
                              
@@ -942,7 +945,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_WAIT_SRC_PD_DEB_TIMEOUT_SS\r\n"); 
                 
                 /*Disable VBUS by driving to vSafe0V*/
-                DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
+                DPM_DriveVBUS (u8PortNum, DPM_VBUS_OFF);
                 
                /*Start the VBUS OFF timer for monitoring the time taken for 
                 power module to reach vSafe0V*/
@@ -1354,25 +1357,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_ENTRY_SS\r\n");
                     
                     /* Assign Operating current based on the Rp value*/
-                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);
-                                                         
-                    /* Update connected CC orientation status */
-                    /*Source Attached in CC1 pin*/
-                    if (u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
-                    {
-                        gasTypeCcontrol[u8PortNum].u8PortSts &= ~(TYPEC_CC_ATTACHED_ORIENTATION_MASK); 
-                        UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
-                        
-                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);                        
-                    }
-                    /*Source Attached in CC2 pin*/
-                    else
-                    {
-                        gasTypeCcontrol[u8PortNum].u8PortSts |= TYPEC_CC_ATTACHED_ORIENTATION_MASK;
-                        UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
-                        
-                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
-                    }
+                    gasDPM[u8PortNum].u16SinkOperatingCurrInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);                                                         
 
                     #if(TRUE == INCLUDE_PD_DRP)       
                     if(PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
@@ -1396,6 +1381,24 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     #endif 
 
                     gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_RUN_SM_SS; 
+                    
+                    /* Update connected CC orientation status */
+                    /*Source Attached in CC1 pin*/
+                    if (u8CC1MatchISR == gasTypeCcontrol[u8PortNum].u8CCSrcSnkMatch)
+                    {
+                        gasTypeCcontrol[u8PortNum].u8PortSts &= ~(TYPEC_CC_ATTACHED_ORIENTATION_MASK); 
+                        UPD_RegByteClearBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
+                        
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_CC1_ATTACH);                        
+                    }
+                    /*Source Attached in CC2 pin*/
+                    else
+                    {
+                        gasTypeCcontrol[u8PortNum].u8PortSts |= TYPEC_CC_ATTACHED_ORIENTATION_MASK;
+                        UPD_RegByteSetBit (u8PortNum, TYPEC_CC_CTL1_HIGH, TYPEC_CC_COM_SEL);
+                        
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_CC2_ATTACH);
+                    }
                     
                     break;
                 }
@@ -1542,7 +1545,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {    
 #if(TRUE == INCLUDE_PD_SOURCE)                        
                         /*Disable VBUS by driving to vSafe0V*/
-                        DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
+                        DPM_DriveVBUS (u8PortNum, DPM_VBUS_OFF);
      
                         /*Disable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                         PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
@@ -1720,7 +1723,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     {
 #if (TRUE == INCLUDE_PD_SOURCE)                        
                         /*Disable VBUS by driving to vSafe0V*/
-                        DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
+                        DPM_DriveVBUS (u8PortNum, DPM_VBUS_OFF);
                              
                          /*Disable DC_DC EN on VBUS fault to reset the DC-DC controller*/
                         PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);

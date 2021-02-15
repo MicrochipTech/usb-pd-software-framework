@@ -239,10 +239,9 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                         DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-ENTRY_SS: Send Source Capabilities\r\n");
                         DPM_GetSourceCapabilities (u8PortNum, &u8SrcPDOCnt, u32aDataObj);
                         
-                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_SOURCE_CAP,  \
+                        u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_SOURCE_CAP,  \
                                                                             u8SrcPDOCnt, PE_NON_EXTENDED_MSG);
                         
-                        u8TransmitSOP = PRL_SOP_TYPE;
                         u32pTransmitDataObj = u32aDataObj;
                         pfnTransmitCB = PE_StateChange_TransmitCB;
                         
@@ -372,7 +371,6 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
-                    u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
                     pfnTransmitCB = PE_StateChange_TransmitCB;
       
@@ -481,7 +479,6 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
-                        u8TransmitSOP = PRL_SOP_TYPE;
                         u32pTransmitDataObj = NULL;
                         pfnTransmitCB = PE_StateChange_TransmitCB;
 
@@ -548,7 +545,6 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_REJECT, \
                                         PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
-                    u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
@@ -849,7 +845,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     }
 					
 					/* Turn Off VBUS */
-                    DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
+                    DPM_DriveVBUS (u8PortNum, DPM_VBUS_OFF);
                     
                      /*Start the VBUS OFF timer for monitoring the time taken for 
                     power module to reach vSafe0V*/
@@ -951,7 +947,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     }
 					
 					/* Turn On VBus */
-                    DPM_DriveVBus (u8PortNum, DPM_VBUS_ON);
+                    DPM_DriveVBUS (u8PortNum, DPM_VBUS_ON);
                     
                      /*Start the VBUS ON timer for monitoring the time taken for 
                     power module to reach vSafe5V*/
@@ -1095,7 +1091,6 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_STATUS, \
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
-                    u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = NULL;
                     pfnTransmitCB = PE_StateChange_TransmitCB;                 
                         
@@ -1186,7 +1181,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_ALERT,  \
                                                  PE_ALERT_DATA_OBJECT_SIZE, PE_NON_EXTENDED_MSG);
-                    u8TransmitSOP = PRL_SOP_TYPE;
+
                     u32pTransmitDataObj = &u32DataBlock;
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
@@ -1234,10 +1229,9 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     /* Form Combined Message Header*/
                     u32TransmitHeader =  /* Combined Message Header */
                         PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & PE_STATUS_DATA_BLOCK_SIZE_IN_BYTES)), /* Extended Msg Header*/
-                                PRL_FormSOPTypeMsgHeader(u8PortNum,PE_EXT_STATUS,PE_STATUS_DATA_OBJ_CNT, /* Standard Msg Header */
+                                PRL_FormSOPTypeMsgHeader (u8PortNum,PE_EXT_STATUS,PE_STATUS_DATA_OBJ_CNT, /* Standard Msg Header */
                                             PE_EXTENDED_MSG));
 
-                    u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = (UINT32 *)u8aStatusDB;
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     
@@ -1284,10 +1278,9 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     /* Form Combined Message Header*/
                     u32TransmitHeader =  /* Combined Message Header */
                         PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & PE_PPS_STATUS_DATA_BLOCK_SIZE_IN_BYTES)), /* Extended Msg Header */
-                                PRL_FormSOPTypeMsgHeader(u8PortNum,PE_EXT_PPS_STATUS,PE_PPS_STATUS_DATA_OBJ_CNT, /* Standard Msg Header */
+                                PRL_FormSOPTypeMsgHeader (u8PortNum,PE_EXT_PPS_STATUS,PE_PPS_STATUS_DATA_OBJ_CNT, /* Standard Msg Header */
                                             PE_EXTENDED_MSG));
 
-                    u8TransmitSOP = PRL_SOP_TYPE;
                     u32pTransmitDataObj = &u32DataBlock;
                     pfnTransmitCB = PE_StateChange_TransmitCB;
                     

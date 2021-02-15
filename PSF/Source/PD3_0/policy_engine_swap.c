@@ -541,7 +541,7 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        Swap Standby*/
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_TRANSITION_TO_OFF_PWROFF_SS\r\n");
 					/* Turn Off Power Supply by driving vSafe0V in VBUS */
-                    DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
+                    DPM_DriveVBUS (u8PortNum, DPM_VBUS_OFF);
                     
                      /*Start the VBUS OFF timer for monitoring the time taken for 
                        power module to reach vSafe0V*/

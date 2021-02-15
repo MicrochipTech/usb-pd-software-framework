@@ -87,11 +87,18 @@ void PE_RunStateMachine (UINT8 u8PortNum)
 {
     /* Receive Data Buffer */
     UINT8 u8aDataBuf[PRL_MAX_EXTN_MSG_LEN_IN_BYTES] = {SET_TO_ZERO};
+    
     /*Received message type*/
     UINT8 u8SOPType = PRL_SOP_TYPE;
-    /* Received Message Header */
-    UINT32 u32Header;
+    
+    /* Return value */
     UINT8 u8RetVal;
+    
+    /* PD Specification Revision */
+    UINT8 u8PDSpecRev; 
+    
+    /* Received Message Header */
+    UINT32 u32Header;    
 
 #if(TRUE == INCLUDE_PD_DRP)
     if (DPM_GET_CURRENT_POWER_ROLE(u8PortNum) != PD_ROLE_DRP)
@@ -133,12 +140,15 @@ void PE_RunStateMachine (UINT8 u8PortNum)
              * PD Specification 3.0*/
             if (DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum) > PRL_GET_PD_SPEC_REV (u32Header))
             {
-                DPM_UpdatePDSpecRev (u8PortNum, PRL_GET_PD_SPEC_REV (u32Header), u8SOPType);
+                u8PDSpecRev = PRL_GET_PD_SPEC_REV (u32Header);                 
             }
             else
             {
-                DPM_UpdatePDSpecRev (u8PortNum, DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum), u8SOPType);
+                u8PDSpecRev = DPM_GET_DEFAULT_PD_SPEC_REV (u8PortNum);                                
             }
+            
+            DPM_UpdatePDSpecRev (u8PortNum, u8PDSpecRev, u8SOPType);
+            
             /* Spec Rev is updated by PRL*/
             PRL_UpdateSpecAndDeviceRoles (u8PortNum);
             
@@ -1707,7 +1717,6 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
                                                                         BYTE_LEN_1, PE_NON_EXTENDED_MSG);
                     u8TransmitSOP = PRL_SOP_P_TYPE;
                     u32pTransmitDataObj = &u32VDMHeader;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
 
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32( ePE_VDM_IDENTITY_REQUEST, \
                                                 ePE_VDM_IDENTITY_REQUEST_MSG_DONE_SS, ePE_VDM_IDENTITY_REQUEST, ePE_VDM_IDENTITY_REQUEST_GOODCRC_NOT_RCVD_SS);
@@ -1798,7 +1807,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
                 }
                 case ePE_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS:
                 {
-                    DEBUG_PRINT_PORT_STR (u8PortNum,"ePE_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS\r\n");
                     
                     if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
                     {                        
@@ -2200,7 +2209,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
                 
                 u32TransmitHeader =  /**Combined Message Header*/
                 PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & 0x03)), /**Extended Msg Header*/
-                                             PRL_FormSOPTypeMsgHeader(u8PortNum,PE_EXT_FW_UPDATE_RESPONSE,7, /**Standard Msg Header*/
+                                             PRL_FormSOPTypeMsgHeader (u8PortNum,PE_EXT_FW_UPDATE_RESPONSE,7, /**Standard Msg Header*/
                                                      PE_EXTENDED_MSG));
                 /** Update the Pointer to Data Object */
                 u32pTransmitDataObj = (UINT32*)&u8TempRespBuffer[0u];
@@ -2343,9 +2352,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_SINK_CAP, \
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
 
-                    u8TransmitSOP = PRL_SOP_TYPE;
-                    u32pTransmitDataObj = NULL;
-                    pfnTransmitCB = PE_StateChange_TransmitCB;                 
+                    u32pTransmitDataObj = NULL;               
                         
                     u32TransmitTmrIDTxSt = PRL_BUILD_PKD_TXST_U32(ePE_GET_SINK_CAP, ePE_GET_SINK_CAP_MSG_DONE_SS, \
                                                     ePE_SEND_SOFT_RESET, ePE_SEND_SOFT_RESET_ENTRY_SS);

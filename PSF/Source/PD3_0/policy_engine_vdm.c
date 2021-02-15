@@ -98,7 +98,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u32pTransmitDataObj = u32aVDMDataObj;
                     
                     /* Object Count is incremented by 1 to include VDM Header */
-                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
                                                                     (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                   
 
                     if (eSVDM_ATTENTION == (eSVDMCmd) DPM_GET_VDM_CMD(u32aVDMDataObj[INDEX_0]))
@@ -181,7 +181,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                         gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                         
                         
                         /* Post eMCHP_PSF_VDM_RESPONSE_RCVD notification */
-                        (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_RESPONSE_RCVD);                                                
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VDM_RESPONSE_RCVD);                                                
                     }
                     break; 
                 }
@@ -348,7 +348,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     /* u8VDOCnt returned by DPM during ACK will not include VDM 
                        Header. So, Object count is incremented by 1 to include 
                        VDM Header. In case of NAK, u8VDOCnt will be 0 */
-                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, PE_DATA_VENDOR_DEFINED, \
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_VENDOR_DEFINED, \
                                                                         (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                                        
                     u32pTransmitDataObj = u32aVDMDataObj;
                     
@@ -386,7 +386,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u32pTransmitDataObj = u32aVDMDataObj;
                     
                     /* Object Count is incremented by 1 to include VDM Header */
-                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader(u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
+                    u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, (UINT8)PE_DATA_VENDOR_DEFINED,  \
                                                                     (u8VDOCnt + BYTE_LEN_1), PE_NON_EXTENDED_MSG);                    
                     
                     /* Move to ePE_VDM_RESPOND_VDM_END_AMS_SS sub-state on Good CRC reception 
@@ -412,7 +412,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS; 
                     
                     /* Post eMCHP_PSF_VDM_AMS_COMPLETE notification */
-                    (void)DPM_NotifyClient(u8PortNum, eMCHP_PSF_VDM_AMS_COMPLETE); 
+                    (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_VDM_AMS_COMPLETE); 
                     
                     break; 
                 }     

@@ -646,7 +646,7 @@ Source/Sink Power delivery objects*/
 #define DPM_VALID_REQUEST            1
 #define DPM_INVALID_REQUEST          0   
 
-/*********Macros for u8VbusOnorOff argument of DPM_DriveVBus API*********/
+/*********Macros for u8VbusOnorOff argument of DPM_DriveVBUS API*********/
 #define DPM_VBUS_ON              1
 #define DPM_VBUS_OFF             0
 
@@ -1229,7 +1229,7 @@ void DPM_SetTypeCState (UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubSta
 
 /**************************************************************************************************
     Function:
-        void DPM_DriveVBus (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+        void DPM_DriveVBUS (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
     Summary:
         This API drives the VBUS line of a given port to either 0V or 5V.
     Devices Supported:
@@ -1249,7 +1249,7 @@ void DPM_SetTypeCState (UINT8 u8PortNum, UINT8 u8TypeCState, UINT8 u8TypeCSubSta
     Remarks:
         None
 **************************************************************************************************/
-void DPM_DriveVBus (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
+void DPM_DriveVBUS (UINT8 u8PortNum, UINT8 u8VbusOnorOff);
 
 /**************************************************************************************************
     Function:
