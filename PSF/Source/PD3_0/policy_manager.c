@@ -91,7 +91,7 @@ void DPM_HandleVCONNONError (UINT8 u8PortNum)
         {	
 #if (TRUE == INCLUDE_PD_SOURCE)            
             /*Disable VBUS by driving to vSafe0V if port role is a source*/
-            DPM_DriveVBus (u8PortNum, DPM_VBUS_OFF);
+            DPM_DriveVBUS (u8PortNum, DPM_VBUS_OFF);
 
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
@@ -604,7 +604,7 @@ void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu
 }
 
 /* Turn On or Off VBUS */
-void DPM_DriveVBus (UINT8 u8PortNum, UINT8 u8VbusOnorOff)
+void DPM_DriveVBUS (UINT8 u8PortNum, UINT8 u8VbusOnorOff)
 {   
 	UINT16 u16CurrentInmA, u16VoltageInmV;
     	

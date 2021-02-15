@@ -39,7 +39,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
     UINT8 u8TypeCSubState = TYPEC_INVALID_SUBSTATE;
     UINT32 u32aDataObj[PRL_MAX_DATA_OBJ_COUNT] = {SET_TO_ZERO};
 	UINT16 u16TransmitHeader = SET_TO_ZERO;
-	PRLTxCallback pfnTransmitCB = NULL;
+	PRLTxCallback pfnTransmitCB = PE_StateChange_TransmitCB;
 	UINT32 u32TransmitTmrIDTxSt = SET_TO_ZERO;
 	UINT8 u8IsTransmit = FALSE;
     
@@ -221,9 +221,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     u16TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_REQUEST,\
                                             PE_OBJECT_COUNT_1, PE_NON_EXTENDED_MSG);
                     
-                    u32aDataObj[INDEX_0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;
-                    
-                    pfnTransmitCB = PE_StateChange_TransmitCB;
+                    u32aDataObj[INDEX_0] = gasCfgStatusData.sPerPortData[u8PortNum].u32RDO;                    
                     
                     /*Set the transmitter callback to transition to Soft reset state if
                     message transmission fails*/

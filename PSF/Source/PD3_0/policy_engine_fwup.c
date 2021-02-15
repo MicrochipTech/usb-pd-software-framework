@@ -186,7 +186,7 @@ UINT8 PE_FwUpdtStateMachine(
         gsPdfuInfo.pu8ResponseBuffer[PE_FWUP_RESPBUFF_RESPONSE_TYPE_INDEX] = ((~0x80) & u8MsgType);
 
         /**   Update the Message Header */
-        u16Message_Header = PRL_FormSOPTypeMsgHeader(u8PortNum,
+        u16Message_Header = PRL_FormSOPTypeMsgHeader (u8PortNum,
                                                      PE_EXT_FW_UPDATE_RESPONSE,
                                                      7,
                                                      PE_EXTENDED_MSG);
