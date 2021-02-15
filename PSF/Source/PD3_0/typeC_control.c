@@ -458,32 +458,32 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_SRC_ENTRY_SS\r\n");
                     
                     /* Disable the receiver*/
-                    PRL_EnableRx (u8PortNum, FALSE);
-                                                             
-					/*Power down the CC comparator*/
-                    TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+                    PRL_EnableRx (u8PortNum, FALSE);                                                             
                     
                     /*Check whether the current Rp value is same as the default Rp value*/
                     if (((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CURR_RPVAL_MASK) \
                         >> TYPEC_CURR_RPVAL_POS) != DPM_GET_CONFIGURED_SOURCE_RP_VAL(u8PortNum))
-                    {                           
+                    {     
+                        /*Power down the CC comparator*/
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
+                        
                         /*Setting the user given Rp value since it is changed by collision 
                         avoidance*/
                         TypeC_SetCCDefaultRpValue (u8PortNum);
 
                         DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: RP Value of Source set to"\
-                                             "User given Value\r\n");                       
-                    }
-
-					/*Set the CC Comparator to sample both CC1 and CC2*/
-              		TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);                     
+                                             "User given Value\r\n");  
+                        
+                        /*Set the CC Comparator to sample both CC1 and CC2*/
+                        TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);   
+                    }                
                     
 #if(TRUE == INCLUDE_PD_DRP)
                     /*Disable DC_DC_EN if DRP does not act as source*/
                     PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
                         
                     if ((PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)) && \
-                         (PD_ROLE_SOURCE == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState))
+                         (PD_ROLE_DRP != gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState))
                     {                         
                         /*Setting CC Comparator OFF*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
@@ -492,16 +492,28 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         UPD_RegByteClearBit (u8PortNum, TYPEC_CC_INT_EN,\
                         (UINT8)(TYPEC_CC1_MATCH_CHG | TYPEC_CC2_MATCH_CHG | TYPEC_CC_MATCH_VLD));	
 
-                        gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
-                        gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
-                        gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
+                        
+                        if(PD_ROLE_SOURCE == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState)
+                        {
+                            TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SINK, TYPEC_ROLE_SINK_RD, TYPEC_ENABLE_CC1_CC2);
 
-                        /*Set power and data role status*/
-                        DPM_UpdatePowerRole (u8PortNum, PD_ROLE_DRP);
-                        DPM_UpdateDataRole (u8PortNum, PD_ROLE_TOGGLING);
+                            gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_UNATTACHED_SNK;
+                            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SNK_ENTRY_SS;
+                        }
+                        else if(PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState)
+                        {
+                            gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_DRP;
 
-                        /*Enable DRP offload.*/
-                        UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN);                                               
+                            /*Set power and data role status*/
+                            DPM_UpdatePowerRole (u8PortNum, PD_ROLE_DRP);
+                            DPM_UpdateDataRole (u8PortNum, PD_ROLE_TOGGLING);
+
+                            /*Enable DRP offload.*/
+                            UPD_RegByteSetBit (u8PortNum, TYPEC_DRP_CTL_LOW, TYPEC_DRP_EN); 
+                            
+                            gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_UNATTACHED_SRC_INIT_SS;
+                        }
+                                              
                     }
                     else
 #endif
@@ -1041,7 +1053,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     PRL_EnableRx (u8PortNum, FALSE);      
                                         
 #if(TRUE == INCLUDE_PD_DRP)                    
-                    if ((PD_ROLE_SINK == gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) && \
+                    if ((PD_ROLE_DRP != gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) && \
                             (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
                     {
                         /*Disable DC_DC_EN which was turned on when enabling FRS detection */
