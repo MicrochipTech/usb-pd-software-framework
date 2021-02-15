@@ -578,6 +578,12 @@ Source/Sink Power delivery objects*/
 #define DPM_VDM_HEADER_POS                          0
 #define DPM_VMD_PRODUCT_TYPE_VDO_POS                4
 
+#define DPM_VDM_TYPE_MASK                           BIT(7)
+#define DPM_VDM_TYPE_POS                            7
+
+#define DPM_VDM_STRUCTURED_VDM                      1
+#define DPM_VDM_UNSTRUCTURED_VDM                    0
+
 /* Max VDO Count */
 #define DPM_MAX_VDO_CNT                             6 
 
@@ -613,6 +619,9 @@ Source/Sink Power delivery objects*/
 
 #define DPM_GET_CABLE_CUR_VAL(u32ProductTypeVDO)    ((u32ProductTypeVDO & DPM_CABLE_CUR_VAL_BIT_MASK) >> \
                                                         DPM_CABLE_CUR_VAL_BIT_POS)
+
+#define DPM_GET_VDM_TYPE(u32VDMHeader)              ((u32VDMHeader & DPM_VDM_TYPE_MASK) >> \
+                                                        DPM_VDM_TYPE_POS)
 
 /* Defines to get number of modes and start mode index from u8aSVIDEntry Table */
 #define DPM_NO_OF_MODES_MASK                        (BIT(0) | BIT(1) | BIT(2))
