@@ -54,6 +54,9 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
         /*Reset the HardResetCounter*/
         gasPolicyEngine[u8PortNum].u8HardResetCounter = RESET_TO_ZERO;
         gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
+        
+        /* Set cable spec revision to default spec revision on every detach */
+        DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV, PRL_SOP_P_TYPE);        
     }
   
     switch (gasPolicyEngine[u8PortNum].ePEState)

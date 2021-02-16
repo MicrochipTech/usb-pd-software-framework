@@ -2009,16 +2009,15 @@ void DPM_VDMBusy_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
         gasDPM[u8PortNum].u32DPMStatus variable and 
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus.
     Description:
-        This API is used to assign the PD Spec Rev value negotiated between
+        This API is used to assign the PD Spec Rev value of the port negotiated between
         port partners and the cable plug
     Conditions:
         None.
     Input:
         u8PortNum   - Port Number for which PD Spec Rev need to be assigned
         u8PDSpecRev - PD Spec Rev to be updated for the port      
-        u8SOPType - PRL_SOP_TYPE - PD Spec Rev of the port partner and the cable
-                                   will be updated 
-                    PRL_SOP_P_TYPE/PRL_SOP_PP_TYPE - PD Spec Rev of the cable alone 
+        u8SOPType - PRL_SOP_TYPE - PD Spec Rev of the port partner will be updated 
+                    PRL_SOP_P_TYPE/PRL_SOP_PP_TYPE - PD Spec Rev of the cable 
                                    will be updated 
     Return:
         None

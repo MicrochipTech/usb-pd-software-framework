@@ -65,11 +65,13 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
     gasPolicyEngine[u8PortNum].u8PETimerID = MAX_CONCURRENT_TIMERS;
     
     /* Set VCONN ON Error status to handle the error in the foreground */
-    gasDPM[u8PortNum].u8DPMStsISR |= DPM_VCONN_ON_ERROR_MASK;           
+    gasDPM[u8PortNum].u8DPMStsISR |= DPM_VCONN_ON_ERROR_MASK;            
 }
 
 void DPM_HandleVCONNONError (UINT8 u8PortNum)
 {
+    DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR\r\n"); 
+    
     /*Checks whether u8VCONNPowerFaultCount exceeds the configured VCONN max power fault count.
     If u8VCONNMaxFaultCnt is configured to 0xFF, port should not be shutdown.*/
     if ((gasCfgStatusData.sPerPortData[u8PortNum].u8VCONNMaxFaultCnt != SET_TO_255) &&
@@ -96,7 +98,7 @@ void DPM_HandleVCONNONError (UINT8 u8PortNum)
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
 
-            DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SRC Powered OFF state\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum,"Entered SRC Powered OFF state\r\n");
 #endif 
         }
         else
@@ -104,7 +106,7 @@ void DPM_HandleVCONNONError (UINT8 u8PortNum)
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
 
-            DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR: Entered SNK Powered OFF state\r\n");
+            DEBUG_PRINT_PORT_STR(u8PortNum,"Entered SNK Powered OFF state\r\n");
         }       
 
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
@@ -268,17 +270,20 @@ void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev, UINT8 u8SOPType)
 {
     /* Spec Ref: Table 6-2 Revision Interoperability during an Explicit Contract         
        Set PD Spec Rev negotiated with port partner and the cable */
-    
-    gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CURR_CABLE_PD_SPEC_REV_MASK;
-    gasDPM[u8PortNum].u32DPMStatus |= (u8PDSpecRev << DPM_CURR_CABLE_PD_SPEC_REV_POS);            
-    
+        
     if (PRL_SOP_TYPE == u8SOPType)
     {
         gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CURR_PD_SPEC_REV_MASK;
         gasDPM[u8PortNum].u32DPMStatus |= (u8PDSpecRev << DPM_CURR_PD_SPEC_REV_POS);    
         
         gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_PD_SPEC_REV_STATUS_MASK);
-        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8PDSpecRev << DPM_PORT_PD_SPEC_REV_STATUS_POS);                    
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= (u8PDSpecRev << DPM_PORT_PD_SPEC_REV_STATUS_POS);                            
+    }
+    
+    if ((PRL_SOP_P_TYPE == u8SOPType) || (PRL_SOP_PP_TYPE == u8SOPType))
+    {
+        gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CURR_CABLE_PD_SPEC_REV_MASK;
+        gasDPM[u8PortNum].u32DPMStatus |= (u8PDSpecRev << DPM_CURR_CABLE_PD_SPEC_REV_POS);                            
     }
 }
 
@@ -498,7 +503,7 @@ UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
         {
             /* Do Nothing */
         }
-        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM-PE: Request is Valid\r\n");
+        DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: Request is Valid\r\n");
     }
 
     return u8RetVal;

@@ -47,6 +47,8 @@ void DPM_Init (UINT8 u8PortNum)
     
     /*Update PD spec revision in u32DPMStatus*/
     DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV, PRL_SOP_TYPE);
+    DPM_UpdatePDSpecRev (u8PortNum, CONFIG_PD_DEFAULT_SPEC_REV, PRL_SOP_P_TYPE);
+
 #if (TRUE == INCLUDE_PD_SINK)
     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = DPM_0mA;        
 #endif
@@ -629,18 +631,15 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
         case eMCHP_PSF_CABLE_IDENTITY_DISCOVERED:
         case eMCHP_PSF_CABLE_IDENTITY_NAKED:
         {
-            if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+            /* Clear the internal event since the AMS is complete */
+            gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
+
+            /* Schedule SOP' Soft Reset if requested by VCONN_Swap PE SM */
+            if ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET) && \
+                 ((DPM_CBL_DISCOVERED_AS_PD_CAPABLE == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))))
             {
-                /* Clear the internal event since the AMS is complete */
-                gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
-                
-                /* Schedule SOP' Soft Reset if requested by VCONN_Swap PE SM */
-                if ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET) && \
-                     ((DPM_CBL_DISCOVERED_AS_PD_CAPABLE == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))))
-                {
-                    DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
-                }        
-            }
+                DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
+            }                    
             break; 
         }        
 #endif   
@@ -1034,7 +1033,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         {
             if (PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
             {
-                if (TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                if (TRUE == DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
                 {
                     DPM_SetTypeCState(u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
                 }
