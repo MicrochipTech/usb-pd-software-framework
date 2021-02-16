@@ -793,6 +793,8 @@ void PRL_HandleISR (UINT8 u8PortNum)
 		if (PRL_TX_IRQ_TX_FAILED & u8IntrStatus)
 		{
 			gasPRL [u8PortNum].u8TxStateISR = PRL_TX_FAILED_ST;
+            
+            gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;  
 		}
 		
 		if (PRL_TX_IRQ_TX_ABORTED & u8IntrStatus)
