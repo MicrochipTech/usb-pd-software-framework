@@ -2459,14 +2459,12 @@ void PE_StateChange_TransmitCB (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8Tx
         {
             break;
         }
-
         case PRL_TX_FAILED_ST:
         {
             gasPolicyEngine[u8PortNum].ePEState = (ePolicyState) u8TxFailedState;
             gasPolicyEngine[u8PortNum].ePESubState = (ePolicySubState) u8TxFailedSubState;
             break;
-        }
-        
+        }        
         default:
         {
             break;

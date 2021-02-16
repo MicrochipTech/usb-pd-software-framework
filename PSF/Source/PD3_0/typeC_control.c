@@ -3266,6 +3266,8 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         
         /*Setting the Rp Value as SinkTxNG*/
         TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, TYPEC_ROLE_SOURCE_15, TYPEC_ENABLE_CC1_CC2);    
+        
+        DEBUG_PRINT_PORT_STR (u8PortNum,"TypeC-CA: Rp set to SinkTxNG\r\n");
     }
     /*Rp value as 3.0A@5V */
     else
@@ -3278,6 +3280,8 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         
         /*Setting the Rp Value as SinkTxOk*/
         TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, TYPEC_ROLE_SOURCE_30, TYPEC_ENABLE_CC1_CC2);
+        
+        DEBUG_PRINT_PORT_STR (u8PortNum,"TypeC-CA: Rp set to SinkTxOK\r\n");
     }
     
     /*Enabling the CC Sampling in the sink attached CC pin if both sink and powered cable 
