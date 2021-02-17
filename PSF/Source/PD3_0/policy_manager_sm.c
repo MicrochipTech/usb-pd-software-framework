@@ -544,7 +544,7 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
 #if (TRUE == INCLUDE_POWER_BALANCING)
     if (TRUE == DPM_IS_PB_ENABLED(u8PortNum))
     {
-        u8Return = PB_HandleDPMEvents(u8PortNum, eDPMNotification);
+        u8Return = PB_HandleDPMEvents (u8PortNum, eDPMNotification);
     }
 #endif
 
@@ -628,21 +628,7 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
             }            
             break; 
         }
-        case eMCHP_PSF_CABLE_IDENTITY_DISCOVERED:
-        case eMCHP_PSF_CABLE_IDENTITY_NAKED:
-        {
-            /* Clear the internal event since the AMS is complete */
-            gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
-
-            /* Schedule SOP' Soft Reset if requested by VCONN_Swap PE SM */
-            if ((gasDPM[u8PortNum].u32DPMStatus & DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET) && \
-                 ((DPM_CBL_DISCOVERED_AS_PD_CAPABLE == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))))
-            {
-                DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
-            }                    
-            break; 
-        }        
-#endif   
+#endif                  
 #if (TRUE == INCLUDE_PD_PR_SWAP)        
         case eMCHP_PSF_PR_SWAP_COMPLETE:
         {            
@@ -665,6 +651,13 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
             break; 
         }         
 #endif        
+        case eMCHP_PSF_CABLE_IDENTITY_DISCOVERED:
+        case eMCHP_PSF_CABLE_IDENTITY_NAKED:
+        {
+            /* Clear the internal event since the AMS is complete */
+            gasDPM[u8PortNum].u16DPMInternalEvents &= ~DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;                    
+            break; 
+        }         
         case eMCHP_PSF_HARD_RESET_COMPLETE:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"***************HARD RESET COMPLETE***********\r\n");
@@ -910,6 +903,8 @@ void DPM_RegisterInternalEvent (UINT8 u8PortNum, UINT16 u16EventType)
 
 void DPM_InternalEventHandler (UINT8 u8PortNum)
 {
+    /* Note: Datatype of u16AMSInProgress has to changed accordingly whenever there 
+             is a change in the datatype of gasDPM[u8PortNum].u16DPMInternalEvents */    
     UINT16 u16AMSInProgress = SET_TO_ZERO;
     UINT8 u8DPMPowerRole = DPM_GET_CURRENT_POWER_ROLE(u8PortNum);
     
@@ -1113,18 +1108,6 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
                 DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: VCONN_SWAP INITIATED\r\n");
             }  
         } /* DPM_INT_EVT_INITIATE_VCONN_SWAP */
-        else if (gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_DISCOVER_CABLE_IDENTITY)
-        {
-            /* Internal event will be cleared once the AMS is complete.
-               No need to do it here since it is an interruptible AMS. SOP' Disc Identity
-               AMS can be interrupted by any AMS from the port partner */
-            
-            gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
-            gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;
-
-            u16AMSInProgress = DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
-            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: SOP_P_DISC_ID INITIATED\r\n");            
-        } /* DPM_INT_EVT_DISCOVER_CABLE_IDENTITY */ 
         else if (gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET)
         {
             /*Clear the Internal event since it is processed*/
@@ -1286,6 +1269,18 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             }
         } /* DPM_INT_EVT_INITIATE_GET_STATUS */
 #endif /*INCLUDE_PD_SOURCE_PPS*/      
+        else if (gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_DISCOVER_CABLE_IDENTITY)
+        {
+            /* Internal event will be cleared once the AMS is complete.
+               No need to do it here since it is an interruptible AMS. SOP' Disc Identity
+               AMS can be interrupted by any AMS from the port partner */
+            
+            gasPolicyEngine[u8PortNum].ePEState = ePE_VDM_IDENTITY_REQUEST;
+            gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;
+
+            u16AMSInProgress = DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
+            DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: SOP_P_DISC_ID INITIATED\r\n");            
+        } /* DPM_INT_EVT_DISCOVER_CABLE_IDENTITY */         
         else
         {
             /* Do Nothing */

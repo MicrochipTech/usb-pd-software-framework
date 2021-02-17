@@ -1878,32 +1878,10 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                     DPM_TGL_VCONN_SRC_RESPONSIBILITY(u8PortNum);
                     
                     /* Reset the discover identity counter to 0*/
-                    gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;                    
-                          
-                    /*  If cable wasn't discovered previously
-                            - initiate Cable Discovery
-                        Else,
-                            - if cable is discovered as PD capable
-                                    - initiate SOP' Soft Reset 
-                            - else if cable is discovered as non PD capable,
-                                    - do not initiate SOP' Soft Reset                       
-                    */                    
-                    if (DPM_CBL_DISCOVERY_UNATTEMPTED == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))
-                    {
-                        DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_DISCOVER_CABLE_IDENTITY);
-                        
-                        /* Request DPM to initiate SOP' Soft Reset if the cable is identified
-                           as PD Capable after the discovery process */
-                        gasDPM[u8PortNum].u32DPMStatus |= DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET;                                                      
-                    }
-                    else if (DPM_CBL_DISCOVERED_AS_PD_CAPABLE == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))
-                    {
-                        DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
-                    }
-                    else
-                    {
-                        /* DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE - Do Nothing */
-                    }
+                    gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;                                                                  
+
+                    /* Request DPM to initiate SOP' Soft Reset */
+                    DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET);
                                         
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
                     gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                                        
@@ -1956,10 +1934,7 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 case ePE_VCS_CBL_SEND_SOFT_RESET_MSG_DONE_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_CBL_SEND_SOFT_RESET_MSG_DONE_SS\r\n");
-                    
-                    /*Clear status bit since SOP_P Soft_Reset is complete */
-                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
-                    
+                                        
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
                                                             PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SubStateChange_TimerCB, u8PortNum,  
@@ -1972,20 +1947,32 @@ void PE_RunVCONNSwapStateMachine (UINT8 u8PortNum)
                 case ePE_VCS_CBL_SEND_SOFT_RESET_ERROR_SS:
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VCS_CBL_SEND_SOFT_RESET_ERROR_SS\r\n");
-                    
-                    /*Clear status bit since SOP_P Soft_Reset is complete */
-                    gasDPM[u8PortNum].u32DPMStatus &= (~DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);
-                    
-                    /* On Transmission failure/ Sender Response timer timeout, if Data Role is 
-                        - DFP -> Send Cable Reset 
-                        - UFP -> Send Hard Reset */                                                              
-                    if (PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+                                        
+                    /* On Transmission failure/ Sender Response timer timeout,                                                  
+                        If cable was discovered previously, 
+                            - DFP -> Send Cable Reset 
+                            - UFP -> Send Hard Reset
+                        Else,
+                            - consider the AMS as complete and move to Ready state since
+                              the cable might be non PD capable                                                   
+                    */                    
+                    if (DPM_CBL_DISCOVERED_AS_PD_CAPABLE == DPM_GET_CBL_DISCOVERY_STS(u8PortNum))
                     {
-                        gasPolicyEngine[u8PortNum].ePEState = ePE_DFP_VCS_CBL_SEND_CABLE_RESET;                        
+                        if (PD_ROLE_DFP == DPM_GET_CURRENT_DATA_ROLE(u8PortNum))
+                        {
+                            gasPolicyEngine[u8PortNum].ePEState = ePE_DFP_VCS_CBL_SEND_CABLE_RESET;                        
+                        }
+                        else
+                        {
+                            PE_SendHardReset (u8PortNum);
+                        }                        
                     }
                     else
                     {
-                        PE_SendHardReset (u8PortNum);
+                        /* Seems like cable is non PD capable. So, no need to initiate
+                           Cable or Hard Reset. Move to PE_SRC_READY/PE_SNK_READY state */
+                        gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
+                        gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                        
                     }
                     break; 
                 }
