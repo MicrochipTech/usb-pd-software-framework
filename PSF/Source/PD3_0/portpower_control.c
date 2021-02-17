@@ -93,7 +93,7 @@ void PWRCTRL_SetPortPower (UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Cur
             /* The occurrence of a falling edge in EN_VBUS disables EN_FRS.
                Therefore, clear the EN_FRS IO Status */
             #if (TRUE == INCLUDE_PD_FR_SWAP)
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_FRS_STATUS);    
+                gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= ~(DPM_PORT_IO_EN_FRS_STATUS);    
             #endif            
         }
         else

@@ -166,7 +166,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_VCONN_SRC_RESPONSIBILITY               (BIT(17))
 #define DPM_FRS_XMT_OR_DET_ENABLED                 (BIT(18))
 #define DPM_FRS_SIGNAL_XMT_OR_RCV_DONE             (BIT(19))
-#define DPM_CABLE_DISCOVERY_STS                    (BIT(20) | BIT(21))
+#define DPM_CABLE_DISCOVERY_STS_MASK               (BIT(20) | BIT(21))
 #define DPM_CURR_CABLE_PD_SPEC_REV_MASK            (BIT(22) | BIT(23))
 
 /*Bit position for u32DPMStatus variable*/
@@ -288,7 +288,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 - DPM_CBL_DISCOVERED_AS_PD_CAPABLE              
 - DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE */              
 #define DPM_GET_CBL_DISCOVERY_STS(u8PortNum) \
-((gasDPM[u8PortNum].u32DPMStatus & DPM_CABLE_DISCOVERY_STS) >> DPM_CABLE_DISCOVERY_STS_POS)
+((gasDPM[u8PortNum].u32DPMStatus & DPM_CABLE_DISCOVERY_STS_MASK) >> DPM_CABLE_DISCOVERY_STS_POS)
 
 #define DPM_GET_CURRENT_CBL_PD_SPEC_REV(u8PortNum)       \
     ((gasDPM[u8PortNum].u32DPMStatus & DPM_CURR_CABLE_PD_SPEC_REV_MASK) >> DPM_CURR_CABLE_PD_SPEC_REV_POS)
@@ -1000,7 +1000,7 @@ void DPM_RunStateMachine (UINT8 u8PortNum);
 /****************************** DPM Source related APIs*****************************************/
 /**************************************************************************************************
     Function:
-        void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
+        void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *pu32DataObj);
     Summary:
         This API is used to get the port source capabilities from the DPM.
     Devices Supported:
@@ -1011,18 +1011,18 @@ void DPM_RunStateMachine (UINT8 u8PortNum);
         None.
     Input:
         u8PortNum - Port Number for which source capabilities to be returned.
-        NumOfPdo - Pointer to hold number of PDOs supported by the port
+        u8pSrcPDOCnt - Pointer to hold number of PDOs supported by the port
         pu32DataObj - Pointer to hold the source capabilities.
     Return:
         None
     Remarks:
         None
 **************************************************************************************************/
-void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32DataObj);
+void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *pu32DataObj);
 
 /**************************************************************************************************
     Function:
-        UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
+        UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT8 *u8pDataBuf);
     Summary:
         This API is used to validate the received request message from the sink port partner.
     Devices Supported:
@@ -1032,15 +1032,15 @@ void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8* NumOfPdo, UINT32* pu32Da
     Conditions:
         None.
     Input:
-        u8PortNum     - Port Number for which the received request message to be validated
-        u16Header - Request message Header
-        u8DataBuf - Pointer which holds the data objects of received request message.
+        u8PortNum - Port Number for which the received request message to be validated
+        u8pDataBuf - Pointer which holds the data objects of received request message.
     Return:
         DPM_VALID_REQUEST - Received message is valid request
+        DPM_INVALID_REQUEST - Received message is invalid request
     Remarks:
         None
 **************************************************************************************************/
-UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf);
+UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT8 *u8pDataBuf);
 
 /**************************************************************************************************
     Function:

@@ -230,7 +230,8 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
 						/* If PD not connected change the PE state to ePE_SRC_DISABLED */
                         else
                         {
-                            gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_DISABLED;                            
+                            gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_DISABLED;  
+                            
                             (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PE_SRC_DISABLED);
                         }
                     }                 
@@ -294,7 +295,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
 					/* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_SRC_HARD_RESET sate and ePE_SRC_HARD_RESET_ENTRY_SS sub state if timeout happens */
                     gasPolicyEngine[u8PortNum].u8PETimerID = PDTimer_Start (
-                                                           PE_SENDERRESPONSE_TIMEOUT_MS,
+                                                            PE_SENDERRESPONSE_TIMEOUT_MS,
                                                             PE_SSChngAndTimeoutValidate_TimerCB, u8PortNum,  
                                                             (UINT8)ePE_SRC_HARD_RESET_ENTRY_SS);
 #if (TRUE == INCLUDE_PD_SOURCE_PPS)
@@ -331,7 +332,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             DPM_UpdateAdvertisedPDO (u8PortNum); 
 
 			/* Validate the received Request message by passing the received message to DPM */
-            if (DPM_VALID_REQUEST == DPM_ValidateRequest (u8PortNum, (UINT16)u32Header, pu8DataBuf))
+            if (DPM_VALID_REQUEST == DPM_ValidateRequest (u8PortNum, pu8DataBuf))
             {
 				/* Received Request is a valid request */
                 DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_NEGOTIATE_CAPABILITY: Request is Valid\r\n");
@@ -700,6 +701,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                        (gasPolicyEngine[u8PortNum].u8PEPortSts & PE_NO_RESPONSE_TIMEDOUT)))
                     {
                         gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_DISABLED;
+                        
                         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PE_SRC_DISABLED);
                     }                    
                     else
