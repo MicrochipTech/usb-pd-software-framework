@@ -1788,6 +1788,7 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
                         {
                             /* Good_CRC not received from cable even after PE_N_DISCOVER_IDENTITY_COUNT times.
                                Hence, considering the cable as Non-PD capable */
+                            gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CABLE_DISCOVERY_STS_MASK;
                             gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE << DPM_CABLE_DISCOVERY_STS_POS);
                             
                             /* Reset Discover Identity Counter to 0 */
@@ -1812,7 +1813,11 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_IDENTITY_REQUEST_NO_RESPONSE_SS\r\n");
                     
                     if (PE_EXPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
-                    {                        
+                    {           
+                        /* Update DPM Cable Discovery status as Non PD Capable */
+                        gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CABLE_DISCOVERY_STS_MASK;
+                        gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE << DPM_CABLE_DISCOVERY_STS_POS);
+                        
                         /* Move to ePE_SRC_READY/ePE_SNK_READY state */
                         gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 
                         gasPolicyEngine[u8PortNum].ePESubState = eTxDoneSS;                         
@@ -1842,7 +1847,8 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
             if (DPM_VDM_ACK == DPM_StoreCableIdentity (u8PortNum, (UINT16) u32Header, (UINT32*) pu8DataBuf))
             {
                 /* A PD-Capable Cable Plug Shall return a Discover Identity Command ACK in 
-                   response to a Discover Identity Command request sent to SOP? */
+                   response to a Discover Identity Command request sent to SOP */
+                gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CABLE_DISCOVERY_STS_MASK;
                 gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISCOVERED_AS_PD_CAPABLE << DPM_CABLE_DISCOVERY_STS_POS);
                 
                 /* Reset Discover Identity Counter to 0 */
@@ -1901,6 +1907,11 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
             {                                
                 gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_CABLE_RESPOND_NAK;
                 
+                /* Update DPM Cable Discovery status as Non PD Capable */
+                gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CABLE_DISCOVERY_STS_MASK;
+                gasDPM[u8PortNum].u32DPMStatus |= (DPM_CBL_DISCOVERED_AS_NON_PD_CAPABLE << DPM_CABLE_DISCOVERY_STS_POS);
+                
+                /* Reset Discover Identity Counter to 0 */
                 gasPolicyEngine[u8PortNum].u8DiscoverIdentityCounter = RESET_TO_ZERO;                
 
                 gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;

@@ -412,7 +412,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
         {
             TypeC_InitPort (u8PortNum);
 
-            PRL_UpdatePowerRole(u8PortNum);
+            PRL_UpdatePowerRole (u8PortNum);
             
             break;
         }
@@ -2774,8 +2774,8 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
     if (TRUE == (gasTypeCcontrol[u8PortNum].u8DRPStsISR & TYPEC_DRP_DONE_INTERRUPT))
     {
         /*Get the state being advertised from DRP_CTL_HIGH register*/
-        UPD_RegisterRead (u8PortNum, TYPEC_DRP_CTL_HIGH, &u8Data, BYTE_LEN_1); 
-
+        UPD_RegisterReadISR (u8PortNum, TYPEC_DRP_CTL_HIGH, &u8Data, BYTE_LEN_1);
+        
         if (TRUE == (u8Data & TYPEC_DRP_ADVERTISING_STATE))
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"DRP attached as Sink-UFP\r\n");

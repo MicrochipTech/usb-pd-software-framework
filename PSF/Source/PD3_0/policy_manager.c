@@ -348,7 +348,7 @@ UINT8 DPM_StoreCableIdentity (UINT8 u8PortNum, UINT16 u16Header, UINT32 *u32Data
 /****************************** DPM Source related APIs*****************************************/
 /***********************************************************************************************/
 /* Validate the received Request message */
-UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
+UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT8 *u8pDataBuf)
 {
     UINT8 u8RetVal = FALSE;
     UINT8 u8SinkReqObjPos= SET_TO_ZERO;
@@ -366,14 +366,14 @@ UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT16 u16Header, UINT8 *u8DataBuf)
                                             PE_CABLE_RESPOND_NAK) >> PE_CABLE_RESPOND_NAK_POS));
     
     /* Get the Requested PDO object position from received buffer */
-    u8SinkReqObjPos = ((u8DataBuf[INDEX_3]) & DPM_RDO_OBJ_MASK) >> DPM_RDO_OBJ_POS;
+    u8SinkReqObjPos = ((u8pDataBuf[INDEX_3]) & DPM_RDO_OBJ_MASK) >> DPM_RDO_OBJ_POS;
     
     /* Get the PDO/APDO from Advertised PDO Array */
     u32PDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8SinkReqObjPos-1]; 
     
     /* Form the RDO */
-    u32RDO = MAKE_UINT32_FROM_BYTES(u8DataBuf[INDEX_0], u8DataBuf[INDEX_1], 
-                                        u8DataBuf[INDEX_2], u8DataBuf[INDEX_3]);
+    u32RDO = MAKE_UINT32_FROM_BYTES(u8pDataBuf[INDEX_0], u8pDataBuf[INDEX_1], 
+                                        u8pDataBuf[INDEX_2], u8pDataBuf[INDEX_3]);
     
     if (ePDO_FIXED == (ePDOType)DPM_GET_PDO_TYPE(u32PDO))
     {
@@ -546,7 +546,7 @@ UINT32 DPM_ResetPDOCurrent (UINT8 u8PortNum, UINT32 u32PDO)
 }
 
 /* Copy the Source capabilities */
-void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32SrcCaps, UINT8 u8pSrcPDOCnt)
+void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32 *pu32DataObj, UINT32 *pu32SrcCaps, UINT8 u8pSrcPDOCnt)
 {
     for (UINT8 u8PDOindex = SET_TO_ZERO; u8PDOindex < u8pSrcPDOCnt; u8PDOindex++)
     {   
@@ -556,7 +556,7 @@ void DPM_ChangeCapabilities (UINT8 u8PortNum, UINT32* pu32DataObj, UINT32 *pu32S
 }
 
 /* Get the source capabilities from the port configuration structure */
-void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8* u8pSrcPDOCnt, UINT32* pu32DataObj)
+void DPM_GetSourceCapabilities (UINT8 u8PortNum, UINT8 *u8pSrcPDOCnt, UINT32 *pu32DataObj)
 {   
 	UINT32 *u32pSrcCap;
     
@@ -932,7 +932,7 @@ void DPM_GetSinkCapabilities (UINT8 u8PortNum, UINT8 *pu8SinkPDOCnt, UINT32 *pu3
 #endif 
 }
 
-void DPM_CalculateAndSortPower (UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][2], UINT8 u8SinkMode)
+void DPM_CalculateAndSortPower (UINT8 u8PDOCount, UINT32 *pu32CapsPayload, UINT8 u8Power[][BYTE_LEN_2], UINT8 u8SinkMode)
 {
     UINT8 u8PowerSwap = SET_TO_ZERO;
     UINT8 u8PowerSwapIndex = SET_TO_ZERO;
@@ -1033,7 +1033,7 @@ void DPM_EvaluateRcvdSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
         UINT8 u8RcvdSrcPDOCnt =  PRL_GET_OBJECT_COUNT(u16RecvdSrcCapsHeader);
     
         /*Clear partner's source pdo variable initially*/
-        for (UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
+        for (UINT8 u8Index = INDEX_0; u8Index < DPM_MAX_PDO_CNT; u8Index++)
         {
             gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[u8Index] = SET_TO_ZERO;
         }
@@ -1604,7 +1604,7 @@ void DPM_OnTypeCDetach (UINT8 u8PortNum)
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
     gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_FRS_XMT_OR_DET_ENABLED |\
-                                        DPM_PORT_IN_MODAL_OPERATION | DPM_CABLE_DISCOVERY_STS);    
+                                        DPM_PORT_IN_MODAL_OPERATION | DPM_CABLE_DISCOVERY_STS_MASK);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
