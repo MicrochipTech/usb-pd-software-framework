@@ -285,6 +285,14 @@ void DPM_UpdatePDSpecRev (UINT8 u8PortNum, UINT8 u8PDSpecRev, UINT8 u8SOPType)
         gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CURR_CABLE_PD_SPEC_REV_MASK;
         gasDPM[u8PortNum].u32DPMStatus |= (u8PDSpecRev << DPM_CURR_CABLE_PD_SPEC_REV_POS);                            
     }
+    
+    /* If SOP spec is lower than the cable spec at any point, downgrade
+       cable spec to sop spec */
+    if (DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum) < DPM_GET_CURRENT_CBL_PD_SPEC_REV(u8PortNum))
+    {
+        gasDPM[u8PortNum].u32DPMStatus &= ~DPM_CURR_CABLE_PD_SPEC_REV_MASK;
+        gasDPM[u8PortNum].u32DPMStatus |= (DPM_GET_CURRENT_PD_SPEC_REV(u8PortNum) << DPM_CURR_CABLE_PD_SPEC_REV_POS);                                    
+    }
 }
 
 /**************************************************************************************************/
