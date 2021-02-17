@@ -1604,8 +1604,7 @@ void DPM_OnTypeCDetach (UINT8 u8PortNum)
     gasDPM[u8PortNum].u16InternalEvntInProgress = SET_TO_ZERO;
         
     gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_FRS_XMT_OR_DET_ENABLED |\
-                                        DPM_PORT_IN_MODAL_OPERATION | DPM_CABLE_DISCOVERY_STS \
-                                        | DPM_VCONNSRC_TO_INITIATE_SOP_P_SOFTRESET);    
+                                        DPM_PORT_IN_MODAL_OPERATION | DPM_CABLE_DISCOVERY_STS);    
     
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
@@ -1822,6 +1821,11 @@ UINT8 DPM_EvaluateRoleSwap (UINT8 u8PortNum, eRoleSwapMsgType eRoleSwapMsg)
 
 void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
 {
+#if (TRUE == (INCLUDE_PD_VCONN_SWAP | INCLUDE_PD_DR_SWAP | INCLUDE_PD_PR_SWAP))
+    /* Note: Datatype of u16SwapIntEvent has to changed accordingly whenever there 
+             is a change in the datatype of gasDPM[u8PortNum].u16DPMInternalEvents */
+    UINT16 u16SwapIntEvent = SET_TO_ZERO;    
+#endif     
     switch (u8SwapInitiateType)
     {
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
@@ -1829,6 +1833,10 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
         {
             /* Set the timer Id to Max Concurrent Value*/
             gasDPM[u8PortNum].u8VCONNSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+            
+            /* Set the Swap internal event to be initiated */
+            u16SwapIntEvent = DPM_INT_EVT_INITIATE_VCONN_SWAP;
+                    
             break;
         }
 #endif /*INCLUDE_PD_VCONN_SWAP*/
@@ -1837,6 +1845,10 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
         {
             /* Set the timer Id to Max Concurrent Value*/
             gasDPM[u8PortNum].u8PRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+            
+            /* Set the Swap internal event to be initiated */
+            u16SwapIntEvent = DPM_INT_EVT_INITIATE_PR_SWAP;
+            
             break;
         }
 #endif /*INCLUDE_PD_PR_SWAP*/
@@ -1845,6 +1857,10 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
         {
             /* Set the timer Id to Max Concurrent Value*/
             gasDPM[u8PortNum].u8DRSwapWaitTmrID = MAX_CONCURRENT_TIMERS;
+            
+            /* Set the Swap internal event to be initiated */
+            u16SwapIntEvent = DPM_INT_EVT_INITIATE_DR_SWAP;
+            
             break;
         }
 #endif /*INCLUDE_PD_DR_SWAP*/
@@ -1855,7 +1871,7 @@ void DPM_SwapWait_TimerCB (UINT8 u8PortNum, UINT8 u8SwapInitiateType)
     /* Re-initiate the corresponding Swap on SwapWait timer expiry */
     if (DPM_REQUEST_SWAP == DPM_EvaluateRoleSwap (u8PortNum, (eRoleSwapMsgType)u8SwapInitiateType))
     {
-        DPM_RegisterInternalEvent (u8PortNum, u8SwapInitiateType);
+        DPM_RegisterInternalEvent (u8PortNum, u16SwapIntEvent);
     } 
 }
 
