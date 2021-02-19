@@ -143,8 +143,15 @@ void PE_RunDRSwapStateMachine (UINT8 u8PortNum)
             {
                 /*Do nothing*/
             }
-            /*Inform Protocol layer of the role change*/
-            PRL_UpdateSpecAndDeviceRoles (u8PortNum);
+            
+            /* Set u8SwapDataRoleISR to indicate that the Port Data Role field 
+               needs to be updated for hardware generated packet header 
+               of the GOOD_CRC message. This is intentionally done in ISR to make sure
+               that the data role is not corrupted in the GOOD_CRC packet sent
+               to acknowledge the Accept received for DR_Swap request */
+            MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+            gasPRL[u8PortNum].u8SwapDataRoleISR = TRUE; 
+            MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();  
             
             /* Move the Policy Engine to ePE_SRC_READY/ePE_SNK_READY state */
             gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt; 

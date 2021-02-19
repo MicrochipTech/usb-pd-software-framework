@@ -125,7 +125,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 															PRL_TX_PARAM_C_N_RETRY_CNT_BIT_POS)
 
 /* PORT_DATA_ROLE (BIT 7) - 1'b0-UFP & 1'b1-DFP*/
-#define PRL_TX_PARAM_C_PORT_DATA_ROLE_DFP					BIT(7)
+#define PRL_TX_PARAM_C_PORT_DATA_ROLE_MASK					BIT(7)
 #define PRL_TX_PARAM_C_PORT_DATA_ROLE_BIT_POS				7
 
 /* define to update Port Data Role in Tx_PARAM_C*/
@@ -727,8 +727,10 @@ typedef struct  MCHP_PSF_STRUCT_PACKED_START _PROTOCOL_LAYER
 	UINT8 	u8RxRcvdISR : 1;            /* ISR to Foreground Sync variable indicating Message Recv*/
     UINT8   u8RxHRRcvdISR : 1;          /* ISR to Foreground Sync variable indicating HR Recv*/
     UINT8   u8TxStsDPMSyncISR : 1;      /* ISR to Foreground sync variable indicating DPM internal event  1st Tx completed*/
-    UINT8   u8RxDisable:1;
-
+    UINT8   u8RxDisable : 1;            /* Disable PD message processing by FW */
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+    UINT8   u8SwapDataRoleISR : 1;      /* IST to Foreground Sync variable indicating a PRL Data Role Swap is required */ 
+#endif 
 } MCHP_PSF_STRUCT_PACKED_END PROTOCOL_LAYER_STRUCT;
 /*************************************************************************************************/
 typedef struct MCHP_PSF_STRUCT_PACKED_START _CHUNK
