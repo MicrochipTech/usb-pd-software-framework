@@ -1614,9 +1614,13 @@ void DPM_OnTypeCDetach (UINT8 u8PortNum)
     gasDPM[u8PortNum].u32DPMStatus &= ~(DPM_SWAP_INIT_STS_MASK | DPM_FRS_XMT_OR_DET_ENABLED |\
                                         DPM_PORT_IN_MODAL_OPERATION | DPM_CABLE_DISCOVERY_STS_MASK);    
     
+    /* Reset PRL ISR Foreground Sync Variables */
     MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE;
-    gasPRL[u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;
+    gasPRL [u8PortNum].u8TxStsDPMSyncISR = FALSE;
+    gasPRL [u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;
+    #if (TRUE == INCLUDE_PD_DR_SWAP)
+    gasPRL [u8PortNum].u8SwapDataRoleISR = FALSE;    
+    #endif 
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT(); 
     
     /* Disable Orientation LED */

@@ -180,9 +180,17 @@ void  PRL_Init (UINT8 u8PortNum)
     gasPRL[u8PortNum].u8RxRcvdISR = FALSE;
     gasPRL[u8PortNum].u8RxHRRcvdISR = FALSE;
 	
+    /* u8TxStsDPMSyncISR is reset */
+    gasPRL[u8PortNum].u8TxStsDPMSyncISR = FALSE; 
+    
 	/* Rx Error bit is reset */
 	gasPRL [u8PortNum].u8RxError = RESET_TO_ZERO;
 	
+    /* Reset u8SwapDataRoleISR */
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+    gasPRL [u8PortNum].u8SwapDataRoleISR = FALSE; 
+#endif     
+    
     #if  (TRUE == INCLUDE_PD_3_0)
 	/* Chunk SM is reset */
     gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
@@ -904,7 +912,7 @@ void PRL_IncrementMsgID (UINT8 u8PortNum)
 
 void PRL_ProcessRxFIFOISR (UINT8 u8PortNum)
 {        
-	UINT8* u8pFIFOBuffer = (UINT8 *) &gasPRLRecvBuff[u8PortNum];
+	UINT8 *u8pFIFOBuffer = (UINT8 *) &gasPRLRecvBuff[u8PortNum];
     
 	/*Receiver packet is read from Rx FIFO*/
 	UPD_RegisterReadISR (u8PortNum, PRL_PDMAC_RECEIVER_BUFF_ADDR, u8pFIFOBuffer, sizeof(gasPRLRecvBuff [u8PortNum]));
@@ -916,6 +924,24 @@ void PRL_ProcessRxFIFOISR (UINT8 u8PortNum)
         /* Received bit is set */
         gasPRL[u8PortNum].u8RxRcvdISR = TRUE;
     }	
+    
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+    UINT8 u8TxParamC = SET_TO_ZERO; 
+    
+    /* Update the Port Data Role field in TX_PARAM_C register if there has 
+       been a change as a result of DR_Swap */
+    if (gasPRL[u8PortNum].u8SwapDataRoleISR)
+    {
+        gasPRL[u8PortNum].u8SwapDataRoleISR = FALSE; 
+        
+        UPD_RegisterReadISR (u8PortNum, PRL_TX_PARAM_C, &u8TxParamC, BYTE_LEN_1);
+        
+        u8TxParamC &= ~PRL_TX_PARAM_C_PORT_DATA_ROLE_MASK; 
+        u8TxParamC |= PRL_UPDATE_TX_PARAM_C_PORT_DATA_ROLE(DPM_GET_CURRENT_DATA_ROLE(u8PortNum));
+        
+        UPD_RegisterWriteISR (u8PortNum, PRL_TX_PARAM_C, &u8TxParamC, BYTE_LEN_1);
+    }
+#endif 
 }
 
 /******************************************************************************************************/
