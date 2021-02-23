@@ -332,20 +332,12 @@ UINT8 PE_IsMsgUnsupported (UINT8 u8PortNum, UINT16 u16Header)
                 #endif 
             }
             else if (PE_CTRL_FR_SWAP == u8MsgType)
-            {
-                /* To ensure the following conditions from PD spec, DPM_FRS_XMT_OR_DET_ENABLED
-                   bit is checked here instead of FRS current field from sink PDO.
-                   PD spec: The initial Source Shall Not transmit a Fast Role Swap signal
-                   if Fast Role Swap USB Type-C Current field is set to zero. Initially,
-                   when the new Source applies vSafe5V it will have Rd asserted but Shall
-                   provide the USB Type-C Current indicated by the new Sink in this field.
-                   If the new Source is not able to supply this level of current it Shall 
-                   Not perform a Fast Role Swap.*/              
+            {            
                 #if (FALSE == INCLUDE_PD_FR_SWAP)
                     u8RetVal = PE_UNSUPPORTED_MSG; 
                 #else                     
                     if ((PD_ROLE_SINK == u8CurrentPwrRole) || \
-                            (FALSE == DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum)))
+                            (FALSE == DPM_GET_PDO_FRS_CURRENT(gasCfgStatusData.sPerPortData[u8PortNum].u32aSinkPDO[INDEX_0])))
                     {
                         u8RetVal = PE_UNSUPPORTED_MSG;
                     }
@@ -1488,57 +1480,47 @@ void PE_ReceiveMsgHandler (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuf)
 #if (TRUE == INCLUDE_PD_FR_SWAP)
                 case PE_CTRL_FR_SWAP: 
                 {
-                    /*Fast Role Swap will be received only by Dual Role Source*/
-                    if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
-                    {
-                        /*Accept the Fast Role swap if current state is READY State or
-                          any VDM AMS is active.  */
-                        if (((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) &&
-                            (ePE_SRC_READY_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))  || \
-                            (u8PEInVDMState))
-                        {                    
-                            /* In case of PPS, Kill SourcePPSCommTimer only in ePE_SRC_READY  
-                            state if the current explicit contract is for a PPS APDO 
-                            Kill VDM Response timer if PE is waiting for a VDM response, but
-                            the AMS is interrupted by DR Swap AMS */
-                            if (u8IsVDMTimerOn || u8IsPPSCommTmrOn)
-                            {
-                                PE_KillPolicyEngineTimer (u8PortNum);
-                            }                         
-                            DEBUG_PRINT_PORT_STR (u8PortNum,"FR_SWAP Received from Partner\r\n");
-
-                            gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_EVALUATE_SWAP; 
-                        }
-                        else
+                    /*Accept the Fast Role swap if current state is READY State or
+                      any VDM AMS is active.  */
+                    if (((ePE_SRC_READY == gasPolicyEngine[u8PortNum].ePEState) &&
+                        (ePE_SRC_READY_IDLE_SS == gasPolicyEngine[u8PortNum].ePESubState))  || \
+                        (u8PEInVDMState))
+                    {                    
+                        /* In case of PPS, Kill SourcePPSCommTimer only in ePE_SRC_READY  
+                        state if the current explicit contract is for a PPS APDO 
+                        Kill VDM Response timer if PE is waiting for a VDM response, but
+                        the AMS is interrupted by DR Swap AMS */
+                        if (u8IsVDMTimerOn || u8IsPPSCommTmrOn)
                         {
-                            /* PD Spec reference regarding FR_Swap: This process can occur at any time,
-                               even during a Non-interruptible AMS in which case error handling such as
-                               Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.*/
-                            if (PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
-                            {
-                                if (TRUE == DPM_NotifyClient(u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
-                                {
-                                    DPM_SetTypeCState (u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
-                                }
-                                else
-                                {
-                                    /*Do nothing. If User application returns FALSE for 
-                                     eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
-                                     the user application will raise a Port disable client request*/
-                                }
-                            }  
-                            else
-                            {
-                                /* The current power role would be source since only a source can receive an FR_Swap*/
-                                gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_HARD_RESET;
-                                gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_HARD_RESET_ENTRY_SS;
-                            }
-                        }
+                            PE_KillPolicyEngineTimer (u8PortNum);
+                        }                         
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"FR_SWAP Received from Partner\r\n");
+
+                        gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SRC_SNK_EVALUATE_SWAP; 
                     }
                     else
                     {
-                        PE_HandleUnExpectedMsg (u8PortNum);
-                    }
+                        /* PD Spec reference regarding FR_Swap: This process can occur at any time,
+                           even during a Non-interruptible AMS in which case error handling such as
+                           Hard Reset or [USB Type-C 2.0] Error Recovery will be triggered.*/
+                        if (PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
+                        {
+                            if (TRUE == DPM_NotifyClient (u8PortNum, eMCHP_PSF_TYPEC_ERROR_RECOVERY))
+                            {
+                                DPM_SetTypeCState (u8PortNum, TYPEC_ERROR_RECOVERY, TYPEC_ERROR_RECOVERY_ENTRY_SS);
+                            }
+                            else
+                            {
+                                /*Do nothing. If User application returns FALSE for 
+                                 eMCHP_PSF_TYPEC_ERROR_RECOVERY notification, it is expected that
+                                 the user application will raise a Port disable client request*/
+                            }
+                        }  
+                        else /* PE_EXPLICIT_CONTRACT */
+                        {
+                            PE_SendHardReset (u8PortNum);
+                        }
+                    }                    
                     break;                    
                 }
 #endif                 
