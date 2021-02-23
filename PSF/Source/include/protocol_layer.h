@@ -729,7 +729,7 @@ typedef struct  MCHP_PSF_STRUCT_PACKED_START _PROTOCOL_LAYER
     UINT8   u8TxStsDPMSyncISR : 1;      /* ISR to Foreground sync variable indicating DPM internal event  1st Tx completed*/
     UINT8   u8RxDisable : 1;            /* Disable PD message processing by FW */
 #if (TRUE == INCLUDE_PD_DR_SWAP)
-    UINT8   u8SwapDataRoleISR : 1;      /* IST to Foreground Sync variable indicating a PRL Data Role Swap is required */ 
+    UINT8   u8SwapDataRoleISR : 1;      /* ISR to Foreground Sync variable indicating a PRL Data Role Swap is required */ 
 #endif 
 } MCHP_PSF_STRUCT_PACKED_END PROTOCOL_LAYER_STRUCT;
 /*************************************************************************************************/
