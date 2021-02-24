@@ -206,7 +206,7 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL         0
+#define INCLUDE_POWER_MANAGEMENT_CTRL         1
 
 /**************************************************************************
 Summary:
