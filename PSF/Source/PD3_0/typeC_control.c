@@ -2998,11 +2998,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                     u8TypeCState = TYPEC_UNATTACHED_SRC;
                     u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;                              
                 }
-                else if ((TYPEC_ATTACHED_SRC == u8TypeCState)
-                #if (TRUE == (INCLUDE_PD_PR_SWAP || INCLUDE_PD_FR_SWAP))
-                    && (u8TypeCSubState != TYPEC_ATTACHED_SRC_SWAP_RD_PRES_DETECT_SS)
-                #endif
-                        )
+                else if (TYPEC_ATTACHED_SRC == u8TypeCState)
                 {
                     /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is 
                     TYPEC_ATTACHED_SRC. A PR_Swap/FR_Swap from Sink to Source should 
