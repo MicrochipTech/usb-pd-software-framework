@@ -1042,11 +1042,19 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 #if(TRUE == INCLUDE_PD_DRP)                    
                     if ((PD_ROLE_DRP != gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState) && \
                             (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum)))
-                    {
+                    {                                                                        
+#if (TRUE == INCLUDE_PD_FR_SWAP)
                         /*Disable DC_DC_EN which was turned on when enabling FRS detection */
-                        #if (TRUE == INCLUDE_PD_FR_SWAP)
-                            PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
-                        #endif  
+                        PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);
+                            
+                        if (DPM_IS_FRS_XMT_OR_DET_ENABLED(u8PortNum))
+                        {
+                            UPD_RegByteClearBit (u8PortNum, TYPEC_CC_HW_CTL_LOW, (UINT8)TYPEC_CC_DET_HBW_EN);	
+
+                            UPD_RegWriteByte (u8PortNum, UPD_CC_SAMP_CLK, \
+                                    (UINT8) (UPD_CC_SAMP_GEN_10_KS | UPD_CC_CLK_20_KHZ));                            
+                        }
+#endif  
 
                         /*Drive DAC_I to 0V if DRP is not sink*/
                         MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, SET_TO_ZERO);
@@ -1522,6 +1530,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
                     
+                    /* Disable EN_FRS pin when FRS is enabled for the port */
+                    #if (TRUE == INCLUDE_PD_FR_SWAP)
+                        PWRCTRL_DisableEnFRS (u8PortNum);
+                    #endif 
+
                     /*Setting CC Comparator OFF*/
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
@@ -3806,20 +3819,20 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             /* Configure UPD350 for FRS Signal Detection */
             TypeC_ConfigureFRSSignalDET (u8PortNum);  
             
-            UINT8 u8PIOOvrSrc = UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET;
-            
+            /* Configure PIO Override Source 
+               When initial VBUS (at new source) < vSafe5V (min), 
+               New Source may turn on after detecting Fast Role Swap signal
+               When initial VBUS (at new source) > vSafe5V (min), 
+               New Source may turn on at any time after VBUS falls below vSafe5V (max) */            
             if (gasCfgStatusData.sPerPortData[u8PortNum].u16NegoVoltageInmV > TYPEC_VBUS_5V)
             {
-                u8PIOOvrSrc |= UPD_PIO_OVR_VBUS4_THR_MATCH;
+                UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, (UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET | UPD_PIO_OVR_VBUS4_THR_MATCH)); 
             }
             else
             {
-                u8PIOOvrSrc |= UPD_PIO_OVR_VBUS1_THR_MATCH;
-            }           
-            
-            /* Configure PIO Override Source */
-            UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, u8PIOOvrSrc);            
-            
+                UPD_RegWriteByte (u8PortNum, UPD_PIO_OVR3_SRC_SEL, UPD_PIO_OVR_SRC_SEL_FRS_SIG_DETECTED); 
+            }                                                       
+                                   
             /* Enable PIO Override */
             UPD_RegByteSetBit (u8PortNum, UPD_PIO_OVR_EN, (UINT8)UPD_PIO_OVR_3);
             

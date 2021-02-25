@@ -1543,9 +1543,9 @@ void DPM_OnTypeCDetach (UINT8 u8PortNum)
        DR_SWAP enabled restore the Data Role on detach */
     if (DPM_GET_DEFAULT_DATA_ROLE(u8PortNum) != PD_ROLE_TOGGLING)
     {
-        DPM_UpdateDataRole(u8PortNum, DPM_GET_DEFAULT_DATA_ROLE(u8PortNum));
+        DPM_UpdateDataRole (u8PortNum, DPM_GET_DEFAULT_DATA_ROLE(u8PortNum));
     }
-    #endif
+    #endif    
     
     /* Clear VCONN Source responsibility status for the port */
     DPM_CLR_VCONN_SRC_RESPONSIBILITY(u8PortNum);
@@ -2305,34 +2305,34 @@ void DPM_HandleHPDEvents (UINT8 u8PortNum)
         
         for (UINT8 u8QueueEvtNo = SET_TO_ZERO; u8QueueEvtNo < UPD_HPD_QUEUE_SIZE; u8QueueEvtNo++)
         {
-           UINT8 u8QueueEntry = ((u8Data >> (UPD_HPD_EVENT_SIZE*u8HPDCurrentIndex)) & UPD_HPD_EVENT_MASK);
-           if (u8QueueEntry)
-           {
-               u8HPDCurrentIndex++;
-               u8HPDCurrentIndex = (u8HPDCurrentIndex % UPD_HPD_QUEUE_SIZE);
-               switch (u8QueueEntry)
-               { 
-                   case eMCHP_PSF_UPD_HPD_HIGH: 
-                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
-                       break; 
-                   case eMCHP_PSF_UPD_HPD_LOW: 
-                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
-                       break; 
-                   case eMCHP_PSF_UPD_IRQ_HPD: 
-                       (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
-                       break; 
-                   default: 
-                       break; 
-               }
-           }
-           else
-           { 
-               break; 
-           }
-       }
-       gu8HPDNextIndex[u8PortNum] = u8HPDCurrentIndex;
-    }
-    
+            UINT8 u8QueueEntry = ((u8Data >> (UPD_HPD_EVENT_SIZE*u8HPDCurrentIndex)) & UPD_HPD_EVENT_MASK);
+            if (u8QueueEntry)
+            {
+                u8HPDCurrentIndex++;
+                u8HPDCurrentIndex = (u8HPDCurrentIndex % UPD_HPD_QUEUE_SIZE);
+                switch (u8QueueEntry)
+                { 
+                    case eMCHP_PSF_UPD_HPD_HIGH: 
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_HIGH); 
+                        break; 
+                    case eMCHP_PSF_UPD_HPD_LOW: 
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_LOW); 
+                        break; 
+                    case eMCHP_PSF_UPD_IRQ_HPD: 
+                        (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_EVENT_IRQ_HPD); 
+                        break; 
+                    default: 
+                        break; 
+                }
+            }
+            else
+            { 
+                break; 
+            }
+        }
+        
+        gu8HPDNextIndex[u8PortNum] = u8HPDCurrentIndex;
+    }    
 }
 
 #endif 
