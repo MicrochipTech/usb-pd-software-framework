@@ -1009,7 +1009,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         UPD_SetPIOIntrAlert (u8PortNum, u8Pio_EN_FRS, u8PwrLossDetectionEdge);
     }    
     else if ((gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_INITIATE_FR_SWAP) &&\
-                PRL_IsAMSInitiatable(u8PortNum))
+                PRL_IsAMSInitiatable (u8PortNum))
     {
         /*Clear the Internal event since it is processed*/
         gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_FR_SWAP);
@@ -1345,7 +1345,7 @@ void DPM_GenericEventHandler (UINT8 u8PortNum)
     #if (TRUE == INCLUDE_PD_ALT_MODE) 
     
     #if (TRUE == INCLUDE_UPD_HPD) 
-        DPM_HandleHPDEvents (u8PortNum);
+    DPM_HandleHPDEvents (u8PortNum);
     #endif 
 
     /* Post eMCHP_PSF_ALT_MODE_ENTRY_FAILED notification */

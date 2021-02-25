@@ -155,6 +155,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* defines for Override Select[4:0]*/
 #define UPD_PIO_OVR_SRC_SEL_VBUS_THR                0x11
 #define UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET    0x12 
+#define UPD_PIO_OVR_SRC_SEL_FRS_SIG_DETECTED        0x13 
 /* define for VBUS Threshold Select [7:5] field*/											  
 #define UPD_PIO_OVR_VBUS_THR_SEL_POS                5
 
