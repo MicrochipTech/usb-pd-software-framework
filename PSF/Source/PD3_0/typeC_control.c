@@ -3011,8 +3011,15 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                     u8TypeCState = TYPEC_UNATTACHED_SRC;
                     u8TypeCSubState = TYPEC_UNATTACHED_SRC_ENTRY_SS;                              
                 }
-                else if (TYPEC_ATTACHED_SRC == u8TypeCState)
+                else if ((TYPEC_ATTACHED_SRC == u8TypeCState)
+                #if (TRUE == INCLUDE_PD_FR_SWAP)
+                    && ((DPM_IS_FRS_XMT_OR_DET_ENABLED (u8PortNum)) && \
+                        (FALSE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum)))
+                #endif
+                        )
                 {
+                    DEBUG_PRINT_PORT_STN (u8PortNum,"4*\r\n"); 
+                    
                     /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is 
                     TYPEC_ATTACHED_SRC. A PR_Swap/FR_Swap from Sink to Source should 
                     not be considered as a detach. So, don't do anything */
@@ -3155,6 +3162,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                 #endif
                 #if (TRUE == INCLUDE_PD_FR_SWAP)
                     && (u8TypeCSubState != TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS)
+                    && (FALSE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum))    
                 #endif 
                         )
                 {
