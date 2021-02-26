@@ -3017,9 +3017,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                         (FALSE == DPM_IS_PR_OR_FR_SWAP_IN_PROGRESS(u8PortNum)))
                 #endif
                         )
-                {
-                    DEBUG_PRINT_PORT_STN (u8PortNum,"4*\r\n"); 
-                    
+                {                                         
                     /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is 
                     TYPEC_ATTACHED_SRC. A PR_Swap/FR_Swap from Sink to Source should 
                     not be considered as a detach. So, don't do anything */
