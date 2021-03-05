@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Defines major and minor version of PSF DRP Application*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x09
+#define APP_REV_MINOR	0x11
 
 /* ************************************************************************** */
 /* ************************************************************************** */
