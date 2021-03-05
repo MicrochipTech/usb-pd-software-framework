@@ -70,7 +70,7 @@ Example:
     #define INCLUDE_PD_3_0	0(Exclude USB PD 3.0 specific features from PSF)
     </code>
 **************************************************************************************************/
-#define INCLUDE_PD_3_0                     1
+#define INCLUDE_PD_3_0                     0
 
 /**************************************************************************************************
 Summary:
@@ -1767,7 +1767,8 @@ typedef struct _PortCfgStatus
     #endif
 	UINT8 u8AdvertisedPDOCnt; 		
     UINT8 u8PartnerSinkPDOCnt;
-    UINT8 u8PartnerSourcePDOCnt;  
+    UINT8 u8PartnerSourcePDOCnt; 
+    UINT8 u8CableIdentityCnt; 
     UINT8 u8SinkConfigSel;         
     UINT8 u8FaultInDebounceInms;    
     UINT8 u8OCSThresholdPercentage; 
@@ -1776,7 +1777,6 @@ typedef struct _PortCfgStatus
     UINT8 u8VCONNOCSDebounceInms;
     UINT8 u8VBUSMaxFaultCnt;
     UINT8 u8VCONNMaxFaultCnt;
-    UINT8 u8CableIdentityCnt; 
     UINT8 u8Pio_FAULT_IN;
     UINT8 u8Mode_FAULT_IN;  
     UINT8 u8aReserved2[3]; 
