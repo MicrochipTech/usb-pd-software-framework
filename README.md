@@ -6,11 +6,11 @@ PSF provides a range of configuration options for your custom PD design and is p
 
 | Development Phase 	| Planned Features 	| Status 	| Latest Release 	|
 |:-----------------:	|-------------------------------------------------------------------------------------------------------------------------------------------	|-------------	|----------------------------------	|
-| I 	| Multi-Port PD Source Only, VCONN sourcing, Fault Handling 	| **Completed** 	| [PSF_STACK_V1.09](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.09) 	|
-| II 	| I2C Mode DC-DC control, PD Balancing, PD Throttling,  Automotive source-only PPS support, PD policy management support from  external SOC 	| **Completed**  	| [PSF_STACK_V1.09](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.09) 	|
-| III 	| PD sink support, Multiple Sink PDO selection algorithms, Custom Sink PDO  selection algorithm, PD sink policy management from external SOC  	| **Completed**  	| [PSF_STACK_V1.09](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.09) 	|  	|
-| IV 	| Dual Role Power (DRP) and Dual Role Data (DRD) support,  DRP/DRD policy management from external SOC 	|  **Completed** 	|  [PSF_STACK_V1.09](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.09)  (Bug fix)  	|
-| V 	| Alternate modes support, Hot Plug Detection (HPD), Fast Role Swap (FRS) and Alternate mode policy management  from external SOC 	| *In-Progress* 	| [PSF_STACK_V1.09](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.09)  (Beta release)  	 	|
+| I 	| Multi-Port PD Source Only, VCONN sourcing, Fault Handling 	| **Completed** 	| [PSF_STACK_V1.11](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.11) (Bug fix) 	|
+| II 	| I2C Mode DC-DC control, PD Balancing, PD Throttling,  Automotive source-only PPS support, PD policy management support from  external SOC 	| **Completed**  	| [PSF_STACK_V1.11](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.11) (Bug fix) 	|
+| III 	| PD sink support, Multiple Sink PDO selection algorithms, Custom Sink PDO  selection algorithm, PD sink policy management from external SOC  	| **Completed**  	| [PSF_STACK_V1.11](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.11) (Bug fix)	|  	
+| IV 	| Dual Role Power (DRP) and Dual Role Data (DRD) support,  DRP/DRD policy management from external SOC 	|  **Completed** 	|  [PSF_STACK_V1.11](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.11)  (Bug fix)  	|
+| V 	| Alternate modes support, Hot Plug Detection (HPD), Fast Role Swap (FRS) and Alternate mode policy management  from external SOC 	| **Completed**	| [PSF_STACK_V1.11](https://github.com/MicrochipTech/usb-pd-software-framework/releases/tag/PSF_STACK_V1.11)  (Beta release)  	 	|
 | VI 	| PD charge through device support 	| Planned 	|  	|
 
 Each development phase will add functionality to the existing feature set. Refer the [Software Release Notes](Software%20Release%20Notes.pdf) for more information about a specific release version.
@@ -39,7 +39,7 @@ Each development phase will add functionality to the existing feature set. Refer
 
 #### Hardware:
 
-* [USB Power Delivery Software Framework Evaluation Kit (EV65D44A)](https://microchipdeveloper.com/boards:usb-power-delivery-software-framework-evaluation-kit)
+* [USB Power Delivery Software Framework Evaluation Kit (EV65D44A)](https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/EV65D44A)
 * [Atmel ICE Programmer/Debugger](https://www.microchip.com/DevelopmentTools/ProductDetails/ATATMEL-ICE)
 
 ## Running the Stack
@@ -49,7 +49,9 @@ We recommend using the pre-configured application example projects under the [De
 * [PSF Source Lite](PSF/Demo/PSF_EVB_Source_Lite): A two port PD source only application example that uses GPIO mode DC-DC control. Can support up to four PD ports
 * [PSF Source Pro](PSF/Demo/PSF_EVB_Source_Pro): A two-port PD source application example using I2C mode DC-DC control. Supports advanced PD features like PD Power Balancing.
 * [PSF Sink](PSF/Demo/PSF_EVB_Sink): A PD sink application example that supports two sink PDO selection algorithms. Mode A enables selection of the highest wattage at highest voltage supported by the port partner. Mode B enables selection of highest wattage at lowest voltage supported by the port partner.
-* [PSF DRP](PSF/Demo/PSF_EVB_DRP): A PD dual role application example that supports two different types of DRP ports. Port 1 is configured as a notebook/laptop type port which can source 5V/3A and sink up to 20V/3A. Port 2 is configured as a dock type port which can source up to 20V/3A and sink 5V/0A. Both ports support power and data role swaps. Additionally, port 1 now supports sink to source mode Fast Role Swap (FRS) while port 2 supports source to sink mode FRS.
+* [PSF DRP](PSF/Demo/PSF_EVB_DRP): A PD dual role application example that supports two different types of DRP ports. Port 1 is configured as a notebook/laptop type port which can source 5V/3A and sink up to 20V/3A. Port 2 is configured as a dock type port which can source up to 20V/3A and sink 5V/0A. Both ports support power and data role swaps.
+* [PSF FRS](PSF/Demo/PSF_EVB_FRS): A Fast Role Swap (FRS) application example that supports two different types of FRS enabled DRP ports. Port 1 is configured as a FRS capable notebook/laptop which is capable of performing a sink-to-source role swap in the event of a power loss. Port 2 is configured as a FRS capable dock which is capable of performing a source-to-sink role swap in the event of a power loss.
+
 
 Please refer the readme file of your chosen application example for instructions on running the example project. We will be updating this space as more features get added to PSF.
 
