@@ -45,3 +45,5 @@ PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/nbproject/Package-default.bash
 PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/nbproject/private/configurations.xml
 PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/nbproject/private/private.xml
 PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/dist/default/
+PSF/Demo/PSF_EVB_FRS/firmware/PSF_EVB_FRS.X/build/default/production/
+PSF/Demo/PSF_EVB_FRS/firmware/PSF_EVB_FRS.X/dist/default/
