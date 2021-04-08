@@ -186,7 +186,7 @@ UINT8 PE_FwUpdtStateMachine(
         gsPdfuInfo.pu8ResponseBuffer[PE_FWUP_RESPBUFF_RESPONSE_TYPE_INDEX] = ((~0x80) & u8MsgType);
 
         /**   Update the Message Header */
-        u16Message_Header = PRL_FormSOPTypeMsgHeader(u8PortNum,
+        u16Message_Header = PRL_FormSOPTypeMsgHeader (u8PortNum,
                                                      PE_EXT_FW_UPDATE_RESPONSE,
                                                      7,
                                                      PE_EXTENDED_MSG);
@@ -223,7 +223,7 @@ void PE_FwUpdtProcessTimerEvent(
 {
     if ((UINT8)ePE_PDFU_MODE == u8PdFwUpdtState)
     {
-        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = PRL_IsAnyMsgPendinginPRL(u8PortNum);
+        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = PRL_IsAnyMsgPendinginPRL (u8PortNum);
 
         /* Check for Msg Header is SET_TO_ZERO */
         if (SET_TO_ZERO == gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader)
@@ -887,7 +887,7 @@ UINT16 PE_FwUpdtGetFWIDRequest(void)
     stGetFWID.u16VID = gasCfgStatusData.u16VendorID;
 
     /*Marked as TBD in Hermes interface*/
-    stGetFWID.u16PID = gasCfgStatusData.u16ProducdID;
+    stGetFWID.u16PID = gasCfgStatusData.u16ProductID;
 
     /*Set HW revision to 1 as mentioned UDID section of Hermes Interface*/
     stGetFWID.u8HWVersion =

@@ -43,100 +43,116 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TYPEC_CABLE_PLUG_CSR_BASE_ADDR	            0x0800
 
 /*Addresses of Cable Plug Control and Status Registers */
-#define TYPEC_CC_HW_CTL       	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x00
+#define TYPEC_CC_HW_CTL       	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x00)
 
 /*TYPEC_CC_HW_CTL_LOW is the lower byte of 2 byte register TYPEC_CC_HW_CTL*/
-#define TYPEC_CC_HW_CTL_LOW   	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x00
+#define TYPEC_CC_HW_CTL_LOW   	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x00)
 /*TYPEC_CC_HW_CTL_HIGH is the higher byte of 2 byte register TYPEC_CC_HW_CTL */
-#define TYPEC_CC_HW_CTL_HIGH  	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x01
+#define TYPEC_CC_HW_CTL_HIGH  	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x01)
 
-#define TYPEC_CC_INT_STS      	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x03
-#define TYPEC_CC_CHG_STS		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x04
-#define TYPEC_CC1_CHG_STS		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x04
-#define TYPEC_CC2_CHG_STS		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x05
-#define TYPEC_CC_MATCH			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x06
-#define TYPEC_CC1_MATCH			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x06
-#define TYPEC_CC2_MATCH			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x07
-#define TYPEC_VBUS_MATCH		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x08
-#define TYPEC_VBUS_CHG_STS          TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x09
-#define TYPEC_PWR_INT_STS		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x0A
-#define TYPEC_CC_INT_EN             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x11
-#define TYPEC_CC1_MATCH_EN		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x12
-#define TYPEC_CC2_MATCH_EN		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x13
-#define TYPEC_VBUS_MATCH_EN		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x14
-#define TYPEC_PWR_INT_EN		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x15
-#define TYPEC_MATCH_DEB			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x17
-#define TYPEC_VCONN_DEB			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x19
-#define TYPEC_CC1_DBCLR_EN		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1A
-#define TYPEC_CC2_DBCLR_EN		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1B
-#define TYPEC_VBUS_DBCLR_EN		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1C
-#define TYPEC_CC1_SAMP_EN     	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1D
-#define TYPEC_CC2_SAMP_EN     	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1E
-#define TYPEC_VBUS_SAMP_EN    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1F
-#define TYPEC_CC_CTL1   			TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x20
+#define TYPEC_CC_INT_STS      	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x03)
+#define TYPEC_CC_CHG_STS		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x04)
+#define TYPEC_CC1_CHG_STS		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x04)
+#define TYPEC_CC2_CHG_STS		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x05)
+#define TYPEC_CC_MATCH			    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x06)
+#define TYPEC_CC1_MATCH			    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x06)
+#define TYPEC_CC2_MATCH			    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x07)
+#define TYPEC_VBUS_MATCH		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x08)
+#define TYPEC_VBUS_CHG_STS          (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x09)
+#define TYPEC_PWR_INT_STS		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x0A)
+#define TYPEC_EXT_INT_STS           (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x0B)
+#define TYPEC_CC_INT_EN             (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x11)
+#define TYPEC_CC1_MATCH_EN		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x12)
+#define TYPEC_CC2_MATCH_EN		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x13)
+#define TYPEC_VBUS_MATCH_EN		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x14)
+#define TYPEC_PWR_INT_EN		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x15)
+#define TYPEC_EXT_INT_EN            (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x16)
+#define TYPEC_MATCH_DEB			    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x17)
+#define TYPEC_VCONN_DEB			    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x19)
+#define TYPEC_CC1_DBCLR_EN		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1A)
+#define TYPEC_CC2_DBCLR_EN		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1B)
+#define TYPEC_VBUS_DBCLR_EN		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1C)
+#define TYPEC_CC1_SAMP_EN     	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1D)
+#define TYPEC_CC2_SAMP_EN     	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1E)
+#define TYPEC_VBUS_SAMP_EN    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x1F)
+#define TYPEC_CC_CTL1   			(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x20)
 
 /*TYPEC_CC_CTL1_LOW is the lower byte of 2 byte register TYPEC_CC_CTL1*/
-#define TYPEC_CC_CTL1_LOW			TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x20
+#define TYPEC_CC_CTL1_LOW			(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x20)
 /*TYPEC_CC_CTL1_HIGH is the higher byte of 2 byte register TYPEC_CC_CTL1*/
-#define TYPEC_CC_CTL1_HIGH	        TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x21
+#define TYPEC_CC_CTL1_HIGH	        (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x21)
 
-#define TYPEC_CC_THR_BASE		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x22
-#define TYPEC_CC_THR0				TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x22
-#define TYPEC_CC_THR1				TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x24
-#define TYPEC_CC_THR2				TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x26
-#define TYPEC_CC_THR3				TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x28
-#define TYPEC_CC_THR4				TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x2A
-#define TYPEC_CC_THR5				TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x2C
-#define TYPEC_CC_THR6				TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x2E
-#define TYPEC_CC_THR7				TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x30
-#define TYPEC_VBUS_CTL2			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x3F
-#define TYPEC_VBUS_CTL1			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x40
-
-#define TYPEC_DRP_CTL_LOW           TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x90
-#define TYPEC_DRP_CTL_HIGH          TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x91
-#define TYPEC_DRP_LFSR_SEED         TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x92
-#define TYPEC_DRP_LFSR_SEED_LOW     TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x92
-#define TYPEC_DRP_LFSR_SEED_HIGH    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x93
-#define TYPEC_DRP_TIME              TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x94
-#define TYPEC_DRP_CC_SNK_MATCH_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x98
-#define TYPEC_DRP_CC_SRC_MATCH_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x99
-#define TYPEC_DRP_CC_SNK_DBCLR_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9A
-#define TYPEC_DRP_DUTY_CYC          TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9C
-#define TYPEC_DRP_CC_SRC_DBCLR_EN   TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9B
-#define TYPEC_DRP_SNK_SAMP_EN       TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9D
-#define TYPEC_DRP_SRC_SAMP_EN       TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9E
+#define TYPEC_CC_THR_BASE		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x22)
+#define TYPEC_CC_THR0				(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x22)
+#define TYPEC_CC_THR1				(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x24)
+#define TYPEC_CC_THR2				(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x26)
+#define TYPEC_CC_THR3				(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x28)
+#define TYPEC_CC_THR4				(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x2A)
+#define TYPEC_CC_THR5				(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x2C)
+#define TYPEC_CC_THR6				(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x2E)
+#define TYPEC_CC_THR7				(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x30)
+#define TYPEC_VBUS_CTL2			    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x3F)
+#define TYPEC_VBUS_CTL1			    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x40)
 
 /*TYPEC_VBUS_CTL1_LOW is the lower byte of 2 byte register TYPEC_VBUS_CTL1*/
-#define TYPEC_VBUS_CTL1_LOW		    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x40
+#define TYPEC_VBUS_CTL1_LOW		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x40)
 /*TYPEC_VBUS_CTL1_HIGH is the higher byte of 2 byte register TYPEC_VBUS_CTL1*/
-#define TYPEC_VBUS_CTL1_HIGH		TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x41
+#define TYPEC_VBUS_CTL1_HIGH		(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x41)
 
-#define TYPEC_VBUS_DEB			    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x4A
-#define TYPEC_VBUS_THR_VSAFE0V      TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x4E
-#define TYPEC_CFG_SEL0_MATCH   	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x50
-#define TYPEC_CFG_SEL1_MATCH   	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x51
-#define TYPEC_CFG_SEL_THR0    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x54
-#define TYPEC_CFG_SEL_THR1    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x56
-#define TYPEC_CFG_SEL_THR2    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x58
-#define TYPEC_CFG_SEL_THR3    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x5A
-#define TYPEC_CFG_SEL_THR4    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x5C
-#define TYPEC_CFG_SEL_THR5    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x5E
-#define TYPEC_CFG_SEL_THR6    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x60
-#define TYPEC_CFG_SEL_THR7    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x62
-#define TYPEC_CFG_SEL_THR8    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x64
-#define TYPEC_CFG_SEL_THR9    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x66
-#define TYPEC_CFG_SEL_THR10    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x68
-#define TYPEC_CFG_SEL_THR11    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x6A
-#define TYPEC_CFG_SEL_THR12    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x6C
-#define TYPEC_CFG_SEL_THR13    	    TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x6E
-#define TYPEC_CFG_SEL_THR14     	TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x70
-#define TYPEC_CFG_SEL_THR15     	TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x72
-#define TYPEC_VBUS_THR_BASE         TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB0
-#define TYPEC_VBUS_THR0             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB0
-#define TYPEC_VBUS_THR1             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB2
-#define TYPEC_VBUS_THR2             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB4
-#define TYPEC_VBUS_THR3             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB6
-#define TYPEC_VBUS_THR4             TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB8
+#define TYPEC_VBUS_DEB			    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x4A)
+#define TYPEC_VBUS_THR_VSAFE0V      (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x4E)
+
+#define TYPEC_CFG_SEL0_MATCH   	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x50)
+#define TYPEC_CFG_SEL1_MATCH   	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x51)
+#define TYPEC_CFG_SEL_THR0    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x54)
+#define TYPEC_CFG_SEL_THR1    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x56)
+#define TYPEC_CFG_SEL_THR2    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x58)
+#define TYPEC_CFG_SEL_THR3    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x5A)
+#define TYPEC_CFG_SEL_THR4    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x5C)
+#define TYPEC_CFG_SEL_THR5    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x5E)
+#define TYPEC_CFG_SEL_THR6    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x60)
+#define TYPEC_CFG_SEL_THR7    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x62)
+#define TYPEC_CFG_SEL_THR8    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x64)
+#define TYPEC_CFG_SEL_THR9    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x66)
+#define TYPEC_CFG_SEL_THR10    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x68)
+#define TYPEC_CFG_SEL_THR11    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x6A)
+#define TYPEC_CFG_SEL_THR12    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x6C)
+#define TYPEC_CFG_SEL_THR13    	    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x6E)
+#define TYPEC_CFG_SEL_THR14     	(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x70)
+#define TYPEC_CFG_SEL_THR15     	(TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x72)
+
+#define TYPEC_DRP_CTL_LOW           (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x90)
+#define TYPEC_DRP_CTL_HIGH          (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x91)
+#define TYPEC_DRP_LFSR_SEED         (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x92)
+#define TYPEC_DRP_LFSR_SEED_LOW     (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x92)
+#define TYPEC_DRP_LFSR_SEED_HIGH    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x93)
+#define TYPEC_DRP_TIME              (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x94)
+#define TYPEC_DRP_CC_SNK_MATCH_EN   (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x98)
+#define TYPEC_DRP_CC_SRC_MATCH_EN   (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x99)
+#define TYPEC_DRP_CC_SNK_DBCLR_EN   (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9A)
+#define TYPEC_DRP_DUTY_CYC          (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9C)
+#define TYPEC_DRP_CC_SRC_DBCLR_EN   (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9B)
+#define TYPEC_DRP_SNK_SAMP_EN       (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9D)
+#define TYPEC_DRP_SRC_SAMP_EN       (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0x9E)
+
+#define TYPEC_FRS_CTL               (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xA0)
+/*TYPEC_FRS_CTL_LOW is the lower byte of 2 byte register TYPEC_FRS_CTL*/
+#define TYPEC_FRS_CTL_LOW		    (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xA0)
+/*TYPEC_FRS_CTL_HIGH is the higher byte of 2 byte register TYPEC_FRS_CTL*/
+#define TYPEC_FRS_CTL_HIGH          (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xA1)
+
+#define TYPEC_FRS_CC_DEB            (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xA2)
+#define TYPEC_FRS_TX_LEN            (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xA4)
+#define TYPEC_FRS_THR_SEL           (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xA6)
+#define TYPEC_FRS_PIO_SEL           (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xA7)
+#define TYPEC_FRS_VBUS_DEB          (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xA8)
+
+#define TYPEC_VBUS_THR_BASE         (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB0)
+#define TYPEC_VBUS_THR0             (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB0)
+#define TYPEC_VBUS_THR1             (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB2)
+#define TYPEC_VBUS_THR2             (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB4)
+#define TYPEC_VBUS_THR3             (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB6)
+#define TYPEC_VBUS_THR4             (TYPEC_CABLE_PLUG_CSR_BASE_ADDR + 0xB8)
 
 /*Bit definitions of TYPEC_CC_CTL1_LOW register*/
 #define TYPEC_CC1_PULL_DOWN		    (BIT(2) | BIT(1) | BIT(0))
@@ -177,6 +193,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Bit definitions of TYPEC_CC_HW_CTL_LOW register*/
 #define TYPEC_MODE	                BIT(0)
+#define TYPEC_CC_DET_HBW_EN         BIT(1)
 #define TYPEC_DEV_ROLE			    BIT(2)
 
 /*Bit definitions of CC_INT_STS register*/
@@ -210,10 +227,34 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /*Bit definitions of TYPEC_VBUS_CTL1_HIGH register*/
 #define TYPEC_VBUS_DB_UNITS		    BIT(6)
+#define TYPEC_VBUS_DET_HBW_EN       BIT(7)
 
 /*Bit definitions of TYPEC_VBUS_CTL2 register*/
 #define TYPEC_VBUS_DEB_BLK_EN		BIT(0)
 #define TYPEC_VBUS_DEB_TO_EN        BIT(1)
+
+/*Bit definitions of TYPEC_EXT_INT_EN register */
+#define TYPEC_CFG_SEL_DONE          BIT(0)
+/* Bit 1 is reserved */
+#define TYPEC_VBUS_DISCH            BIT(2)
+#define TYPEC_VCONN_DISCH_STS       BIT(3)
+#define TYPEC_VBUS_DB_TO            BIT(4)
+#define TYPEC_FRS_RCV_STS           BIT(5)
+#define TYPEC_FRS_XMT_STS           BIT(6)
+/* Bit 7 is reserved */
+
+/*Bit definitions of TYPEC_FRS_CTL_LOW register*/
+#define TYPEC_FRS_CC_SEL_CC1        0
+#define TYPEC_FRS_CC_SEL_CC2        BIT(4)
+#define TYPEC_FRS_CC_SEL_CC1_CC2    BIT(5)
+#define TYPEC_FRS_CC_SEL            (BIT(4) | BIT(5))
+
+/*Bit definitions of TYPEC_FRS_CTL_HIGH register*/
+#define TYPEC_FRS_PD_MAC_OVR        BIT(0)
+#define TYPEC_FRS_REQ_VAL           BIT(4)
+#define TYPEC_FRS_REQ_PIO           BIT(5)
+#define TYPEC_FRS_DET_EN            BIT(6)
+#define TYPEC_FRS_REQ_EN            BIT(7)
 
 /*Defines for each of the CC_THRX values as given in UPD350 DOS*/
 #define TYPEC_CC_THR_VAL_VCONN_DIS		    41
@@ -308,7 +349,7 @@ event for UFP*/
 #define TYPEC_MAX_VSAFE_0V_MATCH_VAL       TYPEC_VSAFE0V_MAX_THR_MATCH
         
 /* VBUS Match bit set when overvoltage is detected*/        
-#define TYPEC_VBUS_OVERVOLT_MATCH_BIT   TYPEC_OVER_VOLT_THR2_MATCH
+#define TYPEC_VBUS_OVERVOLT_MATCH_BIT      TYPEC_OVER_VOLT_THR2_MATCH
 
 /**************************VBUS Match redefines as per usage*******************/
 #define TYPEC_VSAFE0V_MAX_THR_MATCH              TYPEC_VBUS_VSAFE0V_MATCH             
@@ -329,21 +370,21 @@ event for UFP*/
 
 /* VBUS Threshold for vSinkDisconnect */
 #define TYPEC_VSINKDISCONNECT_THR                   \
-            (UINT16)(CONFIG_VSINKDISCONNECT_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)
+            (UINT16)(TYPEC_VSINKDISCONNECT_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
 /* VBUS Threshold for Vsafe5V for Source*/
 #define TYPEC_DESIRED_MIN_SRC_VSAFE5V_VBUS_THR			\
-			(CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)
+			(TYPEC_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
 #define TYPEC_DESIRED_MAX_SRC_VSAFE5V_VBUS_THR			\
-			(CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)
+			(TYPEC_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)
               
 /* VBUS Threshold for Vsafe5V for sink*/
 #define TYPEC_DESIRED_MIN_SNK_VSAFE5V_VBUS_THR			\
-			(CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)
+			(TYPEC_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)
 
 #define TYPEC_DESIRED_MAX_SNK_VSAFE5V_VBUS_THR			\
-			(CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)              
+			(TYPEC_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE / TYPEC_VBUS_THRX_UNITS_MILLI_V)              
 			  
 /* As per PD Spec, For fixed PDO voltage range is 0.95 * PDO voltage to 
     1.05* PDO voltage */
@@ -381,6 +422,7 @@ event for UFP*/
 
 /*Bit definitions for gasTypeCcontrol[u8PortNum].u8DRPStsISR variable*/
 #define TYPEC_DRP_DONE_INTERRUPT                    BIT(0)
+#define TYPEC_FRS_XMT_RCV_STS_INTERRUPT             BIT(1)
 
 /*Defines for different Type C current values of DFP*/
 #define TYPEC_UFP                               PD_ROLE_UFP
@@ -438,20 +480,25 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_SINK_TXOK   0
 #define TYPEC_SINK_TXNG   1 
 
+/* define for TypeC_ConfigureVBUSThr API's parameter u8PowerFaultThrConfig*/
+#define TYPEC_CONFIG_PWR_FAULT_THR		1
+#define TYPEC_CONFIG_NON_PWR_FAULT_THR	0
+
 /*Defines for TYPE C State machine states*/
-#define TYPEC_UNATTACHED_SRC                    0
-#define TYPEC_ATTACHWAIT_SRC                    1
-#define TYPEC_ATTACHED_SRC                      2
-#define TYPEC_UNATTACHED_WAIT_SRC               3
-#define TYPEC_UNORIENTED_DEBUG_ACCESSORY_SRC    4
-#define TYPEC_UNATTACHED_SNK                    5
-#define TYPEC_ATTACHWAIT_SNK                    6
-#define TYPEC_ATTACHED_SNK                      7
-#define TYPEC_DEBUG_ACCESSORY_SNK               8
-#define TYPEC_ERROR_RECOVERY                    9
-#define TYPEC_AUDIO_ACCESSORY                  10
-#define TYPEC_DISABLED                         11 
-#define TYPEC_INVALID_STATE                    12
+#define TYPEC_INIT                              0
+#define TYPEC_UNATTACHED_SRC                    1
+#define TYPEC_ATTACHWAIT_SRC                    2
+#define TYPEC_ATTACHED_SRC                      3
+#define TYPEC_UNATTACHED_WAIT_SRC               4
+#define TYPEC_UNORIENTED_DEBUG_ACCESSORY_SRC    5
+#define TYPEC_UNATTACHED_SNK                    6
+#define TYPEC_ATTACHWAIT_SNK                    7
+#define TYPEC_ATTACHED_SNK                      8
+#define TYPEC_DEBUG_ACCESSORY_SNK               9
+#define TYPEC_ERROR_RECOVERY                    10
+#define TYPEC_AUDIO_ACCESSORY                   11
+#define TYPEC_DISABLED                          12 
+#define TYPEC_INVALID_STATE                     13
 
 /*Setting invalid Substate as maximum value of UINT8*/
 #define TYPEC_INVALID_SUBSTATE                 255
@@ -469,21 +516,21 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHWAIT_SRC_CC_DEB_TIMEOUT_SS        2
     
 /*Defines for TYPEC_ATTACHED_SRC's substates in TYPE C SM*/
-#define TYPEC_ATTACHED_SRC_PRS_ASSERT_RP_SS           0
-#define TYPEC_ATTACHED_SRC_PRS_RD_PRES_DETECT_SS      1
+#define TYPEC_ATTACHED_SRC_SWAP_ASSERT_RP_SS           0
+#define TYPEC_ATTACHED_SRC_SWAP_RD_PRES_DETECT_SS      1
 #define TYPEC_ATTACHED_SRC_DRIVE_PWR_SS               2
 #define TYPEC_ATTACHED_SRC_WAIT_FOR_VBUS_ON_SS        3
 #define TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS       4
 #define TYPEC_ATTACHED_SRC_SET_PRL_SS                 5
 #define TYPEC_ATTACHED_SRC_RUN_SM_SS                  6
 #define TYPEC_ATTACHED_SRC_IDLE_SS				      7
-#define TYPEC_ATTACHED_SRC_PRS_TRANS_TO_SNK_SS        8
+#define TYPEC_ATTACHED_SRC_SWAP_TRANS_TO_SNK_SS        8
 
 /*Defines for TYPEC_UNATTACHED_WAIT_SRC's substates in TYPE C SM*/ 
-#define TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS            0
-#define TYPEC_UNATTACHED_WAIT_SRC_PD_DEB_TIMEOUT_SS   1
-#define TYPEC_UNATTACHED_WAIT_SRC_IDLE_SS             2
-#define TYPEC_UNATTACHED_WAIT_SRC_CHECK_VBUS_OFF_SS   3
+#define TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS                0
+#define TYPEC_UNATTACHED_WAIT_SRC_IDLE_SS                 1
+#define TYPEC_UNATTACHED_WAIT_SRC_WAIT_FOR_VBUS_OFF_SS    2
+#define TYPEC_UNATTACHED_WAIT_SRC_WAIT_FOR_VCONN_OFF_SS   3 
 
 /*Defines for TYPEC_UNATTACHED_SNK's substates in TYPE C SM*/
 #define TYPEC_UNATTACHED_SNK_ENTRY_SS      	        0
@@ -498,14 +545,15 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_ATTACHWAIT_SNK_CC_DEB_TIMEOUT_SS        3
 
 /*Defines for TYPEC_ATTACHED_SNK's substates in TYPE C SM*/
-#define TYPEC_ATTACHED_SNK_PRS_ASSERT_RD_SS            0
-#define TYPEC_ATTACHED_SNK_PRS_VBUS_PRES_DETECT_SS     1
-#define TYPEC_ATTACHED_SNK_ENTRY_SS                    2
-#define TYPEC_ATTACHED_SNK_RUN_SM_SS                   3
-#define TYPEC_ATTACHED_SNK_START_PD_DEB_SS             4
-#define TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS           5
-#define TYPEC_ATTACHED_SNK_IDLE_SS                     6
-#define TYPEC_ATTACHED_SNK_PRS_TRANS_TO_SRC_SS         7
+#define TYPEC_ATTACHED_SNK_SWAP_ASSERT_RD_SS            0
+#define TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS     1
+#define TYPEC_ATTACHED_SNK_SWAP_ATTACH_DETECT_SS        2
+#define TYPEC_ATTACHED_SNK_ENTRY_SS                     3
+#define TYPEC_ATTACHED_SNK_RUN_SM_SS                    4
+#define TYPEC_ATTACHED_SNK_START_PD_DEB_SS              5
+#define TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS            6
+#define TYPEC_ATTACHED_SNK_IDLE_SS                      7
+#define TYPEC_ATTACHED_SNK_SWAP_TRANS_TO_SRC_SS         8
 
 /*Defines for TYPEC_ERROR_RECOVERY's substates in TYPE C SM*/ 
 #define TYPEC_ERROR_RECOVERY_ENTRY_SS                   0
@@ -546,24 +594,19 @@ TypeC_SetRpCollAvoidance API*/
 #define TYPEC_RP_DISABLED             0
 #define TYPEC_RP_DEFAULT_CURRENT      1
 #define TYPEC_RP_CURRENT_15           2
-#define TYPEC_RP_CURRENT_30           3
-
-/*Masks used to get the collision avoidance status of policy engine(For Sink Configuration) 
-from u8PortSts variable*/
-#define TYPEC_COLLISION_AVOIDANCE_ACT	BIT(3)
-#define TYPEC_COLLISION_AVOIDANCE_POS    3   
+#define TYPEC_RP_CURRENT_30           3 
             
 /*Masks used for getting whether VCONN discharge is in progress from u8PortSts variable*/ 
-#define TYPEC_VCONN_DISCHARGE_ON_MASK	 BIT(4)
+#define TYPEC_VCONN_DISCHARGE_ON_MASK	 BIT(3)
 
 /*Masks used for getting whether VCONN ON process has initiated from u8PortSts variable*/ 
-#define TYPEC_VCONN1_ON_REQ	         BIT(5)
-#define TYPEC_VCONN2_ON_REQ	         BIT(6)
-#define TYPEC_VCONN_ON_REQ_MASK	    (BIT(6) | BIT(5))
+#define TYPEC_VCONN1_ON_REQ	         BIT(4)
+#define TYPEC_VCONN2_ON_REQ	         BIT(5)
+#define TYPEC_VCONN_ON_REQ_MASK	    (BIT(4) | BIT(5))
 
 /* Mask to indicate current CC pin Orientation in u8PortSts variable */
-#define TYPEC_CC_ATTACHED_ORIENTATION_MASK  BIT(7)
-#define TYPEC_CC_ATTACHED_ORIENTATION_POS   7 
+#define TYPEC_CC_ATTACHED_ORIENTATION_MASK  BIT(6)
+#define TYPEC_CC_ATTACHED_ORIENTATION_POS   6
 
 /* Define for getting the CC orientation status from u8PortSts variable */
 #define TYPEC_GET_CC_ORIENTATION_STS(u8PortNum) ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_CC_ATTACHED_ORIENTATION_MASK) \
@@ -575,71 +618,78 @@ from u8PortSts variable*/
 #define TYPEC_VSINKDISCONNECT_STATUS_MASK	   BIT(0)
 
 /*Masks used For getting CC interrupt status from u8IntStsISR variable*/ 
-#define TYPEC_CCINT_STATUS_MASK	         BIT(1)
+#define TYPEC_CCINT_STATUS_MASK                BIT(1)
 
 /*Masks used For getting VCONN status from u8IntStsISR variable*/
-#define TYPEC_VCONN_SOURCE_CC1          BIT(2)
-#define TYPEC_VCONN_SOURCE_CC2          BIT(3)
+#define TYPEC_VCONN_SOURCE_CC1                 BIT(2)
+#define TYPEC_VCONN_SOURCE_CC2                 BIT(3)
 
-#define TYPEC_VCONN_SOURCE_POS         2
-#define TYPEC_VCONN_SOURCE_MASK	       (BIT(3) | BIT(2))
-#define TYPEC_VCONN_DISABLED            0
+#define TYPEC_VCONN_SOURCE_POS                 2
+#define TYPEC_VCONN_SOURCE_MASK                (BIT(3) | BIT(2))
+#define TYPEC_VCONN_DISABLED                   0
 
 /*Masks used For getting VBUS value(0V or 5V) status from u8IntStsISR variable*/ 
-#define TYPEC_VBUS_PRESENCE_MASK	    (BIT(4) | BIT(5) | BIT(6))
-#define TYPEC_VBUS_PRESENCE_POS         4
+#define TYPEC_VBUS_PRESENCE_MASK               (BIT(4) | BIT(5) | BIT(6))
+#define TYPEC_VBUS_PRESENCE_POS                4
 
-#define TYPEC_VBUS_0V_PRES       0
-#define TYPEC_VBUS_5V_PRES       BIT(4)
+#define TYPEC_VBUS_0V_PRES                     0
+#define TYPEC_VBUS_5V_PRES                     BIT(4)
                 
-#define TYPEC_VBUS_0V           0
-#define TYPEC_VBUS_5V           5000
+#define TYPEC_VBUS_0V                          0
+#define TYPEC_VBUS_5V                          5000
 
-/*Masks used For getting VCONNON Error status from u8IntStsISR variable*/ 
-#define TYPEC_VCONNONERROR_MASK	       BIT(7)
-#define TYPEC_VCONNONERROR_POS         7
 /*************************************************************************************/
 
 /**********************VSAFE5V range for Source and Sink*******************/
 
-/*  CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for
+/*  TYPEC_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for
     VSafe5V expressed in terms of millivolts for source. The voltage will be considered as valid 
-    Vsafe5V only if it is equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less 
-    than CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE.    
-    CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be considered as overvoltage for Vsafe5V for Source. 
+    Vsafe5V only if it is equal to or greater than TYPEC_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less 
+    than TYPEC_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE.    
+    (TYPEC_GET_OVER_VOLTAGE_VBUS_THR * 5000mV) will be considered as overvoltage for Vsafe5V for Source. 
     This parameter shall never be set to 0. */
-#define CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
+#define TYPEC_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
 
-/*  CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed in 
+/*  TYPEC_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed in 
     terms of millivolts for source. The voltage will be considered as valid Vsafe5V only if it is
-    equal to or greater than CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE & less than 
-    CONFIG_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. 
+    equal to or greater than TYPEC_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE and less than 
+    TYPEC_SRC_VSAFE5V_DESIRED_MAX_VOLTAGE. 
     This parameter shall never be set to 0. */
-#define CONFIG_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE 		4750
+#define TYPEC_SRC_VSAFE5V_DESIRED_MIN_VOLTAGE 		4750
 
-/*  CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for VSafe5V expressed 
+/*  TYPEC_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE is maximum voltage acceptable for VSafe5V expressed 
     in terms of millivolts for sink. The voltage will be considered as valid Vsafe5V only if it 
-    is equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
-    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. CONFIG_OVER_VOLTAGE_FACTOR * 5000mV will be
+    is equal to or greater than TYPEC_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE and less than
+    TYPEC_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. (TYPEC_GET_OVER_VOLTAGE_VBUS_THR * 5000mV) will be
     considered as overvoltage for vSafe5V for sink. 
     This parameter shall never be set to 0. */
-#define CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
+#define TYPEC_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE 		5500
 
-/*  CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed 
+/*  TYPEC_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE is minimum voltage acceptable for VSafe5V expressed 
     in terms of millivolts for Sink. The voltage will be considered as valid Vsafe5V only if it is
-    equal to or greater than CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE & less than
-    CONFIG_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. 
+    equal to or greater than TYPEC_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE and less than
+    TYPEC_SNK_VSAFE5V_DESIRED_MAX_VOLTAGE. 
     This parameter shall never be set to 0. */
-#define CONFIG_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE 		4400
+#define TYPEC_SNK_VSAFE5V_DESIRED_MIN_VOLTAGE 		4400
 
-/*  CONFIG_VSINKDISCONNECT_VOLTAGE is the vSinkDisconnect mentioned in Type c specification v1.3.
+/*  TYPEC_VSINKDISCONNECT_VOLTAGE is the vSinkDisconnect mentioned in Type c specification v1.3.
     Specification defines it as threshold used for transition from Attached.SNK to Unattached.SNK.
-    In PSF, CONFIG_VSINKDISCONNECT_VOLTAGE is considered as under-voltage for Vsafe5V in case of 
-    source. For Sink, if the voltage is below CONFIG_VSINKDISCONNECT_VOLTAGE, it is considered 
+    In PSF, TYPEC_VSINKDISCONNECT_VOLTAGE is considered as under-voltage for Vsafe5V in case of 
+    source. For Sink, if the voltage is below TYPEC_VSINKDISCONNECT_VOLTAGE, it is considered 
     as VBUS disconnect.
     This parameter shall never be set to 0. */
-#define CONFIG_VSINKDISCONNECT_VOLTAGE              3670
+#define TYPEC_VSINKDISCONNECT_VOLTAGE              3670
 
+/*************************Fast Role Swap Defines ************************/
+#define TYPEC_FRS_CC_DEB_30US                 0x0F 
+
+#define TYPEC_FRS_VBUS_DEB_30US               0x0F 
+
+#define TYPEC_FRS_THRESHOLD                   0x00 
+
+#define TYPEC_FRS_TX_LEN_90US                 90            
+
+#define TYPEC_FRS_REQ_PIO_SEL_POS             4 
 /*************************************************************************************/
 
 // *****************************************************************************
@@ -669,30 +719,23 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
   UINT8 u8TypeCTimerID;
   UINT8 u8PortSts;              /*BIT0 - > TYPEC_PWDCABLE_PRES Field
                                 BIT[2:1] -> CURR_RPVAL Field
-                                BIT3 -> COLLISION_AVOIDANCE_ACT
-                                BIT4 -> VCONN_DISCHARGE_ON
-                                BIT5 -> VCONN1_ON_REQ
-                                BIT6 -> TYPEC_VCONN2_ON
-                                BIT7 -> CC Pin Orientation */
+                                BIT3 -> VCONN_DISCHARGE_ON
+                                BIT4 -> VCONN1_ON_REQ
+                                BIT5 -> TYPEC_VCONN2_ON
+                                BIT6 -> CC Pin Orientation */
   UINT8 u8IntStsISR;            /*BIT0 -> VSINKDISCONNECT_STATUS
                                 BIT1 -> CCINT_STATUS
                                 BIT2 -> VCONN_SOURCE_CC1
                                 BIT3 -> VCONN_SOURCE_CC2
-                                BIT[6:4] -> VBUS_PRESENCE
-                                BIT 7 -> VCONNONERROR */
+                                BIT[6:4] -> VBUS_PRESENCE */
 #if(TRUE == INCLUDE_PD_DRP)
-  UINT8 u8DRPStsISR ;           /*BIT0 -> DRP_DONE interrupt status*/
+  UINT8 u8DRPStsISR ;           /*BIT 0 -> DRP_DONE interrupt status
+                                  BIT 1 -> FRS XMT or RCV Status */
   UINT8 u8DRPLastAttachedState; /*BIT[1:0] -> Previous DRP attached power role*/
 #endif
   float fVBUSCorrectionFactor;
   
 }MCHP_PSF_STRUCT_PACKED_END TYPEC_CONTROL;
-
-/* define for TypeC_ConfigureVBUSThr API's parameter u8PowerFaultThrConfig*/
-
-#define TYPEC_CONFIG_PWR_FAULT_THR		1
-#define TYPEC_CONFIG_NON_PWR_FAULT_THR	0
-
 
 // *****************************************************************************
 // *****************************************************************************
@@ -705,7 +748,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
         void TypeC_InitPort (UINT8 u8PortNum);
 
     Summary:
-        This API initializes a given Port to the Power Role and Data role based on the port's global variable
+        This API initializes a given Port as Source-DFP or Sink-UFP based on the port's global variable
 
     Devices Supported:
         UPD350 REV A
@@ -728,6 +771,34 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _TypeCcontrol
 
 **************************************************************************************************/
 void TypeC_InitPort (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void TypeC_GenericInitPort (UINT8 u8PortNum);
+
+    Summary:
+        This API does initialization steps which is common to any port role.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API does initialization steps which is common to any port role.
+
+    Conditions:
+        This API is called inside the PD Stack initialization API call .
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+
+**************************************************************************************************/
+void TypeC_GenericInitPort (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -790,11 +861,12 @@ void TypeC_InitDRPPort(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_ConfigCCComp(UINT8 u8PortNum,UINT8 u8ConfigVal);
+void TypeC_ConfigCCComp (UINT8 u8PortNum,UINT8 u8ConfigVal);
+
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum , UINT8 u8ConfigVal);
+        void TypeC_SetVBUSCompONOFF (UINT8 u8PortNum , UINT8 u8ConfigVal);
 
     Summary:
         This API is used to configure the VBUS Comparator to either ON or OFF State
@@ -822,11 +894,12 @@ void TypeC_ConfigCCComp(UINT8 u8PortNum,UINT8 u8ConfigVal);
         None.
 
 **************************************************************************************************/
-void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum , UINT8 u8ConfigVal);
+void TypeC_SetVBUSCompONOFF (UINT8 u8PortNum , UINT8 u8ConfigVal);
+
 /**************************************************************************************************
 
  Function:
-       void TypeC_SetCCSampleEnable(UINT8 u8PortNum,UINT8 u8CCEnablePins);
+       void TypeC_SetCCSampleEnable (UINT8 u8PortNum,UINT8 u8CCEnablePins);
 
     Summary:
         This API is used to enable CC Comparator to sample for a particular given CC Thresholds
@@ -855,7 +928,7 @@ void TypeC_SetVBUSCompONOFF(UINT8 u8PortNum , UINT8 u8ConfigVal);
         None.
 
 **************************************************************************************************/
-void TypeC_SetCCSampleEnable(UINT8 u8PortNum,UINT8 u8CCEnablePins);
+void TypeC_SetCCSampleEnable (UINT8 u8PortNum,UINT8 u8CCEnablePins);
 
 /**************************************************************************************************
 
@@ -893,7 +966,7 @@ void TypeC_DRPSetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
+        void TypeC_SetCCPowerRole (UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
 
     Summary:
         This API is used to Configure the given Rp or given Rd value for a port for a given
@@ -931,11 +1004,12 @@ void TypeC_DRPSetCCSampleEnable (UINT8 u8PortNum, UINT8 u8RpCurrent);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
+void TypeC_SetCCPowerRole (UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, UINT8 u8CCPin);
+
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetCCDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
+        void TypeC_SetCCDeviceRole (UINT8 u8PortNum,UINT8 u8DevRole);
 
     Summary:
         This API is used to set the device role as either DFP or UFP for a given port.
@@ -961,10 +1035,11 @@ void TypeC_SetCCPowerRole(UINT8 u8PortNum,UINT8 u8PowerRole, UINT8 u8ConfigVal, 
         None.
 **************************************************************************************************/
 void TypeC_SetCCDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
+
 /**************************************************************************************************
 
  Function:
-        void TypeC_EnabDisVCONN(UINT8 u8PortNum,UINT8 u8EnableDisable);
+        void TypeC_EnabDisVCONN (UINT8 u8PortNum,UINT8 u8EnableDisable);
 
     Summary:
         This API is used to enable or disable the VCONN FETS for a given port
@@ -992,11 +1067,12 @@ void TypeC_SetCCDeviceRole(UINT8 u8PortNum,UINT8 u8DevRole);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_EnabDisVCONN(UINT8 u8PortNum,UINT8 u8EnableDisable);
+void TypeC_EnabDisVCONN (UINT8 u8PortNum,UINT8 u8EnableDisable);
+
 /**************************************************************************************************
 
  Function:
-        void TypeC_SetRpCollAvoidance(UINT8 u8PortNum, UINT8 u8RpValue);
+        void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue);
 
     Summary:
         This API is used to Set or reset the collision avoidance for a given source port.
@@ -1024,39 +1100,11 @@ void TypeC_EnabDisVCONN(UINT8 u8PortNum,UINT8 u8EnableDisable);
         None.
 **************************************************************************************************/
 void TypeC_SetRpCollAvoidance(UINT8 u8PortNum, UINT8 u8RpValue);
-/**************************************************************************************************
 
- Function:
-        UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum);
-
-    Summary:
-        This API is used to check whether the connected port partner(Source) has  set the collision 
-        avoidance for a given port
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        This API is called by the protocol layer to check whether the source has set the collision 
-        avoidance as SinkTxOk or SinkTxNG.
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port Number.
-
-    Return:
-        None
-
-    Remarks:
-        None.
-**************************************************************************************************/
-UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum);
 /**************************************************************************************************
 
     Function:
-        void TypeC_CCVBUSIntrHandler(UINT8 u8PortNum);
+        void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum);
 
     Summary:
         This API handles the CC and VBUS interrupts occurred for a given port.
@@ -1065,8 +1113,8 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-        This API handles the CC and VBUS interrupts occurred.Based on the Current state of the 
-        Type C State machine , each interrupt is handled differently.
+        This API handles the CC and VBUS interrupts occurred. Based on the current state of the 
+        Type C State machine, each interrupt is handled differently.
 
     Conditions:
         None.
@@ -1080,7 +1128,8 @@ UINT8 TypeC_CheckRpValCollAvoidance(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_CCVBUSIntrHandler(UINT8 u8PortNum);
+void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum);
+
 /**************************************************************************************************
  Function:
         void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
@@ -1094,8 +1143,8 @@ void TypeC_CCVBUSIntrHandler(UINT8 u8PortNum);
     Description:
         This API handles the interrupt generated from UPD350 device if the interrupt source is 
         Cable Plug Control and Status Registers. Source of interrupt is found as one of the 
-        following: CC interrupt, VBUS interrupt and power interrupt.Interrupt is cleared by writing 
-        the read value in the register which has generated the interrupt.
+        following: CC interrupt, VBUS interrupt, Extended interrupt and power interrupt.Interrupt
+        is cleared by writing the read value in the register which has generated the interrupt.
 
     Conditions:
         None.
@@ -1111,9 +1160,10 @@ void TypeC_CCVBUSIntrHandler(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
+
 /**************************************************************************************************
  Function:
-        void TypeC_SrcIntrHandler(UINT8 u8PortNum);
+        void TypeC_SrcIntrHandler (UINT8 u8PortNum);
 
     Summary:
         This API handles the CC interrupts generated in the source state machine
@@ -1135,11 +1185,11 @@ void TypeC_HandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SrcIntrHandler(UINT8 u8PortNum);
+void TypeC_SrcIntrHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
  Function:
-        void TypeC_DrpIntrHandler(UINT8 u8PortNum);
+        void TypeC_DRPIntrHandler (UINT8 u8PortNum);
 
     Summary:
         This API handles the DRP_DONE interrupt.
@@ -1161,11 +1211,11 @@ void TypeC_SrcIntrHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_DrpIntrHandler(UINT8 u8PortNum);
+void TypeC_DRPIntrHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
  Function:
-        void TypeC_SnkIntrHandler(UINT8 u8PortNum);
+        void TypeC_SnkIntrHandler (UINT8 u8PortNum);
 
     Summary:
         This API handles the CC interrupts generated in the sink state machine
@@ -1187,10 +1237,11 @@ void TypeC_DrpIntrHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SnkIntrHandler(UINT8 u8PortNum);
+void TypeC_SnkIntrHandler (UINT8 u8PortNum);
+
 /**************************************************************************************************
  Function:
-        void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum); 
+        void TypeC_OnVCONNDISCHComplete (UINT8 u8PortNum); 
 
     Summary:
         This API is called after the VCONN Discharge is completed to reset the settings done for
@@ -1215,10 +1266,11 @@ void TypeC_SnkIntrHandler(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum); 
+void TypeC_OnVCONNDISCHComplete (UINT8 u8PortNum); 
+
 /**************************************************************************************************
  Function:
-        void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
+        void TypeC_SetCCDebounceVariable (UINT8 u8PortNum, UINT8 u8Pwrrole);
 
     Summary:
 
@@ -1246,7 +1298,8 @@ void TypeC_ResetVCONNDISSettings(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
+void TypeC_SetCCDebounceVariable (UINT8 u8PortNum, UINT8 u8Pwrrole);
+
 /**************************************************************************************************
  Function:
         void TypeC_SetCCDefaultRpValue (UINT8 u8PortNum); 
@@ -1275,9 +1328,10 @@ void TypeC_SetCCDebounceVariable(UINT8 u8PortNum, UINT8 u8Pwrrole);
         None.
 **************************************************************************************************/
 void TypeC_SetCCDefaultRpValue (UINT8 u8PortNum); 
+
 /**************************************************************************************************
  Function:
-        void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum); 
+        void TypeC_DecodeCCSourceRpValue (UINT8 u8PortNum); 
 
     Summary:
         This API is called by the protocol layer to see whether the source port partner has set the
@@ -1303,10 +1357,11 @@ void TypeC_SetCCDefaultRpValue (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum); 
+void TypeC_DecodeCCSourceRpValue (UINT8 u8PortNum); 
+
 /**************************************************************************************************
  Function:
-        void TypeC_RunStateMachine(UINT8 u8PortNum); 
+        void TypeC_RunStateMachine (UINT8 u8PortNum); 
 
     Summary:
         This API is called to run the Type C State machine for a given port.
@@ -1331,6 +1386,7 @@ void TypeC_DecodeCCSourceRpValue(UINT8 u8PortNum);
         None.
 **************************************************************************************************/
 void TypeC_RunStateMachine (UINT8 u8PortNum);
+
 /**************************************************************************************************
 Function:
         void TypeC_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState);
@@ -1360,6 +1416,7 @@ Function:
         None.
 **************************************************************************************************/
 void TypeC_StateChange_TimerCB (UINT8 u8PortNum, UINT8 u8TypeCState);
+
 /**************************************************************************************************
 Function:
         void TypeC_SubStateChange_TimerCB (UINT8 u8PortNum,UINT8 u8TypeCSubState);
@@ -1389,6 +1446,7 @@ Function:
         None.
 **************************************************************************************************/
 void TypeC_SubStateChange_TimerCB (UINT8 u8PortNum,UINT8 u8TypeCSubState);
+
 /**************************************************************************************************
 Function:
        void TypeC_KillTypeCTimer (UINT8 u8PortNum)
@@ -1415,9 +1473,10 @@ Function:
         None.
 **************************************************************************************************/
 void TypeC_KillTypeCTimer (UINT8 u8PortNum);
+
 /**************************************************************************************************
     Function:
-       void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
+       void TypeC_ConfigureVBUSThr (UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current,  UINT8 u8PowerFaultThrConfig)
 
     Summary:
         This API configures the VBUS threshold to detect the VBUS.
@@ -1445,67 +1504,11 @@ void TypeC_KillTypeCTimer (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void TypeC_ConfigureVBUSThr(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current,  UINT8 u8PowerFaultThrConfig);
+void TypeC_ConfigureVBUSThr (UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current,  UINT8 u8PowerFaultThrConfig);
 
 /**************************************************************************************************
     Function:
-       void TypeC_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
-
-    Summary:
-        This API is Timer call back for PowerGoodTimer.
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        It is a callback for PowerGoodTimer
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port Number.
-        u8DummyVariable - It is used as the Dummy variable.
-
-    Return:
-        None.
-
-    Remarks:
-        None.
-**************************************************************************************************/
-void TypeC_VBUSPowerGood_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
-
-/**************************************************************************************************
-    Function:
-       void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable)
-
-    Summary:
-        This API is Timer call back for VCONNErrorTimer.
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        It is a callback for VCONNErrorTimer.
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port Number.
-        u8DummyVariable - It is used as the Dummy variable.
-
-    Return:
-        None.
-
-    Remarks:
-        None.
-**************************************************************************************************/
-void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
-
-/**************************************************************************************************
-    Function:
-       UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum)
+       UINT16 TypeC_ObtainCurrentValueFrmRp (UINT8 u8PortNum)
 
     Summary:
         Obtains current value from Rp.
@@ -1514,7 +1517,7 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
         UPD350 REV A
 
     Description:
-        This API is to obtain the current value from the Rp value.
+        This API is used to obtain the current value from the Rp value.
 
     Conditions:
         None.
@@ -1528,5 +1531,83 @@ void TypeC_VCONNONError_TimerCB (UINT8 u8PortNum , UINT8 u8DummyVariable);
     Remarks:
         None.
 **************************************************************************************************/
-UINT16 TypeC_ObtainCurrentValueFrmRp(UINT8 u8PortNum);
+UINT16 TypeC_ObtainCurrentValueFrmRp (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void TypeC_ConfigureFRSSignalDET (UINT8 u8PortNum)
+
+    Summary:
+        API to enable detection of FRS signal 
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is used to configure UPD350 to enable it to detect FRS signal. 
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void TypeC_ConfigureFRSSignalDET (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum)
+
+    Summary:
+        API to enable transmission of FRS signal 
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is used to configure UPD350 to enable it to transmit FRS signal. 
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port Number.
+
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum); 
+    Summary:
+        API to enable UPD350 to handle FR_Swap.
+    Description:
+        If the criteria to support FR_Swap are met by both partners, this API 
+        enables UPD350 to support FR_Swap. 
+        If FR_Swap is not supported by both partners, this API disables UPD350
+        from supporting FR_Swap.
+    Conditions:
+        This API is applicable only when INCLUDE_PD_FR_SWAP is enabled.
+    Input:
+        u8PortNum - Port number
+        u8IsFRSSupported - TRUE - FRS Criteria is supported 
+                           FALSE - FRS Criteria is not supported 
+    Return:
+        None.
+    Remarks:
+        None. 
+**************************************************************************************************/
+void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported);
+
 #endif /*_TYPECCONTROL_H_*/
