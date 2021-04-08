@@ -12,6 +12,8 @@ extern "C" {
 #endif
  
 void PSF_ADCRun(void);
+UINT8 getADCPosition(void);
+
 typedef enum
 {
     eADC_INIT,

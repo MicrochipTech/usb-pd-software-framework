@@ -41,7 +41,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 #include "psf_stdinc.h"
 #include <string.h>
-
+#include "psf_adc.h"
 /*******************************************************************/
 /******************* Global variables********************************/
 /*******************************************************************/
@@ -103,14 +103,67 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
         /*Assigning PDOs*/
     pasCfgStatusData->sPerPortData[PORT0].u8SinkPDOCnt = CFG_PORT_0_SINK_NUM_OF_PDOS;
     
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_0] = CFG_PORT_0_SINK_PDO_1;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_1] = CFG_PORT_0_SINK_PDO_2;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_2] = CFG_PORT_0_SINK_PDO_3;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_3] = CFG_PORT_0_SINK_PDO_4;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_4] = CFG_PORT_0_SINK_PDO_5;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_5] = CFG_PORT_0_SINK_PDO_6;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_6] = CFG_PORT_0_SINK_PDO_7;
+//    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_0] = CFG_PORT_0_SINK_PDO_1;
+//    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_1] = CFG_PORT_0_SINK_PDO_2;
+//    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_2] = CFG_PORT_0_SINK_PDO_3;
+//    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_3] = CFG_PORT_0_SINK_PDO_4;
+//    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_4] = CFG_PORT_0_SINK_PDO_5;
+//    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_5] = CFG_PORT_0_SINK_PDO_6;
+//    pasCfgStatusData->sPerPortData[PORT0].u32aSinkPDO[INDEX_6] = CFG_PORT_0_SINK_PDO_7;
     
+    //#Bug fix
+    UINT8 position = getADCPosition();
+    memset(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO,0,7);
+    switch(position)
+    {
+        case 0:
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
+            break;
+        case 1:
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 2;
+            break;
+        case 2:
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+			gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_3;
+			gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 2;
+			break;
+        case 3:
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+			gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_4;
+			gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 2;
+			break;
+        case 4:
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 3;
+			break;
+        case 5:
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel |= CFG_PORT_0_SINK_MODEB;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 3;
+			break;
+		case 6:
+			gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 4;
+			break;
+		case 7:
+			gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel |= CFG_PORT_0_SINK_MODEB;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 4;
+			break;
+	}
     /*Assigning maximum operating current and minimum operating current for Note
       type port to 3000mA and 1000mA respectively*/
     pasCfgStatusData->sPerPortData[PORT0].u16SnkMaxOperatingCurInmA = \

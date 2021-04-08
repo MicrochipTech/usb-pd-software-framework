@@ -965,8 +965,8 @@ void PCTSetPDO(const UINT8 u8array[])
     
     gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= \
         DPM_CLIENT_REQ_RENEGOTIATE;
-    gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= \
-        DPM_CLIENT_REQ_GET_PARTNER_IDENTITY;
+//    gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= \ //Refer adc.c
+//        DPM_CLIENT_REQ_GET_PARTNER_IDENTITY;
     
 }
 

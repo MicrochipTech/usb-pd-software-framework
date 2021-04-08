@@ -48,16 +48,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define   ADC_VREF         (3300U)	// 3300mV (3.3V)
 extern UINT8 gu8PSFIdle;
 extern UINT8 gu8PDContract;
+UINT8 gu8CurrentPos;
+
 void PSF_ADCRun()
 {
-    static UINT8 u8PrevPos = 4;	/* By default PDO's are available
-					            * at position 4*/
-	static UINT8 u8CurrentPos = 4;
+    static UINT8 u8PrevPos = 6;	/* By default PDO's are available
+					            * at position 6*/
 	UINT16 u16adc_count;
 	UINT32 u32input_voltage;
 	UINT8 *pu8PrintString;
 	static ADC_RUN_STATE u8State = eADC_INIT;
 	UINT8 StrPrint[] = "\n\n\r> Knob Voltage 0x";
+    
 	switch (u8State) 
     {
         case eADC_INIT:
@@ -103,7 +105,7 @@ void PSF_ADCRun()
                 /*Supported PDO is (5V,3A)*/
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 1;
-                u8CurrentPos = 0;
+                gu8CurrentPos = 0;
             } 
             else if (u32input_voltage < 1000U) 
             {
@@ -111,7 +113,7 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 2;
-                u8CurrentPos = 1;
+                gu8CurrentPos = 1;
             } 
             else if (u32input_voltage < 1400U) 
             {
@@ -119,7 +121,7 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_3;
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 2;
-                u8CurrentPos = 2;
+                gu8CurrentPos = 2;
             } 
             else if (u32input_voltage < 1800U) 
             {
@@ -127,17 +129,16 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_4;
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 2;
-                u8CurrentPos = 3;
+                gu8CurrentPos = 3;
             }
             else if (u32input_voltage < 2200U) 
             {
-                /*Supported PDOs are (5V,3A),(9V,3A),(15V,3A),(20V,3A) in Sink Mode A*/
+                /*Supported PDOs are (5V,3A),(9V,3A),(15V,3A) in Sink Mode A*/
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
-                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;
-                u8CurrentPos = 4;
+                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 3;
+                gu8CurrentPos = 4;
             } 
             else if (u32input_voltage < 2600U) 
             {
@@ -149,18 +150,36 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 3;
+                gu8CurrentPos = 5;
+            } 
+            else if(u32input_voltage < 3000U)
+            {
+                /*Supported PDOs are (5V,3A),(9V,3A),(15V,3A) in Sink Mode A*/
+				gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;
-                u8CurrentPos = 5;
-            } 
-            else
-            {
-                // Invalid position as per REV A board
-                u8CurrentPos = 6;
+                gu8CurrentPos = 6;
             }
-            if (u8CurrentPos != u8PrevPos)
+			else
+			{
+				 /*Supported PDOs are (5V,3A),(9V,3A),(15V,3A),(20V,3A) in Sink Mode B*/
+                /* BIT[1:0] - Sink Selection mode for operation.
+                1. '0x00' Mode A: Prefer Higher Voltage and Wattage
+                2. '0x01' Mode B: Prefer Lower Voltage and Wattage */
+				gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel |= CFG_PORT_0_SINK_MODEB;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
+                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;
+                gu8CurrentPos = 7;
+			}
+            if (gu8CurrentPos != u8PrevPos)
             {
-                u8PrevPos = u8CurrentPos;
+                u8PrevPos = gu8CurrentPos;
                 /*
                  * modify the pdo list as per the new position 
                  * User application may request PSF to renegotiate based
@@ -177,9 +196,12 @@ void PSF_ADCRun()
                  * variable is set. Then BIT(5) in
                  * gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest
                  * variable needs to be set by the user application. 
-                 */
-                gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CLIENT_REQ_GET_PARTNER_IDENTITY;
-                gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
+//                 */
+//                gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CLIENT_REQ_GET_PARTNER_IDENTITY;
+//                gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
+                
+                gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= BIT(10);
+                gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= BIT(5);
 
                 DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> Client Req set");
 
@@ -195,4 +217,49 @@ void PSF_ADCRun()
             break;
         }
 	}
+}
+//#Bug fix
+UINT8 getADCPosition()
+{
+	UINT16 u16adc_count;
+	UINT32 u32input_voltage;
+    ADC_Enable();
+    ADC_ConversionStart();
+    while (!ADC_ConversionStatusGet()) ;
+    u16adc_count = ADC_ConversionResultGet();
+    u32input_voltage = u16adc_count * ADC_VREF / 4095U;
+    if (u32input_voltage < 650U) 
+    {
+        gu8CurrentPos = 0;
+    } 
+    else if (u32input_voltage < 1000U) 
+    {
+        gu8CurrentPos = 1;
+    } 
+    else if (u32input_voltage < 1400U) 
+    {
+        gu8CurrentPos = 2;
+    } 
+    else if (u32input_voltage < 1800U) 
+    {
+        gu8CurrentPos = 3;
+    }
+    else if (u32input_voltage < 2200U) 
+    {
+        gu8CurrentPos = 4;
+    } 
+    else if (u32input_voltage < 2600U) 
+    {
+        gu8CurrentPos = 5;
+    } 
+    else if(u32input_voltage < 3000U) 
+    {
+        gu8CurrentPos = 6;
+    }
+	else
+	{
+		gu8CurrentPos = 7;
+	}
+    return gu8CurrentPos;
+    
 }
