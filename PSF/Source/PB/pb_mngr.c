@@ -42,7 +42,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
     UINT16 u16PrevNegPwrIn250mW    = SET_TO_ZERO;
     UINT8 u8IsNegotiationInProgress = FALSE;   
         
-    switch(eDPM_EVENT)
+    switch (eDPM_EVENT)
     {
         case eMCHP_PSF_TYPEC_CC1_ATTACH: 
             /* fallthrough */
@@ -52,7 +52,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
             gasPBIntPortParam[u8PortNum].u8AttachSeqNo = gu8AttachSeq++;
             
             /* Update the PDOs in New PDO registers */
-            DPM_UpdateNewPDOFrmSrcPwr(u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
+            DPM_UpdateNewSourcePDO (u8PortNum, gasPBIntPortParam[u8PortNum].u16MinGuaranteedPwrIn250mW); 
                     
             /* Enable New PDO for the DPM to advertise New PDOs since the 
                first negotiation cannot be treated as a client request. */
@@ -135,7 +135,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
                         /*If the recovering mode is on and the detach occurred for the reclaiming
                          port, then see if there is enough power for Recover Port. If not
                          again Reclaim*/
-                        PB_HandleReclaimPortDetachOrRenegCmplt();
+                        PB_HandleReclaimPortDetachOrRenegCmplt ();
                     }
 
                     if (u8PortNum == gsPBIntSysParam.u8RecoverPortNum)
@@ -170,7 +170,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
                 if (ePB_FIRST_RENEGOTIATION_IN_PROGRESS_SS == gasPBIntPortParam[u8PortNum].eRenegSubState)
                 {
                     /* Calculate the power that was negotiated in the last contract */
-                    PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkRDO);                    
+                    PB_CalculateNegotiatedPower (u8PortNum, u32SourcePDO, u32SinkRDO);                    
                     
                     /*Renegotiate that port with new PDO that's assigned*/
                     /*If Reneg Flag is set, then some detach for higher priority port
@@ -197,7 +197,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
                 else if (ePB_SECOND_RENEGOTIATION_IN_PROGRESS_SS == gasPBIntPortParam[u8PortNum].eRenegSubState)
                 {                    
                     /* Calculate the power that was negotiated in the last contract */
-                   PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkRDO);                    
+                   PB_CalculateNegotiatedPower (u8PortNum, u32SourcePDO, u32SinkRDO);                    
                     
                    /*Calculate if there is excess power and refill the common pool*/
                    (void)PB_ReleaseExcessPwr (u8PortNum);
@@ -222,7 +222,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
                                 /*If the Reclaim port's Neg is complete, see if the 
                                  * Recover port has enough power to Reneg. Else Reclaim
                                  */
-                                PB_HandleReclaimPortDetachOrRenegCmplt();
+                                PB_HandleReclaimPortDetachOrRenegCmplt ();
                             }
                         }        
                         else
@@ -238,7 +238,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
                 else if (ePB_WAIT_FOR_ASYNC_REQ_SS == gasPBIntPortParam[u8PortNum].eRenegSubState)
                 {
                     /* Calculate the power that was negotiated in the last contract */
-                    PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkRDO);                    
+                    PB_CalculateNegotiatedPower (u8PortNum, u32SourcePDO, u32SinkRDO);                    
                     
                     PDTimer_Kill (gu8PBTimerID);
                     
@@ -255,8 +255,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
                          
                          PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_IN_PROGRESS_STATE,  ePB_SECOND_RENEGOTIATION_IN_PROGRESS_SS);          
                     }   
-                }
-                
+                }                
                 else
                 {
                         /*This is an asynchronous notification. This can happen
@@ -265,7 +264,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
 
                     u16PrevNegPwrIn250mW = gasPBIntPortParam[u8PortNum].u16NegotiatedPwrIn250mW;    
                     
-                    PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkRDO);
+                    PB_CalculateNegotiatedPower (u8PortNum, u32SourcePDO, u32SinkRDO);
                     
                     if (TRUE == gsPBIntSysParam.u8RecoveringMode)
                     {
@@ -298,7 +297,7 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
             else
             {
                 /* Calculate the power that was negotiated in the last contract */
-                PB_CalculateNegotiatedPower(u8PortNum, u32SourcePDO, u32SinkRDO);
+                PB_CalculateNegotiatedPower (u8PortNum, u32SourcePDO, u32SinkRDO);
                 
                 /*This notification is to indicate the completion of Initial 15W negotiation */
                 gasPBIntPortParam[u8PortNum].u8PBPortStatusMask |= PB_PORT_STATUS_INITIAL_NEG_DONE;              
@@ -310,14 +309,13 @@ UINT8 PB_HandleDPMEvents (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPM_EVENT)
                 
                 if (u8IsNegotiationInProgress)
                 {
-                    PB_ChangePortStates(u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
+                    PB_ChangePortStates (u8PortNum, ePB_RENEGOTIATION_PENDING_STATE, ePB_IDLE_SS);
                 }
                 /* Else Initiate Get Sink Caps to determine capability of the partner */
                 else
                 {
                     if (ePB_SINK_CAPS_NOT_INITIATED == gasPBIntPortParam[u8PortNum].eGetSinkCapSS)
-                    {
-                        
+                    {                        
                         PB_InitiateGetSinkCapsWrapper (u8PortNum);
                     }
                     else

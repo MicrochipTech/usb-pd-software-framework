@@ -80,6 +80,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     Default value of TYPEC_VCONNOFF_TIMEOUT_MS is set as 25 milliseconds.*/
 #define TYPEC_VCONNOFF_TIMEOUT_MS               MILLISECONDS_TO_TICKS(25)
 
+/*  TYPEC_AME_TIMEOUT_MS defines the tAMETimeout specified in the USB-Type C Specification. 
+    Default value of TYPEC_AME_TIMEOUT_MS is set as 1000 milliseconds.*/
+#define TYPEC_AME_TIMEOUT_MS                    MILLISECONDS_TO_TICKS(1000)
+
 // *****************************************************************************
 // Section: Protocol Layer Timeout configuration
 // *****************************************************************************
@@ -207,10 +211,27 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    set as 20 milliseconds. */
 #define PE_SWAP_SOURCE_START_TIMEOUT_MS         MILLISECONDS_TO_TICKS(20)
 
+/* PE_SWAP_SINK_READY_TIMEOUT_MS defines the tSwapSinkReady specified in the 
+   USB PD Specification. Default value of PE_SWAP_SINK_READY_TIMEOUT_MS is 
+   set as 12 milliseconds. */
+#define PE_SWAP_SINK_READY_TIMEOUT_MS           MILLISECONDS_TO_TICKS(12)
+
 /* PE_VDM_BUSY_TIMEOUT_MS defines the tVDMBusy specified in the 
    USB PD Specification. Default value of PE_VDM_BUSY_TIMEOUT_MS is 
    set as 50 milliseconds. */
 #define PE_VDM_BUSY_TIMEOUT_MS                  MILLISECONDS_TO_TICKS(50)
+
+/* PE_FRS_DETACH_WAIT_TIMEOUT_MS defines the amount of time Policy Engine 
+   shall wait before invoking TypeC Error Recovery on failure to receive Good_CRC   
+   for the FR_SWAP message sent. This timeout is implemented out of Type C and
+   PD Specification to wait for a TypeC Detach event. */
+#define PE_FRS_DETACH_WAIT_TIMEOUT_MS           MILLISECONDS_TO_TICKS(5)
+
+/* PE_DISCOVER_IDENTITY_TIMEOUT_MS defines the tDiscoverIdentity specified in the 
+   USB PD Specification. Default value of PE_DISCOVER_IDENTITY_TIMEOUT_MS is 
+   set as 40 milliseconds. */
+#define PE_DISCOVER_IDENTITY_TIMEOUT_MS         MILLISECONDS_TO_TICKS(40)
+
 // *****************************************************************************
 // Section: DPM Timeout configuration
 // *****************************************************************************
@@ -223,8 +244,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 // Section: UPD Idle Timeout configuration
 // *****************************************************************************
- /* UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is put to low power mode by   
-    the power management control if there is no activity or interrupt in UPD350. */
+ /* UPD_IDLE_TIMEOUT_MS is the idle time after which UPD350 is configured by the power 
+    management control layer to enter low power mode if there is no activity or 
+    interrupt in UPD350. */
 #define UPD_IDLE_TIMEOUT_MS                     MILLISECONDS_TO_TICKS(15000)
 
 #endif /* _TIMER_DEFS_H */
