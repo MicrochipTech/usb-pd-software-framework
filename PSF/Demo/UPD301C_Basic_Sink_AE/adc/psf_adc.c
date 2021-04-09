@@ -155,7 +155,7 @@ void PSF_ADCRun()
             } 
             else if(u32input_voltage < 3000U)
             {
-                /*Supported PDOs are (5V,3A),(9V,3A),(15V,3A) in Sink Mode A*/
+                /*Supported PDOs are (5V,3A),(9V,3A),(15V,3A),(20V,3A) in Sink Mode A*/
 				gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
