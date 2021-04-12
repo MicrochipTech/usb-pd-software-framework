@@ -88,7 +88,7 @@ void ADC_Initialize( void )
         /* Wait for Synchronization */
     }
 
-    uint32_t adc_linearity0 = (((*(uint64_t*)OTP4_ADDR) & (uint64_t)ADC_LINEARITY0_Msk) >> ADC_LINEARITY0_POS);
+    uint32_t adc_linearity0 = (((*(uint64_t*)OTP4_ADDR) & ADC_LINEARITY0_Msk) >> ADC_LINEARITY0_POS);
     uint32_t adc_linearity1 = (((*(uint64_t*)(OTP4_ADDR + 4)) & ADC_LINEARITY1_Msk) >> ADC_LINEARITY1_POS);
 
     /* Write linearity calibration and bias calibration */
@@ -102,7 +102,7 @@ void ADC_Initialize( void )
     ADC_REGS->ADC_REFCTRL = ADC_REFCTRL_REFSEL_INTVCC1;
 
     /* positive and negative input pins */
-    ADC_REGS->ADC_INPUTCTRL = (uint32_t) ADC_POSINPUT_PIN4 | (uint32_t) ADC_NEGINPUT_GND \
+    ADC_REGS->ADC_INPUTCTRL = ADC_POSINPUT_PIN4 | ADC_NEGINPUT_GND \
         | ADC_INPUTCTRL_INPUTSCAN(0) | ADC_INPUTCTRL_INPUTOFFSET(0) | ADC_INPUTCTRL_GAIN_DIV2;
 
     /* Prescaler, Resolution & Operation Mode */
@@ -141,12 +141,8 @@ void ADC_Disable( void )
 /* Configure channel input */
 void ADC_ChannelSelect( ADC_POSINPUT positiveInput, ADC_NEGINPUT negativeInput )
 {
-    /* Configure positive and negative input pins */
-    uint32_t channel;
-    channel = ADC_REGS->ADC_INPUTCTRL;
-    channel &= ~(ADC_INPUTCTRL_MUXPOS_Msk | ADC_INPUTCTRL_MUXNEG_Msk);
-    channel |= (uint16_t) positiveInput | (uint16_t) negativeInput;
-    ADC_REGS->ADC_INPUTCTRL = channel;
+    /* Configure pin scan mode and positive and negative input pins */
+    ADC_REGS->ADC_INPUTCTRL = positiveInput | negativeInput;
 
     while(ADC_REGS->ADC_STATUS & ADC_STATUS_SYNCBUSY_Msk)
     {
