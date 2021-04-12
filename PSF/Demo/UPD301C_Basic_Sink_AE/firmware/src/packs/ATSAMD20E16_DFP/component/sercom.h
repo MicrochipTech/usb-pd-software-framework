@@ -1,7 +1,7 @@
 /**
  * \brief Component description for SERCOM
  *
- * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
+ * Copyright (c) 2019 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software and any derivatives
  * exclusively with Microchip products. It is your responsibility to comply with third party license
@@ -20,7 +20,7 @@
  *
  */
 
-/* file generated from device description version 2019-11-25T06:48:59Z */
+/* file generated from device description version 2019-03-25T22:24:54Z */
 #ifndef _SAMD20_SERCOM_COMPONENT_H_
 #define _SAMD20_SERCOM_COMPONENT_H_
 
@@ -332,10 +332,10 @@
 #define SERCOM_USART_EXT_CTRLA_TXPO_Pos       _U_(16)                                              /**< (SERCOM_USART_EXT_CTRLA) Transmit Data Pinout Position */
 #define SERCOM_USART_EXT_CTRLA_TXPO_Msk       (_U_(0x1) << SERCOM_USART_EXT_CTRLA_TXPO_Pos)        /**< (SERCOM_USART_EXT_CTRLA) Transmit Data Pinout Mask */
 #define SERCOM_USART_EXT_CTRLA_TXPO(value)    (SERCOM_USART_EXT_CTRLA_TXPO_Msk & ((value) << SERCOM_USART_EXT_CTRLA_TXPO_Pos))
-#define   SERCOM_USART_EXT_CTRLA_TXPO_PAD0_Val _U_(0x0)                                             /**< (SERCOM_USART_EXT_CTRLA) PAD[0] = TxD; PAD[1] = XCK  */
-#define   SERCOM_USART_EXT_CTRLA_TXPO_PAD1_Val _U_(0x1)                                             /**< (SERCOM_USART_EXT_CTRLA) PAD[2] = TxD; PAD[3] = XCK  */
-#define SERCOM_USART_EXT_CTRLA_TXPO_PAD0      (SERCOM_USART_EXT_CTRLA_TXPO_PAD0_Val << SERCOM_USART_EXT_CTRLA_TXPO_Pos) /**< (SERCOM_USART_EXT_CTRLA) PAD[0] = TxD; PAD[1] = XCK Position  */
-#define SERCOM_USART_EXT_CTRLA_TXPO_PAD1      (SERCOM_USART_EXT_CTRLA_TXPO_PAD1_Val << SERCOM_USART_EXT_CTRLA_TXPO_Pos) /**< (SERCOM_USART_EXT_CTRLA) PAD[2] = TxD; PAD[3] = XCK Position  */
+#define   SERCOM_USART_EXT_CTRLA_TXPO_PAD0_Val _U_(0x0)                                             /**< (SERCOM_USART_EXT_CTRLA) SERCOM PAD[0] is used for data transmission  */
+#define   SERCOM_USART_EXT_CTRLA_TXPO_PAD2_Val _U_(0x1)                                             /**< (SERCOM_USART_EXT_CTRLA) SERCOM PAD[2] is used for data transmission  */
+#define SERCOM_USART_EXT_CTRLA_TXPO_PAD0      (SERCOM_USART_EXT_CTRLA_TXPO_PAD0_Val << SERCOM_USART_EXT_CTRLA_TXPO_Pos) /**< (SERCOM_USART_EXT_CTRLA) SERCOM PAD[0] is used for data transmission Position  */
+#define SERCOM_USART_EXT_CTRLA_TXPO_PAD2      (SERCOM_USART_EXT_CTRLA_TXPO_PAD2_Val << SERCOM_USART_EXT_CTRLA_TXPO_Pos) /**< (SERCOM_USART_EXT_CTRLA) SERCOM PAD[2] is used for data transmission Position  */
 #define SERCOM_USART_EXT_CTRLA_RXPO_Pos       _U_(20)                                              /**< (SERCOM_USART_EXT_CTRLA) Receive Data Pinout Position */
 #define SERCOM_USART_EXT_CTRLA_RXPO_Msk       (_U_(0x3) << SERCOM_USART_EXT_CTRLA_RXPO_Pos)        /**< (SERCOM_USART_EXT_CTRLA) Receive Data Pinout Mask */
 #define SERCOM_USART_EXT_CTRLA_RXPO(value)    (SERCOM_USART_EXT_CTRLA_RXPO_Msk & ((value) << SERCOM_USART_EXT_CTRLA_RXPO_Pos))
@@ -411,10 +411,10 @@
 #define SERCOM_USART_INT_CTRLA_TXPO_Pos       _U_(16)                                              /**< (SERCOM_USART_INT_CTRLA) Transmit Data Pinout Position */
 #define SERCOM_USART_INT_CTRLA_TXPO_Msk       (_U_(0x1) << SERCOM_USART_INT_CTRLA_TXPO_Pos)        /**< (SERCOM_USART_INT_CTRLA) Transmit Data Pinout Mask */
 #define SERCOM_USART_INT_CTRLA_TXPO(value)    (SERCOM_USART_INT_CTRLA_TXPO_Msk & ((value) << SERCOM_USART_INT_CTRLA_TXPO_Pos))
-#define   SERCOM_USART_INT_CTRLA_TXPO_PAD0_Val _U_(0x0)                                             /**< (SERCOM_USART_INT_CTRLA) PAD[0] = TxD; PAD[1] = XCK  */
-#define   SERCOM_USART_INT_CTRLA_TXPO_PAD1_Val _U_(0x1)                                             /**< (SERCOM_USART_INT_CTRLA) PAD[2] = TxD; PAD[3] = XCK  */
-#define SERCOM_USART_INT_CTRLA_TXPO_PAD0      (SERCOM_USART_INT_CTRLA_TXPO_PAD0_Val << SERCOM_USART_INT_CTRLA_TXPO_Pos) /**< (SERCOM_USART_INT_CTRLA) PAD[0] = TxD; PAD[1] = XCK Position  */
-#define SERCOM_USART_INT_CTRLA_TXPO_PAD1      (SERCOM_USART_INT_CTRLA_TXPO_PAD1_Val << SERCOM_USART_INT_CTRLA_TXPO_Pos) /**< (SERCOM_USART_INT_CTRLA) PAD[2] = TxD; PAD[3] = XCK Position  */
+#define   SERCOM_USART_INT_CTRLA_TXPO_PAD0_Val _U_(0x0)                                             /**< (SERCOM_USART_INT_CTRLA) SERCOM PAD[0] is used for data transmission  */
+#define   SERCOM_USART_INT_CTRLA_TXPO_PAD2_Val _U_(0x1)                                             /**< (SERCOM_USART_INT_CTRLA) SERCOM PAD[2] is used for data transmission  */
+#define SERCOM_USART_INT_CTRLA_TXPO_PAD0      (SERCOM_USART_INT_CTRLA_TXPO_PAD0_Val << SERCOM_USART_INT_CTRLA_TXPO_Pos) /**< (SERCOM_USART_INT_CTRLA) SERCOM PAD[0] is used for data transmission Position  */
+#define SERCOM_USART_INT_CTRLA_TXPO_PAD2      (SERCOM_USART_INT_CTRLA_TXPO_PAD2_Val << SERCOM_USART_INT_CTRLA_TXPO_Pos) /**< (SERCOM_USART_INT_CTRLA) SERCOM PAD[2] is used for data transmission Position  */
 #define SERCOM_USART_INT_CTRLA_RXPO_Pos       _U_(20)                                              /**< (SERCOM_USART_INT_CTRLA) Receive Data Pinout Position */
 #define SERCOM_USART_INT_CTRLA_RXPO_Msk       (_U_(0x3) << SERCOM_USART_INT_CTRLA_RXPO_Pos)        /**< (SERCOM_USART_INT_CTRLA) Receive Data Pinout Mask */
 #define SERCOM_USART_INT_CTRLA_RXPO(value)    (SERCOM_USART_INT_CTRLA_RXPO_Msk & ((value) << SERCOM_USART_INT_CTRLA_RXPO_Pos))

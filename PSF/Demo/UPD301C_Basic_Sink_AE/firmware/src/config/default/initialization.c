@@ -102,14 +102,6 @@
 
 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Local initialization functions
-// *****************************************************************************
-// *****************************************************************************
-
-
-
 /*******************************************************************************
   Function:
     void SYS_Initialize ( void *data )
@@ -132,7 +124,7 @@ void SYS_Initialize ( void* data )
     NVMCTRL_Initialize( );
     
     //UART is initialized either in PSF or in PCT
-    //SERCOM1_USART_Initialize();
+    SERCOM1_USART_Initialize();
 
 	//SPI initialization is done as part of MchpPSF_Init by PSF stack
     //SERCOM0_SPI_Initialize();
@@ -145,6 +137,10 @@ void SYS_Initialize ( void* data )
     //TC0_TimerInitialize();
 
     DAC_Initialize();
+
+
+
+
 
     NVIC_Initialize();
 

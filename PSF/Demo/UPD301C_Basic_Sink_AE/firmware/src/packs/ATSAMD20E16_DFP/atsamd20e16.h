@@ -1,7 +1,7 @@
 /**
  * \brief Header file for ATSAMD20E16
  *
- * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
+ * Copyright (c) 2019 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software and any derivatives
  * exclusively with Microchip products. It is your responsibility to comply with third party license
@@ -20,7 +20,7 @@
  *
  */
 
-/* file generated from device description version 2019-11-25T06:48:37Z */
+/* file generated from device description version 2019-03-25T22:23:58Z */
 #ifndef _SAMD20E16_H_
 #define _SAMD20E16_H_
 
@@ -158,12 +158,6 @@ typedef struct _DeviceVectors
   void* pfnPTC_Handler;                          /*  24 Peripheral Touch Controller (PTC) */
 } DeviceVectors;
 
-/* Defines for Deprecated Interrupt and Exceptions handler names */
-#define pfnMemManage_Handler      pfnMemoryManagement_Handler     /**< \deprecated  Backward compatibility for ASF*/
-#define pfnDebugMon_Handler       pfnDebugMonitor_Handler         /**< \deprecated  Backward compatibility for ASF*/
-#define pfnNMI_Handler            pfnNonMaskableInt_Handler       /**< \deprecated  Backward compatibility for ASF*/
-#define pfnSVC_Handler            pfnSVCall_Handler               /**< \deprecated  Backward compatibility for ASF*/
-
 #endif /* !(defined(__ASSEMBLER__) || defined(__IAR_SYSTEMS_ASM__)) */
 
 #if !(defined(__ASSEMBLER__) || defined(__IAR_SYSTEMS_ASM__))
@@ -201,12 +195,6 @@ void AC_Handler                    ( void );
 void DAC_Handler                   ( void );
 void PTC_Handler                   ( void );
 #endif /* DONT_USE_PREDEFINED_PERIPHERALS_HANDLERS */
-/* Defines for Deprecated Interrupt and Exceptions handler names */
-#define MemManage_Handler         MemoryManagement_Handler        /**< \deprecated  Backward compatibility*/
-#define DebugMon_Handler          DebugMonitor_Handler            /**< \deprecated  Backward compatibility*/
-#define NMI_Handler               NonMaskableInt_Handler          /**< \deprecated  Backward compatibility*/
-#define SVC_Handler               SVCall_Handler                  /**< \deprecated  Backward compatibility*/
-
 #endif /* !(defined(__ASSEMBLER__) || defined(__IAR_SYSTEMS_ASM__)) */
 
 /*
@@ -426,7 +414,7 @@ void PTC_Handler                   ( void );
 /* ************************************************************************** */
 /**  DEVICE SIGNATURES FOR SAMD20E16                                          */
 /* ************************************************************************** */
-#define CHIP_DSU_DID                   _UL_(0X1000140C)
+#define DSU_DID                        _UL_(0X1000140C)
 
 /* ************************************************************************** */
 /**  ELECTRICAL DEFINITIONS FOR SAMD20E16                                     */
