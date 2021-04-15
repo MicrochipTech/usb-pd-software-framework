@@ -76,10 +76,10 @@ UINT8 PCTReadByte(void)
 void PCTPrintCommands()
 {
 	UINT8 u8aPrintString[] =
-	    "?\n\n\r> get version - Gets the current version\n\r> get pdo - Gets the sink power details\n\r> "
+	    "\n\n\r> get version - Gets the current version\n\r> get pdo - Gets the sink power details\n\r> "
 	    "get sr[GlobalCfgStatusData] - Gets the config status data\n\r> get sr[PortCfgStatus] - Gets the port Config Status\n\r> "
 	    "get mem[memory_address][length] -  Reads the memory at the given location\n\r> set mem[memory_address][byte value] - Writes memory to SAMD20\n\r> "
-	    "set pdo[position][value] -  Insert a new PDO at the specified location\n\n\r";
+	    "set pdo[position][value] -  Insert a new PDO at the specified location";
 	(void)SERCOM1_USART_Write(&u8aPrintString[0], sizeof(u8aPrintString));
     (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
 }
@@ -141,7 +141,7 @@ UINT8 *HextoAscii(UINT32 u32HexVal, UINT8 u8Length)
 
 void PCTInvalidCommandMsg()
 {
-	UINT8 u8aPrintString[] = "\n\n\r> invalid command! Type help to know more\n\n\r";
+	UINT8 u8aPrintString[] = "\n\n\r> invalid command! Type help to know more";
 	(void)SERCOM1_USART_Write(&u8aPrintString[0], sizeof(u8aPrintString));
     (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
 }
@@ -457,20 +457,20 @@ void PCTPrintStatusData(const UINT8 u8array[])
 	UINT8 *pu8PrintValue;
 	if (0 == memcmp(u8array, u8aGlobalHelper, 27)) 
     {
-		UINT8 StrMinorVersion[] = "\n\n\r>UINT8 u8MinorVersion=";
-		UINT8 StrMajorVersion[] = "\n\n\r>UINT8 u8MajorVersion=";
-		UINT8 StrHWVersion[] = "\n\n\r>UINT8 u8HWVersion";
-		UINT8 StrSiVersion[] = "\n\n\r>UINT8 u8SiVersion";
-		UINT8 StrManfString[] = "\n\n\r>UINT8 u8aManfString";
-		UINT8 StrPSFMajorVersion[] = "\n\n\r>UINT8 u8PSFMajorVersion";
-		UINT8 StrPSFMinorVersion[] = "\n\n\r>UINT8 u8PSFMinorVersion";
-		UINT8 StrPwrThrottleCfg[] = "\n\n\r>UINT8 u8PwrThrottleCfg";
-		UINT8 StrProducdID[] = "\n\n\r>UINT16 u16ProducdID";
-		UINT8 StrVendorID[] = "\n\n\r>UINT16 u16VendorID";
-		UINT8 StrProductTypeVDO[] = "\n\n\r>UINT16 u16ProductTypeVDO";
-		UINT8 StrProductVDO[] = "\n\n\r>UINT16 u16ProductVDO";
-		UINT8 StrCertStatVDO[] = "\n\n\r>UINT16 u16CertStatVDO";
-		UINT8 StrIDHeaderVDO[] = "\n\n\r>UINT16 u16IDHeaderVDO";
+		UINT8 StrMinorVersion[] = "\n\n\r>UINT8 u8MinorVersion = ";
+		UINT8 StrMajorVersion[] = "\n\n\r>UINT8 u8MajorVersion = ";
+		UINT8 StrHWVersion[] = "\n\n\r>UINT8 u8HWVersion = ";
+		UINT8 StrSiVersion[] = "\n\n\r>UINT8 u8SiVersion = ";
+		UINT8 StrManfString[] = "\n\n\r>UINT8 u8aManfString = ";
+		UINT8 StrPSFMajorVersion[] = "\n\n\r>UINT8 u8PSFMajorVersion = ";
+		UINT8 StrPSFMinorVersion[] = "\n\n\r>UINT8 u8PSFMinorVersion = ";
+		UINT8 StrPwrThrottleCfg[] = "\n\n\r>UINT8 u8PwrThrottleCfg = ";
+		UINT8 StrProducdID[] = "\n\n\r>UINT16 u16ProducdID = ";
+		UINT8 StrVendorID[] = "\n\n\r>UINT16 u16VendorID = ";
+		UINT8 StrProductTypeVDO[] = "\n\n\r>UINT16 u16ProductTypeVDO = ";
+		UINT8 StrProductVDO[] = "\n\n\r>UINT16 u16ProductVDO = ";
+		UINT8 StrCertStatVDO[] = "\n\n\r>UINT16 u16CertStatVDO = ";
+		UINT8 StrIDHeaderVDO[] = "\n\n\r>UINT16 u16IDHeaderVDO = ";
 
 		pu8PrintValue = HextoAscii(gasCfgStatusData.u8MinorVersion, 4);
 		PCTWrite(StrMinorVersion, (UINT8 *) & pu8PrintValue[0],\
@@ -532,44 +532,44 @@ void PCTPrintStatusData(const UINT8 u8array[])
     else if (0 == memcmp(u8array, u8aPortHelper, 21)) 
     {
 		UINT8 u8Index;
-		UINT8 StrCfgData[] = "\n\n\r>UINT32 u32CfgData=";
-		UINT8 StrRDOVoltage[] = "\n\n\r>UINT32 u32RDOVoltage=";
-		UINT8 StrRDOCurrent[] = "\n\n\r>UINT32 u32RDOCurrent=";
-		UINT8 StrPortConnectStatus[] = "\n\n\r>UINT32 u32PortConnectStatus=";
-		UINT8 StrPortStatusChange[] = "\n\n\r>UINT32 u32PortStatusChange=";
-		UINT8 StrPortIOStatus[] = "\n\n\r>UINT32 u32PortIOStatus=";
-		UINT8 u32ClientRequest[] = "\n\n\r>UINT32 u32ClientRequest=";
-		UINT8 u16AllocatedPowerIn250mW[] = "\n\n\r>UINT16 u16AllocatedPowerIn250mW=";
-		UINT8 u16NegoVoltageInmV[] = "\n\n\r>UINT16 u16NegoVoltageInmV=";
-		UINT8 u16NegoCurrentInmA[] = "\n\n\r>UINT16 u16NegoCurrentInmA=";
-		UINT8 u16MaxSrcPrtCurrentIn10mA[] = "\n\n\r>UINT16 u16MaxSrcPrtCurrentIn10mA=";
-		UINT8 u16PortIntrMask[] = "\n\n\r>UINT16 u16PortIntrMask=";
-		UINT8 u16FeatureSelect[] = "\n\n\r>UINT16 u16FeatureSelect=";
-		UINT8 u16SwapPolicy[] = "\n\n\r>UINT16 u16SwapPolicy=";
-		UINT8 StrPowerGoodTimerInms[] = "\n\n\r>UINT16 u16PowerGoodTimerInms=";
-		UINT8 StraMinPDOPreferredCurInmA[] = "\n\n\r>UINT16 u16aMinPDOPreferredCurInmA=";
-		UINT8 StrSnkMaxOperatingCurInmA[] = "\n\n\r>UINT16 u16SnkMaxOperatingCurInmA=";
-		UINT8 StrSnkMinOperatingCurInmA[] = "\n\n\r>UINT16 u16SnkMinOperatingCurInmA=";
-		UINT8 StrDAC_I_MaxOutVoltInmV[] = "\n\n\r>UINT16 u16DAC_I_MaxOutVoltInmV=";
-		UINT8 StrDAC_I_MinOutVoltInmV[] = "\n\n\r>UINT16 u16DAC_I_MinOutVoltInmV=";
-		UINT8 StrDAC_I_CurrentInd_MaxInA[] = "\n\n\r>UINT16 u16DAC_I_CurrentInd_MaxInA=";
-		UINT8 StrSinkPDOCnt[] = "\n\n\r>UINT8 u8SinkPDOCnt=";
-		UINT8 StrNewPDOCnt[] = "\n\n\r>UINT8 u8NewPDOCnt=";
-		UINT8 StrAdvertisedPDOCnt[] = "\n\n\r>UINT8 u8AdvertisedPDOCnt=";
-		UINT8 StrSinkConfigSel[] = "\n\n\r>UINT8 u8SinkConfigSel=";
-		UINT8 StrFaultInDebounceInms[] = "\n\n\r>UINT8 u8FaultInDebounceInms=";
-		UINT8 StrOCSThresholdPercentage[] = "\n\n\r>UINT8 u8OCSThresholdPercentage=";
-		UINT8 StrOVThresholdPercentage[] = "\n\n\r>UINT8 u8OVThresholdPercentage=";
-		UINT8 StrUVThresholdPercentage[] = "\n\n\r>UINT8 u8UVThresholdPercentage=";
-		UINT8 StrVCONNOCSDebounceInms[] = "\n\n\r>UINT8 u8VCONNOCSDebounceInms=";
-		UINT8 StrVBUSMaxFaultCnt[] = "\n\n\r>UINT8 u8VBUSMaxFaultCnt=";
-		UINT8 StrVCONNMaxFaultCnt[] = "\n\n\r>UINT8 u8VCONNMaxFaultCnt=";
-		UINT8 StrPio_FAULT_IN[] = "\n\n\r>UINT8 u8Pio_FAULT_IN=";
-		UINT8 StrMode_FAULT_IN[] = "\n\n\r>UINT8 u8Mode_FAULT_IN=";
-		UINT8 StrPio_EN_SINK[] = "\n\n\r>UINT8 u8Pio_EN_SINK=";
-		UINT8 StrMode_EN_SINK[] = "\n\n\r>UINT8 u8Mode_EN_SINK=";
-		UINT8 StrDAC_I_Direction[] = "\n\n\r>UINT8 u8DAC_I_Direction=";
-		UINT8 StrPartnerPDOCnt[] = "\n\n\r>UINT8 u8PartnerPDOCnt";
+		UINT8 StrCfgData[] = "\n\n\r>UINT32 u32CfgData = ";
+		UINT8 StrRDOVoltage[] = "\n\n\r>UINT32 u32RDOVoltage = ";
+		UINT8 StrRDOCurrent[] = "\n\n\r>UINT32 u32RDOCurrent = ";
+		UINT8 StrPortConnectStatus[] = "\n\n\r>UINT32 u32PortConnectStatus = ";
+		UINT8 StrPortStatusChange[] = "\n\n\r>UINT32 u32PortStatusChange = ";
+		UINT8 StrPortIOStatus[] = "\n\n\r>UINT32 u32PortIOStatus = ";
+		UINT8 u32ClientRequest[] = "\n\n\r>UINT32 u32ClientRequest = ";
+		UINT8 u16AllocatedPowerIn250mW[] = "\n\n\r>UINT16 u16AllocatedPowerIn250mW = ";
+		UINT8 u16NegoVoltageInmV[] = "\n\n\r>UINT16 u16NegoVoltageInmV = ";
+		UINT8 u16NegoCurrentInmA[] = "\n\n\r>UINT16 u16NegoCurrentInmA = ";
+		UINT8 u16MaxSrcPrtCurrentIn10mA[] = "\n\n\r>UINT16 u16MaxSrcPrtCurrentIn10mA = ";
+		UINT8 u16PortIntrMask[] = "\n\n\r>UINT16 u16PortIntrMask = ";
+		UINT8 u16FeatureSelect[] = "\n\n\r>UINT16 u16FeatureSelect = ";
+		UINT8 u16SwapPolicy[] = "\n\n\r>UINT16 u16SwapPolicy = ";
+		UINT8 StrPowerGoodTimerInms[] = "\n\n\r>UINT16 u16PowerGoodTimerInms = ";
+		UINT8 StraMinPDOPreferredCurInmA[] = "\n\n\r>UINT16 u16aMinPDOPreferredCurInmA = ";
+		UINT8 StrSnkMaxOperatingCurInmA[] = "\n\n\r>UINT16 u16SnkMaxOperatingCurInmA = ";
+		UINT8 StrSnkMinOperatingCurInmA[] = "\n\n\r>UINT16 u16SnkMinOperatingCurInmA = ";
+		UINT8 StrDAC_I_MaxOutVoltInmV[] = "\n\n\r>UINT16 u16DAC_I_MaxOutVoltInmV = ";
+		UINT8 StrDAC_I_MinOutVoltInmV[] = "\n\n\r>UINT16 u16DAC_I_MinOutVoltInmV = ";
+		UINT8 StrDAC_I_CurrentInd_MaxInA[] = "\n\n\r>UINT16 u16DAC_I_CurrentInd_MaxInA = ";
+		UINT8 StrSinkPDOCnt[] = "\n\n\r>UINT8 u8SinkPDOCnt = ";
+		UINT8 StrNewPDOCnt[] = "\n\n\r>UINT8 u8NewPDOCnt = ";
+		UINT8 StrAdvertisedPDOCnt[] = "\n\n\r>UINT8 u8AdvertisedPDOCnt = ";
+		UINT8 StrSinkConfigSel[] = "\n\n\r>UINT8 u8SinkConfigSel = ";
+		UINT8 StrFaultInDebounceInms[] = "\n\n\r>UINT8 u8FaultInDebounceInms = ";
+		UINT8 StrOCSThresholdPercentage[] = "\n\n\r>UINT8 u8OCSThresholdPercentage = ";
+		UINT8 StrOVThresholdPercentage[] = "\n\n\r>UINT8 u8OVThresholdPercentage = ";
+		UINT8 StrUVThresholdPercentage[] = "\n\n\r>UINT8 u8UVThresholdPercentage = ";
+		UINT8 StrVCONNOCSDebounceInms[] = "\n\n\r>UINT8 u8VCONNOCSDebounceInms = ";
+		UINT8 StrVBUSMaxFaultCnt[] = "\n\n\r>UINT8 u8VBUSMaxFaultCnt = ";
+		UINT8 StrVCONNMaxFaultCnt[] = "\n\n\r>UINT8 u8VCONNMaxFaultCnt = ";
+		UINT8 StrPio_FAULT_IN[] = "\n\n\r>UINT8 u8Pio_FAULT_IN = ";
+		UINT8 StrMode_FAULT_IN[] = "\n\n\r>UINT8 u8Mode_FAULT_IN = ";
+		UINT8 StrPio_EN_SINK[] = "\n\n\r>UINT8 u8Pio_EN_SINK = ";
+		UINT8 StrMode_EN_SINK[] = "\n\n\r>UINT8 u8Mode_EN_SINK = ";
+		UINT8 StrDAC_I_Direction[] = "\n\n\r>UINT8 u8DAC_I_Direction = ";
+		UINT8 StrPartnerPDOCnt[] = "\n\n\r>UINT8 u8PartnerPDOCnt = ";
 
         pu8PrintValue = HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u32CfgData,\
                    sizeof(gasCfgStatusData.sPerPortData[PORT0].u32CfgData));
@@ -958,15 +958,15 @@ void PCTSetPDO(const UINT8 u8array[])
 
     gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[u32PDOPosition] = u32PDOValue;
     gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = \
-	    gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt;
-    
+	    gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt;    
 
-    MCHP_PSF_HOOK_PRINT_TRACE(" Set PDO\r\n");
-    
+    gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= \
+            DPM_CFG_NEGOTIATE_USING_NEW_PDOS;
     gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= \
         DPM_CLIENT_REQ_RENEGOTIATE;
-//    gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= \ //Refer adc.c
-//        DPM_CLIENT_REQ_GET_PARTNER_IDENTITY;
+    
+    MCHP_PSF_HOOK_PRINT_TRACE(" PDO Set\r\n");
+
     
 }
 
@@ -1061,9 +1061,9 @@ void PCTCommandhandler(const UINT8 u8array[])
 
 void PCTSpaceBARMsg(PCT_LOCK_STATE lock_state)
 {
-	UINT8 u8aPrintString[] = "\n\n\r> Welcome to PCT..Hit space bar to exit";
+	UINT8 u8aPrintString[] = "> Welcome to PSF Control Terminal\n\n\r> Type ? for the list of supported commands\n\n\r> Hit space bar to exit";
 	UINT8 u8aPrintUnlockString[] = "\n\n\r> Good bye\n\n\r";
-	if (ePCT_LOCK==lock_state) 
+	if (ePCT_LOCK == lock_state) 
     {
 		(void)SERCOM1_USART_Write(&u8aPrintString[0],sizeof(u8aPrintString));
         (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
@@ -1186,11 +1186,11 @@ void MchpPSF_PCTRUN(PCT_LOCK_STATE lock_state)
 
                 if (lock_state == ePCT_LOCK) 
                 {
-                    lock_state=ePCT_UNLOCK;
+                    lock_state = ePCT_UNLOCK;
                 } 
                 else 
                 {
-                    lock_state=ePCT_LOCK;
+                    lock_state = ePCT_LOCK;
                 }
                 PCTSpaceBARMsg(lock_state);
 
@@ -1198,7 +1198,7 @@ void MchpPSF_PCTRUN(PCT_LOCK_STATE lock_state)
                 break;
         }
     }
-    while (ePCT_LOCK==lock_state);
+    while (ePCT_LOCK == lock_state);
 }
 
 void MchpPSF_PCTInit()

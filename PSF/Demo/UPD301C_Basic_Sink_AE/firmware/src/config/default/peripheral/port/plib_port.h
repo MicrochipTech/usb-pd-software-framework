@@ -102,6 +102,15 @@
 #define SNK_3A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 15)
 #define SNK_3A_IND_PIN                  PORT_PIN_PA15
 
+/*** Macros for EN_SINK pin ***/
+#define EN_SINK_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 22)
+#define EN_SINK_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 22)
+#define EN_SINK_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 22)
+#define EN_SINK_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 22)) & 0x01)
+#define EN_SINK_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 22)
+#define EN_SINK_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 22)
+#define EN_SINK_PIN                  PORT_PIN_PA22
+
 /*** Macros for CAP_MISMATCH pin ***/
 #define CAP_MISMATCH_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 23)
 #define CAP_MISMATCH_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 23)
