@@ -20,7 +20,7 @@
           <LogicalPath dnOrder="2">config/default/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">E0CFEFA8DDE25E0AC8EFDC75D0AC38DF</GeneratedChecksum>
-          <UserChecksum dnOrder="5">E2335A28136BBDF8A38ECC8CE43D7C93</UserChecksum>
+          <UserChecksum dnOrder="5">B99435125EDE1AAE991ECFA204185F60</UserChecksum>
         </File>
         <File dnOrder="2">
           <Type dnOrder="0">SOURCE</Type>
@@ -99,8 +99,8 @@
           <Name dnOrder="1">plib_port.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">4BFF795195466E39DA21734A4BD3FA8D</GeneratedChecksum>
-          <UserChecksum dnOrder="5">4BFF795195466E39DA21734A4BD3FA8D</UserChecksum>
+          <GeneratedChecksum dnOrder="4">6157D541D5FCE878A421AF7D1085A0E3</GeneratedChecksum>
+          <UserChecksum dnOrder="5">6157D541D5FCE878A421AF7D1085A0E3</UserChecksum>
         </File>
         <File dnOrder="12">
           <Type dnOrder="0">SOURCE</Type>
@@ -403,8 +403,8 @@
           <Name dnOrder="1">plib_port.h</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">AABE101E8CAA446F91F7CBE372AF14CF</GeneratedChecksum>
-          <UserChecksum dnOrder="5">AABE101E8CAA446F91F7CBE372AF14CF</UserChecksum>
+          <GeneratedChecksum dnOrder="4">284206BF38ACB47FE3BA72F212ADBF57</GeneratedChecksum>
+          <UserChecksum dnOrder="5">284206BF38ACB47FE3BA72F212ADBF57</UserChecksum>
         </File>
         <File dnOrder="50">
           <Type dnOrder="0">HEADER</Type>
@@ -556,7 +556,7 @@
       <Setting dnOrder="2" key="FORCE_OPTIMIZATION" value="false"/>
       <Setting dnOrder="3" key="GENERATE_BACKUP" value="true"/>
       <Setting dnOrder="4" key="MERGE_STRATEGY" value="USER_ALL"/>
-      <Setting dnOrder="5" key="PackageFilter" value="bsp;core;csp;quick_docs;usb;"/>
+      <Setting dnOrder="5" key="PackageFilter" value="csp;quick_docs;"/>
     </Settings>
   </Configurator>
 </Configuration>

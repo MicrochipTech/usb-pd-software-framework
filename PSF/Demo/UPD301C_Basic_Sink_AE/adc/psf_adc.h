@@ -12,7 +12,7 @@ extern "C" {
 #endif
  
 void PSF_ADCRun(void);
-UINT8 getADCPosition(void);
+UINT8 Get_ADCPosition(void);
 
 typedef enum
 {
