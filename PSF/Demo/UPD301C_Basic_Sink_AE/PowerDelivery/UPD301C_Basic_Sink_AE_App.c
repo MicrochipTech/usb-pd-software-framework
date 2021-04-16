@@ -150,6 +150,11 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break; 
         }
        
+        case eMCHP_PSF_HARD_RESET_COMPLETE:
+        {
+            break; 
+        }
+        
         case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
         {
 			/*Returning TRUE to enable PSF to handle Error Recovery*/
@@ -171,7 +176,27 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         {
             break; 
         }        
+                
+        case eMCHP_PSF_VDM_RESPONSE_RCVD:
+        {
+            break;
+        }
         
+        case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_REQUEST_RCVD:
+        {
+            u8RetVal = TRUE;
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_AMS_COMPLETE:
+        {
+            break; 
+        }
         
         case eMCHP_PSF_PORT_DISABLED:
         {
@@ -232,7 +257,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eSNK_CAPS_MISMATCH_FUNC:
         {
-            CAP_MISMATCH_Set();
+            CAP_MISMATCH_Clear();
             CAP_MISMATCH_OutputEnable();            
             break;
         }
@@ -351,7 +376,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                CAP_MISMATCH_Clear();
+                CAP_MISMATCH_Clear(); //reversed from sink project
             }
             else
             {

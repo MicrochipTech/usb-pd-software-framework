@@ -305,14 +305,13 @@ UINT8 DPM_StoreCableIdentity (UINT8 u8PortNum, UINT16 u16Header, UINT32 *u32Data
     UINT8 u8CurVal;
     
     /* Store the received VDM Data Object count in u8CableIdentityCnt.
-       Subtracting 1 from the actual count to eliminate the VDM Header 
+       Subtracting 1 from the actual count to eliminate the VDM Header */
     gasCfgStatusData.sPerPortData[u8PortNum].u8CableIdentityCnt = \
-                                        (PRL_GET_OBJECT_COUNT(u16Header) - BYTE_LEN_1); */
-        UINT8 u8CableIdentityCnt = (PRL_GET_OBJECT_COUNT(u16Header) - BYTE_LEN_1); 
+                                        (PRL_GET_OBJECT_COUNT(u16Header) - BYTE_LEN_1);
     
     /* Store the received VDM Data Objects in u32aCableIdentity array */
     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity, (u32DataBuf + BYTE_LEN_1),
-                 (u8CableIdentityCnt * BYTE_LEN_4));                                                   
+                 (gasCfgStatusData.sPerPortData[u8PortNum].u8CableIdentityCnt * BYTE_LEN_4));                                                   
     
     /* Get the CMD type from received VDM */
     u8RetVal = DPM_GET_VDM_CMD_TYPE(u32DataBuf[DPM_VDM_HEADER_POS]);
@@ -1044,18 +1043,18 @@ void DPM_EvaluateRcvdSrcCaps (UINT8 u8PortNum, UINT16 u16RecvdSrcCapsHeader,
         /*Clear partner's source pdo variable initially*/
         for (UINT8 u8Index = INDEX_0; u8Index < DPM_MAX_PDO_CNT; u8Index++)
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = SET_TO_ZERO;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[u8Index] = SET_TO_ZERO;
         }
 
         /*Update received source capabilities to partner's source variable*/
-        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, 
+        (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO, 
                                         pu32RecvdSrcCapsPayload, DPM_4BYTES_FOR_EACH_PDO_OF(u8RcvdSrcPDOCnt));
-        gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = u8RcvdSrcPDOCnt;
+        gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSourcePDOCnt = u8RcvdSrcPDOCnt;
     }
     
-    u8PartnerSourcePDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt;
+    u8PartnerSourcePDOCnt = gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSourcePDOCnt;
     /*Update received source capabilities to partner variable*/
-    (void)MCHP_PSF_HOOK_MEMCPY(u32aPartnerSourcePDO, gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, 
+    (void)MCHP_PSF_HOOK_MEMCPY(u32aPartnerSourcePDO, gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO, 
             DPM_4BYTES_FOR_EACH_PDO_OF(u8PartnerSourcePDOCnt));
         
     DPM_UpdateAdvertisedPDO (u8PortNum);
@@ -1376,12 +1375,12 @@ void DPM_InitiateInternalEvts (UINT8 u8PortNum)
        Note: Get Sink Caps will not be initiated when:
           1. The configured power role is sink only
           2. If partner attached is source only */
-    if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]) &&\
+    if ((!gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0]) &&\
           (PD_ROLE_SINK != u8DefaultPwrRole) &&\
             (TRUE != DPM_IS_PB_ENABLED(u8PortNum)))
     {
         if (!((PD_ROLE_SINK == u8CurrentPwrRole) && \
-            (FALSE == DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0]))))
+            (FALSE == DPM_GET_PDO_DUAL_POWER(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[INDEX_0]))))
         {
             DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_GET_SINK_CAPS);
         }   
@@ -1575,10 +1574,12 @@ void DPM_OnTypeCDetach (UINT8 u8PortNum)
     /*Clear Partner PDO, Advertised PDO, Cable Identity and Partner Identity registers */
     for (UINT8 u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++)
     {
-        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index] = RESET_TO_ZERO;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSourcePDO[u8Index] = RESET_TO_ZERO;
+        gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[u8Index] = RESET_TO_ZERO;
         gasCfgStatusData.sPerPortData[u8PortNum].u32aAdvertisedPDO[u8Index] = RESET_TO_ZERO;        
     }
-    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSourcePDOCnt = RESET_TO_ZERO; 
+    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt = RESET_TO_ZERO; 
     gasCfgStatusData.sPerPortData[u8PortNum].u8AdvertisedPDOCnt = RESET_TO_ZERO; 
     
     #if (TRUE == INCLUDE_PD_SOURCE_PPS)
@@ -2342,7 +2343,7 @@ void DPM_HandleHPDEvents (UINT8 u8PortNum)
 
 void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum)
 {
-    UINT32 u32aPartner5VSinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[INDEX_0];
+    UINT32 u32aPartner5VSinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0];
             
     DEBUG_PRINT_PORT_STR (u8PortNum,"PARTNER CAPABILITIES - ");
     
@@ -2373,14 +2374,14 @@ void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum)
         MCHP_PSF_HOOK_PRINT_TRACE ("FRS: NO; ");
     }   
     
-    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt; u8Index++)
+    for (UINT8 u8Index = INDEX_0; u8Index < gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt; u8Index++)
     {
-        if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[u8Index]))
+        if (ePDO_PROGRAMMABLE == (ePDOType)DPM_GET_PDO_TYPE(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[u8Index]))
         {
             MCHP_PSF_HOOK_PRINT_TRACE ("PPS: YES\r\n");
             break;
         }
-        if (u8Index == (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt - BYTE_LEN_1))
+        if (u8Index == (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt - BYTE_LEN_1))
         {
             MCHP_PSF_HOOK_PRINT_TRACE ("PPS: NO\r\n");
         }
