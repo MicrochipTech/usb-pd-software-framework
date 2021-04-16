@@ -210,7 +210,7 @@ void PCTPrintSinkPDO()
  * This function writes Partner PDO values onto the terminal.
  * 
  */
-void PCTPrintPartnerPDO()
+void PCTPrintPartnerSourcePDO()
 {
 	UINT8 *pu8PrintValue;
 	UINT32 *pu32PDOList;
@@ -219,13 +219,13 @@ void PCTPrintPartnerPDO()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
 
-	pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aPartnerPDO;
+	pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aPartnerSourcePDO;
 
 	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) 
     {
 		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
-		PCTWrite((UINT8 *) "\n\n\r> PartnerPDO -",\
-			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 18);
+		PCTWrite((UINT8 *) "\n\n\r> PartnerSourcePDO -",\
+			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 24);
 
 		// Get the voltage form PDO list
 		u32Data = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(pu32PDOList[u8Index]);
@@ -241,7 +241,37 @@ void PCTPrintPartnerPDO()
 	}
 (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
 }
+void PCTPrintPartnerSinkPDO()
+{
+	UINT8 *pu8PrintValue;
+	UINT32 *pu32PDOList;
+	UINT32 u32Data;
+	UINT8 u8Index;
+	UINT8 u8aVoltageString[] = "\rVoltage=";
+	UINT8 u8aCurrentString[] = "\rCurrent=";
 
+	pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aPartnerSinkPDO;
+
+	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) 
+    {
+		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
+		PCTWrite((UINT8 *) "\n\n\r> PartnerSinkPDO -",\
+			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 22);
+
+		// Get the voltage form PDO list
+		u32Data = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(pu32PDOList[u8Index]);
+		pu8PrintValue = HextoAscii(u32Data, sizeof(u32Data));
+		PCTWrite(u8aVoltageString, (UINT8 *) pu8PrintValue,\
+			 sizeof(pu8PrintValue), sizeof(u8aVoltageString));
+
+		// Get the current form PDO list
+		u32Data = DPM_GET_PDO_CURRENT(pu32PDOList[u8Index]);
+		pu8PrintValue = HextoAscii(u32Data, sizeof(u32Data));
+		PCTWrite(u8aCurrentString, (UINT8 *) pu8PrintValue,\
+			 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
+	}
+(void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
+}
 /*
  * Function: PCTPrintNewSinkPDO
  * 
@@ -365,7 +395,7 @@ void PCTPrintCableIdentity()
 
 	pu32CableIdentityList = gasCfgStatusData.sPerPortData[PORT0].u32aCableIdentity;
 
-	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) 
+	for (u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[PORT0].u8CableIdentityCnt; u8Index++) 
     {
 		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
 		PCTWrite((UINT8 *) "\n\n\r> ", (UINT8 *) pu8PrintValue,\
@@ -465,12 +495,7 @@ void PCTPrintStatusData(const UINT8 u8array[])
 		UINT8 StrPSFMajorVersion[] = "\n\n\r>UINT8 u8PSFMajorVersion = ";
 		UINT8 StrPSFMinorVersion[] = "\n\n\r>UINT8 u8PSFMinorVersion = ";
 		UINT8 StrPwrThrottleCfg[] = "\n\n\r>UINT8 u8PwrThrottleCfg = ";
-		UINT8 StrProducdID[] = "\n\n\r>UINT16 u16ProducdID = ";
 		UINT8 StrVendorID[] = "\n\n\r>UINT16 u16VendorID = ";
-		UINT8 StrProductTypeVDO[] = "\n\n\r>UINT16 u16ProductTypeVDO = ";
-		UINT8 StrProductVDO[] = "\n\n\r>UINT16 u16ProductVDO = ";
-		UINT8 StrCertStatVDO[] = "\n\n\r>UINT16 u16CertStatVDO = ";
-		UINT8 StrIDHeaderVDO[] = "\n\n\r>UINT16 u16IDHeaderVDO = ";
 
 		pu8PrintValue = HextoAscii(gasCfgStatusData.u8MinorVersion, 4);
 		PCTWrite(StrMinorVersion, (UINT8 *) & pu8PrintValue[0],\
@@ -504,29 +529,10 @@ void PCTPrintStatusData(const UINT8 u8array[])
 		PCTWrite(StrPwrThrottleCfg, (UINT8 *) & pu8PrintValue[0],\
 			 sizeof(pu8PrintValue), sizeof(StrPwrThrottleCfg));
 
-		pu8PrintValue = HextoAscii(gasCfgStatusData.u16ProducdID, 4);
-		PCTWrite(StrProducdID, (UINT8 *) & pu8PrintValue[0],\
-			 sizeof(pu8PrintValue), sizeof(StrProducdID));
-
 		pu8PrintValue = HextoAscii(gasCfgStatusData.u16VendorID, 4);
 		PCTWrite(StrVendorID, (UINT8 *) & pu8PrintValue[0],\
 			 sizeof(pu8PrintValue), sizeof(StrVendorID));
-
-		pu8PrintValue = HextoAscii(gasCfgStatusData.u16ProductTypeVDO, 4);
-		PCTWrite(StrProductTypeVDO, (UINT8 *) & pu8PrintValue[0],\
-			 sizeof(pu8PrintValue), sizeof(StrProductTypeVDO));
-
-		pu8PrintValue = HextoAscii(gasCfgStatusData.u16ProductVDO, 4);
-		PCTWrite(StrProductVDO, (UINT8 *) & pu8PrintValue[0],\
-			 sizeof(pu8PrintValue), sizeof(StrProductVDO));
-
-		pu8PrintValue = HextoAscii(gasCfgStatusData.u16CertStatVDO, 4);
-		PCTWrite(StrCertStatVDO, (UINT8 *) & pu8PrintValue[0],\
-			 sizeof(pu8PrintValue), sizeof(StrCertStatVDO));
-
-		pu8PrintValue = HextoAscii(gasCfgStatusData.u16IDHeaderVDO, 4);
-		PCTWrite(StrIDHeaderVDO, (UINT8 *) & pu8PrintValue[0],\
-			 sizeof(pu8PrintValue), sizeof(StrIDHeaderVDO));
+        
         (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
 	} 
     else if (0 == memcmp(u8array, u8aPortHelper, 21)) 
@@ -579,7 +585,8 @@ void PCTPrintStatusData(const UINT8 u8array[])
         PCTPrintSinkPDO();
         PCTPrintNewSinkPDO();
         PCTPrintAdvertisedPDO();
-        PCTPrintPartnerPDO();
+        PCTPrintPartnerSourcePDO();
+        PCTPrintPartnerSinkPDO();
         PCTPrintCableIdentity();
 
         pu8PrintValue = HextoAscii(DPM_GET_OP_VOLTAGE_FROM_PROG_RDO_IN_mV \

@@ -2293,17 +2293,17 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_SINK_CAP,\
                                                          u8DataObjCnt, PE_NON_EXTENDED_MSG);                                                               
                     }
-//                    else if (PE_CTRL_GET_SINK_CAP_EXTENDED == u8MessageType)
-//                    {
-//                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP_EXTD RCVD\r\n");                        
-//                        
-//                        u32pTransmitDataObj = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u8aSinkCapsExtd[INDEX_0];                          
-//                        
-//                        u32TransmitHeader =  /* Combined Message Header */
-//                            PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & PE_SINK_CAP_EXTD_DATA_BLOCK_SIZE_IN_BYTES)), /* Extended Msg Header*/
-//                                    PRL_FormSOPTypeMsgHeader (u8PortNum,PE_EXT_SINK_CAPS_EXTD,PE_SINK_CAP_EXTD_DATA_DATA_OBJ_CNT, /* Standard Msg Header */
-//                                                PE_EXTENDED_MSG));                                                                         
-//                    }
+                    else if (PE_CTRL_GET_SINK_CAP_EXTENDED == u8MessageType)
+                    {
+                        DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GIVE_CAP_ENTRY_SS:GET_SINK_CAP_EXTD RCVD\r\n");                        
+                        
+                        u32pTransmitDataObj = (UINT32 *)&gasCfgStatusData.sPerPortData[u8PortNum].u8aSinkCapsExtd[INDEX_0];                          
+                        
+                        u32TransmitHeader =  /* Combined Message Header */
+                            PRL_FORM_COMBINED_MSG_HEADER(((1u << PRL_EXTMSG_CHUNKED_BIT_POS) | (PRL_EXTMSG_DATA_FIELD_MASK & PE_SINK_CAP_EXTD_DATA_BLOCK_SIZE_IN_BYTES)), /* Extended Msg Header*/
+                                    PRL_FormSOPTypeMsgHeader (u8PortNum,PE_EXT_SINK_CAPS_EXTD,PE_SINK_CAP_EXTD_DATA_DATA_OBJ_CNT, /* Standard Msg Header */
+                                                PE_EXTENDED_MSG));                                                                         
+                    }
 #endif                    
                     else
                     {
@@ -2394,10 +2394,10 @@ void PE_RunCommonStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Hea
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_GET_SINK_CAP_RESPONSE_RCVD_SS\r\n"); 
                     /* Store the received sink caps and send notification */                                               
-                    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt = PRL_GET_OBJECT_COUNT(u32Header);
+                    gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt = PRL_GET_OBJECT_COUNT(u32Header);
     
-                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO, pu8DataBuf,
-                                 (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerPDOCnt * BYTE_LEN_4));           
+                    (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO, pu8DataBuf,
+                                 (gasCfgStatusData.sPerPortData[u8PortNum].u8PartnerSinkPDOCnt * BYTE_LEN_4));           
                     
                     /* Move to Ready state */
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;
