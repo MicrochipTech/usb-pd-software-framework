@@ -126,7 +126,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 3;
 			break;
         case 5:
-            gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel |= ((CFG_PORT_0_SINK_MODEB)| \
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel |= (!(CFG_PORT_0_SINK_MODE)| \
             (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
@@ -141,7 +141,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 4;
 			break;
 		case 7:
-			gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel |= ((CFG_PORT_0_SINK_MODEB)| \
+			gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel |= (!(CFG_PORT_0_SINK_MODE)| \
             (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
