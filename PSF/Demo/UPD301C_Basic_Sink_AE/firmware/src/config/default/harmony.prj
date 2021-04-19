@@ -99,8 +99,8 @@
           <Name dnOrder="1">plib_port.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">6157D541D5FCE878A421AF7D1085A0E3</GeneratedChecksum>
-          <UserChecksum dnOrder="5">6157D541D5FCE878A421AF7D1085A0E3</UserChecksum>
+          <GeneratedChecksum dnOrder="4">7E7D52CE55D133DE34909AF800063303</GeneratedChecksum>
+          <UserChecksum dnOrder="5">7E7D52CE55D133DE34909AF800063303</UserChecksum>
         </File>
         <File dnOrder="12">
           <Type dnOrder="0">SOURCE</Type>
@@ -115,8 +115,8 @@
           <Name dnOrder="1">plib_sercom1_usart.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/sercom/usart/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">0DC2B0135B3D7ACBAA745C65B5BB3BA1</GeneratedChecksum>
-          <UserChecksum dnOrder="5">0DC2B0135B3D7ACBAA745C65B5BB3BA1</UserChecksum>
+          <GeneratedChecksum dnOrder="4">9D9377522A8838E99D8B6E3C0B63E84B</GeneratedChecksum>
+          <UserChecksum dnOrder="5">9D9377522A8838E99D8B6E3C0B63E84B</UserChecksum>
         </File>
         <File dnOrder="14">
           <Type dnOrder="0">SOURCE</Type>

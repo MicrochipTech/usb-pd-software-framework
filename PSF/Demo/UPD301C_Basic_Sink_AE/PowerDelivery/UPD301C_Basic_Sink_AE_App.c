@@ -376,11 +376,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                CAP_MISMATCH_Clear(); //reversed from sink project
+                CAP_MISMATCH_Set(); 
             }
             else
             {
-                CAP_MISMATCH_Set();
+                CAP_MISMATCH_Clear();
             }
             break;
         }

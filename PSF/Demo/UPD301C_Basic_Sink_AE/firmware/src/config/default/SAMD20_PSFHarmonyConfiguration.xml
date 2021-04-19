@@ -860,7 +860,7 @@
         </String>
         <String dnOrder="160" id="PIN_22_LAT">
           <Values dnOrder="0">
-            <User dnOrder="0" value=""/>
+            <User dnOrder="0" value="High"/>
           </Values>
         </String>
         <String dnOrder="161" id="PIN_22_MODE">
@@ -1025,7 +1025,7 @@
         </String>
         <String dnOrder="193" id="PORT_GROUP_0_OUT">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="core" value="0x404e01"/>
+            <Dynamic dnOrder="0" id="core" value="0xc04e01"/>
           </Values>
         </String>
         <String dnOrder="194" id="PORT_GROUP_0_PAD_0">
@@ -1732,32 +1732,39 @@
             <Dynamic dnOrder="0" id="sercom1" value="23"/>
           </Values>
         </Integer>
-        <Integer dnOrder="2" id="USART_BAUD_RATE">
+        <Comment dnOrder="2" id="USART_BAUD_ERROR_COMMENT">
+          <Attributes dnOrder="0">
+            <Boolean dnOrder="0" id="visible">
+              <Value dnOrder="0">false</Value>
+            </Boolean>
+          </Attributes>
+        </Comment>
+        <Integer dnOrder="3" id="USART_BAUD_RATE">
           <Values dnOrder="0">
-            <User dnOrder="0" value="115200"/>
+            <User dnOrder="0" value="3000000"/>
           </Values>
         </Integer>
-        <Integer dnOrder="3" id="USART_BAUD_VALUE">
+        <Integer dnOrder="4" id="USART_BAUD_VALUE">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="sercom1" value="63019"/>
+            <Dynamic dnOrder="0" id="sercom1" value="0"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="4" id="USART_INTERRUPT_MODE">
+        <Boolean dnOrder="5" id="USART_INTERRUPT_MODE">
           <Values dnOrder="0">
             <User dnOrder="0" value="false"/>
           </Values>
         </Boolean>
-        <KeyValueSet dnOrder="5" id="USART_RXPO">
+        <KeyValueSet dnOrder="6" id="USART_RXPO">
           <Values dnOrder="0">
             <User dnOrder="0" value="3"/>
           </Values>
         </KeyValueSet>
-        <Boolean dnOrder="6" id="USART_RX_ENABLE">
+        <Boolean dnOrder="7" id="USART_RX_ENABLE">
           <Values dnOrder="0">
             <User dnOrder="0" value="true"/>
           </Values>
         </Boolean>
-        <KeyValueSet dnOrder="7" id="USART_TXPO">
+        <KeyValueSet dnOrder="8" id="USART_TXPO">
           <Values dnOrder="0">
             <User dnOrder="0" value="1"/>
           </Values>
