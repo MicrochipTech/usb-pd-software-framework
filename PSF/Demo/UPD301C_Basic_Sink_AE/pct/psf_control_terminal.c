@@ -181,12 +181,13 @@ void PCTPrintSinkPDO()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
 
+    DEBUG_PRINT_PORT_STR(PORT0," SinkPDO");
 	pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO;
 
 	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) 
     {
 		pu8PrintValue = HextoAscii(u8Index,sizeof(u8Index));
-		PCTWrite((UINT8 *) "\n\n\r>SinkPDO -", (UINT8 *) pu8PrintValue,\
+		PCTWrite((UINT8 *) "\n\n\r> SinkPDO -", (UINT8 *) pu8PrintValue,\
 			 sizeof(pu8PrintValue), 15);
 
 		// Get the voltage form PDO list
@@ -203,12 +204,13 @@ void PCTPrintSinkPDO()
 			 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
         DEBUG_PRINT_PORT_STR(PORT0,"mA");
 	}
+    (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
 }
 
 /*
- * Function: PCTPrintPartnerPDO
+ * Function: PCTPrintSourcePartnerPDO
  * 
- * This function writes Partner PDO values onto the terminal.
+ * This function writes Source Partner PDO values onto the terminal.
  * 
  */
 void PCTPrintPartnerSourcePDO()
@@ -220,12 +222,13 @@ void PCTPrintPartnerSourcePDO()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
 
+    DEBUG_PRINT_PORT_STR(PORT0," PartnerSourcePDO");
 	pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aPartnerSourcePDO;
 
 	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) 
     {
 		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
-		PCTWrite((UINT8 *) "\n\n\r>PartnerSourcePDO -",\
+		PCTWrite((UINT8 *) "\n\n\r> PartnerSourcePDO -",\
 			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 23);
 
 		// Get the voltage form PDO list
@@ -242,7 +245,14 @@ void PCTPrintPartnerSourcePDO()
 			 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
         DEBUG_PRINT_PORT_STR(PORT0,"mA");
 	}
+    (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
 }
+/*
+ * Function: PCTPrintSinkPartnerPDO
+ * 
+ * This function writes Sink Partner PDO values onto the terminal.
+ * 
+ */
 void PCTPrintPartnerSinkPDO()
 {
 	UINT8 *pu8PrintValue;
@@ -251,13 +261,14 @@ void PCTPrintPartnerSinkPDO()
 	UINT8 u8Index;
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
-
+    
+    DEBUG_PRINT_PORT_STR(PORT0," PartnerSinkPDO");
 	pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aPartnerSinkPDO;
 
 	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) 
     {
 		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
-		PCTWrite((UINT8 *) "\n\n\r>PartnerSinkPDO -",\
+		PCTWrite((UINT8 *) "\n\n\r> PartnerSinkPDO -",\
 			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 21);
 
 		// Get the voltage form PDO list
@@ -290,6 +301,7 @@ void PCTPrintNewSinkPDO()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
 
+    DEBUG_PRINT_PORT_STR(PORT0," NewSinkPDO");
 	// If it is in New PDO list then get it from New list else get it from 
 	// default
 	if (gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt) 
@@ -299,7 +311,7 @@ void PCTPrintNewSinkPDO()
         for (u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt ; u8Index++) 
         {
             pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
-            PCTWrite((UINT8 *) "\n\n\r>NewSinkPDO -",\
+            PCTWrite((UINT8 *) "\n\n\r> NewSinkPDO -",\
                  (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 17);
 
             // Get the voltage form PDO list
@@ -325,8 +337,8 @@ void PCTPrintNewSinkPDO()
 	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) 
     {
 		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
-		PCTWrite((UINT8 *) "\n\n\r>PDO -",\
-			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 10);
+		PCTWrite((UINT8 *) "\n\n\r> SinkPDO -",\
+			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 14);
 
 		// Get the voltage form PDO list
 		u32Data = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(pu32PDOList[u8Index]);
@@ -342,6 +354,7 @@ void PCTPrintNewSinkPDO()
 			 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
         DEBUG_PRINT_PORT_STR(PORT0,"mA");
 	}
+    (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
 }
 
 /*
@@ -359,6 +372,7 @@ void PCTPrintAdvertisedPDO()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
 
+    DEBUG_PRINT_PORT_STR(PORT0," AdvertisedPDO");
 	// If it is already advertised then get it from advertised list else
 	// get it from default
 	if (gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt) 
@@ -367,7 +381,7 @@ void PCTPrintAdvertisedPDO()
         for (u8Index = SET_TO_ZERO; u8Index <gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt; u8Index++) 
         {
             pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
-            PCTWrite((UINT8 *) "\n\n\r>Advertised PDO -", (UINT8 *) pu8PrintValue,\
+            PCTWrite((UINT8 *) "\n\n\r> Advertised PDO -", (UINT8 *) pu8PrintValue,\
                  sizeof(pu8PrintValue), 20);
 
             // Get the voltage form PDO list
@@ -393,8 +407,8 @@ void PCTPrintAdvertisedPDO()
 	for (u8Index = SET_TO_ZERO; u8Index < DPM_MAX_PDO_CNT; u8Index++) 
     {
 		pu8PrintValue = HextoAscii(u8Index, sizeof(u8Index));
-		PCTWrite((UINT8 *) "\n\n\r>PDO -",\
-			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 10);
+		PCTWrite((UINT8 *) "\n\n\r> SinkPDO -",\
+			 (UINT8 *) pu8PrintValue, sizeof(pu8PrintValue), 14);
 
 		// Get the voltage form PDO list
 		u32Data = DPM_GET_VOLTAGE_FROM_PDO_MILLI_V(pu32PDOList[u8Index]);
@@ -410,6 +424,7 @@ void PCTPrintAdvertisedPDO()
 			 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
         DEBUG_PRINT_PORT_STR(PORT0,"mA");
 	}
+    (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
 }
 /*
  * Function: PCTPrintCableIdentity
@@ -522,15 +537,15 @@ void PCTPrintStatusData(const UINT8 u8array[])
 	UINT8 *pu8PrintValue;
 	if (0 == memcmp(u8array, u8aGlobalHelper, 27)) 
     {
-		UINT8 StrMinorVersion[] = "\n\n\r>UINT8 u8MinorVersion = ";
-		UINT8 StrMajorVersion[] = "\n\n\r>UINT8 u8MajorVersion = ";
-		UINT8 StrHWVersion[] = "\n\n\r>UINT8 u8HWVersion = ";
-		UINT8 StrSiVersion[] = "\n\n\r>UINT8 u8SiVersion = ";
-		UINT8 StrManfString[] = "\n\n\r>UINT8 u8aManfString = ";
-		UINT8 StrPSFMajorVersion[] = "\n\n\r>UINT8 u8PSFMajorVersion = ";
-		UINT8 StrPSFMinorVersion[] = "\n\n\r>UINT8 u8PSFMinorVersion = ";
-		UINT8 StrPwrThrottleCfg[] = "\n\n\r>UINT8 u8PwrThrottleCfg = ";
-		UINT8 StrVendorID[] = "\n\n\r>UINT16 u16VendorID = ";
+		UINT8 StrMinorVersion[] = "\n\n\r> UINT8 u8MinorVersion = ";
+		UINT8 StrMajorVersion[] = "\n\n\r> UINT8 u8MajorVersion = ";
+		UINT8 StrHWVersion[] = "\n\n\r> UINT8 u8HWVersion = ";
+		UINT8 StrSiVersion[] = "\n\n\r> UINT8 u8SiVersion = ";
+		UINT8 StrManfString[] = "\n\n\r> UINT8 u8aManfString = ";
+		UINT8 StrPSFMajorVersion[] = "\n\n\r> UINT8 u8PSFMajorVersion = ";
+		UINT8 StrPSFMinorVersion[] = "\n\n\r> UINT8 u8PSFMinorVersion = ";
+		UINT8 StrPwrThrottleCfg[] = "\n\n\r> UINT8 u8PwrThrottleCfg = ";
+		UINT8 StrVendorID[] = "\n\n\r> UINT16 u16VendorID = ";
 
 		pu8PrintValue = HextoAscii(gasCfgStatusData.u8MinorVersion, 4);
 		PCTWrite(StrMinorVersion, (UINT8 *) & pu8PrintValue[0],\
@@ -573,49 +588,50 @@ void PCTPrintStatusData(const UINT8 u8array[])
     else if (0 == memcmp(u8array, u8aPortHelper, 21)) 
     {
 		UINT8 u8Index;
-		UINT8 StrCfgData[] = "\n\n\r>UINT32 u32CfgData = ";
-		UINT8 StrRDOVoltage[] = "\n\n\r>UINT32 u32RDOVoltage = ";
-		UINT8 StrRDOCurrent[] = "\n\n\r>UINT32 u32RDOCurrent = ";
-		UINT8 StrPortConnectStatus[] = "\n\n\r>UINT32 u32PortConnectStatus = ";
-		UINT8 StrPortStatusChange[] = "\n\n\r>UINT32 u32PortStatusChange = ";
-		UINT8 StrPortIOStatus[] = "\n\n\r>UINT32 u32PortIOStatus = ";
-		UINT8 u32ClientRequest[] = "\n\n\r>UINT32 u32ClientRequest = ";
-		UINT8 u16AllocatedPowerIn250mW[] = "\n\n\r>UINT16 u16AllocatedPowerIn250mW = ";
-		UINT8 u16NegoVoltageInmV[] = "\n\n\r>UINT16 u16NegoVoltageInmV = ";
-		UINT8 u16NegoCurrentInmA[] = "\n\n\r>UINT16 u16NegoCurrentInmA = ";
-		UINT8 u16MaxSrcPrtCurrentIn10mA[] = "\n\n\r>UINT16 u16MaxSrcPrtCurrentIn10mA = ";
-		UINT8 u16PortIntrMask[] = "\n\n\r>UINT16 u16PortIntrMask = ";
-		UINT8 u16FeatureSelect[] = "\n\n\r>UINT16 u16FeatureSelect = ";
-		UINT8 u16SwapPolicy[] = "\n\n\r>UINT16 u16SwapPolicy = ";
-		UINT8 StrPowerGoodTimerInms[] = "\n\n\r>UINT16 u16PowerGoodTimerInms = ";
-		UINT8 StraMinPDOPreferredCurInmA[] = "\n\n\r>UINT16 u16aMinPDOPreferredCurInmA = ";
-		UINT8 StrSnkMaxOperatingCurInmA[] = "\n\n\r>UINT16 u16SnkMaxOperatingCurInmA = ";
-		UINT8 StrSnkMinOperatingCurInmA[] = "\n\n\r>UINT16 u16SnkMinOperatingCurInmA = ";
-		UINT8 StrDAC_I_MaxOutVoltInmV[] = "\n\n\r>UINT16 u16DAC_I_MaxOutVoltInmV = ";
-		UINT8 StrDAC_I_MinOutVoltInmV[] = "\n\n\r>UINT16 u16DAC_I_MinOutVoltInmV = ";
-		UINT8 StrDAC_I_CurrentInd_MaxInA[] = "\n\n\r>UINT16 u16DAC_I_CurrentInd_MaxInA = ";
-		UINT8 StrSinkPDOCnt[] = "\n\n\r>UINT8 u8SinkPDOCnt = ";
-		UINT8 StrNewPDOCnt[] = "\n\n\r>UINT8 u8NewPDOCnt = ";
-		UINT8 StrAdvertisedPDOCnt[] = "\n\n\r>UINT8 u8AdvertisedPDOCnt = ";
-		UINT8 StrSinkConfigSel[] = "\n\n\r>UINT8 u8SinkConfigSel = ";
-		UINT8 StrFaultInDebounceInms[] = "\n\n\r>UINT8 u8FaultInDebounceInms = ";
-		UINT8 StrOCSThresholdPercentage[] = "\n\n\r>UINT8 u8OCSThresholdPercentage = ";
-		UINT8 StrOVThresholdPercentage[] = "\n\n\r>UINT8 u8OVThresholdPercentage = ";
-		UINT8 StrUVThresholdPercentage[] = "\n\n\r>UINT8 u8UVThresholdPercentage = ";
-		UINT8 StrVCONNOCSDebounceInms[] = "\n\n\r>UINT8 u8VCONNOCSDebounceInms = ";
-		UINT8 StrVBUSMaxFaultCnt[] = "\n\n\r>UINT8 u8VBUSMaxFaultCnt = ";
-		UINT8 StrVCONNMaxFaultCnt[] = "\n\n\r>UINT8 u8VCONNMaxFaultCnt = ";
-		UINT8 StrPio_FAULT_IN[] = "\n\n\r>UINT8 u8Pio_FAULT_IN = ";
-		UINT8 StrMode_FAULT_IN[] = "\n\n\r>UINT8 u8Mode_FAULT_IN = ";
-		UINT8 StrPio_EN_SINK[] = "\n\n\r>UINT8 u8Pio_EN_SINK = ";
-		UINT8 StrMode_EN_SINK[] = "\n\n\r>UINT8 u8Mode_EN_SINK = ";
-		UINT8 StrDAC_I_Direction[] = "\n\n\r>UINT8 u8DAC_I_Direction = ";
-		UINT8 StrPartnerSinkPDOCnt[] = "\n\n\r>UINT8 u8PartnerSinkPDOCnt = ";
-        UINT8 StrPartnerSourcePDOCnt[] = "\n\n\r>UINT8 u8PartnerSourcePDOCnt = ";
+		UINT8 StrCfgData[] = "\n\n\r> UINT32 u32CfgData = ";
+		UINT8 StrRDOVoltage[] = "\n\n\r> UINT32 u32RDOVoltage = ";
+		UINT8 StrRDOCurrent[] = "\n\n\r> UINT32 u32RDOCurrent = ";
+		UINT8 StrPortConnectStatus[] = "\n\n\r> UINT32 u32PortConnectStatus = ";
+		UINT8 StrPortStatusChange[] = "\n\n\r> UINT32 u32PortStatusChange = ";
+		UINT8 StrPortIOStatus[] = "\n\n\r> UINT32 u32PortIOStatus = ";
+		UINT8 u32ClientRequest[] = "\n\n\r> UINT32 u32ClientRequest = ";
+		UINT8 u16AllocatedPowerIn250mW[] = "\n\n\r> UINT16 u16AllocatedPowerIn250mW = ";
+		UINT8 u16NegoVoltageInmV[] = "\n\n\r> UINT16 u16NegoVoltageInmV = ";
+		UINT8 u16NegoCurrentInmA[] = "\n\n\r> UINT16 u16NegoCurrentInmA = ";
+		UINT8 u16MaxSrcPrtCurrentIn10mA[] = "\n\n\r> UINT16 u16MaxSrcPrtCurrentIn10mA = ";
+		UINT8 u16PortIntrMask[] = "\n\n\r> UINT16 u16PortIntrMask = ";
+		UINT8 u16FeatureSelect[] = "\n\n\r> UINT16 u16FeatureSelect = ";
+		UINT8 u16SwapPolicy[] = "\n\n\r> UINT16 u16SwapPolicy = ";
+		UINT8 StrPowerGoodTimerInms[] = "\n\n\r> UINT16 u16PowerGoodTimerInms = ";
+		UINT8 StraMinPDOPreferredCurInmA[] = "\n\n\r> UINT16 u16aMinPDOPreferredCurInmA = ";
+		UINT8 StrSnkMaxOperatingCurInmA[] = "\n\n\r> UINT16 u16SnkMaxOperatingCurInmA = ";
+		UINT8 StrSnkMinOperatingCurInmA[] = "\n\n\r> UINT16 u16SnkMinOperatingCurInmA = ";
+		UINT8 StrDAC_I_MaxOutVoltInmV[] = "\n\n\r> UINT16 u16DAC_I_MaxOutVoltInmV = ";
+		UINT8 StrDAC_I_MinOutVoltInmV[] = "\n\n\r> UINT16 u16DAC_I_MinOutVoltInmV = ";
+		UINT8 StrDAC_I_CurrentInd_MaxInA[] = "\n\n\r> UINT16 u16DAC_I_CurrentInd_MaxInA = ";
+		UINT8 StrSinkPDOCnt[] = "\n\n\r> UINT8 u8SinkPDOCnt = ";
+		UINT8 StrNewPDOCnt[] = "\n\n\r> UINT8 u8NewPDOCnt = ";
+		UINT8 StrAdvertisedPDOCnt[] = "\n\n\r> UINT8 u8AdvertisedPDOCnt = ";
+		UINT8 StrSinkConfigSel[] = "\n\n\r> UINT8 u8SinkConfigSel = ";
+		UINT8 StrFaultInDebounceInms[] = "\n\n\r> UINT8 u8FaultInDebounceInms = ";
+		UINT8 StrOCSThresholdPercentage[] = "\n\n\r> UINT8 u8OCSThresholdPercentage = ";
+		UINT8 StrOVThresholdPercentage[] = "\n\n\r> UINT8 u8OVThresholdPercentage = ";
+		UINT8 StrUVThresholdPercentage[] = "\n\n\r> UINT8 u8UVThresholdPercentage = ";
+		UINT8 StrVCONNOCSDebounceInms[] = "\n\n\r> UINT8 u8VCONNOCSDebounceInms = ";
+		UINT8 StrVBUSMaxFaultCnt[] = "\n\n\r> UINT8 u8VBUSMaxFaultCnt = ";
+		UINT8 StrVCONNMaxFaultCnt[] = "\n\n\r> UINT8 u8VCONNMaxFaultCnt = ";
+		UINT8 StrPio_FAULT_IN[] = "\n\n\r> UINT8 u8Pio_FAULT_IN = ";
+		UINT8 StrMode_FAULT_IN[] = "\n\n\r> UINT8 u8Mode_FAULT_IN = ";
+		UINT8 StrPio_EN_SINK[] = "\n\n\r> UINT8 u8Pio_EN_SINK = ";
+		UINT8 StrMode_EN_SINK[] = "\n\n\r> UINT8 u8Mode_EN_SINK = ";
+		UINT8 StrDAC_I_Direction[] = "\n\n\r> UINT8 u8DAC_I_Direction = ";
+		UINT8 StrPartnerSinkPDOCnt[] = "\n\n\r> UINT8 u8PartnerSinkPDOCnt = ";
+        UINT8 StrPartnerSourcePDOCnt[] = "\n\n\r> UINT8 u8PartnerSourcePDOCnt = ";
         pu8PrintValue = HextoAscii(gasCfgStatusData.sPerPortData[PORT0].u32CfgData,\
                    sizeof(gasCfgStatusData.sPerPortData[PORT0].u32CfgData));
         PCTWrite(StrCfgData, (UINT8 *) & pu8PrintValue[0],\
              sizeof(pu8PrintValue), sizeof(StrCfgData));
+        (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
 
         PCTPrintSinkPDO();
         PCTPrintNewSinkPDO();
