@@ -231,6 +231,7 @@
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_engine_swap.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_engine_vdm.c</itemPath>
         </logicalFolder>
         <logicalFolder name="PT" displayName="PT" projectFiles="true">
           <itemPath>../../../../Source/PT/pt_mngr.c</itemPath>
@@ -258,7 +259,7 @@
         <targetDevice>ATSAMD20E16</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>nEdbgTool</platformTool>
+        <platformTool>AtmelIceTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.30</languageToolchainVersion>
         <platform>3</platform>

@@ -72,7 +72,7 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 	/*Timer ID of IDLE Timer*/
     UINT8 gau8PortIdleTimerID [CONFIG_PD_PORT_COUNT];
     /*MCU Idle flag*/
-    UINT8 gu8SetMCUidle;
+    UINT8 gu8SetMCUIdle;
 
 #endif
 /***************************************************************************************/
@@ -108,37 +108,52 @@ DEVICE_POLICY_MANAGER gasDPM[CONFIG_PD_PORT_COUNT];
 GLOBAL_CFG_STATUS_DATA gasCfgStatusData = {SET_TO_ZERO};
 /**************************************************************************************************/ 
 
+#if (TRUE == INCLUDE_UPD_HPD)
+  HPD_CONTROL gu16HPDStsISR[CONFIG_PD_PORT_COUNT];    /*BIT[7:0] -> HPD Event Queue
+                                                            BIT[7:6] -> HPD event 3
+                                                            BIT[5:4] -> HPD event 2
+                                                            BIT[3:2] -> HPD event 1
+                                                            BIT[1:0] -> HPD event 0
+                                                            00b: HPD event field is empty
+                                                            01b: HPD_HIGH Detected
+                                                            10b: HPD_LOW Detected
+                                                            11b: HPD_IRQ Detected 
+                                                        BIT[8] -> HPD Event occurred*/
+UINT8 gu8HPDNextIndex[CONFIG_PD_PORT_COUNT];
+
+#endif
+
 /*******************************************************************/
 /******************* Functions**************************************/
 /*******************************************************************/
 
-void IntGlobals_PDInitialization(void)
+void IntGlobals_PDInitialization (void)
 {
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
-        UPD_PwrManagementInit(u8PortNum);        
+        UPD_InitPwrManagement(u8PortNum);        
 #endif
-        DPM_Init(u8PortNum);
+        DPM_Init (u8PortNum);
 
-        PE_InitPort(u8PortNum);
+        PE_InitPort (u8PortNum);
         
 #if (FALSE != INCLUDE_PDFU)
-        PE_FwUpdtInitialize();
+        PE_FwUpdtInitialize ();
 #endif
         
 #if (TRUE == INCLUDE_POWER_THROTTLING)
-        PT_Init(u8PortNum); 
+        PT_Init (u8PortNum); 
 #endif 
     }
     
 #if (TRUE == INCLUDE_POWER_BALANCING)
     /* Initialize PB System and Port Parameters */
-    PB_Init();     
+    PB_Init ();     
 #endif 
 }
 
-void IntGlobals_StackStructVersion(void)
+void IntGlobals_StackStructVersion (void)
 {
     gasCfgStatusData.u8MinorVersion = STRUCT_MINOR_VERSION;
     gasCfgStatusData.u8MajorVersion = STRUCT_MAJOR_VERSION;

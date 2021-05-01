@@ -83,8 +83,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Maximum active concurrent timers for a port when VCONN_SWAP is enabled*/
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
 	#define PD_SYS_VCONNSWAP_WAIT_TIMER           1
+    #define PD_SYS_DISC_IDENTITY_TIMER            1 
 #else
 	#define PD_SYS_VCONNSWAP_WAIT_TIMER           0
+    #define PD_SYS_DISC_IDENTITY_TIMER            0 
 #endif
 
 /*Maximum active concurrent timers for a port when DR_SWAP is enabled*/
@@ -100,6 +102,21 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #else
 	#define PD_SYS_PRSWAP_WAIT_TIMER              0
 #endif
+
+/*Maximum active concurrent timers for a port when VDM is enabled*/
+#if (TRUE == INCLUDE_PD_VDM)
+    #define PD_SYS_VDM_BUSY_TIMER                  1 
+#else 
+    #define PD_SYS_VDM_BUSY_TIMER                  0
+#endif 
+
+/*Maximum active concurrent timers for a port when AltMode is enabled*/
+#if (TRUE == INCLUDE_PD_ALT_MODE)
+    #define PD_SYS_ALT_MODE_ENTRY_TIMER             1 
+#else 
+    #define PD_SYS_ALT_MODE_ENTRY_TIMER             0
+#endif 
+
 /***********************************************************************************/
 /*Maximum concurrent timer per port*/
 #define MAX_CONCURRENT_TIMERS_PER_PORT           (PD_SYS_MAX_CONCURRENT_TIMERS + \
@@ -108,7 +125,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                                  PD_SYS_PPS_STATUS_TIMER + \
                                                  PD_SYS_VCONNSWAP_WAIT_TIMER + \
                                                  PD_SYS_DRSWAP_WAIT_TIMER + \
-                                                 PD_SYS_PRSWAP_WAIT_TIMER)
+                                                 PD_SYS_PRSWAP_WAIT_TIMER + \
+                                                 PD_SYS_VDM_BUSY_TIMER + \
+                                                 PD_SYS_ALT_MODE_ENTRY_TIMER + \
+                                                 PD_SYS_DISC_IDENTITY_TIMER)
 
 /* This variable of size MAX_CONCURRENT_TIMERS is the software timer which stores the timeout value, timer state,
  call back function and arguments to be passed to call back function*/
@@ -191,7 +211,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _Timer
 		This API calls MCHP_PSF_HOOK_HW_PDTIMER_INIT() API which is defined by 
         the user to configure and start the Hardware timer.
 **************************************************************************************************/
-UINT8 PDTimer_Init(void);
+UINT8 PDTimer_Init (void);
 /**************************************************************************************************
     Function:
         UINT8 PDTimer_Start (UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, 
@@ -228,7 +248,7 @@ UINT8 PDTimer_Init(void);
     if there are no functions to be executed after the timer expiration
     Similarly, u8PDState parameter is not mandatory.
 **************************************************************************************************/
-UINT8 PDTimer_Start(UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, \
+UINT8 PDTimer_Start (UINT32 u32TimeoutTicks, PDTimerCallback pfnTimerCallback, \
                         UINT8 u8PortNum, UINT8 u8PDState);
 /**************************************************************************************************
     Function:
@@ -283,7 +303,7 @@ void PDTimer_WaitforTicks (UINT32 u32TimeoutTicks);
 	Remarks:
 		None
 **************************************************************************************************/
-void PDTimer_Kill(UINT8 u8TimerID);
+void PDTimer_Kill (UINT8 u8TimerID);
 /**************************************************************************************************
 	Function:
         void PDTimer_KillPortTimers (UINT8 u8PortNum)
@@ -310,10 +330,10 @@ void PDTimer_Kill(UINT8 u8TimerID);
 	Remarks:
 		None
 **************************************************************************************************/
-void PDTimer_KillPortTimers(UINT8 u8PortNum);
+void PDTimer_KillPortTimers (UINT8 u8PortNum);
 /*************************************************************************************************
 	Function:
-		void PDTimer_InterruptHandler(void);
+		void PDTimer_InterruptHandler (void);
 
 	Summary:
 		Interrupt Handler for the USB Power delivery Hardware Timer
@@ -338,6 +358,6 @@ void PDTimer_KillPortTimers(UINT8 u8PortNum);
 	Remarks:
         None
 **************************************************************************************************/
-void PDTimer_InterruptHandler(void);
+void PDTimer_InterruptHandler (void);
 /**************************************************************************************************/
 #endif /*_PD_TIMER_H_*/

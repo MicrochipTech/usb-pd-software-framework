@@ -121,18 +121,22 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         {
             break;
         }
+        
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
             break;
         }
+        
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
             break;
         }
+        
         case eMCHP_PSF_CAPS_MISMATCH:
         {
             break;
         }
+        
         case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
         {
             break;
@@ -143,14 +147,62 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break; 
         }
        
-        case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
+        case eMCHP_PSF_HARD_RESET_COMPLETE:
         {
             break; 
         }
         
-        case eMCHP_PSF_BUSY:
+        case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
+        {
+			/*Returning TRUE to enable PSF to handle Error Recovery*/
+            u8RetVal = TRUE;
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_COMPLETE:
         {
             break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD:
+        {
+            break; 
+        }        
+                
+        case eMCHP_PSF_VDM_RESPONSE_RCVD:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_REQUEST_RCVD:
+        {
+            u8RetVal = TRUE;
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_AMS_COMPLETE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_PORT_DISABLED:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_PORT_ENABLED:
+        {
+            break;
         }
         
         default:
