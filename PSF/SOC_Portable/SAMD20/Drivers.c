@@ -207,7 +207,7 @@ void SAMD20_UART_Initialisation(void)
 
 void SAMD20_UART_Write_Char(char byData)
 {
-    SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)&byData,1); 
+    (void)SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)&byData,1); 
     while(!SAMD20UART_IsTransmitComplete(SAMD20_UART_INSTANCE)) 
     { 
     }
@@ -215,7 +215,7 @@ void SAMD20_UART_Write_Char(char byData)
 
 void SAMD20_UART_Write_Int(UINT32 dwWriteInt, UINT8 byWidth)
 {
-    SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)&dwWriteInt, byWidth); 
+    (void)SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)&dwWriteInt, byWidth); 
     while(!SAMD20UART_IsTransmitComplete(SAMD20_UART_INSTANCE)) 
     { 
     } 
@@ -223,14 +223,14 @@ void SAMD20_UART_Write_Int(UINT32 dwWriteInt, UINT8 byWidth)
 
 void SAMD20_UART_Write_String(char* pbyMessage)
 {
-    SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)pbyMessage,strlen(pbyMessage)); 
+    (void)SAMD20UART_Write(SAMD20_UART_INSTANCE, (void*)pbyMessage,strlen(pbyMessage)); 
     while(!SAMD20UART_IsTransmitComplete(SAMD20_UART_INSTANCE)) 
     { 
     }
 }
 
 
-#endif //CONFIG_HOOK_DEBUG_MSG
+#endif /* CONFIG_HOOK_DEBUG_MSG */
 
 /* *****************************************************************************
  End of File

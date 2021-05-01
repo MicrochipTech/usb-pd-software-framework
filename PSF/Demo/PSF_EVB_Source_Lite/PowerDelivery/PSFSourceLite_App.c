@@ -62,7 +62,7 @@ void App_SetMCUIdle()
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
-    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE");
+    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE\r\n");
     
 	/*If there is any pending interrupt it will not go to sleep*/
     SCB->SCR |=  (SCB_SCR_SLEEPDEEP_Msk )| (SCB_SCR_SEVONPEND_Msk);
@@ -129,10 +129,22 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         }
         case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
         {
+			/*Returning TRUE to enable PSF to handle Error Recovery*/
+            u8RetVal = TRUE;
             break; 
         }
         
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_HARD_RESET_COMPLETE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_PE_SRC_DISABLED:
         {
             break; 
         }
@@ -144,12 +156,67 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         
         case eMCHP_PSF_SINK_CAPS_RCVD:
         {
+            /* Sink Capabilities received from partner is available in 
+               gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO array */
             break;            
-        }
+        }        
         
-        case eMCHP_PSF_BUSY:
+        case eMCHP_PSF_VCONN_SWAP_COMPLETE:
         {
             break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_CABLE_IDENTITY_DISCOVERED:
+        {
+            /* Cable identity received from Cable is available in 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity array */                        
+            break; 
+        }
+        
+        case eMCHP_PSF_CABLE_IDENTITY_NAKED:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_VDM_RESPONSE_RCVD:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_REQUEST_RCVD:
+        {
+            u8RetVal = TRUE;
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_AMS_COMPLETE:
+        {
+            break; 
+        }
+        
+		case eMCHP_PSF_PORT_DISABLED:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_PORT_ENABLED:
+        {
+            break;
         }
         
         default:
@@ -173,6 +240,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             }
+            #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
             else if (PORT1 == u8PortNum)
             {
                 PORT_PinWrite(PORT_PIN_PA15, TRUE);
@@ -180,6 +248,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA15);
             }
+            #endif
             else
             {
                 /* Do Nothing */
@@ -207,11 +276,13 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 SPI_SS_0_Set();
                 SPI_SS_0_OutputEnable();                
             }
+            #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
             else if(PORT1 == u8PortNum)
             {
                 SPI_SS_1_Set();
                 SPI_SS_1_OutputEnable();                
             }
+            #endif
             else
             {
                 /* Do Nothing */
@@ -312,11 +383,13 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     /*PORT_PIN_PA10*/
                     SPI_SS_0_Clear();
                 }
+                #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
                 else if(PORT1 == u8PortNum)
                 {
                     /*PORT_PIN_PA01*/
                     SPI_SS_1_Clear();
                 } 
+                #endif
                 else
                 {
                     /* Do Nothing */
@@ -329,10 +402,12 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     SPI_SS_0_Set();
                 }
+                #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1)   
                 else if(PORT1 == u8PortNum)
                 {
                     SPI_SS_1_Set();
                 }
+                #endif
                 else
                 {
                     /* Do Nothing */
@@ -452,7 +527,8 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
             UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8);
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
             /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL1_STATUS;            break;
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL1_STATUS;            
+            break;
         }
         case APP_VOLTAGE_20000mV:
         {
