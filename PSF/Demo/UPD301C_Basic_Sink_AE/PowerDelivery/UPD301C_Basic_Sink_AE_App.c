@@ -257,7 +257,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eSNK_CAPS_MISMATCH_FUNC:
         {
-            CAP_MISMATCH_Clear();
+            CAP_MISMATCH_Set();
             CAP_MISMATCH_OutputEnable();            
             break;
         }
@@ -376,11 +376,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                CAP_MISMATCH_Set(); 
+                CAP_MISMATCH_Clear(); 
             }
             else
             {
-                CAP_MISMATCH_Clear();
+                CAP_MISMATCH_Set();
             }
             break;
         }
