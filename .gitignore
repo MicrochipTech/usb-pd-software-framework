@@ -57,7 +57,7 @@ PSF/Demo/PSF_EVB_FRS/firmware/PSF_EVB_FRS.X/nbproject/Package-default.bash
 PSF/Demo/PSF_EVB_FRS/firmware/PSF_EVB_FRS.X/nbproject/private/configurations.xml
 PSF/Demo/PSF_EVB_FRS/firmware/PSF_EVB_FRS.X/nbproject/private/private.xml
 PSF/Demo/PSF_EVB_FRS/firmware/PSF_EVB_FRS.X/dist/default/
-PSF/Demo/PSF_EVB_DRP/firmware/PSF_EVB_DRP.X/dist/default/
+
 PSF/Demo/UPD301C_PIM_Source_Pro/firmware/UPD301C_PIM_Source_Pro.X/build/
 PSF/Demo/UPD301C_PIM_Source_Pro/firmware/UPD301C_PIM_Source_Pro.X/dist/default/production/
 PSF/Demo/UPD301C_PIM_Source_Pro/firmware/UPD301C_PIM_Source_Pro.X/nbproject/Makefile-default.mk
@@ -68,6 +68,8 @@ PSF/Demo/UPD301C_PIM_Source_Pro/firmware/UPD301C_PIM_Source_Pro.X/nbproject/Make
 PSF/Demo/UPD301C_PIM_Source_Pro/firmware/UPD301C_PIM_Source_Pro.X/nbproject/private/private.xml
 PSF/Demo/UPD301C_PIM_Source_Pro/firmware/UPD301C_PIM_Source_Pro.X/nbproject/private/configurations.xml
 PSF/Demo/UPD301C_PIM_Source_Pro/firmware/UPD301C_PIM_Source_Pro.X/nbproject/Package-default.bash
+PSF/Demo/UPD301C_PIM_Source_Pro/firmware/UPD301C_PIM_Source_Pro.X/dist/default/
+
 PSF/Demo/UPD301C_PIM_DRP/firmware/UPD301C_PIM_DRP.X/build/
 PSF/Demo/UPD301C_PIM_DRP/firmware/UPD301C_PIM_DRP.X/dist/default/production/
 PSF/Demo/UPD301C_PIM_DRP/firmware/UPD301C_PIM_DRP.X/nbproject/Package-default.bash
@@ -78,6 +80,8 @@ PSF/Demo/UPD301C_PIM_DRP/firmware/UPD301C_PIM_DRP.X/nbproject/Makefile-genesis.p
 PSF/Demo/UPD301C_PIM_DRP/firmware/UPD301C_PIM_DRP.X/nbproject/Makefile-default.mk
 PSF/Demo/UPD301C_PIM_DRP/firmware/UPD301C_PIM_DRP.X/nbproject/private/private.xml
 PSF/Demo/UPD301C_PIM_DRP/firmware/UPD301C_PIM_DRP.X/nbproject/private/configurations.xml
+PSF/Demo/UPD301C_PIM_DRP/firmware/UPD301C_PIM_DRP.X/dist/default/
+
 PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/build/
 PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/dist/default/production/
 PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/nbproject/private/configurations.xml
@@ -88,6 +92,8 @@ PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/nbproject/Ma
 PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/nbproject/Makefile-local-default.mk
 PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/nbproject/Makefile-variables.mk
 PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/nbproject/Package-default.bash
+PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/dist/default/
+
 PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/build/
 PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/dist/default/production/
 PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/Makefile-default.mk
@@ -98,3 +104,16 @@ PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/Makefile-variabl
 PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/Package-default.bash
 PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/private/configurations.xml
 PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/nbproject/private/private.xml
+PSF/Demo/UPD301C_PIM_Sink/firmware/UPD301C_PIM_Sink.X/dist/default/
+
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/build/
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/dist/default/production/
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/nbproject/Makefile-default.mk
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/nbproject/Makefile-genesis.properties
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/nbproject/Makefile-impl.mk
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/nbproject/Makefile-local-default.mk
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/nbproject/Makefile-variables.mk
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/nbproject/Package-default.bash
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/nbproject/private/configurations.xml
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/nbproject/private/private.xml
+PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/dist/default/
