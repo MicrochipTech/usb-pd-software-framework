@@ -11,7 +11,7 @@
     This file contains generic defines used in the stack.
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -74,6 +74,22 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define INDEX_3                                 3
 #define INDEX_4                                 4
 #define INDEX_5                                 5
+#define INDEX_6                                 6
+#define INDEX_7                                 7
+#define INDEX_8                                 8
+#define INDEX_9                                 9
+#define INDEX_10                                10
+#define INDEX_11                                11
+#define INDEX_12                                12
+#define INDEX_13                                13
+#define INDEX_14                                14
+#define INDEX_15                                15
+#define INDEX_16                                16
+#define INDEX_17                                17
+#define INDEX_18                                18
+#define INDEX_19                                19
+#define INDEX_20                                20
+#define INDEX_21                                21
 
 /********************************************************************************************/
 /*Low Byte and High byte from a UINT16*/
@@ -116,6 +132,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define RESET_TO_ZERO									0
 #define SET_TO_ZERO									    0  
 #define SET_TO_ONE                                      1
+#define SET_TO_255                                      0xFF
 /********************************************************************************************/
 /* Defines for Port reference*/
 #define PORT0       0
@@ -123,6 +140,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PORT2       2
 #define PORT3       3
 
+#define PORT_COUNT_1    1
+#define PORT_COUNT_2    2
 /**********************************************************************************************/
 
 #endif /*GENERIC_DEFS_H*/

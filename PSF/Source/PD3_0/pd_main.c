@@ -37,18 +37,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /******************* Functions**************************************/
 /*******************************************************************/
 
-UINT8 MchpPSF_Init(void)
+UINT8 MchpPSF_Init (void)
 {
     UINT8 u8InitStatus = TRUE;
 
 	/*Initialize PSF Stack and Structure version*/
-    IntGlobals_StackStructVersion();
+    IntGlobals_StackStructVersion ();
     
     /* Load configurations */
     MCHP_PSF_HOOK_BOOT_TIME_CONFIG(&gasCfgStatusData);
        
     /*Timer module Initialization*/
-    u8InitStatus &= PDTimer_Init();
+    u8InitStatus &= PDTimer_Init ();
     
     /*Initialize HW SPI module defined by the user*/
     u8InitStatus &= MCHP_PSF_HOOK_UPDHW_INTF_INIT();
@@ -58,25 +58,27 @@ UINT8 MchpPSF_Init(void)
         /*If Timer and HW module of SOC are not initialized properly disable all the ports*/
         if (TRUE != u8InitStatus)
         {
-            gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData &= \
-                                                       ~(TYPEC_PORT_ENDIS_MASK);
+            DPM_DISABLE_CONFIGURED_PORT_EN(u8PortNum);
         }
         #if (CONFIG_DEFINE_UPD350_HW_INTF_SEL == CONFIG_UPD350_SPI)
         /*Initialize chip select in case of SPI configuration*/
         MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSPI_CHIP_SELECT_FUNC);
         #endif
+
+        /*Initialize orientation pin*/
+        MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
     }
     
     /*Since, Reset is common for all the ports. It is called only once with PORT0 as dummy value*/
     MCHP_PSF_HOOK_GPIO_FUNC_INIT(PORT0, eUPD350_RESET_FUNC);
-        
-	/*Initialize Internal global variables*/
-    IntGlobals_PDInitialization();
     
-    UPD_CheckAndDisablePorts();	
+	/*Initialize Internal global variables*/
+    IntGlobals_PDInitialization ();
+    
+    UPD_CheckAndDisablePorts ();	
 
     /* VBUS threshold correction factor */
-    UPD_FindVBusCorrectionFactor();
+    UPD_FindVBusCorrectionFactor ();
     
     #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
         /*Initialize debug hardware*/
@@ -88,18 +90,16 @@ UINT8 MchpPSF_Init(void)
         
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-                                    & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             /*Port Power Initialization*/
-            u8InitStatus &= PWRCTRL_Initialization(u8PortNum);
+            u8InitStatus &= PWRCTRL_Init (u8PortNum);
         }
     }
     
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
-        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-                                    & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             /* Initialize the Port's IRQ*/
             MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eUPD350_ALERT_FUNC);
@@ -109,7 +109,7 @@ UINT8 MchpPSF_Init(void)
         }
     }    
     
-    DPM_StateMachineInit();  
+    DPM_InitStateMachine ();  
 
     /* Enable the global interrupt */
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
@@ -118,12 +118,11 @@ UINT8 MchpPSF_Init(void)
 
 }
 /********************************************************************************************/
-void MchpPSF_RUN()
+void MchpPSF_RUN ()
 {
 	for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
   	{
-        if (UPD_PORT_ENABLED == ((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData \
-                                  & TYPEC_PORT_ENDIS_MASK) >> TYPEC_PORT_ENDIS_POS))
+        if (UPD_PORT_ENABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
            DPM_RunStateMachine (u8PortNum);
         }
@@ -132,16 +131,16 @@ void MchpPSF_RUN()
 /*********************************************************************************************/
 
 /*********************************************************************************************/
-void MchpPSF_UPDIrqHandler(UINT8 u8PortNum)
+void MchpPSF_UPDIrqHandler (UINT8 u8PortNum)
 {
-    UPDIntr_AlertHandler(u8PortNum);
+    UPDIntr_AlertHandler (u8PortNum);
 }
 /*********************************************************************************************/
 
 /*********************************************************************************************/
-void MchpPSF_PDTimerHandler(void)
+void MchpPSF_PDTimerHandler (void)
 {
-    PDTimer_InterruptHandler();
+    PDTimer_InterruptHandler ();
 }
 /*********************************************************************************************/
 

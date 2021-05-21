@@ -1,5 +1,5 @@
 /***************************************************************************
-Power Delivery Source Pro Application header file
+Power Delivery Sink Application header file
 
   Company:
     Microchip Technology Inc.
@@ -34,10 +34,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define _PSFSINK_APP_H
 
 /* Defines major and minor version of PSF Sink Application*/
-
-/*v1.03 release*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x04
+#define APP_REV_MINOR	0x11
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -47,6 +45,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #include <PSF_APIHook.h>
 #include "psf_stdinc.h"
+
+/*Defines used by DAC*/
+#define APP_DAC_MAX_STEP_COUNT  0x3FF
+#define APP_DAC_VREF            3300
 
 // *****************************************************************************
 // *****************************************************************************
@@ -64,6 +66,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 UINT8 App_PortPowerInit(UINT8 u8PortNum);
 
 
+void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData);
 #endif /* _PSFSINK_APP_H */
 
 /* *****************************************************************************

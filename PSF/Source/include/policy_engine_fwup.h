@@ -9,10 +9,10 @@ File Name:
 
 Description:
     This header file contains the data structures, constant definition,
-		function prototypes and definitions for Policy Engine firmware update.
+    function prototypes and definitions for Policy Engine firmware update.
 *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -62,15 +62,15 @@ typedef enum
 typedef PRLTxCallback   PE_FwUpdtTxDoneCallBack_Type;
 
 /*******************Defines to get the policy engine status ****************************/
-#define PE_FWUP_GET_CURRENT_STATE(PE_PORT_NUM)                 (gasPolicy_Engine[PE_PORT_NUM].ePEState)
-#define PE_FWUP_SET_CURRENT_STATE(PE_PORT_NUM,PE_STATE)        (gasPolicy_Engine[PE_PORT_NUM].ePEState = PE_STATE)
+#define PE_FWUP_GET_CURRENT_STATE(PE_PORT_NUM)                 (gasPolicyEngine[PE_PORT_NUM].ePEState)
+#define PE_FWUP_SET_CURRENT_STATE(PE_PORT_NUM,PE_STATE)        (gasPolicyEngine[PE_PORT_NUM].ePEState = PE_STATE)
 
-#define PE_FWUP_GET_CURRENT_SUBSTATE(PE_PORT_NUM)              (gasPolicy_Engine[PE_PORT_NUM].ePESubState)
-#define PE_FWUP_CHANGE_SUBSTATE(PE_PORT_NUM,PE_FWUP_NEXT_STATE)(gasPolicy_Engine[PE_PORT_NUM].ePESubState = PE_FWUP_NEXT_STATE)
+#define PE_FWUP_GET_CURRENT_SUBSTATE(PE_PORT_NUM)              (gasPolicyEngine[PE_PORT_NUM].ePESubState)
+#define PE_FWUP_CHANGE_SUBSTATE(PE_PORT_NUM,PE_FWUP_NEXT_STATE)(gasPolicyEngine[PE_PORT_NUM].ePESubState = PE_FWUP_NEXT_STATE)
 #define PE_FWUP_GET_CURRENT_MSGTYPE(PE_PORT_NUM)                NULL
 
-#define PE_FWUP_GET_TIMER_INDEX(PE_PORT_NUM)                   (gasPolicy_Engine[PE_PORT_NUM].u8PETimerID)
-#define PE_FWUP_SET_TIMER_INDEX(PE_PORT_NUM,PE_FWUP_TIMERIDX)  (gasPolicy_Engine[PE_PORT_NUM].u8PETimerID = PE_FWUP_TIMERIDX)
+#define PE_FWUP_GET_TIMER_INDEX(PE_PORT_NUM)                   (gasPolicyEngine[PE_PORT_NUM].u8PETimerID)
+#define PE_FWUP_SET_TIMER_INDEX(PE_PORT_NUM,PE_FWUP_TIMERIDX)  (gasPolicyEngine[PE_PORT_NUM].u8PETimerID = PE_FWUP_TIMERIDX)
 
 
 /********************* PDFU State machine generic events macro *************************/
@@ -249,7 +249,7 @@ Currently reserved for future usage
 /*! Next Request wait timeout */
 /*!
     When the timeout for the next expected FW Update request, failing which
-    the statemachine runs error recovery mechanisms
+    the state machine runs error recovery mechanisms
     -30ms timeout for each request chunk and Response chunk
     -Maximum of 10 Chunks can constitute a Extended message.
     -10 Request chunks & 10 Response chunks with each having timeout of 30ms.
@@ -441,7 +441,7 @@ void  PE_FwUpdtProcessTimerEvent(UINT8 u8PortNum, UINT8 u8PdFwUpdtState);
     Devices Supported:
         UPD350 REV A
 
-    Description:  This function is invoked on the Response Message Transmissio complete Event.
+    Description:  This function is invoked on the Response Message Transmission complete Event.
 
     Input:
         UINT8 u8PortNum - Port in which the PDFU is happening
@@ -467,7 +467,7 @@ void PE_FwUpdtTxDoneCallBack (UINT8 u8PortNum, UINT8 u8TXDoneState, UINT8 u8TxDo
         UPD350 REV A
 
     Description:
-        *Enumeration state is the Initial state/Idle state of the PD FW update Statemachine.
+        *Enumeration state is the Initial state/Idle state of the PD FW update State machine.
         *This function Processes,
             #the Get_FW_ID command and responds with appropriate information.
             #the PDFU_Initiate command and posts response.
@@ -530,7 +530,7 @@ UINT8 PE_FwUpdtProcessReconfigureState(UINT8 u8PortNum,UINT8 u8PDFUMsgType,UINT8
         void PE_FwUpdtProcessTransferState(UINT8 u8PortNum,UINT8 u8PDFUMsgType,UINT8* pu8DataBuffer)
 	Summary:
         During the Transfer State Image data is transfered through the PDFU_DATA packets.
-        Flash is update for every PDFUDATA packetr (256 bytes) reception.
+        Flash is update for every PDFUDATA packet (256 bytes) reception.
         To Immediately Read back from Flash and compare against received.
         and to Post the response.
 		(i.e.Processes the Transfer state events and initiates state transition.)
@@ -563,7 +563,7 @@ UINT8 PE_FwUpdtProcessTransferState(UINT8 u8PortNum,UINT8 u8PDFUMsgType,UINT8* p
         UPD350 REV A
 
     Description:
-        Kill the Timers and Initialze the State Machine Data.
+        Kill the Timers and Initialize the State Machine Data.
     Input:
         u8PortNum - Port in which the PDFU is active
 	Return:
@@ -574,7 +574,7 @@ void PE_FwUpdtResetToEnumState(UINT8 u8PortNum);
     Function:
         UINT8 PE_FwUpdtProcessValidationState(UINT8 u8PortNum,UINT8 u8PDFUMsgType);
 	Summary:
-        The Validation phase ios when the Flasshed image is validated and response is sent to Initiator.
+        The Validation phase is when the Flashed image is validated and response is sent to Initiator.
     Devices Supported:
         UPD350 REV A
 
