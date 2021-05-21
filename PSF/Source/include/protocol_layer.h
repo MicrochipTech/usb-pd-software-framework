@@ -9,10 +9,10 @@ File Name:
 
 Description:
   This header file contains the data structures, constant definition,
-      function prototypes and definitions for Protocol Layer.
+  function prototypes and definitions for Protocol Layer.
 *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -125,7 +125,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 															PRL_TX_PARAM_C_N_RETRY_CNT_BIT_POS)
 
 /* PORT_DATA_ROLE (BIT 7) - 1'b0-UFP & 1'b1-DFP*/
-#define PRL_TX_PARAM_C_PORT_DATA_ROLE_DFP					BIT(7)
+#define PRL_TX_PARAM_C_PORT_DATA_ROLE_MASK					BIT(7)
 #define PRL_TX_PARAM_C_PORT_DATA_ROLE_BIT_POS				7
 
 /* define to update Port Data Role in Tx_PARAM_C*/
@@ -672,7 +672,6 @@ typedef void(*PRLRxCallback) (UINT8 u8PortNum, UINT8 u8RxRcvStatus);
 #define PRL_TX_HARD_RESET_ST						7
 #define PRL_TX_CABLE_RESET_ST						8
 #define PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST				9
-#define PRL_TX_CA_SINK_TXNG_ST						10
 
 /* Chunk States*/
 #define PRL_CH_CHUNK_IDLE_ST						0
@@ -707,6 +706,10 @@ typedef void(*PRLRxCallback) (UINT8 u8PortNum, UINT8 u8RxRcvStatus);
 #define PRL_SEND_CABLE_RESET		1
 #define PRL_SEND_HARD_RESET			0
 
+/**************************** Defines for Hardware Retry Count *******************/
+#define PRL_HW_RETRY_CNT_2_0        3
+#define PRL_HW_RETRY_CNT_3_0        2 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Structures - PRL Structs
@@ -723,8 +726,11 @@ typedef struct  MCHP_PSF_STRUCT_PACKED_START _PROTOCOL_LAYER
 	UINT8	u8RxError : 1;              /* Rx Error - intimates Chunk error to Policy engine */
 	UINT8 	u8RxRcvdISR : 1;            /* ISR to Foreground Sync variable indicating Message Recv*/
     UINT8   u8RxHRRcvdISR : 1;          /* ISR to Foreground Sync variable indicating HR Recv*/
-    UINT8   u8RxDisable:1;
-
+    UINT8   u8TxStsDPMSyncISR : 1;      /* ISR to Foreground sync variable indicating DPM internal event  1st Tx completed*/
+    UINT8   u8RxDisable : 1;            /* Disable PD message processing by FW */
+#if (TRUE == INCLUDE_PD_DR_SWAP)
+    UINT8   u8SwapDataRoleISR : 1;      /* ISR to Foreground Sync variable indicating a PRL Data Role Swap is required */ 
+#endif 
 } MCHP_PSF_STRUCT_PACKED_END PROTOCOL_LAYER_STRUCT;
 /*************************************************************************************************/
 typedef struct MCHP_PSF_STRUCT_PACKED_START _CHUNK
@@ -736,7 +742,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _CHUNK
 	UINT8 	u8TotalChunkPkt:4 ;				/* Total Chunk packet to be transmitted in TCH or expected RCH*/
 	UINT8 	u8ChunkNumExpectedOrSent:4;		/* ChunkNumber of Chunk packet lastly sent in TCH or received in RCV*/
 	UINT8 	u8ChunkState : 4;				/* State variable for Chunk SM*/
-  	UINT8	u8EnableChunkSM:1;				/* To know wthether Chunk SM is enabled or disabled*/
+  	UINT8	u8EnableChunkSM:1;				/* To know whether Chunk SM is enabled or disabled*/
 	UINT8	u8AbortFlag:1;					/* Chunk abort flag to abort chunking*/
 
 } MCHP_PSF_STRUCT_PACKED_END PRL_CHUNK_STRUCT;
@@ -781,7 +787,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PRL_EXTENDED_MESSAGE_BUFF
 
     Summary:
         This API initialize the UPD_MAC Registers and Protocol Layer variables
-		based on port numnber passed.
+		based on port number passed.
 
     Devices Supported:
         UPD350 REV A
@@ -791,8 +797,7 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PRL_EXTENDED_MESSAGE_BUFF
 		UPD_MAC Tx- Rx configurations, Protocol Layer globals and interrupts.
 
     Conditions:
-        This API has to be called only after Type c & DPM init.
-		Protocol Layer init depends on Spec Rev, Data & Power Role global variable updated by above modules.
+        None.
 
     Input:
         u8PortNum - Port number of the device.
@@ -803,10 +808,43 @@ typedef struct MCHP_PSF_STRUCT_PACKED_START _PRL_EXTENDED_MESSAGE_BUFF
 
     Remarks:
         This API has to be called for all the ports (0 to (CONFIG_PD_PORT_COUNT -1))
-		to initialise the Protocol Layer.
+		to initialize the Protocol Layer.
 
 **************************************************************************************************/
 void  PRL_Init (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void  PRL_UpdatePowerRole (UINT8 u8PortNum);
+
+    Summary:
+        This API initialize the UPD_MAC Registers and Protocol Layer variables
+		based on power role of the port.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API initializes UPD_MAC Tx- Rx configurations, Protocol Layer globals 
+        and interrupts based on power role of the port.
+
+    Conditions:
+        This API has to be called only after Type c & DPM init.
+		It depends on Power Role global variable updated by above modules.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+
+    Return:
+        None.
+
+    Remarks:
+        This API has to be called for all the ports (0 to (CONFIG_PD_PORT_COUNT -1))
+		to initialize the Protocol Layer.
+
+**************************************************************************************************/
+void PRL_UpdatePowerRole (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -909,7 +947,7 @@ UINT16 PRL_FormNonSOPTypeMsgHeader (UINT8 u8PortNum, UINT8 u8MessageType, UINT8 
 
 /**************************************************************************************************
     Function:
-        void PRL_EnableRx (UINT8 u8PortNum, bool bEnable);
+        void PRL_EnableRx (UINT8 u8PortNum, UINT8 bEnable);
 
     Summary:
         This API enables or disables UPD_MAC PHY for Reception.
@@ -973,7 +1011,10 @@ void PRL_EnableRx (UINT8 u8PortNum, UINT8 u8Enable);
 
     Return:
 		The return value can be the following,
-			PRL_RET_TX_MSG_DISCARD_ON_RCV(0x00)		-	Message transmission aborted as SOP type Message is received
+			PRL_RET_TX_MSG_DISCARD_ON_RCV(0x00)		-	Message transmission aborted due to one of the following condtions:
+ *                                                        1. SOP type Message is received
+ *                                                        2. FRS signal is transmitted
+ *                                                        3. FRS signal is received
 			PRL_RET_TX_MSG_TRANSMITTED_ON_LINE(0x01)-	Message transmitted on line
 			PRL_RET_TX_MSG_BUFFERED(0x02)			-	Message is buffered for CA & will be sent later
 			PRL_RET_TX_MSG_CHUNKING_ENABLED(0x03)	- 	Message is tranmitted via Chunking SM
@@ -989,7 +1030,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, \
     Function:
         UINT8 PRL_BuildTxPacket (UINT8 u8PortNum, UINT32 u32Header, UINT8 *pu8DataBuffer, UINT8 *pu8TxPkt);
     Summary:
-        This API is to form the PD message to tranmsitted into single buffer.
+        This API is to form the PD message to transmitted into single buffer.
 
     Devices Supported:
         UPD350 REV A
@@ -1070,7 +1111,7 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
         UPD350 REV A
 
     Description:
-		This API is called to receive messages or any receive error initimation from Protocol Layer
+		This API is called to receive messages or any receive error intimation from Protocol Layer
 
     Conditions:
         None.
@@ -1097,7 +1138,6 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
 			PRL_RET_EXT_MSG_RCVD(0x3)	- Extended message is received
 			PRL_RET_RCV_CHUNK_ERROR(0x4)- Receiver Chunk error
 
-
     Remarks:
         None.
 
@@ -1106,7 +1146,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
 
 /**************************************************************************************************
     Function:
-        UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum);
+        UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum);
 
     Summary:
         This API processes raw FIFO data received to Message format.
@@ -1134,7 +1174,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8  *pu8SOPType, UINT32 *pu32Header, U
         It is internal API called by PRL_ReceiveMsg().
 
 **************************************************************************************************/
-UINT8 PRL_ProcessRecvdMsg(UINT8 u8PortNum);
+UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1225,7 +1265,7 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PRL_ProtocolspecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType);
+        void PRL_ResetPRLSpecificSOP (UINT8 u8PortNum, UINT8 u8SOPType);
 
     Summary:
         This API is to reset message ID counter of Tx & Rx SOP type specifically.
@@ -1248,7 +1288,6 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
 							PRL_SOP_P_TYPE (0x1)	- SOP' type
 							PRL_SOP_PP_TYPE (0x2)	- SOP'' type
 
-
     Return:
         None.
 
@@ -1256,40 +1295,11 @@ void PRL_IncrementMsgID (UINT8 u8PortNum);
         This API should be called by Policy engine on receiving Soft Reset for specific SOP type.
 
 **************************************************************************************************/
-void PRL_ProtocolspecificSOPReset(UINT8 u8PortNum, UINT8 u8SOPType);
+void PRL_ResetPRLSpecificSOP (UINT8 u8PortNum, UINT8 u8SOPType);
 
 /**************************************************************************************************
     Function:
-        void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum);
-
-    Summary:
-        This API is to reset message ID counter of Tx & Rx for all SOPs.
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-		This API resets Tx Message ID counter & Rx message ID stored for all SOP types.
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum	- Port number of the device.
-						Value passed will be less than CONFIG_PD_PORT_COUNT.
-
-    Return:
-        None.
-
-    Remarks:
-        This API should be called by Policy engine on receiving Hard reset to reset the protocol layer.
-
-**************************************************************************************************/
-void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
-        void PRL_PHYLayerReset (UINT8 u8PortNum);
+        void PRL_ResetPHYLayer (UINT8 u8PortNum);
 
     Summary:
         This API is to reset the PHY layer completely.
@@ -1301,8 +1311,8 @@ void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum);
 		This API Completely resets the PHY layer.
 
     Conditions:
-        PRL_ProtocolResetAllSOPs() has to be called along with this API
-			 for complete reset of PHY & protocol layer.
+        Protocol Layer of all SOPs has to be reset along with this API call
+        for complete reset of PHY & protocol layer.
 
     Input:
         u8PortNum	- Port number of the device.
@@ -1315,11 +1325,11 @@ void PRL_ProtocolResetAllSOPs(UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PRL_PHYLayerReset (UINT8 u8PortNum);
+void PRL_ResetPHYLayer (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum);
+        void PRL_OnHardResetComplete (UINT8 u8PortNum);
 
     Summary:
         This API is for the Policy Engine to inform the Protocol Layer on processing Hard Reset.
@@ -1334,7 +1344,7 @@ void PRL_PHYLayerReset (UINT8 u8PortNum);
         None.
 
     Input:
-        u8PortNum	- Port number of the device.
+        u8PortNum - Port number of the device.
 						Value passed will be less than CONFIG_PD_PORT_COUNT.
 
     Return:
@@ -1344,11 +1354,11 @@ void PRL_PHYLayerReset (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum);
+void PRL_OnHardResetComplete (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT8 PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
+        void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
 
     Summary:
         This API is to set or clear Collision Avoidance.
@@ -1357,7 +1367,7 @@ void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum);
         UPD350 REV A
 
     Description:
-		This API is for the Policy Enigne to set the Collision Avoidance (Rp value SinkTxNG) or
+		This API is for the Policy Engine to set the Collision Avoidance (Rp value SinkTxNG) or
 			clear(Rp value to SinkTxOK).
 
     Conditions:
@@ -1370,18 +1380,17 @@ void PRL_HRorCRCompltIndicationFromPE (UINT8 u8PortNum);
 					  Passing 'false' sets Rp value to SinkTxOK(3A)
 
     Return:
-        UINT8 - Returns 'true' if Rp value is successfully set.
-				Returns 'false' if Rp vlaue is not set.
+        None.
 
     Remarks:
         This function confined to INCLUDE_PD_3_0 define.
 
 **************************************************************************************************/
-UINT8 PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
+void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
 
 /**************************************************************************************************
     Function:
-        void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+        void PRL_CASinkTx_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
     Summary:
         This API is callback for SinTxTimer timeout.
@@ -1410,7 +1419,7 @@ UINT8 PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable);
         This function confined to INCLUDE_PD_3_0 define.
 
 **************************************************************************************************/
-void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
+void PRL_CASinkTx_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
@@ -1437,25 +1446,26 @@ void PRL_CASinkTxTimerOut_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
     Remarks:
         This function confined to INCLUDE_PD_3_0 define.
-		It is called by PRL_CASinkTxTimerOut_TimerCB() internally.
-		It is also called when Sink buffers Tx message to send on PHY when Rp value is set to SinkTxOK.
+		It is called by PRL_CASinkTx_TimerCB() internally.		
 
 **************************************************************************************************/
 void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT8 PRL_SinkIntAMS (UINT8 u8PortNum);
+        UINT8 PRL_IsAmsInitiatable (UINT8 u8PortNum);
 
     Summary:
-        This API is read the current Rp value.
+        This API returns whether an Ams can be initiated.
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-		This API returns Rp value whether it is SinkTxOK or SinkTxNG.
-
+		This API returns a value to decide whether an AMS can be initiated based
+        Rp value whether it is SinkTxOK or SinkTxNG in case of Sink and Tx buffer
+        idleness in case of Source.
+ 
     Conditions:
         None.
 
@@ -1465,14 +1475,14 @@ void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum);
 
     Return:
         This API returns
-		TYPEC_SINK_TXOK(0x0)	-  Rp value is SinkTxOK(3A)
-		TYPEC_SINK_TXNG(0x1)	-  Rp value is SinkTxNG(1.5A)
+		FALSE(0x0)	-  AMS cannot be initiated
+        TRUE(0x1) - AMS can be initiated.
 
     Remarks:
         This function confined to INCLUDE_PD_3_0 define.
 
 **************************************************************************************************/
-UINT8 PRL_SinkIntAMS (UINT8 u8PortNum);
+UINT8 PRL_IsAMSInitiatable (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1631,7 +1641,7 @@ void PRL_UpdateTotalChunkNumVar (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT32 PRL_FormRequestChunkMsgHeader(UINT8 u8PortNum);
+        UINT32 PRL_FormRequestChunkMsgHeader (UINT8 u8PortNum);
 
     Summary:
         This API forms & returns Combined header for Chunk request packet.
@@ -1657,7 +1667,7 @@ void PRL_UpdateTotalChunkNumVar (UINT8 u8PortNum);
         This function confined to INCLUDE_PD_3_0 define.
 
 **************************************************************************************************/
-UINT32 PRL_FormRequestChunkMsgHeader(UINT8 u8PortNum);
+UINT32 PRL_FormRequestChunkMsgHeader (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1724,7 +1734,7 @@ void PRL_ConfigureBISTCarrierMode (UINT8 u8PortNum, UINT8 u8BISTCarriermode);
 
 /**************************************************************************************************
     Function:
-        void PRL_ChangeTxState(UINT8 u8PortNum, UINT8 u8TxStateISR);
+        void PRL_ChangeTxState (UINT8 u8PortNum, UINT8 u8TxStateISR);
 
     Summary:
         This API changes the state of the Variable gasPRL[u8PortNum].u8TxStateISR
@@ -1750,7 +1760,7 @@ void PRL_ConfigureBISTCarrierMode (UINT8 u8PortNum, UINT8 u8BISTCarriermode);
         None.
 
 **************************************************************************************************/
-void PRL_ChangeTxState(UINT8 u8PortNum, UINT8 u8TxStateISR);
+void PRL_ChangeTxState (UINT8 u8PortNum, UINT8 u8TxStateISR);
 
 /**************************************************************************************************
     Function:
@@ -1782,7 +1792,7 @@ void PRL_KillCAorChunkSMTimer (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        void PRL_ProtocolReset(UINT8 u8PortNum);
+        void PRL_ResetProtocolLayer (UINT8 u8PortNum);
 
     Summary:
         This API resets the PRL at Sink & SRC startup
@@ -1806,6 +1816,6 @@ void PRL_KillCAorChunkSMTimer (UINT8 u8PortNum);
         None.
 
 **************************************************************************************************/
-void PRL_ProtocolReset(UINT8 u8PortNum);
+void PRL_ResetProtocolLayer (UINT8 u8PortNum);
 
 #endif /*_PROTOCOL_LAYER_H_*/

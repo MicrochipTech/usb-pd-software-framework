@@ -62,11 +62,11 @@ Summary:
     Initialize the hardware interface(SPI/I2C) used for communicating with UPD350 part.
 Description:
     PSF requires a Hardware interface from SOC(either SPI or I2C) to communicate with UPD350. UPD350 
-    supports either I2C or SPI interface depending on UPD350 part used.  UPD350 A and C supports I2C
-    interface and UPD350 B and D part supports SPI interface. 
-    This Hook is to initialize the SOC's Hardware interface for communication. It is called 
-    during initialization of PSF. Define relevant function that has no arguments but a return type 
-    UINT8 that indicates whether initialization is successful. 
+    supports either I2C or SPI interface depending on UPD350 SKU used.  UPD350 A and C SKUs support
+    I2C interface and UPD350 B and D SKUs support SPI interface. 
+    This Hook is used to initialize the SOC's Hardware interface for communication. It is called 
+    during initialization of PSF. This hook is assigned to a function that takes no arguments and
+    has a return type of UINT8 which indicates if the initialization was successful or not. 
 Conditions:
     Use SPI interface for part UPD350 B and D.
     Use I2C interface for part UPD350 A and C.
@@ -104,9 +104,9 @@ Function:
 Summary:
     Initiates a write transfer to UPD350 via I2C/SPI
 Description:
-    This hook is called to write to UPD350 registers specific to the port. Its definition is 
-    confined to CONFIG_DEFINE_UPD350_HW_INTF_SEL definition for SPI or I2C selection. Define 
-    relevant function that has UINT8, UINT8*, UINT8 arguments with a return type UINT8.
+    This hook is used to write to the registers of the UPD350 of a given port over the chosen
+    communication interface defined by CONFIG_DEFINE_UPD350_HW_INTF_SEL. This hook is assigned to
+    a function that takes arguments of type UINT8, UINT8 *, UINT8, and has a return type of UINT8.
 Conditions:
     None.
 Input:
@@ -150,7 +150,7 @@ Remarks:
     User definition of this Hook function is mandatory                                        
 *********************************************************************************************/
 #define MCHP_PSF_HOOK_UPD_WRITE(u8PortNum,pu8WriteBuf,u8WriteLen)\
-            SAMD20_SPIWritedriver(u8PortNum,pu8WriteBuf,u8WriteLen)
+            SAMD20_SPIWritedriver (u8PortNum,pu8WriteBuf,u8WriteLen)
 
 /***************************************************************************************
 Function:
@@ -158,9 +158,10 @@ Function:
 Summary:
     Initiates a read transfer to UPD350 via I2C/SPI
 Description:
-    This hook is called to read to UPD350 registers with respect to the port. Its definition is 
-    confined CONFIG_DEFINE_UPD350_HW_INTF_SEL definition for SPI/I2C selection. Define relevant 
-    function that has UINT8, UINT8*, UINT8, UINT8*, UINT8 arguments with UINT8 return type.
+    This hook is used to read the registers of the UPD350 of a given port over the chosen 
+    communication interface defined by CONFIG_DEFINE_UPD350_HW_INTF_SEL. This hook is assigned to
+    a function that takes arguments of type UNIT8, UINT8 *, UINT8, UINT8 *, UNIT8 and has a return
+    type of UINT8.
 Conditions:
     None.
 Input:
@@ -221,7 +222,7 @@ Remarks:
     User definition of this Hook function is mandatory.                                 
 ***************************************************************************************/
 #define MCHP_PSF_HOOK_UPD_READ(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)\
-            SAMD20_SPIReaddriver(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)
+            SAMD20_SPIReaddriver (u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)
 
 
 // *****************************************************************************
@@ -234,11 +235,12 @@ Function:
 Summary:
     Hook to Initialize and start the hardware timer module.
 Description:
-    PSF requires a single dedicated hardware timer module for its functionality. This Hook
-    initializes and starts the hardware timer module for MCHP_PSF_PDTIMER_INTERRUPT_RATE interrupt
-    frequency. To inform PSF about the occurrence of hardware timer interrupt  API 
-    MchpPSF_PDTimerHandler should be called by the SOC layer on every timer interrupt. Define 
-    relevant function that has no argument with UINT8 return type. 
+    PSF requires a single dedicated hardware timer module for synchronizing the various state
+    machines in the stack. This Hook initializes and starts the hardware timer module for 
+    MCHP_PSF_PDTIMER_INTERRUPT_RATE interrupt frequency. To inform PSF about the occurrence 
+    of hardware timer interrupt, MchpPSF_PDTimerHandler should be called by the SOC layer on every
+    occurrence of the timer interrupt. This hook is assigned to a function that takes no arguments
+    and has a return type of UINT8. 
 Conditions:
     None.
 Return:
@@ -262,7 +264,7 @@ Remarks:
 
 /**************************************************************************************************
 Summary:
-	PD Timer Interrupt Rate
+	Rate at which the Hardware PD timer generates an interrupt 
 Description:
     MCHP_PSF_PDTIMER_INTERRUPT_RATE defines the frequency of interrupt set in the hardware timer 
     dedicated for PSF. In other words, it is the resolution of the hardware timer. It can be 
@@ -284,9 +286,9 @@ Summary:
 Description :
     MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER can be defined as either 1 or 0 to set the timeout counter in PSF 
     to unsigned 16bit or unsigned 32bit correspondingly. When set as 1, maximum timeout that can be 
-    set will be 65535 ticks.(Ticks = Resolution of the Hardware timer used). When set as 0 , maximum 
+    set will be 65535 ticks.(Ticks = Resolution of the Hardware timer used). When set as 0, maximum 
     timeout that can be set will be 4294967296 ticks. Default value of MCHP_PSF_CONFIG_16BIT_PDTIMER_COUNTER is 
-    set as 1. With Hardware timer resolution set as 1ms , PSF will be capable of handling timeouts 
+    set as 1. With Hardware timer resolution set as 1ms, PSF will be capable of handling timeouts 
     upto 65.535 Seconds.
 Remarks :
     None
@@ -309,10 +311,11 @@ Example :
 Summary:
     Disables the global interrupt.
 Description:
-    This hook is called when PSF enters into a critical section. It must provide an implementation
-    to disable the interrupts globally. This hook implementation must be very short, otherwise 
-    response time may be delayed and cause timing issues/conflicts. Define relevant function that 
-	has no arguments without return type.
+    This hook is used to disable the global interrupts of the chosen SOC. It is usually invoked
+    when PSF enters a critical section in the code. This hook is assigned to a function that takes
+    no arguments and has a return type of void. The assigned function should be very short to
+    ensure interrupt response times are shorter and potential timing issues or race conditions
+    can be prevented.
 Conditions:
     None.
 Return:
@@ -337,10 +340,11 @@ Function:
 Summary:
     Enables the global interrupt.
 Description:
-    This hook is called when PSF exits from critical section. It must provide an 
-    implementation to enable the interrupts globally. This function must be very short, otherwise 
-    response time to the interrupt may be delayed and cause timing issues/conflicts. Define 
-	relevant function that has no arguments without return type.
+    This hook is used to enable the global interrupts of the chosen SOC. It is usually invoked when
+    PSF exits from a critical section in the code. This hook is assigned to a function that takes no
+    arguments and has a return type of void. The assigned function should be very short to ensure 
+    interrupt response times are shorter and potential timing issues or race conditions can be 
+    prevented.
 Conditions:
     None.
 Return:
@@ -370,8 +374,8 @@ Function:
 Summary:
     Compare two memory regions
 Description:
-    This function is called to compare two memory regions pau8Obj1, pau8Obj2 with specified length 
-    u8Length. User must define this hook based on compiler of SOC.
+    This hook is used to compare two memory regions pau8Obj1, pau8Obj2 with specified length 
+    u8Length. User must define this hook based on the compiler of SOC.
 Conditions:
     None.
 Input:
@@ -388,7 +392,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                   
 ************************************************************************/
-#define MCHP_PSF_HOOK_MEMCMP(pObj1, pObj2, iLength) SAMD20_MemCmp(pObj1, pObj2, iLength)                          
+#define MCHP_PSF_HOOK_MEMCMP(pObj1, pObj2, iLength) SAMD20_MemCmp (pObj1, pObj2, iLength)                          
 
 /**************************************************************************
 Function:
@@ -396,8 +400,8 @@ Function:
 Summary:
     Copies one memory area to another memory area
 Description:
-    This function is called to copy iLen bytes from pSrc memory area to pDest memory area. User must 
-    define this function based on compiler of SOC. The memory areas must not overlap.
+    This hook is used to copy iLen bytes from pSrc memory area to pDest memory area. User must 
+    define this hook based on the compiler of SOC. The memory areas cannot overlap.
 Conditions:
     None.
 Input:
@@ -414,7 +418,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                     
 **************************************************************************/
-#define MCHP_PSF_HOOK_MEMCPY(pDest, pSrc, iLen) SAMD20_MemCpy(pDest, pSrc, iLen)
+#define MCHP_PSF_HOOK_MEMCPY(pDest, pSrc, iLen) SAMD20_MemCpy (pDest, pSrc, iLen)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -426,12 +430,12 @@ Remarks:
 Summary:
     Structure packing to align the bytes in data memory based on the compiler.
 Description:
-    Generally packed structures will be used to save space & align the bytes in data memory based 
+    Packed structures are used to save space & align the bytes in data memory based 
     on the compiler. If this pre-processor is defined, then all the PSF's "C" structures will be 
-    replaced with this keyword for compilation. If this pre-processor is not defined, then it will  
-    be default compilation rules based on the compiler.
+    replaced with this keyword prior to compilation. If this pre-processor is not defined, then 
+    structures will be compiled using the default rules of the compiler.
 Remarks:
-    Need to be packed always based on type of SOC.	
+    Need to be packed always based on the type of SOC.	
 Example:
     <code>
         #define MCHP_PSF_STRUCT_PACKED_START   __attribute__((__packed__)) 
@@ -443,12 +447,12 @@ Example:
 Summary:
     Structure packing to align the bytes in data memory based on the compiler.
 Description:
-    Generally packed structures will be used to save space & align the bytes in data memory based 
+    Packed structures are used to save space & align the bytes in data memory based 
     on the compiler. If this pre-processor is defined, then all the PSF's "C" structures will be 
-    replaced with this keyword for compilation. If this pre-processor is not defined, then it will  
-    be default compilation rules based on the compiler.
+    replaced with this keyword prior to compilation. If this pre-processor is not defined, then 
+    structures will be compiled using the default rules of the compiler.
 Remarks:
-    Need to be packed always based on type of SOC.
+    Need to be packed always based on the type of SOC.
 Example:
     <code>
         #define CONFIG_STRUCT_PACKED_END    _Pragma("pack()")
@@ -462,9 +466,9 @@ Example:
   Summary:
     Updates the global and per port Configuration parameters.
   Description:
-    This function is called to update the configuration parameters of Type-C, PD, Power Balancing, 
-	Power throttling and PPS contained in gasCfgStatusData structure. This API must have an input 
-	parameter of gasCfgStatusData.
+    This hook is used to update the configuration parameters of Type-C, PD, Power Balancing, 
+	Power throttling, PPS, VDM and AltMode contained in gasCfgStatusData structure. 
+    This hook must have an argument gasCfgStatusData.
   Conditions:
     None.
   Input:
@@ -493,7 +497,7 @@ Example:
   Remarks:
     User definition of this Hook function is mandatory                                          
   *********************************************************************************************/
-#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData)       PSF_LoadConfig(pasCfgStatusData)
+#define  MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData)       PSF_LoadConfig (pasCfgStatusData)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -504,12 +508,12 @@ Example:
 Function:
     MCHP_PSF_HOOK_DPM_PRE_PROCESS(u8PortNum)
 Summary:
-    This hook is called before entering into the DPM state machine.
+    This hook is called inside the DPM_RunStateMachine() API.
 Description:
-    This hook is called at the entry of DPM_RunStateMachine() API before executing the Type C state 
-    machine and policy engine state machine. USER_APPLICATION can define this function if a change 
-    is required in default device policy manager functionality or add a user defined state machine. 
-    Define relevant function that has one UINT8 argument without return type.
+    This hook is called before executing the Type C state machine and policy engine state machine.  
+    USER_APPLICATION can define this function if a change is required in default device policy 
+    manager or add a user defined state machine. This hook is assigned to a function that takes an
+    argument of type UNIT8 and has no return type.
 Conditions:
     None.
 Input:
@@ -543,8 +547,9 @@ Function:
 Summary:
     Initialization of debug module interface
 Description:
-    This hook is called during initialization of PSF if CONFIG_HOOK_DEBUG_MSG is set to 1. Define
-    relevant function to initialize the Debug interface used with no arguments without return type.
+    This hook is used to initialize the debug interface used by the SOC. It is called during
+    initialization of PSF if CONFIG_HOOK_DEBUG_MSG is set to 1. This hook is assigned 
+    to a function that takes no arguments and has no return type 
 Conditions:
     None.
 Return:
@@ -569,8 +574,8 @@ Function:
 Summary:
     Outputs a character via UART interface
 Description:
-    This hook is can be called to output a character via UART interface to help the user in debugging. byData is of type char.
-    Define relevant function to print a character via UART terminal with argument of type char and no return type. 
+    This hook is used to output a character via UART interface to help the user in debugging. 
+    This hook is assigned to a function that takes an argument of type char and has no return type.
 Conditions:
     MCHP_PSF_HOOK_DEBUG_INIT() should have been called before using this API.
 Return:
@@ -588,7 +593,7 @@ Remarks:
     This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
 ***********************************************************************/  
 
-#define MCHP_PSF_HOOK_PRINT_CHAR(byData)    SAMD20_UART_Write_Char(byData);
+#define MCHP_PSF_HOOK_PRINT_CHAR(byData)    SAMD20_UART_Write_Char (byData);
 
 
 /***********************************************************************
@@ -597,11 +602,10 @@ Function:
 Summary:
     Outputs an integer via UART interface
 Description:
-    This hook is can be called to output an integer via UART interface to help the user in debugging. 
-    The size of integer is specified in byWidth.
-    dwWriteInt is of type unsigned long. byWidth is of type unsigned char.
-    Define relevant function to print an integer via UART terminal with arguments of type unsigned long and unsigned char and no return type. 
-
+    This hook is used to output an integer via UART interface to help the user in debugging. 
+    The size of integer is specified in byWidth. dwWriteInt is of type unsigned long. 
+    byWidth is of type unsigned char. This hook is assigned to a function that takes 
+    arguments of type unsigned long and unsigned char and has no return type.
 Conditions:
     MCHP_PSF_HOOK_DEBUG_INIT() should have been called before using this API.
 Return:
@@ -618,7 +622,7 @@ Example:
 Remarks:
     This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
 ***********************************************************************/  
-#define MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)    SAMD20_UART_Write_Int(dwWriteInt, byWidth);
+#define MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)    SAMD20_UART_Write_Int (dwWriteInt, byWidth);
 
 
 /***********************************************************************
@@ -627,9 +631,9 @@ Function:
 Summary:
     Outputs a string via UART interface
 Description:
-    This hook is can be called to output a string via UART interface to help the user in debugging. pbyMessage is of type char *.
-    Define relevant function to print a string via UART terminal with argument of type char* and no return type. 
-
+    This hook is used to output a string via UART interface to help the user in debugging. 
+    pbyMessage is of type char *. This hook is assigned to a function that takes 
+    an argument of type char * and has no return type.
 Conditions:
     MCHP_PSF_HOOK_DEBUG_INIT() should have been called before using this API.
 Return:
@@ -646,7 +650,7 @@ Example:
 Remarks:
     This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
 ***********************************************************************/ 
-#define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)  SAMD20_UART_Write_String(pbyMessage);
+#define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)  SAMD20_UART_Write_String (pbyMessage);
 
 #else
     #define MCHP_PSF_HOOK_DEBUG_INIT() 
@@ -665,13 +669,13 @@ Remarks:
 Function:
     MCHP_PSF_HOOK_GETCURRENT_IMAGEBANK()
 Summary:
-    To Return the Index of the Image Bank which is currently executing.
+    Returns the Index of the Image Bank which is currently executing.
     Example:
         1. 0x01 - Corresponds to Bootloader Application
         2. 0x02 - Corresponds to Fixed Application
         3. 0x03 - Corresponds to Updatable Application
 Description:
-    This hook is called by PSF to get the Index of the image bank which is currently executing in 
+    This hook is used to get the Index of the image bank which is currently executing in 
     the application. PSF follows "Architecture 2 - Fixed base application with updatable application 
     image". In which the Fixed Application is Image Bank 1 and updatable Application is Image Bank 2.
 Conditions:
@@ -767,7 +771,7 @@ Remarks:
   Function:
         MCHP_PSF_HOOK_VALIDATE_FIRMWARE()
   Summary:
-    To validate the Flashed Binary using a user defined validation method and return the status of
+    Validates the Flashed Binary using a user defined validation method and returns the status of
 	the Firmware Validation Operation.
   Description:
     This hook is invoked during the validation phase on reception of every PDFU Validation Request.
@@ -814,9 +818,9 @@ Summary:
     application to Fixed application.
 Description:
     Re-flash of the Updatable_Application image bank while currently executing in the Updatable
-    Application image bank, requires switch to Fixed application for performing the upgrade.
-    The application switching may include invalidating the Updatable_Application signatures (and/or)
-    jump/reset for fresh boot from Fixed application.
+    Application image bank, requires switching to the fixed application for performing the upgrade.
+    The application switching shall include invalidating the Updatable_Application signatures and/or
+    jump/reset for fresh boot from the fixed application.
 Conditions:
     This hook is invoked by the PD Firmware Update State-machine during the Reconfiguration phase(On
     reception PDFU_INITIATE Command), when the Updatable application is currently running.
@@ -873,9 +877,10 @@ Remarks:
 /**************************************************************************
 Function:
     MCHP_PSF_HOOK_IS_PDFU_ALLOWED_NOW()
+Summary:
+    MCHP_PSF_HOOK_BOOT_UPDATABLE_APP specifies if PD Firmware Update can be currently allowed, 
+    based on the priority of the application tasks currently executing. 
 Description:
-    MCHP_PSF_HOOK_IS_PDFU_ALLOWED_NOW specifies if PD Firmware Update can be currently allowed, 
-    based on the priority of the application tasks currently executing.
     1. When the PD Firmware Update is allowed, the PDFU Initiator can perform firmware upgrade by 
        the PDFU Sequence
     2. When the PD Firmware Update is not allowed, the PDFU Initiator is responded with the error 
@@ -926,19 +931,20 @@ Return:
     TRUE - Stack and UPD350 HW successfully initialized.
     FALSE - Stack and UPD350 HW initialization failed.
 Remarks:
-    For the current PSF implementation, return value is not used. API called with void. With SAMD20 
-	environment configured for CPU frequency 48MHZ, this API took maximum of 3.488ms and 6.182ms 
-	execution time for 1 and 2 port solution respectively.
+    For the current PSF implementation, return value is not used. 
+    Note: <b> With SAMD20 SOC environment configured for CPU frequency of 48MHZ, this API
+    took maximum of 3.488ms and 6.182ms execution time for 1 and 2 port Source only solution 
+    respectively. </b>
 **************************************************************************************************/
-UINT8 MchpPSF_Init(void);
+UINT8 MchpPSF_Init (void);
 
 /**************************************************************************************************
 Function:
-	void MchpPSF_RUN(void)
+	void MchpPSF_RUN (void)
 Summary:
     PSF state machine run API
 Description:
-    This API is to run the PSF state machine.For single threaded environment, it should be called 
+    This API is used to run the PSF state machine.For single threaded environment, it should be called 
 	repeatedly within a while(1).
 Conditions:
     API should be called only after MchpPSF_Init().
@@ -954,11 +960,11 @@ Remarks:
     configured for 48MHz environment, MchpPSF_RUN can be called for
     every 1ms to 5ms for Successful 2-Port Source only operation.                
   *************************************************************************/
-void MchpPSF_RUN(void);
+void MchpPSF_RUN (void);
 
 /**************************************************************************************************
 Function:
-    void MchpPSF_UPDIrqHandler(UINT8 u8PortNum)
+    void MchpPSF_UPDIrqHandler (UINT8 u8PortNum)
 Summary:
     UPD350 IRQ Interrupt Handler 
 Description:
@@ -975,11 +981,11 @@ Remarks:
     With SAMD20 environment configured for CPU frequency 48MHZ, this API took maximum of 3.98us and
 	5.8us execution time for 1 and 2 port solution respectively.
 **************************************************************************************************/
-void MchpPSF_UPDIrqHandler(UINT8 u8PortNum);
+void MchpPSF_UPDIrqHandler (UINT8 u8PortNum);
 
 /**************************************************************************************************
 Function:
-    void MchpPSF_PDTimerHandler(void)
+    void MchpPSF_PDTimerHandler (void)
 Summary:
     PD Timer Interrupt Handler 
 Description:
@@ -995,7 +1001,7 @@ Remarks:
     With SAMD20 environment configured for CPU frequency 48MHZ, this API took maximum of 262us  
 	execution time for both 1 and 2 port solution.
 **************************************************************************************************/
-void MchpPSF_PDTimerHandler(void);
+void MchpPSF_PDTimerHandler (void);
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1018,95 +1024,279 @@ Description:
     <b>eMCHP_PSF_TYPEC_CC2_ATTACH:</b> This event is posted by PSF Type C state machine when port
 	partner Type C attach is detected in CC2 pin.
     
-    <b>eMCHP_PSF_TYPEC_ERROR_RECOVERY:</b> This event is posted by PSF Type C state machine when 
-    the port has entered Type C Error Recovery state.
-  
+    <b>eMCHP_PSF_TYPEC_ERROR_RECOVERY:</b> PSF notifies Type-C Error Recovery condition 
+	via this notification. For this notification, PSF expects a return value to decide whether
+    to handle Error Recovery. When user application returns TRUE, PSF enters Type-C Error Recovery
+    state and resolves the error condition. The user application may also return FALSE, in which case,
+    the user application will itself handle Error Recovery condition by raising a Port disable client
+    request (BIT(0) of gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable).
+
     <b>eMCHP_PSF_UPDS_IN_IDLE: </b>This event is posted by Power management control. PSF runs an
-	algorithm backend for Power management control. If there is no activity in UPD350 for 
-	CONFIG_PORT_UPD_IDLE_TIMEOUT_MS corresponding UPD350 is put to low power mode. When all the
-	UPD350 present in the system enters low mode, eMCHP_PSF_UPDS_IN_IDLE is posted. User can put 
-	SOC in low power mode as required on this notification. This notification occurs only when
-    INCLUDE_POWER_MANAGEMENT_CTRL defined as 1.
+	algorithm in the background for Power management control. The Idle timeout value maintained 
+    by PSF is 15 seconds. If there is no activity in UPD350 for 15 seconds, the corresponding 
+    UPD350 is put in low power mode. When all the UPD350s present in the system enter low power 
+    mode, eMCHP_PSF_UPDS_IN_IDLE is notified. User can then choose to put the SOC into a low power
+    state based on this notification. This notification occurs only when 
+    INCLUDE_POWER_MANAGEMENT_CTRL is defined as 1.
     
     <b> eMCHP_PSF_VCONN_PWR_FAULT:</b> UPD350 has VCONN comparators to detect VCONN OCS faults. 
 	This event is notified when VCONN OCS fault is detected by UPD350. For this notification, PSF
 	expects a return value to decide whether to handle the fault occurred. When user returns TRUE
 	for VCONN power fault, Incase of explicit contract, if VCONN power fault count is less than
-	CONFIG_MAX_VCONN_POWER_FAULT_COUNT, PSF DPM power fault manager handles it by sending Hard Reset.
-	If the count exceeds max fault count,VCONN is powered off until physical detach of port partner.
-	Incase of implicit contract, PSF handles by entering TypeC Error Recovery. This notification
-	occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+	u8VCONNMaxFaultCnt, PSF DPM power fault manager handles it by sending Hard Reset. If the count 
+    exceeds max fault count,VCONN is powered off until physical detach of port partner. Incase of 
+    implicit contract, PSF handles by entering TypeC Error Recovery. This notification occurs only 
+    when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
     
     <b> eMCHP_PSF_VBUS_PWR_FAULT</b>: PSF notifies all VBUS power fault VBUS Over voltage, VBUS
 	under voltage, VBUS OCS via this notification. For this notification, PSF expects a return
 	value to decide whether to handle the fault occurred.When user returns TRUE for power fault,
-    Incase of explicit contract, if power fault count is less than CONFIG_MAX_VBUS_POWER_FAULT_COUNT,
-	PSF DPM power fault manager handles it by sending Hard Reset. When the power fault count 
-	exceeds the max fault count,CC termination on the port is removed until the physical detach of
-	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery.
-	This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
+    Incase of explicit contract, if power fault count is less than u8VBUSMaxFaultCnt, 
+    PSF DPM power fault manager handles it by sending Hard Reset. When the power fault count 
+    exceeds the max fault count, CC termination on the port is removed until the physical detach of
+  	the port partner. Incase of implicit contract, PSF handles by entering TypeC Error Recovery. 
+    This notification occurs only when INCLUDE_POWER_FAULT_HANDLING is defined as 1.
  
+    <b> eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT </b>: This event is notified when a port is recovered
+    from  VCONN power fault if the VCONN is stable for u16PowerGoodTimerInms without 
+    any further fault occurrence. PSF clears VCONN fault recorded with this notification.
+    
+    <b> eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT </b>: This event is notified when a port
+    recovers from VBUS power fault when the VBUS is stable for u16PowerGoodTimerInms without
+    any further VBUS fault occurrence. PSF clears the VBUS fault count it recorded with
+    this notification.
+ 
+    <b> eMCHP_PSF_PORT_POWERED_OFF</b>: This event is used by PSF to notify application when 
+    the port has been powered off as a result of VBUS or VCONN fault count exceeding the 
+    values present in u8VBUSMaxFaultCnt or u8VCONNMaxFaultCnt variables respectively within 
+    u16PowerGoodTimerInms time period. When a port is powered off, it stops sourcing/sinking 
+    power and waits for a detach. The port can be revived only when the partner is detached 
+    and attached again. 
+
     <b> eMCHP_PSF_PD_CONTRACT_NEGOTIATED</b>: PSF notifies when PD contract is
     established with the Port partner.
+    
+    <b> eMCHP_PSF_HARD_RESET_COMPLETE</b>: This event is posted when a Hard Reset is 
+    is sent or received by the port and as a result of which the port has entered into an 
+    implicit contract and is going to reestablish the explicit contract with the port partner. 
+  
+    <b> eMCHP_PSF_PE_SRC_DISABLED</b>: This event is posted when Source policy
+    engine enters PE_SRC_DISABLED indicating Power Delivery capable port partner 
+    is not present and only Implicit contract is established with Sink port partner.
    
     <b> eMCHP_PSF_SINK_CAPS_RCVD</b>: This event is used by PSF to notify application when 
-    Sink capabilities has been received from Port Partner in response to the Get_Sink_Caps
-    message initiated by PSF on request from the application through u32ClientRequest variable 
-    in sPerPortDatastructure. Application can read the sink capabilities by accessing 
-    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO[7].
+    Sink capabilities has been received from Port Partner in response to the Get_Sink_Cap
+    message initiated by PSF. Application can read the Sink Capabilities by accessing 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO array. This event is applicable 
+    only when the port is configured for Source only or DRP configuration.  
     
     <b> eMCHP_PSF_SINK_CAPS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink capabilities has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Sink_Caps message initiated by PSF on request from application
-    through u32ClientRequest variable in sPerPortDatastructure.
+    as a response to the Get_Sink_Cap message initiated by PSF. This event is applicable 
+    only when when the port is configured for Source only or DRP configuration. 
     
     <b> eMCHP_PSF_CAPS_MISMATCH</b>: It is notified by PSF when there is a capability
-    mismatch with Source partner PDOs in a PD negotiation.
+    mismatch with Source partner PDOs in a PD negotiation. This event is applicable 
+    only when PSF is operating as Sink or the power role of the port is resolved as 
+    Sink during DRP operation. 
     
     <b> eMCHP_PSF_NEW_SRC_CAPS_RCVD</b>: It is notified by PSF when new source capability
-    message is received from the Source Partner.
+    message is received from the Source Partner. This event is applicable 
+    only when PSF is operating as Sink or the power role of the port is resolved as 
+    Sink during DRP operation. 
   
     <b> eMCHP_PSF_SINK_ALERT_RCVD</b>: This event is used by PSF to notify application when PD
 	Alert message has been received from Sink Partner. Application can read the alert
-    information by accessing gasCfgStatusData.sPerPortData[u8PortNum].u32PartnerAlert.
+    data by accessing gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert.
+    This event is applicable only when PSF is operating as Source or the power role of the port 
+    is resolved as Source during DRP operation.   
  
     <b> eMCHP_PSF_SINK_STATUS_RCVD</b>: This event is used by PSF to notify application when 
     Sink Status has been received from Port Partner in response to the Get_Status
-    message initiated by PSF on request from the application. Application can read the 
-    Sink Status by accessing gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6]
-    
+    message initiated by PSF. Application can read the Sink Status by accessing 
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus array.
+    This event is applicable only when PSF is operating as Source or the power role of the port is
+    resolved as Source during DRP operation. 
+ 
     <b> eMCHP_PSF_SINK_STATUS_NOT_RCVD</b>: This event is used by PSF to notify application when
     Sink Status has not been received from Port Partner within tSenderResponseTimer
-    as a response to the Get_Status message initiated by PSF on request from application.
-    gasCfgStatusData.sPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
-    when this notification is posted. 
+    as a response to the Get_Status message initiated by PSF.
+    gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus[6] would have 0 
+    when this notification is posted. This event is applicable only when PSF is operating as Source
+    or the power role of the port is resolved as Source during DRP operation. 
  
-    <b> eMCHP_PSF_BUSY</b>: This event is used by PSF to indicate that it is
-    Busy due to which it cannot process any of the client requests, say 
-    Renegotiation, Get Sink Caps, Get Status, etc., which were raised by the 
-    application through u32ClientRequest variable in sPerPortDatastructure. On 
-    receiving this notification, the application can re-initiate the request.
+    <b> eMCHP_PSF_VCONN_SWAP_COMPLETE</b>: This notification will be posted when the VCONN Swap
+    is completed and the VCONN roles of the both the partners are changed successfully. This 
+    notification will also be posted when the VCONN Swap initiated by either of the partners
+    is rejected by the other. Users can know the current status of VCONN
+    through u32PortConnectStatus.
+    
+    <b> eMCHP_PSF_VCONN_SWAP_RCVD</b>: This notification will be posted by PSF when a VCONN 
+    Swap message is received from port partner. Application can make use of this event to 
+    dynamically update the VCONN Swap Policy Configuration through u16SwapPolicy based on 
+    which the VCONNN Swap request would be accepted or rejected by PSF. 
+
+    <b> eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD </b>: This notification will be posted by PSF 
+    when a VCONN Swap message has been initiated by PSF and no response has been 
+    received from the port partner. 
+
+    <b> eMCHP_PSF_FR_SWAP_COMPLETE</b>: This notification will be posted when the FR Swap
+    is completed and the power roles of the both the partners are changed successfully.
+    Users can know the current power role status through u32PortConnectStatus. This event 
+    is applicable only when PSF is operating as DRP and FR_Swap is supported.
+   
+    <b> eMCHP_PSF_PR_SWAP_COMPLETE</b>: This notification will be posted when the PR Swap
+    is completed and the power roles of the both the partners are changed successfully.
+    This notification will also be posted when the PR_Swap initiated by either of the 
+    partners is rejected by the other. Users can know the current power role status 
+    through u32PortConnectStatus. This event is applicable only when PSF is operating as DRP.
+    
+    <b> eMCHP_PSF_PR_SWAP_RCVD</b>: This notification will be posted by PSF when a Power 
+    Role Swap message is received from port partner. Application can make use of this event to 
+    dynamically update the Power Role Swap Policy Configuration through u16SwapPolicy based on 
+    which the Power Role Swap request would be accepted or rejected by PSF. 
+    This event is applicable only when PSF is operating as DRP.
+  
+    <b> eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD </b>: This notification will be posted by PSF 
+    when a Power Role Swap message has been initiated by PSF and no response has been 
+    received from the port partner. 
+    This event is applicable only when PSF is operating as DRP.
+   
+    <b>eMCHP_PSF_DR_SWAP_COMPLETE</b>: This notification will be posted when the DR Swap
+    is completed and the data roles of the both the partners are changed successfully.
+    This notification will also be posted when the DR_Swap initiated by either of the 
+    partners is rejected by the other. Users can know the current data role status 
+    through u32PortConnectStatus.
+        
+    <b>eMCHP_PSF_DR_SWAP_RCVD</b>: This occurs whenever there is a DR_SWAP message
+    from port partner. User can modify u16SwapPolicy dynamically to Accept or 
+    Reject DR_SWAP. Note for dynamic DR_SWAP initiation by PSF, client request 
+    has to be raised apart from dynamic change of u16SwapPolicy configuration.
+    
+    <b> eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD </b>: This is posted by PSF when
+    Response Timer times out and there is no response from the port partner for 
+    the DR_SWAP initiated. 
+    
+    <b> eMCHP_PSF_CABLE_IDENTITY_DISCOVERED </b>: This event is used by PSF to notify the 
+    application when the Cable Identity has been received from Cable in response to the 
+    VDM:Discover Identity request initiated by PSF. Application can read the cable identity by 
+    accessing the gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity array.
+    This event is applicable only when the port is operating as both VBUS Source and
+    VCONN Source.
+  
+    <b> eMCHP_PSF_CABLE_IDENTITY_NAKED </b>: This event is used by PSF to notify the 
+    application of the scenarios Good_CRC not received, no response, NAK response and 
+    BUSY response from cable for SOP' VDM:Discover Identity request initiated by PSF. 
+    This event is applicable only when the port is operating as both VBUS Source and
+    VCONN Source. 
+   
+    <b> eMCHP_PSF_VDM_RESPONSE_RCVD </b>: This notification will be posted by PSF when the partner 
+    has sent an ACK/NAK response for the VDM request initiated by PSF within VDM Response time. 
+    This notification will not be posted for a BUSY response. Instead, PSF will re-initiate the 
+    request after PE_VDM_BUSY_TIMEOUT_MS. This will be done for a maximum Busy count of 5 times.
+  
+    <b> eMCHP_PSF_VDM_RESPONSE_NOT_RCVD </b>: This notification will be posted by PSF when
+	the VDM response timer has timed out due to no response from the partner for the VDM request 
+    sent or when the partner has responded BUSY for a maximum of 5 times and the VDM request will 
+    not be initiated by PSF anymore or when the partner has sent Not Supported for the VDM request.
+
+    <b> eMCHP_PSF_VDM_REQUEST_RCVD </b>: This notification will be posted by PSF when a VDM request
+    received from the partner is evaluated and determined to be ACKed or when the request 
+    is a SVID specific command i.e it needs evaluation by the user application. In case of 
+    Structured VDM commands like Discover Identity, Discover SVIDs, Discover Modes, Enter Mode, 
+    and Exit Mode, PSF expects a return value from the application to send ACK/NAK response.
+    If the application returns TRUE, PSF will send ACK response. The application may also return 
+    FALSE in which case PSF will send NAK response. If after the evaluation by PSF, it is 
+    determined that these commands are to be NAKed, then PSF will send NAK response without 
+    notifying the user application. For SVID specific commands, PSF will not 
+    send any response since it is expected that the user application will send the response by 
+    raising a VDM client request within the VDM response time specified by USB PD Specification. 
+ 
+    <b> eMCHP_PSF_VDM_AMS_COMPLETE </b>: This notification will be posted by PSF when Good CRC 
+    is received for the VDM request initiated by PSF that consists of no command response or when 
+    Good CRC is received for the VDM response sent in response to the VDM request received
+    from partner.  
+
+    <b> eMCHP_PSF_HPD_ENABLED </b>: This notification will be posted by PSF when
+	an Hot Plug Detect (HPD) support is enabled.
+
+    <b> eMCHP_PSF_HPD_EVENT_HIGH </b>: This notification will be posted by PSF when
+	an HPD_HIGH event has occurred. 
+
+    <b> eMCHP_PSF_HPD_EVENT_LOW </b>: This notification will be posted by PSF when
+	an HPD_LOW event has occurred. 
+
+    <b> eMCHP_PSF_HPD_EVENT_IRQ_HPD </b>: This notification will be posted by PSF when
+	an IRQ_HPD event has occurred. 
+
+    <b> eMCHP_PSF_HPD_DISABLED </b>: This notification will be posted by PSF when
+	an Hot Plug Detect (HPD) support is disabled.
+ 
+    <b> eMCHP_PSF_ALT_MODE_ENTRY_FAILED </b>: This notification will be posted by PSF when
+    AltModeEntry timer has timed out because of No 'Enter Mode' command from the port partner
+   
+    <b> eMCHP_PSF_PORT_DISABLED</b>: This event is used by PSF to notify the application 
+    that a port has been disabled as a result of port disable client request (BIT[0] in 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is disabled,
+    any connection to the port is prevented by removing all terminations from the CC pins. 
+    A disabled port will continue to be in disabled state even after the port partner is
+    physically detached and attached. The port can only be revived by a client request to 
+    enable the port (BIT[1] in gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). 
+
+    <b> eMCHP_PSF_PORT_ENABLED</b>: This event is used by PSF to notify the application 
+    that a port has been enabled as a result of port enable client request (BIT[1] in 
+    gasCfgStatusData.sPerPortData[u8PortNum].u32ClientRequest variable). When a port is enabled,
+    Type-C attach and PD negotiation sequence happens again.
+ 
 Remarks:
     None                                                                                               
   ******************************************************************************************************/
 typedef enum MCHP_PSF_NOTIFICATION
 {    
-eMCHP_PSF_TYPEC_DETACH_EVENT = 1,   // Detach event has occurred
-eMCHP_PSF_TYPEC_CC1_ATTACH,         // Port partner attached at CC1 orientation
-eMCHP_PSF_TYPEC_CC2_ATTACH,         // Port partner attached at CC2 orientation
-eMCHP_PSF_TYPEC_ERROR_RECOVERY,     // Entered Error recovery State
-eMCHP_PSF_UPDS_IN_IDLE,             // All the UPD350s are in Idle
-eMCHP_PSF_VCONN_PWR_FAULT,          // VCONN Power Fault has occurred
-eMCHP_PSF_VBUS_PWR_FAULT,            // VBUS Power Fault has occurred
-eMCHP_PSF_PD_CONTRACT_NEGOTIATED,   // PD Contract established with port partner
-eMCHP_PSF_SINK_CAPS_RCVD,          // Sink Caps received from Port Partner
-eMCHP_PSF_SINK_CAPS_NOT_RCVD,      // Sink Caps not received from Port Partner
-eMCHP_PSF_CAPS_MISMATCH,            // Capability mismatch with Source Port Partner
-eMCHP_PSF_NEW_SRC_CAPS_RCVD,        // New source capability message is received from Source Partner
-eMCHP_PSF_SINK_ALERT_RCVD,          // Alert message received from Sink Partner         
-eMCHP_PSF_SINK_STATUS_RCVD,         // Sink Status received from Sink Partner
-eMCHP_PSF_SINK_STATUS_NOT_RCVD,     // Sink Status not received from Sink Partner
-eMCHP_PSF_BUSY                      // PSF is busy, cannot handle client request        
+eMCHP_PSF_TYPEC_DETACH_EVENT = 1,      // Detach event has occurred
+eMCHP_PSF_TYPEC_CC1_ATTACH,            // Port partner attached at CC1 orientation
+eMCHP_PSF_TYPEC_CC2_ATTACH,            // Port partner attached at CC2 orientation
+eMCHP_PSF_TYPEC_ERROR_RECOVERY,        // Error recovery condition has occurred and it will be handled by PSF if user application returns TRUE
+eMCHP_PSF_UPDS_IN_IDLE,                // All the UPD350s are Idle and in low power mode
+eMCHP_PSF_VCONN_PWR_FAULT,             // VCONN Power Fault has occurred
+eMCHP_PSF_VBUS_PWR_FAULT,              // VBUS Power Fault has occurred
+eMCHP_PSF_PORT_POWERED_OFF,            // Port powered off since fault count exceeded maximum fault count
+eMCHP_PSF_RECOVERED_FRM_VCONN_PWR_FAULT,       // Port Recovered from VCONN power fault
+eMCHP_PSF_RECOVERED_FRM_VBUS_PWR_FAULT,        // Port Recovered from VBUS Power fault
+eMCHP_PSF_PE_SRC_DISABLED,              // Only Type C device is present, Partner does not support PD
+eMCHP_PSF_PD_CONTRACT_NEGOTIATED,      // PD Contract established with port partner
+eMCHP_PSF_HARD_RESET_COMPLETE,         // Hard Reset is sent or received by the port         
+eMCHP_PSF_SINK_CAPS_RCVD,              // Sink Caps received from Port Partner
+eMCHP_PSF_SINK_CAPS_NOT_RCVD,          // Sink Caps not received from Port Partner
+eMCHP_PSF_CAPS_MISMATCH,               // Capability mismatch with Source Port Partner
+eMCHP_PSF_NEW_SRC_CAPS_RCVD,           // New source capability message is received from Source Partner
+eMCHP_PSF_SINK_ALERT_RCVD,             // Alert message received from Sink Partner         
+eMCHP_PSF_SINK_STATUS_RCVD,            // Sink Status received from Sink Partner
+eMCHP_PSF_SINK_STATUS_NOT_RCVD,        // Sink Status not received from Sink Partner
+eMCHP_PSF_VCONN_SWAP_COMPLETE,         // VCONN Swap completed
+eMCHP_PSF_VCONN_SWAP_RCVD,             // VCONN Swap Received from port partner
+eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD, // No response from port partner for VCONN Swap sent
+eMCHP_PSF_FR_SWAP_COMPLETE,            // Fast Role Swap completed        
+eMCHP_PSF_PR_SWAP_COMPLETE,            // Power Role Swap completed
+eMCHP_PSF_PR_SWAP_RCVD,                // Power Role Swap Received from port partner
+eMCHP_PSF_PR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for Power Role Swap sent 
+eMCHP_PSF_DR_SWAP_COMPLETE,            // Data Role Swap completed
+eMCHP_PSF_DR_SWAP_RCVD,                // Data Role swap received from port partner
+eMCHP_PSF_DR_SWAP_NO_RESPONSE_RCVD,    // No response from port partner for the DR_SWAP initiated        
+eMCHP_PSF_CABLE_IDENTITY_DISCOVERED,   // ACK received from cable for Discover Identity sent to SOP'        
+eMCHP_PSF_CABLE_IDENTITY_NAKED,        // NAK received from cable for Discover Identity sent to SOP'
+eMCHP_PSF_VDM_RESPONSE_RCVD,           // Response received from partner for VDM request sent to SOP
+eMCHP_PSF_VDM_RESPONSE_NOT_RCVD,       // No response from partner for VDM request sent to SOP  
+eMCHP_PSF_VDM_REQUEST_RCVD,            // VDM Request received from partner        
+eMCHP_PSF_VDM_AMS_COMPLETE,            // VDM AMS Completed 
+eMCHP_PSF_HPD_ENABLED,                 // Indicates that HPD module is enabled
+eMCHP_PSF_HPD_EVENT_HIGH,              //Indicates that HPD_HIGH event has occurred
+eMCHP_PSF_HPD_EVENT_LOW,               //Indicates that HPD_LOW event has occurred
+eMCHP_PSF_HPD_EVENT_IRQ_HPD,           //Indicates that IRQ_HPD event has occurred
+eMCHP_PSF_HPD_DISABLED,                // Indicates that HPD module is disabled        
+eMCHP_PSF_ALT_MODE_ENTRY_FAILED,       // Alt Mode Entry Failed        
+eMCHP_PSF_PORT_DISABLED,               // Indicates that port is disabled successfully        
+eMCHP_PSF_PORT_ENABLED                // Indicates that the port is enabled successfully
 } eMCHP_PSF_NOTIFICATION;
 
 /****************************************************************************************************
@@ -1115,22 +1305,21 @@ Function:
 Summary:
     Notifies the USER_APPLICATION about various PD events from PSF.
 Description:
-    This hook is called by the various modules of PSF to notify the USER_APPLICATION about different 
-    PD events such as Type-C Attach and Detach , Type-C Orientation. USER_APPLICATION can define 
-    this hook function if it wants external handling of the PD events. Define relevant function that 
-    has  UINT8, eMCHP_PSF_NOTIFICATION argument without return type.
+    This hook is used by the various modules of PSF to notify the USER_APPLICATION about different 
+    PD events such as Type-C Attach and Detach, Type-C Orientation. USER_APPLICATION can define 
+    this hook function if it wants external handling of the PD events. This hook is assigned to a 
+    function that takes an argument of type UINT8 and has a return type of UINT8.
 Conditions:
     None.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    ePSFNotification -   Type of Notification occurred inside the stack. This argument can take 
-                        one of the values from enum eMCHP_PSF_NOTIFICATION.                   
+    ePSFNotification - Type of Notification occurred inside the stack. This argument can take 
+                       one of the values from enum eMCHP_PSF_NOTIFICATION.                   
 Return:
-    UINT8 - Except for eMCHP_PSF_VCONN_PWR_FAULT and eMCHP_PSF_VBUS_PWR_FAULT the return value is 
-            ignored by PSF. For eMCHP_PSF_VCONN_PWR_FAULT and eMCHP_PSF_VBUS_PWR_FAULT event, 
-			user can return 
-             TRUE - if the Power fault shall be handled by PSF
-             FALSE - if the Power fault occurrence is ignored.
+    UINT8 - Except for eMCHP_PSF_VCONN_PWR_FAULT, eMCHP_PSF_VBUS_PWR_FAULT, 
+            eMCHP_PSF_TYPEC_ERROR_RECOVERY and eMCHP_PSF_VDM_REQUEST_RCVD the return value is 
+            ignored by PSF. For these events, user can return TRUE or FALSE depending on whether
+            the relevant action is required to be taken by PSF or not.
 Example:
     <code>
         #define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)\
@@ -1146,7 +1335,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                                                
 ****************************************************************************************************/
-#define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   App_HandlePSFEvents(u8PortNum, ePSFNotification)
+#define MCHP_PSF_NOTIFY_CALL_BACK(u8PortNum, ePSFNotification)   App_HandlePSFEvents (u8PortNum, ePSFNotification)
  
 /**************************************************************************************************************
   Section:
@@ -1160,13 +1349,15 @@ Remarks:
   Summary:
     GPIO Functionality enum.
   Description:
-    eMCHP_PSF_GPIO_FUNCTIONALITY enum defines the various GPIO
-    functionality Pins that are used in PSF.
+    eMCHP_PSF_GPIO_FUNCTIONALITY enum contains all the GPIO pin roles or functions that are used by
+    PSF on a per port basis. Depending on the PD mode supported, each of these pin roles are
+    assigned a unique GPIO from the MCU or the UPD350.
     <table>
-    Funtionality              \Input/Output   \Description
+    Functionality             \Input/Output   \Description
     ------------------------  --------------  -----------------------------------------------------------------
-    eUPD350_ALERT_FUNC        \Input          * PSF requires a GPIO specific to each port of UPD350 for
-                                                 interrupt detection via UPD350's IRQ_N lines.
+    eUPD350_ALERT_FUNC        \Input          * PSF needs an SOC GPIO to be assigned to this role
+                                                 for detecting the status of the IRQ_N line of
+                                                 UPD350 associated with each port
                                                * IRQ_N is an active low signal. This GPIO functionality
                                                  shall initialize the SOC GPIOs connected to the IRQ_N
                                                  lines of UPD350s in the system for interrupt notification.
@@ -1174,20 +1365,22 @@ Remarks:
                                                  level detection with internal pull up since the UPD350
                                                  keeps the IRQ_N line in low state until the interrupt is
                                                  cleared.
-                                               * To notify PSF the occurrence of UPD350 interrupt, the
-                                                 API MchpPSF_UPDIrqHandler shall be called by SOC on
-                                                 interrupt detection of the specific port.
+                                               * To notify PSF about the occurrence of UPD350 
+                                                 interrupt, the API MchpPSF_UPDIrqHandler shall be 
+                                                 called by SOC on interrupt detection of the 
+                                                 specific port. 
                                                * GPIO connected to IRQ_N should be wakeup capable if
                                                  INCLUDE_POWER_MANAGEMENT_CTRL defined as 1.This is a
                                                  mandatory functionality and configured only during
                                                  initialization.
-    eI2C_DC_DC_ALERT_FUNC     \Input          * Configures the GPIO of SOC for DC DC Alert
+    eI2C_DC_DC_ALERT_FUNC     \Input          * Configures the GPIO of the SOC for DC DC Alert
                                                  functionality. This is not a mandatory functionality and
                                                  can be configured based on the DC DC controller used.
     eUPD350_RESET_FUNC        \Input          * This GPIO functionality is to control SOC GPIOs
                                                  connected to the RESET_N lines of Port's UPD350. It is
-                                                 must to connect a single GPIO to the reset line of
-                                                 all UPD350s. The UPD350 RESET_N is active low signal.
+                                                 mandatory to connect a single GPIO to the reset 
+                                                 line of all UPD350s. The UPD350 RESET_N is an 
+                                                 active low signal. 
                                                * The GPIO control for reset shall be handled as below
 											      * Initialization - Drive the GPIO high
 												  * eGPIO_ASSERT - Drive the GPIO low and provide a sufficient 
@@ -1199,66 +1392,105 @@ Remarks:
                                                    shall be 0.
                                                * This is a mandatory functionality to reset UPD350 and
                                                  done only during initialization.
-    eSPI_CHIP_SELECT_FUNC     \Output         * This functionality is used by PSF to enable or disable
-                                                 the communication to port's UPD350.It is applicable only
-                                                 when CONFIG_DEFINE_UPD350_HW_INTF_SEL is defined as
-                                                 CONFIG_UPD350_SPI. The eSPI_CHIP_SELECT_FUNC is active low signal.
+    eSPI_CHIP_SELECT_FUNC     \Output         * The SOC GPIO assigned this pin role is used to
+                                                 enable/disable the SPI communication with the 
+                                                 UPD350 of a given port. It is applicable only when
+                                                 CONFIG_DEFINE_UPD350_HW_INTF_SEL is defined as
+                                                 CONFIG_UPD350_SPI. The eSPI_CHIP_SELECT_FUNC is 
+                                                 active low signal.
                                                * The GPIO control for CS shall be handled as below
 											      * Initialization - Drive the GPIO high
 												  * eGPIO_ASSERT - Drive the GPIO low for the specific port to enable 
 												     communication
                                                   * eGPIO_DEASSERT - Drive the GPIO high for the specific port to disable 
 												     communication											  
-                                               * It is mandatory to assign a MCU pin to this functionality port specifically                                            active low signal.
+                                               * It is mandatory to have a unique MCU pin for every
+                                                 port in the design, which is assigned this role.
     eVBUS_DIS_FUNC            \Output         * VBUS Discharge mechanism is required to enable quick
                                                  discharge of VBUS when VBUS transitions from higher to
                                                  lower voltage.PSF requests the application layer to assert
                                                  this pin whenever it requires a quick discharge of VBUS.
-                                                 PSF request for deassertion once the quick discharge
-                                                 is complete. The state of GPIO during init,Assert and Deassert  
+                                                 PSF requests for de-assertion once the quick discharge
+                                                 is complete. The state of GPIO during initialization, 
+                                                 assertion and de-assertion
 												 of this functionality is specific discharge circuitry used.
-                                               * It mandatory to assign a pin to this functionality to do
-                                                 a quick discharge whenever it is asserted.
+                                               * It is mandatory to have a unique pin for every
+                                                 port in the design, which is assigned this role.  
     eDC_DC_EN_FUNC            \Output         * DC_DC_EN functionality is required to enable DC DC
-                                                 Controller. PSF request the application layer to assert
+                                                 Controller. PSF requests the application layer to assert
                                                  when PSF is initialized, ready to operate and CC pins are
                                                  functional. It will be toggled during error condition say,
-                                                 on occurrence of fault to reset the DC DC controller.The state 
-												 of GPIO during init,Assert and Deassert of this functionality 
-												 is specific DC DC Controller used.
+                                                 on occurrence of fault to reset the DC DC controller. 
+                                                 The state of GPIO during initialization, assertion 
+												 and de-assertion of this functionality 
+												 is specific to the DC DC Controller used.
                                                * This is applicable only for Source functionality
     eORIENTATION_FUNC         \Output         * Orientation functionality is used to indicate the
-                                                 detected orientation. It can be used to control an
-                                                 external USB data multiplexer. The PSF will request to init
-												 this functionality during device detach, assert during CC1 attach 
-												 and deassert during CC2 attach. The state of GPIO during init,Assert 
-												 and Deassert of this functionality is user specific 
+                                                 orientation of the type-C cable connector. It can be
+                                                 used to control an external USB data multiplexer.
+                                                 PSF requests the application layer to initialize
+                                                 this functionality during device attach, assert
+												 assert during CC1 attach and de-assert during
+												 CC2 attach. The state of GPIO during 
+                                                 initialization, assertion and de-assertion
+												 of this functionality is user specific. 
                                                * This is not mandatory, depends on user application.
-    eSNK_CAPS_MISMATCH_FUNC   \Output         * Sink Caps mismatch functionality is to indicate any
-                                                 mismatch of capability during a PD negotiation.It is
-                                                 applicable only for Sink functionality. PSF request
-                                                 application to assert when PD Sink negotiation is
-                                                 complete and there was a capability mismatch with the
-                                                 selection. PSF request application to deassert during port partner 
-												 detach or during a new negotiation.The state of GPIO during init,
-												 Assert and Deassert of this functionality is user specific
-                                               * This is not mandatory, depends on user application.
-    eSNK_1_5A_IND_FUNC        \Output         * This functionality is indicate the current capability is
-                                                 more than 1.5A. PSF request the application to assert when the
-                                                 Current capability or negotiated current is 1.5A or more and 
-												 less than 3A. PSF request the application to deassert on detach 
-												 event or during renegotiation. The state of GPIO during init,
-												 Assert and Deassert of this functionality is user specific
-												* This is applicable only for sink functionality and it is
-                                                 not mandatory,depends on user application.
-    eSNK_3A_IND_FUNC          \Output         * 3A indicator functionality is to indicate the current
-                                                 capability is more than 3A. PSF request the application to assert
-												 when current capability or negotiated current is 3A or more. PSF request 
-												 the application to deassert on detach event or during renegotiation.The 
-												 state of GPIO during init, Assert and Deassert of this functionality 
+    eSNK_CAPS_MISMATCH_FUNC   \Output         * Sink Caps mismatch functionality is used to indicate any
+                                                 mismatch of capability during a PD negotiation. It is
+                                                 applicable only in Sink mode operation. PSF requests 
+                                                 the application to assert when PD Sink negotiation is
+                                                 complete and if there was a capability mismatch with the
+                                                 selection. PSF requests the application to de-assert
+                                                 during port partner detach or during a new 
+												 negotiation. The state of GPIO during initialization,
+												 assertion and de-assertion of this functionality
+                                                 is user specific.
+                                               * This is not mandatory, depends on the user application.
+    eSNK_1_5A_IND_FUNC        \Output         * This functionality indicates if the current
+                                                 capability of the sink is more than 1.5A. PSF
+                                                 requests the application to assert when the current
+                                                 capability or negotiated current is 1.5A or more and 
+												 less than 3A. PSF requests the application to 
+                                                 de-assert on detach event or during renegotiation. 
+												 The state of GPIO during initialization,
+												 assertion and de-assertion of this functionality
+                                                 is user specific.
+												* This is applicable only in sink mode of operation
+                                                   and it is not mandatory, depends on user application.
+    eSNK_3A_IND_FUNC          \Output         * 3A indicator functionality indicates if the current
+                                                 capability of the sink is more than 3A. PSF 
+                                                 requests the application to assert when current
+												 capability or negotiated current is 3A or more. 
+                                                 PSF requests the application to de-assert
+												 on detach event or during renegotiation. The 
+												 state of GPIO during initialization, assertion
+                                                 and de-assertion of this functionality 
 												 is user specific.
-                                               * This is applicable only for sink functionality and it is
-                                                 not mandatory,depends on user application.
+                                               * This is applicable only for sink mode operation
+                                                 and it is not mandatory, depends on the 
+                                                 user application.
+    ePOWER_ROLE_FUNC          \Output         * Power role indicator functionality is used to 
+                                                 indicate the current power role of a port.
+                                                 PSF requests the application to assert this pin
+                                                 when the current power role is source. PSF 
+                                                 requests the application to de-assert this pin
+                                                 when the current power role is sink or when the 
+                                                 port partner is detached. The state of GPIO during
+                                                 initialization, assertion and de-assertion of this
+                                                 functionality is user specific.
+                                               * This is applicable only for DRP mode operation and 
+                                                 it is not mandatory, depends on user application.
+    eDATA_ROLE_FUNC           \Output         * Data role indicator functionality is to indicate
+                                                 that the current data role is Host/Hub DFP.
+                                                 PSF requests the application to assert the pin
+												 when current data role is DFP. PSF requests the 
+                                                 application to de-assert the pin when the current
+												 data role is UFP or when the port partner is 
+                                                 detached. The state of GPIO during initialization,
+                                                 assertion and de-assertion of this functionality
+                                                 is user specific.
+                                               * This is applicable only for DRP mode operation and
+                                                 it is not mandatory, depends on user application.
     </table>
   Remarks:
     None                                                                                                       
@@ -1274,7 +1506,9 @@ typedef enum eMCHP_PSF_GPIO_Functionality
     eORIENTATION_FUNC,             
     eSNK_CAPS_MISMATCH_FUNC,       
     eSNK_1_5A_IND_FUNC,            
-    eSNK_3A_IND_FUNC               
+    eSNK_3A_IND_FUNC,
+    ePOWER_ROLE_FUNC,
+    eDATA_ROLE_FUNC
 } eMCHP_PSF_GPIO_FUNCTIONALITY;
 
 /**************************************************************************************************
@@ -1299,17 +1533,17 @@ Function:
 Summary:
     Hook to initialize all the GPIO functionality pins in application layer.
 Description:
-    PSF calls this API to initialize the ePSF_GPIO_Functionality pins in 
-    application layer.User has to define an appropriate function with UINT8 and 
-    eMCHP_PSF_GPIO_FUNCTIONALITY as argument.User can assign any PIO either from 
-    UDP350 or MCU for any GPIO functionality defined.
-    Drive of this API will be controlled by API MCHP_PSF_HOOK_GPIO_FUNC_DRIVE.
+    PSF calls this API to initialize the eMCHP_PSF_GPIO_FUNCTIONALITY pins in the
+    application layer. Users has to define an appropriate function with UINT8 and 
+    eMCHP_PSF_GPIO_FUNCTIONALITY as argument. Users can assign any PIO either from 
+    UDP350 or MCU for any GPIO functionality defined. Drive of this API will be 
+    controlled by the hook MCHP_PSF_HOOK_GPIO_FUNC_DRIVE.
 Conditions:
     None.
 Input:
     u8PortNum - Port number of the device. It takes value between 0 to 
                 (CONFIG_PD_PORT_COUNT-1).
-    eGPIOFunc-  Passes the GPIO functionality type that has to be initialized by the application. 
+    eGPIOFunc - Passes the GPIO functionality type that has to be initialized by the application. 
 Return:
     None.
 Example:
@@ -1339,7 +1573,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory as well as it is mandatory to define functionality for ePSF_GPIO_Functionality.
  **************************************************************************/
-#define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc) App_GPIOControl_Init(u8PortNum, eGPIOFunc)
+#define MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eGPIOFunc) App_GPIOControl_Init (u8PortNum, eGPIOFunc)
 
 /**************************************************************************
 Function:
@@ -1348,15 +1582,15 @@ Summary:
     Hook to drive GPIOs assigned to GPIO functionality pins in application layer.
 Description:
     PSF calls this API to drive the ePSF_GPIO_Functionality pins in application 
-    layer as per  drive value ePSF_GPIO_DriveVal. User has to define an 
+    layer as per  drive value ePSF_GPIO_DriveVal. Users has to define an 
     appropriate function with UINT8, eMCHP_PSF_GPIO_FUNCTIONALITY, eMCHP_PSF_GPIO_DRIVE_VAL 
-    as argument. User can assign any PIO either from UDP350 or MCU for any GPIO 
+    as argument. Users can assign any PIO either from UDP350 or MCU for any GPIO 
     functionality defined.
 Conditions:
     None.
 Input:
     u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    eGPIOFunc-  Passes the GPIO functionality type that has to be initialized by 
+    eGPIOFunc - Passes the GPIO functionality type that has to be initialized by 
                 the application. 
     eDriveVal - Drive value for the pin
 Return:
@@ -1399,10 +1633,10 @@ Example:
     </code>
 Remarks:
     User definition of this Hook function is mandatory as well as it is mandatory 
-    to define functionality for ePSF_GPIO_Functionality.
+    to define functionality for eMCHP_PSF_GPIO_FUNCTIONALITY.
  *************************************************************************/
 #define MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eGPIOFunc, eDriveVal) \
-App_GPIOControl_Drive(u8PortNum, eGPIOFunc, eDriveVal)
+App_GPIOControl_Drive (u8PortNum, eGPIOFunc, eDriveVal)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -1417,15 +1651,16 @@ Summary:
     boost controller and load switch. Additionally, in case of sink functionality, this hook may be 
     defined with APIs to initialize a DAC.
 Description:
-    This hook is to initialize the hardware modules related to port power functionality. 
+    This hook is used to initialize the hardware modules related to port power functionality. 
     Implementation of this function depends on the type of DC-DC buck boost controller, load
-    switch or DAC used. Define relevant function with return type as UINT8. 
+    switch or DAC used. This hook is assigned to a function that takes an argument of type UINT8
+    and has a return type of UINT8.
 Conditions:
-    API implementation must make sure the Port Power(VBUS) of all ports must be set to 0V.
+    API implementation must make sure that the Port Power(VBUS) of all ports is set to 0V.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-Return:
-    None.
+Return:    
+    UINT8 - Return TRUE if initialization was successful or else return FALSE. 
 Example:
     <code>
         #define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)       hw_portpower_init(u8PortNum)
@@ -1440,60 +1675,60 @@ Remarks:
     A DAC may initialized under this hook if PSF is configured as SINK.                        
 *****************************************************************************/
 
-#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  App_PortPowerInit(u8PortNum)
+#define MCHP_PSF_HOOK_HW_PORTPWR_INIT(u8PortNum)  App_PortPowerInit (u8PortNum)
                                                    
 /****************************************************************************
 Function:
-    MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum, u16VBUSVolatge, u16Current)
+    MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum, u16VBUSVoltage, u16Current)
 Summary:
-    Drives the VBUS for given voltage, current
+    Drives the VBUS line with the negotiated voltage and current
 Description:
-    If the user chose to implement their own DC-DC buck booster control, this hook must be implemented 
-    to drive VBUS as per the parameter passed based on voltage and current. It can also be used to 
-    modify the default option. Implementation of this function depends on the type of DC-DC buck 
-    boost controller and load switch used. Define relevant function that has UINT8,UINT16, UINT16
-    arguments without return type.
+    If the user chose to implement their own DC-DC buck boost control, this hook must be implemented 
+    to drive VBUS as per the arguments passed with it. Implementation of this hook depends on the 
+    type of DC-DC buck boost controller and load switch used. This hook is assigned to a function
+    that takes arguments of type UINT8, UINT16, UINT16 and no return type.
 Conditions:
     It is applicable only for Source operation.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).         
-    u16VBUSVolatge - VBUS Voltage level to be driven in VBUS expressed in terms of milliVolts.
+    u16VBUSVoltage - VBUS Voltage level to be driven in VBUS expressed in terms of milliVolts.
     u16Current     - VBUS current level in terms of mA.
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum, u16VBUSVolatge, u16Current)\
-                hw_portpower_driveVBUS(u8PortNum, u16VBUSVolatge, u16Current)
-      void hw_portpower_driveVBUS(UINT8 u8PortNum, UINT16 u16VBUSVolatge, UINT16 u16Current);
-      void hw_portpower_driveVBUS(UINT8 u8PortNum, UINT16 u16VBUSVolatge, UINT16 u16Current)
+        #define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum, u16VBUSVoltage, u16Current)\
+                hw_portpower_driveVBUS(u8PortNum, u16VBUSVoltage, u16Current)
+      void hw_portpower_driveVBUS(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current);
+      void hw_portpower_driveVBUS(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
       {
-            // Configure DC-DC buck boost control to drive u16VBUSVolatge & u16Current in VBUS
+            // Configure DC-DC buck boost control to drive u16VBUSVoltage & u16Current in VBUS
       }
     </code>
 Remarks:
     User definition of this Hook function is mandatory.                      
 ****************************************************************************/
 
-#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u16VBUSVolatge,u16Current)   \
-        App_PortPowerSetPower(u8PortNum, u16VBUSVolatge, u16Current)
+#define MCHP_PSF_HOOK_PORTPWR_DRIVE_VBUS(u8PortNum,u16VBUSVoltage,u16Current)   \
+        App_PortPowerSetPower (u8PortNum, u16VBUSVoltage, u16Current)
 
 /*******************************************************************************************
 Function:
     MCHP_PSF_HOOK_PORTPWR_CONFIG_SINK_HW(u8PortNum,u16Voltage,u16Current)
 Summary:
-    Enables or disables sink hardware circuitry and configures it to sinks the VBUS voltage for 
+    Enables or disables sink hardware circuitry and configures it to sink the VBUS voltage for 
     a given port based on the sink requested voltage and current.
 Description:
-    This hook is to enable or disable sink hardware circuitry and configure it for Sink  
-    requested current and voltage.Implementation of this function depends on the type of Sink 
-    circuitry used. Define relevant function that has UINT8,UINT16,UINT16 arguments without return type.
+    This hook is used to enable or disable sink hardware circuitry and configure it for Sink  
+    requested current and voltage. Implementation of this function depends on the type of Sink 
+    circuitry used. This hook is assigned to a function that takes arguments of type 
+    UINT8,UINT16,UINT16 without return type.
 Conditions:
     It is applicable only for Sink operation.
 Input:
     u8PortNum -  Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
-    u16voltage -  Enable Sink HW Circuitry if the u16voltage is not Vsafe0V to drain power.
-                    Disable sink HW circuitry if the u16voltage is VSafe0V.
+    u16voltage -  Enable Sink HW Circuitry if the u16voltage is not vSafe0V to drain power.
+                    Disable sink HW circuitry if the u16voltage is vSafe0V.
                     Configure the HW to requested u16voltage in mV.
     u16Current -  Configure the HW for the requested current passed in terms of mA.
 Return:
@@ -1530,13 +1765,13 @@ Remarks:
 // *****************************************************************************
 /*******************************************************************************
 Function:
-    MCHP_PSF_HOOK_DRIVE_DAC_I()
+    MCHP_PSF_HOOK_DRIVE_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
 Summary:
     Indicates the implicit/explicit current capability of attached source partner.
 Description:
-    This hook is called to indicate the sink hardware of the implicit/explicit 
-    current capability of attached source partner. The current capability is 
-    indicated thorough a voltage level on Digital to Analog Converter(DAC)'s 
+    This hook is used by PSF to inform the sink about the implicit/explicit current
+    capability of the attached source partner. The current capability is 
+    indicated through a voltage level on Digital to Analog Converter(DAC)'s 
     output pin. The voltage level on DAC's output pin is calculated based on 
     per port Configuration parameters, which were configured using 
     MCHP_PSF_HOOK_BOOT_TIME_CONFIG(pasCfgStatusData) hook.
@@ -1558,21 +1793,23 @@ Description:
         3. 2.0A > DAC_I = 1.67V
         4. 3.0A > DAC_I = 2.5V
         5. 4.0A > DAC_I = 2.5V
-        6. 5.0A > DAC_I = 2.5V
-    This is applicable only for Sink operation.
+        6. 5.0A > DAC_I = 2.5V    
 
     A suitable function that initializes DAC from SoC may be 
     implemented in this hook. 
 Conditions:
-    SoC should support a DAC. And the DAC should be initialized under 
+    SoC should support a DAC and the DAC should be initialized under 
     MCHP_PSF_HOOK_HW_PORTPWR_INIT() hook.
+Input:
+    u8PortNum   - Port number for which DAC_I needs to be driven
+    u16DACData  - Analog voltage to be driven on DAC_I pin
 Return:
     None.
 Example:
     <code>
-        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)   SAMD20_Drive_DAC_I(u16DACData)
-        void SAMD20_Drive_DAC_I(UINT16 u16DACData);
-        void SAMD20_Drive_DAC_I(UINT16 u16DACData)
+        #define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)   HW_Drive_DAC_I(u8PortNum, u16DACData)
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData);
+        void HW_Drive_DAC_I(UINT8 u8PortNum, UINT16 u16DACData)
         {
             //Implement user specific application to output volatge provided under 
             //u16DACData argument in DAC's output pin
@@ -1580,9 +1817,9 @@ Example:
     </code>
 Remarks:
     This hook is applicable only if INCLUDE_PD_SINK macro is 1. Definition of this
-    hook is not mandatory.
+    hook is not mandatory. This is applicable only for Sink operation.
 *******************************************************************************/ 
-#define MCHP_PSF_HOOK_DRIVE_DAC_I(u16DACData)  SAMD20_Drive_DAC_I(u16DACData)
+#define MCHP_PSF_HOOK_DRIVE_DAC_I(u8PortNum, u16DACData)  App_DriveDAC_I (u8PortNum, u16DACData)
 
 /*******************************************************************************
 Function:
@@ -1590,15 +1827,16 @@ Function:
 Summary:
     Gets the current output voltage driven in the VBUS.
 Description:
-    This hook is called when PSF needs to know about the present voltage driven
+    This hook is used when PSF needs to know about the present voltage driven
     by external DC_DC controller. The function should be defined with return type
     UINT32 and UINT8 type as input parameter. If the DC_DC controller does not 
-    have feature to get output voltage, return 0xFFFFFFFF to denote the feature
+    have the capability to measure output voltage, return 0xFFFFFFFF to denote the feature
     is not supported. 
 Conditions:
     Output voltage shall be returned in terms of milliVolts.
 Return:
-    None.
+    UINT32 - Output voltage in terms of mV if the DC_DC controller have the capability to 
+    measure output voltage. Else, return 0xFFFFFFFF.
 Example:
     <code>
         #define MCHP_PSF_HOOK_GET_OUTPUT_VOLTAGE_IN_mV(u8PortNum)   DCDC_GetOutVoltage(u8PortNum)
@@ -1620,15 +1858,16 @@ Remarks:
   Summary:
     Gets the output current.
   Description:
-    This hook is called when PSF needs to know about the current drawn from
+    This hook is used when PSF needs to know about the current drawn from
     external DC_DC controller. The function should be defined with return
     type UINT32 and UINT8 type as input parameter. If the DC_DC controller
-    doesnot have feature to get output current, return 0xFFFFFFFF to denote
+    does not have the capability to measure output current, return 0xFFFFFFFF to denote
     the feature is not supported.
   Conditions:
-    \Output Current shall be returned in terms of mA.
+    Output Current shall be returned in terms of mA.
   Return:
-    None.
+    UINT32 - Output current in terms of mA if the DC_DC controller have the capability to 
+    measure output current. Else, return 0xFFFFFFFF.
   Example:
     <code>
         \#define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mV(u8PortNum)   DCDC_GetOutCurrent(u8PortNum)
@@ -1643,6 +1882,93 @@ Remarks:
     INCLUDE_PD_SOURCE_PPS is defined as '1'.                                                      
   *************************************************************************************************/  
 #define MCHP_PSF_HOOK_GET_OUTPUT_CURRENT_IN_mA        0xFFFFFFFF
+
+/**************************************************************************************************
+Summary:
+    PSF Notify Idle enum.
+Description:
+	eMCHP_PSF_NOTIFY_IDLE enum notifies the Idle state in PSF  
+Remarks:
+        None
+**************************************************************************************************/
+typedef enum ePSF_NOTIFY_IDLE 
+{
+    eIDLE_PE_NOTIFY,               //Notify Policy Engine Idle State
+    eIDLE_TYPEC_NOTIFY             //Notify Type C Idle State
+} eMCHP_PSF_NOTIFY_IDLE;
+
+/**************************************************************************
+Function:
+    MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState)
+Summary:
+    Hook to notify entry of Policy Engine and Type C State Machine into idle state
+Description:
+    PSF calls this API to notify the entry of Policy Engine and Type C State Machine
+    into idle state. The entry into idle state refers to when the state machine
+    waits for an event from the partner or for the activated timer to get expired.
+    The entry into Idle state of Policy Engine or Type C state machine is 
+    differentiated based on the enum argument passed
+Conditions:
+    None.
+Input:
+    u8PortNum - Port number of the device. It takes value between 0 to (CONFIG_PD_PORT_COUNT-1).
+    eIDLESubState - Defines the idle notification of Policy Engine(eIDLE_PE_NOTIFY) or   
+                   Type C State machine(eIDLE_TYPEC_NOTIFY) 
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState) 
+        PSF_IDLENotification(u8PortNum, eIDLESubState)
+        void  PSF_IDLENotification(u8PortNum, eIDLESubState)
+        {
+            if(eIDLESubState == eIDLE_PE_NOTIFY)
+        {
+            gu8PEIDLEFlag[u8PortNum] = TRUE;
+        }
+        else if (eIDLESubState == eIDLE_TYPEC_NOTIFY)
+        {
+            gu8TypeCIDLEFlag[u8PortNum] = TRUE;
+        }
+        else
+        {
+            //Do Nothing 
+        }
+    </code>
+Remarks:
+    User definition of this Hook function is not mandatory and would be useful
+    in an RTOS environment                          
+ *************************************************************************/
+#define MCHP_PSF_HOOK_NOTIFY_IDLE(u8PortNum, eIDLESubState)
+
+/*******************************************************************************
+Function:
+    MCHP_PSF_HOOK_PDTIMER_EVENT()
+Summary:
+    Hook for PD timer timeout event
+Description:
+    This hook is used when PD timer expires for the given event to call 
+    the callback function. 
+Conditions:
+    None
+Input:
+    None 
+Return:
+    None.
+Example:
+    <code>
+        #define MCHP_PSF_HOOK_PDTIMER_EVENT ()  PSF_IdleExit()
+    void PSF_IdleExit()
+    {
+        gbyIdleFlag = FALSE;
+    }
+    </code>
+Remarks:
+    User definition of this Hook function is not mandatory and would be useful
+    in an RTOS environment                          
+*******************************************************************************/  
+
+#define MCHP_PSF_HOOK_PDTIMER_EVENT()
 
 #endif /*_PSF_API_HOOK_H_*/
 

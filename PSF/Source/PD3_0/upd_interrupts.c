@@ -36,8 +36,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
 {
     do
     {
-        if (((gasCfgStatusData.sPerPortData[u8PortNum].u32CfgData & TYPEC_PORT_ENDIS_MASK) \
-            >> TYPEC_PORT_ENDIS_POS)== UPD_PORT_DISABLED)
+        if (UPD_PORT_DISABLED == DPM_GET_CONFIGURED_PORT_EN(u8PortNum))
         {
             break;
         }
@@ -48,9 +47,9 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         UINT16 u16Data = SET_TO_ZERO;
 
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
-        UINT8 u8ReadData = 0x00;
+        UINT8 u8ReadData = SET_TO_ZERO;
 	
-        if (gau8ISRPortState[u8PortNum] ==  UPD_STATE_IDLE)
+        if (UPD_STATE_IDLE == gau8ISRPortState[u8PortNum])
         {             
             /*UPD350 was in idle , make sure SPI_TEST register is read as 0x02*/
             while (TRUE)
@@ -59,7 +58,7 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
                 UPD_RegisterReadISR(u8PortNum, (UINT16)UPD_SPI_TEST, &u8ReadData, BYTE_LEN_1);
                     
                 /*Check the SPI_TEST register value is 0x02*/
-                if (u8ReadData == UPD_SPI_TEST_VAL)
+                if (UPD_SPI_TEST_VAL == u8ReadData)
                 {
                     break;
                 }
@@ -70,19 +69,25 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
         UPD_RegisterReadISR (u8PortNum,UPDINTR_INT_STS,(UINT8 *)&u16InterruptStatus,BYTE_LEN_2);
         
         /*Checking for Device ready Interrupt*/
-        if(u16InterruptStatus & UPDINTR_RDY_INT)
-        {    
-            
+        if (u16InterruptStatus & UPDINTR_RDY_INT)
+        {                
             UPD_RegisterReadISR (u8PortNum, UPDINTR_INT_EN, (UINT8 *)&u16Data, BYTE_LEN_2);
             
             u16Data &= ~UPDINTR_RDY_INT; 
             
-            UPD_RegisterWriteISR (u8PortNum, UPDINTR_INT_EN, (UINT8 *)&u16Data, BYTE_LEN_2);
-            
+            UPD_RegisterWriteISR (u8PortNum, UPDINTR_INT_EN, (UINT8 *)&u16Data, BYTE_LEN_2);            
         }
 
-        /*CC,PWR,VBUS interrupts are handled by the function "TypeC_InterruptHandler"*/
-        if((u16InterruptStatus & UPDINTR_CC_INT) || (u16InterruptStatus & UPDINTR_PWR_INT) || (u16InterruptStatus & UPDINTR_VBUS_INT))
+        #if(TRUE == INCLUDE_UPD_HPD)
+        if (u16InterruptStatus & UPDINTR_HPD_INT)
+        {
+            UPD_HPDHandleISR(u8PortNum);
+        }
+        #endif
+
+        /*CC,PWR,VBUS interrupts are handled by the function "TypeC_HandleISR"*/
+        if ((u16InterruptStatus & UPDINTR_CC_INT) || (u16InterruptStatus & UPDINTR_PWR_INT) || \
+                (u16InterruptStatus & UPDINTR_VBUS_INT) || (u16InterruptStatus & UPDINTR_EXT_INT))
         {
             TypeC_HandleISR (u8PortNum, u16InterruptStatus);
         }
@@ -93,14 +98,14 @@ void UPDIntr_AlertHandler (UINT8 u8PortNum)
             PRL_HandleISR (u8PortNum);
         }
 		
-		/* Checking for UPD GPIO interrupt */
-        if (u16InterruptStatus & UPDINTR_PIO_INT)
+		/* Checking for UPD GPIO and PIO Override interrupt */
+        if ((u16InterruptStatus & UPDINTR_PIO_INT) || \
+                    (u16InterruptStatus & UPDINTR_PIO_OVERRIDE_INT))
         {
-            UPD_PIOHandleISR (u8PortNum);
+            UPD_PIOHandleISR (u8PortNum, u16InterruptStatus);
         }
-
-#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
         
+#if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)        
         /*Set UPD_STATE_ACTIVE at End of ISR*/
         gau8ISRPortState[u8PortNum] = UPD_STATE_ACTIVE;
 #endif

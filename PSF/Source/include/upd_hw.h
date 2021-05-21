@@ -12,7 +12,7 @@
     for GPIO, Register access, PIO override
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -55,6 +55,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define UPD_SPI_DUMMY_BYTE                          0x00
 #define UPD_SPI_WRITE_CMD_LEN                       3
 #define UPD_SPI_READ_CMD_LEN                        4
+#define UPD_SPI_MAX_BYTE_WRITE                      38 
 
 #else
 
@@ -66,85 +67,97 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*****************************************************************************************************/
 /* UPD Address Base*/
 #define UPD_SYSTEM_CSR_BASE_ADDR	                0x0000
-#define UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR            0x1000
-
+#define UPD_HPD_BASE_ADDR                           0x0C00 
+#define UPD_CLK_PWR_MGMT_CSR_BASE_ADDR              0x1000
 /**************************************************************************************************/
 
 /* System Control and Status Register */
-#define UPD_VID          	        UPD_SYSTEM_CSR_BASE_ADDR + 0x04
-#define UPD_SPI_TEST      	        UPD_SYSTEM_CSR_BASE_ADDR + 0x0E
-#define UPD_HW_CTL          	    UPD_SYSTEM_CSR_BASE_ADDR + 0x18
-#define UPD_PIO_STS				    UPD_SYSTEM_CSR_BASE_ADDR + 0x20
-#define UPD_PIO_STS_LOW		        UPD_SYSTEM_CSR_BASE_ADDR + 0x20
-#define UPD_PIO_STS_HIGH	        UPD_SYSTEM_CSR_BASE_ADDR + 0x21
-#define UPD_PIO_INT_STS				UPD_SYSTEM_CSR_BASE_ADDR + 0x22
-#define UPD_PIO_INT_EN			    UPD_SYSTEM_CSR_BASE_ADDR + 0x24
+#define UPD_VID          	        (UPD_SYSTEM_CSR_BASE_ADDR + 0x04)
+#define UPD_SPI_TEST      	        (UPD_SYSTEM_CSR_BASE_ADDR + 0x0E)
+#define UPD_HW_CTL          	    (UPD_SYSTEM_CSR_BASE_ADDR + 0x18)
+#define UPD_PIO_STS				    (UPD_SYSTEM_CSR_BASE_ADDR + 0x20)
+#define UPD_PIO_STS_LOW		        (UPD_SYSTEM_CSR_BASE_ADDR + 0x20)
+#define UPD_PIO_STS_HIGH	        (UPD_SYSTEM_CSR_BASE_ADDR + 0x21)
+#define UPD_PIO_INT_STS				(UPD_SYSTEM_CSR_BASE_ADDR + 0x22)
+#define UPD_PIO_INT_EN			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x24)
 
 /* Configure PIOx Registers*/
-#define UPD_CFG_PIO_BASE			UPD_SYSTEM_CSR_BASE_ADDR + 0x30                                                  
-#define UPD_CFG_PIO0			    UPD_SYSTEM_CSR_BASE_ADDR + 0x30
-#define UPD_CFG_PIO1			    UPD_SYSTEM_CSR_BASE_ADDR + 0x31
-#define UPD_CFG_PIO2			    UPD_SYSTEM_CSR_BASE_ADDR + 0x32
-#define UPD_CFG_PIO3			    UPD_SYSTEM_CSR_BASE_ADDR + 0x33
-#define UPD_CFG_PIO4			    UPD_SYSTEM_CSR_BASE_ADDR + 0x34
-#define UPD_CFG_PIO5			    UPD_SYSTEM_CSR_BASE_ADDR + 0x35
-#define UPD_CFG_PIO6			    UPD_SYSTEM_CSR_BASE_ADDR + 0x36
-#define UPD_CFG_PIO7			    UPD_SYSTEM_CSR_BASE_ADDR + 0x37
-#define UPD_CFG_PIO8			    UPD_SYSTEM_CSR_BASE_ADDR + 0x38
-#define UPD_CFG_PIO9			    UPD_SYSTEM_CSR_BASE_ADDR + 0x39
-#define UPD_CFG_PIO10			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3A
-#define UPD_CFG_PIO11			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3B
-#define UPD_CFG_PIO12			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3C
-#define UPD_CFG_PIO13			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3D
-#define UPD_CFG_PIO14			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3E
-#define UPD_CFG_PIO15			    UPD_SYSTEM_CSR_BASE_ADDR + 0x3F
+#define UPD_CFG_PIO_BASE			(UPD_SYSTEM_CSR_BASE_ADDR + 0x30)                                                  
+#define UPD_CFG_PIO0			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x30)
+#define UPD_CFG_PIO1			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x31)
+#define UPD_CFG_PIO2			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x32)
+#define UPD_CFG_PIO3			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x33)
+#define UPD_CFG_PIO4			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x34)
+#define UPD_CFG_PIO5			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x35)
+#define UPD_CFG_PIO6			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x36)
+#define UPD_CFG_PIO7			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x37)
+#define UPD_CFG_PIO8			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x38)
+#define UPD_CFG_PIO9			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x39)
+#define UPD_CFG_PIO10			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3A)
+#define UPD_CFG_PIO11			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3B)
+#define UPD_CFG_PIO12			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3C)
+#define UPD_CFG_PIO13			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3D)
+#define UPD_CFG_PIO14			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3E)
+#define UPD_CFG_PIO15			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x3F)
 
 #define UPD_CFG_PIO_REGADDR(PIONum) (UPD_CFG_PIO_BASE + PIONum)
 
 /* PIO override register*/
-#define UPD_PIO_MON_VAL				UPD_SYSTEM_CSR_BASE_ADDR + 0x54
-#define UPD_PIO_OVR_EN				UPD_SYSTEM_CSR_BASE_ADDR + 0x55
-#define UPD_PIO_OVR_STS				UPD_SYSTEM_CSR_BASE_ADDR + 0x56
-#define UPD_PIO_OVR_INT_STS			UPD_SYSTEM_CSR_BASE_ADDR + 0x57
-#define UPD_PIO_OVR_INT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0x58
+#define UPD_PIO_MON_VAL				(UPD_SYSTEM_CSR_BASE_ADDR + 0x54)
+#define UPD_PIO_OVR_EN				(UPD_SYSTEM_CSR_BASE_ADDR + 0x55)
+#define UPD_PIO_OVR_STS				(UPD_SYSTEM_CSR_BASE_ADDR + 0x56)
+#define UPD_PIO_OVR_INT_STS			(UPD_SYSTEM_CSR_BASE_ADDR + 0x57)
+#define UPD_PIO_OVR_INT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0x58)
 												  											  
-#define UPD_CFG_PIO_OUT_LOW		    UPD_SYSTEM_CSR_BASE_ADDR + 0x59
-#define UPD_CFG_PIO_OUT_HIGH	    UPD_SYSTEM_CSR_BASE_ADDR + 0x5A
-#define UPD_CFG_PIO_OUT_UPD_LOW	    UPD_SYSTEM_CSR_BASE_ADDR + 0x5B
-#define UPD_CFG_PIO_OUT_UPD_HIGH	UPD_SYSTEM_CSR_BASE_ADDR + 0x5C
+#define UPD_CFG_PIO_OUT_LOW		    (UPD_SYSTEM_CSR_BASE_ADDR + 0x59)
+#define UPD_CFG_PIO_OUT_HIGH	    (UPD_SYSTEM_CSR_BASE_ADDR + 0x5A)
+#define UPD_CFG_PIO_OUT_UPD_LOW	    (UPD_SYSTEM_CSR_BASE_ADDR + 0x5B)
+#define UPD_CFG_PIO_OUT_UPD_HIGH	(UPD_SYSTEM_CSR_BASE_ADDR + 0x5C)
+#define UPD_FRS_PIO_OVR_EN_MSK      (UPD_SYSTEM_CSR_BASE_ADDR + 0x5D)
 												  
-#define UPD_PIO_OVR_OUT				UPD_SYSTEM_CSR_BASE_ADDR + 0x68
-#define UPD_PIO_OVR_DIR				UPD_SYSTEM_CSR_BASE_ADDR + 0x6A
+#define UPD_PIO_OVR_OUT				(UPD_SYSTEM_CSR_BASE_ADDR + 0x68)
+#define UPD_PIO_OVR_DIR				(UPD_SYSTEM_CSR_BASE_ADDR + 0x6A)
                                                   
-#define UPD_PIO_DEBOUNCE_10MS_COUNT UPD_SYSTEM_CSR_BASE_ADDR + 0x6C
-#define UPD_PIO_DEBOUNCE_1MS_COUNT  UPD_SYSTEM_CSR_BASE_ADDR + 0x6D
-#define UPD_PIO_DEBOUNCE_1US_COUNT  UPD_SYSTEM_CSR_BASE_ADDR + 0x6E
-#define UPD_PIO_DEBOUNCE_EN         UPD_SYSTEM_CSR_BASE_ADDR + 0x70                                                  
+#define UPD_PIO_DEBOUNCE_10MS_COUNT (UPD_SYSTEM_CSR_BASE_ADDR + 0x6C)
+#define UPD_PIO_DEBOUNCE_1MS_COUNT  (UPD_SYSTEM_CSR_BASE_ADDR + 0x6D)
+#define UPD_PIO_DEBOUNCE_1US_COUNT  (UPD_SYSTEM_CSR_BASE_ADDR + 0x6E)
+#define UPD_PIO_DEBOUNCE_EN         (UPD_SYSTEM_CSR_BASE_ADDR + 0x70)                                                  
                                                   
                                                  										  
-#define UPD_TRIM_ZTC			    UPD_SYSTEM_CSR_BASE_ADDR + 0x98
-#define UPD_TRIM_ZTC_BYTE_3		    UPD_TRIM_ZTC + 0x02
+#define UPD_TRIM_ZTC			    (UPD_SYSTEM_CSR_BASE_ADDR + 0x98)
+#define UPD_TRIM_ZTC_BYTE_3		    (UPD_TRIM_ZTC + 0x02)
 												  
-#define UPD_PIO_OVR0_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC0							
-#define UPD_PIO_OVR1_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC1
-#define UPD_PIO_OVR2_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC2													  
-#define UPD_PIO_OVR3_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC3													  
-#define UPD_PIO_OVR4_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC4													  
-#define UPD_PIO_OVR5_SRC_SEL		UPD_SYSTEM_CSR_BASE_ADDR + 0xC5													  
+#define UPD_PIO_OVR0_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC0)							
+#define UPD_PIO_OVR1_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC1)
+#define UPD_PIO_OVR2_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC2)													  
+#define UPD_PIO_OVR3_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC3)													  
+#define UPD_PIO_OVR4_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC4)													  
+#define UPD_PIO_OVR5_SRC_SEL		(UPD_SYSTEM_CSR_BASE_ADDR + 0xC5)													  
 												  
-#define UPD_PIO_OVR0_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD0								
-#define UPD_PIO_OVR1_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD2
-#define UPD_PIO_OVR2_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD4													  
-#define UPD_PIO_OVR3_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD6													  
-#define UPD_PIO_OVR4_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xD8													  
-#define UPD_PIO_OVR5_OUT_EN			UPD_SYSTEM_CSR_BASE_ADDR + 0xDA		
+#define UPD_PIO_OVR0_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD0)								
+#define UPD_PIO_OVR1_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD2)
+#define UPD_PIO_OVR2_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD4)													  
+#define UPD_PIO_OVR3_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD6)													  
+#define UPD_PIO_OVR4_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xD8)													  
+#define UPD_PIO_OVR5_OUT_EN			(UPD_SYSTEM_CSR_BASE_ADDR + 0xDA)		
+           
+#define UPD_HPD_CTL                 (UPD_HPD_BASE_ADDR + 0x00)
+#define UPD_HPD_INT_STS             (UPD_HPD_BASE_ADDR + 0x01)
+#define UPD_HPD_INT_EN              (UPD_HPD_BASE_ADDR + 0x02)
+#define UPD_HPD_QUEUE               (UPD_HPD_BASE_ADDR + 0x03)
+#define UPD_IRQ_HPD_MIN_TIME        (UPD_HPD_BASE_ADDR + 0x04)
+#define UPD_IRQ_HPD_MAX_TIME        (UPD_HPD_BASE_ADDR + 0x05)
+#define UPD_HPD_HIGH_DET_TIME       (UPD_HPD_BASE_ADDR + 0x06)
+#define UPD_HPD_LOW_DET_TIME        (UPD_HPD_BASE_ADDR + 0x08)
 /**************************************************************************************************/
 
 /* Defines for PIO Overridex Source Select Register (PIO_OVRx_SRC_SEL)*/
 /* defines for Override Select[4:0]*/
-#define UPD_PIO_OVR_SRC_SEL_VBUS_THR	0x11
+#define UPD_PIO_OVR_SRC_SEL_VBUS_THR                0x11
+#define UPD_PIO_OVR_SRC_SEL_VBUS_THR_AND_FRS_DET    0x12 
+#define UPD_PIO_OVR_SRC_SEL_FRS_SIG_DETECTED        0x13 
 /* define for VBUS Threshold Select [7:5] field*/											  
-#define UPD_PIO_OVR_VBUS_THR_SEL_POS	5
+#define UPD_PIO_OVR_VBUS_THR_SEL_POS                5
 
 #define UPD_PIO_OVR_VSAFE0V_THR_MATCH		(0 << UPD_PIO_OVR_VBUS_THR_SEL_POS)
 #define UPD_PIO_OVR_VBUS0_THR_MATCH			(1 << UPD_PIO_OVR_VBUS_THR_SEL_POS)
@@ -187,20 +200,56 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*****************************************************************************************************/
 
 /* Clock and Power Management control and status register */ 
-#define UPD_CLK_CTL				    	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x00
-#define UPD_CC_SAMP_CLK             	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x06
-#define UPD_VBUS_SAMP_CLK		    	UPD_CLK_PWR_MANAGE_CSR_BASE_ADDR + 0x07
+#define UPD_CLK_CTL				    	(UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x00)
+#define UPD_CC_SAMP_CLK             	(UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x06)
+#define UPD_VBUS_SAMP_CLK		    	(UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x07)
+#define UPD_CLK_GATE                    (UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x08)
+#define UPD_CLK_GATE_LOW                (UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x08)
+#define UPD_CLK_GATE_HIGH               (UPD_CLK_PWR_MGMT_CSR_BASE_ADDR + 0x09)
 
 /*Defines for UPD_CC_SAMP_CLK register*/
 #define UPD_CC_CLK_20_KHZ               0
 #define UPD_CC_CLK_48_KHZ               BIT(3)
-#define UPD_CC_SAMP_GEN_10_KS           0
 
-/*Defines for UPD_CC_SAMP_CLK register*/
+#define UPD_CC_SAMP_GEN_10_KS           0
+#define UPD_CC_SAMP_GEN_50_KS           BIT(0)
+#define UPD_CC_SAMP_GEN_100_KS          BIT(1)
+#define UPD_CC_SAMP_GEN_200_KS          (BIT(0) | BIT(1))
+#define UPD_CC_SAMP_GEN_250_KS          BIT(2)
+#define UPD_CC_SAMP_GEN_300_KS          (BIT(0) | BIT(2))
+#define UPD_CC_SAMP_GEN_375_KS          (BIT(1) | BIT(2))
+#define UPD_CC_SAMP_GEN_500_KS          (BIT(0) | BIT(1) | BIT(2))
+
+/*Defines for UPD_VBUS_SAMP_CLK register*/
 #define UPD_VBUS_CLK_20_KHZ             0
 #define UPD_VBUS_CLK_48_KHZ             BIT(3)
+
 #define UPD_VBUS_SAMP_GEN_10_KS         0
-                                                  
+#define UPD_VBUS_SAMP_GEN_50_KS         BIT(0)
+#define UPD_VBUS_SAMP_GEN_100_KS        BIT(1)
+#define UPD_VBUS_SAMP_GEN_200_KS        (BIT(0) | BIT(1))
+#define UPD_VBUS_SAMP_GEN_250_KS        BIT(2)
+#define UPD_VBUS_SAMP_GEN_300_KS        (BIT(0) | BIT(2))
+#define UPD_VBUS_SAMP_GEN_375_KS        (BIT(1) | BIT(2))
+#define UPD_VBUS_SAMP_GEN_500_KS        (BIT(0) | BIT(1) | BIT(2))
+             
+/*Defines for UPD_CLK_GATE_LOW register*/
+#define UPD_GPT_CLK_GATE_EN             BIT(0)
+#define UPD_PWR_SW_CLK_GATE_EN          BIT(1)
+#define UPD_I2C_CLK_GATE_EN             BIT(2)
+#define UPD_SPI_CLK_GATE_EN             BIT(3)
+#define UPD_OTP_CTRL_CLK_GATE_EN        BIT(4)
+#define UPD_ANA_TEST_GATE_EN            BIT(5)
+#define UPD_PPC_CLK_GATE_EN             BIT(6)
+#define UPD_PIO_CLK_GATE_EN             BIT(7)
+
+/*Defines for UPD_CLK_GATE_HIGH register*/
+#define UPD_OCS_CLK_GATE_EN             BIT(0)
+#define UPD_PD_MAC_CLK_GATE_EN          BIT(1)
+#define UPD_WDT_CLK_GATE_EN             BIT(2)
+#define UPD_HPD_CLK_GATE_EN             BIT(3)
+#define UPD_CABLE_PLUG_CLK_GATE_EN      BIT(4)
+
 /*Vendor ID & Product ID information*/
 #define UPD_VID_LSB                     0x24
 #define UPD_VID_MSB                     0x04  
@@ -224,6 +273,47 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*Status of ports whether disabled or enabled*/
 #define UPD_PORT_DISABLED        0x00
 #define UPD_PORT_ENABLED         0x01
+
+/* Default UPD VBUS Threshold value */
+#define UPD_VBUS_THRS_DEFAULT    222 
+
+/*Defines used in UPD_InitHPD() API*/
+#define HPD_IRQ_MIN_TIME_350US           5
+#define HPD_IRQ_MIN_TIME_2_1MS           40
+#define UPD_HPD_HIGH_DET_TIME_100_1MS    2000
+#define UPD_HPD_LOW_DET_TIME_2_1MS       40
+
+#define UPD_IRQ_HPD_EN                   BIT(0)
+#define UPD_HPD_LOW_EN                   BIT(1)
+#define UPD_HPD_HIGH_EN                  BIT(2)
+#define UPD_QUEUE_NOT_EMPTY_EN           BIT(3)
+
+#define UPD_CFG_PIO_ENABLE               BIT(0)
+#define UPD_CFG_PIO_RISING_EDGE          BIT(4)
+
+#define UPD_HPD_ENABLE                   BIT(0)
+#define UPD_HPD_CFG                      BIT(1)
+
+/*Defines for gu16HPDStsISR variable*/
+#define UPD_HPD_INTERRUPT_OCCURRED       BIT(8)
+
+#define UPD_HPD_EVENT_MASK               (BIT(1)|BIT(0))
+#define UPD_HPD_EVENT_SIZE               2
+#define UPD_HPD_WRITE_CLR                0x55
+#define UPD_HPD_QUEUE_SIZE               4
+
+typedef enum
+{ 
+    eMCHP_PSF_UPD_HPD_HIGH = 0x01,
+    eMCHP_PSF_UPD_HPD_LOW,        
+    eMCHP_PSF_UPD_IRQ_HPD                
+} eMCHP_UPD_HPD_EVENT;
+
+typedef enum
+{
+    eUPDPIO_FAULT_IN,
+    eUPDPIO_EN_FRS
+} eUPD_INPUT_PIO;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -348,7 +438,7 @@ UINT16 UPD_RegReadWord (UINT8 u8PortNum, UINT16 u16RegOffset);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_RegisterWrite(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen)
+		void UPD_RegisterWrite (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen)
 
 	Summary:
 		To write a buffer to a UPD register address
@@ -374,11 +464,11 @@ UINT16 UPD_RegReadWord (UINT8 u8PortNum, UINT16 u16RegOffset);
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_RegisterWrite(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
+void UPD_RegisterWrite (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_RegisterRead(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT16 u8Readlen)
+		void UPD_RegisterRead (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT16 u8Readlen)
 
 	Summary:
 		To read a buffer from a UPD register address
@@ -404,7 +494,7 @@ void UPD_RegisterWrite(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_RegisterRead(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen);
+void UPD_RegisterRead (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen);
 
 /*****************************************************************************************************
 	Function:
@@ -466,7 +556,7 @@ void UPD_RegByteClearBit (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8BitMsk);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_RegisterWriteISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
+		void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
 
 	Summary:
 		To write a buffer in ISR context to a UPD register address.
@@ -479,7 +569,7 @@ void UPD_RegByteClearBit (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8BitMsk);
         disabling the interrupts.
 		
 	Precondition:
-		It should be used only ISR.
+		It should be used only in ISR.
 
 	Parameters:
 		u8PortNum		- Corresponding port number
@@ -493,11 +583,11 @@ void UPD_RegByteClearBit (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 u8BitMsk);
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_RegisterWriteISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
+void UPD_RegisterWriteISR (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteData, UINT8 u8WriteDataLen);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen)
+		void UPD_RegisterReadISR (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen)
 
 	Summary:
 		To read a buffer in ISR context from a UPD register address.
@@ -510,7 +600,7 @@ void UPD_RegisterWriteISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteD
         disabling the interrupts.
 		
 	Precondition:
-		It should be used only ISR.
+		It should be used only in ISR.
 
 	Parameters:
 		u8PortNum		-  Corresponding port number
@@ -524,11 +614,39 @@ void UPD_RegisterWriteISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8WriteD
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen);
+void UPD_RegisterReadISR (UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadData, UINT8 u8Readlen);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
+		void UPD_DisablePIOOutputISR (UINT8 u8PortNum);
+
+	Summary:
+        API to disable the output of EN_VBUS and EN_SINK PIOs 
+	
+	Devices Supported:
+		UPD350 REV A
+
+	Description:
+		This API is used in ISR to disable the EN_VBUS or EN_SINK PIOs based on 
+        the current power role. 
+		
+	Precondition:
+		It should be used only in ISR.
+
+	Parameters:
+		u8PortNum  -  Corresponding port number
+
+	Return:
+		None.
+
+	Remarks:
+        This API can be used when INCLUDE_UPD_PIO_OVERRIDE_SUPPORT is set to 0.
+**************************************************************************************************/
+void UPD_DisablePIOOutputISR (UINT8 u8PortNum);
+
+/*****************************************************************************************************
+	Function:
+		void UPD_UpdatePIOOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType)
 
 	Summary:
 		API updates the output data of the GPIO.
@@ -556,11 +674,11 @@ void UPD_RegisterReadISR(UINT8 u8PortNum, UINT16 u16RegOffset, UINT8 *pu8ReadDat
 		None.
 **************************************************************************************************/
 
-void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType);
+void UPD_UpdatePIOOutput (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT8 u8DriveType);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType)
+		void UPD_SetPIOIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType)
 
 	Summary:
 		API sets the alert interrupt for the GPIO.
@@ -587,11 +705,11 @@ void UPD_GPIOUpdateOutput(UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode, UINT
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType);
+void UPD_SetPIOIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8CountValue)
+		void UPD_ConfigurePIODebounceCount (UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8CountValue)
 
 	Summary:
 		API configures the debounce count for corresponding debounce type.
@@ -618,11 +736,11 @@ void UPD_GPIOSetIntrAlert (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8IntrType);
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8CountValue);
+void UPD_ConfigurePIODebounceCount (UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8CountValue);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType)
+		void UPD_SetPIODebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType)
 
 	Summary:
 		API enables the debounce for the UPD350 PIO.
@@ -631,7 +749,7 @@ void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8C
 		UPD350 REV A
 
 	Description:
-		This API is to set or reset the debounce corresponidng debounce type for the PIO number passed.
+		This API is to set or reset the debounce corresponding debounce type for the PIO number passed.
 		
 	Precondition:
 		None.
@@ -650,11 +768,11 @@ void UPD_ConfigurePIODebounceCount(UINT8 u8PortNum, UINT8 u8CountType, UINT8 u8C
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType);
+void UPD_SetPIODebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnType);
 
 /**************************************************************************************************
     Function:
-        void UPD_GPIOInit(UINT8 u8PortNum)
+        void UPD_InitGPIO(UINT8 u8PortNum)
 
     Summary:
         This API initialize the GPIO module based on port number passed.
@@ -680,26 +798,27 @@ void UPD_GPIOSetDebounce (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8DebounceEnTyp
 		to initialize the GPIO module for the port.
 
 **************************************************************************************************/
-void UPD_GPIOInit(UINT8 u8PortNum);
+void UPD_InitGPIO (UINT8 u8PortNum);
 
 /*****************************************************************************************************
 	Function:
-		void UPD_PIOHandleISR (UINT8 u8PortNum)
+		void UPD_PIOHandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus)
 
 	Summary:
-        UPD's GPIO interrupt Handler
+        UPD's GPIO and PIO Override interrupt Handler
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-		This API is called to process UPD's GPIO interrupt.
+		This API is called to process UPD's GPIO and PIO Override interrupt.
 		
 	Precondition:
 		None.
 
 	Parameters:
-		u8PortNum		-  Corresponding port number
+		u8PortNum -  Corresponding port number
+        u16InterruptStatus - Value of the Interrupt Status Register
 
 	Return:
 		None.
@@ -707,66 +826,7 @@ void UPD_GPIOInit(UINT8 u8PortNum);
 	Remarks:
 		None.
 **************************************************************************************************/
-void UPD_PIOHandleISR (UINT8 u8PortNum);
-
-/*****************************************************************************************************
-	Function:
-		void UPD_FaultInInit (UINT8 u8PortNum)
-
-	Summary:
-		API to configure the fault in pin of the UPD350
-	
-	Devices Supported:
-		UPD350 REV A
-
-	Description:
-		This API enables the fault in pin configured for the port passed.
-		
-	Precondition:
-		None.
-
-	Parameters:
-		u8PortNum		-  Corresponding port number
-	Return:
-		None.
-
-	Remarks:
-		None.
-**************************************************************************************************/
-void UPD_FaultInInit (UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
-        void UPD_ConfigPIOOvrforPwrFault (UINT8 u8PortNum)
-
-    Summary:
-        This API initialize PIO override on power fault for the port.
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        This API initialize PIO override on power fault for the port.
-
-    Conditions:
-        confined to INCLUDE_UPD_PIO_OVERRIDE_SUPPORT define.
-        PIO Override concept is applicable only if the EN_VBUS and FAULT_IN pin are UPD's PIO
-        in case of Source. EN_SINK and FAULT_IN in case of Sink.
-
-    Input:
-        u8PortNum - Port number of the device.
-					Value passed will be less than CONFIG_PD_PORT_COUNT.
-
-    Return:
-        None.
-
-    Remarks:
-        Fault_IN for the port is obtained from gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_FAULT_IN 
-        EN_VBUS for the port is obtained from gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_VBUS
-        EN_SINK for the port is obtained from gasCfgStatusData.sPerPortData[u8PortNum].u8Pio_EN_SINK
-
-**************************************************************************************************/
-void UPD_ConfigPIOOvrforPwrFault (UINT8 u8PortNum);
+void UPD_PIOHandleISR (UINT8 u8PortNum, UINT16 u16InterruptStatus);
 
 /**************************************************************************************************
     Function:
@@ -801,7 +861,7 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
 /**************************************************************************************************
     Function:
-        void PD_StartIdleTimer(UINT8 u8PortNum)
+        void PD_StartIdleTimer (UINT8 u8PortNum)
 
     Summary:
         This API starts the port Idle timer 
@@ -811,7 +871,7 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
 
     Description:
         This API starts the  port Idle timer with the value specified in
-        CONFIG_PORT_UPD_IDLE_TIMEOUT_MS
+        UPD_IDLE_TIMEOUT_MS
 
     Conditions:
         confined to INCLUDE_POWER_MANAGEMENT_CTRL define.
@@ -826,11 +886,11 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable);
     Remarks:
         None.
 **************************************************************************************************/
-void PD_StartIdleTimer(UINT8 u8PortNum);
+void PD_StartIdleTimer (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UINT8 UPD_CheckUPDsActive()
+        UINT8 UPD_ReturnUPDsActiveSts ()
 
     Summary:
         This API is to check the active or idle status of UPD350s 
@@ -853,11 +913,11 @@ void PD_StartIdleTimer(UINT8 u8PortNum);
         TRUE - UPD350s are in Active State
         FALSE - All the UPD350s are in Idle State
 **************************************************************************************************/
-UINT8 UPD_CheckUPDsActive();
+UINT8 UPD_ReturnUPDsActiveSts ();
 
 /**************************************************************************************************
     Function:
-        UPD_PwrManagementCtrl(UINT8 u8PortNum)
+        UPD_PwrManagementCtrl (UINT8 u8PortNum)
 
     Summary:
         This API is to initiate the Power Management control.
@@ -882,11 +942,11 @@ UINT8 UPD_CheckUPDsActive();
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_PwrManagementCtrl(UINT8 u8PortNum);
+void UPD_PwrManagementCtrl (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UPD_PwrManagementInit(UINT8 u8PortNum)
+        UPD_InitPwrManagement (UINT8 u8PortNum)
 
     Summary:
         This API is to initialize the Power Management control.
@@ -911,11 +971,11 @@ void UPD_PwrManagementCtrl(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_PwrManagementInit(UINT8 u8PortNum);
+void UPD_InitPwrManagement (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
-        UPD_CheckAndDisablePorts()
+        UPD_CheckAndDisablePorts ()
 
     Summary:
         This API is to check the whether the port is working or not.
@@ -943,7 +1003,7 @@ void UPD_CheckAndDisablePorts (void);
 
 /**************************************************************************************************
     Function:
-        UPD_FindVBusCorrectionFactor()
+        UPD_FindVBusCorrectionFactor ()
 
     Summary:
         This API is to find the VBUS correction factor.
@@ -966,48 +1026,20 @@ void UPD_CheckAndDisablePorts (void);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_FindVBusCorrectionFactor(void);
+void UPD_FindVBusCorrectionFactor (void);
 
 /**************************************************************************************************
     Function:
-        void UPD_EnableFaultIn(UINT8 u8PortNum)
+        void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum)
 
     Summary:
-        This API enables Fault_In. 
+        API to configure PIO override functionality for power fault conditions
 
     Devices Supported:
         UPD350 REV A
 
     Description:
-        This API is to enable the Fault_In to detect OCS.
-
-    Conditions:
-        None.
-
-    Input:
-        u8PortNum - Port number of the device.
-					Value passed will be less than CONFIG_PD_PORT_COUNT.
-        
-    Return:
-        None.
-
-    Remarks:
-        None.
-**************************************************************************************************/
-void UPD_EnableFaultIn(UINT8 u8PortNum);
-
-/**************************************************************************************************
-    Function:
-        void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum)
-
-    Summary:
-        This API configures PIO override functionality.
-
-    Devices Supported:
-        UPD350 REV A
-
-    Description:
-        This API is to configures UPD350's PIO override feature for undervoltage, overvoltage and 
+        This API is to configure UPD350's PIO override feature for under-voltage, overvoltage and 
         Fault_In OCS.
 
     Conditions:
@@ -1023,8 +1055,7 @@ void UPD_EnableFaultIn(UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum);
-
+void UPD_ConfigPwrFaultPIOOverride (UINT8 u8PortNum);
 
 /**************************************************************************************************
     Function:
@@ -1051,6 +1082,212 @@ void UPD_ConfigPwrFaultPIOOvverride (UINT8 u8PortNum);
     Remarks:
         None.
 **************************************************************************************************/
-void UPD_ResetThroughGPIO(void);
+void UPD_ResetThroughGPIO (void);
+
+/**************************************************************************************************
+    Function:
+        void UPD_RegDump (UINT8 u8PortNum)
+
+    Summary:
+        Provides a dump of UPD350 registers.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is to output various register values of UPD350 through 
+        debug interface.
+
+    Conditions:
+        CONFIG_HOOK_DEBUG_MSG should be set for the register dump to be output 
+        via debug interface.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_RegDump (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void UPD_InitHPD (UINT8 u8PortNum)
+
+    Summary:
+        Enables UPD350 to detect HPD events.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is to enable UPD350 to detect HPD events.
+
+    Conditions:
+        This is applicable only when INCLUDE_UPD_HPD is enabled.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_InitHPD (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void UPD_HPDHandleISR (UINT8 u8PortNum)
+
+    Summary:
+        If an HPD_QUEUE_NOT_EMPTY event occurs, this API will register the events stored in the queue 
+        in gu16HPDStsISR[u8PortNum] variable.
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        If an HPD_QUEUE_NOT_EMPTY event occurs, this API will read the HPD queue interrupt status register
+        and will record those events in gu16HPDStsISR[u8PortNum] variable.
+
+    Conditions:
+        This is applicable only when INCLUDE_UPD_HPD is enabled.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_HPDHandleISR (UINT8 u8PortNum);
+
+/**************************************************************************************************
+    Function:
+        void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum)
+
+    Summary:
+        API to configure PIO override functionality for Fast Role Swap events
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is used to configure UPD350's PIO override feature for 
+        FRS Request PIO assertion and FRS signal detected events 
+ 
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_ConfigureFRSPIOOverride (UINT8 u8PortNum); 
+
+/*****************************************************************************************************
+	Function:
+		void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
+
+	Summary:
+		API to initialize input pin of the UPD350
+	
+	Devices Supported:
+		UPD350 REV A
+
+	Description:
+		This API initializes the UPD350's input PIOs - Fault_In and FRS_Request 
+        based on the user configured PIO number and PIO mode 
+		
+	Precondition:
+		None.
+
+	Parameters:
+		u8PortNum -  Corresponding port number
+        eUPD_INPUT_PIO - enum to specify the input PIO
+ 
+	Return:
+		None.
+
+	Remarks:
+		None.
+**************************************************************************************************/
+void UPD_InitInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio);
+
+/**************************************************************************************************
+    Function:
+        void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio)
+
+    Summary:
+        This API enables input PIOs. 
+
+    Devices Supported:
+        UPD350 REV A
+
+    Description:
+        This API is to enable the Fault_In to detect OCS and FRS_Request to 
+        detect FRS event 
+
+    Conditions:
+        None.
+
+    Input:
+        u8PortNum - Port number of the device.
+					Value passed will be less than CONFIG_PD_PORT_COUNT.
+        eUPD_INPUT_PIO - enum to specify the input PIO
+        
+    Return:
+        None.
+
+    Remarks:
+        None.
+**************************************************************************************************/
+void UPD_EnableInputPIO (UINT8 u8PortNum, eUPD_INPUT_PIO eUPDInputPio); 
+
+/*****************************************************************************************************
+	Function:
+		void UPD_InitOutputPIO (UINT8 u8PortNum, UINT8 u8PIONum, UINT8 u8PioMode)
+
+	Summary:
+		API to initialize output pin of the UPD350
+	
+	Devices Supported:
+		UPD350 REV A
+
+	Description:
+		This API initializes the UPD350's output PIOs - EN_VBUS, EN_SINK and 
+        EN_FRS based on the user configured PIO number and PIO mode 
+		
+	Precondition:
+		None.
+
+	Parameters:
+		u8PortNum -  Corresponding port number
+        u8PIONum - PIO number
+        u8PioMode - PIO mode
+  
+	Return:
+		None.
+
+	Remarks:
+		None.
+**************************************************************************************************/
+void UPD_InitOutputPIO (UINT8 u8PortNum,UINT8 u8PIONum, UINT8 u8PIOMode);
 
 #endif /*_UPD_HW_H_*/

@@ -11,7 +11,7 @@
     This file contains the function definitions for Policy Engine Firmware Update
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -73,7 +73,7 @@ void PE_FwUpdtInitialize(void)
     gsPdfuInfo.u16PDFUResponseLength = SET_TO_ZERO;
     gsPdfuInfo.u8TransferPhaseComplete = PE_FWUP_TRANSFER_PHASE_NOTSTARTED;
     gsPdfuInfo.u16ExptDataBlockIdx = SET_TO_ZERO;
-    gsPdfuInfo.pu8ResponseBuffer = &gu8PDFUResBuffer[0];
+    gsPdfuInfo.pu8ResponseBuffer = &gu8PDFUResBuffer[INDEX_0];
 }
 
 /**************************************************************************************************
@@ -186,7 +186,7 @@ UINT8 PE_FwUpdtStateMachine(
         gsPdfuInfo.pu8ResponseBuffer[PE_FWUP_RESPBUFF_RESPONSE_TYPE_INDEX] = ((~0x80) & u8MsgType);
 
         /**   Update the Message Header */
-        u16Message_Header = PRL_FormSOPTypeMsgHeader(u8PortNum,
+        u16Message_Header = PRL_FormSOPTypeMsgHeader (u8PortNum,
                                                      PE_EXT_FW_UPDATE_RESPONSE,
                                                      7,
                                                      PE_EXTENDED_MSG);
@@ -223,13 +223,13 @@ void PE_FwUpdtProcessTimerEvent(
 {
     if ((UINT8)ePE_PDFU_MODE == u8PdFwUpdtState)
     {
-        gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = PRL_IsAnyMsgPendinginPRL(u8PortNum);
+        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = PRL_IsAnyMsgPendinginPRL (u8PortNum);
 
         /* Check for Msg Header is SET_TO_ZERO */
-        if (SET_TO_ZERO == gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader)
+        if (SET_TO_ZERO == gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader)
         {
             /* Copy Receive Msg Handler Header to Timeout Header */
-            gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = gasPolicy_Engine[u8PortNum].u32MsgHeader;
+            gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = gasPolicyEngine[u8PortNum].u32MsgHeader;
         }
 
         gsPdfuInfo.u8EventType |= PE_FWUP_TIMEOUT_EVT;
@@ -356,7 +356,7 @@ void PE_FwUpdtTxDoneCallBack(
     if(gasPRL [u8PortNum].u8TxStateISR != PRL_TX_DONE_ST)
     {   /** The response has not been sent */
         gsPdfuInfo.u8EventType |= PE_FWUP_TIMEOUT_EVT;
-        gasPolicy_Engine[u8PortNum].u32TimeoutMsgHeader = 0x00;
+        gasPolicyEngine[u8PortNum].u32TimeoutMsgHeader = SET_TO_ZERO;
         gsPdfuInfo.u8ResendResponseTimes++;
     }
     else
@@ -373,12 +373,12 @@ void PE_FwUpdtTxDoneCallBack(
   
     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
     {
-        if (u8TxDoneSubState == (UINT8)ePE_SRC_READY_END_AMS_SS)
+        if ((UINT8)ePE_SRC_READY_END_AMS_SS == u8TxDoneSubState)
             PE_FwUpdtInitialize();
     }
     else
     {
-        if (u8TxDoneSubState == (UINT8)ePE_SNK_READY_IDLE_SS)
+        if ((UINT8)ePE_SNK_READY_END_AMS_SS == u8TxDoneSubState)
             PE_FwUpdtInitialize();
     }
 
@@ -770,13 +770,13 @@ void PE_FwUpdtResetToEnumState(
     if (PD_ROLE_SINK == u8CurrentPowerRole)
     {
         eState  = ePE_SNK_READY;
-        eSubState = ePE_SNK_READY_IDLE_SS;     
+        eSubState = ePE_SNK_READY_END_AMS_SS;     
         //PE_FWUP_SET_CURRENT_STATE(u8PortNum, ePE_SNK_READY);
-        //PE_FWUP_CHANGE_SUBSTATE(u8PortNum, ePE_SNK_READY_IDLE_SS);
+        //PE_FWUP_CHANGE_SUBSTATE(u8PortNum, ePE_SNK_READY_END_AMS_SS);
         gsPdfuInfo.u32Transmit_TmrID_TxSt = PRL_BUILD_PKD_TXST_U32(ePE_SNK_READY,
-                                                                   ePE_SNK_READY_IDLE_SS,
+                                                                   ePE_SNK_READY_END_AMS_SS,
                                                                    ePE_SNK_READY,
-                                                                   ePE_SNK_READY_IDLE_SS);
+                                                                   ePE_SNK_READY_END_AMS_SS);
     }
     else
     { }
@@ -887,7 +887,7 @@ UINT16 PE_FwUpdtGetFWIDRequest(void)
     stGetFWID.u16VID = gasCfgStatusData.u16VendorID;
 
     /*Marked as TBD in Hermes interface*/
-    stGetFWID.u16PID = gasCfgStatusData.u16ProducdID;
+    stGetFWID.u16PID = gasCfgStatusData.u16ProductID;
 
     /*Set HW revision to 1 as mentioned UDID section of Hermes Interface*/
     stGetFWID.u8HWVersion =
@@ -896,8 +896,8 @@ UINT16 PE_FwUpdtGetFWIDRequest(void)
             (CONFIG_HWMAJOR_VERSION << PE_FWUP_HWMAJOR_VER_Pos)
         );
 
-    /*Set Silicon revision to 1; To be requested to Richard*/
-    stGetFWID.u8SiVersion = (UINT8)CONFIG_SILICON_VERSION;
+    /*Set Silicon revision */
+    stGetFWID.u8SiVersion = gasCfgStatusData.u8SiVersion; 
 
     /*Firmware Revision*/
     stGetFWID.u16FWVersion1 = (UINT16)SET_TO_ZERO;
