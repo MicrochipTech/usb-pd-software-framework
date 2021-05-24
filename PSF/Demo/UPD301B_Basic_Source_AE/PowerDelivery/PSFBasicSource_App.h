@@ -1,11 +1,11 @@
 /***************************************************************************
-Power Delivery Source Pro Application header file
+Power Delivery Basic Source Application Header file
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    PSFSourceLite_App.h
+    PSFBasicSource_App.h
 
   Description:
     This header file contains user application specific functions and interfaces
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFSOURCELITE_APP_H
-#define _PSFSOURCELITE_APP_H
+#ifndef _PSFBASICSOURCE_APP_H
+#define _PSFBASICSOURCE_APP_H
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -47,9 +47,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Defines major and minor version of PSF Source Lite Application*/
-
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x04
+#define APP_REV_MINOR	0x11
 
 #define APP_VOLTAGE_0mV         0
 #define APP_VOLTAGE_5000mV      5000
