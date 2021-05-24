@@ -79,6 +79,11 @@ bool SERCOM1_USART_TransmitComplete( void );
 
 void SERCOM1_USART_WriteByte( int data );
 
+bool SERCOM1_USART_Read( void *buffer, const size_t size );
+
+bool SERCOM1_USART_ReceiverIsReady( void );
+
+int SERCOM1_USART_ReadByte( void );
 
 USART_ERROR SERCOM1_USART_ErrorGet( void );
 

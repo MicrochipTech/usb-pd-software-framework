@@ -83,8 +83,8 @@
           <Name dnOrder="1">plib_port.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">66F67ED19725CCF9E94FCD26A5AF6D78</GeneratedChecksum>
-          <UserChecksum dnOrder="5">66F67ED19725CCF9E94FCD26A5AF6D78</UserChecksum>
+          <GeneratedChecksum dnOrder="4">CD15B5192FD089785A552163D62888C8</GeneratedChecksum>
+          <UserChecksum dnOrder="5">CD15B5192FD089785A552163D62888C8</UserChecksum>
         </File>
         <File dnOrder="10">
           <Type dnOrder="0">SOURCE</Type>
@@ -99,8 +99,8 @@
           <Name dnOrder="1">plib_sercom1_usart.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/sercom/usart/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">8BE7A49E5AC127022D1AE64431A628E3</GeneratedChecksum>
-          <UserChecksum dnOrder="5">098DAABBF8E2E2A8AF2EA69AA0D50A05</UserChecksum>
+          <GeneratedChecksum dnOrder="4">9D9377522A8838E99D8B6E3C0B63E84B</GeneratedChecksum>
+          <UserChecksum dnOrder="5">9D9377522A8838E99D8B6E3C0B63E84B</UserChecksum>
         </File>
         <File dnOrder="12">
           <Type dnOrder="0">SOURCE</Type>
@@ -379,8 +379,8 @@
           <Name dnOrder="1">plib_sercom1_usart.h</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/sercom/usart/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/sercom/usart/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">F23A473404313EF6761E27058E55292A</GeneratedChecksum>
-          <UserChecksum dnOrder="5">EE99DDB68C29816DAC3AC72D59C8B7C1</UserChecksum>
+          <GeneratedChecksum dnOrder="4">127ECE005B419F0CF0880C698761314A</GeneratedChecksum>
+          <UserChecksum dnOrder="5">127ECE005B419F0CF0880C698761314A</UserChecksum>
         </File>
         <File dnOrder="47">
           <Type dnOrder="0">HEADER</Type>
@@ -516,7 +516,7 @@
       <Setting dnOrder="2" key="FORCE_OPTIMIZATION" value="false"/>
       <Setting dnOrder="3" key="GENERATE_BACKUP" value="true"/>
       <Setting dnOrder="4" key="MERGE_STRATEGY" value="USER_ALL"/>
-      <Setting dnOrder="5" key="PackageFilter" value="bsp;csp;"/>
+      <Setting dnOrder="5" key="PackageFilter" value="bsp;core;csp;quick_docs;usb;"/>
     </Settings>
   </Configurator>
 </Configuration>

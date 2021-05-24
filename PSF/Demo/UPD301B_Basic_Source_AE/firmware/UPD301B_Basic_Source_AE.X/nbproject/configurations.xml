@@ -101,9 +101,9 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFSourceLite_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFSourceLite_BootCfg.h</itemPath>
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
+        <itemPath>../../PowerDelivery/PSFBasicSource_App.h</itemPath>
+        <itemPath>../../PowerDelivery/PSFBasicSource_BootCfg.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -189,8 +189,8 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFSourceLite_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFSourceLite_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/PSFBasicSource_App.c</itemPath>
+        <itemPath>../../PowerDelivery/PSFBasicSource_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -215,6 +215,8 @@
           <itemPath>../../../../Source/PD3_0/upd_hw.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_engine_swap.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_engine_vdm.c</itemPath>
         </logicalFolder>
         <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
           <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.c</itemPath>
@@ -245,8 +247,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
         <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
+        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -295,6 +297,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0x400000-0x5fffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/i53191/Desktop/SourceTree PSF/PSF/Demo/UPD301B_Basic_Source_AE/firmware/UPD301B_Basic_Source_AE.X/debug/default/UPD301B_Basic_Source_AE_ptg"/>
         <property key="programoptions.eraseb4program" value="false"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"

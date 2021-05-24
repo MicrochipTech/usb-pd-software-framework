@@ -81,10 +81,11 @@ void PORT_Initialize(void)
    PORT_REGS->GROUP[0].PORT_PINCFG[14] = 0x7;
    PORT_REGS->GROUP[0].PORT_PINCFG[15] = 0x7;
    PORT_REGS->GROUP[0].PORT_PINCFG[18] = 0x1;
+   PORT_REGS->GROUP[0].PORT_PINCFG[19] = 0x1;
 
    PORT_REGS->GROUP[0].PORT_PMUX[4] = 0x22;
    PORT_REGS->GROUP[0].PORT_PMUX[5] = 0x20;
-   PORT_REGS->GROUP[0].PORT_PMUX[9] = 0x2;
+   PORT_REGS->GROUP[0].PORT_PMUX[9] = 0x22;
 }
 
 // *****************************************************************************

@@ -94,7 +94,7 @@ void SERCOM1_USART_Initialize( void )
      * Configures Sampling rate
      * Configures IBON
      */
-    SERCOM1_REGS->USART_INT.SERCOM_CTRLA = SERCOM_USART_INT_CTRLA_MODE_USART_INT_CLK | SERCOM_USART_INT_CTRLA_RXPO_PAD0 | SERCOM_USART_INT_CTRLA_TXPO_PAD2 | SERCOM_USART_INT_CTRLA_DORD_Msk | SERCOM_USART_INT_CTRLA_IBON_Msk | SERCOM_USART_INT_CTRLA_FORM(0x0) ;
+    SERCOM1_REGS->USART_INT.SERCOM_CTRLA = SERCOM_USART_INT_CTRLA_MODE_USART_INT_CLK | SERCOM_USART_INT_CTRLA_RXPO_PAD3 | SERCOM_USART_INT_CTRLA_TXPO_PAD2 | SERCOM_USART_INT_CTRLA_DORD_Msk | SERCOM_USART_INT_CTRLA_IBON_Msk | SERCOM_USART_INT_CTRLA_FORM(0x0) ;
 
     /* Configure Baud Rate */
     SERCOM1_REGS->USART_INT.SERCOM_BAUD = SERCOM_USART_INT_BAUD_BAUD(SERCOM1_USART_INT_BAUD_VALUE);
@@ -106,7 +106,7 @@ void SERCOM1_USART_Initialize( void )
      * Configures Parity
      * Configures Stop bits
      */
-    SERCOM1_REGS->USART_INT.SERCOM_CTRLB = SERCOM_USART_INT_CTRLB_CHSIZE_8_BIT | SERCOM_USART_INT_CTRLB_SBMODE_1_BIT | SERCOM_USART_INT_CTRLB_TXEN_Msk;
+    SERCOM1_REGS->USART_INT.SERCOM_CTRLB = SERCOM_USART_INT_CTRLB_CHSIZE_8_BIT | SERCOM_USART_INT_CTRLB_SBMODE_1_BIT | SERCOM_USART_INT_CTRLB_RXEN_Msk | SERCOM_USART_INT_CTRLB_TXEN_Msk;
 
     /* Wait for sync */
     while((SERCOM1_REGS->USART_INT.SERCOM_STATUS & SERCOM_USART_INT_STATUS_SYNCBUSY_Msk) & SERCOM_USART_INT_STATUS_SYNCBUSY_Msk);
@@ -249,5 +249,63 @@ void SERCOM1_USART_WriteByte( int data )
     while((SERCOM1_REGS->USART_INT.SERCOM_INTFLAG & SERCOM_USART_INT_INTFLAG_DRE_Msk) != SERCOM_USART_INT_INTFLAG_DRE_Msk);
 
     SERCOM1_REGS->USART_INT.SERCOM_DATA = data;
+}
+
+bool SERCOM1_USART_Read( void *buffer, const size_t size )
+{
+    bool readStatus        = false;
+    uint8_t *pu8Data       = (uint8_t*)buffer;
+    uint32_t u32Length     = size;
+    uint32_t processedSize = 0;
+    USART_ERROR errorStatus = USART_ERROR_NONE;
+
+    if(pu8Data != NULL)
+    {
+        /* Clear errors before submitting the request.
+         * ErrorGet clears errors internally.
+         */
+        SERCOM1_USART_ErrorGet();
+
+        while(u32Length--)
+        {
+            /* Check if USART has new data */
+            while((SERCOM1_REGS->USART_INT.SERCOM_INTFLAG & SERCOM_USART_INT_INTFLAG_RXC_Msk) != SERCOM_USART_INT_INTFLAG_RXC_Msk);
+
+            /* Read data from USART module */
+            *pu8Data++ = SERCOM1_REGS->USART_INT.SERCOM_DATA;
+            processedSize++;
+
+            errorStatus = SERCOM1_REGS->USART_INT.SERCOM_STATUS & (SERCOM_USART_INT_STATUS_PERR_Msk | SERCOM_USART_INT_STATUS_FERR_Msk | SERCOM_USART_INT_STATUS_BUFOVF_Msk);
+
+            if(errorStatus != USART_ERROR_NONE)
+            {
+                break;
+            }
+        }
+
+        if(size == processedSize)
+        {
+            readStatus = true;
+        }
+    }
+
+    return readStatus;
+}
+
+bool SERCOM1_USART_ReceiverIsReady( void )
+{
+    bool receiverStatus = false;
+
+    if((SERCOM1_REGS->USART_INT.SERCOM_INTFLAG & SERCOM_USART_INT_INTFLAG_RXC_Msk) == SERCOM_USART_INT_INTFLAG_RXC_Msk)
+    {
+        receiverStatus = true;
+    }
+
+    return receiverStatus;
+}
+
+int SERCOM1_USART_ReadByte( void )
+{
+    return SERCOM1_REGS->USART_INT.SERCOM_DATA;
 }
 

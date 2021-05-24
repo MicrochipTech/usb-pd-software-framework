@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFSourceLite_App.c
+    PSFBasicSource_App.c
 
   Summary:
     User Application Source file
@@ -62,7 +62,7 @@ void App_SetMCUIdle()
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
-    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE");
+    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE\r\n");
     
 	/*If there is any pending interrupt it will not go to sleep*/
     SCB->SCR |=  (SCB_SCR_SLEEPDEEP_Msk )| (SCB_SCR_SEVONPEND_Msk);
@@ -109,6 +109,12 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             u8RetVal = TRUE;
             break;
         }
+        
+        case eMCHP_PSF_PORT_POWERED_OFF:
+        {
+            break;
+        }
+        
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
             break;
@@ -123,10 +129,22 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         }
         case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
         {
+			/*Returning TRUE to enable PSF to handle Error Recovery*/
+            u8RetVal = TRUE;
             break; 
         }
         
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_HARD_RESET_COMPLETE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_PE_SRC_DISABLED:
         {
             break; 
         }
@@ -138,7 +156,67 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         
         case eMCHP_PSF_SINK_CAPS_RCVD:
         {
+            /* Sink Capabilities received from partner is available in 
+               gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerPDO array */
             break;            
+        }        
+        
+        case eMCHP_PSF_VCONN_SWAP_COMPLETE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_CABLE_IDENTITY_DISCOVERED:
+        {
+            /* Cable identity received from Cable is available in 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32aCableIdentity array */                        
+            break; 
+        }
+        
+        case eMCHP_PSF_CABLE_IDENTITY_NAKED:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_VDM_RESPONSE_RCVD:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_REQUEST_RCVD:
+        {
+            u8RetVal = TRUE;
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_AMS_COMPLETE:
+        {
+            break; 
+        }
+        
+		case eMCHP_PSF_PORT_DISABLED:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_PORT_ENABLED:
+        {
+            break;
         }
         
         default:
@@ -162,13 +240,6 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             }
-//            else if (PORT1 == u8PortNum)  //SB edit
-//            {                             //SB edit
-//                PORT_PinWrite(PORT_PIN_PA15, TRUE);      //SB edit
-//                PORT_PinInputEnable(PORT_PIN_PA15);       //SB edit
-//                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);  //SB edit
-//                EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA15);  //SB edit
-//            } //SB edit
             else
             {
                 /* Do Nothing */
@@ -196,11 +267,6 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 SPI_SS_0_Set();
                 SPI_SS_0_OutputEnable();                
             }
-//            else if(PORT1 == u8PortNum)   //SB edit
-//            {                             //SB edit
-//                SPI_SS_1_Set();           //SB edit
-//                SPI_SS_1_OutputEnable();  //SB edit                
-//            }
             else
             {
                 /* Do Nothing */
@@ -209,16 +275,16 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eVBUS_DIS_FUNC:
         {
-            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);    //SB edit
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);  //SB edit
-            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);  //SB edit
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);    
+            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);  
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);  
             break;             
         }
         case eDC_DC_EN_FUNC:
         {
-            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2, UPD_PIO_SETBUF_PUSHPULL);       //SB edit     
-            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);                                     //SB edit
-            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);                                  //SB edit
+            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2, UPD_PIO_SETBUF_PUSHPULL);            
+            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);                                     
+            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);                                 
             
             UINT16 u16Delay;
             /* Delay of 1.25ms for the DC/DC module to stabilize after Initialization */
@@ -233,9 +299,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         case eORIENTATION_FUNC:
         {
             /*Init is called when detach happens*/
-//            UPDPIO_Disable(u8PortNum, eUPD_PIO2); //SB edit
-              PORT_PinWrite(PORT_PIN_PA28, TRUE);  //SB edit
-              PORT_PinOutputEnable(PORT_PIN_PA28);  //SB edit
+              PORT_PinWrite(PORT_PIN_PA28, TRUE);  
+              PORT_PinOutputEnable(PORT_PIN_PA28);  
             
             break;
         }
@@ -304,11 +369,6 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     /*PORT_PIN_PA10*/
                     SPI_SS_0_Clear();
                 }
-//                else if(PORT1 == u8PortNum)   //SB edit
-//                {                             //SB edit
-//                    /*PORT_PIN_PA01*/         //SB edit
-//                    SPI_SS_1_Clear();         //SB edit
-//                } 
                 else
                 {
                     /* Do Nothing */
@@ -321,10 +381,6 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     SPI_SS_0_Set();
                 }
-//                else if(PORT1 == u8PortNum)   //SB edit
-//                {                             //SB edit
-//                    SPI_SS_1_Set();           //SB edit
-//                }                             //SB edit
                 else
                 {
                     /* Do Nothing */
@@ -336,11 +392,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8); //SB edit
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8); 
             }
             else
             {
-                UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);  //SB edit
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO8); 
             }
             break;
         }            
@@ -348,31 +404,25 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);     //SB edit
+                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);     
             }
             else
             {
-                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);      //SB edit
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2);      
             }
             break;
         }
         case eORIENTATION_FUNC:
         {
             if (eGPIO_ASSERT == eGPIODrive)
-            {
-//                UPDPIO_SetBufferType(u8PortNum, eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);                
-//                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO2);
-//                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);     
-                  PORT_PinWrite(PORT_PIN_PA28, TRUE);  //SB edit
-                  PORT_PinOutputEnable(PORT_PIN_PA28);  //SB edit  
+            {   
+                  PORT_PinWrite(PORT_PIN_PA28, TRUE);  
+                  PORT_PinOutputEnable(PORT_PIN_PA28);   
             }
             else
             {
-//                UPDPIO_SetBufferType(u8PortNum,eUPD_PIO2,UPD_PIO_SETBUF_PUSHPULL);                
-//                UPDPIO_DriveLow(u8PortNum, eUPD_PIO2); 
-//                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO2);
-                  PORT_PinWrite(PORT_PIN_PA28, FALSE);  //SB edit
-                  PORT_PinOutputEnable(PORT_PIN_PA28);  //SB edit  
+                  PORT_PinWrite(PORT_PIN_PA28, FALSE); 
+                  PORT_PinOutputEnable(PORT_PIN_PA28);    
             }
             break; 
         }
@@ -393,27 +443,17 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 UINT8 App_PortPowerInit(UINT8 u8PortNum)
 {   
     /*VSEL0 Init */ 
-//    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_PIO_SETBUF_PUSHPULL);  //SB edit   
-//    UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);    //SB edit 
-//    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO7);    //SB edit 
-      PORT_PinWrite(PORT_PIN_PA04, FALSE);  //SB edit
-      PORT_PinOutputEnable(PORT_PIN_PA04);  //SB edit  
+      PORT_PinWrite(PORT_PIN_PA04, FALSE);  
+      PORT_PinOutputEnable(PORT_PIN_PA04);    
     
     /*VSEL 1 Init */
-//    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);  //SB edit
-//    UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);    //SB edit
-//    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);    //SB edit
-      PORT_PinWrite(PORT_PIN_PA03, FALSE);  //SB edit
-      PORT_PinOutputEnable(PORT_PIN_PA03);  //SB edit  
+      PORT_PinWrite(PORT_PIN_PA03, FALSE);  
+      PORT_PinOutputEnable(PORT_PIN_PA03);    
       
     
     /*VSEL 2 Init */
-//    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO9, UPD_PIO_SETBUF_PUSHPULL);  //SB edit
-//    UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);    //SB edit
-//    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);    //SB edit
-      PORT_PinWrite(PORT_PIN_PA02, FALSE);  //SB edit
-      PORT_PinOutputEnable(PORT_PIN_PA02);  //SB edit  
-    
+      PORT_PinWrite(PORT_PIN_PA02, FALSE);  
+      PORT_PinOutputEnable(PORT_PIN_PA02);    
     return TRUE; 
 }
 
@@ -427,85 +467,54 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
      *15V       0       1       0
      *20V       0       0       1
      */
+    /* Update Port IO Status */
+    gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
+              ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
     
     switch(u16Voltage)
     {
         case APP_VOLTAGE_5000mV:
-        {
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);    //SB edit
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);      //SB edit
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);    //SB edit
-            
-            PORT_PinWrite(PORT_PIN_PA04, FALSE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA03, FALSE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA02, FALSE);  //SB edit
-            /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                  ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
-            break;
+        {   
+            PORT_PinWrite(PORT_PIN_PA04, FALSE);  
+            PORT_PinWrite(PORT_PIN_PA03, FALSE);  
+            PORT_PinWrite(PORT_PIN_PA02, FALSE);  
         }
         case APP_VOLTAGE_9000mV:
         {
-//            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO7);   //SB edit
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);    //SB edit
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9); //SB edit
-            
-            PORT_PinWrite(PORT_PIN_PA04, TRUE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA03, FALSE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA02, FALSE);  //SB edit
+            PORT_PinWrite(PORT_PIN_PA04, TRUE);  
+            PORT_PinWrite(PORT_PIN_PA03, FALSE);  
+            PORT_PinWrite(PORT_PIN_PA02, FALSE);  
             /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
-                                                DPM_PORT_IO_VSEL0_STATUS;
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                    ~(DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL0_STATUS;
             break;
         }
         case APP_VOLTAGE_15000mV:
-        {   
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);    //SB edit
-//            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8);   //SB edit
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);    //SB edit
-            
-            PORT_PinWrite(PORT_PIN_PA04, FALSE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA03, TRUE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA02, FALSE);  //SB edit
+        {            
+            PORT_PinWrite(PORT_PIN_PA04, FALSE);  
+            PORT_PinWrite(PORT_PIN_PA03, TRUE);  
+            PORT_PinWrite(PORT_PIN_PA02, FALSE);  
             /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
-                                                DPM_PORT_IO_VSEL1_STATUS;
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                    ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL2_STATUS);             
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL1_STATUS;            
             break;
         }
         case APP_VOLTAGE_20000mV:
         {
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);    //SB edit
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);    //SB edit
-//            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO9);   //SB edit
-            
-            PORT_PinWrite(PORT_PIN_PA04, FALSE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA03, FALSE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA02, TRUE);  //SB edit
+            PORT_PinWrite(PORT_PIN_PA04, FALSE);  
+            PORT_PinWrite(PORT_PIN_PA03, FALSE);  
+            PORT_PinWrite(PORT_PIN_PA02, TRUE);  
             /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= 
-                                                DPM_PORT_IO_VSEL2_STATUS;
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                    ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS); 
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL2_STATUS;
             break;
         }
         default:
         /*Intentionally break is left*/
         case APP_VOLTAGE_0mV:
         {
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);    //SB edit
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);    //SB edit
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);    //SB edit
             
-            PORT_PinWrite(PORT_PIN_PA04, FALSE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA03, FALSE);  //SB edit
-            PORT_PinWrite(PORT_PIN_PA02, FALSE);  //SB edit
-            /* Update Port IO Status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus &= 
-                  ~(DPM_PORT_IO_VSEL0_STATUS | DPM_PORT_IO_VSEL1_STATUS | DPM_PORT_IO_VSEL2_STATUS); 
+            PORT_PinWrite(PORT_PIN_PA04, FALSE);  
+            PORT_PinWrite(PORT_PIN_PA03, FALSE);  
+            PORT_PinWrite(PORT_PIN_PA02, FALSE);  
+           
             break;
         }
     }
