@@ -2371,7 +2371,7 @@ typedef struct _GlobalCfgStatusData
    
 extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
 
-#include "PSFBasicSource_App.h"
-#include "PSFBasicSource_BootCfg.h"
+#include "UPD301B_Basic_Source_AE_App.h"
+#include "UPD301B_Basic_Source_AE_BootCfg.h"
 
 #endif

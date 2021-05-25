@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFBasicSource_BootCfg.h
+    UPD301B_Basic_Source_AE_BootCfg.h
 
   Description:
     This header file contains user configurable globals and function prototypes.
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFBASICSOURCE_BOOTCFG_H    /* Guard against multiple inclusion */
-#define _PSFBASICSOURCE_BOOTCFG_H
+#ifndef _UPD301B_BASIC_SOURCE_AE_BOOTCFG_H    /* Guard against multiple inclusion */
+#define _UPD301B_BASIC_SOURCE_AE_BOOTCFG_H
 
 /*********************************Common Configuration*****************************************/
 #define CFG_PRODUCT_ID              0x0350U
@@ -61,7 +61,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 
 /********************************PIO Specific configuration******************************/
-#define CFG_PORT_UPD_FAULT_IN_PIO_NO       eUPD_PIO9    //SB edit //Source Lite have it as eUPD_PIO5
+#define CFG_PORT_UPD_FAULT_IN_PIO_NO       eUPD_PIO9    
 #define CFG_PORT_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
 #define CFG_PORT_UPD_EN_VBUS               eUPD_PIO3
 #define CFG_PORT_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
@@ -84,9 +84,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /*********************************PDO Configuration ******************************/
 /**********************************************************************************/
 /********************************************************************************/
-/**********************************Port 0****************************************/
-/*********************************************************************************/
-/*Port 0 PDO configuration*/
+/*Port PDO configuration*/
 #define CFG_PORT_DUAL_ROLE_POWER           0U 
 #define CFG_PORT_DUAL_ROLE_DATA            0U
 #define CFG_PORT_SOURCE_NUM_OF_PDOS        4U
@@ -346,7 +344,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 void PSF_LoadConfig(); 
 
-#endif /* _PSFSOURCELITE_BOOTCFG_H */
+#endif /* _UPD301B_BASIC_SOURCE_AE_BOOTCFG_H */
 
 /* *****************************************************************************
  End of File

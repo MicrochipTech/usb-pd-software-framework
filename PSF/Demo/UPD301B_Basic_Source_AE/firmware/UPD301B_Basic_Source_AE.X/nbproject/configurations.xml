@@ -102,8 +102,8 @@
                      displayName="PowerDelivery"
                      projectFiles="true">
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFBasicSource_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFBasicSource_BootCfg.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301B_Basic_Source_AE_App.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301B_Basic_Source_AE_BootCfg.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -189,8 +189,8 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFBasicSource_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFBasicSource_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301B_Basic_Source_AE_App.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301B_Basic_Source_AE_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
