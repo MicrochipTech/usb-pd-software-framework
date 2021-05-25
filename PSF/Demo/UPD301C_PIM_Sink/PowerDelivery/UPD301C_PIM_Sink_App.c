@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFSink_App.c
+    UPD301C_PIM_Sink_App.c
 
   Summary:
     User Application Source file
@@ -121,18 +121,22 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         {
             break;
         }
+        
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
             break;
         }
+        
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
             break;
         }
+        
         case eMCHP_PSF_CAPS_MISMATCH:
         {
             break;
         }
+        
         case eMCHP_PSF_NEW_SRC_CAPS_RCVD:
         {
             break;
@@ -143,12 +147,60 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             break; 
         }
        
-        case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
+        case eMCHP_PSF_HARD_RESET_COMPLETE:
         {
             break; 
         }
         
-        case eMCHP_PSF_BUSY:
+        case eMCHP_PSF_TYPEC_ERROR_RECOVERY: 
+        {
+			/*Returning TRUE to enable PSF to handle Error Recovery*/
+            u8RetVal = TRUE;
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_COMPLETE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VCONN_SWAP_NO_RESPONSE_RCVD:
+        {
+            break; 
+        }        
+                
+        case eMCHP_PSF_VDM_RESPONSE_RCVD:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_VDM_RESPONSE_NOT_RCVD:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_REQUEST_RCVD:
+        {
+            u8RetVal = TRUE;
+            break; 
+        }
+        
+        case eMCHP_PSF_VDM_AMS_COMPLETE:
+        {
+            break; 
+        }
+        
+        case eMCHP_PSF_PORT_DISABLED:
+        {
+            break;
+        }
+        
+        case eMCHP_PSF_PORT_ENABLED:
         {
             break; 
         }
@@ -188,13 +240,9 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             break; 
         }
         case eVBUS_DIS_FUNC:
-        {      
-              //SB Edit
-//            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);
-//            UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
-//            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
-            PORT_PinWrite(PORT_PIN_PA28, FALSE);     //SB Edit
-            PORT_PinOutputEnable(PORT_PIN_PA28);    //SB Edit
+        {     
+			PORT_PinWrite(PORT_PIN_PA28, FALSE);     
+			PORT_PinOutputEnable(PORT_PIN_PA28);    
             
             break; 
         }
@@ -290,13 +338,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-//                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
-                PORT_PinWrite(PORT_PIN_PA28, TRUE);     //SB Edit
-            }
+				PORT_PinWrite(PORT_PIN_PA28, TRUE);     
+			}
             else
             {
-//                UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
-                PORT_PinWrite(PORT_PIN_PA28, FALSE);     //SB Edit
+				PORT_PinWrite(PORT_PIN_PA28, FALSE);     
             }
             break;
         }            
@@ -369,7 +415,6 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 UINT8 App_PortPowerInit(UINT8 u8PortNum)
 {
     DAC_Initialize();
-    
     return TRUE; 
 }
 

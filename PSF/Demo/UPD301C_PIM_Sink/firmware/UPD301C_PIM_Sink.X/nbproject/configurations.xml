@@ -76,12 +76,12 @@
           <logicalFolder name="f1" displayName="CMSIS" projectFiles="true">
             <logicalFolder name="f1" displayName="Core" projectFiles="true">
               <logicalFolder name="f1" displayName="Include" projectFiles="true">
-                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armcc.h</itemPath>
-                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang.h</itemPath>
-                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang_ltm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_iccarm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_gcc.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armcc.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang_ltm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/tz_context.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/core_cm0plus.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/mpu_armv7.h</itemPath>
@@ -102,8 +102,8 @@
                      displayName="PowerDelivery"
                      projectFiles="true">
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFSink_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFSink_BootCfg.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_Sink_App.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_Sink_BootCfg.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -189,8 +189,8 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFSink_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFSink_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_Sink_App.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_Sink_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
