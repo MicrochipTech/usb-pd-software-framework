@@ -5,7 +5,7 @@ Power Delivery Basic Source Application Header file
     Microchip Technology Inc.
 
   File Name:
-    PSFBasicSource_App.h
+    UPD301B_Basic_Source_AE_App.h
 
   Description:
     This header file contains user application specific functions and interfaces
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFBASICSOURCE_APP_H
-#define _PSFBASICSOURCE_APP_H
+#ifndef _UPD301B_BASIC_SOURCE_AE_APP_H
+#define _UPD301B_BASIC_SOURCE_AE_APP_H
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -76,7 +76,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum);
 void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current);
 
 
-#endif /* _PSFSOURCELITE_APP_H */
+#endif /* _UPD301B_BASIC_SOURCE_AE_APP_H */
 
 /* *****************************************************************************
  End of File

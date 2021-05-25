@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFBasicSource_BootCfg.c
+    UPD301B_Basic_Source_AE_BootCfg.c
 
   Summary:
     User Configuration Source file

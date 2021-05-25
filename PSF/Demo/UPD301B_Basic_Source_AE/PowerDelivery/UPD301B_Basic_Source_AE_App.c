@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFBasicSource_App.c
+    UPD301B_Basic_Source_AE_App.c
 
   Summary:
     User Application Source file
