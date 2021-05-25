@@ -101,9 +101,9 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFSourceLite_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFSourceLite_BootCfg.h</itemPath>
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_Source_Lite_App.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_Source_Lite_BootCfg.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -189,8 +189,8 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFSourceLite_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFSourceLite_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_Source_Lite_App.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_Source_Lite_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -952,8 +952,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath"
-                  value="C:/Users/C16354/Documents/usb-pd-software-framework-public/PSF/Demo/UPD301C_PIM_Source_Lite/firmware/UPD301C_PIM_Source_Lite.X/debug/default/UPD301C_PIM_Source_Lite_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"

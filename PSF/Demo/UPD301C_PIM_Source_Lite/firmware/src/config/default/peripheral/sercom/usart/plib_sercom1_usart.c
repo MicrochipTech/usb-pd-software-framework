@@ -251,3 +251,4 @@ void SERCOM1_USART_WriteByte( int data )
     SERCOM1_REGS->USART_INT.SERCOM_DATA = data;
 }
 
+
