@@ -252,4 +252,3 @@ void SERCOM1_USART_WriteByte( int data )
 }
 
 
-

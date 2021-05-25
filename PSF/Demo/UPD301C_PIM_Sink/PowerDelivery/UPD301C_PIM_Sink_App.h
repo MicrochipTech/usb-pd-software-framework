@@ -5,7 +5,7 @@ Power Delivery Sink Application header file
     Microchip Technology Inc.
 
   File Name:
-    PSFSink_App.h
+    UPD301C_PIM_Sink_App.h
 
   Description:
     This header file contains user application specific functions and interfaces
@@ -30,12 +30,12 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFSINK_APP_H
-#define _PSFSINK_APP_H
+#ifndef _UPD301C_PIM_SINK_APP_H
+#define _UPD301C_PIM_SINK_APP_H
 
 /* Defines major and minor version of PSF Sink Application*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x06
+#define APP_REV_MINOR	0x11
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -67,7 +67,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum);
 
 
 void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData);
-#endif /* _PSFSINK_APP_H */
+#endif /* _UPD301C_PIM_SINK_APP_H */
 
 /* *****************************************************************************
  End of File

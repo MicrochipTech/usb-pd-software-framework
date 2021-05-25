@@ -60,12 +60,11 @@
 // Section: Global Data
 // *****************************************************************************
 // *****************************************************************************
-
 /* EIC Channel Callback object */
 EIC_CALLBACK_OBJ    eicCallbackObject[EXTINT_COUNT];
 
 
-void EIC_Initialize (void)
+void EIC_Initialize(void)
 {
     /* Reset all registers in the EIC module to their initial state and
 	   EIC will be disabled. */
@@ -78,8 +77,8 @@ void EIC_Initialize (void)
 
     /* NMI Control register */
 
-    /* Interrupt sense type and filter control for EXTINT channels 0 to 7*/
-    EIC_REGS->EIC_CONFIG[0] =  EIC_CONFIG_SENSE0_NONE  |
+    /* Interrupt sense type and filter control for EXTINT channels 0 to 7 */
+    EIC_REGS->EIC_CONFIG[0] = EIC_CONFIG_SENSE0_NONE  |
                               EIC_CONFIG_SENSE1_NONE  |
                               EIC_CONFIG_SENSE2_NONE  |
                               EIC_CONFIG_SENSE3_NONE  |
@@ -89,7 +88,7 @@ void EIC_Initialize (void)
                               EIC_CONFIG_SENSE7_NONE ;
 
     /* Interrupt sense type and filter control for EXTINT channels 8 to 15 */
-    EIC_REGS->EIC_CONFIG[1] =  EIC_CONFIG_SENSE0_NONE  |
+    EIC_REGS->EIC_CONFIG[1] = EIC_CONFIG_SENSE0_NONE  |
                               EIC_CONFIG_SENSE1_NONE  |
                               EIC_CONFIG_SENSE2_NONE  |
                               EIC_CONFIG_SENSE3_NONE  |
@@ -100,7 +99,6 @@ void EIC_Initialize (void)
 
     /* External Interrupt Asynchronous Mode enable */
     EIC_REGS->EIC_WAKEUP = 0xc000;
-
 
     /* External Interrupt enable*/
     // Interrupt is enabled as part of PSF
@@ -123,6 +121,7 @@ void EIC_Initialize (void)
     eicCallbackObject[13].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[14].eicPinNo = EIC_PIN_14;
     eicCallbackObject[15].eicPinNo = EIC_PIN_15;
+
     /* Enable the EIC */
     EIC_REGS->EIC_CTRL |= EIC_CTRL_ENABLE_Msk;
 
@@ -132,12 +131,12 @@ void EIC_Initialize (void)
     }
 }
 
-void EIC_InterruptEnable (EIC_PIN pin)
+void EIC_InterruptEnable(EIC_PIN pin)
 {
     EIC_REGS->EIC_INTENSET = (1UL << pin);
 }
 
-void EIC_InterruptDisable (EIC_PIN pin)
+void EIC_InterruptDisable(EIC_PIN pin)
 {
     EIC_REGS->EIC_INTENCLR = (1UL << pin);
 }
