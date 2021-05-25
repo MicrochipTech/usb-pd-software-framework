@@ -5,7 +5,7 @@ Power Delivery Source Lite Application Header file
     Microchip Technology Inc.
 
   File Name:
-    PSFSourceLite_App.h
+    UPD301C_PIM_Source_Lite_App.h
 
   Description:
     This header file contains user application specific functions and interfaces
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFSOURCELITE_APP_H
-#define _PSFSOURCELITE_APP_H
+#ifndef _UPD301C_PIM_SOURCE_LITE_APP_H
+#define _UPD301C_PIM_SOURCE_LITE_APP_H
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -48,7 +48,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* Defines major and minor version of PSF Source Lite Application*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x06
+#define APP_REV_MINOR	0x11
 
 #define APP_VOLTAGE_0mV         0
 #define APP_VOLTAGE_5000mV      5000
@@ -76,7 +76,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum);
 void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current);
 
 
-#endif /* _PSFSOURCELITE_APP_H */
+#endif /* _UPD301C_PIM_SOURCE_LITE_APP_H */
 
 /* *****************************************************************************
  End of File
