@@ -5,7 +5,7 @@ Power Delivery Source Pro Application header file
     Microchip Technology Inc.
 
   File Name:
-    PSFSourcePro_App.h
+    UPD301C_PIM_Source_Pro_App.h
 
   Description:
     This header file contains user application specific functions and interfaces
@@ -30,12 +30,12 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFSOURCEPRO_APP_H
-#define _PSFSOURCEPRO_APP_H
+#ifndef _UPD301C_PIM_SOURCE_PRO_APP_H
+#define _UPD301C_PIM_SOURCE_PRO_APP_H
 
 /* Defines major and minor version of PSF Source Pro Application*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x06
+#define APP_REV_MINOR	0x11
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -80,7 +80,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum);
 
 void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current);
 
-#endif /* _PSFSOURCEPRO_APP_H */
+#endif /* _UPD301C_PIM_SOURCE_PRO_APP_H */
 
 /* *****************************************************************************
  End of File
