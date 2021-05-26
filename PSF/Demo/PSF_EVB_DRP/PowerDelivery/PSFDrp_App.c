@@ -648,6 +648,20 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     /* Do Nothing */
                 }
+                /*Check for DC_DC MIC2128*/
+                #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MIC2128)
+                /* Check for PR Swap */
+                if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
+                                DPM_PORT_PR_SWAP_IN_PROGRESS)
+                {
+                    /* In case of PRS Add a Timer Delay of 60 ms after enabling DC_DC_EN pin and before enabling VBUS_EN pin*/
+                    for(UINT32 u32Delayloop = 0u; u32Delayloop <(472000);u32Delayloop++)
+                    {
+                        __NOP();
+                        __NOP();
+                    }                     
+                }
+                #endif
             }
             else
             {
@@ -666,21 +680,6 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     /* Do Nothing */
                 }
             }
-            
-            /*Check for DC_DC MIC2128*/
-            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MIC2128)
-            /* Check for PR Swap */
-            if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
-                                DPM_PORT_PR_SWAP_IN_PROGRESS)
-            {
-                /* In case of PRS Add a Timer Delay of 60 ms after enabling DC_DC_EN pin and before enabling VBUS_EN pin*/
-                for(UINT32 u32Delayloop = 0u; u32Delayloop <(472000);u32Delayloop++)
-                {
-                    __NOP();
-                    __NOP();
-                } 
-            }
-            #endif
             break;
         }
         case eORIENTATION_FUNC:  
