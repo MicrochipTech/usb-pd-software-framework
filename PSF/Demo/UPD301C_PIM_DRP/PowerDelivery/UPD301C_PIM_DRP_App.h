@@ -5,7 +5,7 @@ Power Delivery DRP Application header file
     Microchip Technology Inc.
 
   File Name:
-    PSFDrp_App.h
+    UPD301C_PIM_DRP_App.h
 
   Description:
     This header file contains user application specific functions and interfaces
@@ -30,12 +30,12 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFDRP_APP_H
-#define _PSFDRP_APP_H
+#ifndef _UPD301C_PIM_DRP_APP_H
+#define _UPD301C_PIM_DRP_APP_H
 
-/* Defines major and minor version of PSF Source Pro Application*/
+/* Defines major and minor version of PSF DRP Application*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x06
+#define APP_REV_MINOR	0x11
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -59,7 +59,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PWRCTRL_GPIO_DC_DC     1
 
 /* Macro to indicate I2C based DC-DC Controller */
-#define PWRCTRL_I2C_DC_DC     2
+#define PWRCTRL_I2C_DC_DC      2
 
 /* Defines the type of DC DC Controller used */
 #define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC
@@ -84,7 +84,8 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum);
 void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current);
 
 void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData);
-#endif /* _PSFDRP_APP_H */
+
+#endif /* _UPD301C_PIM_DRP_APP_H */
 
 /* *****************************************************************************
  End of File

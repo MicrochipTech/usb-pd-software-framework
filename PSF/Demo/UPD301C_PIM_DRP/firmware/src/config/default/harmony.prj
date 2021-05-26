@@ -60,7 +60,7 @@
           <LogicalPath dnOrder="2">config/default/peripheral/dac/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/dac/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">992E86D9028D5A78F96D769655243780</GeneratedChecksum>
-          <UserChecksum dnOrder="5">DCE43EF5D74939472371B97AABCBF22A</UserChecksum>
+          <UserChecksum dnOrder="5">992E86D9028D5A78F96D769655243780</UserChecksum>
         </File>
         <File dnOrder="7">
           <Type dnOrder="0">SOURCE</Type>
@@ -91,8 +91,8 @@
           <Name dnOrder="1">plib_port.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">73EE445E288CE19D217EC29CD27D3E4C</GeneratedChecksum>
-          <UserChecksum dnOrder="5">E0AF01758D4DDCA8CEAFFFEA367A7F8D</UserChecksum>
+          <GeneratedChecksum dnOrder="4">754DA6C9EFEBD9F9B953499D51F46C01</GeneratedChecksum>
+          <UserChecksum dnOrder="5">279DC1EFD9640E946BA08B9EF310E52F</UserChecksum>
         </File>
         <File dnOrder="11">
           <Type dnOrder="0">SOURCE</Type>
@@ -364,7 +364,7 @@
           <LogicalPath dnOrder="2">config/default/peripheral/eic/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/eic/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">A96CB7759278065C8055C69CD28652F9</GeneratedChecksum>
-          <UserChecksum dnOrder="5">78186099FEF73D7131144C2937859DFE</UserChecksum>
+          <UserChecksum dnOrder="5">A96CB7759278065C8055C69CD28652F9</UserChecksum>
         </File>
         <File dnOrder="45">
           <Type dnOrder="0">HEADER</Type>
@@ -387,8 +387,8 @@
           <Name dnOrder="1">plib_port.h</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">64DCDC26E625AA067DE940DE3E0A8E77</GeneratedChecksum>
-          <UserChecksum dnOrder="5">A7EE05A8C5B9A40BA2D856A4DCA90B3B</UserChecksum>
+          <GeneratedChecksum dnOrder="4">D30393CD0B686FD776A51C5ADC64FB04</GeneratedChecksum>
+          <UserChecksum dnOrder="5">58A021E8BAC8FCB0F5669329AB6615D5</UserChecksum>
         </File>
         <File dnOrder="48">
           <Type dnOrder="0">HEADER</Type>
@@ -556,7 +556,7 @@
       <Setting dnOrder="2" key="FORCE_OPTIMIZATION" value="false"/>
       <Setting dnOrder="3" key="GENERATE_BACKUP" value="true"/>
       <Setting dnOrder="4" key="MERGE_STRATEGY" value="USER_ALL"/>
-      <Setting dnOrder="5" key="PackageFilter" value="bsp;csp;"/>
+      <Setting dnOrder="5" key="PackageFilter" value="bsp;core;csp;quick_docs;usb;"/>
     </Settings>
   </Configurator>
 </Configuration>

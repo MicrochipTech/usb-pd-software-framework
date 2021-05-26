@@ -108,8 +108,8 @@
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_driver.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFDrp_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFDrp_BootCfg.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_DRP_App.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_DRP_BootCfg.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -206,8 +206,8 @@
                      projectFiles="true">
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.c</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_driver.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFDrp_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFDrp_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_DRP_App.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_DRP_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -237,6 +237,7 @@
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_engine_swap.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_engine_vdm.c</itemPath>
         </logicalFolder>
         <logicalFolder name="PT" displayName="PT" projectFiles="true">
           <itemPath>../../../../Source/PT/pt_mngr.c</itemPath>
