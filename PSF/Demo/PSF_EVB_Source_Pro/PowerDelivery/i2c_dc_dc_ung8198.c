@@ -13,7 +13,7 @@
  *******************************************************************************/
 /*******************************************************************************
 
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -36,18 +36,18 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <i2c_dc_dc_driver.h>
 
 /***********************************************************************************/
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)
 
 volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
 
-#if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
+#if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
 static const UINT8 u8aMPQI2CSlvAddr[CONFIG_PD_PORT_COUNT] = {MPQ_I2C_SLV_ADDR_PORT_1 ,MPQ_I2C_SLV_ADDR_PORT_2};
 #else
 static const UINT8 u8aMPQI2CSlvAddr[CONFIG_PD_PORT_COUNT] = {MPQ_I2C_SLV_ADDR_PORT_1};
 #endif
 
-UINT16 u16PrevCurrent[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
-UINT16 u16PrevVoltage[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
+UINT8 u16PrevCurrent[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
+UINT8 u16PrevVoltage[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
 
 static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage);
 static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current);

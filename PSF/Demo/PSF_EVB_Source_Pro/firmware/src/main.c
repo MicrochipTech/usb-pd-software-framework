@@ -16,7 +16,7 @@
     machines of all modules in the system
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -41,7 +41,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 // *****************************************************************************
 
+#include <stddef.h>                     // Defines NULL
+#include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
+#include "definitions.h"                // SYS function prototypes
 #include "i2c_dc_dc_ung8198.h"
 
 // *****************************************************************************
@@ -66,7 +69,7 @@ int main ( void )
 		/*PSF stack Run*/
 		MchpPSF_RUN();
         
-        #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)   
+        #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)   
 
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING) 
 
