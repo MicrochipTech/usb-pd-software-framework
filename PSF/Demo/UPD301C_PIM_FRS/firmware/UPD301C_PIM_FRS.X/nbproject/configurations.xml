@@ -108,8 +108,8 @@
         <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.h</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_driver.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFFRS_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFFRS_BootCfg.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_FRS_BootCfg.h</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_FRS_App.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -206,8 +206,8 @@
                      projectFiles="true">
         <itemPath>../../PowerDelivery/i2c_dc_dc_ung8198.c</itemPath>
         <itemPath>../../PowerDelivery/i2c_dc_dc_driver.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFFRS_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFFRS_BootCfg.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_FRS_App.c</itemPath>
+        <itemPath>../../PowerDelivery/UPD301C_PIM_FRS_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -271,8 +271,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
         <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
+        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
       </packs>
       <compileType>
         <linkerTool>
@@ -321,6 +321,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0x400000-0x5fffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/i53191/Desktop/SourceTree PSF/PSF/Demo/UPD301C_PIM_FRS/firmware/UPD301C_PIM_FRS.X/debug/default/UPD301C_PIM_FRS_ptg"/>
         <property key="programoptions.eraseb4program" value="false"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"

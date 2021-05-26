@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFFRS_BootCfg.h
+    UPD301C_PIM_FRS_BootCfg.h
 
   Description:
     This header file contains user configurable globals and function prototypes.
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFFRS_BOOTCFG_H    /* Guard against multiple inclusion */
-#define _PSFFRS_BOOTCFG_H
+#ifndef __UPD301C_PIM_FRS_BOOTCFG_H    /* Guard against multiple inclusion */
+#define __UPD301C_PIM_FRS_BOOTCFG_H
 
 /*********************************Common Configuration*****************************************/
 #define CFG_PRODUCT_ID              0x0350U
@@ -109,12 +109,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_RP_CURRENT_VALUE          (3U << 3)
 
 /*Port Enable: 0 - Port Disable; 1 - Port Enable*/
-#define CFG_PORT_0_ENABLE       (1U << 5)
-#define CFG_PORT_1_ENABLE       (1U << 5)
+#define CFG_PORT_0_ENABLE                    (1U << 5)
+#define CFG_PORT_1_ENABLE                    (1U << 5)
 
 /*VCONN OCS Enable: 0 - Disable, 1 - Enable*/
-#define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
-#define CFG_PORT_1_VCONN_OCS_ENABLE     (1U << 9)  
+#define CFG_PORT_0_VCONN_OCS_ENABLE          (1U << 9)
+#define CFG_PORT_1_VCONN_OCS_ENABLE          (1U << 9)  
 
 /* Power/Data state for initiating FRS: 
  * 0 - Disabled; 
@@ -125,7 +125,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_1_FRS_POWER_DATA_STATE  (2U << 11) 
 
 /********************************PIO Specific configuration******************************/
-#define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
+#define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO9 
 #define CFG_PORT_1_UPD_FAULT_IN_PIO_NO       eUPD_PIO5
 
 #define CFG_PORT_0_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
@@ -136,7 +136,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define CFG_PORT_0_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_1_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 
-#define CFG_PORT_0_UPD_EN_SNK                eUPD_PIO6
+#define CFG_PORT_0_UPD_EN_SNK                eUPD_PIO8 
 #define CFG_PORT_1_UPD_EN_SNK                eUPD_PIO6
 #define CFG_PORT_0_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 #define CFG_PORT_1_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
@@ -145,8 +145,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
    Hence, INCLUDE_UPD_HPD is disabled by default. If user application
    wishes to use HPD feature, then VSEL2 functionality has to be mapped
    with any MCU pin since HPD pin can only be an UPD PIO */
-#define CFG_PORT_0_HPD_IO                    eUPD_PIO9
-#define CFG_PORT_1_HPD_IO                    eUPD_PIO9
+//#define CFG_PORT_0_HPD_IO                    eUPD_PIO9
+//#define CFG_PORT_1_HPD_IO                    eUPD_PIO9
 
 /* Port 0 is configured as Power Sink/Data Host. So, EN_FRS acts an output pin */
 #define CFG_PORT_0_UPD_EN_FRS_PIO_NO        eUPD_PIO2
@@ -757,7 +757,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 void PSF_LoadConfig (GLOBAL_CFG_STATUS_DATA *pasCfgStatusData); 
 
-#endif /* _PSFFRS_BOOTCFG_H */
+#endif /* __UPD301C_PIM_FRS_BOOTCFG_H */
 
 /* *****************************************************************************
  End of File

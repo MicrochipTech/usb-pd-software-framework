@@ -206,7 +206,7 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL       0
+#define INCLUDE_POWER_MANAGEMENT_CTRL       1
 
 /**************************************************************************
 Summary:
@@ -2373,7 +2373,7 @@ typedef struct _GlobalCfgStatusData
    
 extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
 
-#include "PSFFRS_App.h"
-#include "PSFFRS_BootCfg.h"
+#include "UPD301C_PIM_FRS_App.h"
+#include "UPD301C_PIM_FRS_BootCfg.h"
 
 #endif
