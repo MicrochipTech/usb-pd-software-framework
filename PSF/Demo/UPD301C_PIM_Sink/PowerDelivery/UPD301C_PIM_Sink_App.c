@@ -338,11 +338,11 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-				PORT_PinWrite(PORT_PIN_PA28, TRUE);     
-			}
+                PORT_PinWrite(PORT_PIN_PA28, TRUE);     
+            }
             else
             {
-				PORT_PinWrite(PORT_PIN_PA28, FALSE);     
+                PORT_PinWrite(PORT_PIN_PA28, FALSE);     
             }
             break;
         }            
