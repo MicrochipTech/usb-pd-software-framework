@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    PSFFRS_App.c
+    UPD301C_PIM_FRS_App.c
 
   Summary:
     User Application Source file
@@ -413,9 +413,21 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eVBUS_DIS_FUNC:
         {
-            UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
-            UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
+            if (PORT0 == u8PortNum)
+            {
+                PORT_PinWrite(PORT_PIN_PA28, FALSE);
+                PORT_PinOutputEnable(PORT_PIN_PA28);        
+            }
+            else if(PORT1 == u8PortNum)
+            {
+                UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);
+                UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+                UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
+            }
+            else
+            {
+                /* Do Nothing */
+            }
             break; 
         }
         case eDC_DC_EN_FUNC:
@@ -536,7 +548,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }     
         case eDATA_ROLE_FUNC:
         {
-            /* Note: Due to unavailability of free GPIOs, Power Role PIO 
+            /* Note: Due to unavailability of free GPIOs, Data Role PIO 
                functionality is not implemented. User Application can implement
                eDATA_ROLE_FUNC as per it's needs */               
             if (PORT0 == u8PortNum)
@@ -648,11 +660,33 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
+                if (PORT0 == u8PortNum)
+                {
+                    PORT_PinWrite(PORT_PIN_PA28, TRUE);
+                }
+                else if (PORT1 == u8PortNum)
+                {
+                    UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
+                }
+                else
+                {
+                    /* Do Nothing */
+                }
             }
             else
             {
-                UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+                if (PORT0 == u8PortNum)
+                {
+                    PORT_PinWrite(PORT_PIN_PA28, FALSE);
+                }
+                else if (PORT1 == u8PortNum)
+                {
+                    UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
+                }
+                else
+                {
+                    /* Do Nothing */
+                }                
             }
             break; 
         }
@@ -823,7 +857,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case eDATA_ROLE_FUNC:
         {
-            /* Note: Due to unavailability of free GPIOs, Power Role PIO 
+            /* Note: Due to unavailability of free GPIOs, Data Role PIO 
                functionality is not implemented. User Application can implement
                eDATA_ROLE_FUNC as per it's needs */            
             if (PORT0 == u8PortNum)
@@ -865,7 +899,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 
 UINT8 App_PortPowerInit(UINT8 u8PortNum)
 {
-    UINT8 u8Return = TRUE; 
+    UINT8 u8Return; 
    
 #if (TRUE == INCLUDE_PD_SINK)
     DAC_Initialize();
@@ -879,14 +913,39 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum)
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO7);
     
     /*VSEL 1 Init */
-    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);
-    UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
-    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);
-    
+    if (PORT0 == u8PortNum)
+    {
+        PORT_PinWrite(PORT_PIN_PA05, FALSE);
+        PORT_PinOutputEnable(PORT_PIN_PA05);   
+    }
+    else if(PORT1 == u8PortNum)
+    {                       
+        UPDPIO_SetBufferType(u8PortNum, eUPD_PIO8, UPD_PIO_SETBUF_PUSHPULL);
+        UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
+        UPDPIO_EnableOutput(u8PortNum, eUPD_PIO8);
+    }
+    else
+    {
+        /* Do Nothing */
+    }                
+
     /*VSEL 2 Init */
-    UPDPIO_SetBufferType(u8PortNum, eUPD_PIO9, UPD_PIO_SETBUF_PUSHPULL);
-    UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
-    UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
+    if (PORT0 == u8PortNum)
+    {
+        PORT_PinWrite(PORT_PIN_PA02, FALSE);
+        PORT_PinOutputEnable(PORT_PIN_PA02);   
+    }
+    else if(PORT1 == u8PortNum)
+    {                       
+        UPDPIO_SetBufferType(u8PortNum, eUPD_PIO9, UPD_PIO_SETBUF_PUSHPULL);
+        UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+        UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
+    }
+    else
+    {
+        /* Do Nothing */
+    }                
+    u8Return = TRUE; 
     
 #elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
     u8Return = MPQDCDC_Initialize(u8PortNum); /* MPQ4230 - I2C based DC/DC */ 
@@ -915,15 +974,15 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
         case APP_VOLTAGE_5000mV:
         {
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA05, FALSE)): (UPDPIO_DriveLow(u8PortNum, eUPD_PIO8)); 
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA02, FALSE)): (UPDPIO_DriveLow(u8PortNum, eUPD_PIO9)); 
             break;
         }
         case APP_VOLTAGE_9000mV:
         {
             UPDPIO_DriveHigh(u8PortNum, eUPD_PIO7);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA05, FALSE)): (UPDPIO_DriveLow(u8PortNum, eUPD_PIO8)); 
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA02, FALSE)): (UPDPIO_DriveLow(u8PortNum, eUPD_PIO9)); 
             /* Update Port IO Status */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL0_STATUS;
             break;
@@ -931,8 +990,8 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
         case APP_VOLTAGE_15000mV:
         {
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
-            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA05, TRUE)): (UPDPIO_DriveHigh(u8PortNum, eUPD_PIO8)); 
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA02, FALSE)): (UPDPIO_DriveLow(u8PortNum, eUPD_PIO9)); 
             /* Update Port IO Status */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL1_STATUS;
             break;
@@ -940,8 +999,8 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
         case APP_VOLTAGE_20000mV:
         {
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
-            UPDPIO_DriveHigh(u8PortNum, eUPD_PIO9);
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA05, FALSE)): (UPDPIO_DriveLow(u8PortNum, eUPD_PIO8)); 
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA02, TRUE)): (UPDPIO_DriveHigh(u8PortNum, eUPD_PIO9)); 
             /* Update Port IO Status */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus |= DPM_PORT_IO_VSEL2_STATUS;
             break;
@@ -951,8 +1010,8 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
         case APP_VOLTAGE_0mV:
         {
             UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO8);
-            UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA05, FALSE)): (UPDPIO_DriveLow(u8PortNum, eUPD_PIO8)); 
+            (PORT0 == u8PortNum) ? (PORT_PinWrite(PORT_PIN_PA02, FALSE)): (UPDPIO_DriveLow(u8PortNum, eUPD_PIO9)); 
             break;
         }
     }
@@ -962,7 +1021,7 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
 #endif     
 }
 
-#if (TRUE == INCLUDE_PD_SINK)
+#if (TRUE == INCLUDE_PD_SINK) 
 void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData)
 {
     if(PORT0 == u8PortNum)

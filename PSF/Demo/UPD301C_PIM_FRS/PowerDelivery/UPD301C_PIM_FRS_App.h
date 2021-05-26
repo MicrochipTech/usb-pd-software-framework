@@ -5,7 +5,7 @@ Power Delivery FRS Application header file
     Microchip Technology Inc.
 
   File Name:
-    PSFFRS_App.h
+    UPD301C_PIM_FRS_App.h
 
   Description:
     This header file contains user application specific functions and interfaces
@@ -30,8 +30,8 @@ RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU
 HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PSFFRS_APP_H
-#define _PSFFRS_APP_H
+#ifndef _UPD301C_PIM_FRS_APP_H
+#define _UPD301C_PIM_FRS_APP_H
 
 /* Defines major and minor version of PSF FRS Application*/
 #define APP_REV_MAJOR	0x01
@@ -85,7 +85,7 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
 
 void App_DriveDAC_I(UINT8 u8PortNum, UINT16 u16DACData);
 
-#endif /* _PSFFRS_APP_H */
+#endif /* _UPD301C_PIM_FRS_APP_H */
 
 /* *****************************************************************************
  End of File

@@ -84,6 +84,15 @@
 #define SPI_SS_1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 1)
 #define SPI_SS_1_PIN                  PORT_PIN_PA01
 
+/*** Macros for DC_DC_EN_1 pin ***/
+#define DC_DC_EN_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 3)
+#define DC_DC_EN_1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 3)
+#define DC_DC_EN_1_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 3)
+#define DC_DC_EN_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 3)) & 0x01)
+#define DC_DC_EN_1_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 3)
+#define DC_DC_EN_1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 3)
+#define DC_DC_EN_1_PIN                  PORT_PIN_PA03
+
 /*** Macros for SNK_CAP_MISMATCH pin ***/
 #define SNK_CAP_MISMATCH_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 4)
 #define SNK_CAP_MISMATCH_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 4)
@@ -94,13 +103,13 @@
 #define SNK_CAP_MISMATCH_PIN                  PORT_PIN_PA04
 
 /*** Macros for DC_DC_EN_0 pin ***/
-#define DC_DC_EN_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 5)
-#define DC_DC_EN_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 5)
-#define DC_DC_EN_0_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 5)
-#define DC_DC_EN_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 5)) & 0x01)
-#define DC_DC_EN_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 5)
-#define DC_DC_EN_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 5)
-#define DC_DC_EN_0_PIN                  PORT_PIN_PA05
+#define DC_DC_EN_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 6)
+#define DC_DC_EN_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 6)
+#define DC_DC_EN_0_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 6)
+#define DC_DC_EN_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 6)) & 0x01)
+#define DC_DC_EN_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 6)
+#define DC_DC_EN_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 6)
+#define DC_DC_EN_0_PIN                  PORT_PIN_PA06
 
 /*** Macros for SPI_SS_0 pin ***/
 #define SPI_SS_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 10)
@@ -111,50 +120,41 @@
 #define SPI_SS_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 10)
 #define SPI_SS_0_PIN                  PORT_PIN_PA10
 
-/*** Macros for ORIENTATION_1 pin ***/
-#define ORIENTATION_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 17)
-#define ORIENTATION_1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 17)
-#define ORIENTATION_1_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 17)
-#define ORIENTATION_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 17)) & 0x01)
-#define ORIENTATION_1_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 17)
-#define ORIENTATION_1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 17)
-#define ORIENTATION_1_PIN                  PORT_PIN_PA17
-
 /*** Macros for SNK_1_5A_IND pin ***/
-#define SNK_1_5A_IND_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 24)
-#define SNK_1_5A_IND_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 24)
-#define SNK_1_5A_IND_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 24)
-#define SNK_1_5A_IND_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 24)) & 0x01)
-#define SNK_1_5A_IND_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 24)
-#define SNK_1_5A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 24)
-#define SNK_1_5A_IND_PIN                  PORT_PIN_PA24
+#define SNK_1_5A_IND_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 16)
+#define SNK_1_5A_IND_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 16)
+#define SNK_1_5A_IND_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 16)
+#define SNK_1_5A_IND_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 16)) & 0x01)
+#define SNK_1_5A_IND_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 16)
+#define SNK_1_5A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 16)
+#define SNK_1_5A_IND_PIN                  PORT_PIN_PA16
 
 /*** Macros for SNK_3A_IND pin ***/
-#define SNK_3A_IND_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 25)
-#define SNK_3A_IND_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 25)
-#define SNK_3A_IND_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 25)
-#define SNK_3A_IND_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 25)) & 0x01)
-#define SNK_3A_IND_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 25)
-#define SNK_3A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 25)
-#define SNK_3A_IND_PIN                  PORT_PIN_PA25
+#define SNK_3A_IND_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 17)
+#define SNK_3A_IND_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 17)
+#define SNK_3A_IND_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 17)
+#define SNK_3A_IND_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 17)) & 0x01)
+#define SNK_3A_IND_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 17)
+#define SNK_3A_IND_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 17)
+#define SNK_3A_IND_PIN                  PORT_PIN_PA17
 
 /*** Macros for ORIENTATION_0 pin ***/
-#define ORIENTATION_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 27)
-#define ORIENTATION_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 27)
-#define ORIENTATION_0_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 27)
-#define ORIENTATION_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 27)) & 0x01)
-#define ORIENTATION_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 27)
-#define ORIENTATION_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 27)
-#define ORIENTATION_0_PIN                  PORT_PIN_PA27
+#define ORIENTATION_0_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 18)
+#define ORIENTATION_0_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 18)
+#define ORIENTATION_0_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 18)
+#define ORIENTATION_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 18)) & 0x01)
+#define ORIENTATION_0_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 18)
+#define ORIENTATION_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 18)
+#define ORIENTATION_0_PIN                  PORT_PIN_PA18
 
-/*** Macros for DC_DC_EN_1 pin ***/
-#define DC_DC_EN_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 28)
-#define DC_DC_EN_1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 28)
-#define DC_DC_EN_1_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 28)
-#define DC_DC_EN_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 28)) & 0x01)
-#define DC_DC_EN_1_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 28)
-#define DC_DC_EN_1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 28)
-#define DC_DC_EN_1_PIN                  PORT_PIN_PA28
+/*** Macros for ORIENTATION_1 pin ***/
+#define ORIENTATION_1_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 19)
+#define ORIENTATION_1_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 19)
+#define ORIENTATION_1_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 19)
+#define ORIENTATION_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 19)) & 0x01)
+#define ORIENTATION_1_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 19)
+#define ORIENTATION_1_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 19)
+#define ORIENTATION_1_PIN                  PORT_PIN_PA19
 
 
 
