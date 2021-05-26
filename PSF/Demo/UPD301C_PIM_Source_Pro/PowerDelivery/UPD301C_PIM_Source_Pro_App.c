@@ -367,11 +367,10 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 UPDPIO_DriveHigh(u8PortNum, eUPD_PIO6);
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO6);
             }
-              else
+            else
             {
                 /* Do Nothing */
             }
-            
              /* Delay for the DC/DC module to stabilize after Initialization */
             for(u16Delay = 0; u16Delay < 20000; u16Delay++)
             {
@@ -488,15 +487,15 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         {
             if (eGPIO_ASSERT == eGPIODrive)
             {
-                 if (PORT0 == u8PortNum)
-                 {    
-                    PORT_PinWrite(PORT_PIN_PA28, TRUE);
-                 }
-                 else if(PORT1 == u8PortNum)
-                 {
-                    UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
-                 }
-                 else
+                if (PORT0 == u8PortNum)
+                {    
+                   PORT_PinWrite(PORT_PIN_PA28, TRUE);
+                }
+                else if(PORT1 == u8PortNum)
+                {
+                   UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
+                }
+                else
                 {
                     /* Do Nothing */
                 }
