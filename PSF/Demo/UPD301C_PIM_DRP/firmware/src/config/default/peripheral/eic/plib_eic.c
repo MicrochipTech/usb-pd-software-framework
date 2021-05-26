@@ -77,8 +77,8 @@ void EIC_Initialize(void)
 
     /* NMI Control register */
 
-    /* Interrupt sense type and filter control for EXTINT channels 0 to 7*/
-    EIC_REGS->EIC_CONFIG[0] =  EIC_CONFIG_SENSE0_NONE  |
+    /* Interrupt sense type and filter control for EXTINT channels 0 to 7 */
+    EIC_REGS->EIC_CONFIG[0] = EIC_CONFIG_SENSE0_NONE  |
                               EIC_CONFIG_SENSE1_NONE  |
                               EIC_CONFIG_SENSE2_NONE  |
                               EIC_CONFIG_SENSE3_FALL  |
@@ -88,7 +88,7 @@ void EIC_Initialize(void)
                               EIC_CONFIG_SENSE7_FALL ;
 
     /* Interrupt sense type and filter control for EXTINT channels 8 to 15 */
-    EIC_REGS->EIC_CONFIG[1] =  EIC_CONFIG_SENSE0_NONE  |
+    EIC_REGS->EIC_CONFIG[1] = EIC_CONFIG_SENSE0_NONE  |
                               EIC_CONFIG_SENSE1_NONE  |
                               EIC_CONFIG_SENSE2_NONE  |
                               EIC_CONFIG_SENSE3_NONE  |
@@ -130,12 +130,12 @@ void EIC_Initialize(void)
     }
 }
 
-void EIC_InterruptEnable (EIC_PIN pin)
+void EIC_InterruptEnable(EIC_PIN pin)
 {
     EIC_REGS->EIC_INTENSET = (1UL << pin);
 }
 
-void EIC_InterruptDisable (EIC_PIN pin)
+void EIC_InterruptDisable(EIC_PIN pin)
 {
     EIC_REGS->EIC_INTENCLR = (1UL << pin);
 }
