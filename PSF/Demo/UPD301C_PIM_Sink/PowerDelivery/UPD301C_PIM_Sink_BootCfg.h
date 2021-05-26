@@ -71,8 +71,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define CFG_PORT_0_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
 
-//#define CFG_PORT_0_UPD_EN_SNK                eUPD_PIO6
-#define CFG_PORT_0_UPD_EN_SNK                eUPD_PIO8  //SB Edit
+#define CFG_PORT_0_UPD_EN_SNK                eUPD_PIO8  
 #define CFG_PORT_0_UPD_EN_SNK_PIO_MODE       ePUSH_PULL_ACTIVE_HIGH
 
 /* Note: UPD PIO9 is shared between HPD and VSEL2 pin functionalities. 
