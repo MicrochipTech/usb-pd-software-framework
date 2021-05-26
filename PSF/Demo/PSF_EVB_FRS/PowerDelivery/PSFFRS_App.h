@@ -56,13 +56,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define APP_DAC_VREF            3300
 
 /* Macro to indicate GPIO based DC-DC Controller */
-#define PWRCTRL_GPIO_DC_DC     1
+#define PWRCTRL_GPIO_DC_DC_MCP19119     1
 
 /* Macro to indicate I2C based DC-DC Controller */
-#define PWRCTRL_I2C_DC_DC      2
+#define PWRCTRL_I2C_DC_DC_MPQ4230      2
+
+/* Macro to indicate GPIO based DC-DC Controller */
+#define PWRCTRL_GPIO_DC_DC_MIC2128       3
 
 /* Defines the type of DC DC Controller used */
-#define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC
+#define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC_MCP19119
 
 
 // *****************************************************************************

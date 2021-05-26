@@ -1450,7 +1450,10 @@ typedef enum
 									* '01' PD2.0 
                                     * '10' PD3.0   
                                     * '00' & '11' - Reserved 
-	31:21	 			           Reserved 				
+	21      R            R         PR Swap In Progress  
+									* '0' PR Swap Not in Progress
+                                    * '1' PR Swap in Progress
+	31:22	 			           Reserved  				
 	</table>
 
 	<b>c. u32PortIOStatus</b>: 
