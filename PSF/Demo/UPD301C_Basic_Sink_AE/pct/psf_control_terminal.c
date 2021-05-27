@@ -670,24 +670,24 @@ void PCTPrintStatusData(const UINT8 u8array[])
              sizeof(pu8PrintValue), sizeof(StrRDOCurrent));
 
         pu8PrintValue = HextoAscii(gasCfgStatusData.sPerPortData[PORT0].
-                u32PortConnectStatus, 4);
+                u32PortConnectStatus, 8);
         PCTWrite(StrPortConnectStatus, (UINT8 *) & pu8PrintValue[0],\
-             sizeof(pu8PrintValue), sizeof(StrPortConnectStatus));
+             sizeof(pu8PrintValue) + 4, sizeof(StrPortConnectStatus));
 
         pu8PrintValue = HextoAscii(gasCfgStatusData.sPerPortData[PORT0].
-                u32PortStatusChange, 4);
+                u32PortStatusChange, 8);
         PCTWrite(StrPortStatusChange, (UINT8 *) & pu8PrintValue[0],\
-             sizeof(pu8PrintValue), sizeof(StrPortStatusChange));
+             sizeof(pu8PrintValue) + 4, sizeof(StrPortStatusChange));
 
         pu8PrintValue = HextoAscii(gasCfgStatusData.sPerPortData[PORT0].
-                u32PortIOStatus, 4);
+                u32PortIOStatus, 8);
         PCTWrite(StrPortIOStatus, (UINT8 *) & pu8PrintValue[0],\
-             sizeof(pu8PrintValue), sizeof(StrPortIOStatus));
+             sizeof(pu8PrintValue) + 4, sizeof(StrPortIOStatus));
 
         pu8PrintValue = HextoAscii(gasCfgStatusData.sPerPortData[PORT0].
-                   u32ClientRequest, 4);
+                   u32ClientRequest, 8);
         PCTWrite(u32ClientRequest, (UINT8 *) & pu8PrintValue[0],\
-             sizeof(pu8PrintValue), sizeof(u32ClientRequest));
+             sizeof(pu8PrintValue) + 4, sizeof(u32ClientRequest));
 
         pu8PrintValue = HextoAscii_Int(gasCfgStatusData.sPerPortData[PORT0].
                    u16AllocatedPowerIn250mW, 4);
@@ -785,10 +785,12 @@ void PCTPrintStatusData(const UINT8 u8array[])
                    u8PartnerSinkPDOCnt, 4);
         PCTWrite(StrPartnerSinkPDOCnt, (UINT8 *) & pu8PrintValue[0],\
              sizeof(pu8PrintValue), sizeof(StrPartnerSinkPDOCnt));
+        
         pu8PrintValue = HextoAscii(gasCfgStatusData.sPerPortData[PORT0].
                    u8PartnerSourcePDOCnt, 4);
         PCTWrite(StrPartnerSourcePDOCnt, (UINT8 *) & pu8PrintValue[0],\
              sizeof(pu8PrintValue), sizeof(StrPartnerSourcePDOCnt));
+        
         pu8PrintValue = HextoAscii(gasCfgStatusData.sPerPortData[PORT0].
                    u8SinkConfigSel, 4);
         PCTWrite(StrSinkConfigSel, (UINT8 *) & pu8PrintValue[0],\
