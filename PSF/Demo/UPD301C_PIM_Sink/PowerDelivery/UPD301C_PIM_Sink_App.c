@@ -243,7 +243,6 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {     
 			PORT_PinWrite(PORT_PIN_PA28, FALSE);     
 			PORT_PinOutputEnable(PORT_PIN_PA28);    
-            
             break; 
         }
         case eORIENTATION_FUNC:
