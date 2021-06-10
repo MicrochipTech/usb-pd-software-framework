@@ -91,8 +91,8 @@
           <Name dnOrder="1">plib_port.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">754DA6C9EFEBD9F9B953499D51F46C01</GeneratedChecksum>
-          <UserChecksum dnOrder="5">279DC1EFD9640E946BA08B9EF310E52F</UserChecksum>
+          <GeneratedChecksum dnOrder="4">11ACD33DFDA0A964B07FEB8FFDE84AB9</GeneratedChecksum>
+          <UserChecksum dnOrder="5">9A207EC343803E7DC23AD73D4DC58B89</UserChecksum>
         </File>
         <File dnOrder="11">
           <Type dnOrder="0">SOURCE</Type>
@@ -387,8 +387,8 @@
           <Name dnOrder="1">plib_port.h</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">D30393CD0B686FD776A51C5ADC64FB04</GeneratedChecksum>
-          <UserChecksum dnOrder="5">58A021E8BAC8FCB0F5669329AB6615D5</UserChecksum>
+          <GeneratedChecksum dnOrder="4">FFBF2C05688C0B094522915D18674A6A</GeneratedChecksum>
+          <UserChecksum dnOrder="5">033A8A5A0CBF38E0AC0E398EA157AD1E</UserChecksum>
         </File>
         <File dnOrder="48">
           <Type dnOrder="0">HEADER</Type>
