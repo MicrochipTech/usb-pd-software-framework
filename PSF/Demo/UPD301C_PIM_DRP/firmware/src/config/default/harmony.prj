@@ -91,8 +91,8 @@
           <Name dnOrder="1">plib_port.c</Name>
           <LogicalPath dnOrder="2">config/default/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">11ACD33DFDA0A964B07FEB8FFDE84AB9</GeneratedChecksum>
-          <UserChecksum dnOrder="5">9A207EC343803E7DC23AD73D4DC58B89</UserChecksum>
+          <GeneratedChecksum dnOrder="4">9FB691E2ECD034681A9AEB7BB7831386</GeneratedChecksum>
+          <UserChecksum dnOrder="5">0EB2A5F38BBD9C153B36AD9113B99CB0</UserChecksum>
         </File>
         <File dnOrder="11">
           <Type dnOrder="0">SOURCE</Type>
