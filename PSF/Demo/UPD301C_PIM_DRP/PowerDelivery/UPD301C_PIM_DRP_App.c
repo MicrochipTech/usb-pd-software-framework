@@ -356,10 +356,10 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
 #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
             if (PORT0 == u8PortNum)
             {
-                PORT_PinWrite(PORT_PIN_PA02, TRUE); //check sourcepro - PA04
-                PORT_PinInputEnable(PORT_PIN_PA02);
-                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA02, SAMD20_I2CDCDCAlertCallback, PORT0);
-                EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA02);
+                PORT_PinWrite(PORT_PIN_PA04, TRUE);
+                PORT_PinInputEnable(PORT_PIN_PA04);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA04, SAMD20_I2CDCDCAlertCallback, PORT0);
+                EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA04);
             }
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
             else if (PORT1 == u8PortNum)
@@ -475,46 +475,50 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             }
             break;
         }
-        case eSNK_1_5A_IND_FUNC:
-        {
-            if (PORT0 == u8PortNum)
-            {
-                SNK_1_5A_IND_Clear();
-                SNK_1_5A_IND_OutputEnable();            
-            }
-            else
-            {
-                /*Do nothing since sink specific IOs are applicable only for port 0*/
-            }
-            break;
-        }
-        case eSNK_3A_IND_FUNC:
-        {
-            if (PORT0 == u8PortNum)
-            {
-                SNK_3A_IND_Clear();
-                SNK_3A_IND_OutputEnable();  
-            }
-            else
-            {
-                /*Do nothing since sink specific IOs are applicable only for port 0*/
-            }
-            break;
-        }    
+//        case eSNK_1_5A_IND_FUNC:
+//        {
+//            if (PORT0 == u8PortNum)
+//            {
+//                SNK_1_5A_IND_Clear();
+//                SNK_1_5A_IND_OutputEnable();            
+//            }
+//            else
+//            {
+//                /*Do nothing since sink specific IOs are applicable only for port 0*/
+//            }
+//            break;
+//        }
+//        case eSNK_3A_IND_FUNC:
+//        {
+//            if (PORT0 == u8PortNum)
+//            {
+//                SNK_3A_IND_Clear();
+//                SNK_3A_IND_OutputEnable();  
+//            }
+//            else
+//            {
+//                /*Do nothing since sink specific IOs are applicable only for port 0*/
+//            }
+//            break;
+//        }    
         case ePOWER_ROLE_FUNC:
         {
+#if (FALSE == CONFIG_HOOK_DEBUG_MSG)
             if (PORT0 == u8PortNum)
             {
                 POWER_ROLE_0_Clear();
                 POWER_ROLE_0_OutputEnable();  
             }
+#endif
+#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
             else if (PORT1 == u8PortNum)
             {
-//                POWER_ROLE_1_Clear();
-//                POWER_ROLE_1_OutputEnable(); 
+                POWER_ROLE_1_Clear();
+                POWER_ROLE_1_OutputEnable(); 
             }
             #endif  
+#endif
             else
             {
                 /*Do nothing*/
@@ -523,18 +527,22 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }     
         case eDATA_ROLE_FUNC:
         {
+#if (FALSE == CONFIG_HOOK_DEBUG_MSG)
             if (PORT0 == u8PortNum)
             {
                 DATA_ROLE_0_Clear();
                 DATA_ROLE_0_OutputEnable();  
             }
+#endif
+#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
             else if (PORT1 == u8PortNum)
             {
-//                DATA_ROLE_1_Clear();
-//                DATA_ROLE_1_OutputEnable(); 
+                DATA_ROLE_1_Clear();
+                DATA_ROLE_1_OutputEnable(); 
             }
             #endif
+#endif
             else
             {
                 /*Do nothing*/
@@ -737,46 +745,47 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             }
             break;
         }
-        case eSNK_1_5A_IND_FUNC:
-        {
-            if (PORT0 == u8PortNum)
-            {
-                if (eGPIO_ASSERT == eGPIODrive)
-                {
-                    SNK_1_5A_IND_Set();
-                }
-                else
-                {
-                    SNK_1_5A_IND_Clear();
-                }
-            }
-            else
-            {
-                /*Do nothing since sink specific IOs are applicable only for port 0*/
-            }
-            break;
-        }
-        case eSNK_3A_IND_FUNC:
-        {
-            if (PORT0 == u8PortNum)
-            {
-                if (eGPIO_ASSERT == eGPIODrive)
-                {
-                    SNK_3A_IND_Set();
-                }
-                else
-                {
-                    SNK_3A_IND_Clear();
-                }
-            }
-            else
-            {
-                /*Do nothing since sink specific IOs are applicable only for port 0*/
-            }
-            break;
-        }
+//        case eSNK_1_5A_IND_FUNC:
+//        {
+//            if (PORT0 == u8PortNum)
+//            {
+//                if (eGPIO_ASSERT == eGPIODrive)
+//                {
+//                    SNK_1_5A_IND_Set();
+//                }
+//                else
+//                {
+//                    SNK_1_5A_IND_Clear();
+//                }
+//            }
+//            else
+//            {
+//                /*Do nothing since sink specific IOs are applicable only for port 0*/
+//            }
+//            break;
+//        }
+//        case eSNK_3A_IND_FUNC:
+//        {
+//            if (PORT0 == u8PortNum)
+//            {
+//                if (eGPIO_ASSERT == eGPIODrive)
+//                {
+//                    SNK_3A_IND_Set();
+//                }
+//                else
+//                {
+//                    SNK_3A_IND_Clear();
+//                }
+//            }
+//            else
+//            {
+//                /*Do nothing since sink specific IOs are applicable only for port 0*/
+//            }
+//            break;
+//        }
         case ePOWER_ROLE_FUNC:
         {
+#if (FALSE == CONFIG_HOOK_DEBUG_MSG)
             if (PORT0 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
@@ -788,19 +797,22 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     POWER_ROLE_0_Clear();
                 }
             }
+#endif
+#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
             else if (PORT1 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
                 {
-                   // POWER_ROLE_1_Set();
+                    POWER_ROLE_1_Set();
                 }
                 else
                 {
-                   // POWER_ROLE_1_Clear();
+                    POWER_ROLE_1_Clear();
                 }            
             }
             #endif
+#endif
             else
             {
                 /*Do nothing*/
@@ -809,6 +821,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case eDATA_ROLE_FUNC:
         {
+#if (FALSE == CONFIG_HOOK_DEBUG_MSG)
             if (PORT0 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
@@ -820,19 +833,22 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     DATA_ROLE_0_Clear();
                 }
             }
+#endif
+#if(CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)
             else if (PORT1 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
                 {
-                    //DATA_ROLE_1_Set();
+                    DATA_ROLE_1_Set();
                 }
                 else
                 {
-                    //DATA_ROLE_1_Clear();
+                    DATA_ROLE_1_Clear();
                 }            
             }
             #endif
+#endif
             else
             {
                 /*Do nothing*/
