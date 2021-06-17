@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Defines major and minor version of PSF Source Pro Application*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x11
+#define APP_REV_MINOR	0x12
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -62,7 +62,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PWRCTRL_GPIO_DC_DC_MIC2128     3
 
 /* Defines the type of DC DC Controller used */
-#define CONFIG_DCDC_CTRL        PWRCTRL_I2C_DC_DC_MPQ4230
+#define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC_MCP19119
 
 
 // *****************************************************************************
