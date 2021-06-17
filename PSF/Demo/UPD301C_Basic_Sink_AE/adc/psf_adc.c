@@ -235,11 +235,11 @@ UINT8 Get_ADCPosition()
     u16adc_count = ADC_ConversionResultGet();
     u32input_voltage = u16adc_count * ADC_VREF / 4095U;
     
-    if (u32input_voltage < 40U) 
+    if (u32input_voltage < 20U) 
     {
         gu8CurrentPos = 7;
     }
-    if(u32input_voltage < 58U) 
+    if(u32input_voltage < 65U) 
     {
         gu8CurrentPos = 0;
     }
