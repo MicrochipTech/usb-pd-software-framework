@@ -1446,10 +1446,10 @@ typedef enum
     20:19   R            R         Current Negotiated PD Specification Revision									
 									* '01' PD2.0 
                                     * '10' PD3.0   
-                                    * '00' & '11' - Reserved 
-	21      R            R         PR Swap In Progress  
-									* '0' PR Swap Not in Progress
-                                    * '1' PR Swap in Progress
+                                    * '00' & '11' - Reserved
+	21		R            R         PR Swap In Progress									
+									* '0' A Power Role Swap is not in Progress 
+                                    * '1' A Power Role Swap is in Progress  								
 	31:22	 			           Reserved  				
 	</table>
 
