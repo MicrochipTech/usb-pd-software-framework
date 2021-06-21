@@ -475,32 +475,16 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             }
             break;
         }
-//        case eSNK_1_5A_IND_FUNC:
-//        {
-//            if (PORT0 == u8PortNum)
-//            {
-//                SNK_1_5A_IND_Clear();
-//                SNK_1_5A_IND_OutputEnable();            
-//            }
-//            else
-//            {
-//                /*Do nothing since sink specific IOs are applicable only for port 0*/
-//            }
-//            break;
-//        }
-//        case eSNK_3A_IND_FUNC:
-//        {
-//            if (PORT0 == u8PortNum)
-//            {
-//                SNK_3A_IND_Clear();
-//                SNK_3A_IND_OutputEnable();  
-//            }
-//            else
-//            {
-//                /*Do nothing since sink specific IOs are applicable only for port 0*/
-//            }
-//            break;
-//        }    
+        case eSNK_1_5A_IND_FUNC:
+        {
+            /*Not supported due to the shortage of GPIOs on PIM*/
+            break;
+        }
+        case eSNK_3A_IND_FUNC:
+        {
+            /*Not supported due to the shortage of GPIOs on PIM*/
+            break;
+        }    
         case ePOWER_ROLE_FUNC:
         {
 #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
@@ -745,44 +729,16 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             }
             break;
         }
-//        case eSNK_1_5A_IND_FUNC:
-//        {
-//            if (PORT0 == u8PortNum)
-//            {
-//                if (eGPIO_ASSERT == eGPIODrive)
-//                {
-//                    SNK_1_5A_IND_Set();
-//                }
-//                else
-//                {
-//                    SNK_1_5A_IND_Clear();
-//                }
-//            }
-//            else
-//            {
-//                /*Do nothing since sink specific IOs are applicable only for port 0*/
-//            }
-//            break;
-//        }
-//        case eSNK_3A_IND_FUNC:
-//        {
-//            if (PORT0 == u8PortNum)
-//            {
-//                if (eGPIO_ASSERT == eGPIODrive)
-//                {
-//                    SNK_3A_IND_Set();
-//                }
-//                else
-//                {
-//                    SNK_3A_IND_Clear();
-//                }
-//            }
-//            else
-//            {
-//                /*Do nothing since sink specific IOs are applicable only for port 0*/
-//            }
-//            break;
-//        }
+        case eSNK_1_5A_IND_FUNC:
+        {
+            /*Not supported due to the shortage of GPIOs on PIM*/
+            break;
+        }
+        case eSNK_3A_IND_FUNC:
+        {
+            /*Not supported due to the shortage of GPIOs on PIM*/
+            break;
+        }
         case ePOWER_ROLE_FUNC:
         {
 #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
