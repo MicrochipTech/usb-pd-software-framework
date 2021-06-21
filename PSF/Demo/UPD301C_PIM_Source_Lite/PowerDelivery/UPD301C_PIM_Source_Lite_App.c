@@ -540,7 +540,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 
 UINT8 App_PortPowerInit(UINT8 u8PortNum)
 {   
-    /*VSEL0 Init */ //Check
+    /*VSEL0 Init */ 
     UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_PIO_SETBUF_PUSHPULL);
     UPDPIO_DriveLow(u8PortNum, eUPD_PIO7);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO7);
