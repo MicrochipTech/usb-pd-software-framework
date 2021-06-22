@@ -66,7 +66,7 @@ int main ( void )
 		/*PSF stack Run*/
 		MchpPSF_RUN();
         
-        #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)   
+        #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)   
 
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING) 
 

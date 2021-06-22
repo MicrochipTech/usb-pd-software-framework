@@ -350,7 +350,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define DPM_PORT_RP_VAL_DETECT_MASK_STATUS                    (BIT(17)|BIT(18))                         
 #define DPM_PORT_PD_SPEC_REV_STATUS_POS                       19
 #define DPM_PORT_PD_SPEC_REV_STATUS_MASK                      ((BIT(0)|BIT(1)) << DPM_PORT_PD_SPEC_REV_STATUS_POS)
-
+#define DPM_PORT_PR_SWAP_IN_PROGRESS                          BIT(21)
 /* *************************Port IO Status parameters *****************************
  * gasCfgStatusData.sPerPortData[u8PortNum].u32PortIOStatus *********************** */
 #define DPM_PORT_IO_EN_DC_DC_STATUS                  BIT(0)

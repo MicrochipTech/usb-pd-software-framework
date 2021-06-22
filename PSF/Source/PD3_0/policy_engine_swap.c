@@ -524,6 +524,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        for the accept message sent */
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_TRANSITION_TO_OFF_ENTRY_SS\r\n");
                     
+                    /* Set the DPM_PORT_PR_SWAP_IN_PROGRESS bit in u32PortConnectStatus variable */
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_PR_SWAP_IN_PROGRESS;
+                    
                     /* Disable FRS Transmitter */
                     #if (TRUE == INCLUDE_PD_FR_SWAP)                        
                         DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
@@ -738,6 +741,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                 {
                     DEBUG_PRINT_PORT_STR (u8PortNum,"PE_PRS_SRC_SNK_WAIT_SOURCE_ON_EXIT_SS\r\n");
                     
+                    /* Clear the bit DPM_PORT_PR_SWAP_IN_PROGRESS in u32PortConnectStatus variable*/
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_PR_SWAP_IN_PROGRESS);
+                    
                     /* Resetting the Protocol Layer will be taken care by the 
                     ePE_SNK_STARTUP state */
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SNK_STARTUP;
@@ -768,6 +774,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        PD Spec Reference Note: during the Power Role Swap process the 
                        initial Sink does not disconnect even though VBUS drops below vSafe5V */
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK;
+                    
+                    /*Set the DPM_PORT_PR_SWAP_IN_PROGRESS bit in u32PortConnectStatus variable */
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_PR_SWAP_IN_PROGRESS;
                            
                     /* Disable FRS Receiver */
                     #if (TRUE == INCLUDE_PD_FR_SWAP)                        
@@ -890,6 +899,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                        flow */
                     gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK);
                     
+                    /* Clear the DPM_PORT_PR_SWAP_IN_PROGRESS bit in u32PortConnectStatus variable*/
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_PR_SWAP_IN_PROGRESS);
+                    
                     /* No need to revert the port role to Sink since gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState 
                        would be PD_ROLE_SOURCE. After Error recovery, Type C SM would enter 
                        Unattached Source state and DRP offload would be enabled there.
@@ -928,6 +940,9 @@ void PE_RunPRSwapStateMachine (UINT8 u8PortNum)
                     
                     /* Clear the PE_PR_OR_FR_SWAP_IN_PROGRESS flag since the Swap is complete */
                     gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK);
+                    
+                    /* Clear the  DPM_PORT_PR_SWAP_IN_PROGRESS bit in u32PortConnectStatus variable*/
+                    gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_PR_SWAP_IN_PROGRESS);
                     
                     /* Move the Policy Engine to PE_SRC_STARTUP state. Resetting the CapsCounter 
                        and Protocol Layer would be taken care by the startup state */

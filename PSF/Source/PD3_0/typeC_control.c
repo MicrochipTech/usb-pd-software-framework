@@ -571,9 +571,11 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     if (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
                     {
                         gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_SOURCE;
+                        /*Enable DC_DC_EN if DRP acts as source*/
+                        /*For configurations other than DRP, DC_DC_EN is high by default*/
+                        PWRCTRL_ConfigDCDCEn (u8PortNum, TRUE);
                     }
                     #endif   
-
                     gasTypeCcontrol[u8PortNum].u8TypeCTimerID = PDTimer_Start ( \
                                                       (TYPEC_TCCDEBOUNCE_TIMEOUT_MS),\
                                                       TypeC_SubStateChange_TimerCB, u8PortNum,\
@@ -621,11 +623,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         {
                             /*Set BLK_PD_MSG. Done in cronus*/
                             UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
-                            #if (TRUE == INCLUDE_PD_DRP)                            
-                            /*Enable DC_DC_EN if DRP acts as source*/
-                            /*For configurations other than DRP, DC_DC_EN is high by default*/
-                            PWRCTRL_ConfigDCDCEn (u8PortNum, TRUE);
-                            #endif
+                            
                             gasTypeCcontrol[u8PortNum].u8TypeCState = TYPEC_ATTACHED_SRC;
                             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_DRIVE_PWR_SS;      
                         }                                                
