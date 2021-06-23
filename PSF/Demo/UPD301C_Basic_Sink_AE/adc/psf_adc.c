@@ -114,7 +114,7 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;
                 gu8CurrentPos = 7;
             }
-            else if (u32input_voltage < 65U)
+            else if (u32input_voltage < 70U)
             {
                 /*Position 0*/
                 /*Supported PDO is (5V,3A)*/
@@ -239,7 +239,7 @@ UINT8 Get_ADCPosition()
     {
         gu8CurrentPos = 7;
     }
-    if(u32input_voltage < 65U) 
+    if(u32input_voltage < 70U) 
     {
         gu8CurrentPos = 0;
     }
