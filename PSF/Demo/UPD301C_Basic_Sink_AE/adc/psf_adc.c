@@ -51,7 +51,7 @@ UINT8 gu8CurrentPos;
 
 void PSF_ADCRun()
 {
-    UINT8 u8PrevPos = 6; //Default position where all the PDOs [(5V,3A),(9V,3A),(15V,3A),(20V,3A)] exist.
+    UINT8 u8PrevPos = 8; //Set to 8 to advertise PDOs everytime the knob is rotated.
 	UINT16 u16adc_count;
 	UINT32 u32input_voltage;
 	UINT8 *pu8PrintString;
@@ -113,14 +113,6 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;
                 gu8CurrentPos = 7;
-            }
-            else if (u32input_voltage < 70U)
-            {
-                /*Position 0*/
-                /*Supported PDO is (5V,3A)*/
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
-                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 1;
-                gu8CurrentPos = 0;
             }
             else if (u32input_voltage < 650U) 
             {
@@ -238,10 +230,6 @@ UINT8 Get_ADCPosition()
     if (u32input_voltage < 20U) 
     {
         gu8CurrentPos = 7;
-    }
-    if(u32input_voltage < 70U) 
-    {
-        gu8CurrentPos = 0;
     }
     if (u32input_voltage < 650U) 
     {
