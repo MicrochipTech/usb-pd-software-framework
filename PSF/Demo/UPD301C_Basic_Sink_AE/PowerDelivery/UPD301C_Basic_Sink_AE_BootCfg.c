@@ -99,10 +99,6 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     memset(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO,0,7);
     switch(u8ADCPosition)
     {
-        case 0:
-            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
-            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
-            break;
         case 1:
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
