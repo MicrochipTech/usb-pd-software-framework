@@ -90,7 +90,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u16PowerGoodTimerInms = MILLISECONDS_TO_TICKS(CFG_POWER_GOOD_TIMER_MS);
     pasCfgStatusData->sPerPortData[PORT0].u16MaxSrcPrtCurrentIn10mA = CFG_MAX_PORT_CURRENT_IN_10mA;
     
-	pasCfgStatusData->sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
+	pasCfgStatusData->sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE_A)| \
             (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
 			
     /*Assigning PDOs according to the ADC position*/
@@ -100,39 +100,71 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     switch(u8ADCPosition)
     {
         case 1:
+        {
+            /*Position 1*/
+            /*Supported PDO is (5V,3A)*/
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
             gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
             break;
+        }
         case 2:
-            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_2;
-            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
-            break;
-        case 3:
-            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_3;
-            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
-            break;
-        case 4:
-            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_4;
-            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
-            break;
-        case 5:
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
-                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;            
-            break;
-        case 6:
-            gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel |= ((CFG_PORT_0_SINK_MODE | 0x01)| \
-                (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
+        {
+            /*Position 2*/
+            /*Supported PDOs are (5V,3A), (9V,3A)*/
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
-            gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
-            gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
-            gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
-            gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
-            gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 4;      
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 2;
             break;
-	}
+        }
+        case 3:
+        {
+            /*Position 3*/
+            /*Supported PDOs are (5V,3A), (15V,3A)*/
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_3;
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 2;
+            break;
+        }
+        case 4:
+        {
+            /*Position 4*/
+            /*Supported PDOs are (5V,3A), (20V,3A)*/
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_4;
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 2;
+            break;
+        }
+        case 5:
+        {
+            /*Position 5*/
+            /*Operates in Sink Mode A*/
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE_A)| \
+            (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
+            
+            /*Change in mode, call for renegotiation*/
+            gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS;
+            gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
+
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
+            break;
+        }
+        case 6:
+        {
+            /*Position 6*/
+            /*Operates in Sink Mode B*/
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE_B)| \
+            (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
+            
+            /*Change in mode, call for renegotiation*/
+            gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS;
+            gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
+
+            gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
+            break;
+        }
+    }
 	/* Load Extended Sink Capabilities */
     pasCfgStatusData->sPerPortData[PORT0].u8aSinkCapsExtd[INDEX_0] = \
                             LOBYTE(CFG_PORT_0_SINK_CAPS_EXTD_VID); 

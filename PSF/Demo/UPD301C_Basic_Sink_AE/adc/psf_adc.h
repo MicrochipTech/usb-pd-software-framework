@@ -13,6 +13,7 @@ extern "C" {
  
 void PSF_ADCRun(void);
 UINT8 Get_ADCPosition(void);
+void PSF_SinkSelectMode(void);
 
 typedef enum
 {
