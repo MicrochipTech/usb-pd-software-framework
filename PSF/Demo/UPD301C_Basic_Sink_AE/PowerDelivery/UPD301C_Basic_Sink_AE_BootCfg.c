@@ -141,10 +141,10 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE_A)| \
             (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
             
-            /*Change in mode, call for renegotiation*/
-            gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS;
-            gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
+           /*Selects PDOs according to the mode selected*/
+            PSF_SinkSelectMode();
 
+            /*5V default negotiation required?*/
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
             gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
             break;
@@ -156,10 +156,10 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
             gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE_B)| \
             (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
             
-            /*Change in mode, call for renegotiation*/
-            gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS;
-            gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
+            /*Selects PDOs according to the mode selected*/
+            PSF_SinkSelectMode();
 
+            /*5V default negotiation required?*/
             gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
             gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 1;
             break;

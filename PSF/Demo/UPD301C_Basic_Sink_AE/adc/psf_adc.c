@@ -201,12 +201,10 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE_A)| \
                 (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
                 
-                /*Change in mode, call for renegotiation*/
-                gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS;
-                gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
-                DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> MODE A, MON");
+                /*Selects PDOs according to the mode selected*/
+                PSF_SinkSelectMode();
 
-
+                /*5V default negotiation required?*/
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 1;
                 gu8CurrentPos = 5;
@@ -221,12 +219,10 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE_B) | \
                 (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
                 
-                /*Change in mode, call for renegotiation*/
-                gasCfgStatusData.sPerPortData[PORT0].u32CfgData |= DPM_CFG_NEGOTIATE_USING_NEW_PDOS;
-                gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
-                DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> MODE B, MON");
+                /*Selects PDOs according to the mode selected*/
+                PSF_SinkSelectMode();
 
-                
+                /*5V default negotiation required?*/
                 gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 1;
                 gu8CurrentPos = 6;
