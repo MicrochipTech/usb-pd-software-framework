@@ -145,7 +145,7 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
         {
-            DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> PD_contract_negotiate");
+            DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> PD_contract_negotiated");
             gu8PDContract = true;
             break; 
         }
