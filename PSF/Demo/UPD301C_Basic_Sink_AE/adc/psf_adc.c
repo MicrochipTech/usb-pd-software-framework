@@ -87,7 +87,7 @@ void PSF_SinkSelectMode()
     u8SourcePDOIndex = u8SrcPower[DPM_PDO_WITH_MAX_PWR][DPM_PDO_INDEX];
     /* Storing Source PDO which has maximum power*/
     u32RcvdSrcPDO = gasCfgStatusData.sPerPortData[PORT0].u32aPartnerSourcePDO[u8SourcePDOIndex];
-    for (u8SinkIndex = gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt; u8SinkIndex > SET_TO_ZERO; u8SinkIndex--)
+    for (u8SinkIndex = SET_TO_ZERO; u8SinkIndex < gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt; u8SinkIndex++)
     {
         /* Comparing whether any of Sink power is less than or 
          * equal to maximum Source power*/
@@ -194,6 +194,11 @@ void PSF_ADCRun()
             else if (u32input_voltage < 2200U) 
             {
                 /*Position 5*/
+                gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+                gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+                gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+                gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
+                gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 4;
                 /*Operates in Sink Mode A*/
                 /* BIT[1:0] - Sink Selection mode for operation.
                 1. '0x00' Mode A: Prefer Higher Voltage and Wattage
@@ -205,13 +210,19 @@ void PSF_ADCRun()
                 PSF_SinkSelectMode();
 
                 /*5V default negotiation required?*/
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
-                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 1;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
+                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 2;
                 gu8CurrentPos = 5;
             } 
             else if (u32input_voltage < 2600U) 
             {
                 /*Position 6*/
+                gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+                gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
+                gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
+                gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
+                gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 4;
                 /*Operates in Sink Mode B*/
                 /* BIT[1:0] - Sink Selection mode for operation.
                 1. '0x00' Mode A: Prefer Higher Voltage and Wattage
@@ -223,8 +234,9 @@ void PSF_ADCRun()
                 PSF_SinkSelectMode();
 
                 /*5V default negotiation required?*/
-                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
-                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 1;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
+                gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO[1] = CFG_FORM_FIXED_PDOx(gasCfgStatusData.sPerPortData[PORT0].u16NegoVoltageInmV, gasCfgStatusData.sPerPortData[PORT0].u16NegoCurrentInmA);
+                gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 2;
                 gu8CurrentPos = 6;
             } 
 
