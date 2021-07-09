@@ -194,12 +194,13 @@ void PSF_ADCRun()
             else if (u32input_voltage < 2200U) 
             {
                 /*Position 5*/
+                /*Operates in Sink Mode A*/
+                /*Resetting sink PDOs for sink to negotiate appropriate PDO in Mode A*/
                 gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
                 gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
                 gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
                 gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
                 gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 4;
-                /*Operates in Sink Mode A*/
                 /* BIT[1:0] - Sink Selection mode for operation.
                 1. '0x00' Mode A: Prefer Higher Voltage and Wattage
                 2. '0x01' Mode B: Prefer Lower Voltage and Wattage */
@@ -218,12 +219,13 @@ void PSF_ADCRun()
             else if (u32input_voltage < 2600U) 
             {
                 /*Position 6*/
+                /*Operates in Sink Mode B*/
+                /*Resetting sink PDOs for sink to negotiate appropriate PDO in Mode B*/
                 gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[0] = CFG_PORT_0_SINK_PDO_1;
                 gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[1] = CFG_PORT_0_SINK_PDO_2;
                 gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[2] = CFG_PORT_0_SINK_PDO_3;
                 gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO[3] = CFG_PORT_0_SINK_PDO_4;
                 gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt = 4;
-                /*Operates in Sink Mode B*/
                 /* BIT[1:0] - Sink Selection mode for operation.
                 1. '0x00' Mode A: Prefer Higher Voltage and Wattage
                 2. '0x01' Mode B: Prefer Lower Voltage and Wattage */
