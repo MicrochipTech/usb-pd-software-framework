@@ -562,23 +562,23 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"***************TYPEC CC1 ATTACH***********\r\n");
-            /* Update Attached and Orientation connection status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
-                                                ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS);            
-            /* Assert Orientation LED */
-            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
+            /* Update Orientation connection status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
+                            (DPM_PORT_ATTACHED_STATUS | DPM_PORT_ORIENTATION_FLIPPED_STATUS);            
+            /* De-assert Orientation LED */
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
             DEBUG_PRINT_PORT_STR (u8PortNum,"***************TYPEC CC2 ATTACH***********\r\n");
-            /* Update Orientation connection status */
-            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
-                            (DPM_PORT_ATTACHED_STATUS | DPM_PORT_ORIENTATION_FLIPPED_STATUS);                        
+            /* Update Attached and Orientation connection status */
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
+            gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
+                                                ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS);                        
 
-            /* De-assert Orientation LED */
-            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);           
+            /* Assert Orientation LED */
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
             break;
         }
 #if (TRUE == INCLUDE_PD_SINK)        
