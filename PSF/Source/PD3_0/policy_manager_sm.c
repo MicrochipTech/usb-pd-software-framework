@@ -566,8 +566,8 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
                                                 ~(DPM_PORT_ORIENTATION_FLIPPED_STATUS);            
-            /* Assert Orientation LED */
-            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_ASSERT);     
+            /* DeAssert Orientation LED */
+            MCHP_PSF_HOOK_GPIO_FUNC_DRIVE(u8PortNum, eORIENTATION_FUNC, eGPIO_DEASSERT);     
             break;
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
