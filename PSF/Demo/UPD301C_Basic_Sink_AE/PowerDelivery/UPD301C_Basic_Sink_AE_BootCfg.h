@@ -108,7 +108,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                                     CFG_PORT_0_SINK_HIGHER_CAPABILITY, \
                                     CFG_PORT_0_DUAL_ROLE_POWER);
 #define CFG_PORT_0_SINK_PDO_2     CFG_FORM_FIXED_PDOx(9000U,3000U)    
-#define CFG_PORT_0_SINK_PDO_3     CFG_FORM_FIXED_PDOx(15000U,1800U)   
+#define CFG_PORT_0_SINK_PDO_3     CFG_FORM_FIXED_PDOx(15000U,3000U)   
 #define CFG_PORT_0_SINK_PDO_4     CFG_FORM_FIXED_PDOx(20000U,3000U)
 #define CFG_PORT_0_SINK_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
 #define CFG_PORT_0_SINK_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
@@ -117,8 +117,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /********************************Sink Specific Configuration********************************/
 /*u8SinkConfigSel configuration*/
 /*Sink Mode A - 0x00, Mode B - 0x01*/
-#define CFG_PORT_0_SINK_MODE_A            0x00
-#define CFG_PORT_0_SINK_MODE_B            BIT(0)
+#define CFG_PORT_0_SINK_MODE            0x00
 
 /*Sink Give Back Flag - 0 - Disabled, 1 - Enabled*/
 #define CFG_PORT_0_SINK_GIVE_BACK_FLAG      (0U << 2)
