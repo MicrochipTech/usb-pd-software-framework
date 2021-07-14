@@ -50,8 +50,8 @@
 #include <stdbool.h>
 #include <PSF_Config.h>
 #include "peripheral/nvmctrl/plib_nvmctrl.h"
-#include "peripheral/sercom/usart/plib_sercom1_usart.h"
 #include "peripheral/evsys/plib_evsys.h"
+#include "peripheral/sercom/usart/plib_sercom1_usart.h"
 #include "peripheral/sercom/spim/plib_sercom0_spi.h"
 #include "peripheral/port/plib_port.h"
 #include "peripheral/clock/plib_clock.h"

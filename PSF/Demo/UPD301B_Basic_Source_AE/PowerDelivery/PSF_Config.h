@@ -41,7 +41,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _PSF_CONFIG_H_
 #define _PSF_CONFIG_H_
 
-#include "generic_defs.h"
+#include <generic_defs.h>
+
 //DOM-IGNORE-END
 
 // *****************************************************************************
@@ -205,7 +206,7 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL         1
+#define INCLUDE_POWER_MANAGEMENT_CTRL         0
 
 /**************************************************************************
 Summary:
@@ -224,154 +225,6 @@ Example:
     </code>                                                                        
  ***************************************************************************/
 #define INCLUDE_PDFU                  0
-
-/**************************************************************************************************
-Summary:
-    Power Balancing support code inclusion.
-Description:
-    Setting the INCLUDE_POWER_BALANCING as 1 enables PSF to include the PD 
-    Power Balancing functionality at the compile time. Users can set this define to 0
-    to reduce code size if none of the PD enabled Source ports in the system 
-    require Power Balancing functionality.
-Remarks: 
-    Default value is 1 for Source application. INCLUDE_PD_SOURCE should be set to 1 as a
-    prerequisite when INCLUDE_POWER_BALANCING is set to 1.
-Example:
-    <code>
-    #define INCLUDE_POWER_BALANCING	1(Include Power Balancing functionality in PSF)
-    #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_POWER_BALANCING  		0
-
-/**************************************************************************************************
-Summary:
-    Power Throttling support code inclusion.
-Description:
-    Setting the INCLUDE_POWER_THROTTLING as 1 enables PSF to include the 
-    Power Throttling(PT) feature at the compile time. Users can set this define to 0
-    to reduce code size if none of the Source ports in the system 
-    require PT functionality.
-Remarks: 
-    Default value is 1 for Source application. INCLUDE_PD_SOURCE should be set to 1 as a prerequisite
-    when INCLUDE_POWER_THROTTLING is set to 1. 
-Example:
-    <code>
-    #define INCLUDE_POWER_THROTTLING	1(Include PT functionality in PSF)
-    #define INCLUDE_POWER_THROTTLING	0(Exclude PT functionality from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_POWER_THROTTLING        0
-
-/**************************************************************************************************
-Summary:
-    Source PPS support code inclusion.
-Description:
-    Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Source Programmable 
-    Power Supply(PPS) feature at the compile time. Users can set this define to 0
-    to reduce code size if none of the Source ports in the system 
-    require PPS functionality.
-Remarks: 
-    Default value is 1 for Source application. INCLUDE_PD_SOURCE and INCLUDE_PD_3_0 should be set
-    to 1 as a prerequisite when INCLUDE_PD_SOURCE_PPS is set to 1. 
-Example:
-    <code>
-    #define INCLUDE_PD_SOURCE_PPS	1(Include Source PPS functionality in PSF)
-    #define INCLUDE_PD_SOURCE_PPS	0(Exclude Source PPS functionality from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_PD_SOURCE_PPS           0
-
-/**************************************************************************************************
-Summary:
-    Data Role Swap support code inclusion.
-Description:
-    Setting the INCLUDE_PD_DR_SWAP as 1 enables PSF to include the Data Role 
-    Swap (DR_SWAP) feature at the compile time. Users can set this define to 0
-    to reduce code size if none of the ports in the system require DR_SWAP
-    functionality.
-Remarks: 
-    Default value is 1. Users can configure it based on the
-    application.
-Example:
-    <code>
-    #define INCLUDE_PD_DR_SWAP	1(Include DR_SWAP functionality in PSF)
-    #define INCLUDE_PD_DR_SWAP	0(Exclude DR_SWAP functionality from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_PD_DR_SWAP           0
-
-/**************************************************************************************************
-Summary:
-    Power Role Swap support code inclusion.
-Description:
-    Setting the INCLUDE_PD_PR_SWAP as 1 enables PSF to include the Power Role 
-    Swap (PR_SWAP) feature at the compile time. PR_Swap is applicable only for the ports that
-    are configured for DRP operation. Users can set this define to 0 to reduce the code size
-    if none of the DRP ports in the system require Power Role Swap functionality.
-Remarks: 
-    Default value is 1 for DRP application. INCLUDE_PD_DRP should be set to 1 as a prerequisite
-    when INCLUDE_PD_PR_SWAP is set to 1. 
-Example:
-    <code>
-    #define INCLUDE_PD_PR_SWAP	1(Include PR_SWAP functionality in PSF)
-    #define INCLUDE_PD_PR_SWAP	0(Exclude PR_SWAP functionality from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_PD_PR_SWAP      0
-
-/**************************************************************************************************
-Summary:
-    Vendor Defined Message support code inclusion.
-Description:
-    Setting the INCLUDE_PD_VDM as 1 enables PSF to include the Structured Vendor Defined 
-    Message(VDM) feature at the compile time. Users can set this define to 0 to reduce the code size
-    if none of the ports in the system require Structured VDM support.
-Remarks: 
-    Default value is 1. 
-Example:
-    <code>
-    #define INCLUDE_PD_VDM	1(Include Structured VDM support in PSF)
-    #define INCLUDE_PD_VDM	0(Exclude Structured VDM support from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_PD_VDM             0
-
-/**************************************************************************************************
-Summary:
-    Alternate Mode support code inclusion.
-Description:
-    Setting the INCLUDE_PD_ALT_MODE as 1 enables PSF to include the Alternate Mode 
-    feature at the compile time. Users can set this define to 0 to reduce the code size
-    if none of the ports in the system require Alternate Mode support.
-Remarks: 
-    Default value is 1. INCLUDE_PD_VDM should be set to 1 as a prerequisite when
-    INCLUDE_PD_ALT_MODE is set to 1. 
-Example:
-    <code>
-    #define INCLUDE_PD_ALT_MODE	1(Include Alternate Mode support in PSF)
-    #define INCLUDE_PD_ALT_MODE	0(Exclude Alternate Mode support from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_PD_ALT_MODE             0
-
-/**************************************************************************************************
-Summary:
-    Hot Plug Detect support code inclusion.
-Description:
-    Setting the INCLUDE_UPD_HPD as 1 enables PSF to include the Hot Plug Detect(HPD) feature 
-    at the compile time. Users can set this define to 0 to reduce the code size
-    if none of the ports in the system require HPD support.
-Remarks: 
-    Default value is 1. INCLUDE_PD_ALT_MODE should be set to 1 as a prerequisite when
-    INCLUDE_UPD_HPD is set to 1.    
-Example:
-    <code>
-    #define INCLUDE_UPD_HPD	1(Include Hot Plug Detect support in PSF)
-    #define INCLUDE_UPD_HPD	0(Exclude Hot Plug Detect support from PSF)
-    </code>
-**************************************************************************************************/
-#define INCLUDE_UPD_HPD             0
 /**************************************************************************************************
 Summary:
     Fast Role Swap support code inclusion.
@@ -391,6 +244,154 @@ Example:
     </code>
 **************************************************************************************************/
 #define INCLUDE_PD_FR_SWAP      0
+/**************************************************************************************************
+Summary:
+    Power Balancing support code inclusion.
+Description:
+    Setting the INCLUDE_POWER_BALANCING as 1 enables PSF to include the PD 
+    Power Balancing functionality at the compile time. Users can set this define to 0
+    to reduce code size if none of the PD enabled Source ports in the system 
+    require Power Balancing functionality.
+Remarks: 
+    Recommended default value is 1 for Source application. For INCLUDE_POWER_BALANCING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_POWER_BALANCING	1(Include Power Balancing functionality in PSF)
+    #define INCLUDE_POWER_BALANCING	0(Exclude Power Balancing functionality from PSF)
+    </code>
+**************************************************************************************************/
+
+#define INCLUDE_POWER_BALANCING  		0
+
+/**************************************************************************************************
+Summary:
+    Power Throttling support code inclusion.
+Description:
+    Setting the INCLUDE_POWER_THROTTLING as 1 enables PSF to include the 
+    Power Throttling(PT) feature at the compile time. Users can set this define to 0
+    to reduce code size if none of the Source ports in the system 
+    require PT functionality.
+Remarks: 
+    Recommended default value is 1 for Source application. For INCLUDE_POWER_THROTTLING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_POWER_THROTTLING	1(Include PT functionality in PSF)
+    #define INCLUDE_POWER_THROTTLING	0(Exclude PT functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_POWER_THROTTLING        0
+
+/**************************************************************************************************
+Summary:
+    Source PPS support code inclusion.
+Description:
+    Setting the INCLUDE_PD_SOURCE_PPS as 1 enables PSF to include the Source Programmable 
+    Power Supply(PPS) feature at the compile time. Users can set this define to 0
+    to reduce code size if none of the Source ports in the system 
+    require PPS functionality.
+Remarks: 
+    Recommended default value is 1 for Source application. For INCLUDE_PD_SOURCE_PPS to be 1, 
+    INCLUDE_PD_SOURCE and INCLUDE_PD_3_0 shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_SOURCE_PPS	1(Include Source PPS functionality in PSF)
+    #define INCLUDE_PD_SOURCE_PPS	0(Exclude Source PPS functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_SOURCE_PPS       0
+
+/**************************************************************************************************
+Summary:
+    DR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_DR_SWAP as 1 enables PSF to include the Data Role 
+    Swap (DR_SWAP) feature at the compile time. Users can set this define to 0
+    to reduce code size if none of the ports in the system require DR_SWAP
+    functionality.
+Remarks: 
+    Recommended default value is 1. Users can configure it based on the
+    application.
+Example:
+    <code>
+    #define INCLUDE_PD_DR_SWAP	1(Include DR_SWAP functionality in PSF)
+    #define INCLUDE_PD_DR_SWAP	0(Exclude DR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_DR_SWAP           0
+
+/**************************************************************************************************
+Summary:
+    PR_SWAP support code inclusion.
+Description:
+    Setting the INCLUDE_PD_PR_SWAP as 1 enables PSF to include the Power Role 
+    Swap (PR_SWAP) feature at the compile time. PR_Swap is applicable only for the ports that
+    are configured for DRP operation. Users can set this define to 0 to reduce the code size
+    if none of the DRP ports in the system require Power Role Swap functionality.
+Remarks: 
+    Recommended default value is 1 for DRP application. For INCLUDE_PD_PR_SWAP to be 1, 
+    INCLUDE_PD_DRP shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_PR_SWAP	1(Include PR_SWAP functionality in PSF)
+    #define INCLUDE_PD_PR_SWAP	0(Exclude PR_SWAP functionality from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_PR_SWAP      0
+
+/**************************************************************************************************
+Summary:
+    Vendor Defined Message support code inclusion.
+Description:
+    Setting the INCLUDE_PD_VDM as 1 enables PSF to include the Structured Vendor Defined 
+    Message(VDM) feature at the compile time. Users can set this define to 0 to reduce the code size
+    if none of the ports in the system require Structured VDM support.
+Remarks: 
+    Recommended default value is 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_VDM	1(Include Structured VDM support in PSF)
+    #define INCLUDE_PD_VDM	0(Exclude Structured VDM support from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_VDM             0
+
+/**************************************************************************************************
+Summary:
+    Alternate Mode support code inclusion.
+Description:
+    Setting the INCLUDE_PD_ALT_MODE as 1 enables PSF to include the Alternate Mode 
+    feature at the compile time. Users can set this define to 0 to reduce the code size
+    if none of the ports in the system require Alternate Mode support.
+Remarks: 
+    Recommended default value is 1. For INCLUDE_PD_ALT_MODE to be 1,
+    INCLUDE_PD_VDM shall be set to 1. 
+Example:
+    <code>
+    #define INCLUDE_PD_ALT_MODE	1(Include Alternate Mode support in PSF)
+    #define INCLUDE_PD_ALT_MODE	0(Exclude Alternate Mode support from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_PD_ALT_MODE             0
+
+/**************************************************************************************************
+Summary:
+    Hot Plug Detect support code inclusion.
+Description:
+    Setting the INCLUDE_UPD_HPD as 1 enables PSF to include the Hot Plug Detect(HPD) feature 
+    at the compile time. Users can set this define to 0 to reduce the code size
+    if none of the ports in the system require HPD support.
+Remarks: 
+    Recommended default value is 1. 
+    For INCLUDE_UPD_HPD to be set to 1, INCLUDE_PD_ALT_MODE shall also be set to 1.
+Example:
+    <code>
+    #define INCLUDE_UPD_HPD	1(Include Hot Plug Detect support in PSF)
+    #define INCLUDE_UPD_HPD	0(Exclude Hot Plug Detect support from PSF)
+    </code>
+**************************************************************************************************/
+#define INCLUDE_UPD_HPD             0
 
 // *****************************************************************************
 // *****************************************************************************
@@ -453,7 +454,7 @@ Example:
     #define CONFIG_PD_PORT_COUNT        2 (Number of PD ports enabled in PSF Stack is 2)
     </code>
 **********************************************************************/
-#define CONFIG_PD_PORT_COUNT            1   
+#define CONFIG_PD_PORT_COUNT            1
 
 /**************************************************************************
 Summary:

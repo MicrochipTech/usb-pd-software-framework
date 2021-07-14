@@ -238,7 +238,7 @@ bool SERCOM0_SPI_TransferSetup(SPI_TRANSFER_SETUP *setup, uint32_t spiSourceCloc
     to store 9 bits of data.
 
   Returns:
-    true - If configured for Non-interrupt mode, the function has recevied and
+    true - If configured for Non-interrupt mode, the function has received and
     transmitted the requested number of bytes. If configured for Interrupt mode,
     the request was accepted successfully and will be processed in the
     interrupt.
@@ -317,7 +317,7 @@ bool SERCOM0_SPI_WriteRead (void* pTransmitData, size_t txSize, void* pReceiveDa
     When "Interrupt Mode" option is selected in MHC, the function will be
     non-blocking in nature.  The function returns immediately. The data transfer
     process continues in the peripheral interrupt.  The application specified
-    transmit buffer  is ownerd by the library until the data transfer is
+    transmit buffer  is owned by the library until the data transfer is
     complete and should not be modified by the application till the transfer is
     complete.  Only one transfer is allowed at any time. The application can use
     a callback function or a polling function to check for completion of the
