@@ -80,8 +80,8 @@ void EIC_Initialize(void)
     /* Interrupt sense type and filter control for EXTINT channels 0 to 7 */
     EIC_REGS->EIC_CONFIG[0] = EIC_CONFIG_SENSE0_NONE  |
                               EIC_CONFIG_SENSE1_NONE  |
-                              EIC_CONFIG_SENSE2_NONE  |
-                              EIC_CONFIG_SENSE3_NONE  |
+                              EIC_CONFIG_SENSE2_FALL  |
+                              EIC_CONFIG_SENSE3_FALL  |
                               EIC_CONFIG_SENSE4_NONE  |
                               EIC_CONFIG_SENSE5_NONE  |
                               EIC_CONFIG_SENSE6_NONE  |
@@ -98,17 +98,19 @@ void EIC_Initialize(void)
                               EIC_CONFIG_SENSE7_LOW | EIC_CONFIG_FILTEN7_Msk;
 
     /* External Interrupt Asynchronous Mode enable */
-    EIC_REGS->EIC_WAKEUP = 0xc000;
+    EIC_REGS->EIC_WAKEUP = 0xc00c;
 
-    //Interrupts will be enabled as part of PSF_stack
-    /* External Interrupt enable*/
-    //EIC_REGS->EIC_INTENSET = 0xc000;
+  
+    /* External Interrupt enable for DC_DC_Alert0 and DC_DC_Alert1*/
+    EIC_REGS->EIC_INTENSET = 0xc;
+   // EIC_REGS->EIC_INTENSET = 0xc00;
+   
 
     /* Callbacks for enabled interrupts */
     eicCallbackObject[0].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[1].eicPinNo = EIC_PIN_MAX;
-    eicCallbackObject[2].eicPinNo = EIC_PIN_MAX;
-    eicCallbackObject[3].eicPinNo = EIC_PIN_MAX;
+    eicCallbackObject[2].eicPinNo = EIC_PIN_2;
+    eicCallbackObject[3].eicPinNo = EIC_PIN_3;
     eicCallbackObject[4].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[5].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[6].eicPinNo = EIC_PIN_MAX;
@@ -131,12 +133,12 @@ void EIC_Initialize(void)
     }
 }
 
-void EIC_InterruptEnable(EIC_PIN pin)
+void EIC_InterruptEnable (EIC_PIN pin)
 {
     EIC_REGS->EIC_INTENSET = (1UL << pin);
 }
 
-void EIC_InterruptDisable(EIC_PIN pin)
+void EIC_InterruptDisable (EIC_PIN pin)
 {
     EIC_REGS->EIC_INTENCLR = (1UL << pin);
 }

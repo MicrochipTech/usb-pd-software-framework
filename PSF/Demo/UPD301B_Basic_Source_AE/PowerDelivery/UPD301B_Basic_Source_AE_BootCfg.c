@@ -23,11 +23,18 @@
 #include <PSF_Config.h>
 #include <string.h>
 
+/*******************************************************************/
+/******************* Global variables********************************/
+/*******************************************************************/
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 // Section: Local Functions                                                   */
 /* ************************************************************************** */
 /* ************************************************************************** */
+
+
+
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -51,16 +58,16 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
         u8Length++;
     }
 
-    /*Per port configuration for Port 0*/    
+    /*Per port configuration for the Port*/    
     pasCfgStatusData->sPerPortData[PORT0].u32CfgData =       
-        ((CFG_PORT_VCONN_OCS_ENABLE) | (CFG_PORT_ENABLE) | (CFG_PORT_RP_CURRENT_VALUE)| \
-        (CFG_PORT_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_POWER_ROLE));
+        ((CFG_PORT_0_VCONN_OCS_ENABLE) | (CFG_PORT_0_ENABLE) | (CFG_PORT_0_RP_CURRENT_VALUE)| \
+        (CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT) | (CFG_PORT_0_POWER_ROLE));
+    
+    pasCfgStatusData->sPerPortData[PORT0].u8Pio_FAULT_IN = (UINT8)CFG_PORT_0_UPD_FAULT_IN_PIO_NO;
+    pasCfgStatusData->sPerPortData[PORT0].u8Mode_FAULT_IN = (UINT8)CFG_PORT_0_UPD_FAULT_IN_MODE;
+    pasCfgStatusData->sPerPortData[PORT0].u8Pio_EN_VBUS = (UINT8)CFG_PORT_0_UPD_EN_VBUS;
+    pasCfgStatusData->sPerPortData[PORT0].u8Mode_EN_VBUS = (UINT8)CFG_PORT_0_UPD_EN_VBUS_PIO_MODE;
 
-    pasCfgStatusData->sPerPortData[PORT0].u8Pio_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_PIO_NO;
-    pasCfgStatusData->sPerPortData[PORT0].u8Mode_FAULT_IN = (UINT8)CFG_PORT_UPD_FAULT_IN_MODE;
-    pasCfgStatusData->sPerPortData[PORT0].u8Pio_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS;
-    pasCfgStatusData->sPerPortData[PORT0].u8Mode_EN_VBUS = (UINT8)CFG_PORT_UPD_EN_VBUS_PIO_MODE;
-     
     pasCfgStatusData->sPerPortData[PORT0].u8OCSThresholdPercentage = SET_TO_ZERO;
     pasCfgStatusData->sPerPortData[PORT0].u8OVThresholdPercentage = CFG_OVER_VOLTAGE_FACTOR;
     pasCfgStatusData->sPerPortData[PORT0].u8UVThresholdPercentage = CFG_UNDER_VOLTAGE_FACTOR;
@@ -69,24 +76,24 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     pasCfgStatusData->sPerPortData[PORT0].u8VBUSMaxFaultCnt = CFG_MAX_VBUS_POWER_FAULT_COUNT;
     pasCfgStatusData->sPerPortData[PORT0].u8VCONNMaxFaultCnt = CFG_MAX_VCONN_FAULT_COUNT;
     pasCfgStatusData->sPerPortData[PORT0].u16PowerGoodTimerInms = MILLISECONDS_TO_TICKS(CFG_POWER_GOOD_TIMER_MS);
-    pasCfgStatusData->sPerPortData[PORT0].u16MaxSrcPrtCurrentIn10mA = CFG_MAX_PORT_CURRENT_IN_10mA;
-   
-    pasCfgStatusData->sPerPortData[PORT0].u8SourcePDOCnt = CFG_PORT_SOURCE_NUM_OF_PDOS;  
+    pasCfgStatusData->sPerPortData[PORT0].u16MaxSrcPrtCurrentIn10mA = CFG_MAX_PORT_CURRENT_IN_10mA;      
+	
+	pasCfgStatusData->sPerPortData[PORT0].u8SourcePDOCnt = CFG_PORT_0_SOURCE_NUM_OF_PDOS;  
     
     /*PDOs update*/
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_0] = CFG_PORT_SOURCE_PDO_1;   
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_1] = CFG_PORT_SOURCE_PDO_2;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_2] = CFG_PORT_SOURCE_PDO_3;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_3] = CFG_PORT_SOURCE_PDO_4;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_4] = CFG_PORT_SOURCE_PDO_5;
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_5] = CFG_PORT_SOURCE_PDO_6;               
-    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_6] = CFG_PORT_SOURCE_PDO_7;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_0] = CFG_PORT_0_SOURCE_PDO_1;   
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_1] = CFG_PORT_0_SOURCE_PDO_2;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_2] = CFG_PORT_0_SOURCE_PDO_3;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_3] = CFG_PORT_0_SOURCE_PDO_4;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_4] = CFG_PORT_0_SOURCE_PDO_5;
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_5] = CFG_PORT_0_SOURCE_PDO_6;               
+    pasCfgStatusData->sPerPortData[PORT0].u32aSourcePDO[INDEX_6] = CFG_PORT_0_SOURCE_PDO_7;
     
-    pasCfgStatusData->sPerPortData[PORT0].u16FeatureSelect = (CFG_PORT_ENABLE_VDM_SUPPORT | \
-                                            CFG_PORT_ENABLE_AME_MONITORING);
+    pasCfgStatusData->sPerPortData[PORT0].u16FeatureSelect = (CFG_PORT_0_ENABLE_VDM_SUPPORT | \
+                                            CFG_PORT_0_ENABLE_AME_MONITORING);
     
-    /*Configure role swap policy for Port 0 */
-    pasCfgStatusData->sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_ROLE_SWAP_POLICY;
+    /*Configure role swap policy for the Port*/
+    pasCfgStatusData->sPerPortData[PORT0].u16SwapPolicy = CFG_PORT_0_ROLE_SWAP_POLICY;
     
     #if (TRUE == INCLUDE_PD_VDM)
     /* PD Identity Configuration for Port 0 */
@@ -119,7 +126,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     
 #if(TRUE == INCLUDE_UPD_HPD)
     pasCfgStatusData->sPerPortData[PORT0].u8PIO_HPD = CFG_PORT_0_HPD_IO;
-#endif
+#endif	
 
 
 }

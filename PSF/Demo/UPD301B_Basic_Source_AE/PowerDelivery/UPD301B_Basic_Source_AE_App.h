@@ -33,6 +33,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef _UPD301B_BASIC_SOURCE_AE_APP_H
 #define _UPD301B_BASIC_SOURCE_AE_APP_H
 
+/* Defines major and minor version of PSF Source Pro Application*/
+#define APP_REV_MAJOR	0x01
+#define APP_REV_MINOR	0x11
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: Included Files                                                    */
@@ -40,15 +44,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 #include <PSF_APIHook.h>
 #include "psf_stdinc.h"
-
-/* ************************************************************************** */
-/* ************************************************************************** */
-/* Section: Defines and constants                                                   */
-/* ************************************************************************** */
-/* ************************************************************************** */
-/* Defines major and minor version of PSF Source Lite Application*/
-#define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x11
 
 #define APP_VOLTAGE_0mV         0
 #define APP_VOLTAGE_5000mV      5000

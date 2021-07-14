@@ -45,8 +45,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
-#include "psf_stdinc.h"                 // PSF include file
-
+#include "psf_stdinc.h"
 // *****************************************************************************
 // *****************************************************************************
 // Section: Main Entry Point

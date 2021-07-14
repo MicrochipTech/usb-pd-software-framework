@@ -49,22 +49,22 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /***********************************Port Specific configuration***********************/    
 /*Configuration value for u32CfgData*/
 /*Power Role values 0 - Sink, 1- Source, 2- DRP*/
-#define CFG_PORT_POWER_ROLE                1U
+#define CFG_PORT_0_POWER_ROLE                1
 /*Data Role supported values 0-Dual Role Data Not supported, 1- Dual Role Date Supported */
-#define CFG_PORT_DUAL_ROLE_DATA_SUPPORT    (0U << 2)
+#define CFG_PORT_0_DUAL_ROLE_DATA_SUPPORT    (0U << 2)
 /*Rp Value - 0 -Rd(Sink), 1-Default USB Rp, 2- 1.5A Rp, 3-3.0A Rp */
-#define CFG_PORT_RP_CURRENT_VALUE          (3U << 3)
+#define CFG_PORT_0_RP_CURRENT_VALUE          (3U << 3)
 /*Port Enable - 0- Port Disable; 1- Port Enable*/
-#define CFG_PORT_ENABLE                    (1U << 5)
+#define CFG_PORT_0_ENABLE       (1U << 5)
 /*VCONN OCS Enable - 0- Disable, 1-Enable*/
-#define CFG_PORT_VCONN_OCS_ENABLE     (1U << 9)
+#define CFG_PORT_0_VCONN_OCS_ENABLE     (1U << 9)
 
 
 /********************************PIO Specific configuration******************************/
-#define CFG_PORT_UPD_FAULT_IN_PIO_NO       eUPD_PIO9    
-#define CFG_PORT_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
-#define CFG_PORT_UPD_EN_VBUS               eUPD_PIO3
-#define CFG_PORT_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
+#define CFG_PORT_0_UPD_FAULT_IN_PIO_NO       eUPD_PIO9
+#define CFG_PORT_0_UPD_FAULT_IN_MODE         eINPUT_ACTIVE_LOW
+#define CFG_PORT_0_UPD_EN_VBUS               eUPD_PIO3
+#define CFG_PORT_0_UPD_EN_VBUS_PIO_MODE      ePUSH_PULL_ACTIVE_HIGH
 /* Note: UPD PIO9 is shared between HPD and VSEL2 pin functionalities. 
    Hence, INCLUDE_UPD_HPD is disabled by default. If user application
    wishes to use HPD feature, then VSEL2 functionality has to be mapped
@@ -85,99 +85,121 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /**********************************************************************************/
 /********************************************************************************/
 /*Port PDO configuration*/
-#define CFG_PORT_DUAL_ROLE_POWER           0U 
-#define CFG_PORT_DUAL_ROLE_DATA            0U
-#define CFG_PORT_SOURCE_NUM_OF_PDOS        4U
-#define CFG_PORT_SOURCE_USB_SUSP           0U
-#define CFG_PORT_SOURCE_UNCONSTARINED_PWR  1U
-#define CFG_PORT_SOURCE_USB_COMM           0U
-#define CFG_PORT_SOURCE_PDO_1     CFG_FORM_SOURCE_FIXED_PDO1(5000U, 3000U,\
-                                  CFG_PORT_DUAL_ROLE_DATA, \
-                                  CFG_PORT_SOURCE_USB_COMM, \
-                                  CFG_PORT_SOURCE_USB_SUSP,  \
-                                  CFG_PORT_SOURCE_UNCONSTARINED_PWR, \
-                                  CFG_PORT_DUAL_ROLE_POWER);
-#define CFG_PORT_SOURCE_PDO_2     CFG_FORM_FIXED_PDOx(9000U, 3000U)    
-#define CFG_PORT_SOURCE_PDO_3     CFG_FORM_FIXED_PDOx(15000U, 3000U)   
-#define CFG_PORT_SOURCE_PDO_4     CFG_FORM_FIXED_PDOx(20000U, 3000U)
-#define CFG_PORT_SOURCE_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
-#define CFG_PORT_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
-#define CFG_PORT_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0) 
+#define CFG_PORT_0_DUAL_ROLE_POWER           0U 
+#define CFG_PORT_0_DUAL_ROLE_DATA            0U
+#define CFG_PORT_0_SOURCE_NUM_OF_PDOS        4U
+#define CFG_PORT_0_SOURCE_USB_SUSP           0U
+#define CFG_PORT_0_SOURCE_UNCONSTARINED_PWR  1U
+#define CFG_PORT_0_SOURCE_USB_COMM           0U
+#define CFG_PORT_0_SOURCE_PDO_1     CFG_FORM_SOURCE_FIXED_PDO1(5000U, 3000U,\
+                                  CFG_PORT_0_DUAL_ROLE_DATA, \
+                                  CFG_PORT_0_SOURCE_USB_COMM, \
+                                  CFG_PORT_0_SOURCE_USB_SUSP,  \
+                                  CFG_PORT_0_SOURCE_UNCONSTARINED_PWR, \
+                                  CFG_PORT_0_DUAL_ROLE_POWER);
+#define CFG_PORT_0_SOURCE_PDO_2     CFG_FORM_FIXED_PDOx(9000U, 3000U)    
+#define CFG_PORT_0_SOURCE_PDO_3     CFG_FORM_FIXED_PDOx(15000U, 3000U)   
+#define CFG_PORT_0_SOURCE_PDO_4     CFG_FORM_FIXED_PDOx(20000U, 3000U)
+#define CFG_PORT_0_SOURCE_PDO_5     CFG_FORM_FIXED_PDOx(0,0)   
+#define CFG_PORT_0_SOURCE_PDO_6     CFG_FORM_FIXED_PDOx(0,0)
+#define CFG_PORT_0_SOURCE_PDO_7     CFG_FORM_FIXED_PDOx(0,0) 
 
 /**************************Role Swap Policy defines*****************************/
-#define CFG_PORT_AS_DFP_REQUEST_DR_SWAP             0 
-#define CFG_PORT_AS_UFP_REQUEST_DR_SWAP             0
-#define CFG_PORT_AS_DFP_ACCEPT_DR_SWAP              0 
-#define CFG_PORT_AS_UFP_ACCEPT_DR_SWAP              0 
-#define CFG_PORT_AS_SRC_REQUEST_PR_SWAP             0
-#define CFG_PORT_AS_SNK_REQUEST_PR_SWAP             0
-#define CFG_PORT_AS_SRC_ACCEPT_PR_SWAP              0
-#define CFG_PORT_AS_SNK_ACCEPT_PR_SWAP              0
-#define CFG_PORT_AS_VCONN_SRC_REQ_VCONN_SWAP        0
-#define CFG_PORT_AS_NOT_VCONN_SRC_REQ_VCONN_SWAP    0
-#define CFG_PORT_AS_VCONN_SRC_ACCEPT_VCONN_SWAP     1
-#define CFG_PORT_AS_NOT_VCONN_SRC_ACCEPT_VCONN_SWAP 1
+#define CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP             0 
+#define CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP             0
+#define CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP              0 
+#define CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP              0 
+#define CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP             0
+#define CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP             0
+#define CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP              0
+#define CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP              0
+#define CFG_PORT_0_AS_VCONN_SRC_REQ_VCONN_SWAP        0
+#define CFG_PORT_0_AS_NOT_VCONN_SRC_REQ_VCONN_SWAP    0
+#define CFG_PORT_0_AS_VCONN_SRC_ACCEPT_VCONN_SWAP     1
+#define CFG_PORT_0_AS_NOT_VCONN_SRC_ACCEPT_VCONN_SWAP 1
+
+
+
+
 /*********************** Feature Select Defines *************************************/
-#define CFG_PORT_ENABLE_VDM_SUPPORT                 (0U << 1)
-#define CFG_PORT_ENABLE_AME_MONITORING              (0U << 2)
+#define CFG_PORT_0_ENABLE_VDM_SUPPORT                 (0U << 1)
+#define CFG_PORT_0_ENABLE_AME_MONITORING              (0U << 2)
 /* Note: VDM defines are set to 0 by default. Users shall input necessary
    data relevant to their application. Refer section 6.4.4.3.1 of USB
    Power Delivery Specification v3.0 for detailed information on
    Discover Identity */
 /******************* PD Identity Count Defines **************************/
-#define CFG_PORT_PD_IDENTITY_COUNT                   0U
+#define CFG_PORT_0_PD_IDENTITY_COUNT                   0U
 
 /**************** ID Header VDO Defines *********************************/
-#define CFG_PORT_ID_HEADER_VDO_USB_HOST_CAPABLE         0U
-#define CFG_PORT_ID_HEADER_VDO_USB_DEVICE_CAPABLE       0U
-#define CFG_PORT_ID_HEADER_VDO_PROD_TYPE_UFP            0U
-#define CFG_PORT_ID_HEADER_VDO_MODAL_OPR_SUPPORTED      0U
-#define CFG_PORT_ID_HEADER_VDO_PROD_TYPE_DFP            0U
-#define CFG_PORT_ID_HEADER_VDO_CONNECTOR_TYPE           0U
-#define CFG_PORT_ID_HEADER_VDO_USB_VENDOR_ID            0U 
+#define CFG_PORT_0_ID_HEADER_VDO_USB_HOST_CAPABLE         0U
+#define CFG_PORT_0_ID_HEADER_VDO_USB_DEVICE_CAPABLE       0U
+#define CFG_PORT_0_ID_HEADER_VDO_PROD_TYPE_UFP            0U
+#define CFG_PORT_0_ID_HEADER_VDO_MODAL_OPR_SUPPORTED      0U
+#define CFG_PORT_0_ID_HEADER_VDO_PROD_TYPE_DFP            0U
+#define CFG_PORT_0_ID_HEADER_VDO_CONNECTOR_TYPE           0U
+#define CFG_PORT_0_ID_HEADER_VDO_USB_VENDOR_ID            0U 
+
+
 /**************** Cert Stat VDO Defines *********************************/
-#define CFG_PORT_CERT_STAT_VDO_XID                  0U
+#define CFG_PORT_0_CERT_STAT_VDO_XID                  0U
 
 
 /******************* Product VDO Defines *********************************/
-#define CFG_PROD_VDO_USB_PRODUCT_ID            0U
-#define CFG_PROD_VDO_BCD_DEVICE                0U 
+#define CFG_PORT_0_PROD_VDO_USB_PRODUCT_ID            0U
+#define CFG_PORT_0_PROD_VDO_BCD_DEVICE                0U 
 
 /******************* Product Type VDO Defines ****************************/
                 /*************** UFP VDO 1 *************/
-#define CFG_PORT_UFP_VDO_1_UFP_VDO_VERSION          0U
-#define CFG_PORT_UFP_VDO_1_DEVICE_CAPABILITY        0U
-#define CFG_PORT_UFP_VDO_1_CONNECTOR_TYPE           0U
-#define CFG_PORT_UFP_VDO_1_ALTERNATE_MODES          0U
-#define CFG_PORT_UFP_VDO_1_USB_HIGHEST_SPEED        0U 
-               /*************** UFP VDO 2 *************/
-#define CFG_PORT_UFP_VDO_2_USB4_MIN_PWR             0U
-#define CFG_PORT_UFP_VDO_2_USB4_MAX_PWR             0U
-#define CFG_PORT_UFP_VDO_2_USB3_MIN_PWR             0U
-#define CFG_PORT_UFP_VDO_2_USB3_MAX_PWR             0U
+#define CFG_PORT_0_UFP_VDO_1_UFP_VDO_VERSION          0U
+#define CFG_PORT_0_UFP_VDO_1_DEVICE_CAPABILITY        0U
+#define CFG_PORT_0_UFP_VDO_1_CONNECTOR_TYPE           0U
+#define CFG_PORT_0_UFP_VDO_1_ALTERNATE_MODES          0U
+#define CFG_PORT_0_UFP_VDO_1_USB_HIGHEST_SPEED        0U 
+
+
+
+                /*************** UFP VDO 2 *************/
+#define CFG_PORT_0_UFP_VDO_2_USB4_MIN_PWR             0U
+#define CFG_PORT_0_UFP_VDO_2_USB4_MAX_PWR             0U
+#define CFG_PORT_0_UFP_VDO_2_USB3_MIN_PWR             0U
+#define CFG_PORT_0_UFP_VDO_2_USB3_MAX_PWR             0U
+
+
+
                 /*************** DFP VDO ***************/
-#define CFG_PORT_DFP_VDO_DFP_VDO_VERSION            0U
-#define CFG_PORT_DFP_VDO_DFP_HOST_CAPABILITY        0U
-#define CFG_PORT_DFP_VDO_DFP_CONNECTOR_TYPE         0U
-#define CFG_PORT_DFP_VDO_DFP_PORT_NUMBER            0U
+#define CFG_PORT_0_DFP_VDO_DFP_VDO_VERSION            0U
+#define CFG_PORT_0_DFP_VDO_DFP_HOST_CAPABILITY        0U
+#define CFG_PORT_0_DFP_VDO_DFP_CONNECTOR_TYPE         0U
+#define CFG_PORT_0_DFP_VDO_DFP_PORT_NUMBER            0U
+
+
+
 /*************************** SVID Defines ****************************/
                 /*************** SVIDs ***************/
-#define CFG_PORT_SVID_0                             0U
-#define CFG_PORT_SVID_1                             0U
+#define CFG_PORT_0_SVID_0                             0U
+#define CFG_PORT_0_SVID_1                             0U
                 /************* SVIDs Count ***********/
-#define CFG_PORT_SVID_COUNT                         0U
+#define CFG_PORT_0_SVID_COUNT                         0U
 /*************************** Mode Defines ****************************/
                 /*************** Modes ***************/
-#define CFG_PORT_SVID_0_MODE_0                      0U
-#define CFG_PORT_SVID_0_MODE_1                      0U
-#define CFG_PORT_SVID_1_MODE_0                      0U
-#define CFG_PORT_SVID_1_MODE_1                      0U
+#define CFG_PORT_0_SVID_0_MODE_0                      0U
+#define CFG_PORT_0_SVID_0_MODE_1                      0U
+#define CFG_PORT_0_SVID_1_MODE_0                      0U
+#define CFG_PORT_0_SVID_1_MODE_1                      0U
+
+
+
                 /*************** Modes Count ***************/
-#define CFG_PORT_SVID_0_MODES_COUNT                 0U
-#define CFG_PORT_SVID_1_MODES_COUNT                 0U
+#define CFG_PORT_0_SVID_0_MODES_COUNT                 0U
+#define CFG_PORT_0_SVID_1_MODES_COUNT                 0U
+
+
+
                 /************ Start Mode Index **************/
-#define CFG_PORT_SVID_0_START_MODE_INDEX            (0U << 3)
-#define CFG_PORT_SVID_1_START_MODE_INDEX            (0U << 3)
+#define CFG_PORT_0_SVID_0_START_MODE_INDEX            (0U << 3)
+#define CFG_PORT_0_SVID_1_START_MODE_INDEX            (0U << 3)
+
 /*****************Defines to form PDOs ****************************************/
 /* Macro used to form Fixed PDO 1 */
 /*Source PDO 
@@ -204,11 +226,11 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Macro used to form Fixed PDOs 2 to 7 */
 #define CFG_FORM_FIXED_PDOx(voltage,current)        ((((voltage)/50) << 10) | ((current)/10))
 /***********************Defines to form role swap policy************************/
-#define CFG_PORT_ROLE_SWAP_POLICY  CFG_FORM_ROLE_SWAP_POLICY(CFG_PORT_AS_DFP_REQUEST_DR_SWAP, \
- CFG_PORT_AS_UFP_REQUEST_DR_SWAP, CFG_PORT_AS_DFP_ACCEPT_DR_SWAP, CFG_PORT_AS_UFP_ACCEPT_DR_SWAP,\
- CFG_PORT_AS_SRC_REQUEST_PR_SWAP, CFG_PORT_AS_SNK_REQUEST_PR_SWAP, CFG_PORT_AS_SRC_ACCEPT_PR_SWAP,\
- CFG_PORT_AS_SNK_ACCEPT_PR_SWAP, CFG_PORT_AS_VCONN_SRC_REQ_VCONN_SWAP, CFG_PORT_AS_NOT_VCONN_SRC_REQ_VCONN_SWAP,\
- CFG_PORT_AS_VCONN_SRC_ACCEPT_VCONN_SWAP, CFG_PORT_AS_NOT_VCONN_SRC_ACCEPT_VCONN_SWAP);
+#define CFG_PORT_0_ROLE_SWAP_POLICY  CFG_FORM_ROLE_SWAP_POLICY(CFG_PORT_0_AS_DFP_REQUEST_DR_SWAP, \
+ CFG_PORT_0_AS_UFP_REQUEST_DR_SWAP, CFG_PORT_0_AS_DFP_ACCEPT_DR_SWAP, CFG_PORT_0_AS_UFP_ACCEPT_DR_SWAP,\
+ CFG_PORT_0_AS_SRC_REQUEST_PR_SWAP, CFG_PORT_0_AS_SNK_REQUEST_PR_SWAP, CFG_PORT_0_AS_SRC_ACCEPT_PR_SWAP,\
+ CFG_PORT_0_AS_SNK_ACCEPT_PR_SWAP, CFG_PORT_0_AS_VCONN_SRC_REQ_VCONN_SWAP, CFG_PORT_0_AS_NOT_VCONN_SRC_REQ_VCONN_SWAP,\
+ CFG_PORT_0_AS_VCONN_SRC_ACCEPT_VCONN_SWAP, CFG_PORT_0_AS_NOT_VCONN_SRC_ACCEPT_VCONN_SWAP);
 
 
 #define CFG_FORM_ROLE_SWAP_POLICY(AsDfp_Request_DRSwap, AsUfp_Request_DRSwap, \
@@ -260,10 +282,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     ((connectorType) << 21) | \
     (vendorID))
 
-#define CFG_PORT_ID_HEADER_VDO   CFG_FORM_ID_HEADER_VDO(CFG_PORT_ID_HEADER_VDO_USB_HOST_CAPABLE, \
-        CFG_PORT_ID_HEADER_VDO_USB_DEVICE_CAPABLE, CFG_PORT_ID_HEADER_VDO_PROD_TYPE_UFP, \
-        CFG_PORT_ID_HEADER_VDO_MODAL_OPR_SUPPORTED, CFG_PORT_ID_HEADER_VDO_PROD_TYPE_DFP, \
-        CFG_PORT_ID_HEADER_VDO_CONNECTOR_TYPE, CFG_PORT_ID_HEADER_VDO_USB_VENDOR_ID)
+#define CFG_PORT_0_ID_HEADER_VDO   CFG_FORM_ID_HEADER_VDO(CFG_PORT_0_ID_HEADER_VDO_USB_HOST_CAPABLE, \
+        CFG_PORT_0_ID_HEADER_VDO_USB_DEVICE_CAPABLE, CFG_PORT_0_ID_HEADER_VDO_PROD_TYPE_UFP, \
+        CFG_PORT_0_ID_HEADER_VDO_MODAL_OPR_SUPPORTED, CFG_PORT_0_ID_HEADER_VDO_PROD_TYPE_DFP, \
+        CFG_PORT_0_ID_HEADER_VDO_CONNECTOR_TYPE, CFG_PORT_0_ID_HEADER_VDO_USB_VENDOR_ID)
 
 
 
@@ -276,7 +298,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     (((productID) << 16) | \
     (bcdDevice))
 
-#define CFG_PORT_PRODUCT_VDO   CFG_FORM_PRODUCT_VDO(CFG_PORT_0_PROD_VDO_USB_PRODUCT_ID, \
+#define CFG_PORT_0_PRODUCT_VDO   CFG_FORM_PRODUCT_VDO(CFG_PORT_0_PROD_VDO_USB_PRODUCT_ID, \
                                  CFG_PORT_0_PROD_VDO_BCD_DEVICE)
 
 
@@ -297,9 +319,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     ((altModes) << 3) | \
     (usbSpeed))
 
-#define CFG_PORT_UFP_VDO_1    CFG_FORM_UFP_VDO_1(CFG_PORT_UFP_VDO_1_UFP_VDO_VERSION, \
-        CFG_PORT_UFP_VDO_1_DEVICE_CAPABILITY, CFG_PORT_UFP_VDO_1_CONNECTOR_TYPE, \
-        CFG_PORT_UFP_VDO_1_ALTERNATE_MODES, CFG_PORT_UFP_VDO_1_USB_HIGHEST_SPEED)
+#define CFG_PORT_0_UFP_VDO_1    CFG_FORM_UFP_VDO_1(CFG_PORT_0_UFP_VDO_1_UFP_VDO_VERSION, \
+        CFG_PORT_0_UFP_VDO_1_DEVICE_CAPABILITY, CFG_PORT_0_UFP_VDO_1_CONNECTOR_TYPE, \
+        CFG_PORT_0_UFP_VDO_1_ALTERNATE_MODES, CFG_PORT_0_UFP_VDO_1_USB_HIGHEST_SPEED)
 
 
 /******************* PRODUCT TYPE VDO - UFP VDO 2 *********************/
@@ -317,9 +339,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     ((usb3MinPwr) << 7) | \
     (usb3MaxPwr))
 
-#define CFG_PORT_UFP_VDO_2    CFG_FORM_UFP_VDO_2(CFG_PORT_UFP_VDO_2_USB4_MIN_PWR, \
-        CFG_PORT_UFP_VDO_2_USB4_MAX_PWR, CFG_PORT_UFP_VDO_2_USB3_MIN_PWR, \
-        CFG_PORT_UFP_VDO_2_USB3_MAX_PWR)
+#define CFG_PORT_0_UFP_VDO_2    CFG_FORM_UFP_VDO_2(CFG_PORT_0_UFP_VDO_2_USB4_MIN_PWR, \
+        CFG_PORT_0_UFP_VDO_2_USB4_MAX_PWR, CFG_PORT_0_UFP_VDO_2_USB3_MIN_PWR, \
+        CFG_PORT_0_UFP_VDO_2_USB3_MAX_PWR)
 
 
 /******************* PRODUCT TYPE VDO - DFP VDO *********************/
@@ -337,9 +359,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     ((connectorType) << 22) | \
     (portNum))
 
-#define CFG_PORT_DFP_VDO    CFG_FORM_DFP_VDO(CFG_PORT_DFP_VDO_DFP_VDO_VERSION, \
-        CFG_PORT_DFP_VDO_DFP_HOST_CAPABILITY, CFG_PORT_DFP_VDO_DFP_CONNECTOR_TYPE, \
-        CFG_PORT_DFP_VDO_DFP_PORT_NUMBER)
+#define CFG_PORT_0_DFP_VDO    CFG_FORM_DFP_VDO(CFG_PORT_0_DFP_VDO_DFP_VDO_VERSION, \
+        CFG_PORT_0_DFP_VDO_DFP_HOST_CAPABILITY, CFG_PORT_0_DFP_VDO_DFP_CONNECTOR_TYPE, \
+        CFG_PORT_0_DFP_VDO_DFP_PORT_NUMBER)
 
 
 void PSF_LoadConfig(); 
