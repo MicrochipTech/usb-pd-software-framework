@@ -47,7 +47,11 @@ void DPM_VBUSOnOffOrVCONNOff_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
        would be registered as 0 */
     if (DPM_CLR_SWAP_IN_PROGRESS_MASK == u8DummyVariable)
     {
-        gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK);            
+        gasPolicyEngine[u8PortNum].u8PEPortSts &= ~(PE_PR_OR_FR_SWAP_IN_PROGRESS_MASK);
+        
+         /* Clear the  DPM_PORT_PR_SWAP_IN_PROGRESS bit in u32PortConnectStatus variable*/
+        gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= ~(DPM_PORT_PR_SWAP_IN_PROGRESS);
+        
     }
     #endif 
     
