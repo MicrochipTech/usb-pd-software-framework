@@ -121,7 +121,7 @@ void SYS_Initialize ( void* data )
 
     CLOCK_Initialize();
     
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)
     SERCOM3_I2C_Initialize();
 #endif 
 
