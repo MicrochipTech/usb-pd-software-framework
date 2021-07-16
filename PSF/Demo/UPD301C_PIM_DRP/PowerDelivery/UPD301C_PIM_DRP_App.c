@@ -353,7 +353,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eI2C_DC_DC_ALERT_FUNC:
         {
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+            #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
             if (PORT0 == u8PortNum)
             {
                 PORT_PinWrite(PORT_PIN_PA04, TRUE);
@@ -374,7 +374,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 /* Do Nothing */
             }
-#endif 
+            #endif 
             break;
         }
         case eUPD350_RESET_FUNC:
@@ -413,12 +413,14 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 PORT_PinWrite(PORT_PIN_PA28, FALSE);
                 PORT_PinOutputEnable(PORT_PIN_PA28);        
             }
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
             else if(PORT1 == u8PortNum)
             {
                 UPDPIO_SetBufferType(u8PortNum, eUPD_PIO4, UPD_PIO_SETBUF_PUSHPULL);
                 UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
                 UPDPIO_EnableOutput(u8PortNum, eUPD_PIO4);
             }
+            #endif
             else
             {
                 /* Do Nothing */
@@ -487,58 +489,60 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }    
         case ePOWER_ROLE_FUNC:
         {
-#if (FALSE == CONFIG_HOOK_DEBUG_MSG)
+            /*
             if (PORT0 == u8PortNum)
             {
-                POWER_ROLE_0_Clear();
-                POWER_ROLE_0_OutputEnable();  
+                #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
+                {
+                    POWER_ROLE_0_Clear();
+                    POWER_ROLE_0_OutputEnable();  
+                }
+                #endif
             }
-            else
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
+            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+            else if(PORT1 == u8PortNum)
             {
-                /*Do nothing*/
-            }  
-#endif
-#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
-            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
-            if (PORT1 == u8PortNum)
-            {
-                POWER_ROLE_1_Clear();
-                POWER_ROLE_1_OutputEnable(); 
+                {
+                    POWER_ROLE_1_Clear();
+                    POWER_ROLE_1_OutputEnable(); 
+                }
             }
+            #endif
+            #endif
             else
-            {
-                /*Do nothing*/
-            }  
-            #endif  
-#endif
+            {*/
+                /* Do Nothing */
+            //}
             break;
         }     
         case eDATA_ROLE_FUNC:
         {
-#if (FALSE == CONFIG_HOOK_DEBUG_MSG)
+            /*
             if (PORT0 == u8PortNum)
             {
-                DATA_ROLE_0_Clear();
-                DATA_ROLE_0_OutputEnable();  
+                #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
+                {
+                    DATA_ROLE_0_Clear();
+                    DATA_ROLE_0_OutputEnable();  
+                }
+                #endif
             }
-            else
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
+            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+            else if(PORT1 == u8PortNum)
             {
-                /*Do nothing*/
-            }  
-#endif
-#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
-            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
-            if (PORT1 == u8PortNum)
-            {
-                DATA_ROLE_1_Clear();
-                DATA_ROLE_1_OutputEnable(); 
-            } 
-            else
-            {
-                /*Do nothing*/
-            }  
+                {
+                    DATA_ROLE_1_Clear();
+                    DATA_ROLE_1_OutputEnable(); 
+                }
+            }
             #endif
-#endif
+            #endif
+            else
+            {*/
+                /* Do Nothing */
+            //}
             break;
         }
         default:
@@ -638,10 +642,12 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     PORT_PinWrite(PORT_PIN_PA28, TRUE);
                 }
+                #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
                 else if (PORT1 == u8PortNum)
                 {
                     UPDPIO_DriveHigh(u8PortNum, eUPD_PIO4);
                 }
+                #endif
                 else
                 {
                     /* Do Nothing */
@@ -653,10 +659,12 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     PORT_PinWrite(PORT_PIN_PA28, FALSE);
                 }
+                #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
                 else if (PORT1 == u8PortNum)
                 {
                     UPDPIO_DriveLow(u8PortNum, eUPD_PIO4);
                 }
+                #endif
                 else
                 {
                     /* Do Nothing */
@@ -749,26 +757,25 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case ePOWER_ROLE_FUNC:
         {
-#if (FALSE == CONFIG_HOOK_DEBUG_MSG)
+            /*
             if (PORT0 == u8PortNum)
             {
-                if (eGPIO_ASSERT == eGPIODrive)
+                #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
                 {
-                    POWER_ROLE_0_Set();
+                    if (eGPIO_ASSERT == eGPIODrive)
+                    {
+                        POWER_ROLE_0_Set();
+                    }  
+                    else
+                    {
+                        POWER_ROLE_0_Clear();
+                    }
                 }
-                else
-                {
-                    POWER_ROLE_0_Clear();
-                }
+                #endif
             }
-            else
-            {
-                /*Do nothing*/
-            }  
-#endif
-#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
-            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
-            if (PORT1 == u8PortNum)
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
+            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+            else if(PORT1 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
                 {
@@ -777,38 +784,37 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 else
                 {
                     POWER_ROLE_1_Clear();
-                }            
+                }   
             }
-            else
-            {
-                /*Do nothing*/
-            }         
             #endif
-#endif
+            #endif
+            else
+            {*/
+                /* Do Nothing */
+           // }
             break;
         }
         case eDATA_ROLE_FUNC:
         {
-#if (FALSE == CONFIG_HOOK_DEBUG_MSG)
+            /*
             if (PORT0 == u8PortNum)
             {
-                if (eGPIO_ASSERT == eGPIODrive)
+                #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
                 {
-                    DATA_ROLE_0_Set();
+                    if (eGPIO_ASSERT == eGPIODrive)
+                    {
+                        DATA_ROLE_0_Set();
+                    }  
+                    else
+                    {
+                        DATA_ROLE_0_Clear();
+                    }
                 }
-                else
-                {
-                    DATA_ROLE_0_Clear();
-                }
+                #endif
             }
-            else
-            {
-                /*Do nothing*/
-            }  
-#endif
-#if(CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
-            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)
-            if (PORT1 == u8PortNum)
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
+            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+            else if(PORT1 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
                 {
@@ -817,14 +823,14 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 else
                 {
                     DATA_ROLE_1_Clear();
-                }            
+                }   
             }
-            else
-            {
-                /*Do nothing*/
-            }     
             #endif
-#endif
+            #endif
+            else
+            {*/
+                /* Do Nothing */
+            //}
             break;
         }           
         default:
