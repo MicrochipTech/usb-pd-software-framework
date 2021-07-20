@@ -511,9 +511,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             #endif
             #endif
             else
-            {*/
-                /* Do Nothing */
-            //}
+            {
+            }*/
             break;
         }     
         case eDATA_ROLE_FUNC:
@@ -540,9 +539,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             #endif
             #endif
             else
-            {*/
-                /* Do Nothing */
-            //}
+            {
+            }*/
             break;
         }
         default:
@@ -789,9 +787,8 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             #endif
             #endif
             else
-            {*/
-                /* Do Nothing */
-           // }
+            {
+            }*/
             break;
         }
         case eDATA_ROLE_FUNC:
@@ -828,9 +825,8 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             #endif
             #endif
             else
-            {*/
-                /* Do Nothing */
-            //}
+            {
+            }*/
             break;
         }           
         default:
