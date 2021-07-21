@@ -156,7 +156,7 @@ void PSF_ADCRun()
             gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
                 (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
             
-            if (300 < u32input_voltage && u32input_voltage < 650U) 
+            if (300U < u32input_voltage && u32input_voltage < 600U) 
             {
                 /*Position 1*/
                 /*Supported PDO is (5V,3A)*/
@@ -164,7 +164,7 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 1;
                 gu8CurrentPos = 1; 
             } 
-            else if (u32input_voltage < 1000U) 
+            else if (700U < u32input_voltage && u32input_voltage < 1000U)
             {
                 /*Position 2*/
                 /*Supported PDOs are (5V,3A), (9V,3A)*/
@@ -173,7 +173,7 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 2;
                 gu8CurrentPos = 2;
             } 
-            else if (u32input_voltage < 1400U) 
+            else if (1100U < u32input_voltage && u32input_voltage < 1400U)  
             {
                 /*Position 3*/
                 /*Supported PDOs are (5V,3A), (15V,3A)*/
@@ -182,7 +182,7 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 2;
                 gu8CurrentPos = 3;
             } 
-            else if (u32input_voltage < 1800U) 
+            else if (1500U < u32input_voltage && u32input_voltage < 1800U) 
             {
                 /*Position 4*/
                 /*Supported PDOs are (5V,3A), (20V,3A)*/
@@ -191,7 +191,7 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 2;
                 gu8CurrentPos = 4;
             }
-            else if (u32input_voltage < 2200U) 
+            else if (1900U < u32input_voltage && u32input_voltage < 2200U) 
             {
                 /*Position 5*/
                 /*Operates in Sink Mode A*/
@@ -207,7 +207,7 @@ void PSF_ADCRun()
                 (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
                 gu8CurrentPos = 5;
             } 
-            else if (u32input_voltage < 2600U) 
+            else if (2100U < u32input_voltage && u32input_voltage < 2700U)  
             {
                 /*Position 6*/
                 /*Operates in Sink Mode B*/
@@ -223,6 +223,10 @@ void PSF_ADCRun()
                 (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
                 gu8CurrentPos = 6;
             } 
+            else
+            {
+                /*Do nothing*/
+            }
 
             if (gu8CurrentPos != u8PrevPos)
             {
@@ -274,27 +278,27 @@ UINT8 Get_ADCPosition()
     u16adc_count = ADC_ConversionResultGet();
     u32input_voltage = u16adc_count * ADC_VREF / 4095U;
     
-    if (300 < u32input_voltage && u32input_voltage < 650U) 
+    if (300U < u32input_voltage && u32input_voltage < 600U) 
     {
         gu8CurrentPos = 1;
     } 
-    else if (u32input_voltage < 1000U) 
+    else if (700U < u32input_voltage && u32input_voltage < 1000U) 
     {
         gu8CurrentPos = 2;
     } 
-    else if (u32input_voltage < 1400U) 
+    else if (1100U < u32input_voltage && u32input_voltage < 1400U) 
     {
         gu8CurrentPos = 3;
     } 
-    else if (u32input_voltage < 1800U) 
+    else if (1500U < u32input_voltage && u32input_voltage < 1800U) 
     {
         gu8CurrentPos = 4;
     }
-    else if (u32input_voltage < 2200U) 
+    else if (1900U < u32input_voltage && u32input_voltage < 2200U) 
     {
         gu8CurrentPos = 5;
     } 
-    else if (u32input_voltage < 2600U) 
+    else if (2100U < u32input_voltage && u32input_voltage < 2700U) 
     {
         gu8CurrentPos = 6;
     } 
