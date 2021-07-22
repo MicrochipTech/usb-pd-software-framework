@@ -182,7 +182,7 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt = 2;
                 gu8CurrentPos = 3;
             } 
-            else if (1500U < u32input_voltage && u32input_voltage < 1800U) 
+            else if (1625U < u32input_voltage && u32input_voltage < 1800U) 
             {
                 /*Position 4*/
                 /*Supported PDOs are (5V,3A), (20V,3A)*/
@@ -290,7 +290,7 @@ UINT8 Get_ADCPosition()
     {
         gu8CurrentPos = 3;
     } 
-    else if (1500U < u32input_voltage && u32input_voltage < 1800U) 
+    else if (1625U < u32input_voltage && u32input_voltage < 1800U) 
     {
         gu8CurrentPos = 4;
     }
