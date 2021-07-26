@@ -353,7 +353,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }
         case eI2C_DC_DC_ALERT_FUNC:
         {
-            #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)
             if (PORT0 == u8PortNum)
             {
                 PORT_PinWrite(PORT_PIN_PA04, TRUE);
@@ -374,7 +374,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 /* Do Nothing */
             }
-            #endif 
+#endif 
             break;
         }
         case eUPD350_RESET_FUNC:
@@ -688,6 +688,20 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     /* Do Nothing */
                 }
+                /*Check for DC_DC MIC2128*/
+                #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MIC2128)
+                /* Check for PR Swap */
+                if (gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus & 
+                                DPM_PORT_PR_SWAP_IN_PROGRESS)
+                {
+                    /* In case of PRS Add a Timer Delay of 60 ms after enabling DC_DC_EN pin and before enabling VBUS_EN pin*/
+                    for(UINT32 u32Delayloop = 0u; u32Delayloop <(472000);u32Delayloop++)
+                    {
+                        __NOP();
+                        __NOP();
+                    }                     
+                }
+                #endif
             }
             else
             {
@@ -838,13 +852,13 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 
 UINT8 App_PortPowerInit(UINT8 u8PortNum)
 {
-    UINT8 u8Return; 
+    UINT8 u8Return = TRUE; 
    
 #if (TRUE == INCLUDE_PD_SINK) 
     DAC_Initialize();
 #endif
 	
-#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+#if ((CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MIC2128) || (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MCP19119))
     
     /*VSEL0 Init */
     UPDPIO_SetBufferType(u8PortNum, eUPD_PIO7, UPD_PIO_SETBUF_PUSHPULL);
@@ -886,7 +900,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum)
     }                
     u8Return = TRUE; 
     
-#elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)
+#elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)
     u8Return = MPQDCDC_Initialize(u8PortNum); /* MPQ4230 - I2C based DC/DC */ 
 #endif 
     
@@ -895,7 +909,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum)
 
 void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current)
 {
-#if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+#if ((CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MIC2128) || (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MCP19119))
     /*
      Voltage    VSEL0   VSEL1   VSEL2
      *0V        0       0       0
@@ -955,7 +969,7 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
         }
     }
     
-#elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC)/* MPQ4230 - I2C based DC/DC */ 
+#elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)/* MPQ4230 - I2C based DC/DC */ 
     MPQDCDC_SetPortPower(u8PortNum, u16Voltage, u16Current);
 #endif     
 }
