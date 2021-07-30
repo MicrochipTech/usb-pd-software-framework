@@ -489,7 +489,6 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         }    
         case ePOWER_ROLE_FUNC:
         {
-            /*
             if (PORT0 == u8PortNum)
             {
                 #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
@@ -500,7 +499,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 #endif
             }
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
-            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MCP19119)
             else if(PORT1 == u8PortNum)
             {
                 {
@@ -512,12 +511,12 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             #endif
             else
             {
-            }*/
+                /*Do nothing*/
+            }
             break;
         }     
         case eDATA_ROLE_FUNC:
         {
-            /*
             if (PORT0 == u8PortNum)
             {
                 #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
@@ -528,7 +527,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 #endif
             }
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
-            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MCP19119)
             else if(PORT1 == u8PortNum)
             {
                 {
@@ -540,7 +539,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             #endif
             else
             {
-            }*/
+                /*Do nothing*/
+            }
             break;
         }
         default:
@@ -769,7 +769,6 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
         }
         case ePOWER_ROLE_FUNC:
         {
-            /*
             if (PORT0 == u8PortNum)
             {
                 #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
@@ -786,7 +785,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 #endif
             }
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
-            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MCP19119)
             else if(PORT1 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
@@ -802,12 +801,12 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             #endif
             else
             {
-            }*/
+                /*Do nothing*/
+            }
             break;
         }
         case eDATA_ROLE_FUNC:
         {
-            /*
             if (PORT0 == u8PortNum)
             {
                 #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
@@ -824,7 +823,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 #endif
             }
             #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
-            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC)
+            #if (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MCP19119)
             else if(PORT1 == u8PortNum)
             {
                 if (eGPIO_ASSERT == eGPIODrive)
@@ -840,7 +839,8 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
             #endif
             else
             {
-            }*/
+                /*Do nothing*/
+            }
             break;
         }           
         default:
