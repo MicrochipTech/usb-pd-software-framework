@@ -1,12 +1,12 @@
 # **Microchip USB Power Delivery Software Framework (PSF)**
 
-Microchip's USB Power Delivery Software Framework (PSF) is a light weight USB Power Delivery (PD) stack that is designed to integrate any suitable powerful MCU with Microchip's [UPD350](https://www.microchip.com/wwwproducts/en/UPD350) Type-C&trade; PD controller to realize multi-port custom PD solutions. The stack also supports Microchip's [UPD301B/C](https://www.microchip.com/wwwproducts/en/UPD301C) standalone Type-C&trade; PD controller.
+Microchip's USB Power Delivery Software Framework (PSF) is a light weight USB Power Delivery (PD) stack that is designed to integrate any suitable powerful MCU with Microchip's [UPD350](https://www.microchip.com/en-us/product/UPD350) Type-C&trade; PD controller to realize multi-port custom PD solutions. The stack also supports Microchip's [UPD301B/C](https://www.microchip.com/en-us/product/UPD301C) standalone Type-C&trade; PD controller.
 
 PSF provides a range of configuration options for your custom PD design and is portable to many MCUs. PSF is constantly evolving as we add PD functionality and improvements to it in a planned fashion. A summary of the planned and the supported features are as follows:
 
 | Sr No	| Features 	| Status 	|
 |:-----------------:	|-------------------------------------------------------------------------------------------------------------------------------------------	|-------------	|
-| 1. | Multi-Port PD Source Only, VCONN sourcing and Fault Handling 	| **Supported**	|
+| 1. | Multi-Port PD Source, VCONN sourcing and Fault Handling 	| **Supported**	|
 | 2. | I2C Mode DC-DC control, PD Balancing, PD Throttling and Automotive source-only PPS | **Supported** 	|
 | 3. | PD sink, Multiple Sink PDO selection algorithms and Custom Sink PDO selection algorithm	| **Supported** |
 | 4. | Dual Role Power (DRP) and Dual Role Data (DRD)	|  **Supported** 	|
@@ -48,7 +48,7 @@ Refer the [Software Release Notes](Software%20Release%20Notes.pdf) for more info
 
 |Sr No| Platform Name	| Platform Type	| Description	|
 |:-----------------:|:-----------------:	|-------------------------------------------------------------------------------------------------------------------------------------------	|-------------	|
-| 1. 	| [USB Power Delivery Software Framework Evaluation Kit (EV65D44A)](https://www.microchip.com/en-us/development-tool/EV65D44A)	| Development/ Evaluation	| Full featured two port USB PD platform meant for evaluation of PSF features and custom software development	|
+| 1. 	| [USB Power Delivery Software Framework Evaluation Kit (EV65D44A)](https://www.microchip.com/en-us/development-tool/EV65D44A)	| Development/ Evaluation	| Full featured two port USB PD platform for evaluation of PSF features and custom software development	|
 | 2. 	| UPD301C Plug-In Module (PIM) (EV71C90A)	| Development/ Evaluation	| Add-on module for EV65D44A. Can be used to evaluate PSF and develop custom software for UPD301B/C standalone USB PD controller. Contact [Microchip Support](https://microchipsupport.force.com/s/).|
 | 3. 	| [UPD301C Basic Sink Application Example (EV11L78A)](https://www.microchip.com/en-us/development-tool/EV11L78A)	| Evaluation | Low cost, single port, sink-only application reference design|
 | 4. 	| UPD301B Basic Source Application Example (EV56W72A)	| Evaluation	| Low cost, single port, source-only application reference. Contact [Microchip Support](https://microchipsupport.force.com/s/).|
