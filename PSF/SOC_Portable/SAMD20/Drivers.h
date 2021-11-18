@@ -52,7 +52,7 @@
 #include "PSF_Config.h"
 
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
-#include "../../firmware/src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h"
+#include "../../firmware/src/config/default/peripheral/sercom/spi_master/plib_sercom0_spi_master.h"
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 #include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
 #include <string.h>
@@ -83,7 +83,7 @@
  *  - PORT_PIN_PA10 is renamed as SPI_SS_0_PIN  in Harmony GUI and used as SPI Chip Select for Port 0
  *  - PORT_PIN_PA01 is renamed as SPI_SS_1_PIN in Harmony GUI and used as SPI Chip Select for Port 1
  *  - SPI drivers are generated in polling mode as SPI read and write API are called in critical section
- *  - SPI drivers for different SERCOM can be configured by changing SAMD20_SPI_INSTANCE in the file if 
+ *  - SPI drivers for different SERCOM can be configured by changing PSF_APP_SPI_INSTANCE in the file if 
  *      and only all the required SPI drivers are generated using Harmony for that instance.
  *  - SERCOM0_SPI_Initialize() and SERCOM0_SPI_WriteRead() drivers are used for this example
  *
@@ -91,7 +91,7 @@
  * Timer Configuration  
  * -------------------
  * - TC0 timer instance configured for 1ms for timer interrupt frequency
- * - Different timer instance can be used  by changing SAMD20_TIMER_INSTANCE in the file if and only
+ * - Different timer instance can be used  by changing PSF_APP_TIMER_INSTANCE in the file if and only
  *      all the required timer drivers are generated using Harmony for that instance.
  * -TC0_TimerInitialize(), TC0_TimerStart(), and TC0_TimerCallbackRegister() driver APIs are used.
  * 
@@ -113,10 +113,10 @@
  *      and input with internal pullup by default.
  */
 
-#define SAMD20_TIMER_INSTANCE   0
-#define SAMD20_SPI_INSTANCE     0
+#define PSF_APP_TIMER_INSTANCE   0
+#define PSF_APP_SPI_INSTANCE     0
 
-#define SAMD20_UART_INSTANCE  1
+#define PSF_APP_UART_INSTANCE  1
 
 // *****************************************************************************
 // *****************************************************************************
@@ -125,9 +125,9 @@
 // *****************************************************************************
 /****************************************************************************
     Function:
-        UINT8 SAMD20_HWTimerInit(void)
+        UINT8 PSF_APP_HWTimerInit(void)
     Summary:
-        Wrapper function to initialize SAMD20 Hardware Timer  
+        Wrapper function to initialize Device (SAMD20) Hardware Timer  
     Description:
         This API serves as a wrapper between PSF stack defined Timer initialization function 
         MCHP_PSF_HOOK_HW_PDTIMER_INIT and Harmony generated timer drivers. It shall initialize and 
@@ -142,13 +142,13 @@
     Remarks:
         None
 **************************************************************************************************/
-UINT8 SAMD20_HWTimerInit(void);
+UINT8 PSF_APP_HWTimerInit(void);
 
 /****************************************************************************
     Function:
-        UINT8 SAMD20_SPIInitialisation(void)
+        UINT8 PSF_APP_SPIInitialisation(void)
     Summary:
-        Wrapper function to initialize SAMD20 Hardware Interface for UPD350 communication  
+        Wrapper function to initialize Device (SAMD20) Hardware Interface for UPD350 communication  
     Description:
         This API serves as a wrapper between PSF stack defined Hardware interface initialization 
         function MCHP_PSF_HOOK_UPDHW_INTF_INIT and Harmony generated SPI drivers. It shall initialize 
@@ -163,17 +163,17 @@ UINT8 SAMD20_HWTimerInit(void);
     Remarks:
         None
 **************************************************************************************************/
-UINT8 SAMD20_SPIInitialisation(void);
+UINT8 PSF_APP_SPIInitialisation(void);
 
 /****************************************************************************
     Function:
-        UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength,\
+        UINT8 PSF_APP_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength,\
                 UINT8 *pu8ReadBuffer, UINT8 u8Readlength)
     Summary:
         Wrapper function for SPI read drivers.  
     Description:
         This API serves as a wrapper between PSF stack defined UPD350 read driver 
-        MCHP_PSF_HOOK_UPD_READ and Harmony generated SAMD20 SPI read driver.
+        MCHP_PSF_HOOK_UPD_READ and Harmony generated Device (SAMD20) SPI read driver.
     Conditions:
         None
     Input:
@@ -189,16 +189,16 @@ UINT8 SAMD20_SPIInitialisation(void);
         None
 **************************************************************************************************/
 
-UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength,\
+UINT8 PSF_APP_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength,\
                 UINT8 *pu8ReadBuffer, UINT8 u8Readlength);
 /****************************************************************************
     Function:
-        UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength)
+        UINT8 PSF_APP_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength)
     Summary:
         Wrapper function for SPI write drivers.  
     Description:
         This API serves as a wrapper between PSF stack defined UPD350 write driver 
-        MCHP_PSF_HOOK_UPD_WRITEand Harmony generated SAMD20 SPI write driver.
+        MCHP_PSF_HOOK_UPD_WRITEand Harmony generated Device (SAMD20) SPI write driver.
     Conditions:
         None
     Input:
@@ -211,16 +211,16 @@ UINT8 SAMD20_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writ
     Remarks:
         None
 **************************************************************************************************/
-UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength);
+UINT8 PSF_APP_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength);
 
 /****************************************************************************
     Function:
-        SAMD20_UPD350AlertCallback(uintptr_t u8PortNum)
+        PSF_APP_UPD350AlertCallback(uintptr_t u8PortNum)
     Summary:
         UPD350 Alert Callback wrapper function.  
     Description:
         This API serves as a wrapper for PSF's function MchpPSF_UPDIrqHandler to 
-        register as callback for SAMD20's function EIC_CallbackRegister.
+        register as callback for Device's (SAMD20) function EIC_CallbackRegister.
     Conditions:
         None
     Input:
@@ -230,16 +230,16 @@ UINT8 SAMD20_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Wri
     Remarks:
         None
 **************************************************************************************************/
-void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum);
+void PSF_APP_UPD350AlertCallback(uintptr_t u8PortNum);
 
 /****************************************************************************
     Function:
-        void SAMD20_EnterCriticalSection(void)
+        void PSF_APP_EnterCriticalSection(void)
     Summary:
-        Wrapper function to SAMD20 disable interrupts globally to provide critical section
+        Wrapper function to Device (SAMD20) disable interrupts globally to provide critical section
     Description:
         This API serves as a wrapper between PSF stack defined SOC interrupt disable function
-        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT and SAMD20 global interrupt disable option.
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT and Device (SAMD20) global interrupt disable option.
     Conditions:
         None
     Input:
@@ -249,16 +249,16 @@ void SAMD20_UPD350AlertCallback(uintptr_t u8PortNum);
     Remarks:
         None
 **************************************************************************************************/
-void SAMD20_EnterCriticalSection(void);
+void PSF_APP_EnterCriticalSection(void);
 
 /****************************************************************************
     Function:
-        void SAMD20_EnterCriticalSection(void)
+        void PSF_APP_ExitCriticalSection(void)
     Summary:
-        Wrapper function to SAMD20 enable interrupts globally to provide critical section
+        Wrapper function to Device (SAMD20) enable interrupts globally to provide critical section
     Description:
         This API serves as a wrapper between PSF stack defined SOC interrupt enable function
-        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT and SAMD20 global interrupt enable option.
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT and Device (SAMD20) global interrupt enable option.
     Conditions:
         None
     Input:
@@ -268,11 +268,11 @@ void SAMD20_EnterCriticalSection(void);
     Remarks:
         None
 **************************************************************************************************/
-void SAMD20_ExitCriticalSection(void);
+void PSF_APP_ExitCriticalSection(void);
 
 /**************************************************************************
     Function:
-        void* SAMD20_MemCpy(void *dest, const void *src, int n)
+        void* PSF_APP_MemCpy(void *dest, const void *src, int n)
     Summary:
         Wrapper to Copy one memory area to another memory area
     Description:
@@ -288,11 +288,11 @@ void SAMD20_ExitCriticalSection(void);
     Remarks:
         None                    
  **************************************************************************/
-void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
+void* PSF_APP_MemCpy(void *pdest, const void *psrc, int ilen);
 
 /**************************************************************************
     Function:
-        int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
+        int PSF_APP_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
     Summary:
         Wrapper to compare two memory location
     Description:
@@ -308,17 +308,16 @@ void* SAMD20_MemCpy(void *pdest, const void *psrc, int ilen);
     Remarks:
         None                    
 **************************************************************************/
-int SAMD20_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
+int PSF_APP_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
 
 /*Debug UART APIs*/
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-void SAMD20_UART_Initialisation(void);
 
-void SAMD20_UART_Write_Char(char);
+void PSF_APP_UART_Write_Char(char);
 
-void SAMD20_UART_Write_Int(UINT32, UINT8);
+void PSF_APP_UART_Write_Int(UINT32, UINT8);
 
-void SAMD20_UART_Write_String(char*);
+void PSF_APP_UART_Write_String(char*);
 
 #endif //CONFIG_HOOK_DEBUG_MSG
 

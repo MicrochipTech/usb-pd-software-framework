@@ -5,10 +5,10 @@
     Microchip Technology Inc.
 
   File Name
-    plib_sercom_spi.h
+    plib_sercom_spi_master_common.h
 
   Summary
-   SERCOM_SPI PLIB Local Header File.
+   SERCOM_SPI PLIB Master Local Header File.
 
   Description
     This file defines the interface to the SERCOM SPI peripheral library.
@@ -45,8 +45,8 @@
 *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef PLIB_SERCOM_SPI_COMMON_H  // Guards against multiple inclusion
-#define PLIB_SERCOM_SPI_COMMON_H
+#ifndef PLIB_SERCOM_SPI_MASTER_COMMON_H  // Guards against multiple inclusion
+#define PLIB_SERCOM_SPI_MASTER_COMMON_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -97,7 +97,7 @@ typedef enum
     SPI_CLOCK_PHASE_LEADING_EDGE = SERCOM_SPIM_CTRLA_CPHA_LEADING_EDGE,
 
     /* Force the compiler to reserve 32-bit space for each enum value */
-    SPI_CLOCK_PHASE_INVALID = 0xFFFFFFFF
+    SPI_CLOCK_PHASE_INVALID = 0xFFFFFFFFU
 
 } SPI_CLOCK_PHASE;
 
@@ -123,7 +123,7 @@ typedef enum
     SPI_CLOCK_POLARITY_IDLE_HIGH = SERCOM_SPIM_CTRLA_CPOL_IDLE_HIGH,
 
     /* Force the compiler to reserve 32-bit space for each enum value */
-    SPI_CLOCK_POLARITY_INVALID = 0xFFFFFFFF
+    SPI_CLOCK_POLARITY_INVALID = 0xFFFFFFFFU
 
 } SPI_CLOCK_POLARITY;
 
@@ -150,7 +150,7 @@ typedef enum
     SPI_DATA_BITS_9 = SERCOM_SPIM_CTRLB_CHSIZE_9_BIT,
 
     /* Force the compiler to reserve 32-bit space for each enum value */
-    SPI_DATA_BITS_INVALID = 0xFFFFFFFF
+    SPI_DATA_BITS_INVALID = 0xFFFFFFFFU
 
 } SPI_DATA_BITS;
 
@@ -301,4 +301,4 @@ typedef struct
 
 #endif
 
-#endif //PLIB_SERCOM_SPI_COMMON_H
+#endif //PLIB_SERCOM_SPI_MASTER_COMMON_H

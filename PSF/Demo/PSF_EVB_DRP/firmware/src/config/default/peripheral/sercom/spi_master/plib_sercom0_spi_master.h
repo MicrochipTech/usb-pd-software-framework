@@ -5,10 +5,10 @@
     Microchip Technology Inc.
 
   File Name
-    plib_sercom0_spi.h
+    plib_sercom0_spi_master.h
 
   Summary
-   SERCOM0_SPI PLIB Header File.
+   SERCOM0_SPI Master PLIB Header File.
 
   Description
     This file defines the interface to the SERCOM SPI peripheral library.
@@ -45,8 +45,8 @@
 *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef PLIB_SERCOM0_SPI_H // Guards against multiple inclusion
-#define PLIB_SERCOM0_SPI_H
+#ifndef PLIB_SERCOM0_SPI_MASTER_H // Guards against multiple inclusion
+#define PLIB_SERCOM0_SPI_MASTER_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -56,7 +56,7 @@
 /* This section lists the other files that are included in this file.
 */
 
-#include "plib_sercom_spi_common.h"
+#include "plib_sercom_spi_master_common.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus // Provide C++ Compatibility
@@ -129,7 +129,7 @@ void SERCOM0_SPI_Initialize (void);
     should be initialized to the desired value.
 
     The application may feel need to call this function in situation where
-    multiple SPI slaves, each with different operation parameters, are connected
+    multiple SPI slaves, each with different operation paramertes, are connected
     to one SPI master. This function can thus be used to setup the SPI Master to
     meet the communication needs of the slave.
 
@@ -161,10 +161,10 @@ void SERCOM0_SPI_Initialize (void);
         setup.clockPolarity = SPI_CLOCK_POLARITY_IDLE_LOW;
         setup.dataBits = SPI_DATA_BITS_8;
 
-        // Assuming 20 MHz as peripheral Master clock frequency
+        Assuming 20 MHz as peripheral Master clock frequency
         if (SERCOM0_SPI_TransferSetup (&setup, 20000000) == false)
         {
-            // this means setup could not be done, debug the reason.
+            this means setup could not be done, debug the reason.
         }
 
     </code>
@@ -201,7 +201,7 @@ bool SERCOM0_SPI_TransferSetup(SPI_TRANSFER_SETUP *setup, uint32_t spiSourceCloc
     When "Interrupt Mode" option is selected in MHC, the function will be
     non-blocking in nature.  The function returns immediately. The data transfer
     process continues in the peripheral interrupt.  The application specified
-    transmit and receive buffer are owned by the library until the data
+    transmit and receive buffer  are ownerd by the library until the data
     transfer is complete and should not be modified by the application till the
     transfer is complete.  Only one transfer is allowed at any time. The
     Application can use a callback function or a polling function to check for
@@ -238,7 +238,7 @@ bool SERCOM0_SPI_TransferSetup(SPI_TRANSFER_SETUP *setup, uint32_t spiSourceCloc
     to store 9 bits of data.
 
   Returns:
-    true - If configured for Non-interrupt mode, the function has received and
+    true - If configured for Non-interrupt mode, the function has recevied and
     transmitted the requested number of bytes. If configured for Interrupt mode,
     the request was accepted successfully and will be processed in the
     interrupt.
@@ -252,9 +252,9 @@ bool SERCOM0_SPI_TransferSetup(SPI_TRANSFER_SETUP *setup, uint32_t spiSourceCloc
   Example:
     <code>
 
-    // The following code snippet shows an example using the
-    // SERCOM0_SPI_WriteRead() function in interrupt mode operation using the
-    // callback function.
+     The following code snippet shows an example using the
+     SERCOM0_SPI_WriteRead() function in interrupt mode operation using the
+     callback function.
 
     uint8_t     txBuffer[4];
     uint8_t     rxBuffer[10];
@@ -263,21 +263,21 @@ bool SERCOM0_SPI_TransferSetup(SPI_TRANSFER_SETUP *setup, uint32_t spiSourceCloc
 
     void APP_SPITransferHandler(uintptr_t context)
     {
-       //Transfer was completed without error, do something else now.
+       Transfer was completed without error, do something else now.
     }
 
     SERCOM0_SPI_Initialize();
     SERCOM0_SPI_CallbackRegister(&APP_SPITransferHandler, (uintptr_t)NULL);
     if(SERCOM0_SPI_WriteRead(&txBuffer, txSize, &rxBuffer, rxSize))
     {
-        // request got accepted
+        request got accepted
     }
     else
     {
-        // request didn't get accepted, try again later with correct arguments
+        request didn't get accepted, try again later with correct arguments
     }
-    // The following code snippet shows non-interrupt or blocking mode
-    // operation.
+    The following code snippet shows non-interrupt or blocking mode
+    operation.
 
     uint8_t txBuffer[4];
     uint8_t rxBuffer[10];
@@ -286,7 +286,7 @@ bool SERCOM0_SPI_TransferSetup(SPI_TRANSFER_SETUP *setup, uint32_t spiSourceCloc
 
     SERCOM0_SPI_Initialize();
 
-    // This function call will block.
+    This function call will block.
     SERCOM0_SPI_WriteRead(&txBuffer, txSize, &rxBuffer, rxSize);
 
     </code>
@@ -317,7 +317,7 @@ bool SERCOM0_SPI_WriteRead (void* pTransmitData, size_t txSize, void* pReceiveDa
     When "Interrupt Mode" option is selected in MHC, the function will be
     non-blocking in nature.  The function returns immediately. The data transfer
     process continues in the peripheral interrupt.  The application specified
-    transmit buffer  is owned by the library until the data transfer is
+    transmit buffer  is ownerd by the library until the data transfer is
     complete and should not be modified by the application till the transfer is
     complete.  Only one transfer is allowed at any time. The application can use
     a callback function or a polling function to check for completion of the
@@ -359,18 +359,18 @@ bool SERCOM0_SPI_WriteRead (void* pTransmitData, size_t txSize, void* pReceiveDa
 
     void APP_SPITransferHandler(uintptr_t context)
     {
-        //Transfer was completed without error, do something else now.
+        Transfer was completed without error, do something else now.
     }
 
     SERCOM0_SPI_Initialize();
     SERCOM0_SPI_CallbackRegister(&APP_SPITransferHandler, (uintptr_t)NULL);
     if(SERCOM0_SPI_Write(&txBuffer, txSize))
     {
-        // request got accepted
+        request got accepted
     }
     else
     {
-        // request didn't get accepted, try again later with correct arguments
+        request didn't get accepted, try again later with correct arguments
     }
 
     </code>
@@ -444,18 +444,18 @@ bool SERCOM0_SPI_Write(void* pTransmitData, size_t txSize);
 
     void APP_SPITransferHandler(uintptr_t context)
     {
-        //Transfer was completed without error, do something else now.
+        Transfer was completed without error, do something else now.
     }
 
     SERCOM0_SPI_Initialize();
     SERCOM0_SPI_CallbackRegister(&APP_SPITransferHandler, (uintptr_t)NULL);
     if(SERCOM0_SPI_Read(&rxBuffer, rxSize))
     {
-        // request got accepted
+        request got accepted
     }
     else
     {
-        // request didn't get accepted, try again later with correct arguments
+        request didn't get accepted, try again later with correct arguments
     }
     </code>
 
@@ -470,4 +470,4 @@ bool SERCOM0_SPI_Read(void* pReceiveData, size_t rxSize);
 }
 #endif
 
-#endif /* PLIB_SERCOM0_SPI_H */
+#endif /* PLIB_SERCOM0_SPI_MASTER_H */

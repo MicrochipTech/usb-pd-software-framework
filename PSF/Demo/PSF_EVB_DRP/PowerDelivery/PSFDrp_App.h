@@ -65,7 +65,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PWRCTRL_GPIO_DC_DC_MIC2128       3
 
 /* Defines the type of DC DC Controller used */
-#define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC_MCP19119
+#define CONFIG_DCDC_CTRL        PWRCTRL_I2C_DC_DC_MPQ4230
 
 
 // *****************************************************************************

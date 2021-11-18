@@ -59,10 +59,10 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
             
     for(int i=0; i<3; i++)
     {
-        if (TRUE == SAMD20_I2CDCDCWriteDriver (u8I2CAddress, pu8I2CCmd, u8Length))
+        if (TRUE == PSF_APP_I2CDCDCWriteDriver (u8I2CAddress, pu8I2CCmd, u8Length))
         {
             /* wait for the current transfer to complete */ 
-            while(SAMD20_I2CDCDCIsBusyDriver( ));
+            while(PSF_APP_I2CDCDCIsBusyDriver( ));
             u8RetVal = TRUE;
             break;
         }
@@ -77,7 +77,7 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     UINT32 u32I2CCmd;
     UINT8 u8Return = TRUE;
 
-    /* Global interrupt is enabled as the I2C works on interrupt in SAMD20*/
+    /* Global interrupt is enabled as the I2C works on interrupt in the device (SAMD20)*/
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 
     /* Clear the faults */
@@ -206,9 +206,9 @@ UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
 {
     UINT16 u16FaultStatus;
     
-    (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
+    (void)PSF_APP_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
     /* wait for the current transfer to complete */ 
-    while(SAMD20_I2CDCDCIsBusyDriver( ));
+    while(PSF_APP_I2CDCDCIsBusyDriver( ));
 
     return u16FaultStatus;
 }
@@ -251,7 +251,7 @@ UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum)
         u16I2CCmd = MPQ_CMD_CLEAR_FAULT;
         u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_1);           
         /* wait for the current transfer to complete */ 
-        while(SAMD20_I2CDCDCIsBusyDriver( ));
+        while(PSF_APP_I2CDCDCIsBusyDriver( ));
     }
     
     return u8RetVal;
@@ -273,10 +273,10 @@ UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum)
     
     for(u8ReadCnt=0; u8ReadCnt<MPQ_VOLTAGE_READ_AVG_CNT;u8ReadCnt++)
     { 
-        (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16VoltageOutputCnt,2U);
+        (void)PSF_APP_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16VoltageOutputCnt,2U);
         
         /* wait for the current transfer to complete */ 
-        while(SAMD20_I2CDCDCIsBusyDriver( ));
+        while(PSF_APP_I2CDCDCIsBusyDriver( ));
         
         u32VoltageCntAvg += u16VoltageOutputCnt;
     }

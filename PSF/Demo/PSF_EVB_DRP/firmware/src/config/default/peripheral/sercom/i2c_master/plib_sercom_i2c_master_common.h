@@ -150,6 +150,9 @@ typedef enum
     /* SERCOM PLib Task Write Transfer State */
     SERCOM_I2C_STATE_TRANSFER_WRITE,
 
+    /* SERCOM PLib Task High Speed Slave Address Send State */
+    SERCOM_I2C_STATE_TRANSFER_ADDR_HS,
+
     /* SERCOM PLib Task Transfer Done State */
     SERCOM_I2C_STATE_TRANSFER_DONE,
 
@@ -190,29 +193,36 @@ typedef void (*SERCOM_I2C_CALLBACK)
 
 typedef struct
 {
+    bool                        isHighSpeed;
 
-    uint16_t address;
+    bool                        txMasterCode;
 
-    uint8_t *writeBuffer;
+    bool                        transferDir;
 
-    uint8_t *readBuffer;
+    uint16_t                    address;
 
-    size_t  writeSize;
+    uint8_t                     masterCode;
 
-    size_t  readSize;
+    uint8_t*                    writeBuffer;
 
-    size_t  writeCount;
+    uint8_t*                    readBuffer;
 
-    size_t  readCount;
+    size_t                      writeSize;
+
+    size_t                      readSize;
+
+    size_t                      writeCount;
+
+    size_t                      readCount;
 
     /* State */
-    volatile SERCOM_I2C_STATE state;
+    volatile SERCOM_I2C_STATE   state;
 
     /* Transfer status */
-    volatile SERCOM_I2C_ERROR error;
+    volatile SERCOM_I2C_ERROR   error;
 
     /* Transfer Event Callback */
-    SERCOM_I2C_CALLBACK callback;
+    SERCOM_I2C_CALLBACK         callback;
 
     /* Transfer context */
     uintptr_t context;

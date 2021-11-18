@@ -96,7 +96,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory.                    
 **************************************************************************/
-#define MCHP_PSF_HOOK_UPDHW_INTF_INIT()      SAMD20_SPIInitialisation();              
+#define MCHP_PSF_HOOK_UPDHW_INTF_INIT()      PSF_APP_SPIInitialisation();              
 
 /*********************************************************************************************
 Function:
@@ -150,7 +150,7 @@ Remarks:
     User definition of this Hook function is mandatory                                        
 *********************************************************************************************/
 #define MCHP_PSF_HOOK_UPD_WRITE(u8PortNum,pu8WriteBuf,u8WriteLen)\
-            SAMD20_SPIWritedriver (u8PortNum,pu8WriteBuf,u8WriteLen)
+            PSF_APP_SPIWritedriver (u8PortNum,pu8WriteBuf,u8WriteLen)
 
 /***************************************************************************************
 Function:
@@ -222,7 +222,7 @@ Remarks:
     User definition of this Hook function is mandatory.                                 
 ***************************************************************************************/
 #define MCHP_PSF_HOOK_UPD_READ(u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)\
-            SAMD20_SPIReaddriver (u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)
+            PSF_APP_SPIReaddriver (u8PortNum,pu8WriteBuf,u8WriteLen,pu8ReadBuf, u8ReadLen)
 
 
 // *****************************************************************************
@@ -260,7 +260,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                  
 ***********************************************************************/			      
-#define MCHP_PSF_HOOK_HW_PDTIMER_INIT()   SAMD20_HWTimerInit() 
+#define MCHP_PSF_HOOK_HW_PDTIMER_INIT()   PSF_APP_HWTimerInit()
 
 /**************************************************************************************************
 Summary:
@@ -332,7 +332,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                            
 *********************************************************************************/
-#define MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT()  SAMD20_EnterCriticalSection()             
+#define MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT()  PSF_APP_EnterCriticalSection()             
 
 /*******************************************************************************
 Function:
@@ -361,7 +361,7 @@ Example:
 Remarks:
 User definition of this Hook function is mandatory                          
 *******************************************************************************/                           
-#define MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT()     SAMD20_ExitCriticalSection()
+#define MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT()     PSF_APP_ExitCriticalSection()
 
 // *****************************************************************************
 // *****************************************************************************
@@ -392,7 +392,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                   
 ************************************************************************/
-#define MCHP_PSF_HOOK_MEMCMP(pObj1, pObj2, iLength) SAMD20_MemCmp (pObj1, pObj2, iLength)                          
+#define MCHP_PSF_HOOK_MEMCMP(pObj1, pObj2, iLength) PSF_APP_MemCmp (pObj1, pObj2, iLength)                          
 
 /**************************************************************************
 Function:
@@ -418,7 +418,7 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory                     
 **************************************************************************/
-#define MCHP_PSF_HOOK_MEMCPY(pDest, pSrc, iLen) SAMD20_MemCpy (pDest, pSrc, iLen)
+#define MCHP_PSF_HOOK_MEMCPY(pDest, pSrc, iLen) PSF_APP_MemCpy (pDest, pSrc, iLen)
 
 // *****************************************************************************
 // *****************************************************************************
@@ -566,7 +566,8 @@ Example:
 Remarks:
     User definition of this Hook function is mandatory when CONFIG_HOOK_DEBUG_MSG is declared as '1'.                  
 ***********************************************************************/  
-#define MCHP_PSF_HOOK_DEBUG_INIT()   SAMD20_UART_Initialisation()
+/*SERCOM1_USART_Initialize is initialized as part of initialization.c - MS Edit*/
+#define MCHP_PSF_HOOK_DEBUG_INIT()   
 
 /***********************************************************************
 Function:
@@ -593,7 +594,7 @@ Remarks:
     This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
 ***********************************************************************/  
 
-#define MCHP_PSF_HOOK_PRINT_CHAR(byData)    SAMD20_UART_Write_Char (byData);
+#define MCHP_PSF_HOOK_PRINT_CHAR(byData)    PSF_APP_UART_Write_Char (byData);
 
 
 /***********************************************************************
@@ -622,7 +623,7 @@ Example:
 Remarks:
     This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
 ***********************************************************************/  
-#define MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)    SAMD20_UART_Write_Int (dwWriteInt, byWidth);
+#define MCHP_PSF_HOOK_PRINT_INTEGER(dwWriteInt, byWidth)    PSF_APP_UART_Write_Int (dwWriteInt, byWidth);
 
 
 /***********************************************************************
@@ -650,7 +651,7 @@ Example:
 Remarks:
     This hook API can be used only if CONFIG_HOOK_DEBUG_MSG is 1.                 
 ***********************************************************************/ 
-#define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)  SAMD20_UART_Write_String (pbyMessage);
+#define MCHP_PSF_HOOK_PRINT_TRACE(pbyMessage)  PSF_APP_UART_Write_String (pbyMessage);
 
 #else
     #define MCHP_PSF_HOOK_DEBUG_INIT() 

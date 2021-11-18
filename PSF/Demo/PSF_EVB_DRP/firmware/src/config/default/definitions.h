@@ -49,21 +49,18 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "PSF_Config.h"
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)
-#include "peripheral/sercom/i2cm/plib_sercom3_i2c.h"
-#endif 
+#include "peripheral/sercom/i2c_master/plib_sercom3_i2c_master.h"
 #include "peripheral/nvmctrl/plib_nvmctrl.h"
-#include "peripheral/evsys/plib_evsys.h"
 #include "peripheral/sercom/usart/plib_sercom1_usart.h"
-#include "peripheral/sercom/spim/plib_sercom0_spi.h"
+#include "peripheral/evsys/plib_evsys.h"
+#include "peripheral/sercom/spi_master/plib_sercom0_spi_master.h"
 #include "peripheral/port/plib_port.h"
 #include "peripheral/clock/plib_clock.h"
 #include "peripheral/nvic/plib_nvic.h"
 #include "peripheral/eic/plib_eic.h"
 #include "peripheral/tc/plib_tc0.h"
-#if (TRUE == INCLUDE_PD_SINK)
 #include "peripheral/dac/plib_dac.h"
-#endif
+
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
 
@@ -71,6 +68,9 @@ extern "C" {
 
 #endif
 // DOM-IGNORE-END
+
+/* CPU clock frequency */
+#define CPU_CLOCK_FREQUENCY 48000000
 
 // *****************************************************************************
 // *****************************************************************************

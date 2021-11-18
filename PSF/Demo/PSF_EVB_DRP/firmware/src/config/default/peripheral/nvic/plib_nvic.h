@@ -42,6 +42,7 @@
 #define PLIB_NVIC_H
 
 #include <stddef.h>
+#include <stdbool.h>
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -55,6 +56,9 @@
 /***************************** NVIC Inline *******************************/
 
 void NVIC_Initialize( void );
+void NVIC_INT_Enable( void );
+bool NVIC_INT_Disable( void );
+void NVIC_INT_Restore( bool state );
 
 
 // DOM-IGNORE-BEGIN
