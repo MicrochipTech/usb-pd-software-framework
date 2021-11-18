@@ -4,7 +4,7 @@
 
 
 project: PSF_EVB_DRP
-creation_date: 2021-11-18T11:25:27.585+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
+creation_date: 2021-11-18T13:30:03.865+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
 operating_system: Windows 10
 mhc_mode: IDE            # [IDE|Standalone|Headless]
 mhc_version: v3.8.2
@@ -14,5 +14,6 @@ compiler: XC32 (2.30)
 
 modules:
     - {name: "csp", version: "v3.10.0"}
+    - {name: "core", version: "v3.10.0"}
     - {name: "dev_packs", version: "v3.10.0"}
 

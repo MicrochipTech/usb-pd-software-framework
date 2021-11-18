@@ -1,20 +1,28 @@
 /*******************************************************************************
- System Interrupts File
+  Driver Layer Interface Header
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    interrupt.h
+    driver.h
 
   Summary:
-    Interrupt vectors mapping
+    Driver layer data types and definitions.
 
   Description:
-    This file contains declarations of device vectors used by Harmony 3
- *******************************************************************************/
+    This file defines the common macros and definitions for the driver layer
+    modules.
 
-// DOM-IGNORE-BEGIN
+  Remarks:
+    The parent directory to the "driver" directory should be added to the
+    compiler's search path for header files such that the following include
+    statement will successfully include this file.
+
+    #include "driver/driver.h"
+  *************************************************************************/
+
+//DOM-IGNORE-BEGIN
 /*******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
@@ -37,34 +45,23 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  *******************************************************************************/
-// DOM-IGNORE-END
+//DOM-IGNORE-END
 
-#ifndef INTERRUPTS_H
-#define INTERRUPTS_H
+#ifndef DRIVER_H
+#define DRIVER_H
+
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
-#include <stdint.h>
+
+#include "driver/driver_common.h"
 
 
+#endif // DRIVER_H
+/*******************************************************************************
+ End of File
+*/
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Handler Routines
-// *****************************************************************************
-// *****************************************************************************
-
-void Reset_Handler (void);
-void NonMaskableInt_Handler (void);
-void HardFault_Handler (void);
-void EIC_InterruptHandler (void);
-void SERCOM0_SPI_InterruptHandler (void);
-void SERCOM3_I2C_InterruptHandler (void);
-void TC0_TimerInterruptHandler (void);
-
-
-
-#endif // INTERRUPTS_H
