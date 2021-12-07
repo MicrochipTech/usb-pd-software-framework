@@ -46,7 +46,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 #include "i2c_dc_dc_ung8198.h"
-
+#include "drivers.h"
 // *****************************************************************************
 // *****************************************************************************
 // Section: Main Entry Point
@@ -58,8 +58,16 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
 
+
 	/*PSF init called*/
 	(void)MchpPSF_Init();
+    
+    PSF_APP_USART_Drv_Initialize();
+
+    PSF_APP_SPI_Drv_Initialize();
+    
+    DEBUG_PRINT_PORT_STR (3, "debug message for testing\r\n");
+
 
     while ( true )
     {
@@ -68,6 +76,7 @@ int main ( void )
 		
 		/*PSF stack Run*/
 		MchpPSF_RUN();
+        
         
         #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)   
 

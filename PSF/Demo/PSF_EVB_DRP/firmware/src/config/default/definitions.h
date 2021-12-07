@@ -61,7 +61,10 @@
 #include "peripheral/tc/plib_tc0.h"
 #include "peripheral/dac/plib_dac.h"
 #include "driver/i2c/drv_i2c.h"
+#include "driver/usart/drv_usart.h"
+#include "driver/spi/drv_spi.h"
 #include "system/int/sys_int.h"
+#include "system/ports/sys_ports.h"
 #include "osal/osal.h"
 #include "system/debug/sys_debug.h"
 #include "app.h"
@@ -192,6 +195,10 @@ typedef struct
     /* I2C0 Driver Object */
     SYS_MODULE_OBJ drvI2C0;
 
+    /* SPI0 Driver Object */
+    SYS_MODULE_OBJ drvSPI0;
+
+    SYS_MODULE_OBJ  drvUsart0;
 
 } SYSTEM_OBJECTS;
 

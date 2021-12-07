@@ -926,7 +926,7 @@ void UPD_InitHPD (UINT8 u8PortNum)
     /*Initially, disable HPD*/
     UPD_RegByteClearBit (u8PortNum, UPD_HPD_CTL, UPD_HPD_ENABLE);
     
-    DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Initialized and disabled\r\n");
+    //DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Initialized and disabled\r\n");
     
     /*HPD peripheral will be enabled by user application via client request.*/
 }
@@ -1008,13 +1008,13 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	UPD_RegByteClearBit (u8PortNum, UPD_CLK_CTL, \
             (UPD_RING_OSC_ENABLE | UPD_48MHZ_OSC_ENABLE | UPD_SYS_CLK_ENABLE));
     
-    DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set Port Idle\r\n");
+    //DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set Port Idle\r\n");
 	
 	/* Put MCU into IDLE */
 
 	if (FALSE == UPD_ReturnUPDsActiveSts ())
 	{
-        DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE\r\n");
+        //DEBUG_PRINT_PORT_STR (u8PortNum,"UPDHW: Set MCU IDLE\r\n");
                 
 		gu8SetMCUIdle = UPD_MCU_IDLE;
 	}	

@@ -667,21 +667,21 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: 'false'}
+        attributes: {id: core, value: 'true'}
   - type: String
     attributes: {id: NVIC_8_0_HANDLER}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: SERCOM1_Handler}
+        attributes: {id: core, value: SERCOM1_USART_InterruptHandler}
   - type: Boolean
     attributes: {id: NVIC_8_0_HANDLER_LOCK}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: 'false'}
+        attributes: {id: core, value: 'true'}
   - type: Integer
     attributes: {id: OSC8M_CLOCK_FREQ}
     children:
@@ -1137,6 +1137,13 @@ children:
       children:
       - type: User
         attributes: {value: ''}
+  - type: KeyValueSet
+    attributes: {id: PIN_1_DRVSTR}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '0'}
   - type: String
     attributes: {id: PIN_1_FUNCTION_NAME}
     children:
@@ -2529,28 +2536,28 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: sercom1, value: 'false'}
+        attributes: {id: sercom1, value: 'true'}
   - type: Boolean
     attributes: {id: SERCOM1_INTERRUPT_ENABLE_UPDATE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: 'true'}
+        attributes: {id: core, value: 'false'}
   - type: String
     attributes: {id: SERCOM1_INTERRUPT_HANDLER}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: sercom1, value: SERCOM1_Handler}
+        attributes: {id: sercom1, value: SERCOM1_USART_InterruptHandler}
   - type: Boolean
     attributes: {id: SERCOM1_INTERRUPT_HANDLER_LOCK}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: sercom1, value: 'false'}
+        attributes: {id: sercom1, value: 'true'}
   - type: Boolean
     attributes: {id: SERCOM3_CORE_CLOCK_ENABLE}
     children:
@@ -2621,15 +2628,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: 'true'}
-  - type: Comment
-    attributes: {id: SYSTICK_COMMENT}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'false'}
   - type: String
     attributes: {id: SYSTICK_PERIOD}
     children:
@@ -2724,13 +2722,11 @@ children:
       - type: Dynamic
         attributes: {id: tc0, value: 'true'}
   - type: Boolean
-    attributes: {id: systickEnable}
+    attributes: {id: USE_SYSTICK_INTERRUPT}
     children:
-    - type: Attributes
+    - type: Values
       children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
+      - type: Dynamic
+        attributes: {id: core, value: 'false'}
 - type: ElementPosition
   attributes: {x: '330', y: '60', id: core}

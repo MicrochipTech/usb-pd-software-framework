@@ -51,6 +51,8 @@
         
 #include "PSF_Config.h"
 
+#include "../src/config/default/driver/usart/drv_usart.h"
+#include "../src/config/default/driver/spi/drv_spi.h"
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
 #include "../../firmware/src/config/default/peripheral/sercom/spi_master/plib_sercom0_spi_master.h"
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
@@ -62,6 +64,9 @@
 #if (TRUE == INCLUDE_PD_SINK)
 #include "../../firmware/src/config/default/peripheral/dac/plib_dac.h"
 #endif
+
+#define APP1_DATA_SIZE   1
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: SAMD20 Configuration
@@ -310,6 +315,41 @@ void* PSF_APP_MemCpy(void *pdest, const void *psrc, int ilen);
 **************************************************************************/
 int PSF_APP_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen);
 
+
+typedef struct
+{
+    DRV_HANDLE              usartHandle;
+    DRV_USART_BUFFER_HANDLE bufferHandle;
+    char                    readBuffer[APP1_DATA_SIZE];
+    volatile bool           transferStatus;
+} DRV_USART_DATA;
+
+// *****************************************************************************
+/* Application Data
+
+  Summary:
+    Holds application data
+
+  Description:
+    This structure holds the application's data.
+
+  Remarks:
+    Application strings and buffers are be defined outside this structure.
+ */
+
+typedef struct
+{
+    /* The application's current state */
+    DRV_HANDLE                      drvSPIHandle;
+    DRV_SPI_TRANSFER_HANDLE         transferHandle;
+    DRV_SPI_TRANSFER_SETUP          setup;
+    volatile bool                   transferStatus;
+
+} DRV_SPI_DATA;
+
+void PSF_APP_USART_Drv_Initialize(void);
+
+void PSF_APP_SPI_Drv_Initialize(void);
 /*Debug UART APIs*/
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 

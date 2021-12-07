@@ -1,21 +1,23 @@
 /*******************************************************************************
-  NVIC PLIB Implementation
+  Ports System Service Mapping File
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    plib_nvic.c
+    sys_ports_mapping.h
 
   Summary:
-    NVIC PLIB Source File
+    Ports System Service mapping file.
 
   Description:
-    None
-
+    This header file contains the mapping of the APIs defined in the API header
+    to either the function implementations or macro implementation or the
+    specific variant implementation.
 *******************************************************************************/
 
-/*******************************************************************************
+//DOM-IGNORE-BEGIN
+/******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
@@ -37,69 +39,64 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
+//DOM-IGNORE-END
 
-#include "device.h"
-#include "plib_nvic.h"
+#ifndef SYS_PORTS_MAPPING_H
+#define SYS_PORTS_MAPPING_H
 
+
+
+#include "peripheral/port/plib_port.h"
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: NVIC Implementation
+// Section: PORTS System Service Mapping
 // *****************************************************************************
 // *****************************************************************************
 
-void NVIC_Initialize( void )
+
+static inline void SYS_PORT_PinWrite(SYS_PORT_PIN pin, bool value)
 {
-
-    /* Enable NVIC Controller */
-    __DMB();
-    __enable_irq();
-
-    /* Enable the interrupt sources and configure the priorities as configured
-     * from within the "Interrupt Manager" of MHC. */
-    NVIC_SetPriority(EIC_IRQn, 3);
-    NVIC_EnableIRQ(EIC_IRQn);
-    NVIC_SetPriority(SERCOM0_IRQn, 3);
-    NVIC_EnableIRQ(SERCOM0_IRQn);
-    NVIC_SetPriority(SERCOM1_IRQn, 3);
-    NVIC_EnableIRQ(SERCOM1_IRQn);
-    NVIC_SetPriority(SERCOM3_IRQn, 3);
-    NVIC_EnableIRQ(SERCOM3_IRQn);
-    NVIC_SetPriority(TC0_IRQn, 3);
-    NVIC_EnableIRQ(TC0_IRQn);
-
-
-
+    PORT_PinWrite((PORT_PIN)pin, value);
 }
 
-void NVIC_INT_Enable( void )
+static inline bool SYS_PORT_PinRead(SYS_PORT_PIN pin)
 {
-    __DMB();
-    __enable_irq();
+    return(PORT_PinRead((PORT_PIN)pin));
 }
 
-bool NVIC_INT_Disable( void )
+static inline bool SYS_PORT_PinLatchRead(SYS_PORT_PIN pin)
 {
-    bool processorStatus;
-
-    processorStatus = (bool) (__get_PRIMASK() == 0);
-
-    __disable_irq();
-    __DMB();
-
-    return processorStatus;
+    return(PORT_PinLatchRead((PORT_PIN)pin));
 }
 
-void NVIC_INT_Restore( bool state )
+static inline void SYS_PORT_PinToggle(SYS_PORT_PIN pin)
 {
-    if( state == true )
-    {
-        __DMB();
-        __enable_irq();
-    }
-    else
-    {
-        __disable_irq();
-        __DMB();
-    }
+    PORT_PinToggle((PORT_PIN)pin);
 }
+
+static inline void SYS_PORT_PinSet(SYS_PORT_PIN pin)
+{
+    PORT_PinSet((PORT_PIN)pin);
+}
+
+static inline void SYS_PORT_PinClear(SYS_PORT_PIN pin)
+{
+    PORT_PinClear((PORT_PIN)pin);
+}
+
+static inline void SYS_PORT_PinInputEnable(SYS_PORT_PIN pin)
+{
+    PORT_PinInputEnable((PORT_PIN)pin);
+}
+
+static inline void SYS_PORT_PinOutputEnable(SYS_PORT_PIN pin)
+{
+    PORT_PinOutputEnable((PORT_PIN)pin);
+}
+
+#endif // SYS_PORTS_MAPPING_H
+
+/*******************************************************************************
+ End of File
+*/

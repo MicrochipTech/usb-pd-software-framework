@@ -62,6 +62,7 @@ void NonMaskableInt_Handler (void);
 void HardFault_Handler (void);
 void EIC_InterruptHandler (void);
 void SERCOM0_SPI_InterruptHandler (void);
+void SERCOM1_USART_InterruptHandler (void);
 void SERCOM3_I2C_InterruptHandler (void);
 void TC0_TimerInterruptHandler (void);
 

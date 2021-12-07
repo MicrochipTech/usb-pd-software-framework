@@ -52,6 +52,8 @@
 
 static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 
+static DRV_USART_DATA UsartData;
+DRV_SPI_DATA SpiData;
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: defines                                                */
@@ -67,30 +69,14 @@ static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 
 
 /*SERCOM0_SPI_Initialize() to initialize the SPI is called from initialization.c - MS Edit,*/
-/*SPI drivers - SERCOMn_SPI_Initialize is called to initialize the SERCOM SPI module. 
-                    n is the SERCOM instance*/
-#define PSF_APP_SPI_Initialise(n)     SERCOMn_SPI_Initialize(n)
-#define SERCOMn_SPI_Initialize(n)   SERCOM##n##_SPI_Initialize()
 
 /*SPI drivers - SERCOMn_SPI_WriteRead is called for SPI read write operation. n is the SERCOM instance*/
 #define PSF_APP_SPI_WriteRead(n,pTransmitData,txSize,pReceiveData,rxSize)\
-                    SERCOMn_SPI_WriteRead(n,pTransmitData,txSize,pReceiveData,rxSize)
-#define SERCOMn_SPI_WriteRead(n,pTransmitData,txSize,pReceiveData,rxSize)\
- SERCOM##n##_SPI_WriteRead(pTransmitData,txSize,pReceiveData,rxSize)
+    DRV_SPI_WriteReadTransferAdd(SpiData.drvSPIHandle, pTransmitData, txSize, pReceiveData, rxSize, &SpiData.transferHandle);
 
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     /*Debug UART drivers*/
-
-    /*SERCOM1_USART_Initialise is initialized as part of initialization.c - MS Edit*/
-    #define PSF_APP_UART_Init(n) SERCOMn_UART_Initialise(n)
-    #define SERCOMn_UART_Initialise(n) SERCOM##n##_USART_Initialize()
-
-    #define PSF_APP_UART_Write(n, buffer, u32size) SERCOMn_UART_WRITE(n, buffer, u32size)
-    #define SERCOMn_UART_WRITE(n, buffer, u32size) SERCOM##n##_USART_Write(buffer, u32size)
-
-    #define PSF_APP_UART_IsTransmitComplete(n) SERCOMn_UART_IsTransmitComplete(n)
-    #define SERCOMn_UART_IsTransmitComplete(n) SERCOM##n##_USART_TransmitComplete()
-
+#define PSF_APP_UART_Write(n, buffer, u32size) DRV_USART_WriteBufferAdd(UsartData.usartHandle, (void*)buffer, u32size, &UsartData.bufferHandle)
 #endif /* CONFIG_HOOK_DEBUG_MSG */
 
 /* ************************************************************************** */
@@ -136,13 +122,14 @@ UINT8 PSF_APP_SPIInitialisation(void)
 }
 UINT8 PSF_APP_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, UINT8 *pu8ReadBuffer, UINT8 u8Readlength)
 {
-    UINT8 u8Return = PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
-    u8Return &= PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, NULL, SET_TO_ZERO, pu8ReadBuffer, u8Readlength);
-    return u8Return;
+    PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
+    PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, NULL, SET_TO_ZERO, pu8ReadBuffer, u8Readlength);
+    return TRUE;
 }
 UINT8 PSF_APP_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength)
 {
-    return PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
+    PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
+    return TRUE;
 }
 
 /*****************************************************************************/
@@ -204,29 +191,107 @@ int PSF_APP_MemCmp(const void *pau8Data1, const void *pau8Data2, int ilen)
 /*Removed PSF_APP_UART_Initialisation- MS Edit*/
 void PSF_APP_UART_Write_Char(char byData)
 {
-    (void)PSF_APP_UART_Write(PSF_APP_UART_INSTANCE, (void*)&byData,1); 
-    while(!PSF_APP_UART_IsTransmitComplete(PSF_APP_UART_INSTANCE)) 
-    { 
+    while(UsartData.transferStatus != true)
+    {
     }
+    UsartData.transferStatus = false;
+    (void)PSF_APP_UART_Write(PSF_APP_UART_INSTANCE, (void*)&byData,1); 
+
 }
 
 void PSF_APP_UART_Write_Int(UINT32 dwWriteInt, UINT8 byWidth)
 {
+    while(UsartData.transferStatus != true)
+    {
+    }
+    UsartData.transferStatus = false;
     (void)PSF_APP_UART_Write(PSF_APP_UART_INSTANCE, (void*)&dwWriteInt, byWidth); 
-    while(!PSF_APP_UART_IsTransmitComplete(PSF_APP_UART_INSTANCE)) 
-    { 
-    } 
+    
 }
 
 void PSF_APP_UART_Write_String(char* pbyMessage)
 {
-    (void)PSF_APP_UART_Write(PSF_APP_UART_INSTANCE, (void*)pbyMessage,strlen(pbyMessage)); 
-    while(!PSF_APP_UART_IsTransmitComplete(PSF_APP_UART_INSTANCE)) 
-    { 
+    while(UsartData.transferStatus != true)
+    {
+    }
+    UsartData.transferStatus = false;
+    DRV_USART_WriteBufferAdd(UsartData.usartHandle, (void*)pbyMessage, strlen(pbyMessage), &UsartData.bufferHandle);
+}
+static void Drv_USARTBufferEventHandler(
+    DRV_USART_BUFFER_EVENT bufferEvent,
+    DRV_USART_BUFFER_HANDLE bufferHandle,
+    uintptr_t context
+)
+{
+    switch(bufferEvent)
+    {
+        case DRV_USART_BUFFER_EVENT_COMPLETE:
+            UsartData.transferStatus = true;
+            break;
+
+        case DRV_USART_BUFFER_EVENT_ERROR:
+            break;
+
+        default:
+            break;
+
     }
 }
+static void Drv_SPIEventHandler (
+    DRV_SPI_TRANSFER_EVENT event,
+    DRV_SPI_TRANSFER_HANDLE transferHandle, 
+    uintptr_t context 
+)
+{
+    if (event == DRV_SPI_TRANSFER_EVENT_COMPLETE)
+    {
+        if(transferHandle == SpiData.transferHandle)
+        {
+            SpiData.transferStatus = true;
+        }
+    }
+    else
+    {
+        SpiData.transferStatus = false;
+    }
+}
+void PSF_APP_USART_Drv_Initialize( void )
+{
+    UsartData.transferStatus = true;
+    UsartData.usartHandle    = DRV_HANDLE_INVALID;
+    UsartData.bufferHandle   = DRV_USART_BUFFER_HANDLE_INVALID;
+    UsartData.usartHandle = DRV_USART_Open(DRV_USART_INDEX_0, DRV_IO_INTENT_READWRITE);
+    if (UsartData.usartHandle != DRV_HANDLE_INVALID)
+    {
+        DRV_USART_BufferEventHandlerSet(UsartData.usartHandle, Drv_USARTBufferEventHandler, 0);
+    }
+    else
+    {
+    }
+}
+void PSF_APP_SPI_Drv_Initialize()
+{
+    SpiData.drvSPIHandle = DRV_HANDLE_INVALID;
+    SpiData.transferStatus = false;
+    SpiData.setup.baudRateInHz = 2000000;
+    SpiData.setup.clockPhase = DRV_SPI_CLOCK_PHASE_VALID_TRAILING_EDGE;
+    SpiData.setup.clockPolarity = DRV_SPI_CLOCK_POLARITY_IDLE_LOW;
+    SpiData.setup.dataBits = DRV_SPI_DATA_BITS_8;
+    SpiData.setup.chipSelect = (SYS_PORT_PIN)SPI_SS_0_PIN;
+    SpiData.setup.csPolarity = DRV_SPI_CS_POLARITY_ACTIVE_LOW;
+    
+    SpiData.drvSPIHandle = DRV_SPI_Open( DRV_SPI_INDEX_0, DRV_IO_INTENT_READWRITE );
+    if(DRV_SPI_TransferSetup(SpiData.drvSPIHandle, &SpiData.setup) == true)
+    {
+        /* Register an event handler with the SPI driver */
+        DRV_SPI_TransferEventHandlerSet(SpiData.drvSPIHandle, Drv_SPIEventHandler, (uintptr_t)NULL);
 
-
+    }
+    else
+    {
+        
+    }          
+}
 #endif /* CONFIG_HOOK_DEBUG_MSG */
 
 /* *****************************************************************************

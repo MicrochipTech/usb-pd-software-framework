@@ -26,7 +26,7 @@ children:
       - type: Boolean
         attributes: {id: readOnly}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -180,7 +180,7 @@ children:
       - type: Boolean
         attributes: {id: readOnly}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
       - type: Boolean
         attributes: {id: visible}
         children:
@@ -379,7 +379,20 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
+  - type: DirectCapability
+    attributes: {id: SERCOM0_SPI}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: drv_spi_0}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: drv_spi_SPI_dependency}
   - type: DirectCapability
     attributes: {id: SERCOM0_UART}
     children:
@@ -388,6 +401,6 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
 - type: ElementPosition
-  attributes: {x: '32', y: '96', id: sercom0}
+  attributes: {x: '5', y: '258', id: sercom0}

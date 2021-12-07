@@ -38,8 +38,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 /**************************************************************************************/
     /* Define to print a string */
-    #define DEBUG_PRINT_PORT_STR(byPortNum,string)    MCHP_PSF_HOOK_PRINT_INTEGER(byPortNum,1); \
-                                                      MCHP_PSF_HOOK_PRINT_TRACE(string);
+    #define DEBUG_PRINT_PORT_STR(byPortNum,string)    MCHP_PSF_HOOK_PRINT_TRACE(string);
 
     /* Define to print string and a UINT32 buffer*/
     #define DEBUG_PRINT_PORT_UINT32_STR(byPortNum,string1,dwData,byLen,string2)      MCHP_PSF_HOOK_PRINT_INTEGER(byPortNum,1); \
