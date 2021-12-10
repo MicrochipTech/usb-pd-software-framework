@@ -58,13 +58,14 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
 
-
-	/*PSF init called*/
-	(void)MchpPSF_Init();
-    
     PSF_APP_USART_Drv_Initialize();
 
     PSF_APP_SPI_Drv_Initialize();
+    
+	/*PSF init called*/
+	(void)MchpPSF_Init();
+    
+
     
     DEBUG_PRINT_PORT_STR (3, "debug message for testing\r\n");
 

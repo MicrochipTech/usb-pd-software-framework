@@ -1334,6 +1334,13 @@ children:
       - type: User
         attributes: {value: ''}
   - type: String
+    attributes: {id: PIN_23_LAT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: ''}
+  - type: String
     attributes: {id: PIN_23_MODE}
     children:
     - type: Values
@@ -1376,6 +1383,13 @@ children:
       - type: User
         attributes: {value: ''}
   - type: String
+    attributes: {id: PIN_24_LAT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: ''}
+  - type: String
     attributes: {id: PIN_24_MODE}
     children:
     - type: Values
@@ -1412,6 +1426,13 @@ children:
         attributes: {value: GPIO}
   - type: String
     attributes: {id: PIN_25_INEN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: ''}
+  - type: String
+    attributes: {id: PIN_25_LAT}
     children:
     - type: Values
       children:
@@ -1461,6 +1482,13 @@ children:
         attributes: {value: GPIO}
   - type: String
     attributes: {id: PIN_27_INEN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: ''}
+  - type: String
+    attributes: {id: PIN_27_LAT}
     children:
     - type: Values
       children:
@@ -1677,6 +1705,13 @@ children:
       - type: User
         attributes: {value: ''}
   - type: String
+    attributes: {id: PIN_5_LAT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: ''}
+  - type: String
     attributes: {id: PIN_5_MODE}
     children:
     - type: Values
@@ -1719,6 +1754,13 @@ children:
       - type: User
         attributes: {value: ''}
   - type: String
+    attributes: {id: PIN_6_LAT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: ''}
+  - type: String
     attributes: {id: PIN_6_MODE}
     children:
     - type: Values
@@ -1755,6 +1797,13 @@ children:
         attributes: {value: GPIO}
   - type: String
     attributes: {id: PIN_7_INEN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: ''}
+  - type: String
+    attributes: {id: PIN_7_LAT}
     children:
     - type: Values
       children:

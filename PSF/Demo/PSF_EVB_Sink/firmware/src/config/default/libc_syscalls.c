@@ -24,10 +24,10 @@
 // DOM-IGNORE-END
 
 #include <stdio.h>
-#include <stdarg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <device.h> /* for ARM CMSIS __BKPT() */
+#include <stdbool.h>
+#include "device.h" /* for ARM CMSIS __BKPT() */
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,16 +38,15 @@ extern "C" {
  */
 extern void _exit(int status);
 
-extern void _exit(int status)
+void _exit(int status)
 {
     /* Software breakpoint */
-#ifdef DEBUG
-//    asm("bkpt #0");
+#ifdef __DEBUG
     __BKPT(0);
 #endif
 
     /* halt CPU */
-    while (1)
+    while (true)
     {
     }
 }

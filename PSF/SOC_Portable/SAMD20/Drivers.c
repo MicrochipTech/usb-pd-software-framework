@@ -52,7 +52,10 @@
 
 static UINT32 gu32CriticalSectionCnt = SET_TO_ZERO;
 
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 static DRV_USART_DATA UsartData;
+#endif
+
 DRV_SPI_DATA SpiData;
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -122,12 +125,20 @@ UINT8 PSF_APP_SPIInitialisation(void)
 }
 UINT8 PSF_APP_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, UINT8 *pu8ReadBuffer, UINT8 u8Readlength)
 {
+    while(SpiData.transferStatus != true)
+    {
+    }
+    SpiData.transferStatus = false;
     PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
     PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, NULL, SET_TO_ZERO, pu8ReadBuffer, u8Readlength);
     return TRUE;
 }
 UINT8 PSF_APP_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength)
 {
+    while(SpiData.transferStatus != true)
+    {
+    }
+    SpiData.transferStatus = false;
     PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
     return TRUE;
 }
@@ -237,6 +248,22 @@ static void Drv_USARTBufferEventHandler(
 
     }
 }
+void PSF_APP_USART_Drv_Initialize( void )
+{
+    UsartData.transferStatus = true;
+    UsartData.usartHandle    = DRV_HANDLE_INVALID;
+    UsartData.bufferHandle   = DRV_USART_BUFFER_HANDLE_INVALID;
+    UsartData.usartHandle = DRV_USART_Open(DRV_USART_INDEX_0, DRV_IO_INTENT_READWRITE);
+    if (UsartData.usartHandle != DRV_HANDLE_INVALID)
+    {
+        DRV_USART_BufferEventHandlerSet(UsartData.usartHandle, Drv_USARTBufferEventHandler, 0);
+    }
+    else
+    {
+    }
+}
+
+#endif /* CONFIG_HOOK_DEBUG_MSG */
 static void Drv_SPIEventHandler (
     DRV_SPI_TRANSFER_EVENT event,
     DRV_SPI_TRANSFER_HANDLE transferHandle, 
@@ -255,24 +282,10 @@ static void Drv_SPIEventHandler (
         SpiData.transferStatus = false;
     }
 }
-void PSF_APP_USART_Drv_Initialize( void )
-{
-    UsartData.transferStatus = true;
-    UsartData.usartHandle    = DRV_HANDLE_INVALID;
-    UsartData.bufferHandle   = DRV_USART_BUFFER_HANDLE_INVALID;
-    UsartData.usartHandle = DRV_USART_Open(DRV_USART_INDEX_0, DRV_IO_INTENT_READWRITE);
-    if (UsartData.usartHandle != DRV_HANDLE_INVALID)
-    {
-        DRV_USART_BufferEventHandlerSet(UsartData.usartHandle, Drv_USARTBufferEventHandler, 0);
-    }
-    else
-    {
-    }
-}
 void PSF_APP_SPI_Drv_Initialize()
 {
     SpiData.drvSPIHandle = DRV_HANDLE_INVALID;
-    SpiData.transferStatus = false;
+    SpiData.transferStatus = true;
     SpiData.setup.baudRateInHz = 2000000;
     SpiData.setup.clockPhase = DRV_SPI_CLOCK_PHASE_VALID_TRAILING_EDGE;
     SpiData.setup.clockPolarity = DRV_SPI_CLOCK_POLARITY_IDLE_LOW;
@@ -292,7 +305,7 @@ void PSF_APP_SPI_Drv_Initialize()
         
     }          
 }
-#endif /* CONFIG_HOOK_DEBUG_MSG */
+
 
 /* *****************************************************************************
  End of File

@@ -220,7 +220,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {           
             PORT_PinWrite(PORT_PIN_PA14, TRUE);
             PORT_PinInputEnable(PORT_PIN_PA14);
-            EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
+            //EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
             EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             break;
         }
