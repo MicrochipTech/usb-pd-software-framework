@@ -61,7 +61,7 @@ files:
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 3B157127CE2EA1F6095B09FBEEF7CC3B
+  userChecksum: 9B47FF337CE6963166166ACF6D154055
 - generatedChecksum: E74D3A4F8CF79616493019FC10BE35A7
   logicalPath: config/default
   name: interrupts.c
@@ -139,13 +139,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: CD29BA93C55F4ED28C6F9A2085BD2EA5
-- generatedChecksum: 0D85A034023B6D7EE57B00C85B14B6FC
+- generatedChecksum: 4F4DF61783DDFB0D414784B1B45E3BA6
   logicalPath: config/default/peripheral/sercom/usart
   name: plib_sercom1_usart.c
   physicalPath: peripheral/sercom/usart
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 0D85A034023B6D7EE57B00C85B14B6FC
+  userChecksum: 4F4DF61783DDFB0D414784B1B45E3BA6
 - generatedChecksum: 96EA49323C9391741EAA5C69EA6216AE
   logicalPath: config/default/peripheral/sercom/i2c_master
   name: plib_sercom3_i2c_master.c

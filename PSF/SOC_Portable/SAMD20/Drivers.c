@@ -57,6 +57,7 @@ static DRV_USART_DATA UsartData;
 #endif
 
 DRV_SPI_DATA SpiData;
+
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: defines                                                */
@@ -125,20 +126,27 @@ UINT8 PSF_APP_SPIInitialisation(void)
 }
 UINT8 PSF_APP_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, UINT8 *pu8ReadBuffer, UINT8 u8Readlength)
 {
+//    while(SpiData.transferStatus != true)
+//    {
+//    }
+//    SpiData.transferStatus = false;
+    PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
+//    while(SpiData.transferStatus != true)
+//    {
+//    }
+    SpiData.transferStatus = false;
+    PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, NULL, SET_TO_ZERO, pu8ReadBuffer, u8Readlength);
     while(SpiData.transferStatus != true)
     {
     }
-    SpiData.transferStatus = false;
-    PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
-    PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, NULL, SET_TO_ZERO, pu8ReadBuffer, u8Readlength);
     return TRUE;
 }
 UINT8 PSF_APP_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength)
 {
-    while(SpiData.transferStatus != true)
-    {
-    }
-    SpiData.transferStatus = false;
+//    while(SpiData.transferStatus != true)
+//    {
+//    }
+//    SpiData.transferStatus = false;
     PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
     return TRUE;
 }
