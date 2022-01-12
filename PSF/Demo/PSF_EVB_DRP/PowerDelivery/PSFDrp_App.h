@@ -44,6 +44,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 #include <PSF_APIHook.h>
 #include "psf_stdinc.h"
+#include "i2c_dc_dc_driver.h"
 
 #define APP_VOLTAGE_0mV         0
 #define APP_VOLTAGE_5000mV      5000

@@ -40,7 +40,6 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 
 #include "psf_stdinc.h"
-#include "i2c_dc_dc_driver.h"
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -58,8 +57,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 void App_SetMCUIdle()
 {
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    
+
+//    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+    __disable_irq(); // MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT() API modified to disable individual peripheral interrupts
+
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
@@ -70,8 +71,9 @@ void App_SetMCUIdle()
     
     __DSB();
     __WFI();
-    
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+
+    __enable_irq(); // MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT() API modified to enable individual peripheral interrupts
+//    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     
     /* Resume from Idle*/
     /* Enable the disabled interrupt*/

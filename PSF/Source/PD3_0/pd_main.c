@@ -52,6 +52,7 @@ UINT8 MchpPSF_Init (void)
     
     /*Initialize HW SPI module defined by the user*/
     u8InitStatus &= MCHP_PSF_HOOK_UPDHW_INTF_INIT();
+    
 	
     for (UINT8 u8PortNum = SET_TO_ZERO; u8PortNum < CONFIG_PD_PORT_COUNT; u8PortNum++)
     {
@@ -64,7 +65,7 @@ UINT8 MchpPSF_Init (void)
         /*Initialize chip select in case of SPI configuration*/
         MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eSPI_CHIP_SELECT_FUNC);
         #endif
-
+        
         /*Initialize orientation pin*/
         MCHP_PSF_HOOK_GPIO_FUNC_INIT(u8PortNum, eORIENTATION_FUNC);
     }
@@ -113,7 +114,7 @@ UINT8 MchpPSF_Init (void)
 
     /* Enable the global interrupt */
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
-    
+
     return u8InitStatus;
 
 }

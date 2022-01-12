@@ -83,9 +83,9 @@
 #define SPI_SS_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 1U)) & 0x01U)
 #define SPI_SS_1_PIN                  PORT_PIN_PA01
 
-/*** Macros for DAC_I pin ***/
-#define DAC_I_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 2U)) & 0x01U)
-#define DAC_I_PIN                  PORT_PIN_PA02
+/*** Macros for DC_DC_ALERT_0 pin ***/
+#define DC_DC_ALERT_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 2U)) & 0x01U)
+#define DC_DC_ALERT_0_PIN                  PORT_PIN_PA02
 
 /*** Macros for DC_DC_ALERT_1 pin ***/
 #define DC_DC_ALERT_1_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 3U)) & 0x01U)
@@ -117,10 +117,6 @@
 #define POWER_ROLE_0_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 6U))
 #define POWER_ROLE_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 6U)) & 0x01U)
 #define POWER_ROLE_0_PIN                  PORT_PIN_PA06
-
-/*** Macros for DC_DC_ALERT_0 pin ***/
-#define DC_DC_ALERT_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 7U)) & 0x01U)
-#define DC_DC_ALERT_0_PIN                  PORT_PIN_PA07
 
 /*** Macros for SPI_MISO pin ***/
 #define SPI_MISO_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 8U)) & 0x01U)

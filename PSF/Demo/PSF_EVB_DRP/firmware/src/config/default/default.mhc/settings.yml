@@ -1,13 +1,13 @@
 configName: default
 folderName: ''
 format_version: v1.0
-frameworkPath: ../../../../../Harmony_Framework
+frameworkPath: ../../../../../../../../Harmony_Framework_Latest
 processor: ATSAMD20E16
 projectName: ''
 settings:
-  PackageFilter: bsp;core;csp;dev_packs;quick_docs;usb
+  PackageFilter: bsp;core;core_apps_sam_d20;cryptoauthlib;cryptoauthlib_apps;csp;csp_apps_sam_d20;dev_packs;quick_docs;usb_powerdelivery
   FORCE_OPTIMIZATION: 'false'
   GENERATE_BACKUP: 'true'
   CMSISPath: .\dev_packs\arm\CMSIS\5.8.0
-  MERGE_STRATEGY: USER_ALL
+  MERGE_STRATEGY: ALL
   DFPPath: .\dev_packs\Microchip\SAMD20_DFP\3.4.68\samd20\atdf\ATSAMD20E16.atdf

@@ -1,11 +1,4 @@
 files:
-- generatedChecksum: null
-  logicalPath: ''
-  name: app.c
-  physicalPath: ../..
-  security: NON_SECURE
-  type: SOURCE
-  userChecksum: null
 - generatedChecksum: 13F062B063A4F4AE0B19CE872943995B
   logicalPath: config/default/driver/i2c
   name: drv_i2c.c
@@ -55,13 +48,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 0D18A719A1E40A8875895284967F66D0
-- generatedChecksum: F0F74F9A6F2D1856E319DA4ACE3E36B7
+- generatedChecksum: D0CB46F1D6406AE704986070C530D29D
   logicalPath: config/default
   name: initialization.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 9B47FF337CE6963166166ACF6D154055
+  userChecksum: D0CB46F1D6406AE704986070C530D29D
 - generatedChecksum: E74D3A4F8CF79616493019FC10BE35A7
   logicalPath: config/default
   name: interrupts.c
@@ -97,13 +90,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 7A8067F683B387DF9A602D8CD93360ED
-- generatedChecksum: 49FE2898012C24240CEB09413AFC364A
+- generatedChecksum: 437F16AAE59A3A3DEA6C1104DE31D0BE
   logicalPath: config/default/peripheral/eic
   name: plib_eic.c
   physicalPath: peripheral/eic
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 01C067E2723D14BACC25EC47A96A354D
+  userChecksum: 334CFF4A4888A359D99BA33146847EA2
 - generatedChecksum: C3ECDED3D6301DB0DE622293ED615D21
   logicalPath: config/default/peripheral/evsys
   name: plib_evsys.c
@@ -111,13 +104,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: C3ECDED3D6301DB0DE622293ED615D21
-- generatedChecksum: 7234EB70951D8464969A612D039F5D69
+- generatedChecksum: 469C506E0941A6D5B83936058B80E035
   logicalPath: config/default/peripheral/nvic
   name: plib_nvic.c
   physicalPath: peripheral/nvic
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 7234EB70951D8464969A612D039F5D69
+  userChecksum: 469C506E0941A6D5B83936058B80E035
 - generatedChecksum: 8E76B0609233122F5E1694614CEC13B1
   logicalPath: config/default/peripheral/nvmctrl
   name: plib_nvmctrl.c
@@ -125,13 +118,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 8E76B0609233122F5E1694614CEC13B1
-- generatedChecksum: EA8F0A0E85F3DEE4E6E3636B08B2737D
+- generatedChecksum: 2EBA01DF515A9E0CEEE0E891FE7B9C90
   logicalPath: config/default/peripheral/port
   name: plib_port.c
   physicalPath: peripheral/port
   security: NON_SECURE
   type: SOURCE
-  userChecksum: EA8F0A0E85F3DEE4E6E3636B08B2737D
+  userChecksum: 2EBA01DF515A9E0CEEE0E891FE7B9C90
 - generatedChecksum: CD29BA93C55F4ED28C6F9A2085BD2EA5
   logicalPath: config/default/peripheral/sercom/spi_master
   name: plib_sercom0_spi_master.c
@@ -174,13 +167,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 02C3C1B519E59992810626BB6098CF56
-- generatedChecksum: DE51BB8F6FDBC39FB049CB2A14E56B25
+- generatedChecksum: 77FAB1E07EB408CD5CEF7CEEC75D1C60
   logicalPath: config/default
   name: tasks.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: DE51BB8F6FDBC39FB049CB2A14E56B25
+  userChecksum: 77FAB1E07EB408CD5CEF7CEEC75D1C60
 - generatedChecksum: 7806B30ECAE0D18D08CD583D8775530D
   logicalPath: config/default/stdio
   name: xc32_monitor.c
@@ -216,13 +209,6 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 52C6EC782D8D4AA1A8A2B88137B3E8A3
-- generatedChecksum: null
-  logicalPath: ''
-  name: app.h
-  physicalPath: ../..
-  security: NON_SECURE
-  type: HEADER
-  userChecksum: null
 - generatedChecksum: 14F1AD56D242EFD0AF76849C6ADFECC4
   logicalPath: packs/CMSIS/CMSIS/Core/Include
   name: cachel1_armv7.h
@@ -307,13 +293,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 4C6EE00E23F2346FA40BD5FBB38BA8E9
-- generatedChecksum: E2028AD654890F112251FF7D9DEA7373
+- generatedChecksum: 31A5B35A14838926DE104D1856F91F62
   logicalPath: config/default
   name: definitions.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: 7DF66E75F43A4B989FDB7C11A0D56A2E
+  userChecksum: DD22597BE07A8F4666AA0D1AD93C666C
 - generatedChecksum: 199CE8A322D6C7600722A4ABA4E3A439
   logicalPath: config/default
   name: device.h
@@ -538,13 +524,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 9290D4A79F86C3A3D1E5CE508A1A0DF4
-- generatedChecksum: A96CB7759278065C8055C69CD28652F9
+- generatedChecksum: EE886B31B28CC1EFCB099D73D16076C2
   logicalPath: config/default/peripheral/eic
   name: plib_eic.h
   physicalPath: peripheral/eic
   security: NON_SECURE
   type: HEADER
-  userChecksum: A96CB7759278065C8055C69CD28652F9
+  userChecksum: EE886B31B28CC1EFCB099D73D16076C2
 - generatedChecksum: CCAEF942C66AF995876DFD85CEFF611F
   logicalPath: config/default/peripheral/evsys
   name: plib_evsys.h
@@ -566,13 +552,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: AE3541D9EB0BC86EE90AC03EA3E1339F
-- generatedChecksum: 2DFD2317F4DFE9AF158254162C791107
+- generatedChecksum: E98B720D44CB750E2A00362E3BF64D2B
   logicalPath: config/default/peripheral/port
   name: plib_port.h
   physicalPath: peripheral/port
   security: NON_SECURE
   type: HEADER
-  userChecksum: 2DFD2317F4DFE9AF158254162C791107
+  userChecksum: E98B720D44CB750E2A00362E3BF64D2B
 - generatedChecksum: 7BE8D2DC4C674C3542390C9E75603EB6
   logicalPath: config/default/peripheral/sercom/spi_master
   name: plib_sercom0_spi_master.h

@@ -126,14 +126,14 @@ UINT8 PSF_APP_SPIInitialisation(void)
 }
 UINT8 PSF_APP_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength, UINT8 *pu8ReadBuffer, UINT8 u8Readlength)
 {
-//    while(SpiData.transferStatus != true)
-//    {
-//    }
-//    SpiData.transferStatus = false;
+    while(SpiData.transferStatus != true)
+    {
+    }
+    SpiData.transferStatus = false;
     PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
-//    while(SpiData.transferStatus != true)
-//    {
-//    }
+    while(SpiData.transferStatus != true)
+    {
+    }
     SpiData.transferStatus = false;
     PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, NULL, SET_TO_ZERO, pu8ReadBuffer, u8Readlength);
     while(SpiData.transferStatus != true)
@@ -143,10 +143,10 @@ UINT8 PSF_APP_SPIReaddriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Wri
 }
 UINT8 PSF_APP_SPIWritedriver (UINT8 u8PortNum, UINT8 *pu8WriteBuffer, UINT8 u8Writelength)
 {
-//    while(SpiData.transferStatus != true)
-//    {
-//    }
-//    SpiData.transferStatus = false;
+    while(SpiData.transferStatus != true)
+    {
+    }
+    SpiData.transferStatus = false;
     PSF_APP_SPI_WriteRead(PSF_APP_SPI_INSTANCE, pu8WriteBuffer, u8Writelength, NULL, SET_TO_ZERO);
     return TRUE;
 }
@@ -159,18 +159,30 @@ void PSF_APP_EnterCriticalSection()
 {
     if (gu32CriticalSectionCnt++ == 0)  
     {
-        /*Interrupt is disabled if Critical section is not entered already*/
-        __disable_irq();
-		
+//        /*Interrupt is disabled if Critical section is not entered already*/
+//        __disable_irq();
+        
+        NVIC_DisableIRQ(EIC_IRQn);
+//        NVIC_DisableIRQ(SERCOM0_IRQn); // SPI Interrupt not Disabled as SPI Driver uses ISR method for communicating with UPD350
+        NVIC_DisableIRQ(SERCOM1_IRQn);
+        NVIC_DisableIRQ(SERCOM3_IRQn);
+        NVIC_DisableIRQ(TC0_IRQn);
     }
+    
 }
 void PSF_APP_ExitCriticalSection()
 {
     
     if (--gu32CriticalSectionCnt == 0)
     {
-        /*Interrupt is Enabled when there is no pending critical section nesting*/
-		__enable_irq();
+//        /*Interrupt is Enabled when there is no pending critical section nesting*/
+//		__enable_irq();
+        
+        NVIC_EnableIRQ(EIC_IRQn);
+//        NVIC_EnableIRQ(SERCOM0_IRQn); // SPI Interrupt not Disabled as SPI Driver uses ISR method for communicating with UPD350
+        NVIC_EnableIRQ(SERCOM1_IRQn);
+        NVIC_EnableIRQ(SERCOM3_IRQn);
+        NVIC_EnableIRQ(TC0_IRQn);
     }
 }
 void* PSF_APP_MemCpy(void *pdest, const void *psrc, int ilen)
@@ -290,28 +302,30 @@ static void Drv_SPIEventHandler (
         SpiData.transferStatus = false;
     }
 }
-void PSF_APP_SPI_Drv_Initialize()
+void PSF_APP_SPI_Drv_Initialize( void )
 {
     SpiData.drvSPIHandle = DRV_HANDLE_INVALID;
     SpiData.transferStatus = true;
-    SpiData.setup.baudRateInHz = 2000000;
+    SpiData.setup.baudRateInHz = 16000000; // Driver Baud rate set to twice the peripheral baud rate
     SpiData.setup.clockPhase = DRV_SPI_CLOCK_PHASE_VALID_TRAILING_EDGE;
+
     SpiData.setup.clockPolarity = DRV_SPI_CLOCK_POLARITY_IDLE_LOW;
     SpiData.setup.dataBits = DRV_SPI_DATA_BITS_8;
-    SpiData.setup.chipSelect = (SYS_PORT_PIN)SPI_SS_0_PIN;
+//    SpiData.setup.chipSelect = (SYS_PORT_PIN)SPI_SS_0_PIN;
+    SpiData.setup.chipSelect = SYS_PORT_PIN_NONE;
     SpiData.setup.csPolarity = DRV_SPI_CS_POLARITY_ACTIVE_LOW;
     
     SpiData.drvSPIHandle = DRV_SPI_Open( DRV_SPI_INDEX_0, DRV_IO_INTENT_READWRITE );
-    if(DRV_SPI_TransferSetup(SpiData.drvSPIHandle, &SpiData.setup) == true)
+    if(SpiData.drvSPIHandle != DRV_HANDLE_INVALID)
     {
-        /* Register an event handler with the SPI driver */
-        DRV_SPI_TransferEventHandlerSet(SpiData.drvSPIHandle, Drv_SPIEventHandler, (uintptr_t)NULL);
+        if(TRUE == DRV_SPI_TransferSetup(SpiData.drvSPIHandle, &SpiData.setup))
+        {
+            /* Register an event handler with the SPI driver */
+            DRV_SPI_TransferEventHandlerSet(SpiData.drvSPIHandle, Drv_SPIEventHandler, (uintptr_t)NULL);
 
+        }
     }
-    else
-    {
-        
-    }          
+              
 }
 
 

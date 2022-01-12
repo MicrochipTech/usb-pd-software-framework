@@ -20,6 +20,16 @@ children:
         attributes: {id: visible}
         children:
         - {type: Value, value: 'true'}
+  - type: Comment
+    attributes: {id: I2C_BAUD_ERROR_COMMENT}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: text}
+        children:
+        - {type: Value, value: '**** Reference Clock Frequency too low for generating
+            the desired I2C Clock '}
   - type: Integer
     attributes: {id: I2C_CLOCK_SPEED}
     children:

@@ -336,7 +336,7 @@ void SYS_Initialize ( void* data )
 
 
 
-    //SERCOM3_I2C_Initialize();
+    SERCOM3_I2C_Initialize();
 
     NVMCTRL_Initialize( );
 
@@ -360,9 +360,6 @@ void SYS_Initialize ( void* data )
     sysObj.drvUsart0 = DRV_USART_Initialize(DRV_USART_INDEX_0, (SYS_MODULE_INIT *)&drvUsart0InitData);
 
 
-
-
-    APP_Initialize();
 
 
     NVIC_Initialize();
