@@ -14,7 +14,7 @@
     This source file contains user application specific functions and interfaces
 ************************************************************************** */
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -40,7 +40,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 
 #include "psf_stdinc.h"
-#include "i2c_dc_dc_driver.h"
+//#include "i2c_dc_dc_driver.h"
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -58,20 +58,23 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 void App_SetMCUIdle()
 {
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    
+
+//    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+    __disable_irq(); // MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT() API modified to disable individual peripheral interrupts
+
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
-    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE");
+    //DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE\r\n");
     
 	/*If there is any pending interrupt it will not go to sleep*/
     SCB->SCR |=  (SCB_SCR_SLEEPDEEP_Msk )| (SCB_SCR_SEVONPEND_Msk);
     
     __DSB();
     __WFI();
-    
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+
+    __enable_irq(); // MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT() API modified to enable individual peripheral interrupts
+//    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     
     /* Resume from Idle*/
     /* Enable the disabled interrupt*/
@@ -89,7 +92,7 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
     
     switch(ePDEvent)
     {
-		case eMCHP_PSF_UPDS_IN_IDLE:
+        case eMCHP_PSF_UPDS_IN_IDLE:
 		{
 #if (TRUE == INCLUDE_POWER_MANAGEMENT_CTRL)
 			App_SetMCUIdle();
@@ -110,7 +113,7 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
             u8RetVal = TRUE;
             break;
         }
-         
+        
         case eMCHP_PSF_PORT_POWERED_OFF:
         {
             break;
@@ -260,15 +263,15 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 PORT_PinWrite(PORT_PIN_PA14, TRUE);
                 PORT_PinInputEnable(PORT_PIN_PA14);
-                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, PSF_APP_UPD350AlertCallback, PORT0);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             }
-            #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1)   
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)         
             else if (PORT1 == u8PortNum)
             {
                 PORT_PinWrite(PORT_PIN_PA15, TRUE);
                 PORT_PinInputEnable(PORT_PIN_PA15);
-                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, PSF_APP_UPD350AlertCallback, PORT1);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA15);
             }
             #endif
@@ -285,15 +288,15 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 PORT_PinWrite(PORT_PIN_PA02, TRUE);
                 PORT_PinInputEnable(PORT_PIN_PA02);
-                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA02, SAMD20_I2CDCDCAlertCallback, PORT0);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA02, PSF_APP_I2CDCDCAlertCallback, PORT0);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA02);
             }
-            #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
             else if (PORT1 == u8PortNum)
             {
                 PORT_PinWrite(PORT_PIN_PA03, TRUE);
                 PORT_PinInputEnable(PORT_PIN_PA03);
-                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA03, SAMD20_I2CDCDCAlertCallback, PORT1);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA03, PSF_APP_I2CDCDCAlertCallback, PORT1);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA03);
             }
             #endif
@@ -320,7 +323,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
                 SPI_SS_0_Set();
                 SPI_SS_0_OutputEnable();
             }
-            #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
+            #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
             else if(PORT1 == u8PortNum)
             {
                 SPI_SS_1_Set();
@@ -407,7 +410,6 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     __asm volatile("nop");
                     __asm volatile("nop");
-
                 }                
             }
             else
@@ -426,7 +428,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                     /*PORT_PIN_PA10*/
                     SPI_SS_0_Clear();
                 }
-                #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
+                #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
                 else if(PORT1 == u8PortNum)
                 {
                     /*PORT_PIN_PA01*/
@@ -445,7 +447,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
                 {
                     SPI_SS_0_Set();
                 }
-                #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
+                #if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1)  
                 else if(PORT1 == u8PortNum)
                 {
                     SPI_SS_1_Set();
@@ -517,7 +519,7 @@ void App_GPIOControl_Drive(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFu
 
 UINT8 App_PortPowerInit(UINT8 u8PortNum)
 {
-    UINT8 u8Return; 
+    UINT8 u8Return = TRUE; 
     
 #if ((CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MIC2128) || (CONFIG_DCDC_CTRL == PWRCTRL_GPIO_DC_DC_MCP19119))
 
@@ -537,9 +539,8 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum)
     UPDPIO_DriveLow(u8PortNum, eUPD_PIO9);
     UPDPIO_EnableOutput(u8PortNum, eUPD_PIO9);
     
-    u8Return = TRUE; 
-#else 
-    u8Return = MPQDCDC_Initialize(u8PortNum); /* MPQ4230 - I2C based DC/DC */ 
+#elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)
+    u8Return = PSFDCDC_Initialize(u8PortNum); /* MPQ4230 - I2C based DC/DC */ 
 #endif 
     
     return u8Return; 
@@ -608,8 +609,8 @@ void App_PortPowerSetPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current
         }
     }
     
-#else /* MPQ4230 - I2C based DC/DC */ 
-    MPQDCDC_SetPortPower(u8PortNum, u16Voltage, u16Current);
+#elif (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)/* MPQ4230 - I2C based DC/DC */ 
+    PSFDCDC_SetPortPower(u8PortNum, u16Voltage, u16Current);
 #endif     
 }
 /* *****************************************************************************

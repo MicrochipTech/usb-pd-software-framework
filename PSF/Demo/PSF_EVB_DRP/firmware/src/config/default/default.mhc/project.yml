@@ -299,7 +299,7 @@ files:
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: DD22597BE07A8F4666AA0D1AD93C666C
+  userChecksum: 35DC4F8413F97AC7E0A4331732406E74
 - generatedChecksum: 199CE8A322D6C7600722A4ABA4E3A439
   logicalPath: config/default
   name: device.h

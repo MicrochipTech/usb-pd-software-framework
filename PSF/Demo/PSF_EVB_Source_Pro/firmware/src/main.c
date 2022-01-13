@@ -16,7 +16,7 @@
     machines of all modules in the system
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -41,8 +41,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 // *****************************************************************************
 
+#include <stddef.h>                     // Defines NULL
+#include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
-#include "i2c_dc_dc_ung8198.h"
+#include "definitions.h"                // SYS function prototypes
 
 // *****************************************************************************
 // *****************************************************************************
@@ -54,9 +56,18 @@ int main ( void )
 {
     /* Initialize all modules */
     SYS_Initialize ( NULL );
-
+    
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+    PSF_APP_USART_Drv_Initialize();
+#endif
+    PSF_APP_SPI_Drv_Initialize();
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)    
+    PSF_APP_I2C_Drv_Initialize();
+#endif
 	/*PSF init called*/
 	(void)MchpPSF_Init();
+
+    DEBUG_PRINT_PORT_STR (3, "debug message for testing\r\n");
 
     while ( true )
     {
@@ -65,6 +76,7 @@ int main ( void )
 		
 		/*PSF stack Run*/
 		MchpPSF_RUN();
+        
         
         #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)   
 

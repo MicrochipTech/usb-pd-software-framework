@@ -45,9 +45,49 @@
 /* ************************************************************************** */
 /* ************************************************************************** */
 #include "i2c_dc_dc_ung8198.h"
+#include "../src/config/default/driver/i2c/drv_i2c.h"
+#include "../src/config/default/peripheral/sercom/i2c_master/plib_sercom3_i2c_master.h"
 
 /* SERCOM instance for I2C driver */
 #define PSF_APP_I2C_INSTANCE     3
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Type Definitions
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
+/* I2C Driver Application Data
+
+  Summary:
+    Holds I2C Driver application data
+
+  Description:
+    This structure holds the I2C Driver application's data.
+
+  Remarks:
+    Application strings and buffers are be defined outside this structure.
+ */
+
+typedef struct
+{
+    /* I2C driver client handle */
+    DRV_HANDLE i2cHandle;
+
+    /* I2C driver transfer handle */
+    DRV_I2C_TRANSFER_HANDLE transferHandle;
+
+    /* buffer to hold temperature queried from sensor */
+    uint8_t rxBuffer[2];
+
+    /* flag to check whether read transfer is done */
+    volatile bool isTransferDone;
+
+//    uint8_t registerAddr;
+} DRV_I2C_DATA;
+
+void PSF_APP_I2C_Drv_Initialize(void);
 
 /****************************************************************************
     Function:

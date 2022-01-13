@@ -13,7 +13,7 @@
  *******************************************************************************/
 /*******************************************************************************
 
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -40,7 +40,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
 
-#if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
+#if (CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
 static const UINT8 u8aMPQI2CSlvAddr[CONFIG_PD_PORT_COUNT] = {MPQ_I2C_SLV_ADDR_PORT_1 ,MPQ_I2C_SLV_ADDR_PORT_2};
 #else
 static const UINT8 u8aMPQI2CSlvAddr[CONFIG_PD_PORT_COUNT] = {MPQ_I2C_SLV_ADDR_PORT_1};
@@ -59,10 +59,8 @@ UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
             
     for(int i=0; i<3; i++)
     {
-        if (TRUE == SAMD20_I2CDCDCWriteDriver (u8I2CAddress, pu8I2CCmd, u8Length))
+        if (TRUE == PSF_APP_I2CDCDCWriteDriver (u8I2CAddress, pu8I2CCmd, u8Length))
         {
-            /* wait for the current transfer to complete */ 
-            while(SAMD20_I2CDCDCIsBusyDriver( ));
             u8RetVal = TRUE;
             break;
         }
@@ -77,7 +75,7 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     UINT32 u32I2CCmd;
     UINT8 u8Return = TRUE;
 
-    /* Global interrupt is enabled as the I2C works on interrupt in SAMD20*/
+    /* Global interrupt is enabled as the I2C works on interrupt in the device (SAMD20)*/
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 
     /* Clear the faults */
@@ -206,10 +204,7 @@ UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
 {
     UINT16 u16FaultStatus;
     
-    (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
-    /* wait for the current transfer to complete */ 
-    while(SAMD20_I2CDCDCIsBusyDriver( ));
-
+    (void)PSF_APP_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen);
     return u16FaultStatus;
 }
 
@@ -249,9 +244,7 @@ UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum)
         /* Clear the Fault condition by sending 'CLEAR_FAULTS' command, so that 
            Alert line gets de asserted */
         u16I2CCmd = MPQ_CMD_CLEAR_FAULT;
-        u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_1);           
-        /* wait for the current transfer to complete */ 
-        while(SAMD20_I2CDCDCIsBusyDriver( ));
+        u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_1);
     }
     
     return u8RetVal;
@@ -273,11 +266,7 @@ UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum)
     
     for(u8ReadCnt=0; u8ReadCnt<MPQ_VOLTAGE_READ_AVG_CNT;u8ReadCnt++)
     { 
-        (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16VoltageOutputCnt,2U);
-        
-        /* wait for the current transfer to complete */ 
-        while(SAMD20_I2CDCDCIsBusyDriver( ));
-        
+        (void)PSF_APP_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16VoltageOutputCnt,2U);        
         u32VoltageCntAvg += u16VoltageOutputCnt;
     }
     u16VoltageOutputCnt = (UINT16) (u32VoltageCntAvg/((UINT16)MPQ_VOLTAGE_READ_AVG_CNT));

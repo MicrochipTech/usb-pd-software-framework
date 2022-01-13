@@ -61,36 +61,37 @@
 #endif
 
 // DOM-IGNORE-END
+// *****************************************************************************
+// *****************************************************************************
+// Section: Preprocessor macros
+// *****************************************************************************
+// *****************************************************************************
 
 #define NVMCTRL_FLASH_START_ADDRESS        (0x00000000U)
-#define NVMCTRL_FLASH_SIZE                 (0x10000U)
 #define NVMCTRL_FLASH_PAGESIZE             (64U)
 #define NVMCTRL_FLASH_ROWSIZE              (256U)
 
 
 
-typedef enum
-{
-    /* No error */
-    NVMCTRL_ERROR_NONE = 0x0,
+#define NVMCTRL_ERROR_NONE 0x0U
+#define NVMCTRL_ERROR_PROG 0x4U
+#define NVMCTRL_ERROR_LOCK 0x8U
+#define NVMCTRL_ERROR_NVM 0x10U
 
-    /* NVMCTRL invalid commands and/or bad keywords error */
-    NVMCTRL_ERROR_PROG = 0x4,
-
-    /* NVMCTRL lock error */
-    NVMCTRL_ERROR_LOCK = 0x8,
-
-    /* NVMCTRL programming or erase error */
-    NVMCTRL_ERROR_NVM = 0x10,
-
-} NVMCTRL_ERROR;
+typedef uint16_t NVMCTRL_ERROR;
 
 
 void NVMCTRL_Initialize(void);
 
-bool NVMCTRL_Read( uint32_t *data, uint32_t length, uint32_t address );
+bool NVMCTRL_Read( uint32_t *data, uint32_t length, const uint32_t address );
 
-bool NVMCTRL_PageWrite( uint32_t* data, uint32_t address );
+bool NVMCTRL_PageWrite( uint32_t *data, const uint32_t address );
+
+
+bool NVMCTRL_PageBufferWrite( uint32_t *data, const uint32_t address);
+
+bool NVMCTRL_PageBufferCommit( const uint32_t address);
+
 
 bool NVMCTRL_RowErase( uint32_t address );
 NVMCTRL_ERROR NVMCTRL_ErrorGet( void );

@@ -1,7 +1,7 @@
 /**
  * \brief Component description for TC
  *
- * Copyright (c) 2019 Microchip Technology Inc. and its subsidiaries.
+ * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software and any derivatives
  * exclusively with Microchip products. It is your responsibility to comply with third party license
@@ -20,7 +20,7 @@
  *
  */
 
-/* file generated from device description version 2019-03-25T22:24:54Z */
+/* file generated from device description version 2019-11-25T06:48:59Z */
 #ifndef _SAMD20_TC_COMPONENT_H_
 #define _SAMD20_TC_COMPONENT_H_
 
@@ -387,8 +387,14 @@
 #define TC_COUNT32_COUNT_REG_OFST      (0x10)              /**< (TC_COUNT32_COUNT) COUNT32 Counter Value Offset */
 #define TC_COUNT8_PER_REG_OFST         (0x14)              /**< (TC_COUNT8_PER) COUNT8 Period Value Offset */
 #define TC_COUNT8_CC_REG_OFST          (0x18)              /**< (TC_COUNT8_CC) COUNT8 Compare/Capture Offset */
+#define TC_COUNT8_CC0_REG_OFST         (0x18)              /**< (TC_COUNT8_CC0) COUNT8 Compare/Capture Offset */
+#define TC_COUNT8_CC1_REG_OFST         (0x19)              /**< (TC_COUNT8_CC1) COUNT8 Compare/Capture Offset */
 #define TC_COUNT16_CC_REG_OFST         (0x18)              /**< (TC_COUNT16_CC) COUNT16 Compare/Capture Offset */
+#define TC_COUNT16_CC0_REG_OFST        (0x18)              /**< (TC_COUNT16_CC0) COUNT16 Compare/Capture Offset */
+#define TC_COUNT16_CC1_REG_OFST        (0x1A)              /**< (TC_COUNT16_CC1) COUNT16 Compare/Capture Offset */
 #define TC_COUNT32_CC_REG_OFST         (0x18)              /**< (TC_COUNT32_CC) COUNT32 Compare/Capture Offset */
+#define TC_COUNT32_CC0_REG_OFST        (0x18)              /**< (TC_COUNT32_CC0) COUNT32 Compare/Capture Offset */
+#define TC_COUNT32_CC1_REG_OFST        (0x1C)              /**< (TC_COUNT32_CC1) COUNT32 Compare/Capture Offset */
 
 #if !(defined(__ASSEMBLER__) || defined(__IAR_SYSTEMS_ASM__))
 /** \brief TC register API structure */

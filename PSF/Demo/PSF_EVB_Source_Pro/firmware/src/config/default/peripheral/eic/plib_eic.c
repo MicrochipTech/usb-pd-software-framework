@@ -54,6 +54,7 @@
 */
 
 #include "plib_eic.h"
+#include "interrupts.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -67,7 +68,7 @@ EIC_CALLBACK_OBJ    eicCallbackObject[EXTINT_COUNT];
 void EIC_Initialize(void)
 {
     /* Reset all registers in the EIC module to their initial state and
-	   EIC will be disabled. */
+       EIC will be disabled. */
     EIC_REGS->EIC_CTRL |= EIC_CTRL_SWRST_Msk;
 
     while((EIC_REGS->EIC_STATUS & EIC_STATUS_SYNCBUSY_Msk) == EIC_STATUS_SYNCBUSY_Msk)
@@ -77,8 +78,8 @@ void EIC_Initialize(void)
 
     /* NMI Control register */
 
-    /* Interrupt sense type and filter control for EXTINT channels 0 to 7*/
-    EIC_REGS->EIC_CONFIG[0] =  EIC_CONFIG_SENSE0_NONE  |
+    /* Interrupt sense type and filter control for EXTINT channels 0 to 7 */
+    EIC_REGS->EIC_CONFIG[0] = EIC_CONFIG_SENSE0_NONE  |
                               EIC_CONFIG_SENSE1_NONE  |
                               EIC_CONFIG_SENSE2_FALL  |
                               EIC_CONFIG_SENSE3_FALL  |
@@ -88,23 +89,20 @@ void EIC_Initialize(void)
                               EIC_CONFIG_SENSE7_NONE ;
 
     /* Interrupt sense type and filter control for EXTINT channels 8 to 15 */
-    EIC_REGS->EIC_CONFIG[1] =  EIC_CONFIG_SENSE0_NONE  |
+    EIC_REGS->EIC_CONFIG[1] = EIC_CONFIG_SENSE0_NONE  |
                               EIC_CONFIG_SENSE1_NONE  |
                               EIC_CONFIG_SENSE2_NONE  |
                               EIC_CONFIG_SENSE3_NONE  |
                               EIC_CONFIG_SENSE4_NONE  |
                               EIC_CONFIG_SENSE5_NONE  |
-                              EIC_CONFIG_SENSE6_LOW | EIC_CONFIG_FILTEN6_Msk |
-                              EIC_CONFIG_SENSE7_LOW | EIC_CONFIG_FILTEN7_Msk;
+                              EIC_CONFIG_SENSE6_LOW  |
+                              EIC_CONFIG_SENSE7_LOW ;
 
     /* External Interrupt Asynchronous Mode enable */
     EIC_REGS->EIC_WAKEUP = 0xc00c;
 
-
-    /* External Interrupt enable for DC_DC_Alert0 and DC_DC_Alert1*/
-    EIC_REGS->EIC_INTENSET = 0xc;
-   // EIC_REGS->EIC_INTENSET = 0xc00;
-   
+    /* External Interrupt enable*/
+    //EIC_REGS->EIC_INTENSET = 0xc00c;
 
     /* Callbacks for enabled interrupts */
     eicCallbackObject[0].eicPinNo = EIC_PIN_MAX;
@@ -123,6 +121,7 @@ void EIC_Initialize(void)
     eicCallbackObject[13].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[14].eicPinNo = EIC_PIN_14;
     eicCallbackObject[15].eicPinNo = EIC_PIN_15;
+
     /* Enable the EIC */
     EIC_REGS->EIC_CTRL |= EIC_CTRL_ENABLE_Msk;
 
@@ -132,12 +131,12 @@ void EIC_Initialize(void)
     }
 }
 
-void EIC_InterruptEnable (EIC_PIN pin)
+void EIC_InterruptEnable(EIC_PIN pin)
 {
     EIC_REGS->EIC_INTENSET = (1UL << pin);
 }
 
-void EIC_InterruptDisable (EIC_PIN pin)
+void EIC_InterruptDisable(EIC_PIN pin)
 {
     EIC_REGS->EIC_INTENCLR = (1UL << pin);
 }

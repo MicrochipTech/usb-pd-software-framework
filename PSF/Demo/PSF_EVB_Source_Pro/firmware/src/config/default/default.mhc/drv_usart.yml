@@ -1,0 +1,44 @@
+format_version: v1.0
+type: GeneratorComponent
+attributes: {id: drv_usart}
+children:
+- type: Symbols
+  children:
+  - type: Combo
+    attributes: {id: DRV_USART_COMMON_MODE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drv_usart, value: Asynchronous}
+- type: Instances
+  children:
+  - type: InstanceComponent
+    attributes: {instance: '0', id: drv_usart}
+    children:
+    - type: Symbols
+      children:
+      - type: String
+        attributes: {id: DRV_USART_PLIB}
+        children:
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: drv_usart_0, value: SERCOM1}
+    - type: Attachments
+      children:
+      - type: DirectDependency
+        attributes: {id: drv_usart_UART_dependency}
+        children:
+        - type: Attributes
+          children:
+          - type: String
+            attributes: {id: targetComponentID}
+            children:
+            - {type: Value, value: sercom1}
+          - type: String
+            attributes: {id: targetAttachmentID}
+            children:
+            - {type: Value, value: SERCOM1_UART}
+- type: ElementPosition
+  attributes: {x: '120', y: '187', id: drv_usart}

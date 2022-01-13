@@ -53,10 +53,11 @@
 
 #include "../src/config/default/driver/usart/drv_usart.h"
 #include "../src/config/default/driver/spi/drv_spi.h"
+
 #include "../../firmware/src/config/default/peripheral/tc/plib_tc0.h"
-#include "../../firmware/src/config/default/peripheral/sercom/spi_master/plib_sercom0_spi_master.h"
+#include "../src/config/default/peripheral/sercom/spi_master/plib_sercom0_spi_master.h"
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-#include "../../firmware/src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
+#include "../src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h"
 #include <string.h>
 #endif 
 #include "../../firmware/src/config/default/peripheral/port/plib_port.h"

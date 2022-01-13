@@ -13,7 +13,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2019-2020 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2019-2020] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -42,8 +42,15 @@
 /* ************************************************************************** */
 /* ************************************************************************** */
 #include "i2c_dc_dc_driver.h"
-#include "../../firmware/src/config/default/peripheral/sercom/i2cm/plib_sercom3_i2c.h"
 
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: File Scope or Global Data                                         */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+DRV_I2C_DATA I2CData;
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -51,66 +58,113 @@
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-#define SAMD20I2CDCDC_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
-                    SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen)
-#define SERCOMn_I2C_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
-        SERCOM##n##_I2C_Read(u16Address,pu8ReadBuf,u8ReadLen)
+#define PSF_APP_I2CDCDC_Read(n,u16Address,pu8ReadBuf,u8ReadLen) \
+                    DRV_I2C_ReadTransferAdd(I2CData.i2cHandle,u16Address,pu8ReadBuf,u8ReadLen,&I2CData.transferHandle)
 
-#define SAMD20I2CDCDC_Write(n,u16Address,pu8WritedBuf,u8WriteLen) \
-                    SERCOMn_I2C_Write(n,u16Address,pu8WritedBuf,u8WriteLen)
-#define SERCOMn_I2C_Write(n,u16Address,pu8WritedBuf,u8WriteLen) \
-        SERCOM##n##_I2C_Write(u16Address,pu8WritedBuf,u8WriteLen)
+#define PSF_APP_I2CDCDC_Write(n,u16Address,pu8WritedBuf,u8WriteLen) \
+                    DRV_I2C_WriteTransferAdd(I2CData.i2cHandle,u16Address,pu8WriteBuf,u8WriteLen,&I2CData.transferHandle)
 
-#define SAMD20I2CDCDC_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
-        SERCOMn_I2C_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
-#define SERCOMn_I2C_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
-        SERCOM##n##_I2C_WriteRead(u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen)
 
-#define SAMD20_I2cDCDCIsBusy(n) SERCOMn_I2C_IsBusy(n)
-#define SERCOMn_I2C_IsBusy(n) SERCOM##n##_I2C_IsBusy()
+#define PSF_APP_I2CDCDC_WriteRead(n,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen) \
+        DRV_I2C_WriteReadTransferAdd(I2CData.i2cHandle,u16Address,pu8WritedBuf,u8WriteLen,pu8ReadBuf,u8ReadLen,&I2CData.transferHandle)
+
 
 /*****************************************************************************/
 /*****************************************************************************/
 /*********************************I2C Driver APIs*****************************/
 /*****************************************************************************/
-void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum)
+void PSF_APP_I2CDCDCAlertCallback(uintptr_t u8PortNum)
 {
     /*PSF Alert Handler is called for specific port to service UPD350 Alert interrupt*/
     MPQDCDC_HandleAlert(u8PortNum);
 }
 
-UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
+UINT8 PSF_APP_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
 {
-    UINT8 u8Return = FALSE;
-    
-    u8Return = SAMD20I2CDCDC_Read (SAMD20_I2C_INSTANCE,u16Address,pu8ReadBuf,u8ReadLen);
-    return u8Return;
+    while(I2CData.isTransferDone != true)
+    {
+    }
+    I2CData.isTransferDone = false;
+    PSF_APP_I2CDCDC_Read (PSF_APP_I2C_INSTANCE,u16Address,pu8ReadBuf,u8ReadLen);
+    while(I2CData.isTransferDone != true)
+    {
+        /* wait for the current transfer to complete */
+    }
+    return true;
 }
 
-UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen)
+UINT8 PSF_APP_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen)
 {
-    UINT8 u8Return = FALSE;
-    
-    u8Return = SAMD20I2CDCDC_Write (SAMD20_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen);
-    return u8Return;
+    while(I2CData.isTransferDone != true)
+    {
+    }
+    I2CData.isTransferDone = false;
+    PSF_APP_I2CDCDC_Write (PSF_APP_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen);
+    while(I2CData.isTransferDone != true)
+    {
+        /* wait for the current transfer to complete */
+    }
+    return true;
    
 }
 
-UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
+UINT8 PSF_APP_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
                                               UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
+{
+    while(I2CData.isTransferDone != true)
+    {
+    }
+    I2CData.isTransferDone = false;
+    PSF_APP_I2CDCDC_WriteRead (PSF_APP_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen,\
+                                                            pu8ReadBuf,u8ReadLen);
+    while(I2CData.isTransferDone != true)
+    {
+        /* wait for the current transfer to complete */
+    }
+    return true;
+}
+
+UINT8 PSFDCDC_Initialize(uintptr_t u8PortNum)    
 {
     UINT8 u8Return = FALSE;
     
-    u8Return = SAMD20I2CDCDC_WriteRead (SAMD20_I2C_INSTANCE,u16Address,pu8WriteBuf,u8WriteLen,\
-                                                            pu8ReadBuf,u8ReadLen);
+    u8Return = MPQDCDC_Initialize(u8PortNum);
+            
     return u8Return;
 }
 
-UINT8 SAMD20_I2CDCDCIsBusyDriver(void)
+void PSFDCDC_SetPortPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current)
 {
-    return SAMD20_I2cDCDCIsBusy(SAMD20_I2C_INSTANCE);
+    
+    MPQDCDC_SetPortPower(u8PortNum, u16Voltage, u16Current);
+    
 }
 
+static void Drv_I2CEventHandler(
+    DRV_I2C_TRANSFER_EVENT event,
+    DRV_I2C_TRANSFER_HANDLE transferHandle,
+    uintptr_t context
+)
+{
+    if(event == DRV_I2C_TRANSFER_EVENT_COMPLETE)
+    {
+        I2CData.isTransferDone = true;
+    }
+    
+}
+
+void PSF_APP_I2C_Drv_Initialize ( void )
+{
+    I2CData.i2cHandle      = DRV_HANDLE_INVALID;
+    I2CData.isTransferDone = true;
+    I2CData.transferHandle = DRV_I2C_TRANSFER_HANDLE_INVALID;
+    I2CData.i2cHandle = DRV_I2C_Open(DRV_I2C_INDEX_0,DRV_IO_INTENT_READWRITE);
+    if(I2CData.i2cHandle != DRV_HANDLE_INVALID)
+    {
+        /* Register the I2C Driver client event callback */
+        DRV_I2C_TransferEventHandlerSet(I2CData.i2cHandle, Drv_I2CEventHandler, 0);     
+    }
+}
 /* *****************************************************************************
  End of File
  */

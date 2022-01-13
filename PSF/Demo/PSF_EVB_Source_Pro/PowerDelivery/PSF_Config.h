@@ -206,7 +206,7 @@ Example:
     #define INCLUDE_POWER_MANAGEMENT_CTRL	0(Exclude power management feature)
     </code>
 **************************************************************************************************/
-#define INCLUDE_POWER_MANAGEMENT_CTRL         1
+#define INCLUDE_POWER_MANAGEMENT_CTRL       1
 
 /**************************************************************************
 Summary:
@@ -373,6 +373,7 @@ Example:
     </code>
 **************************************************************************************************/
 #define INCLUDE_UPD_HPD             0
+
 /**************************************************************************************************
 Summary:
     Fast Role Swap support code inclusion.

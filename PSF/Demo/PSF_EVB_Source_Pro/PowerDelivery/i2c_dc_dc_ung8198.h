@@ -12,7 +12,7 @@
 	drive power and discharge VBUS
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -118,7 +118,7 @@ extern volatile UINT8 gu8MPQAlertPortMsk[CONFIG_PD_PORT_COUNT];
 // *****************************************************************************
 /****************************************************************************
     Function:
-        void MPQDCDC_Initialize(UINT8 u8PortNum)
+        UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     Summary:
         Initializes I2C DC DC Control for the port
     Description:
@@ -143,7 +143,7 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum);
         Writes the data through I2C master interface 
     Description:
         This API is called for writing the data to the DC DC controller 
-        attached in the respective port through I2C master interface of SAMD20. 
+        attached in the respective port through I2C master interface of the device (SAMD20). 
     Conditions:
         None.
     Input:

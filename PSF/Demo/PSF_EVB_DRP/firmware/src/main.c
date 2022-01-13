@@ -61,7 +61,9 @@ int main ( void )
     PSF_APP_USART_Drv_Initialize();
 #endif
     PSF_APP_SPI_Drv_Initialize();
-    
+#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)    
+    PSF_APP_I2C_Drv_Initialize();
+#endif
 	/*PSF init called*/
 	(void)MchpPSF_Init();
 

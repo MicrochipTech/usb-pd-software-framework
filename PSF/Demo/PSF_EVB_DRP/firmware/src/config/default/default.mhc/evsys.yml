@@ -122,14 +122,14 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: eic, value: 'true'}
+        attributes: {id: eic, value: 'false'}
   - type: Boolean
     attributes: {id: GENERATOR_EIC_EXTINT_15_ACTIVE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: eic, value: 'true'}
+        attributes: {id: eic, value: 'false'}
   - type: Boolean
     attributes: {id: GENERATOR_EIC_EXTINT_2_ACTIVE}
     children:

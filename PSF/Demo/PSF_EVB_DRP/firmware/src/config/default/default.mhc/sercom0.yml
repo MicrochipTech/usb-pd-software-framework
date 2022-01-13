@@ -11,16 +11,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: sercom0, value: '232'}
-  - type: Comment
-    attributes: {id: I2C_BAUD_ERROR_COMMENT}
-    children:
-    - type: Attributes
-      children:
-      - type: String
-        attributes: {id: text}
-        children:
-        - {type: Value, value: '**** Reference Clock Frequency too low for generating
-            the desired I2C Clock '}
   - type: String
     attributes: {id: RECEIVE_DATA_REGISTER}
     children:
