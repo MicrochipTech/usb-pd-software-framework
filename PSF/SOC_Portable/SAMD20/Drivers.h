@@ -242,10 +242,11 @@ void PSF_APP_UPD350AlertCallback(uintptr_t u8PortNum);
     Function:
         void PSF_APP_EnterCriticalSection(void)
     Summary:
-        Wrapper function to Device (SAMD20) disable interrupts globally to provide critical section
+        Wrapper function to Device (SAMD20) disable all peripheral interrupts to provide critical section
     Description:
         This API serves as a wrapper between PSF stack defined SOC interrupt disable function
-        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT and Device (SAMD20) global interrupt disable option.
+        MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT and Device (SAMD20) peripheral interrupt disable option, to
+        disable all peripheral interrupts.
     Conditions:
         None
     Input:
@@ -261,10 +262,11 @@ void PSF_APP_EnterCriticalSection(void);
     Function:
         void PSF_APP_ExitCriticalSection(void)
     Summary:
-        Wrapper function to Device (SAMD20) enable interrupts globally to provide critical section
+        Wrapper function to Device (SAMD20) enable all peripheral interrupts to exit critical section
     Description:
         This API serves as a wrapper between PSF stack defined SOC interrupt enable function
-        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT and Device (SAMD20) global interrupt enable option.
+        MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT and Device (SAMD20) peripheral interrupt enable option, to
+        enable all peripheral interrupts.
     Conditions:
         None
     Input:

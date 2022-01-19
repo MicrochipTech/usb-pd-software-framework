@@ -163,9 +163,6 @@ void PSF_APP_EnterCriticalSection()
 //        __disable_irq();
         
         NVIC_DisableIRQ(EIC_IRQn);
-//        NVIC_DisableIRQ(SERCOM0_IRQn); // SPI Interrupt not Disabled as SPI Driver uses ISR method for communicating with UPD350
-        NVIC_DisableIRQ(SERCOM1_IRQn);
-        NVIC_DisableIRQ(SERCOM3_IRQn);
         NVIC_DisableIRQ(TC0_IRQn);
     }
     
@@ -179,12 +176,10 @@ void PSF_APP_ExitCriticalSection()
 //		__enable_irq();
         
         NVIC_EnableIRQ(EIC_IRQn);
-//        NVIC_EnableIRQ(SERCOM0_IRQn); // SPI Interrupt not Disabled as SPI Driver uses ISR method for communicating with UPD350
-        NVIC_EnableIRQ(SERCOM1_IRQn);
-        NVIC_EnableIRQ(SERCOM3_IRQn);
         NVIC_EnableIRQ(TC0_IRQn);
     }
 }
+
 void* PSF_APP_MemCpy(void *pdest, const void *psrc, int ilen)
 {
    // Typecast src and dest addresses to (char *)

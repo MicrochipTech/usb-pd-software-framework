@@ -377,7 +377,7 @@
         <targetDevice>ATSAMD20E16</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>AtmelIceTool</platformTool>
+        <platformTool>nEdbgTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>3.01</languageToolchainVersion>
         <platform>3</platform>
@@ -440,6 +440,8 @@
         <property key="memories.programmemory.ranges" value="0x400000-0x5fffff"/>
         <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="D:/Work/PSF Configurator/Beta Phase/PSF Stack Update/Updated DRP - SPI Interrupt method, I2C Driver Implemented/PSF/Demo/PSF_EVB_Source_Pro/firmware/PSF_EVB_Source_Pro.X/debug/default/PSF_EVB_Source_Pro_ptg"/>
         <property key="programoptions.eraseb4program" value="false"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"
