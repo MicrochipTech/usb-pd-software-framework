@@ -63,7 +63,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
     {
         case ePE_SNK_STARTUP:
         {         
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_STARTUP\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_STARTUP\r\n");
  
             /*Reset the Protocol Layer */
             PRL_ResetProtocolLayer (u8PortNum);
@@ -104,7 +104,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             if ((TYPEC_VBUS_5V == DPM_GetVBUSVoltage (u8PortNum)) && \
                 (TYPEC_ATTACHED_SNK == u8TypeCState))
             {
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_DISCOVERY\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_DISCOVERY\r\n");
                 
 			  	/* Enable Power fault thresholds for TYPEC_VBUS_5V to detect Power faults*/
                 TypeC_ConfigureVBUSThr (u8PortNum, TYPEC_VBUS_5V, \
@@ -127,7 +127,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS:
                 {                   
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_WAIT_FOR_CAPABILITIES_ENTRY_SS\r\n");
                     
                     if (gasPolicyEngine[u8PortNum].u8HardResetCounter <= PE_N_HARD_RESET_COUNT)
                     {
@@ -173,7 +173,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
         /*This State is set by the PE_ReceiveMsgHandler API if the source capability message has been received*/    
         case ePE_SNK_EVALUATE_CAPABILITY:
         {            
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_EVALUATE_CAPABILITY\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_EVALUATE_CAPABILITY\r\n");
               
             if (gasDPM[u8PortNum].u16InternalEvntInProgress != DPM_INT_EVT_INITIATE_RENEGOTIATION)
             {
@@ -218,7 +218,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SNK_SELECT_CAPABILITY_SEND_REQ_SS:
                 {                 
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_SELECT_CAPABILITY_SEND_REQ_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_SELECT_CAPABILITY_SEND_REQ_SS\r\n");
 
                     /*Set the PD message transmitter API variables to send Sink Data request Message*/                    
                     u16TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_REQUEST,\
@@ -285,7 +285,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SNK_TRANSITION_SINK_ENTRY_SS:
                 {                    
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_SINK_ENTRY_SS\r\n");                                                       
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_TRANSITION_SINK_ENTRY_SS\r\n");                                                       
                     
                     /* Configure VBUS Threshold for the requested PDO */
                     TypeC_ConfigureVBUSThr (u8PortNum, \
@@ -333,7 +333,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SNK_READY_ENTRY_SS:
                 {                    
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_READY_ENTRY_SS\r\n");
 					
                     /* Configure threshold to detect faults*/
                    	DPM_EnablePowerFaultDetection (u8PortNum);
@@ -361,7 +361,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 
                 case ePE_SNK_READY_END_AMS_SS:
                 {                 
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_READY_END_AMS_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_READY_END_AMS_SS\r\n");
                     
                     /* Request DPM to initiate internal events*/
                     DPM_InitiateInternalEvts (u8PortNum);
@@ -394,7 +394,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
            {           
                case ePE_SNK_HARD_RESET_SEND_SS:
                {                     
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_HARD_RESET_SEND_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_HARD_RESET_SEND_SS\r\n");
 
                     /*Kill All the Active timers of policy engine for the port*/
                     PE_KillPolicyEngineTimer (u8PortNum);
@@ -431,7 +431,7 @@ void PE_RunSnkStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
            {                  
                case ePE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS:
                {            
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SNK_TRANSITION_TO_DEFAULT_ENTRY_SS\r\n");
                     
                     /*Setting the Hard Reset IN progress bit to avoid VBUS discharge
                     when VBUS drops below VSinkDisconnnect*/

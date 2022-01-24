@@ -197,7 +197,7 @@ void  PRL_Init (UINT8 u8PortNum)
 	PRL_ResetChunkSM (u8PortNum);
     #endif
     
-    //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL Init Done\r\n");
+    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL Init Done\r\n");
 }
 
 /***************************************************************************************************/
@@ -244,7 +244,7 @@ void PRL_UpdatePowerRole (UINT8 u8PortNum)
     /* Updates Device's Data & Power role, UPD Spec rev & corresponding retry counter*/
 	PRL_UpdateSpecAndDeviceRoles (u8PortNum);
     
-    //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL Updated Power Role\r\n");
+    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL Updated Power Role\r\n");
 }
 
 void PRL_UpdateSpecAndDeviceRoles (UINT8 u8PortNum)
@@ -353,7 +353,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 		
 	  	/* Chunk state machine is enabled*/
 		gasChunkSM [u8PortNum].u8EnableChunkSM = TRUE;
-		//DEBUG_PRINT_PORT_STR (u8PortNum, "PRL: Chunk SM Enabled\r\n");
+		DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "PRL: Chunk SM Enabled\r\n");
 		
 		return PRL_RET_TX_MSG_CHUNKING_ENABLED;
 	}
@@ -428,7 +428,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 		default:
 		{
 			u8MsgId = SET_TO_ZERO;
-			//DEBUG_PRINT_PORT_STR (u8PortNum,"Wrong SOP* type detected\r\n");
+			DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"Wrong SOP* type detected\r\n");
 			break;
 		}
 	}
@@ -460,7 +460,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 		/* if Timer SinkTxTimer is ON, Tx Message is just buffered in Tx_FIFO by not setting Go bit*/
 		PRL_ChangeTxState (u8PortNum, PRL_TX_MSG_BUFFERED_ON_CA_ST);
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg Buffered due to CA\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Tx Msg Buffered due to CA\r\n");
         
 		return PRL_RET_TX_MSG_BUFFERED;
 	}
@@ -486,7 +486,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 						Entered on condition "discarding Complete" */
 		PRL_ResetPHYLayer (u8PortNum);
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg Discarded\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Tx Msg Discarded\r\n");
 		
 		return PRL_RET_TX_MSG_DISCARD_ON_RCV;
 	}	
@@ -498,7 +498,7 @@ UINT8 PRL_TransmitMsg (UINT8 u8PortNum, UINT8 u8SOPType, UINT32 u32Header, UINT8
 	
 	while (!(u8OKToTx & PRL_TX_CTL_B_OK_TO_TX));
 	
-	//DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg sent on line\r\n");
+	DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Tx Msg sent on line\r\n");
 	
 	/* Go bit is set & message sent to PHY Layer*/
 	/* Spec Ref: PRL_Tx_Wait_for_PHY_response, PRL_Tx_Match_MessageID, PRL_Tx_Check_RetryCounter state is handled by UPD hardware */
@@ -633,7 +633,7 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
 		/* Tx state variable is set to Cable Reset*/
         PRL_ChangeTxState (u8PortNum, PRL_TX_CABLE_RESET_ST);
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_CABLE_RESET_SENT\r\n");        
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL_TX_CABLE_RESET_SENT\r\n");        
 	}
 	else
 	{
@@ -643,7 +643,7 @@ void PRL_SendCableorHardReset (UINT8 u8PortNum, UINT8 u8CableorHardReset, PRLTxC
 		/* Tx state variable is set to Hard Reset*/
 		PRL_ChangeTxState (u8PortNum, PRL_TX_HARD_RESET_ST);
 
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_TX_HARD_RESET_SENT\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL_TX_HARD_RESET_SENT\r\n");
 	}	
 	
 	/* enable the interrupt for HR */
@@ -663,7 +663,7 @@ void PRL_EnableRx (UINT8 u8PortNum, UINT8 u8Enable)
 		/* Enable reception of Hardreset*/
 		UPD_RegByteSetBit (u8PortNum, PRL_RX_IRQ_EN, PRL_RX_IRQ_RX_HARD_RST);
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Receiver enabled\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Receiver enabled\r\n");
 	}
 	else
 	{
@@ -672,7 +672,7 @@ void PRL_EnableRx (UINT8 u8PortNum, UINT8 u8Enable)
 		/* Disable reception of Hardreset*/
 		UPD_RegByteClearBit (u8PortNum, PRL_RX_IRQ_EN, PRL_RX_IRQ_RX_HARD_RST);
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Receiver disabled\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Receiver disabled\r\n");
 	}
 }
 
@@ -710,7 +710,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8 *pu8SOPType, UINT32 *pu32Header, UI
             }
         }
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Rx Msg passed to PE\r\n");        
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Rx Msg passed to PE\r\n");        
     }
     
     #if (TRUE == INCLUDE_PD_3_0)
@@ -732,7 +732,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8 *pu8SOPType, UINT32 *pu32Header, UI
             }
         }
 		
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Extd Msg rcvd passed to PE\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Extd Msg rcvd passed to PE\r\n");
 		
     }
     /*Note: gasPRL [u8PortNum].u8RxError is used only for PRL_RX_CHUNK_RCV_ERROR*/
@@ -743,7 +743,7 @@ UINT8 PRL_ReceiveMsg (UINT8 u8PortNum, UINT8 *pu8SOPType, UINT32 *pu32Header, UI
 		/* RxIntrStatus is cleared*/
         gasPRL [u8PortNum].u8RxError &= ~PRL_RX_CHUNK_RCV_ERROR;
 		
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Rx Chunk Error \r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Rx Chunk Error \r\n");
     }
     #endif
     else
@@ -989,7 +989,7 @@ void PRL_OnHardResetComplete (UINT8 u8PortNum)
 	gasPRL [u8PortNum].u8RxHRRcvdISR = FALSE;
     MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 	
-	//DEBUG_PRINT_PORT_STR (u8PortNum,"PRL_HR_COMPLETE\r\n");
+	DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL_HR_COMPLETE\r\n");
     
 	/*If Tx_EOP is enabled at the time of Auto mode response,For Good_CRC sent as auto 
      * response, Tx_EOP interrupt is fired. Thus, Disable the Tx interrupt*/
@@ -1054,7 +1054,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
             if ((PRL_GET_CHUNK_NUMBER(u16ExtendedMsgHeader) == gasChunkSM[u8PortNum].u8ChunkNumExpectedOrSent)
 					&& PRL_IS_MSG_CHUNKED(u16ExtendedMsgHeader))
             {
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Chunk Request received\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Chunk Request received\r\n");
 				
 			  	/* If Chunk number request received and ChunkNumber of next Chunk to be sent is equal,
 				PRL_TCH_SEND_RESPONSE_CHUNK_ST is assigned to send next chunk packet*/
@@ -1062,7 +1062,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
             }
             else
             {
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Request Chunk number mismatch\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Request Chunk number mismatch\r\n");
 				
 			  	/* Spec Ref: TCH_Report_Error - Report Error to Policy Engine. 
 												Entered on condition 
@@ -1091,7 +1091,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
                /* if Chunk SM Chunk message is already in process & other message is received*/
                 if (gasChunkSM [u8PortNum].u8EnableChunkSM)
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Unexpected Chunk msg rcvd\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Unexpected Chunk msg rcvd\r\n");
                      
                     /* Unexpected message received*/
                     if ((PRL_RCH_EXPECT_RESPONSE_CHUNK_WAIT_ST == gasChunkSM [u8PortNum].u8ChunkState)
@@ -1115,7 +1115,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
                 /* Spec Ref: RCH_Processing_Extended_Message: 
 					If first chunk: Set Chunk_Number_Expected = 0 and Num bytes received = 0 */
                 gasChunkSM [u8PortNum].u8EnableChunkSM = TRUE;
-                //DEBUG_PRINT_PORT_STR (u8PortNum, "PRL: Chunk SM Enabled\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "PRL: Chunk SM Enabled\r\n");
 					
 				/* copying the message to global buffer */
 				
@@ -1166,7 +1166,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
                 }
                 else
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Chunk Response Rcvd\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Chunk Response Rcvd\r\n");
 					
                     /* If the received Chunk response is not the last chunk response packet
 						PRL_RCH_SEND_CHUNK_REQUEST_ST is assigned to to request for next chunk*/
@@ -1178,7 +1178,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
             }
             else
             {
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Response Chunk number mismatch\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Response Chunk number mismatch\r\n");
 			  	/* PRL_RCH_CHUNK_RECV_ERROR_ST is assigned to indicate PE*/
                 gasChunkSM [u8PortNum].u8ChunkState = PRL_RCH_CHUNK_RECV_ERROR_ST;
             }			
@@ -1197,7 +1197,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
                 || (PRL_RCH_SEND_CHUNK_REQUEST_ST == gasChunkSM [u8PortNum].u8ChunkState)
                 || (PRL_RCH_WAIT_FOR_CHUNK_REQUEST_STATUS_ST == gasChunkSM [u8PortNum].u8ChunkState))
             {
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Unexpected msg rcvd other than Ping & Chunk msg\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Unexpected msg rcvd other than Ping & Chunk msg\r\n");
 			  	
                 /* Chunk SM is reset*/
                 PRL_ResetChunkSM (u8PortNum);
@@ -1207,7 +1207,7 @@ UINT8 PRL_ProcessRcvdMsg (UINT8 u8PortNum)
             }
             else
             {
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Unexpected msg rcvd other than Ping & Chunk msg\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Unexpected msg rcvd other than Ping & Chunk msg\r\n");
 				/* Spec Ref: TCH_Message_Received - Clear Extended Message Buffer. Pass message to Chunked Rx*/
                 PRL_ResetChunkSM (u8PortNum);
             }
@@ -1294,7 +1294,7 @@ void PRL_SetCollisionAvoidance (UINT8 u8PortNum, UINT8 u8Enable)
 		/* u8Txstate is set to PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST*/
 		PRL_ChangeTxState (u8PortNum, PRL_Tx_CA_SRC_SINKTXTIMER_ON_ST);
         		
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: SINK_TX_TMR ON\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: SINK_TX_TMR ON\r\n");
 	}
 }
 
@@ -1359,7 +1359,7 @@ void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum)
         /* PRL_TX_IDLE_ST is assigned to PRL state*/
         gasPRL [u8PortNum].u8TxStateISR = PRL_TX_IDLE_ST;
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Tx Msg Discarded on Rcv\r\n");		
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Tx Msg Discarded on Rcv\r\n");		
     }
     else if (PRL_TX_MSG_BUFFERED_ON_CA_ST == gasPRL [u8PortNum].u8TxStateISR)
     {
@@ -1373,7 +1373,7 @@ void PRL_CommitPendingTxOnCAISR (UINT8 u8PortNum)
         /* PRL_TX_MSG_ON_LINE_ST is assigned to PRL state as Buffered message is tranmitted on line*/
         gasPRL [u8PortNum].u8TxStateISR = PRL_TX_MSG_ON_LINE_ST;
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"PRL: Buffered Tx Msg sent on line\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"PRL: Buffered Tx Msg sent on line\r\n");
     }
     else
     {
@@ -1480,7 +1480,7 @@ void PRL_ChunkStateChange_TimerCB (UINT8 u8PortNum, UINT8 u8ChunkState)
 	 /* setting the Timer ID to Max value*/
     gasChunkSM [u8PortNum].u8CAorChunkSMTimerID = MAX_CONCURRENT_TIMERS;
 	
-	//DEBUG_PRINT_PORT_STR (u8PortNum, "PRL: ChunkTimer time out \r\n");		
+	DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "PRL: ChunkTimer time out \r\n");		
 }
 
 /******************************************************************************************************/
@@ -1560,7 +1560,7 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 		
 		case PRL_RCH_SEND_CHUNK_REQUEST_ST:
 		{
-		  	//DEBUG_PRINT_PORT_STR (u8PortNum, "PRL: Chunk SM PRL_RCH_SEND_CHUNK_REQUEST_ST\r\n");
+		  	DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "PRL: Chunk SM PRL_RCH_SEND_CHUNK_REQUEST_ST\r\n");
             
             /* Check Abort flag before sending chunk Request*/
             if (gasChunkSM [u8PortNum].u8AbortFlag)
@@ -1636,7 +1636,7 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 			    									u8ChunkNumber);
                 u32CombinedMessageHeader = PRL_FORM_COMBINED_MSG_HEADER((UINT16)u32CombinedMessageHeader,
 			    									(gasExtendedMsgBuff [u8PortNum].u16Header));			/* Extended Msg Header + Msg Header*/
-                //DEBUG_PRINT_PORT_STR (u8PortNum, "PRL: Chunk SM PRL_TCH_SEND_RESPONSE_CHUNK_ST\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "PRL: Chunk SM PRL_TCH_SEND_RESPONSE_CHUNK_ST\r\n");
 			    
 			    /* TCH_CONSTRUCT_CHUNKED_MESSAGE - Construct Message Chunk and pass to Protocol Layer */
 			    /* Chunk Response is transmitted*/			  
@@ -1683,7 +1683,7 @@ void PRL_RunChunkStateMachine (UINT8 u8PortNum)
 		
 		case PRL_TCH_CHUNK_TX_ERROR_ST:
 		{
-		  	//DEBUG_PRINT_PORT_STR (u8PortNum, "PRL: Chunk SM PRL_TCH_CHUNK_TX_ERROR_ST\r\n");
+		  	DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "PRL: Chunk SM PRL_TCH_CHUNK_TX_ERROR_ST\r\n");
 			
 		  	/* On any transmission error, PE is informed through the callback */
 		  	PRL_TxOriginalCBfromCH (u8PortNum, PRL_TX_FAILED_ST);

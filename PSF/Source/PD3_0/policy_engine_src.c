@@ -122,7 +122,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_STARTUP_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_STARTUP-ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_STARTUP-ENTRY_SS\r\n");
 					
 					/* Reset the Caps Counter value */
                     gasPolicyEngine[u8PortNum].u8CapsCounter = FALSE;
@@ -169,14 +169,14 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                         if (FALSE == DPM_IsPortVCONNSource (u8PortNum))
                         { 
 							/* E-Cable not present, Port partner alone attached */
-                            //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_STARTUP-IDLE_SS: Device Attached\r\n");
+                            DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_STARTUP-IDLE_SS: Device Attached\r\n");
                             gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_SEND_CAPABILITIES;
                             gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_SEND_CAP_ENTRY_SS;                      
                         }
                         else
                         {
 							/* Port partner attached with E-Cable */
-                            //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_STARTUP-IDLE_SS: E-Cable and Device Attached\r\n");
+                            DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_STARTUP-IDLE_SS: E-Cable and Device Attached\r\n");
                             gasDPM[u8PortNum].u16SrcMaxSupportedCurrInmA = DPM_CABLE_CURR_3A_UNIT;
 
                             /*Routing PE states to initiate discover identity is not done
@@ -238,7 +238,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                     else
                     {
 						/* Send Source Capabilities message to Port partner */
-                        //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP-ENTRY_SS: Send Source Capabilities\r\n");
+                        DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_SEND_CAP-ENTRY_SS: Send Source Capabilities\r\n");
                         DPM_GetSourceCapabilities (u8PortNum, &u8SrcPDOCnt, u32aDataObj);
                         
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_DATA_SOURCE_CAP,  \
@@ -283,7 +283,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 
                 case ePE_SRC_SEND_CAP_GOODCRC_RCVD_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_CAP_GOODCRC_RCVD_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_SEND_CAP_GOODCRC_RCVD_SS\r\n");
                     
                     /* Reset CapsCounter and HardReset Counter to 0 */
                     gasPolicyEngine[u8PortNum].u8CapsCounter = RESET_TO_ZERO;
@@ -335,7 +335,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             if (DPM_VALID_REQUEST == DPM_ValidateRequest (u8PortNum, pu8DataBuf))
             {
 				/* Received Request is a valid request */
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_NEGOTIATE_CAPABILITY: Request is Valid\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_NEGOTIATE_CAPABILITY: Request is Valid\r\n");
                 
                 /* No RDO Reject message has been sent to last Request made by attached Sink */
                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
@@ -347,7 +347,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             else
             {
 				/* Received Request is invalid */
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_NEGOTIATE_CAPABILITY: Request is Invalid\r\n"); 
+                DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_NEGOTIATE_CAPABILITY: Request is Invalid\r\n"); 
                 
                 /* No RDO Accept message has been sent to last Request made by attached Sink */
                 gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
@@ -367,7 +367,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_TRANSITION_SUPPLY_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_SUPPLY-ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_TRANSITION_SUPPLY-ENTRY_SS\r\n");
                     
 					/* Send the Accept message */
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_ACCEPT,
@@ -476,7 +476,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                            tPpsSrcTransSmall or tPpsSrcTransLarge Timer in case of PPS. */
                         PE_KillPolicyEngineTimer (u8PortNum);
                         
-                        //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_SUPPLY-EXIT_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_TRANSITION_SUPPLY-EXIT_SS\r\n");
                         
                         u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_PS_RDY, \
                                                 PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -522,7 +522,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_CAPABILITY_RESPONSE_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_CAPABILITY_RESPONSE_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_CAPABILITY_RESPONSE_ENTRY_SS\r\n");
                     
 					/* If Explicit Contract already initiated, Send the reject message and set the
 						PE state to PE_SRC_READY*/
@@ -584,7 +584,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_READY_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_READY-ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_READY-ENTRY_SS\r\n");
 					
 					/* Set the PD contract as Explicit Contract */
                     gasPolicyEngine[u8PortNum].u8PEPortSts |= PE_EXPLICIT_CONTRACT;                    
@@ -617,7 +617,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 }
                 case ePE_SRC_READY_END_AMS_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_READY_END_AMS_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_READY_END_AMS_SS\r\n");
                     
                     /* Request DPM to initiate internal events*/
                     DPM_InitiateInternalEvts (u8PortNum);
@@ -666,7 +666,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_DISCOVERY_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_DISCOVERY-ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_DISCOVERY-ENTRY_SS\r\n");
 					
 					/* Start Source Capability  Timer, if timed out set the PE sub-state to 
 						ePE_SRC_DISCOVERY_EXIT_SS */
@@ -690,7 +690,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 
                 case ePE_SRC_DISCOVERY_EXIT_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_DISCOVERY-EXIT_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_DISCOVERY-EXIT_SS\r\n");
 					
 					/* If Caps Counter value reaches nCapsCount or Hard Reset Counter reaches
 						nHardResetCount, NoResponse timer timed out and PD is not connected change the 
@@ -727,7 +727,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_HARD_RESET_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_HARD_RESET-ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_HARD_RESET-ENTRY_SS\r\n");
                     
                     /* No request has been made by Sink within tSenderResponse */
                     if (gasPolicyEngine[u8PortNum].u8PEPortSts & PE_PDCONNECTED_STS_MASK)
@@ -768,7 +768,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 
                 case ePE_SRC_HARD_RESET_EXIT_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_HARD_RESET-EXIT_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_HARD_RESET-EXIT_SS\r\n");
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_TRANSITION_TO_DEFAULT;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_ENTRY_SS;
                     break;
@@ -790,7 +790,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_HARD_RESET_RECEIVED_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_HARD_RESET_RECEIVED-ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_HARD_RESET_RECEIVED-ENTRY_SS\r\n");
                     
                     /* Kill All the Active Policy Engine timers for the port */                   
                     PE_KillPolicyEngineTimer (u8PortNum);  
@@ -818,7 +818,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 
                 case ePE_SRC_HARD_RESET_RECEIVED_EXIT_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_HARD_RESET_RECEIVED-EXIT_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_HARD_RESET_RECEIVED-EXIT_SS\r\n");
                     gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_TRANSITION_TO_DEFAULT;
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_TRANSITION_TO_DEFAULT_ENTRY_SS;  
                     break;
@@ -839,7 +839,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_TRANSITION_TO_DEFAULT_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT-ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT-ENTRY_SS\r\n");
                     
 					/* Turn Off VCONN if the port is currently supplying VCONN */
                     if (DPM_IsPortVCONNSource (u8PortNum))
@@ -934,7 +934,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 
                 case ePE_SRC_TRANSITION_TO_DEFAULT_POWER_ON_SS:
                 {
-                   // DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT-POWER_ON_SS\r\n");
+                   DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT-POWER_ON_SS\r\n");
  
 #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
                     
@@ -968,7 +968,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
                     if (TYPEC_VBUS_5V == DPM_GetVBUSVoltage (u8PortNum))
                     {
-                        //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_ON_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_TRANSITION_TO_DEFAULT_WAIT_FOR_VBUS_ON_SS\r\n");
 
                         /*Kill the VBUS ON timer since vSafe5V is reached*/
                         PE_KillPolicyEngineTimer (u8PortNum);
@@ -1069,7 +1069,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             /************* PE_SRC_SINK_ALERT_RECEIVED *******/
         case ePE_SRC_SINK_ALERT_RECEIVED: 
         {
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SINK_ALERT_RECEIVED\r\n"); 
+            DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_SINK_ALERT_RECEIVED\r\n"); 
             /* Store the Alert Information received from Sink Partner */
             (void)MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sPPSPerPortData[u8PortNum].u32PartnerAlert, 
                                             pu8DataBuf, BYTE_LEN_4);
@@ -1089,7 +1089,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_GET_SINK_STATUS_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_GET_SINK_STATUS_ENTRY_SS\r\n"); 
                     
                     u32TransmitHeader = PRL_FormSOPTypeMsgHeader (u8PortNum, PE_CTRL_GET_STATUS, \
                                             PE_OBJECT_COUNT_0, PE_NON_EXTENDED_MSG);
@@ -1109,7 +1109,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 
                 case ePE_SRC_GET_SINK_STATUS_MSG_DONE_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_MSG_DONE_SS\r\n");                                         
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_GET_SINK_STATUS_MSG_DONE_SS\r\n");                                         
                     
                     /* Start Sender Response timer and Set the timer callback to transition to 
 					ePE_SRC_GET_SINK_STATUS_SENDER_RESPONSE_TIMEDOUT_SS sub state if timeout happens */
@@ -1128,7 +1128,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                    /* Sink Status not received within tSenderResponse. Send 
                       SINK_STATUS_NOT_RECEIVED notification and move to 
                       PE_SRC_READY state */ 
-                   //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS\r\n"); 
+                   DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_GET_SINK_STATUS_NO_RESPONSE_SS\r\n"); 
                                       
                    gasPolicyEngine[u8PortNum].ePEState = ePE_SRC_READY; 
                    gasPolicyEngine[u8PortNum].ePESubState = ePE_SRC_READY_END_AMS_SS;
@@ -1140,7 +1140,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 
                 case ePE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_GET_SINK_STATUS_RESPONSE_RCVD_SS\r\n"); 
                     
                     /* Store the received Sink Status and send notification */                            
                     (void)MCHP_PSF_HOOK_MEMCPY(gasCfgStatusData.sPPSPerPortData[u8PortNum].u8aPartnerStatus, 
@@ -1177,7 +1177,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_SEND_SOURCE_ALERT_ENTRY_SS: 
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_SEND_SOURCE_ALERT_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_SEND_SOURCE_ALERT_ENTRY_SS\r\n"); 
                     
                     /* Obtain the Alert Data Object from DPM */
                     u32DataBlock = DPM_ObtainAlertDO (u8PortNum);
@@ -1224,7 +1224,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_GIVE_SOURCE_STATUS_ENTRY_SS\r\n"); 
                             
                     /* Obtain the Status Data Block from DPM */
                     DPM_ObtainStatusDB (u8PortNum, u8aStatusDB);
@@ -1273,7 +1273,7 @@ void PE_RunSrcStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
             {
                 case ePE_SRC_GIVE_PPS_STATUS_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_SRC_GIVE_PPS_STATUS_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_SRC_GIVE_PPS_STATUS_ENTRY_SS\r\n"); 
                     
                     /* Obtain the PPS Status Data Block from DPM */
                     u32DataBlock = DPM_ObtainPPSStatusDB (u8PortNum);

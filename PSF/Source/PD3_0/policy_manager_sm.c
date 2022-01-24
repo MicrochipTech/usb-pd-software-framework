@@ -256,7 +256,7 @@ void DPM_PowerFaultHandler (UINT8 u8PortNum)
 				/* set the fault count to zero */
                 gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
 				
-                //DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "PWR_FAULT: HRCompleteWait Reseted\r\n");
 				
                 if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                 {			
@@ -271,7 +271,7 @@ void DPM_PowerFaultHandler (UINT8 u8PortNum)
 				/* Assign an idle state wait for detach*/
                 gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
                 
-                //DEBUG_PRINT_PORT_STR (u8PortNum, "VBUS PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "VBUS PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
                 
                 /* Notify the entry to Powered Off state */
                 (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_PORT_POWERED_OFF);
@@ -297,7 +297,7 @@ void DPM_PowerFaultHandler (UINT8 u8PortNum)
     
     if (gasDPM[u8PortNum].u8PowerFaultISR)
     {
-        //DEBUG_PRINT_PORT_STR(u8PortNum, "DPM Fault Handling\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "DPM Fault Handling\r\n");
         /*If VCONN OCS is present , kill the VCONN power good timer*/
         if (gasDPM[u8PortNum].u8PowerFaultISR & DPM_POWER_FAULT_VCONN_OCS)
         {
@@ -313,7 +313,7 @@ void DPM_PowerFaultHandler (UINT8 u8PortNum)
             TimerID does not hold any valid timer IDs anymore*/
             gasDPM[u8PortNum].u8VCONNPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 			
-            //DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: VCONN Power Fault\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "PWR_FAULT: VCONN Power Fault\r\n");
         } /*end of if condition of VCONN OCS check*/
         if (gasDPM[u8PortNum].u8PowerFaultISR & ~DPM_POWER_FAULT_VCONN_OCS)
         { 
@@ -354,7 +354,7 @@ void DPM_PowerFaultHandler (UINT8 u8PortNum)
             TimerID does not hold any valid timer IDs anymore*/
             gasDPM[u8PortNum].u8VBUSPowerGoodTmrID = MAX_CONCURRENT_TIMERS;
 			
-            //DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: VBUS Power Fault\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "PWR_FAULT: VBUS Power Fault\r\n");
         } /*end of if condition of VBUS Fault check*/
         
         if (PE_IMPLICIT_CONTRACT == PE_GET_PD_CONTRACT(u8PortNum))
@@ -378,7 +378,7 @@ void DPM_PowerFaultHandler (UINT8 u8PortNum)
                     /* set the fault count to zero */
                     gasDPM[u8PortNum].u8VBUSPowerFaultCount = SET_TO_ZERO;
 
-                    //DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: HRCompleteWait Reseted\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "PWR_FAULT: HRCompleteWait Reseted\r\n");
 
                     if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
                     {			
@@ -391,7 +391,7 @@ void DPM_PowerFaultHandler (UINT8 u8PortNum)
                         DPM_SetTypeCState(u8PortNum, TYPEC_ATTACHED_SNK, TYPEC_ATTACHED_SNK_IDLE_SS);
                     }
 
-                    //DEBUG_PRINT_PORT_STR (u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "PWR_FAULT: Entered SRC/SNK Powered OFF state\r\n");
 
                     gasDPM[u8PortNum].u8PowerFaultFlags &= (~DPM_TYPEC_ERR_RECOVERY_FLAG_MASK);
 
@@ -554,14 +554,14 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
     {
         case eMCHP_PSF_TYPEC_DETACH_EVENT:
         {
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"***************TYPEC DETACH***********\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"***************TYPEC DETACH***********\r\n");
             /* Process Type C Detach Event */
             DPM_OnTypeCDetach (u8PortNum); 
             break;
         }
         case eMCHP_PSF_TYPEC_CC1_ATTACH:
         {
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"***************TYPEC CC1 ATTACH***********\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"***************TYPEC CC1 ATTACH***********\r\n");
             /* Update Attached and Orientation connection status */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= DPM_PORT_ATTACHED_STATUS;  
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus &= 
@@ -572,7 +572,7 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
         }
         case eMCHP_PSF_TYPEC_CC2_ATTACH:
         {
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"***************TYPEC CC2 ATTACH***********\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"***************TYPEC CC2 ATTACH***********\r\n");
             /* Update Orientation connection status */
             gasCfgStatusData.sPerPortData[u8PortNum].u32PortConnectStatus |= 
                             (DPM_PORT_ATTACHED_STATUS | DPM_PORT_ORIENTATION_FLIPPED_STATUS);                        
@@ -660,7 +660,7 @@ UINT8 DPM_NotifyClient (UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION eDPMNotification
         }         
         case eMCHP_PSF_HARD_RESET_COMPLETE:
         {
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"***************HARD RESET COMPLETE***********\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"***************HARD RESET COMPLETE***********\r\n");
             break; 
         } 
         case eMCHP_PSF_SINK_CAPS_RCVD:
@@ -805,12 +805,12 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
             DPM_DISABLE_FRS_REQ_PIO(u8PortNum);
-            //DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Disabled\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "FRS XMT Disabled\r\n");
         }
         else
         {
             DPM_DISABLE_FRS_DET_EN(u8PortNum);
-            //DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "FRS DET Disabled\r\n");
         }
         
         DPM_DISABLE_FRS_XMT_OR_DET(u8PortNum);
@@ -872,7 +872,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         gu16HPDStsISR[u8PortNum] = SET_TO_ZERO;
         MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();                                      
         
-        //DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Disabled\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "UPD_HPD Disabled\r\n");
         
         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_DISABLED);
     }
@@ -882,7 +882,7 @@ void DPM_ClientRequestHandler(UINT8 u8PortNum)
         u32ClientRequest &= ~(DPM_CLIENT_REQ_ENABLE_HPD);
         
         DPM_ENABLE_HPD(u8PortNum);
-        //DEBUG_PRINT_PORT_STR(u8PortNum, "UPD_HPD Enabled\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "UPD_HPD Enabled\r\n");
 
         (void)DPM_NotifyClient (u8PortNum, eMCHP_PSF_HPD_ENABLED);        
     }
@@ -924,7 +924,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         /*Clear the Internal event since it is processed*/
         gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_HANDLE_SYSTEM_POWER_LOSS);
         
-        //DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_SYSTEM_POWER_IS_LOST\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "DPM_SYSTEM_POWER_IS_LOST\r\n");
          /* After Source to sink FR_Swap, the new role is bus-powered sink.*/
         /* Clearing DPM_DEFAULT_POWER_ROLE_MASK in u8DPMConfigData 
            to set the configured power role as fixed sink*/
@@ -970,7 +970,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
         /*Clear the Internal event since it is processed*/
         gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_HANDLE_SYSTEM_POWER_RECOVERY);
         
-        //DEBUG_PRINT_PORT_STR(u8PortNum, "DPM_SYSTEM_POWER_IS_BACK\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum, "DPM_SYSTEM_POWER_IS_BACK\r\n");
 
         /*Transition to DRP role (acting as sink) since power is back*/
         gasDPM[u8PortNum].u8DPMConfigData &= (~DPM_DEFAULT_POWER_ROLE_MASK);
@@ -1022,7 +1022,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             gasPolicyEngine[u8PortNum].ePEState = ePE_FRS_SNK_SRC_SEND_SWAP;
             gasPolicyEngine[u8PortNum].ePESubState = ePE_FRS_SNK_SRC_SEND_SWAP_ENTRY_SS;
             u16AMSInProgress = DPM_INT_EVT_INITIATE_FR_SWAP;
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: FR_SWAP INITIATED\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: FR_SWAP INITIATED\r\n");
         }
         else
         {
@@ -1071,7 +1071,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             gasPolicyEngine[u8PortNum].ePESubState = ePE_GET_SINK_CAP_ENTRY_SS;
             
             u16AMSInProgress = DPM_INT_EVT_INITIATE_GET_SINK_CAPS;
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: GET_SINK_CAP INITIATED\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: GET_SINK_CAP INITIATED\r\n");
         }
         else if (gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_INITIATE_RENEGOTIATION)
         {
@@ -1091,7 +1091,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             }
             
             u16AMSInProgress = DPM_INT_EVT_INITIATE_RENEGOTIATION;
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: RENEGOTIATION INITIATED\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: RENEGOTIATION INITIATED\r\n");
         }
 #if (TRUE == INCLUDE_PD_VCONN_SWAP)
         else if (gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_INITIATE_VCONN_SWAP)
@@ -1105,7 +1105,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
                 gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_SEND_SWAP_ENTRY_SS;
                 
                 u16AMSInProgress = DPM_INT_EVT_INITIATE_VCONN_SWAP;
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: VCONN_SWAP INITIATED\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: VCONN_SWAP INITIATED\r\n");
             }  
         } /* DPM_INT_EVT_INITIATE_VCONN_SWAP */
         else if (gasDPM[u8PortNum].u16DPMInternalEvents & DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET)
@@ -1117,7 +1117,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             gasPolicyEngine[u8PortNum].ePESubState = ePE_VCS_CBL_SEND_SOFT_RESET_ENTRY_SS;
             
             u16AMSInProgress = DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET;
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: SOP_P_SOFT_RST INITIATED\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: SOP_P_SOFT_RST INITIATED\r\n");
         } /*DPM_INT_EVT_INITIATE_SOP_P_SOFT_RESET */        
 #endif /*INCLUDE_PD_VCONN_SWAP*/
 #if (TRUE == INCLUDE_PD_PR_SWAP)
@@ -1153,7 +1153,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_PRS_SEND_SWAP_ENTRY_SS;
                     
                     u16AMSInProgress = DPM_INT_EVT_INITIATE_PR_SWAP;
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: PR_SWAP INITIATED\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: PR_SWAP INITIATED\r\n");
                 }
             }
         }
@@ -1192,7 +1192,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
                     gasPolicyEngine[u8PortNum].ePESubState = ePE_DRS_SEND_SWAP_ENTRY_SS;
                     
                     u16AMSInProgress = DPM_INT_EVT_INITIATE_DR_SWAP;  
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: DR_SWAP INITIATED\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: DR_SWAP INITIATED\r\n");
                 }
             }
         }
@@ -1235,7 +1235,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
                 {
                     /* Do nothing for sink as PPS sink not supported currently*/
                 }    
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: ALERT INITIATED\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: ALERT INITIATED\r\n");
             }
 
             /*start the DPM_STATUS_FAULT_PERSIST_TIMEOUT_MS to clear the status flag
@@ -1265,7 +1265,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
                 {
                     /*Do nothing for sink as PPS for sink not supported currently*/
                 }
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: GET_STATUS INITIATED\r\n");
+                DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: GET_STATUS INITIATED\r\n");
             }
         } /* DPM_INT_EVT_INITIATE_GET_STATUS */
 #endif /*INCLUDE_PD_SOURCE_PPS*/      
@@ -1279,7 +1279,7 @@ void DPM_InternalEventHandler (UINT8 u8PortNum)
             gasPolicyEngine[u8PortNum].ePESubState = ePE_VDM_IDENTITY_REQUEST_ENTRY_SS;
 
             u16AMSInProgress = DPM_INT_EVT_DISCOVER_CABLE_IDENTITY;
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: SOP_P_DISC_ID INITIATED\r\n");            
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: SOP_P_DISC_ID INITIATED\r\n");            
         } /* DPM_INT_EVT_DISCOVER_CABLE_IDENTITY */         
         else
         {

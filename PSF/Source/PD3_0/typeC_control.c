@@ -158,7 +158,7 @@ void TypeC_InitDRPPort (UINT8 u8PortNum)
         gasPolicyEngine[u8PortNum].ePESubState = ePE_INVALIDSUBSTATE; 
     }
     
-    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: DRP Port Init Done\r\n");
+    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: DRP Port Init Done\r\n");
 }
 #endif
 /**************************************************************************************/
@@ -334,7 +334,7 @@ void TypeC_InitPort (UINT8 u8PortNum)
             PWRCTRL_ConfigSinkHW (u8PortNum, TYPEC_VBUS_0V, gasDPM[u8PortNum].u16SinkOperatingCurrInmA);
         #endif
     }
-    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Port Init Done\r\n");             
+    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: Port Init Done\r\n");             
 }
 
 void TypeC_GenericInitPort (UINT8 u8PortNum)
@@ -439,7 +439,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /* Check for VBUS VSafe0V for Voltage driven in TypeC Initialization */
                     if (TYPEC_VSAFE_0V_MATCH_VAL == UPD_RegReadByte (u8PortNum, TYPEC_VBUS_MATCH))
                     {
-                        //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_UNATTACHED_SRC_INIT_VSAFE0V_SS\r\n");
                         
                         PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
                         
@@ -455,7 +455,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_UNATTACHED_SRC_ENTRY_SS:
                 {     
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_SRC_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_UNATTACHED_SRC_ENTRY_SS\r\n");
                     
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);                                                             
@@ -474,8 +474,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Set the CC Comparator to sample both CC1 and CC2*/
                         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);   
                         
-                        /*DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: RP Value of Source set to"\
-                                             "User given Value\r\n"); */                        
+                        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,  \
+                                "TYPEC: RP Value of Source set to User given Value\r\n");                      
                     }                
                     
 #if(TRUE == INCLUDE_PD_DRP)
@@ -565,7 +565,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*This SubState is used to start a tCCDebounce timer for Sink attachment*/
                 case TYPEC_ATTACHWAIT_SRC_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SRC_ENTRY_SS\r\n");                    
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHWAIT_SRC_ENTRY_SS\r\n");                    
                     
                     #if(TRUE == INCLUDE_PD_DRP)
                     if (PD_ROLE_DRP == DPM_GET_DEFAULT_POWER_ROLE(u8PortNum))
@@ -668,7 +668,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     
                     if (u8VBUSValueToCheck == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {        
-                        //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC_SWAP_ASSERT_RP_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHED_SRC_SWAP_ASSERT_RP_SS\r\n");
                         
                         gasTypeCcontrol[u8PortNum].u8DRPLastAttachedState = PD_ROLE_SOURCE;
 
@@ -725,7 +725,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*Source Drives VBUS and VCONN required in this sub-state*/
                 case TYPEC_ATTACHED_SRC_DRIVE_PWR_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC_DRIVE_PWR_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHED_SRC_DRIVE_PWR_SS\r\n");
                     
                     /* Drive VBus for vSafe5V */
                     DPM_DriveVBUS (u8PortNum, DPM_VBUS_ON);
@@ -758,14 +758,14 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                         /*Powered cable attached in CC1*/
                         if (u8CC1MatchISR > u8CC2MatchISR)
                         {                                               
-                            /*DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC: VCONN"\
-                                                 "Enabled in CC1\r\n"); */                                                           
+                            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,  \
+                                    "TYPEC_ATTACHED_SRC: VCONN Enabled in CC1\r\n");                                                          
                         }
                         /*Powered cable attached in CC2*/
                         else
                         {                             
-                            /*DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC: VCONN"\
-                                                 "Enabled in CC2\r\n");  */                                              
+                            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,  \
+                                    "TYPEC_ATTACHED_SRC: VCONN Enabled in CC2\r\n");                                              
                         }
                         
                         /*Enable VCONN for powered cable attached in CC1 or CC2 line */
@@ -784,7 +784,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {   
                     if (TYPEC_VBUS_5V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {                      
-                        //DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_WAIT_FOR_VBUS_ON_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "TYPEC_ATTACHED_SRC_WAIT_FOR_VBUS_ON_SS\r\n");
                         /*Kill the VBUS ON timer since vSafe5V is reached*/
                         TypeC_KillTypeCTimer (u8PortNum);
                                                               
@@ -818,7 +818,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {                          
                     if (u8IntStsISR & TYPEC_VCONN_SOURCE_MASK)
                     {                      
-                        //DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS\r\n");
+                        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "TYPEC_ATTACHED_SRC_WAIT_FOR_VCONN_ON_SS\r\n");
                         
                         /*Kill the VCONN ON timer since VCONN is turned ON*/
                         TypeC_KillTypeCTimer (u8PortNum); 
@@ -835,7 +835,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 
                 case TYPEC_ATTACHED_SRC_SET_PRL_SS:
                 {                    
-                    //DEBUG_PRINT_PORT_STR(u8PortNum, "TYPEC_ATTACHED_SRC_SET_PRL_SS\r\n");                    
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "TYPEC_ATTACHED_SRC_SET_PRL_SS\r\n");                    
                                     
                     /* Enabling PRL Rx */
                     PRL_EnableRx (u8PortNum, TRUE);                  
@@ -878,7 +878,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     /* This sub-state would be entered only during 
                        Power role swap from Source to Sink */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SRC_SWAP_TRANS_TO_SNK_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHED_SRC_SWAP_TRANS_TO_SNK_SS\r\n");
                     
                     /* Power down the CC comparator */
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
@@ -921,7 +921,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
             /*This SubState is used to start a tPDDeounce Software timer for sink detach event*/         
             case TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS:
             {                    
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS\r\n"); 
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_UNATTACHED_WAIT_SRC_ENTRY_SS\r\n"); 
                 
                 /*Kill all the timers for a port */
                 PDTimer_KillPortTimers (u8PortNum);
@@ -1023,7 +1023,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
 		    {             
                 case TYPEC_UNATTACHED_SNK_ENTRY_SS: 
                 {
-                    //DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_UNATTACHED_SNK_ENTRY_SS\r\n");
                     
 #if (TRUE == INCLUDE_PD_DRP)
                     /*Setting the Rd Value */ 
@@ -1083,8 +1083,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     if (TYPEC_VBUS_0V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     { 
-                        /*DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC_UNATTACHED_SNK_WAIT_FOR_VSAFE0V_SS" \
-                                            " - VBUS_0V Present\r\n");*/
+                        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,   \
+                                "TYPEC_UNATTACHED_SNK_WAIT_FOR_VSAFE0V_SS - VBUS_0V Present\r\n");
                         
                         /* Disabling the VBUS discharge functionality since VBUS has reached vSafe0V */                  
                         PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
@@ -1153,7 +1153,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*This SubState is used to start a tCCDebounce Software timer for Source attachment*/ 
                 case TYPEC_ATTACHWAIT_SNK_ENTRY_SS:
                 {                  
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SNK_ENTRY_SS\r\n");                  
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHWAIT_SNK_ENTRY_SS\r\n");                  
                     
                     /* Configure VBUS threshold to detect 5V*/
                     TypeC_ConfigureVBUSThr (u8PortNum, TYPEC_VBUS_5V, \
@@ -1218,8 +1218,8 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                     /*Check for VBUS Presence before moving to Attached SNK state */
                     if (TYPEC_VBUS_5V_PRES == (u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK))
                     {
-                        /*DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHWAIT_SNK_CC_DEB_TIMEOUT_SS "\
-                                "- VBUS_5V_PRESENT\r\n");*/
+                        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,  \
+                                "TYPEC_ATTACHWAIT_SNK_CC_DEB_TIMEOUT_SS - VBUS_5V_PRESENT\r\n");
                         /*Set BLK_PD_MSG. Done in cronus*/
                         UPD_RegByteSetBit (u8PortNum, TYPEC_CC_HW_CTL_HIGH, TYPEC_BLK_PD_MSG);
                         
@@ -1249,7 +1249,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                    Attached Source state during Source to Sink PR_Swap/FR_Swap */
                 case TYPEC_ATTACHED_SNK_SWAP_ASSERT_RD_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_SWAP_ASSERT_RD_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHED_SNK_SWAP_ASSERT_RD_SS\r\n");
                     
                     /* CC Comparator would have been turned off in 
                        TYPEC_ATTACHED_SRC_SWAP_TRANS_TO_SNK_SS sub-state. No need
@@ -1320,7 +1320,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                            during a Role Swap, turning off the VBUS Discharge here*/
                         PWRCTRL_ConfigVBUSDischarge (u8PortNum, FALSE);
                         
-                        //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS\r\n");                    
+                        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHED_SNK_SWAP_VBUS_PRES_DETECT_SS\r\n");                    
                         
                         gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_ENTRY_SS;
                     }      
@@ -1344,7 +1344,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                  about the Type C Attached event this sub-state */
                 case TYPEC_ATTACHED_SNK_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHED_SNK_ENTRY_SS\r\n");
                     
                     /* Assign Operating current based on the Rp value*/
                     gasDPM[u8PortNum].u16SinkOperatingCurrInmA = TypeC_ObtainCurrentValueFrmRp(u8PortNum);                                                         
@@ -1404,7 +1404,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 /*Sink enters this sub-state to start a tPDDeounce timer for source detach event*/
                 case TYPEC_ATTACHED_SNK_START_PD_DEB_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_START_PD_DEB_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHED_SNK_START_PD_DEB_SS\r\n");
                     
                     /*Kill all the timers for a port before starting a Type C Debounce timer*/
                     PDTimer_KillPortTimers (u8PortNum);
@@ -1424,7 +1424,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 vSinkDisconnect*/
                 case TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS:
                 {    
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHED_SNK_PD_DEB_TIMEOUT_SS\r\n");
                                          
                     if ((u8IntStsISR & TYPEC_VBUS_PRESENCE_MASK) != TYPEC_VBUS_0V_PRES)
                     {
@@ -1471,7 +1471,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 {
                     /* This sub-state would be entered only during 
                        Power role swap from Sink to Source */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ATTACHED_SNK_SWAP_TRANS_TO_SRC_SS\r\n");                                        
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ATTACHED_SNK_SWAP_TRANS_TO_SRC_SS\r\n");                                        
                     /* Power down the CC comparator */
                     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
                     
@@ -1523,7 +1523,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 are set to open disconnect*/
                 case TYPEC_ERROR_RECOVERY_ENTRY_SS:
                 {                  
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_ERROR_RECOVERY_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_ERROR_RECOVERY_ENTRY_SS\r\n"); 
                     
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
@@ -1703,7 +1703,7 @@ void TypeC_RunStateMachine (UINT8 u8PortNum)
                 its CC1 and CC2 pins. */ 
                 case TYPEC_DISABLED_ENTRY_SS:
                 {
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC_DISABLED_ENTRY_SS\r\n"); 
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC_DISABLED_ENTRY_SS\r\n"); 
                     
                     /* Disable the receiver*/
                     PRL_EnableRx (u8PortNum, FALSE);
@@ -2511,7 +2511,7 @@ void TypeC_EnabDisVCONN (UINT8 u8PortNum, UINT8 u8EnableDisable)
         /*Setting CC Comparator to sample both the CC1 and CC2*/
         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);
                 
-        DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN_DISCH INITIATED\r\n");        
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: VCONN_DISCH INITIATED\r\n");        
     }
     else
     {   
@@ -2614,7 +2614,7 @@ void TypeC_VCONNOnIntrHandler (UINT8 u8PortNum)
             /*Setting the u8IntStsISR variable that CC1 is the VCONN source*/
             gasTypeCcontrol[u8PortNum].u8IntStsISR |= TYPEC_VCONN_SOURCE_CC1;
             
-            //DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: VCONN Enabled in CC1\r\n");            
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: VCONN Enabled in CC1\r\n");            
         }
 		 /*VCONN Enabled in CC2 and Sink Attached in CC1*/
         else if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN2_ON_REQ) && \
@@ -2624,7 +2624,7 @@ void TypeC_VCONNOnIntrHandler (UINT8 u8PortNum)
             /*Setting the u8IntStsISR variable that CC2 is the VCONN source*/
             gasTypeCcontrol[u8PortNum].u8IntStsISR |= TYPEC_VCONN_SOURCE_CC2;
             
-            //DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: VCONN Enabled in CC2\r\n");  
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: VCONN Enabled in CC2\r\n");  
         }
         else
         {
@@ -2652,7 +2652,7 @@ void TypeC_VCONNOnIntrHandler (UINT8 u8PortNum)
              /*Setting the u8IntStsISR variable that CC1 is the VCONN source*/
             gasTypeCcontrol[u8PortNum].u8IntStsISR |= TYPEC_VCONN_SOURCE_CC1;
             
-            //DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: VCONN Enabled in CC1\r\n");  
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: VCONN Enabled in CC1\r\n");  
         }
          /*VCONN Enabled in CC2 and Source Attached in CC1*/
         else if ((gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN2_ON_REQ) && \
@@ -2662,7 +2662,7 @@ void TypeC_VCONNOnIntrHandler (UINT8 u8PortNum)
              /*Setting the u8IntStsISR variable that CC2 is the VCONN source*/
             gasTypeCcontrol[u8PortNum].u8IntStsISR |= TYPEC_VCONN_SOURCE_CC2;          
             
-            //DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: VCONN Enabled in CC2\r\n");  
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: VCONN Enabled in CC2\r\n");  
         }
         else
         {
@@ -2716,8 +2716,8 @@ void TypeC_CCVBUSIntrHandler (UINT8 u8PortNum)
     
     if (gasTypeCcontrol[u8PortNum].u8IntStsISR & TYPEC_CCINT_STATUS_MASK)
     {        
-        //DEBUG_PRINT_PORT_STR(gasTypeCcontrol[u8PortNum].u8CC1MatchISR,"TYPEC: CC1 register\r\n");
-        //DEBUG_PRINT_PORT_STR(gasTypeCcontrol[u8PortNum].u8CC2MatchISR,"TYPEC: CC2 register\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,gasTypeCcontrol[u8PortNum].u8CC1MatchISR,"TYPEC: CC1 register\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,gasTypeCcontrol[u8PortNum].u8CC2MatchISR,"TYPEC: CC2 register\r\n");
                  
         if (gasTypeCcontrol[u8PortNum].u8PortSts & TYPEC_VCONN_DISCHARGE_ON_MASK)
         {
@@ -2789,14 +2789,14 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         
         if (TRUE == (u8Data & TYPEC_DRP_ADVERTISING_STATE))
         {
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"DRP attached as Sink-UFP\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"DRP attached as Sink-UFP\r\n");
             /*Set power and data role status as Sink/UFP*/
             DPM_UpdatePowerRole (u8PortNum, PD_ROLE_SINK);
             DPM_UpdateDataRole (u8PortNum, PD_ROLE_UFP);
         }
         else
         {
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"DRP attached as Source-DFP\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"DRP attached as Source-DFP\r\n");
             /*Set power and data role status as Source/DFP*/
             DPM_UpdatePowerRole (u8PortNum, PD_ROLE_SOURCE);
             DPM_UpdateDataRole (u8PortNum, PD_ROLE_DFP);
@@ -2817,7 +2817,7 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         
         if (PD_ROLE_SOURCE == DPM_GET_CURRENT_POWER_ROLE(u8PortNum))
         {
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS XMT INTR\r\n");            
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC:Handle FRS XMT INTR\r\n");            
             
             /* Set Rp value to SinkTxOK, so that sink partner can initiate
                FR_Swap message */            
@@ -2827,7 +2827,7 @@ void TypeC_DRPIntrHandler (UINT8 u8PortNum)
         }
         else
         {
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:Handle FRS RCV INTR\r\n");                   
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC:Handle FRS RCV INTR\r\n");                   
                 
             /* Register internal event to start FR_Swap AMS */
             DPM_RegisterInternalEvent (u8PortNum, DPM_INT_EVT_INITIATE_FR_SWAP);                
@@ -2874,8 +2874,8 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             /*Setting the Powered cable presence in u8PortSts variable*/
             gasTypeCcontrol[u8PortNum].u8PortSts |= TYPEC_PWDCABLE_PRES_MASK;
 
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Powered Cable is Present in CC");
-            //DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n"); 
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: Only Powered Cable is Present in CC");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n"); 
             
             /*Move to TYPEC_UNATTACHED_WAIT_SRC state if current state is TYPEC_ATTACHED_SRC. 
               A PR_Swap/FR_Swap from Sink to Source should not be considered 
@@ -2910,8 +2910,8 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
 		case TYPEC_UFP_ATT_DEF:
         case TYPEC_UFP_ATT_3A0:
 		{
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Only Sink is Present in CC");
-            //DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");               
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: Only Sink is Present in CC");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");               
             
             if (TYPEC_UNATTACHED_SRC == u8TypeCState)
             {                                  
@@ -2947,11 +2947,11 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
             /*Setting the Powered cable presence in u8PortSts variable*/
             gasTypeCcontrol[u8PortNum].u8PortSts |= TYPEC_PWDCABLE_PRES_MASK;
           
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Sink is Present in CC");
-            //DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 2 : 1),"\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: Sink is Present in CC");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 2 : 1),"\r\n");
             
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Powered Cable is Present in CC");
-            //DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: Powered Cable is Present in CC");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");
             
             if (TYPEC_UNATTACHED_SRC == u8TypeCState)
             {             
@@ -2984,7 +2984,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 /*This avoids unwanted transition in attached state*/
                 if (TYPEC_UNATTACHED_SRC == u8TypeCState)
                 {                
-                    //DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: AUDIO ACCESSORY is present\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: AUDIO ACCESSORY is present\r\n");
                     
                     /*Setting the state for tCCDebounce*/
                     u8TypeCState = TYPEC_ATTACHWAIT_SRC;
@@ -2997,7 +2997,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 /*Clearing the Powered cable presence in u8PortSts variable*/
                 gasTypeCcontrol[u8PortNum].u8PortSts &= ~TYPEC_PWDCABLE_PRES_MASK;
                 
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: No Devices are present\r\n");                
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: No Devices are present\r\n");                
                                                 
                 if (TYPEC_ATTACHWAIT_SRC == u8TypeCState)
                 {
@@ -3034,7 +3034,7 @@ void TypeC_SrcIntrHandler (UINT8 u8PortNum)
                 /*This avoids unwanted transition in attached state*/              
                 if (TYPEC_UNATTACHED_SRC == u8TypeCState)
                 {                  
-                    //DEBUG_PRINT_PORT_STR(u8PortNum,"TYPEC: DEBUG ACCESSORY is present\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: DEBUG ACCESSORY is present\r\n");
                     /*Setting the state for tCCDebounce	*/
                     u8TypeCState = TYPEC_ATTACHWAIT_SRC;
                     u8TypeCSubState = TYPEC_ATTACHWAIT_SRC_ENTRY_SS;
@@ -3106,8 +3106,8 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
                     TypeC_KillTypeCTimer (u8PortNum);                 
                 }
                  
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Source is Present in CC");
-                //DEBUG_PRINT_PORT_STR (((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");                                                             
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: Source is Present in CC");
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,((gasTypeCcontrol[u8PortNum].u8CC1MatchISR > gasTypeCcontrol[u8PortNum].u8CC2MatchISR) ? 1 : 2),"\r\n");                                                             
             }
 
             /*Disable the Protocol layer receiver function since moving to Attach wait state*/
@@ -3125,7 +3125,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
             /*Valid Detach event happens only when both the CC1 and CC2 are 0*/  
             if (SET_TO_ZERO == gasTypeCcontrol[u8PortNum].u8CC1MatchISR)
             {
-                //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: NO DEVICES ARE PRESENT\r\n");                                
+                DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: NO DEVICES ARE PRESENT\r\n");                                
 
                 if (TYPEC_ATTACHWAIT_SNK == u8TypeCState)
                 {
@@ -3219,7 +3219,7 @@ void TypeC_SnkIntrHandler (UINT8 u8PortNum)
 
 void TypeC_OnVCONNDISCHComplete (UINT8 u8PortNum)
 {    
-    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: VCONN_DISCH COMPLETE\r\n");
+    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: VCONN_DISCH COMPLETE\r\n");
     
     /*Power down the CC comparator*/
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);
@@ -3279,7 +3279,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         /*Setting the Rp Value as SinkTxNG*/
         TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, TYPEC_ROLE_SOURCE_15, TYPEC_ENABLE_CC1_CC2);    
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"TypeC-CA: Rp set to SinkTxNG\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TypeC-CA: Rp set to SinkTxNG\r\n");
     }
     /*Rp value as 3.0A@5V */
     else
@@ -3293,7 +3293,7 @@ void TypeC_SetRpCollAvoidance (UINT8 u8PortNum, UINT8 u8RpValue)
         /*Setting the Rp Value as SinkTxOk*/
         TypeC_SetCCPowerRole (u8PortNum, TYPEC_ROLE_SOURCE, TYPEC_ROLE_SOURCE_30, TYPEC_ENABLE_CC1_CC2);
         
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"TypeC-CA: Rp set to SinkTxOK\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TypeC-CA: Rp set to SinkTxOK\r\n");
     }
     
     /*Enabling the CC Sampling in the sink attached CC pin if both sink and powered cable 
@@ -3411,7 +3411,7 @@ void TypeC_ConfigureVBUSThr (UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curre
     
 	if ((u8PowerFaultThrConfig) && (u16Voltage != TYPEC_VBUS_0V))
 	{
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Set PWR Fault VBUS Threshold\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: Set PWR Fault VBUS Threshold\r\n");
         
         /* if fault has occurred start the Power Good Timer */
         if (gasDPM[u8PortNum].u8VBUSPowerFaultCount > SET_TO_ZERO)
@@ -3453,7 +3453,7 @@ void TypeC_ConfigureVBUSThr (UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curre
 	#endif /*INCLUDE_POWER_FAULT_HANDLING*/
 	/*****************************VBUS threshold configuration for all voltages ****************/  
 	{
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC: Set Non PWR Fault VBUS Threshold\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC: Set Non PWR Fault VBUS Threshold\r\n");
         
         #if (TRUE == INCLUDE_POWER_FAULT_HANDLING)
         #if (TRUE == INCLUDE_UPD_PIO_OVERRIDE_SUPPORT)
@@ -3524,7 +3524,7 @@ void TypeC_ConfigureVBUSThr (UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curre
       
       if (u16Voltage != TYPEC_VBUS_0V)
       {
-        //DEBUG_PRINT_PORT_STR (u16MinVoltageThr,"Min VBUS Threshold\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u16MinVoltageThr,"Min VBUS Threshold\r\n");
         
         /* Minimum valid voltage is configured to VBUS Threshold 1*/
         UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR1, u16MinVoltageThr);
@@ -3537,7 +3537,7 @@ void TypeC_ConfigureVBUSThr (UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Curre
                 PWRCTRL_ConfigVBUSDischarge (u8PortNum, TRUE);            
             }
             
-            //DEBUG_PRINT_PORT_STR (u16MaxVoltageThr,"Max VBUS Threshold\r\n"); 
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u16MaxVoltageThr,"Max VBUS Threshold\r\n"); 
             
             /* Set Threshold 1 to previous voltage*/
             UPD_RegWriteWord (u8PortNum, TYPEC_VBUS_THR4, u16MaxVoltageThr);
@@ -3691,7 +3691,7 @@ void TypeC_ConfigureFRSSignalDET (UINT8 u8PortNum)
        connected CC pin.*/     
     TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_CC1_CC2);         
     
-    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Detection Enabled\r\n");             
+    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC:FRS Signal Detection Enabled\r\n");             
 }
 
 void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum)
@@ -3750,7 +3750,7 @@ void TypeC_ConfigureFRSSignalXMT (UINT8 u8PortNum)
         /* Do Nothing */
     }
         
-    //DEBUG_PRINT_PORT_STR (u8PortNum,"TYPEC:FRS Signal Transmission Enabled\r\n");             
+    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"TYPEC:FRS Signal Transmission Enabled\r\n");             
 }
 
 void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
@@ -3815,7 +3815,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             /* Enable FRS_REQ_PIO bit in FRS_CTL register */
             UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO);
 
-            //DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Enabled\r\n");                            
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "FRS XMT Enabled\r\n");                            
         }        
         else /* PD_ROLE_SINK */
         {         
@@ -3845,7 +3845,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             /* Enable FRS Signal Detection */
             UPD_RegByteSetBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_DET_EN);    
             
-            //DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Enabled\r\n"); 
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "FRS DET Enabled\r\n"); 
         }
         /* Set FRS XMT or DET Enabled status */
         DPM_ENABLE_FRS_XMT_OT_DET(u8PortNum);
@@ -3857,7 +3857,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
         {
             UPD_RegByteClearBit (u8PortNum, TYPEC_FRS_CTL_HIGH, (UINT8)TYPEC_FRS_REQ_PIO);
             
-            //DEBUG_PRINT_PORT_STR(u8PortNum, "FRS XMT Disabled\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "FRS XMT Disabled\r\n");
         }
         else /* PD_ROLE_SINK */
         {            
@@ -3866,7 +3866,7 @@ void TypeC_EnableFRSXMTOrDET (UINT8 u8PortNum, UINT8 u8IsFRSSupported)
             /* Disable DC/DC pin function */
             PWRCTRL_ConfigDCDCEn (u8PortNum, FALSE);  
             
-            //DEBUG_PRINT_PORT_STR(u8PortNum, "FRS DET Disabled\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum, "FRS DET Disabled\r\n");
         }      
         
         TypeC_ConfigCCComp (u8PortNum, TYPEC_CC_COMP_CTL_DIS);

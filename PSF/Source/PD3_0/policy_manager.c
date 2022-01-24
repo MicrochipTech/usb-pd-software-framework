@@ -74,7 +74,7 @@ void DPM_VCONNONError_TimerCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 
 void DPM_HandleVCONNONError (UINT8 u8PortNum)
 {
-   // DEBUG_PRINT_PORT_STR(u8PortNum,"VCONN_ON_ERROR\r\n"); 
+    DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"VCONN_ON_ERROR\r\n"); 
     
     /*Checks whether u8VCONNPowerFaultCount exceeds the configured VCONN max power fault count.
     If u8VCONNMaxFaultCnt is configured to 0xFF, port should not be shutdown.*/
@@ -102,7 +102,7 @@ void DPM_HandleVCONNONError (UINT8 u8PortNum)
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SRC_IDLE_SS;
 
-            //DEBUG_PRINT_PORT_STR(u8PortNum,"Entered SRC Powered OFF state\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"Entered SRC Powered OFF state\r\n");
 #endif 
         }
         else
@@ -110,7 +110,7 @@ void DPM_HandleVCONNONError (UINT8 u8PortNum)
             /*Assign an idle state to wait for detach*/
             gasTypeCcontrol[u8PortNum].u8TypeCSubState = TYPEC_ATTACHED_SNK_IDLE_SS;
 
-            //DEBUG_PRINT_PORT_STR(u8PortNum,"Entered SNK Powered OFF state\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"Entered SNK Powered OFF state\r\n");
         }       
 
         gasPolicyEngine[u8PortNum].ePEState = ePE_INVALIDSTATE;
@@ -515,7 +515,7 @@ UINT8 DPM_ValidateRequest (UINT8 u8PortNum, UINT8 *u8pDataBuf)
         {
             /* Do Nothing */
         }
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM: Request is Valid\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM: Request is Valid\r\n");
     }
 
     return u8RetVal;
@@ -635,13 +635,13 @@ void DPM_DriveVBUS (UINT8 u8PortNum, UINT8 u8VbusOnorOff)
            on the Rp value configured by the user */
         u16CurrentInmA = TypeC_ObtainCurrentValueFrmRp (u8PortNum);
         u16VoltageInmV = TYPEC_VBUS_5V;
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM:TURN ON VBUS\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM:TURN ON VBUS\r\n");
     }
     else
     {
         u16CurrentInmA = DPM_0mA; 
         u16VoltageInmV = TYPEC_VBUS_0V; 
-        //DEBUG_PRINT_PORT_STR (u8PortNum,"DPM:TURN OFF VBUS\r\n");
+        DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"DPM:TURN OFF VBUS\r\n");
     }
 
     /* Update power related status registers */
@@ -2349,7 +2349,7 @@ void DPM_EvaluatePartnerCapabilities (UINT8 u8PortNum)
 {
     UINT32 u32aPartner5VSinkPDO = gasCfgStatusData.sPerPortData[u8PortNum].u32aPartnerSinkPDO[INDEX_0];
             
-    //DEBUG_PRINT_PORT_STR (u8PortNum,"PARTNER CAPABILITIES - ");
+    DEBUG_PRINT_PORT_STR (PSF_DPM_LAYER_DEBUG_MSG,u8PortNum,"PARTNER CAPABILITIES - ");
     
     if (DPM_GET_PDO_DUAL_DATA(u32aPartner5VSinkPDO))
     {

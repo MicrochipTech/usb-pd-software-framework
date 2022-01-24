@@ -67,8 +67,6 @@ int main ( void )
 	/*PSF init called*/
 	(void)MchpPSF_Init();
 
-    DEBUG_PRINT_PORT_STR (3, "debug message for testing\r\n");
-
     while ( true )
     {
         /* Maintain state machines of all polled MPLAB Harmony modules. */

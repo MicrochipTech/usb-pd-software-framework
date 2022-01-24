@@ -81,7 +81,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
                     /* PE will enter this sub-state when sending a VDM request 
                        initiated by application via Client Request */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_INITIATE_VDM_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_INITIATE_VDM_ENTRY_SS\r\n");
 
                     /* Get the VDM Header and VDOs configured by the application */                                                   
                     u32aVDMDataObj[INDEX_0] = gasCfgStatusData.sVDMPerPortData[u8PortNum].u32VDMHeader;
@@ -131,7 +131,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
 					/* PE will enter this sub-state when GoodCRC is received
                        for VDM Identity request sent to SOP */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_INITIATE_VDM_MSG_DONE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_INITIATE_VDM_MSG_DONE_SS\r\n");
                 
 					/* Start the VDMResponse timer, if timed out set the PE sub-state to 
 					   ePE_VDM_INITIATE_VDM_NO_RESPONSE_SS */
@@ -148,7 +148,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
                     /* PE will enter this sub-state when response message is 
                        received for the VDM request sent to SOP */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_INITIATE_VDM_RESPONSE_RCVD_SS\r\n");
 
                     /* Store the received VDM Header and VDM response in status registers */                    
                     (void)MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader, \
@@ -189,7 +189,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
                     /* PE will enter this sub-state when a BUSY response is 
                        received for the VDM request sent to SOP */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_INITIATE_VDM_BUSY_RCVD_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_INITIATE_VDM_BUSY_RCVD_SS\r\n");
 
                     /* Clear the internal event since it will be re-initiated when 
                        the VDM Busy Timer expires */                        
@@ -231,7 +231,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
                     /* PE will enter this sub-state when it determines that the
                        partner has not sent any response for the VDM request */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_INITIATE_VDM_NO_RESPONSE_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_INITIATE_VDM_NO_RESPONSE_SS\r\n");
                     
                     /* No response from port partner for the VDM request sent. 
                        Post notification and move to Ready state 
@@ -248,7 +248,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
                     /* PE will enter this sub-state when Good CRC is received for 
                        a VDM request that does not have a response. */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_INITIATE_VDM_END_AMS_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_INITIATE_VDM_END_AMS_SS\r\n");
                     
                     /* Clear the VDM internal event since the AMS is complete */
                     gasDPM[u8PortNum].u16DPMInternalEvents &= ~(DPM_INT_EVT_INITIATE_VDM);
@@ -281,7 +281,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
         {
             /* PE will enter this state when PSF has received a VDM request
                from port partner which needs evaluation by the DPM */
-            //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_EVALUATE_VDM\r\n");
+            DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_EVALUATE_VDM\r\n");
                     
             /* Store the received VDM Header in u32PartnerVDMHeader */                    
             (void) MCHP_PSF_HOOK_MEMCPY(&gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader, \
@@ -325,7 +325,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                        response for the VDM request received from port partner
                        Application initiated VDM response will be sent through
                        ePE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS sub-state */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_RESPOND_VDM_ENTRY_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_RESPOND_VDM_ENTRY_SS\r\n");
                     
                     /* Copy the received VDM Header */
                     u32aVDMDataObj[INDEX_0] = gasCfgStatusData.sVDMPerPortData[u8PortNum].u32PartnerVDMHeader; 
@@ -370,7 +370,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
                     /* PE will enter this sub-state when application raises a 
                        DPM_CLIENT_REQ_RESPOND_VDM client request */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_RESPOND_VDM_SVID_SPECIFIC_SS\r\n");
 
                     /* Get the VDM Header and VDOs configured by the application */
                     u32aVDMDataObj[INDEX_0] = gasCfgStatusData.sVDMPerPortData[u8PortNum].u32VDMHeader;
@@ -405,7 +405,7 @@ void PE_RunVDMStateMachine (UINT8 u8PortNum, UINT8 *pu8DataBuf, UINT32 u32Header
                 {
                     /* PE will enter this sub-state when Good CRC is received for 
                        a VDM response sent. */
-                    //DEBUG_PRINT_PORT_STR (u8PortNum,"PE_VDM_RESPOND_VDM_END_AMS_SS\r\n");
+                    DEBUG_PRINT_PORT_STR (PSF_PE_LAYER_DEBUG_MSG,u8PortNum,"PE_VDM_RESPOND_VDM_END_AMS_SS\r\n");
                     
                     /* Move to Ready state based on the current power role*/
                     gasPolicyEngine[u8PortNum].ePEState = eTxDoneSt;

@@ -35,22 +35,39 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #include <PSF_APIHook.h>
 
+#define ENABLE_DEBUG_MSG    1
+#define DISABLE_DEBUG_MSG   0
+
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
 /**************************************************************************************/
+
     /* Define to print a string */
-    #define DEBUG_PRINT_PORT_STR(byPortNum,string)    MCHP_PSF_HOOK_PRINT_TRACE(string);
+    #define DEBUG_PRINT_PORT_STR(psfDebugMsgLayer,byPortNum,string)     \
+        do                                                              \
+        {                                                               \
+            if (ENABLE_DEBUG_MSG == psfDebugMsgLayer)                   \
+            {                                                           \
+                MCHP_PSF_HOOK_PRINT_TRACE(string);                      \
+            }                                                           \
+        } while(0)
 
     /* Define to print string and a UINT32 buffer*/
-    #define DEBUG_PRINT_PORT_UINT32_STR(byPortNum,string1,dwData,byLen,string2)      MCHP_PSF_HOOK_PRINT_INTEGER(byPortNum,1); \
-                                                                                     MCHP_PSF_HOOK_PRINT_TRACE(string1); \
-                                                                                     MCHP_PSF_HOOK_PRINT_INTEGER(dwData,byLen); \
-                                                                                     MCHP_PSF_HOOK_PRINT_TRACE(string2);
-
+    #define DEBUG_PRINT_PORT_UINT32_STR(psfDebugMsgLayer,byPortNum,string1,dwData,byLen,string2)    \
+        do                                                                                          \
+        {                                                                                           \
+            if (ENABLE_DEBUG_MSG == psfDebugMsgLayer)                                               \
+            {                                                                                       \
+                MCHP_PSF_HOOK_PRINT_INTEGER(byPortNum,1);                                           \
+                MCHP_PSF_HOOK_PRINT_TRACE(string1);                                                 \
+                MCHP_PSF_HOOK_PRINT_INTEGER(dwData,byLen);                                          \
+                MCHP_PSF_HOOK_PRINT_TRACE(string2);                                                 \
+            }                                                                                       \
+        } while(0)
 /**************************************************************************************/ 
     
 #else
-    #define DEBUG_PRINT_PORT_STR(byPportNum,string) 
-    #define DEBUG_PRINT_PORT_UINT32_STR(byPportNum,string1,u32Buf,u32Len,string2)
+    #define DEBUG_PRINT_PORT_STR(psfDebugMsgLayer,byPportNum,string) 
+    #define DEBUG_PRINT_PORT_UINT32_STR(psfDebugMsgLayer,byPportNum,string1,u32Buf,u32Len,string2)
 #endif /*CONFIG_HOOK_DEBUG_MSG*/
 
 #endif /*_DEBUG_H_*/
