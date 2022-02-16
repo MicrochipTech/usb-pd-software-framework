@@ -146,7 +146,7 @@ void PSF_ADCRun()
              */
             u16adc_count = ADC_ConversionResultGet();
             u32input_voltage = u16adc_count * ADC_VREF / 4095U;
-            memset(gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO,0,7);
+            memset(gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO,0,sizeof(gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO));
             
             if(!(gu8PDContract == true))
             {

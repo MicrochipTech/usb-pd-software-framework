@@ -96,7 +96,7 @@ void PSF_LoadConfig(GLOBAL_CFG_STATUS_DATA *pasCfgStatusData)
     /*Assigning PDOs according to the ADC position*/
     pasCfgStatusData->sPerPortData[PORT0].u8SinkPDOCnt = CFG_PORT_0_SINK_NUM_OF_PDOS;
     UINT8 u8ADCPosition = Get_ADCPosition();
-    memset(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO,0,7);
+    memset(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO,0,sizeof(gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO));
     switch(u8ADCPosition)
     {
         case 1:
