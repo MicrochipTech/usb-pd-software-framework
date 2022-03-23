@@ -14,7 +14,7 @@
     This source file contains user application specific functions and interfaces
 ************************************************************************** */
 /*******************************************************************************
-Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -57,14 +57,12 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 void App_SetMCUIdle()
 {
-
-//    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    __disable_irq(); // MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT() API modified to disable individual peripheral interrupts
-
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+    
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
-    DEBUG_PRINT_PORT_STR (PSF_APPLICATION_LAYER_DEBUG_MSG,3, "Set SAMD20 to IDLE\r\n");
+    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE\r\n");
     
 	/*If there is any pending interrupt it will not go to sleep*/
     SCB->SCR |=  (SCB_SCR_SLEEPDEEP_Msk )| (SCB_SCR_SEVONPEND_Msk);
@@ -72,8 +70,7 @@ void App_SetMCUIdle()
     __DSB();
     __WFI();
     
-    __enable_irq(); // MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT() API modified to enable individual peripheral interrupts
-//    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     
     /* Resume from Idle*/
     /* Enable the disabled interrupt*/
@@ -223,7 +220,7 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {           
             PORT_PinWrite(PORT_PIN_PA14, TRUE);
             PORT_PinInputEnable(PORT_PIN_PA14);
-            EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, PSF_APP_UPD350AlertCallback, PORT0);
+            //EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
             EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             break;
         }

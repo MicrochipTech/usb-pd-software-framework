@@ -12,8 +12,8 @@
     invalidates etc. For the DCache and ICache.
 
   Remarks:
-    This header should not define any prototypes or data definitions, or
-    include any files that do.  The file only provides macro definitions for
+    This header should not define any prototypes or data definitions, or 
+    include any files that do.  The file only provides macro definitions for 
     build-time.
 
 *******************************************************************************/
@@ -55,8 +55,6 @@
     define this configuration.
 */
 
-#include "device.h"
-
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
 
@@ -70,11 +68,10 @@ extern "C" {
 // Section: L1 Cache Configuration
 // *****************************************************************************
 // *****************************************************************************
-
-
 #define ICACHE_ENABLE()
 #define ICACHE_DISABLE()
 #define ICACHE_INVALIDATE()
+#define INSTRUCTION_CACHE_ENABLED                      false
 
 #define DCACHE_ENABLE()
 #define DCACHE_DISABLE()
@@ -84,6 +81,7 @@ extern "C" {
 #define DCACHE_CLEAN_BY_ADDR(addr,sz)
 #define DCACHE_INVALIDATE_BY_ADDR(addr,sz)
 #define DCACHE_CLEAN_INVALIDATE_BY_ADDR(addr,sz)
+#define DATA_CACHE_ENABLED                             false
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

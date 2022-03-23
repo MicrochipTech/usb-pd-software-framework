@@ -65,7 +65,7 @@ void DAC_Initialize(void)
     DAC_REGS->DAC_EVCTRL = 0U;
     
     /* Enable DAC */
-    DAC_REGS->DAC_CTRLA =(uint8_t)(DAC_CTRLA_ENABLE_Msk);	
+    DAC_REGS->DAC_CTRLA =(uint8_t)(DAC_CTRLA_ENABLE_Msk | DAC_CTRLA_RUNSTDBY_Msk);	
     while(DAC_REGS->DAC_STATUS != 0U)
     {
         /* Wait for Synchronization after Enabling DAC */

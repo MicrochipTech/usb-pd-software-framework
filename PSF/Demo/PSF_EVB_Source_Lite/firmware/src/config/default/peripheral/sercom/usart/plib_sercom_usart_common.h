@@ -66,30 +66,6 @@
 
 // *****************************************************************************
 // *****************************************************************************
-// Section:Preprocessor macros
-// *****************************************************************************
-// *****************************************************************************
-// *****************************************************************************
-
-// *****************************************************************************
-/* USART Error convenience macros */
-// *****************************************************************************
-// *****************************************************************************
-    /* Error status when no error has occurred */
-#define USART_ERROR_NONE 0U
-
-    /* Error status when parity error has occurred */
-#define USART_ERROR_PARITY SERCOM_USART_INT_STATUS_PERR_Msk
-
-    /* Error status when framing error has occurred */
-#define USART_ERROR_FRAMING SERCOM_USART_INT_STATUS_FERR_Msk
-
-    /* Error status when overrun error has occurred */
-#define USART_ERROR_OVERRUN SERCOM_USART_INT_STATUS_BUFOVF_Msk
-
-
-// *****************************************************************************
-// *****************************************************************************
 // Section: Data Types
 // *****************************************************************************
 // *****************************************************************************
@@ -109,7 +85,21 @@
     None.
 */
 
-typedef uint16_t USART_ERROR;
+typedef enum
+{
+    /* Error status when no error has occurred */
+    USART_ERROR_NONE,
+
+    /* Error status when parity error has occurred */
+    USART_ERROR_PARITY = SERCOM_USART_INT_STATUS_PERR_Msk,
+
+    /* Error status when framing error has occurred */
+    USART_ERROR_FRAMING = SERCOM_USART_INT_STATUS_FERR_Msk,
+
+    /* Error status when overrun error has occurred */
+    USART_ERROR_OVERRUN = SERCOM_USART_INT_STATUS_BUFOVF_Msk
+
+} USART_ERROR;
 
 // *****************************************************************************
 /* USART DATA
@@ -138,7 +128,7 @@ typedef enum
     USART_DATA_9_BIT = SERCOM_USART_INT_CTRLB_CHSIZE_9_BIT,
 
     /* Force the compiler to reserve 32-bit memory for each enum */
-    USART_DATA_INVALID = 0xFFFFFFFFU
+    USART_DATA_INVALID = 0xFFFFFFFF
 
 } USART_DATA;
 
@@ -168,7 +158,7 @@ typedef enum
     USART_PARITY_NONE = 0x2,
 
     /* Force the compiler to reserve 32-bit memory for each enum */
-    USART_PARITY_INVALID = 0xFFFFFFFFU
+    USART_PARITY_INVALID = 0xFFFFFFFF
 
 } USART_PARITY;
 
@@ -193,10 +183,9 @@ typedef enum
     USART_STOP_2_BIT = SERCOM_USART_INT_CTRLB_SBMODE_2_BIT,
 
     /* Force the compiler to reserve 32-bit memory for each enum */
-    USART_STOP_INVALID = 0xFFFFFFFFU
+    USART_STOP_INVALID = 0xFFFFFFFF
 
 } USART_STOP;
-
 
 // *****************************************************************************
 /* USART Serial Configuration
@@ -257,9 +246,9 @@ typedef void (*SERCOM_USART_CALLBACK)( uintptr_t context );
 
 typedef struct
 {
-    uint8_t *                   txBuffer;
+    volatile uint8_t *                   txBuffer;
 
-    size_t                               txSize;
+    volatile size_t                      txSize;
 
     volatile size_t                      txProcessedSize;
 
@@ -269,9 +258,9 @@ typedef struct
 
     volatile bool                        txBusyStatus;
 
-    uint8_t *                   rxBuffer;
+    volatile uint8_t *                   rxBuffer;
 
-    size_t                               rxSize;
+    volatile size_t                      rxSize;
 
     volatile size_t                      rxProcessedSize;
 
@@ -281,99 +270,7 @@ typedef struct
 
     volatile bool                        rxBusyStatus;
 
-    volatile USART_ERROR                 errorStatus;
-
 } SERCOM_USART_OBJECT;
-
-
-typedef enum
-{
-    /* Threshold number of bytes are available in the receive ring buffer */
-    SERCOM_USART_EVENT_READ_THRESHOLD_REACHED = 0,
-
-    /* Receive ring buffer is full. Application must read the data out to avoid missing data on the next RX interrupt. */
-    SERCOM_USART_EVENT_READ_BUFFER_FULL,
-
-    /* USART error. Application must call the USARTx_ErrorGet API to get the type of error and clear the error. */
-    SERCOM_USART_EVENT_READ_ERROR,
-
-    /* Threshold number of free space is available in the transmit ring buffer */
-    SERCOM_USART_EVENT_WRITE_THRESHOLD_REACHED,
-
-    /* Recevie break signal is detected */
-    SERCOM_USART_EVENT_BREAK_SIGNAL_DETECTED,
-}SERCOM_USART_EVENT;
-
-// *****************************************************************************
-/* Callback Function Pointer
-
-  Summary:
-    Defines the data type and function signature for the USART peripheral
-    callback function.
-
-  Description:
-    This data type defines the function signature for the USART peripheral
-    callback function. The USART peripheral will call back the client's
-    function with this signature when the USART buffer event has occurred.
-
-  Remarks:
-    None.
-*/
-
-typedef void (*SERCOM_USART_RING_BUFFER_CALLBACK)(SERCOM_USART_EVENT event, uintptr_t context );
-
-// *****************************************************************************
-/* SERCOM USART Ring Buffer Object
-
-  Summary:
-    Defines the data type for the data structures used for
-    peripheral operations.
-
-  Description:
-    This may be for used for peripheral operations.
-
-  Remarks:
-    None.
-*/
-
-typedef struct
-{
-    SERCOM_USART_RING_BUFFER_CALLBACK                   wrCallback;
-
-    uintptr_t                                           wrContext;
-
-    volatile uint32_t                                   wrInIndex;
-
-    volatile uint32_t                                   wrOutIndex;
-
-    uint32_t                                            wrBufferSize;
-
-    bool                                                isWrNotificationEnabled;
-
-    uint32_t                                            wrThreshold;
-
-    bool                                                isWrNotifyPersistently;
-
-    SERCOM_USART_RING_BUFFER_CALLBACK                   rdCallback;
-
-    uintptr_t                                           rdContext;
-
-    volatile uint32_t                                   rdInIndex;
-
-    volatile uint32_t                                   rdOutIndex;
-
-    uint32_t                                            rdBufferSize;
-
-    bool                                                isRdNotificationEnabled;
-
-    uint32_t                                            rdThreshold;
-
-    bool                                                isRdNotifyPersistently;
-
-    volatile USART_ERROR                                errorStatus;
-
-} SERCOM_USART_RING_BUFFER_OBJECT;
-
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility

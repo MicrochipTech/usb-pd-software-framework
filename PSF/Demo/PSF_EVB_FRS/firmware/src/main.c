@@ -45,6 +45,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
+#include "i2c_dc_dc_ung8198.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -56,17 +57,7 @@ int main ( void )
 {
     /* Initialize all modules */
     SYS_Initialize ( NULL );
-    /*Disable Pin 14 and 15 Initially*/
-    EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA14);
-    EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA15);
-    
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-    PSF_APP_USART_Drv_Initialize();
-#endif
-    PSF_APP_SPI_Drv_Initialize();
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)    
-    PSF_APP_I2C_Drv_Initialize();
-#endif
+
 	/*PSF init called*/
 	(void)MchpPSF_Init();
 
@@ -77,7 +68,6 @@ int main ( void )
 		
 		/*PSF stack Run*/
 		MchpPSF_RUN();
-        
         
         #if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)   
 

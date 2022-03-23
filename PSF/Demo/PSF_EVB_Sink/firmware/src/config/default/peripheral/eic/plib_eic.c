@@ -68,7 +68,7 @@ EIC_CALLBACK_OBJ    eicCallbackObject[EXTINT_COUNT];
 void EIC_Initialize(void)
 {
     /* Reset all registers in the EIC module to their initial state and
-       EIC will be disabled. */
+	   EIC will be disabled. */
     EIC_REGS->EIC_CTRL |= EIC_CTRL_SWRST_Msk;
 
     while((EIC_REGS->EIC_STATUS & EIC_STATUS_SYNCBUSY_Msk) == EIC_STATUS_SYNCBUSY_Msk)
@@ -95,8 +95,8 @@ void EIC_Initialize(void)
                               EIC_CONFIG_SENSE3_NONE  |
                               EIC_CONFIG_SENSE4_NONE  |
                               EIC_CONFIG_SENSE5_NONE  |
-                              EIC_CONFIG_SENSE6_LOW  |
-                              EIC_CONFIG_SENSE7_LOW ;
+                              EIC_CONFIG_SENSE6_LOW | EIC_CONFIG_FILTEN6_Msk |
+                              EIC_CONFIG_SENSE7_LOW | EIC_CONFIG_FILTEN7_Msk;
 
     /* External Interrupt Asynchronous Mode enable */
     EIC_REGS->EIC_WAKEUP = 0xc000;

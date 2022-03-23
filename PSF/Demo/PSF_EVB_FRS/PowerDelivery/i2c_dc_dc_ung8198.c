@@ -46,8 +46,8 @@ static const UINT8 u8aMPQI2CSlvAddr[CONFIG_PD_PORT_COUNT] = {MPQ_I2C_SLV_ADDR_PO
 static const UINT8 u8aMPQI2CSlvAddr[CONFIG_PD_PORT_COUNT] = {MPQ_I2C_SLV_ADDR_PORT_1};
 #endif
 
-UINT16 u16PrevCurrent[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
-UINT16 u16PrevVoltage[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
+UINT8 u16PrevCurrent[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
+UINT8 u16PrevVoltage[CONFIG_PD_PORT_COUNT] = {SET_TO_ZERO};
 
 static void MPQDCDC_SetVoltageOutput (UINT8 u8PortNum, UINT16 u16VBUSVoltage);
 static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current);
@@ -56,18 +56,18 @@ static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current);
 UINT8 MPQDCDC_Write(UINT8 u8I2CAddress,UINT8* pu8I2CCmd,UINT8 u8Length)
 {
     UINT8 u8RetVal = FALSE;
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    
+            
     for(int i=0; i<3; i++)
     {
-        if (TRUE == PSF_APP_I2CDCDCWriteDriver (u8I2CAddress, pu8I2CCmd, u8Length))
+        if (TRUE == SAMD20_I2CDCDCWriteDriver (u8I2CAddress, pu8I2CCmd, u8Length))
         {
+            /* wait for the current transfer to complete */ 
+            while(SAMD20_I2CDCDCIsBusyDriver( ));
             u8RetVal = TRUE;
             break;
         }
     }
-    
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();      
+            
     return u8RetVal;
 }
         
@@ -77,6 +77,8 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     UINT32 u32I2CCmd;
     UINT8 u8Return = TRUE;
 
+    /* Global interrupt is enabled as the I2C works on interrupt in SAMD20*/
+    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
 
     /* Clear the faults */
     u32I2CCmd = MPQ_CMD_CLEAR_FAULT;
@@ -108,6 +110,8 @@ UINT8 MPQDCDC_Initialize(UINT8 u8PortNum)
     u32I2CCmd = MPQ_CMD_UNMASK_OC;
     u8length = I2C_CMD_LENGTH_2;
     u8Return= MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u32I2CCmd, u8length);
+
+    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
 
     return u8Return;
 }
@@ -201,11 +205,11 @@ static void MPQDCDC_SetCurrentOutput (UINT8 u8PortNum, UINT16 u16Current)
 UINT16 MPQDCDC_GetFaultStatus(UINT8 u8PortNum, UINT8 u8Cmd, UINT8 u8ReadLen)
 {
     UINT16 u16FaultStatus;
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     
-    (void)PSF_APP_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen);
-    
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+    (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16FaultStatus,u8ReadLen); 
+    /* wait for the current transfer to complete */ 
+    while(SAMD20_I2CDCDCIsBusyDriver( ));
+
     return u16FaultStatus;
 }
 
@@ -245,7 +249,9 @@ UINT8 MPQDCDC_FaultHandler(UINT8 u8PortNum)
         /* Clear the Fault condition by sending 'CLEAR_FAULTS' command, so that 
            Alert line gets de asserted */
         u16I2CCmd = MPQ_CMD_CLEAR_FAULT;
-        u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_1);
+        u8RetVal = MPQDCDC_Write (u8aMPQI2CSlvAddr[u8PortNum], (UINT8*)&u16I2CCmd, I2C_CMD_LENGTH_1);           
+        /* wait for the current transfer to complete */ 
+        while(SAMD20_I2CDCDCIsBusyDriver( ));
     }
     
     return u8RetVal;
@@ -264,15 +270,16 @@ UINT16 MPQDCDC_ReadVoltage(UINT8 u8PortNum)
     UINT8 u8Cmd,u8ReadCnt;
     
     u8Cmd = MPQ_CMD_READ_VOLTAGE;
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
     
     for(u8ReadCnt=0; u8ReadCnt<MPQ_VOLTAGE_READ_AVG_CNT;u8ReadCnt++)
     { 
-        (void)PSF_APP_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16VoltageOutputCnt,2U);        
+        (void)SAMD20_I2CDCDCWriteReadDriver (u8aMPQI2CSlvAddr[u8PortNum],&u8Cmd,I2C_CMD_LENGTH_1,(UINT8*)&u16VoltageOutputCnt,2U);
+        
+        /* wait for the current transfer to complete */ 
+        while(SAMD20_I2CDCDCIsBusyDriver( ));
+        
         u32VoltageCntAvg += u16VoltageOutputCnt;
     }
-    
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     u16VoltageOutputCnt = (UINT16) (u32VoltageCntAvg/((UINT16)MPQ_VOLTAGE_READ_AVG_CNT));
     return u16VoltageOutputCnt;
 }

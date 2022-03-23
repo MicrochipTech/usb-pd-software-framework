@@ -58,129 +58,56 @@
 // *****************************************************************************
 
 // *****************************************************************************
-/* USART Driver Buffer Handle Macros
+/* USART Driver client Handle Macros
 
   Summary:
-    USART driver Buffer Handle Macros
+    USART driver client Handle Macros
 
   Description:
-    Buffer handle related utility macros. USART driver buffer handle is a
-    combination of buffer token and the buffer object index. The token
-    is a 16 bit number that is incremented for every new read or write request
-    and is used along with the buffer object index to generate a new buffer
-    handle for every request.
+    Client handle related utility macros. USART client handle is a combination
+    of client index (8-bit), instance index (8-bit) and token (16-bit). The token
+    is incremented for every new driver open request.
 
   Remarks:
     None
 */
 
-/* USART Driver Handle Macros*/
-#define DRV_USART_INDEX_MASK                      (0x000000FF)
+#define DRV_USART_CLIENT_INDEX_MASK               (0x000000FF)
 
-#define DRV_USART_INSTANCE_MASK                   (0x0000FF00)
+#define DRV_USART_INSTANCE_INDEX_MASK             (0x0000FF00)
 
-#define DRV_USART_TOKEN_MAX                       (0xFFFF)
+#define DRV_USART_TOKEN_MASK                      (0xFFFF0000)
+
+#define DRV_USART_TOKEN_MAX                       (DRV_USART_TOKEN_MASK >> 16)
+
 
 // *****************************************************************************
-/* USART Driver Buffer States
+/* USART Driver Buffer Events
 
   Summary
-    Identifies the possible state of the buffer that can result from a
-    buffer request add or queue purge request.
+    Identifies the possible events that can result from a buffer add request.
 
   Description
-    This enumeration identifies the possible state of the buffer that can
-    result from a buffer request add or queue purge request by the client.
+    This enumeration identifies the possible events that can result from a
+    buffer add request caused by the client calling either the
+    DRV_USART_ReadBufferAdd or DRV_USART_WriteBufferAdd functions.
 
   Remarks:
-    DRV_USART_BUFFER_IS_FREE is the state of the buffer which is in the
-    free buffer pool.
+    One of these values is passed in the "event" parameter of the event
+    handling callback function that the client registered with the driver by
+    calling the DRV_USART_BufferEventHandlerSet function when a buffer
+    transfer request is completed.
 */
 
 typedef enum
 {
-    /* Buffer is not added to either write or read queue. In other words,
-     * the buffer is in the free pool.
-     */
-    DRV_USART_BUFFER_IS_FREE,
+    /* All data from or to the buffer was transferred successfully. */
+    DRV_USART_REQUEST_STATUS_COMPLETE,
 
-    /* Buffer is in the queue. */
-    DRV_USART_BUFFER_IS_IN_QUEUE,
+    /* There was an error while processing the buffer transfer request. */
+    DRV_USART_REQUEST_STATUS_ERROR,
 
-    /* USART is processing the buffer. */
-    DRV_USART_BUFFER_IS_PROCESSING
-
-} DRV_USART_BUFFER_STATE;
-
-
-// *****************************************************************************
-/* USART Driver Transfer Direction
-
-  Summary
-    Identifies the direction of transfer.
-
-  Description
-    This enumeration identifies the direction of transfer.
-
-  Remarks:
-    None.
-*/
-
-typedef enum
-{
-    /* Receive Operation */
-    DRV_USART_DIRECTION_RX,
-
-    /* Transmit Operation */
-    DRV_USART_DIRECTION_TX
-
-} DRV_USART_DIRECTION;
-
-// *****************************************************************************
-/* USART Driver Buffer Object
-
-  Summary:
-    Object used to keep track of a client's buffer.
-
-  Description:
-    None.
-
-  Remarks:
-    None.
-*/
-
-typedef struct _DRV_USART_BUFFER_OBJ
-{
-    /* Handle to the client that owns this buffer object when it was queued */
-    DRV_HANDLE                      clientHandle;
-
-    /* This flag tracks whether this object is in use */
-    volatile bool                   inUse;
-
-    /* Pointer to the application read or write buffer */
-    void*                           buffer;
-
-    /* Number of bytes to be transferred */
-    size_t                          size;
-
-    /* Number of bytes completed */
-    volatile size_t                 nCount;
-
-    /* Next buffer pointer */
-    struct _DRV_USART_BUFFER_OBJ*   next;
-
-    /* Current state of the buffer */
-    DRV_USART_BUFFER_STATE          currentState;
-
-    /* Current status of the buffer */
-    volatile DRV_USART_BUFFER_EVENT status;
-
-    /* Errors associated with the USART hardware instance */
-    volatile DRV_USART_ERROR        errors;
-
-    DRV_USART_BUFFER_HANDLE         bufferHandle;
-
-} DRV_USART_BUFFER_OBJ;
+} DRV_USART_REQUEST_STATUS;
 
 // *****************************************************************************
 /* USART Driver Instance Object
@@ -198,100 +125,92 @@ typedef struct _DRV_USART_BUFFER_OBJ
 typedef struct
 {
     /* Flag to indicate this object is in use  */
-    bool                                    inUse;
+    bool inUse;
 
-    /* Flag to indicate that driver has been opened Exclusively*/
-    bool                                    isExclusive;
+    /* Flag to indicate that driver has been opened Exclusively */
+    bool isExclusive;
 
-    /* The status of the driver */
-    SYS_STATUS                              status;
-
-    /* PLIB API list that will be used by the driver to access the hardware */
-    const DRV_USART_PLIB_INTERFACE*         usartPlib;
-
-    /* Number of active clients */
-    size_t                                  nClients;
+    /* Keep track of the number of clients
+     * that have opened this driver
+     */
+    size_t nClients;
 
     /* Maximum number of clients */
-    size_t                                  nClientsMax;
+    size_t nClientsMax;
 
-    /* Memory Pool for Client Objects */
-    uintptr_t                               clientObjPool;
+    /* The status of the driver */
+    SYS_STATUS status;
 
-    /* Instance specific token counter used to generate unique client/transfer handles */
-    uint16_t                                usartTokenCount;
+    /* PLIB API list that will be used by the driver to access the hardware */
+    const DRV_USART_PLIB_INTERFACE* usartPlib;
 
-    /* Size of transmit and receive buffer queue */
-    uint32_t                                bufferObjPoolSize;
+    /* Memory pool for Client Objects */
+    uintptr_t clientObjPool;
 
-    /* Pointer to the transmit and receive buffer pool */
-    DRV_USART_BUFFER_OBJ*                   bufferObjPool;
+    /* This is an instance specific token counter used to generate unique
+     * client handles
+     */
+    uint16_t usartTokenCount;
 
-    /* Linked list of transmit buffer objects */
-    DRV_USART_BUFFER_OBJ*                   transmitObjList;
+    /* Active receive client allows reporting errors directly to the client */
+    uintptr_t currentRxClient;
 
-    /* Linked list of receive buffer objects */
-    DRV_USART_BUFFER_OBJ*                   receiveObjList;
+    /* Active transmit client allows reporting errors directly to the client */
+    uintptr_t currentTxClient;
 
-    /* To identify if we are running from interrupt context or not */
-    uint8_t                                 interruptNestingCount;
+    /* Indicates transmit requests status */
+    volatile DRV_USART_REQUEST_STATUS txRequestStatus;
 
+    /* Indicates receive requests status */
+    volatile DRV_USART_REQUEST_STATUS rxRequestStatus;
 
-    /* Mutex to protect access to the client objects */
-    OSAL_MUTEX_DECLARE(mutexClientObjects);
+    /* Transmit mutex */
+    OSAL_MUTEX_DECLARE(clientMutex);
 
-    /* Mutex to protect access to the transfer objects */
-    OSAL_MUTEX_DECLARE(mutexTransferObjects);
+    /* Transmit mutex */
+    OSAL_MUTEX_DECLARE(txTransferMutex);
 
-    const uint32_t*                         remapDataWidth;
+    /* Receive mutex */
+    OSAL_MUTEX_DECLARE(rxTransferMutex);
 
-    const uint32_t*                         remapParity;
+    /* Transmit complete semaphore. This is released from ISR*/
+    OSAL_SEM_DECLARE (txTransferDone);
 
-    const uint32_t*                         remapStopBits;
+    /* Receive complete semaphore. This is released from ISR*/
+    OSAL_SEM_DECLARE (rxTransferDone);
 
-    const uint32_t*                         remapError;
+    const uint32_t* remapDataWidth;
 
-    const DRV_USART_INTERRUPT_SOURCES*      interruptSources;
+    const uint32_t* remapParity;
 
-    bool                                    usartTxReadyIntStatus;
+    const uint32_t* remapStopBits;
 
-    bool                                    usartTxCompleteIntStatus;
+    const uint32_t* remapError;
 
-    bool                                    usartRxCompleteIntStatus;
-
-    bool                                    usartErrorIntStatus;
-
-    bool                                    dmaTxChannelIntStatus;
-
-    bool                                    dmaRxChannelIntStatus;
-
-    bool                                    usartInterruptStatus;
-
-    bool                                    dmaInterruptStatus;
-
-    DRV_USART_DATA_BIT                      dataWidth;
+    DRV_USART_DATA_BIT dataWidth;
 
 } DRV_USART_OBJ;
 
-typedef struct _DRV_USART_CLIENT_OBJ
+typedef struct
 {
-    /* The hardware instance index associated with the client */
-    SYS_MODULE_INDEX                    drvIndex;
+    /* The hardware instance object associated with the client */
+    DRV_USART_OBJ                   *hDriver;
 
     /* The IO intent with which the client was opened */
-    DRV_IO_INTENT                       ioIntent;
+    DRV_IO_INTENT                   ioIntent;
 
-    /* This flags indicates if the object is in use or is available */
-    bool                                inUse;
+    /* Errors associated with the USART hardware instance */
+    DRV_USART_ERROR                 errors;
 
-    /* Event handler for this function */
-    DRV_USART_BUFFER_EVENT_HANDLER      eventHandler;
+    /* Client handle that was assigned to this client object when it was
+     * opened by the user.
+     */
+    DRV_HANDLE                      clientHandle;
 
-    /* Application Context associated with this client */
-    uintptr_t                           context;
-
-    /* Client handle assigned to this client object when it was opened */
-    DRV_HANDLE                          clientHandle;
+    /* This flags indicates if the object is in use or is
+     * available
+     */
+    bool                            inUse;
 
 } DRV_USART_CLIENT_OBJ;
 

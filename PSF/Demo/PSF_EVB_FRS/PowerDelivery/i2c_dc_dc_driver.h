@@ -45,53 +45,13 @@
 /* ************************************************************************** */
 /* ************************************************************************** */
 #include "i2c_dc_dc_ung8198.h"
-#include "../src/config/default/driver/i2c/drv_i2c.h"
-#include "../src/config/default/peripheral/sercom/i2c_master/plib_sercom3_i2c_master.h"
 
 /* SERCOM instance for I2C driver */
-#define PSF_APP_I2C_INSTANCE     3
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Type Definitions
-// *****************************************************************************
-// *****************************************************************************
-
-// *****************************************************************************
-/* I2C Driver Application Data
-
-  Summary:
-    Holds I2C Driver application data
-
-  Description:
-    This structure holds the I2C Driver application's data.
-
-  Remarks:
-    Application strings and buffers are be defined outside this structure.
- */
-
-typedef struct
-{
-    /* I2C driver client handle */
-    DRV_HANDLE i2cHandle;
-
-    /* I2C driver transfer handle */
-    DRV_I2C_TRANSFER_HANDLE transferHandle;
-
-    /* buffer to hold temperature queried from sensor */
-    uint8_t rxBuffer[2];
-
-    /* flag to check whether read transfer is done */
-    volatile bool isTransferDone;
-
-//    uint8_t registerAddr;
-} DRV_I2C_DATA;
-
-void PSF_APP_I2C_Drv_Initialize(void);
+#define SAMD20_I2C_INSTANCE     3
 
 /****************************************************************************
     Function:
-        PSF_APP_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
+        SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
     Summary:
         Function for I2C DC DC Controller read drivers.  
     Description:
@@ -108,11 +68,11 @@ void PSF_APP_I2C_Drv_Initialize(void);
     Remarks:
         None
 **************************************************************************************************/
-UINT8 PSF_APP_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
+UINT8 SAMD20_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
 
 /****************************************************************************
     Function:
-        PSF_APP_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen)
+        SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen)
     Summary:
         Function for I2C DC DC Controller Write drivers.  
     Description:
@@ -129,11 +89,11 @@ UINT8 PSF_APP_I2CDCDCReadDriver (UINT16 u16Address,UINT8 *pu8ReadBuf,UINT8 u8Rea
     Remarks:
         None
 **************************************************************************************************/
-UINT8 PSF_APP_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen);
+UINT8 SAMD20_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen);
 
 /****************************************************************************
     Function:
-        PSF_APP_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
+        SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
                                               UINT8 *pu8ReadBuf,UINT8 u8ReadLen)
     Summary:
         Function for I2C DC DC Controller Write and read drivers.  
@@ -154,11 +114,11 @@ UINT8 PSF_APP_I2CDCDCWriteDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8Wr
     Remarks:
         None
 **************************************************************************************************/
-UINT8 PSF_APP_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
+UINT8 SAMD20_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 u8WriteLen,\
                                               UINT8 *pu8ReadBuf,UINT8 u8ReadLen);
 /****************************************************************************
     Function:
-        PSF_APP_I2CDCDCIsBusyDriver(void)
+        SAMD20_I2CDCDCIsBusyDriver(void)
     Summary:
         Function to check if the I2C drivers is busy  
     Description:
@@ -173,15 +133,15 @@ UINT8 PSF_APP_I2CDCDCWriteReadDriver(UINT16 u16Address,UINT8 *pu8WriteBuf,UINT8 
     Remarks:
         None
 **************************************************************************************************/
-UINT8 PSF_APP_I2CDCDCIsBusyDriver(void);
+UINT8 SAMD20_I2CDCDCIsBusyDriver(void);
 /****************************************************************************
     Function:
-        void PSF_APP_I2CDCDCAlertCallback(uintptr_t u8PortNum)
+        void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum)
     Summary:
         I2C DC DC Alert callback wrapper function.  
     Description:
         This API serves as a wrapper for DC DC alert interrupt handler to 
-        register as callback for device's (SAMD20) function EIC_CallbackRegister.
+        register as callback for SAMD20's function EIC_CallbackRegister.
     Conditions:
         None
     Input:
@@ -191,46 +151,9 @@ UINT8 PSF_APP_I2CDCDCIsBusyDriver(void);
     Remarks:
         None
 **************************************************************************************************/
-void PSF_APP_I2CDCDCAlertCallback(uintptr_t u8PortNum);
-/****************************************************************************
-    Function:
-        UINT8 PSFDCDC_Initialize(uintptr_t u8PortNum) 
-    Summary:
-        Initializes I2C DC DC Control for the port
-    Description:
-        This API is called for initializing the I2C DC DC Module for the given port 
-        during MchpPSF_Init to initialize Port power control. 
-    Conditions:
-        None.
-    Input:
-        u8PortNum - Corresponding Port Number. 
-                    Value passed will be less than CONFIG_PD_PORT_COUNT.
-    Return:
-      None
-    Remarks:
-        None
-**************************************************************************************************/
-UINT8 PSFDCDC_Initialize(uintptr_t u8PortNum);
-/****************************************************************************
-    Function:
-        void PSFDCDC_SetPortPower(UINT8 u8PortNum, UINT16 u16VBUSVoltage, UINT16 u16Current)
-    Summary:
-        API to drive Power on VBUS
-    Description:
-        This API drives Power on VBUS line based on the input parameters.
-    Conditions:
-        None.
-    Input:
-        u8PortNum - Corresponding Port Number. Value passed will be less than CONFIG_PD_PORT_COUNT.
-        u16VBUSVoltage - Provides negotiated voltage to drive power
-        u16Current - Provides negotiated current to drive power
-    Return:
-      None
-    Remarks:
-        None
-**************************************************************************************************/
-void PSFDCDC_SetPortPower(UINT8 u8PortNum, UINT16 u16Voltage, UINT16 u16Current);
-              
+void SAMD20_I2CDCDCAlertCallback(uintptr_t u8PortNum);
+
+
 #endif /*_I2C_DC_DC_DRIVER_H */
 
 /* *****************************************************************************

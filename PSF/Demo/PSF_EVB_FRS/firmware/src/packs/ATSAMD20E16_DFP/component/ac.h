@@ -1,7 +1,7 @@
 /**
  * \brief Component description for AC
  *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
+ * Copyright (c) 2019 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software and any derivatives
  * exclusively with Microchip products. It is your responsibility to comply with third party license
@@ -20,7 +20,7 @@
  *
  */
 
-/* file generated from device description version 2019-11-25T06:48:59Z */
+/* file generated from device description version 2019-03-25T22:24:54Z */
 #ifndef _SAMD20_AC_COMPONENT_H_
 #define _SAMD20_AC_COMPONENT_H_
 
@@ -348,11 +348,7 @@
 #define AC_STATUSC_REG_OFST            (0x0A)              /**< (AC_STATUSC) Status C Offset */
 #define AC_WINCTRL_REG_OFST            (0x0C)              /**< (AC_WINCTRL) Window Control Offset */
 #define AC_COMPCTRL_REG_OFST           (0x10)              /**< (AC_COMPCTRL) Comparator Control n Offset */
-#define AC_COMPCTRL0_REG_OFST          (0x10)              /**< (AC_COMPCTRL0) Comparator Control n Offset */
-#define AC_COMPCTRL1_REG_OFST          (0x14)              /**< (AC_COMPCTRL1) Comparator Control n Offset */
 #define AC_SCALER_REG_OFST             (0x20)              /**< (AC_SCALER) Scaler n Offset */
-#define AC_SCALER0_REG_OFST            (0x20)              /**< (AC_SCALER0) Scaler n Offset */
-#define AC_SCALER1_REG_OFST            (0x21)              /**< (AC_SCALER1) Scaler n Offset */
 
 #if !(defined(__ASSEMBLER__) || defined(__IAR_SYSTEMS_ASM__))
 /** \brief AC register API structure */

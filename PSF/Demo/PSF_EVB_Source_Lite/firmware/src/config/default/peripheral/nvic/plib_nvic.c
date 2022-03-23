@@ -59,45 +59,12 @@ void NVIC_Initialize( void )
      * from within the "Interrupt Manager" of MHC. */
     NVIC_SetPriority(EIC_IRQn, 3);
     NVIC_EnableIRQ(EIC_IRQn);
-    NVIC_SetPriority(SERCOM0_IRQn, 2);
+    NVIC_SetPriority(SERCOM0_IRQn, 3);
     NVIC_EnableIRQ(SERCOM0_IRQn);
-    NVIC_SetPriority(SERCOM1_IRQn, 3);
-    NVIC_EnableIRQ(SERCOM1_IRQn);
     NVIC_SetPriority(TC0_IRQn, 3);
     NVIC_EnableIRQ(TC0_IRQn);
 
 
 
-}
-
-void NVIC_INT_Enable( void )
-{
-    __DMB();
-    __enable_irq();
-}
-
-bool NVIC_INT_Disable( void )
-{
-    bool processorStatus;
-
-    processorStatus = (bool) (__get_PRIMASK() == 0);
-
-    __disable_irq();
-    __DMB();
-
-    return processorStatus;
-}
-
-void NVIC_INT_Restore( bool state )
-{
-    if( state == true )
-    {
-        __DMB();
-        __enable_irq();
-    }
-    else
-    {
-        __disable_irq();
-        __DMB();
-    }
+    return;
 }
