@@ -4,49 +4,15 @@ attributes: {id: drv_spi}
 children:
 - type: Symbols
   children:
-  - type: File
-    attributes: {id: DRV_SPI_ASYNC_HEADER_LOCAL}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: enabled}
-        children:
-        - {type: Value, value: 'false'}
-  - type: File
-    attributes: {id: DRV_SPI_ASYNC_SOURCE}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: enabled}
-        children:
-        - {type: Value, value: 'false'}
   - type: Combo
     attributes: {id: DRV_SPI_COMMON_MODE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: drv_spi, value: Synchronous}
-  - type: File
-    attributes: {id: DRV_SPI_SYNC_HEADER_LOCAL}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: enabled}
-        children:
-        - {type: Value, value: 'true'}
-  - type: File
-    attributes: {id: DRV_SPI_SYNC_SOURCE}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: enabled}
-        children:
-        - {type: Value, value: 'true'}
+        attributes: {id: drv_spi, value: Asynchronous}
+      - type: User
+        attributes: {value: Asynchronous}
 - type: Instances
   children:
   - type: InstanceComponent
@@ -60,7 +26,7 @@ children:
         - type: Values
           children:
           - type: Dynamic
-            attributes: {id: drv_spi_0, value: Synchronous}
+            attributes: {id: drv_spi_0, value: Asynchronous}
       - type: String
         attributes: {id: DRV_SPI_PLIB}
         children:
@@ -68,15 +34,6 @@ children:
           children:
           - type: Dynamic
             attributes: {id: drv_spi_0, value: SERCOM0}
-      - type: Integer
-        attributes: {id: DRV_SPI_QUEUE_SIZE}
-        children:
-        - type: Attributes
-          children:
-          - type: Boolean
-            attributes: {id: visible}
-            children:
-            - {type: Value, value: 'false'}
     - type: Attachments
       children:
       - type: DirectDependency

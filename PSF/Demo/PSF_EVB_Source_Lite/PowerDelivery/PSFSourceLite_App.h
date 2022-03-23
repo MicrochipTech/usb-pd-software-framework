@@ -38,7 +38,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Section: Included Files                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-#include <PSF_APIHook.h>
+#include "PSF_APIHook.h"
+#include "Drivers.h"
 #include "psf_stdinc.h"
 
 /* ************************************************************************** */

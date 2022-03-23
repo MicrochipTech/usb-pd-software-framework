@@ -16,7 +16,7 @@
     machines of all modules in the system
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -56,7 +56,13 @@ int main ( void )
 {
     /* Initialize all modules */
     SYS_Initialize ( NULL );
-
+    /*Disable Pin 14 and 15 Initially*/
+    EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA14);
+    EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA15);
+#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
+    PSF_APP_USART_Drv_Initialize();
+#endif
+    PSF_APP_SPI_Drv_Initialize();
 	/*PSF init called*/
 	(void)MchpPSF_Init();
 

@@ -11,7 +11,7 @@ Power Delivery Sink Application header file
     This header file contains user application specific functions and interfaces
 ************************************************************************** */
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility

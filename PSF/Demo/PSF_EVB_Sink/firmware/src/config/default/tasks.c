@@ -54,23 +54,6 @@
 #include "definitions.h"
 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: RTOS "Tasks" Routine
-// *****************************************************************************
-// *****************************************************************************
-/* Handle for the APP_Tasks. */
-TaskHandle_t xAPP_Tasks;
-
-void _APP_Tasks(  void *pvParameters  )
-{   
-    while(1)
-    {
-        APP_Tasks();
-    }
-}
-
-
 
 
 // *****************************************************************************
@@ -98,23 +81,11 @@ void SYS_Tasks ( void )
     
 
     /* Maintain the application's state machine. */
-        /* Create OS Thread for APP_Tasks. */
-    xTaskCreate((TaskFunction_t) _APP_Tasks,
-                "APP_Tasks",
-                128,
-                NULL,
-                1,
-                &xAPP_Tasks);
+        /* Call Application task APP. */
+    APP_Tasks();
 
 
 
-
-    /* Start RTOS Scheduler. */
-    
-     /**********************************************************************
-     * Create all Threads for APP Tasks before starting FreeRTOS Scheduler *
-     ***********************************************************************/
-    vTaskStartScheduler(); /* This function never returns. */
 
 }
 

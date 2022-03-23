@@ -57,20 +57,23 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 void App_SetMCUIdle()
 {
-    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
-    
+
+//    MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT();
+    __disable_irq(); // MCHP_PSF_HOOK_DISABLE_GLOBAL_INTERRUPT() API modified to disable individual peripheral interrupts
+
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
-    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE\r\n");
+    DEBUG_PRINT_PORT_STR (PSF_APPLICATION_LAYER_DEBUG_MSG,3, "Set SAMD20 to IDLE\r\n");
     
 	/*If there is any pending interrupt it will not go to sleep*/
     SCB->SCR |=  (SCB_SCR_SLEEPDEEP_Msk )| (SCB_SCR_SEVONPEND_Msk);
     
     __DSB();
     __WFI();
-    
-    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
+
+    __enable_irq(); // MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT() API modified to enable individual peripheral interrupts
+//    MCHP_PSF_HOOK_ENABLE_GLOBAL_INTERRUPT();
     
     /* Resume from Idle*/
     /* Enable the disabled interrupt*/
@@ -229,6 +232,7 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
 
 void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFunc)
 {
+    UINT16 u16Delay;
     switch(eGPIOFunc)
     {
         case eUPD350_ALERT_FUNC:
@@ -237,7 +241,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 PORT_PinWrite(PORT_PIN_PA14, TRUE);
                 PORT_PinInputEnable(PORT_PIN_PA14);
-                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, PSF_APP_UPD350AlertCallback, PORT0);
+                EIC_REGS->EIC_INTFLAG = (1UL << (EIC_PIN)PORT_PIN_PA14);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             }
             #if(CONFIG_PD_PORT_COUNT > PORT_COUNT_1) 
@@ -245,7 +250,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             {
                 PORT_PinWrite(PORT_PIN_PA15, TRUE);
                 PORT_PinInputEnable(PORT_PIN_PA15);
-                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, SAMD20_UPD350AlertCallback, PORT1);
+                EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA15, PSF_APP_UPD350AlertCallback, PORT1);
+                EIC_REGS->EIC_INTFLAG = (1UL << (EIC_PIN)PORT_PIN_PA15);
                 EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA15);
             }
             #endif
@@ -302,9 +308,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
             UPDPIO_DriveHigh(u8PortNum, eUPD_PIO6);
             UPDPIO_EnableOutput(u8PortNum, eUPD_PIO6);
             
-            UINT16 u16Delay;
-            /* Delay of 1.25ms for the DC/DC module to stabilize after Initialization */
-            for(u16Delay = 0; u16Delay < 10000; u16Delay++)
+             /* Delay for the DC/DC module to stabilize after Initialization */
+            for(u16Delay = 0; u16Delay < 20000; u16Delay++)
             {
                 __NOP();
             }  

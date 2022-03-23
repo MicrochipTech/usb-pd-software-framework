@@ -56,6 +56,9 @@ int main ( void )
 {
     /* Initialize all modules */
     SYS_Initialize ( NULL );
+    /*Disable 14th and 15th Pin Initially*/
+    EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA14);
+    EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA15);
     
 #if (TRUE == CONFIG_HOOK_DEBUG_MSG)
     PSF_APP_USART_Drv_Initialize();

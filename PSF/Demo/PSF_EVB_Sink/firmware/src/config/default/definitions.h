@@ -48,6 +48,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include "PSF_Config.h"
 #include "peripheral/nvmctrl/plib_nvmctrl.h"
 #include "peripheral/sercom/usart/plib_sercom1_usart.h"
 #include "peripheral/evsys/plib_evsys.h"
@@ -59,8 +60,6 @@
 #include "peripheral/tc/plib_tc0.h"
 #include "peripheral/dac/plib_dac.h"
 #include "driver/usart/drv_usart.h"
-#include "FreeRTOS.h"
-#include "task.h"
 #include "driver/spi/drv_spi.h"
 #include "system/int/sys_int.h"
 #include "system/ports/sys_ports.h"

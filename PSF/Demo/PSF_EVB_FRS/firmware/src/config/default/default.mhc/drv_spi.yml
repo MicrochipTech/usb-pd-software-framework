@@ -1,0 +1,51 @@
+format_version: v1.0
+type: GeneratorComponent
+attributes: {id: drv_spi}
+children:
+- type: Symbols
+  children:
+  - type: Combo
+    attributes: {id: DRV_SPI_COMMON_MODE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drv_spi, value: Asynchronous}
+- type: Instances
+  children:
+  - type: InstanceComponent
+    attributes: {instance: '0', id: drv_spi}
+    children:
+    - type: Symbols
+      children:
+      - type: String
+        attributes: {id: DRV_SPI_MODE}
+        children:
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: drv_spi_0, value: Asynchronous}
+      - type: String
+        attributes: {id: DRV_SPI_PLIB}
+        children:
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: drv_spi_0, value: SERCOM0}
+    - type: Attachments
+      children:
+      - type: DirectDependency
+        attributes: {id: drv_spi_SPI_dependency}
+        children:
+        - type: Attributes
+          children:
+          - type: String
+            attributes: {id: targetComponentID}
+            children:
+            - {type: Value, value: sercom0}
+          - type: String
+            attributes: {id: targetAttachmentID}
+            children:
+            - {type: Value, value: SERCOM0_SPI}
+- type: ElementPosition
+  attributes: {x: '54', y: '184', id: drv_spi}

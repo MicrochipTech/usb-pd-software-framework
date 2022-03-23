@@ -11,7 +11,7 @@ Power Delivery Source Pro Application header file
     This header file contains user application specific functions and interfaces
 ************************************************************************** */
 /*******************************************************************************
-Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ï¿½  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -63,7 +63,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define PWRCTRL_GPIO_DC_DC_MIC2128     3
 
 /* Defines the type of DC DC Controller used */
-#define CONFIG_DCDC_CTRL        PWRCTRL_I2C_DC_DC_MPQ4230
+#define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC_MCP19119
 
 
 // *****************************************************************************
