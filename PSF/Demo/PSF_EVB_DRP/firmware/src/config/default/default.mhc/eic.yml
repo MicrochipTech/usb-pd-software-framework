@@ -19,6 +19,20 @@ children:
       - type: User
         attributes: {value: 'true'}
   - type: Boolean
+    attributes: {id: EIC_CHAN_3}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: EIC_CHAN_7}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
     attributes: {id: EIC_CONFIG_FILTEN_14}
     children:
     - type: Attributes
@@ -44,7 +58,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: Boolean
     attributes: {id: EIC_CONFIG_FILTEN_7}
     children:
@@ -53,7 +67,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: KeyValueSet
     attributes: {id: EIC_CONFIG_SENSE_14}
     children:
@@ -68,6 +82,20 @@ children:
       children:
       - type: User
         attributes: {value: '5'}
+  - type: KeyValueSet
+    attributes: {id: EIC_CONFIG_SENSE_3}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '2'}
+  - type: KeyValueSet
+    attributes: {id: EIC_CONFIG_SENSE_7}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '2'}
   - type: Hex
     attributes: {id: EIC_EXTINTEO}
     children:
@@ -81,7 +109,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: eic, value: '49152'}
+        attributes: {id: eic, value: '49288'}
   - type: Boolean
     attributes: {id: EIC_INT_14}
     children:
@@ -91,6 +119,20 @@ children:
         attributes: {value: 'true'}
   - type: Boolean
     attributes: {id: EIC_INT_15}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: EIC_INT_3}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: EIC_INT_7}
     children:
     - type: Values
       children:
@@ -115,15 +157,6 @@ children:
         children:
         - {type: Value, value: 'true'}
   - type: Menu
-    attributes: {id: EIC_MENU2}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'false'}
-  - type: Menu
     attributes: {id: EIC_MENU3}
     children:
     - type: Attributes
@@ -131,7 +164,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: Menu
     attributes: {id: EIC_MENU7}
     children:
@@ -140,14 +173,14 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: Hex
     attributes: {id: EIC_WAKEUP}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: eic, value: '49152'}
+        attributes: {id: eic, value: '49288'}
   - type: Boolean
     attributes: {id: EIC_WAKEUP_14}
     children:
@@ -157,6 +190,20 @@ children:
         attributes: {value: 'true'}
   - type: Boolean
     attributes: {id: EIC_WAKEUP_15}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: EIC_WAKEUP_3}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: EIC_WAKEUP_7}
     children:
     - type: Values
       children:
