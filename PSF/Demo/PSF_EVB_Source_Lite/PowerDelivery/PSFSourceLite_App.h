@@ -11,7 +11,7 @@ Power Delivery Source Lite Application Header file
     This header file contains user application specific functions and interfaces
 ************************************************************************** */
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ï¿½  [2019-2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -38,7 +38,8 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Section: Included Files                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-#include <PSF_APIHook.h>
+#include "PSF_APIHook.h"
+#include "Drivers.h"
 #include "psf_stdinc.h"
 
 /* ************************************************************************** */
@@ -48,7 +49,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* ************************************************************************** */
 /* Defines major and minor version of PSF Source Lite Application*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x11
+#define APP_REV_MINOR	0x13
 
 #define APP_VOLTAGE_0mV         0
 #define APP_VOLTAGE_5000mV      5000

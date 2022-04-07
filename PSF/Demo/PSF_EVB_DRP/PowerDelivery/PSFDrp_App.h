@@ -11,7 +11,7 @@ Power Delivery DRP Application header file
     This header file contains user application specific functions and interfaces
 ************************************************************************** */
 /*******************************************************************************
-Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
+Copyright ï¿½  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -35,7 +35,7 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 /* Defines major and minor version of PSF DRP Application*/
 #define APP_REV_MAJOR	0x01
-#define APP_REV_MINOR	0x12
+#define APP_REV_MINOR	0x13
 
 /* ************************************************************************** */
 /* ************************************************************************** */

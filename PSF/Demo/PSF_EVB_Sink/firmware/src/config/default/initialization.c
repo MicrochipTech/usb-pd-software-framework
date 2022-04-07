@@ -85,6 +85,9 @@
 /* SPI Client Objects Pool */
 static DRV_SPI_CLIENT_OBJ drvSPI0ClientObjPool[DRV_SPI_CLIENTS_NUMBER_IDX0];
 
+/* SPI Transfer Objects Pool */
+static DRV_SPI_TRANSFER_OBJ drvSPI0TransferObjPool[DRV_SPI_QUEUE_SIZE_IDX0];
+
 /* SPI PLIB Interface Initialization */
 const DRV_SPI_PLIB_INTERFACE drvSPI0PlibAPI = {
 
@@ -105,6 +108,15 @@ const uint32_t drvSPI0remapDataBits[]= { 0x0, 0x1, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFF
 const uint32_t drvSPI0remapClockPolarity[] = { 0x0, 0x20000000 };
 const uint32_t drvSPI0remapClockPhase[] = { 0x10000000, 0x0 };
 
+const DRV_SPI_INTERRUPT_SOURCES drvSPI0InterruptSources =
+{
+    /* Peripheral has single interrupt vector */
+    .isSingleIntSrc                        = true,
+
+    /* Peripheral interrupt line */
+    .intSources.spiInterrupt             = SERCOM0_IRQn,
+};
+
 /* SPI Driver Initialization Data */
 const DRV_SPI_INIT drvSPI0InitData =
 {
@@ -124,6 +136,14 @@ const DRV_SPI_INIT drvSPI0InitData =
     .clientObjPool = (uintptr_t)&drvSPI0ClientObjPool[0],
 
 
+    /* SPI Queue Size */
+    .transferObjPoolSize = DRV_SPI_QUEUE_SIZE_IDX0,
+
+    /* SPI Transfer Objects Pool */
+    .transferObjPool = (uintptr_t)&drvSPI0TransferObjPool[0],
+
+    /* SPI interrupt sources (SPI peripheral and DMA) */
+    .interruptSources = &drvSPI0InterruptSources,
 };
 
 // </editor-fold>
@@ -131,6 +151,8 @@ const DRV_SPI_INIT drvSPI0InitData =
 
 static DRV_USART_CLIENT_OBJ drvUSART0ClientObjPool[DRV_USART_CLIENTS_NUMBER_IDX0];
 
+/* USART transmit/receive transfer objects pool */
+static DRV_USART_BUFFER_OBJ drvUSART0BufferObjPool[DRV_USART_QUEUE_SIZE_IDX0];
 
 const DRV_USART_PLIB_INTERFACE drvUsart0PlibAPI = {
     .readCallbackRegister = (DRV_USART_PLIB_READ_CALLBACK_REG)SERCOM1_USART_ReadCallbackRegister,
@@ -151,6 +173,15 @@ const uint32_t drvUsart0remapParity[] = { 0x2, 0x0, 0x80000, 0xFFFFFFFF, 0xFFFFF
 const uint32_t drvUsart0remapStopBits[] = { 0x0, 0xFFFFFFFF, 0x40 };
 const uint32_t drvUsart0remapError[] = { 0x4, 0x0, 0x2 };
 
+const DRV_USART_INTERRUPT_SOURCES drvUSART0InterruptSources =
+{
+    /* Peripheral has single interrupt vector */
+    .isSingleIntSrc                        = true,
+
+    /* Peripheral interrupt line */
+    .intSources.usartInterrupt             = SERCOM1_IRQn,
+};
+
 const DRV_USART_INIT drvUsart0InitData =
 {
     .usartPlib = &drvUsart0PlibAPI,
@@ -161,6 +192,13 @@ const DRV_USART_INIT drvUsart0InitData =
     /* USART Client Objects Pool */
     .clientObjPool = (uintptr_t)&drvUSART0ClientObjPool[0],
 
+    /* Combined size of transmit and receive buffer objects */
+    .bufferObjPoolSize = DRV_USART_QUEUE_SIZE_IDX0,
+
+    /* USART transmit and receive buffer buffer objects pool */
+    .bufferObjPool = (uintptr_t)&drvUSART0BufferObjPool[0],
+
+    .interruptSources = &drvUSART0InterruptSources,
 
     .remapDataWidth = drvUsart0remapDataWidth,
 
@@ -219,25 +257,30 @@ SYSTEM_OBJECTS sysObj;
 
 void SYS_Initialize ( void* data )
 {
-    NVMCTRL_Initialize( );
+
+    NVMCTRL_REGS->NVMCTRL_CTRLB = NVMCTRL_CTRLB_RWS(3UL);
 
   
     PORT_Initialize();
 
     CLOCK_Initialize();
-    // SERCOM1 UART is initialized as part of PSF
-    //SERCOM1_USART_Initialize();
 
-	//SPI initialisation is done as part of MchpPSF_Init by PSF stack
-    //SERCOM0_SPI_Initialize();
+
+
+
+    NVMCTRL_Initialize( );
+
+    SERCOM1_USART_Initialize();
+
+    EVSYS_Initialize();
+
+    SERCOM0_SPI_Initialize();
 
     EIC_Initialize();
-	// TC0 initialisation is done as part of MchpPSF_Init by PSF stack
-    //TC0_TimerInitialize();
-	
-    // DAC_Initialize is done as part of PSF Hook
-    //DAC_Initialize();
 
+    TC0_TimerInitialize();
+
+    DAC_Initialize();
 
 
     /* Initialize SPI0 Driver Instance */
@@ -245,9 +288,6 @@ void SYS_Initialize ( void* data )
     sysObj.drvUsart0 = DRV_USART_Initialize(DRV_USART_INDEX_0, (SYS_MODULE_INIT *)&drvUsart0InitData);
 
 
-
-
-    APP_Initialize();
 
 
     NVIC_Initialize();

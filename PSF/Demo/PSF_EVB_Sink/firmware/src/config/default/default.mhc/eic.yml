@@ -30,7 +30,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: 'true'}
+        attributes: {value: 'false'}
   - type: Boolean
     attributes: {id: EIC_CONFIG_FILTEN_15}
     children:
@@ -43,7 +43,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: 'true'}
+        attributes: {value: 'false'}
   - type: KeyValueSet
     attributes: {id: EIC_CONFIG_SENSE_14}
     children:

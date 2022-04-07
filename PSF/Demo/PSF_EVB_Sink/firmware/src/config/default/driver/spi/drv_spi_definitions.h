@@ -235,6 +235,13 @@ typedef struct
 
     const uint32_t*                 remapClockPhase;
 
+    /* Size of buffer objects queue */
+    uint32_t                        transferObjPoolSize;
+
+    /* Pointer to the buffer pool */
+    uintptr_t                       transferObjPool;
+
+    const DRV_SPI_INTERRUPT_SOURCES*      interruptSources;
 } DRV_SPI_INIT;
 
 
