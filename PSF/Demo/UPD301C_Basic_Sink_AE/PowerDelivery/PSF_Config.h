@@ -234,8 +234,8 @@ Description:
     to reduce code size if none of the PD enabled Source ports in the system 
     require Power Balancing functionality.
 Remarks: 
-    Default value is 1 for Source application. INCLUDE_PD_SOURCE should be set to 1 as a
-    prerequisite when INCLUDE_POWER_BALANCING is set to 1.
+    Recommended default value is 1 for Source application. For INCLUDE_POWER_BALANCING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
 Example:
     <code>
     #define INCLUDE_POWER_BALANCING	1(Include Power Balancing functionality in PSF)
@@ -253,8 +253,8 @@ Description:
     to reduce code size if none of the Source ports in the system 
     require PT functionality.
 Remarks: 
-    Default value is 1 for Source application. INCLUDE_PD_SOURCE should be set to 1 as a prerequisite
-    when INCLUDE_POWER_THROTTLING is set to 1. 
+    Recommended default value is 1 for Source application. For INCLUDE_POWER_THROTTLING to be 1, 
+    INCLUDE_PD_SOURCE shall be set to 1. 
 Example:
     <code>
     #define INCLUDE_POWER_THROTTLING	1(Include PT functionality in PSF)
@@ -509,9 +509,104 @@ Example:
     </code>
 
 Note:
+    The status messages are segregated based on the layers in which they are defined as follows.
+    1. Device Policy Manager Layer Debug Messages
+    2. Policy Engine Layer Debug Messages
+    3. Protocol & Type C Control Layers Debug Messages
+    4. Application Layer Debug Messages
+    Along with setting CONFIG_HOOK_DEBUG_MSG to 1, setting Debug Message Layer macros
+    to 1 is required to print status messages for the corresponding layer.
+
+**************************************************************************/
+#define CONFIG_HOOK_DEBUG_MSG      1               
+
+/**************************************************************************
+Summary:
+    Enables status messages for the Device Policy Manager Layer
+Description:
+    Setting PSF_DPM_LAYER_DEBUG_MSG to 1, enables status messages for the Device Policy
+    Manager layer of PSF stack through UART interface. 
+	
+Remarks:
+    The CONFIG_HOOK_DEBUG_MSG macro should be set to 1 to print status messages through
+    UART interface.
+
+Example:
+    <code>
+	#define PSF_DPM_LAYER_DEBUG_MSG    0
+	#define PSF_DPM_LAYER_DEBUG_MSG    1
+    </code>
+
+Note:
     None.
 **************************************************************************/
-#define CONFIG_HOOK_DEBUG_MSG      1                
+#define PSF_DPM_LAYER_DEBUG_MSG      0
+
+/**************************************************************************
+Summary:
+    Enables status messages for the Policy Engine Layer
+Description:
+    Setting PSF_PE_LAYER_DEBUG_MSG to 1, enables status messages for the Policy Engine
+    layer of PSF stack through UART interface. 
+	
+Remarks:
+    The CONFIG_HOOK_DEBUG_MSG macro should be set to 1 to print status messages through
+    UART interface 
+
+Example:
+    <code>
+	#define PSF_PE_LAYER_DEBUG_MSG    0
+	#define PSF_PE_LAYER_DEBUG_MSG    1
+    </code>
+
+Note:
+    None.
+**************************************************************************/
+#define PSF_PE_LAYER_DEBUG_MSG      0
+
+/**************************************************************************
+Summary:
+    Enables status messages for the Protocol and Type-C Management Layers
+Description:
+    Setting PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG to 1, enables status messages for the 
+    Protocol and Type-C Management layers of PSF stack through UART interface. 
+	
+Remarks:
+    The CONFIG_HOOK_DEBUG_MSG macro should be set to 1 to print status messages through
+    UART interface 
+
+Example:
+    <code>
+	#define PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG    0
+	#define PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG    1
+    </code>
+
+Note:
+    None.
+**************************************************************************/
+#define PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG      0
+
+/**************************************************************************
+Summary:
+    Enables status messages for the User Application Layer
+Description:
+    Setting PSF_APPLICATION_LAYER_DEBUG_MSG to 1, enables status messages for the User
+    Application layer of PSF stack through UART interface. 
+	
+Remarks:
+    The CONFIG_HOOK_DEBUG_MSG macro should be set to 1 to print status messages through
+    UART interface 
+
+Example:
+    <code>
+	#define PSF_APPLICATION_LAYER_DEBUG_MSG    0
+	#define PSF_APPLICATION_LAYER_DEBUG_MSG    1
+    </code>
+
+Note:
+    None.
+**************************************************************************/
+#define PSF_APPLICATION_LAYER_DEBUG_MSG      1
 
 
 // *****************************************************************************
@@ -1447,8 +1542,11 @@ typedef enum
     20:19   R            R         Current Negotiated PD Specification Revision									
 									* '01' PD2.0 
                                     * '10' PD3.0   
-                                    * '00' & '11' - Reserved 
-	31:21	 			           Reserved 				
+                                    * '00' & '11' - Reserved
+	21		R            R         PR Swap In Progress									
+									* '0' A Power Role Swap is not in Progress 
+                                    * '1' A Power Role Swap is in Progress  								
+	31:22	 			           Reserved  				
 	</table>
 
 	<b>c. u32PortIOStatus</b>: 
@@ -2369,9 +2467,17 @@ typedef struct _GlobalCfgStatusData
      None                                                               
    **********************************************************************/
    
-extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData;   
+  
 
 #include "UPD301C_Basic_Sink_AE_App.h"
 #include "UPD301C_Basic_Sink_AE_BootCfg.h"
+
+#include "definitions.h"                // SYS function prototypes
+
+
+extern const DRV_USART_INIT drvUsart0InitData;
+extern GLOBAL_CFG_STATUS_DATA gasCfgStatusData; 
+
+#define DEMO_VERSION                    0x0101U /* version 1.01 */
 
 #endif

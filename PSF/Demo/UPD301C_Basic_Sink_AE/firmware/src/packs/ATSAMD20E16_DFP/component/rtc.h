@@ -1,7 +1,7 @@
 /**
  * \brief Component description for RTC
  *
- * Copyright (c) 2019 Microchip Technology Inc. and its subsidiaries.
+ * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software and any derivatives
  * exclusively with Microchip products. It is your responsibility to comply with third party license
@@ -20,7 +20,7 @@
  *
  */
 
-/* file generated from device description version 2019-03-25T22:24:54Z */
+/* file generated from device description version 2019-11-25T06:48:59Z */
 #ifndef _SAMD20_RTC_COMPONENT_H_
 #define _SAMD20_RTC_COMPONENT_H_
 
@@ -670,6 +670,8 @@
 #define RTC_MODE1_PER_REG_OFST         (0x14)              /**< (RTC_MODE1_PER) MODE1 Counter Period Offset */
 #define RTC_MODE0_COMP_REG_OFST        (0x18)              /**< (RTC_MODE0_COMP) MODE0 Compare n Value Offset */
 #define RTC_MODE1_COMP_REG_OFST        (0x18)              /**< (RTC_MODE1_COMP) MODE1 Compare n Value Offset */
+#define RTC_MODE1_COMP0_REG_OFST       (0x18)              /**< (RTC_MODE1_COMP0) MODE1 Compare n Value Offset */
+#define RTC_MODE1_COMP1_REG_OFST       (0x1A)              /**< (RTC_MODE1_COMP1) MODE1 Compare n Value Offset */
 #define RTC_MODE2_ALARM_REG_OFST       (0x18)              /**< (RTC_MODE2_ALARM) MODE2_ALARM Alarm n Value Offset */
 #define RTC_MODE2_MASK_REG_OFST        (0x1C)              /**< (RTC_MODE2_MASK) MODE2_ALARM Alarm n Mask Offset */
 

@@ -38,7 +38,7 @@
 
 #ifndef PSF_CONTROL_TERMINAL_H
 #define	PSF_CONTROL_TERMINAL_H
-#define DEMO_VERSION                    0x0100U /* version 1.00 */
+
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus // Provide C++ Compatibility
 
@@ -65,6 +65,8 @@ void PCTPrintPDO();
 typedef enum
 {
     eINIT,
+    eREAD_DATA_WAIT,
+    eREAD_DATA,
     eREAD_CONTINUE,
     eREAD_PROCESS,
     eHALT,   

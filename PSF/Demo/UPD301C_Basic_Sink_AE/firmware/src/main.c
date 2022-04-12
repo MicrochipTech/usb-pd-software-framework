@@ -57,29 +57,33 @@ int main ( void )
 {
    
     /* Initialize all modules */
-    SYS_Initialize ( NULL );
+    (void)SYS_Initialize ( NULL );
     
+    /*EIC will enable later as after UPD350 initialization*/
+    EIC_REGS->EIC_INTENCLR = 0x4000;
     /*PSF init called*/
 	(void)MchpPSF_Init();
     
-    /*PCT init called*/
-    MchpPSF_PCTInit();
+    /*UART should be initialized after PSF init since UART line is connected 
+     * GPIO4 of UPD350 where it is the TEST pin for it*/
+     /*PCT is using UART and it is available in the default firmware*/
+    (void)MchpPSF_PCTInit();
     
 #ifdef WAIT_FOR_PCT_CONFIGURATON
     /*Always monitor SPACE BAR for Enter or exit PCT*/
-    PSF_monitorandwait();
+    (void)PSF_monitorandwait();
 #endif
         
     while (TRUE)
     {
         /* Maintain state machines of all polled MPLAB Harmony modules. */
-        SYS_Tasks ( );
+        (void)SYS_Tasks ( );
         /*ADC Run called*/
-        PSF_ADCRun();
+        (void)PSF_ADCRun();
         /*PCT  monitors during the debug trace*/
-        MchpPSF_PCTRUN(ePCT_UNLOCK);
+        (void)MchpPSF_PCTRUN(ePCT_UNLOCK);
         /*PSF stack Run*/
-        MchpPSF_RUN();        
+        (void)MchpPSF_RUN();        
     }
 }
 

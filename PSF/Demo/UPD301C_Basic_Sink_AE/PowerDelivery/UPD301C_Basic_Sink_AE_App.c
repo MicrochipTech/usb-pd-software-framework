@@ -63,7 +63,7 @@ void App_SetMCUIdle()
     /*Disable Timer to avoid interrupt from Timer*/
     TC0_TimerStop(); 
     
-    DEBUG_PRINT_PORT_STR (3, "Set SAMD20 to IDLE\r\n");
+    DEBUG_PRINT_PORT_STR(PSF_APPLICATION_LAYER_DEBUG_MSG,PORT0, "Set SAMD20 to IDLE\r\n");
     
 	/*If there is any pending interrupt it will not go to sleep*/
     SCB->SCR |=  (SCB_SCR_SLEEPDEEP_Msk )| (SCB_SCR_SEVONPEND_Msk);
@@ -145,7 +145,7 @@ UINT8 App_HandlePSFEvents(UINT8 u8PortNum, eMCHP_PSF_NOTIFICATION ePDEvent)
         
         case eMCHP_PSF_PD_CONTRACT_NEGOTIATED: 
         {
-            DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> PD_contract_negotiated");
+            DEBUG_PRINT_PORT_STR(PSF_APPLICATION_LAYER_DEBUG_MSG,PORT0,"\n\n\r> PD_contract_negotiated");
             gu8PDContract = true;
             break; 
         }
@@ -223,7 +223,8 @@ void App_GPIOControl_Init(UINT8 u8PortNum, eMCHP_PSF_GPIO_FUNCTIONALITY eGPIOFun
         {           
             PORT_PinWrite(PORT_PIN_PA14, TRUE);
             PORT_PinInputEnable(PORT_PIN_PA14);
-            EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, SAMD20_UPD350AlertCallback, PORT0);
+            EIC_CallbackRegister((EIC_PIN)PORT_PIN_PA14, PSF_APP_UPD350AlertCallback, PORT0);
+            EIC_REGS->EIC_INTFLAG = (1UL << (EIC_PIN)PORT_PIN_PA14);
             EIC_InterruptEnable((EIC_PIN)PORT_PIN_PA14);
             break;
         }

@@ -1,21 +1,23 @@
 /*******************************************************************************
- Debug Console Source file
+  Interrupt System Service Mapping File
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    xc32_monitor.c
+    sys_int_mapping.h
 
   Summary:
-    debug console Source File
+    Interrupt System Service mapping file.
 
   Description:
-    None
-
+    This header file contains the mapping of the APIs defined in the API header
+    to either the function implementations or macro implementation or the
+    specific variant implementation.
 *******************************************************************************/
 
-/*******************************************************************************
+//DOM-IGNORE-BEGIN
+/******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
@@ -37,22 +39,22 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
+//DOM-IGNORE-END
 
+#ifndef SYS_INT_MAPPING_H
+#define SYS_INT_MAPPING_H
 
-#ifdef __arm__
-/* Declaration of these functions are missing in stdio.h for ARM parts*/
-int _mon_getc(int canblock);
-void _mon_putc(char c);
-#endif //__arm__
+// *****************************************************************************
+// *****************************************************************************
+// Section: Interrupt System Service Mapping
+// *****************************************************************************
+// *****************************************************************************
 
-int _mon_getc(int canblock)
-{
-   (void)canblock;
-   return 0;
-}
+#define SYS_INT_IsEnabled()                 ( __get_PRIMASK() == 0 )
+#define SYS_INT_SourceEnable( source )      NVIC_EnableIRQ( source )
+#define SYS_INT_SourceIsEnabled( source )   NVIC_GetEnableIRQ( source )
+#define SYS_INT_SourceStatusGet( source )   NVIC_GetPendingIRQ( source )
+#define SYS_INT_SourceStatusSet( source )   NVIC_SetPendingIRQ( source )
+#define SYS_INT_SourceStatusClear( source ) NVIC_ClearPendingIRQ( source )
 
-void _mon_putc(char c)
-{
-   (void)c;
-}
-
+#endif // SYS_INT_MAPPING_H

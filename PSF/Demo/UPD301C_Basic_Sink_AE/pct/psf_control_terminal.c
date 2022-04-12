@@ -59,22 +59,19 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  * This function converts Uppercase alphabets to Lowercase if given by the 
  * user as per point number 7 of section 2.10 in the design document
  * 
- * RETURNS the ReadByte from the terminal 
+ * RETURNS none 
  */
-UINT8 PCTReadByte(void)
+void PCTWriteBack(char chBuffer)
 {
-	INT32 i32ReadByte;
-	i32ReadByte = SERCOM1_USART_ReadByte();
-
-	if ((i32ReadByte > 0x40) && (i32ReadByte < 0x5B)) 
+	if ((chBuffer > 0x40) && (chBuffer < 0x5B)) 
     {
 		/*
 		 * Convert Uppercase to Lowercase Alphabet 
 		 */
-		i32ReadByte = i32ReadByte + 0x20;
+		chBuffer = chBuffer + 0x20;
 	}
-	SERCOM1_USART_WriteByte(i32ReadByte);
-	return ((UINT8) (i32ReadByte));
+	PSF_APP_UART_Write_Char((char)chBuffer);
+	return ;
 }
 
 /*
@@ -88,8 +85,8 @@ void PCTPrintCommands()
 	    "get mem[memory_address][length] -  Reads the memory at the given location\n\r> set mem[memory_address][byte value] - Writes memory to SAMD20\n\r> "
 	    "set pdo[position][value] -  Insert a new PDO at the specified location";
     
-	(void)SERCOM1_USART_Write(&u8aPrintString[0], sizeof(u8aPrintString));
-    (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
+	(void)PSF_APP_UART_Write_String((char *)&u8aPrintString[0]);
+    (void)PSF_APP_UART_Write_String((char *)"\n\n\r> ");
 }
 
 /*
@@ -102,10 +99,10 @@ void PCTPrintCommands()
 void PCTWrite(const UINT8 * u8aPrintString, const UINT8 * u8aValue,UINT8 u8Size, UINT8 u8StrSize)
 {
 	UINT8 u8Index = (u8Size - 1);
-	(void)SERCOM1_USART_Write((void *)u8aPrintString, u8StrSize);
+	(void)PSF_APP_UART_Write_String((char *)u8aPrintString);
 	while (u8Size--) 
     {
-		SERCOM1_USART_WriteByte(u8aValue[u8Index]);
+		PSF_APP_UART_Write_Char((char)u8aValue[u8Index]);
 		u8Index--;
 	}
 }
@@ -168,8 +165,8 @@ UINT8 *HextoAscii (UINT32 u32HexVal, UINT8 u8Length)
 void PCTInvalidCommandMsg ()
 {
     UINT8 u8aPrintString[] = "\r> invalid command! Type help to know more\n\n\r";
-    (void)SERCOM1_USART_Write (&u8aPrintString[0], sizeof(u8aPrintString));
-    (void)SERCOM1_USART_Write ((UINT8 *)"\r> ",3);
+    (void)PSF_APP_UART_Write_String ((char*)&u8aPrintString[0]);
+    (void)PSF_APP_UART_Write_String ((char *)"\r> ");
 }
 
 /*
@@ -196,7 +193,7 @@ void PCTPrintVersion ()
 	pu8PrintValue = HextoAscii (u32FirmwareVersion, sizeof(u32FirmwareVersion));
 	PCTWrite (u8aPSFVersionString, (UINT8 *) & pu8PrintValue[0],\
         sizeof(pu8PrintValue), sizeof(u8aPSFVersionString));
-    (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+    (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
 }
 
 void PCTPrintSinkPDO()
@@ -208,7 +205,7 @@ void PCTPrintSinkPDO()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
 
-    (void)SERCOM1_USART_Write ((void *)"SinkPDO", 7);
+    (void)PSF_APP_UART_Write_String ((char *)"SinkPDO");
 	pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aSinkPDO;
 
     for (u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[PORT0].u8SinkPDOCnt; u8Index++) 
@@ -222,16 +219,16 @@ void PCTPrintSinkPDO()
         pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data) + 1);
         PCTWrite (u8aVoltageString, (UINT8 *) pu8PrintValue,\
             sizeof(pu8PrintValue) + 1, sizeof(u8aVoltageString));
-        (void)SERCOM1_USART_Write ((void *)"mV", 2);
+        (void)PSF_APP_UART_Write_String ((char *)"mV");
 
         /* Get the current form PDO list */
         u32Data = PCT_GET_CURRENT_FROM_PDO_MILLI_A(pu32PDOList[u8Index]);
         pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data));
         PCTWrite (u8aCurrentString, (UINT8 *) pu8PrintValue,\
             sizeof(pu8PrintValue), sizeof(u8aCurrentString));
-        (void)SERCOM1_USART_Write ((void *)"mA", 2);
+        (void)PSF_APP_UART_Write_String ((char *)"mA");
     }
-    (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+    (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
 }
 
 
@@ -250,7 +247,7 @@ void PCTPrintPartnerSourcePDO()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
 
-    (void)SERCOM1_USART_Write ((void *)"PartnerSourcePDO", 16);
+    (void)PSF_APP_UART_Write_String ((char *)"PartnerSourcePDO");
     pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aPartnerSourcePDO;
 
     for (u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[PORT0].u8PartnerSourcePDOCnt; u8Index++) 
@@ -264,16 +261,16 @@ void PCTPrintPartnerSourcePDO()
         pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data) + 1);
         PCTWrite (u8aVoltageString, (UINT8 *) pu8PrintValue,\
             sizeof(pu8PrintValue) + 1, sizeof(u8aVoltageString));
-        (void)SERCOM1_USART_Write ((void *)"mV", 2);
+        (void)PSF_APP_UART_Write_String ((char *)"mV");
 
         /* Get the current form PDO list */
         u32Data = PCT_GET_CURRENT_FROM_PDO_MILLI_A(pu32PDOList[u8Index]);
         pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data));
         PCTWrite (u8aCurrentString, (UINT8 *) pu8PrintValue,\
             sizeof(pu8PrintValue), sizeof(u8aCurrentString));
-        (void)SERCOM1_USART_Write ((void *)"mA", 2);
+        (void)PSF_APP_UART_Write_String ((void *)"mA");
     }
-    (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+    (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
 }
 /*
  * Function: PCTPrintSinkPartnerPDO
@@ -290,7 +287,7 @@ void PCTPrintPartnerSinkPDO()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
     
-    (void)SERCOM1_USART_Write ((void *)"PartnerSinkPDO", 14);
+    (void)PSF_APP_UART_Write_String ((char *)"PartnerSinkPDO");
     pu32PDOList = gasCfgStatusData.sPerPortData[PORT0].u32aPartnerSinkPDO;
 
     for (u8Index = SET_TO_ZERO; u8Index < gasCfgStatusData.sPerPortData[PORT0].u8PartnerSinkPDOCnt; u8Index++) 
@@ -304,16 +301,16 @@ void PCTPrintPartnerSinkPDO()
         pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data) + 1);
         PCTWrite (u8aVoltageString, (UINT8 *) pu8PrintValue,\
             sizeof(pu8PrintValue) + 1, sizeof(u8aVoltageString));
-        (void)SERCOM1_USART_Write ((void *)"mV", 2);
+        (void)PSF_APP_UART_Write_String ((char *)"mV");
 
         /* Get the current form PDO list */
         u32Data = PCT_GET_CURRENT_FROM_PDO_MILLI_A(pu32PDOList[u8Index]);
         pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data));
         PCTWrite (u8aCurrentString, (UINT8 *) pu8PrintValue,\
             sizeof(pu8PrintValue), sizeof(u8aCurrentString));
-        (void)SERCOM1_USART_Write ((void *)"mA", 2);
+        (void)PSF_APP_UART_Write_String ((char *)"mA");
     }
-    (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+    (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
 }
 
 void PCTPrintNewSinkPDO ()
@@ -325,7 +322,7 @@ void PCTPrintNewSinkPDO ()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
 
-    (void)SERCOM1_USART_Write ((void *)"NewSinkPDO", 10);
+    (void)PSF_APP_UART_Write_String ((char *)"NewSinkPDO");
 	// If it is in New PDO list then get it from New list else get it from 
 	// default
 	if (gasCfgStatusData.sPerPortData[PORT0].u8NewSinkPDOCnt) 
@@ -343,14 +340,14 @@ void PCTPrintNewSinkPDO ()
                 pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data) + 1);
                 PCTWrite (u8aVoltageString, (UINT8 *) pu8PrintValue,\
                      sizeof(pu8PrintValue) + 1, sizeof(u8aVoltageString));
-                (void)SERCOM1_USART_Write ((void *)"mV", 2);
+                (void)PSF_APP_UART_Write_String ((char *)"mV");
 
                 /* Get the current form PDO list */
                 u32Data = PCT_GET_CURRENT_FROM_PDO_MILLI_A(pu32PDOList[u8Index]);
                 pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data));
                 PCTWrite (u8aCurrentString, (UINT8 *) pu8PrintValue,\
                      sizeof(pu8PrintValue), sizeof(u8aCurrentString));
-                (void)SERCOM1_USART_Write ((void *)"mA", 2);
+                (void)PSF_APP_UART_Write_String ((char *)"mA");
             }
     } 
     else 
@@ -367,17 +364,17 @@ void PCTPrintNewSinkPDO ()
             pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data) + 1);
             PCTWrite (u8aVoltageString, (UINT8 *) pu8PrintValue,\
                  sizeof(pu8PrintValue) + 1, sizeof(u8aVoltageString));
-            (void)SERCOM1_USART_Write ((void *)"mV", 2);
+            (void)PSF_APP_UART_Write_String ((char *)"mV");
 
             /* Get the current form PDO list */
             u32Data = PCT_GET_CURRENT_FROM_PDO_MILLI_A(pu32PDOList[u8Index]);
             pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data));
             PCTWrite (u8aCurrentString, (UINT8 *) pu8PrintValue,\
                  sizeof(pu8PrintValue), sizeof(u8aCurrentString));
-            (void)SERCOM1_USART_Write ((void *)"mA", 2);
+            (void)PSF_APP_UART_Write_String ((char *)"mA");
         }
     }
-    (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+    (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
 }
 
 
@@ -396,7 +393,7 @@ void PCTPrintAdvertisedPDO()
 	UINT8 u8aVoltageString[] = "\rVoltage=";
 	UINT8 u8aCurrentString[] = "\rCurrent=";
 
-    (void)SERCOM1_USART_Write ((void *)"AdvertisedPDO", 13);
+    (void)PSF_APP_UART_Write_String ((char *)"AdvertisedPDO");
 	// If it is already advertised then get it from advertised list else
 	// get it from default
 	if (gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt) 
@@ -413,14 +410,14 @@ void PCTPrintAdvertisedPDO()
                 pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data) + 1);
                 PCTWrite (u8aVoltageString, (UINT8 *) pu8PrintValue,\
                      sizeof(pu8PrintValue) + 1, sizeof(u8aVoltageString));
-                (void)SERCOM1_USART_Write ((void *)"mV", 2);
+                (void)PSF_APP_UART_Write_String ((char *)"mV");
 
                 /* Get the current form PDO list */
                 u32Data = PCT_GET_CURRENT_FROM_PDO_MILLI_A(pu32PDOList[u8Index]);
                 pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data));
                 PCTWrite (u8aCurrentString, (UINT8 *) pu8PrintValue,\
                      sizeof(pu8PrintValue), sizeof(u8aCurrentString));
-                (void)SERCOM1_USART_Write ((void *)"mA", 2);
+                (void)PSF_APP_UART_Write_String ((char *)"mA");
             }
         }
     else
@@ -437,17 +434,17 @@ void PCTPrintAdvertisedPDO()
             pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data) + 1);
             PCTWrite (u8aVoltageString, (UINT8 *) pu8PrintValue,\
                  sizeof(pu8PrintValue) + 1, sizeof(u8aVoltageString));
-            (void)SERCOM1_USART_Write ((void *)"mV", 2);
+            (void)PSF_APP_UART_Write_String ((char *)"mV");
 
             /* Get the current form PDO list */
             u32Data = PCT_GET_CURRENT_FROM_PDO_MILLI_A(pu32PDOList[u8Index]);
             pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data));
             PCTWrite (u8aCurrentString, (UINT8 *) pu8PrintValue,\
                 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
-            (void)SERCOM1_USART_Write ((void *)"mA", 2);
+            (void)PSF_APP_UART_Write_String ((char *)"mA");
         }
     }
-    (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+    (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
 }
 
 /*
@@ -507,14 +504,14 @@ void PCTPrintPDO()
             pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data) + 1);
             PCTWrite (u8aVoltageString, (UINT8 *) pu8PrintValue,\
                  sizeof(pu8PrintValue) + 1, sizeof(u8aVoltageString));
-            (void)SERCOM1_USART_Write ((void *)"mV", 2);
+            (void)PSF_APP_UART_Write_String ((char *)"mV");
 
             /* Get the current form PDO list */
             u32Data = PCT_GET_CURRENT_FROM_PDO_MILLI_A(pu32PDOList[u8Index]);
             pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data));
             PCTWrite (u8aCurrentString, (UINT8 *) pu8PrintValue,\
                  sizeof(pu8PrintValue), sizeof(u8aCurrentString));
-            (void)SERCOM1_USART_Write ((void *)"mA", 2);
+            (void)PSF_APP_UART_Write_String ((char *)"mA");
         }
 
     } 
@@ -533,17 +530,17 @@ void PCTPrintPDO()
             pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data) + 1);
             PCTWrite (u8aVoltageString, (UINT8 *) pu8PrintValue,\
                 sizeof(pu8PrintValue) + 1, sizeof(u8aVoltageString));
-            (void)SERCOM1_USART_Write ((void *)"mV", 2);
+            (void)PSF_APP_UART_Write_String ((char *)"mV");
 
             /* Get the current form PDO list*/
             u32Data = (PCT_GET_CURRENT_FROM_PDO_MILLI_A(pu32PDOList[u8Index]));
             pu8PrintValue = HextoAscii_Int (u32Data, sizeof(u32Data));
             PCTWrite (u8aCurrentString, (UINT8 *) pu8PrintValue,\
                 sizeof(pu8PrintValue), sizeof(u8aCurrentString));
-            (void)SERCOM1_USART_Write ((void *)"mA", 2);
+            (void)PSF_APP_UART_Write_String ((char *)"mA");
         }
     }
-    (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+    (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
 }
 
 /*
@@ -588,9 +585,8 @@ void PCTPrintStatusData(const UINT8 u8array[])
 		PCTWrite(StrSiVersion, (UINT8 *) & pu8PrintValue[0],\
 			 sizeof(pu8PrintValue), sizeof(StrSiVersion));
 
-		(void)SERCOM1_USART_Write(&StrManfString[0],sizeof(StrManfString));
-		(void)SERCOM1_USART_Write(&gasCfgStatusData.u8aManfString[0],\
-					  gasCfgStatusData.u8ManfStringLength);
+		(void)PSF_APP_UART_Write_String((char*)&StrManfString[0]);
+		(void)PSF_APP_UART_Write_String((char*)&gasCfgStatusData.u8aManfString[0]);
 
 		pu8PrintValue = HextoAscii(gasCfgStatusData.u8PSFMajorVersion, 4);
 		PCTWrite(StrPSFMajorVersion, (UINT8 *) & pu8PrintValue[0],\
@@ -612,7 +608,7 @@ void PCTPrintStatusData(const UINT8 u8array[])
 		PCTWrite(StrVendorID, (UINT8 *) & pu8PrintValue[0],\
 			 sizeof(pu8PrintValue), sizeof(StrVendorID));
         
-        (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
+        (void)PSF_APP_UART_Write_String((char *)"\n\n\r> ");
 	} 
     else if (0 == memcmp(u8array, u8aPortHelper, 21)) 
     {
@@ -661,7 +657,7 @@ void PCTPrintStatusData(const UINT8 u8array[])
                    sizeof(gasCfgStatusData.sPerPortData[PORT0].u32CfgData));
         PCTWrite(StrCfgData, (UINT8 *) & pu8PrintValue[0],\
              sizeof(pu8PrintValue), sizeof(StrCfgData));
-        (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
+        (void)PSF_APP_UART_Write_String((char *)"\n\n\r> ");
 
         PCTPrintSinkPDO();
         PCTPrintNewSinkPDO();
@@ -869,7 +865,7 @@ void PCTPrintStatusData(const UINT8 u8array[])
                    u8DAC_I_Direction, 7);
         PCTWrite(StrDAC_I_Direction, (UINT8 *) & pu8PrintValue[0],\
              sizeof(pu8PrintValue), sizeof(StrDAC_I_Direction));
-        (void)SERCOM1_USART_Write((UINT8 *)"\n\n\r> ",5);
+        (void)PSF_APP_UART_Write_String((char *)"\n\n\r> ");
     } 
     else 
     {
@@ -957,7 +953,7 @@ void PCTPrintMemory (const UINT8 u8array[])
             PCTWrite ((UINT8 *) "\n\n\r> bytevalue=",(UINT8 *) & pu8PrintValue[u8Index], 2, 15);
         }
     }
-    (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+    (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
 }
 
 /*
@@ -989,7 +985,7 @@ void PCTSetMemory (const UINT8 u8array[])
     //The memory 2000_0000 to 20001FF0 is accessible.
     if(u32Address < 0x20000000 || u32Address > 0x20001FF0)
     {
-        (void)SERCOM1_USART_Write ((UINT8 *)"\n\r> Memory inaccessible",25);
+        (void)PSF_APP_UART_Write_String ((char *)"\n\r> Memory inaccessible");
     }
     else
     {
@@ -1008,7 +1004,7 @@ void PCTSetMemory (const UINT8 u8array[])
         {
             pu32Addressptr = (UINT32 *) u32Address;
             pu32Addressptr[u8Index] = u32ByteValue;
-            (void)SERCOM1_USART_Write ((UINT8 *)"\n\r> Memory set successfully",27);
+            (void)PSF_APP_UART_Write_String ((char *)"\n\r> Memory set successfully");
         }
     }
 }
@@ -1051,7 +1047,7 @@ void PCTSetPDO(const UINT8 u8array[])
 	// Max PDO size allocated is 7 
     if (u32PDOPosition > 7) 
     {
-        DEBUG_PRINT_PORT_STR(PORT0,"PDO_OVERFLOW_ERROR:Supported Pdo Size is 7\r\n");
+        DEBUG_PRINT_PORT_STR(PSF_APPLICATION_LAYER_DEBUG_MSG,PORT0,"PDO_OVERFLOW_ERROR:Supported Pdo Size is 7\r\n");
         return;
     }
     for (u8Index = SET_TO_ZERO;u8Index < gasCfgStatusData.sPerPortData[PORT0].u8AdvertisedPDOCnt;\
@@ -1118,12 +1114,12 @@ void PCTSetProcessCommands (const UINT8 u8array[])
 	if (0 == memcmp (u8array, u8aSetMemHelper, 8)) 
     {
         PCTSetMemory (u8array);
-        (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+        (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
     } 
     else if (0 == memcmp (u8array, u8aSetPDOHelper, 8)) 
     {
         PCTSetPDO (u8array);
-        (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+        (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
     } 
     else 
     {
@@ -1171,13 +1167,13 @@ void PCTSpaceBARMsg (PCT_LOCK_STATE lock_state)
 	UINT8 u8aPrintUnlockString[] = "\n\n\r> Good bye\n\n\r";
 	if (ePCT_LOCK == lock_state) 
     {
-		(void)SERCOM1_USART_Write (&u8aPrintString[0],sizeof(u8aPrintString));
-        (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+		(void)PSF_APP_UART_Write_String ((char *)&u8aPrintString[0]);
+        (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
 	} 
     else 
     {
-        (void)SERCOM1_USART_Write (&u8aPrintUnlockString[0],sizeof(u8aPrintUnlockString));
-        (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
+        (void)PSF_APP_UART_Write_String ((char *)&u8aPrintUnlockString[0]);
+        (void)PSF_APP_UART_Write_String ((char *)"\n\n\r> ");
     }
     
 }
@@ -1192,7 +1188,6 @@ void MchpPSF_PCTRUN (PCT_LOCK_STATE lock_state)
 {
 	static UINT8 u8array[LENGTH];
 	static UINT8 u8Length = 0;
-	UINT8 u8ReadByte;
     
 	static STATE state = eINIT;
 
@@ -1205,70 +1200,67 @@ void MchpPSF_PCTRUN (PCT_LOCK_STATE lock_state)
                  * checks if UART receiver is ready 
                  */
                 memset(u8array, 0, LENGTH);
-                if (true == SERCOM1_USART_ReceiverIsReady ()) 
+                u8Length = 0;
+                PSF_APP_UART_Read_Char((char *) &u8array[0]);
+                state = eREAD_DATA_WAIT;
+                break;       
+            case eREAD_DATA_WAIT:
+                if (PSF_APP_UART_Read_DataAvailable() ) 
                 {
-                    /*
-                     * Read the input 
-                     */
-                    u8array[u8Length] = PCTReadByte ();
-
-                    if (('?' == u8array[u8Length])
-                        || (0x0d == u8array[u8Length])) 
-                    {
-                        /*
-                         * checks for '?' input 
-                         */
-                        state = eREAD_PROCESS;
-                    }
-
-                    else if (0x20 == u8array[u8Length]) 
-                    {
-                        /*
-                         * checks for space key input 
-                         */
-                        state = eTOGGLE_BLOCK;
-                    } 
-                    else if (0x71 == u8array[u8Length]) 
-                    {
-                        /*
-                         * Exits from the current state if 'Q/q' is given as
-                         * input 
-                         */
-                        (void)SERCOM1_USART_Write ((UINT8*)"\n\n\r> Exiting from PCT",24);
-                        (void)SERCOM1_USART_Write ((UINT8 *)"\n\n\r> ",5);
-
-                        state = eINIT;
-                        u8Length = 0;
-                    } 
-                    else 
-                    {
-                        u8Length++;
-                        state = eREAD_CONTINUE;
-                    }
+                    state = eREAD_DATA;
                 }
                 break;
-            case eREAD_CONTINUE:
+                
+            case eREAD_DATA:
+                /*
+                 * Read the input 
+                 */
+                PCTWriteBack(u8array[u8Length]);
 
-                if (true == SERCOM1_USART_ReceiverIsReady ()) 
+                if (('?' == u8array[u8Length])
+                    || (0x0d == u8array[u8Length])) 
                 {
-                    u8ReadByte = PCTReadByte ();
-                    if (('?' == u8ReadByte) || (0x0d == u8ReadByte)) 
-                    {
-                        state = eREAD_PROCESS;
-                        u8array[u8Length] = u8ReadByte;
-                        break;
-                    } 
-                    else if (' ' == u8ReadByte && (' ' == u8array[u8Length - 1])) 
-                    {
-                        /*nothing to do if again one more space*/
-                    } 
-                    else 
-                    {
-                        u8array[u8Length] = u8ReadByte;
-                        u8Length++;
-                    }
+                    /*
+                     * checks for '?' input 
+                     */
+                    state = eREAD_PROCESS;
                 }
-                state = eREAD_CONTINUE;
+
+                else if (0x20 == u8array[0]) 
+                {
+                    /*
+                     * checks for space key input 
+                     */
+                    state = eTOGGLE_BLOCK;
+                } 
+                else if (0x71 == u8array[u8Length]) 
+                {
+                    /*
+                     * Exits from the current state if 'Q/q' is given as
+                     * input 
+                     */
+                    (void)PSF_APP_UART_Write_String ((char*)"\n\n\r> Exiting from PCT");
+                    (void)PSF_APP_UART_Write_String ((char*)"\n\n\r> ");
+
+                    state = eINIT;
+                    u8Length = 0;
+                } 
+                else if (' ' == u8array[u8Length] && (' ' == u8array[u8Length - 1])) 
+                {
+                    /*nothing to do if again one more space*/
+                    
+                }  
+                else 
+                {
+                    u8Length++;
+                    state = eREAD_CONTINUE;
+                }
+                
+                break;
+            case eREAD_CONTINUE:
+                 
+                PSF_APP_UART_Read_Char((char *) &u8array[u8Length]);
+                state = eREAD_DATA_WAIT;
                 break;
 
             case eREAD_PROCESS:
@@ -1280,11 +1272,9 @@ void MchpPSF_PCTRUN (PCT_LOCK_STATE lock_state)
                 {
                     PCTCommandhandler (u8array);
                 }
-
-                u8Length = 0;
                 state = eINIT;
-
                 break;
+                
             case eHALT:
                 state = eINIT;
                 break;
@@ -1316,14 +1306,7 @@ void MchpPSF_PCTInit ()
 	UINT8 u8aPrintString[] =
 	    "> Welcome to PSF Control Terminal\n\n\r> Type ? for the list of supported commands\n\n\r> ";
     /*If debug message is enabled in PSF then MCHP_PSF_HOOK_DEBUG_INIT is initialized as part of MchpPSF_Init by PSF stack*/
-    
-    #if (FALSE == CONFIG_HOOK_DEBUG_MSG)
-        /*Initialize debug hardware*/
-        MCHP_PSF_HOOK_DEBUG_INIT ();
-
-    #endif
-
-        (void)SERCOM1_USART_Write (&u8aPrintString[0], sizeof(u8aPrintString));     
+    (void)PSF_APP_UART_Write_String ((char*)&u8aPrintString[0]);     
 }
 
 void PSF_monitorandwait ()

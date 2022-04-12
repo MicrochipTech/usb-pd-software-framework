@@ -1,20 +1,28 @@
 /*******************************************************************************
- Debug Console Source file
+  Driver Layer Interface Header
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    xc32_monitor.c
+    driver.h
 
   Summary:
-    debug console Source File
+    Driver layer data types and definitions.
 
   Description:
-    None
+    This file defines the common macros and definitions for the driver layer
+    modules.
 
-*******************************************************************************/
+  Remarks:
+    The parent directory to the "system" directory should be added to the
+    compiler's search path for header files such that the following include
+    statement will successfully include this file.
 
+    #include "system/system.h"
+ *******************************************************************************/
+
+//DOM-IGNORE-BEGIN
 /*******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
@@ -36,23 +44,25 @@
 * FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*******************************************************************************/
+ *******************************************************************************/
+//DOM-IGNORE-END
+
+#ifndef SYSTEM_H
+#define SYSTEM_H
 
 
-#ifdef __arm__
-/* Declaration of these functions are missing in stdio.h for ARM parts*/
-int _mon_getc(int canblock);
-void _mon_putc(char c);
-#endif //__arm__
+// *****************************************************************************
+// *****************************************************************************
+// Section: Included Files
+// *****************************************************************************
+// *****************************************************************************
 
-int _mon_getc(int canblock)
-{
-   (void)canblock;
-   return 0;
-}
+#include "system/system_common.h"
+#include "system/system_module.h"
 
-void _mon_putc(char c)
-{
-   (void)c;
-}
+
+#endif // SYSTEM_H
+/*******************************************************************************
+ End of File
+*/
 

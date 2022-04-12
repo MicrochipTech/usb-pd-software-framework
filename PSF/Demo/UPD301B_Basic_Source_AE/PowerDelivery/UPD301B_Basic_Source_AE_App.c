@@ -534,7 +534,7 @@ UINT8 App_PortPowerInit(UINT8 u8PortNum)
     /*VSEL0 Init */
     if (PORT0 == u8PortNum)
     {
-        PORT_PinWrite(PORT_PIN_PA04, FALSE); //PA17
+        PORT_PinWrite(PORT_PIN_PA04, FALSE); 
         PORT_PinOutputEnable(PORT_PIN_PA04);
     }
   
