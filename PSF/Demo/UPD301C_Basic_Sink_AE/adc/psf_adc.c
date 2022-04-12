@@ -252,7 +252,7 @@ void PSF_ADCRun()
                 gasCfgStatusData.sPerPortData[PORT0].u32ClientRequest |= DPM_CLIENT_REQ_RENEGOTIATE;
                 
 
-                DEBUG_PRINT_PORT_STR(PORT0,"\n\n\r> Client Req set");
+                DEBUG_PRINT_PORT_STR(PSF_APPLICATION_LAYER_DEBUG_MSG,PORT0,"\n\n\r> Client Req set");
 
                 /*clear the variables since the request is handled */
                 gu8PDContract = false;
