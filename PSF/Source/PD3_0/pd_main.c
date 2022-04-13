@@ -41,8 +41,15 @@ UINT8 MchpPSF_Init (void)
 {
     UINT8 u8InitStatus = TRUE;
 
+    /* Disbale external interrupt until PSF initialization- It was enabled by 
+     * default by Harmony and PSF init will enable when it is required*/
+    //EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA14);
+    
 	/*Initialize PSF Stack and Structure version*/
     IntGlobals_StackStructVersion ();
+    
+    PSF_APP_SPI_Drv_Initialize();
+     
     
     /* Load configurations */
     MCHP_PSF_HOOK_BOOT_TIME_CONFIG(&gasCfgStatusData);

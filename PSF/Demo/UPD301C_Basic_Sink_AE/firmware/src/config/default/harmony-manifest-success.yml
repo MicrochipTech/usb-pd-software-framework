@@ -4,19 +4,16 @@
 
 
 project: UPD301C_Basic_Sink_AE
-creation_date: 2021-04-13T20:37:36.696+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
+creation_date: 2022-03-16T16:28:48.084+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
 operating_system: Windows 10
 mhc_mode: IDE            # [IDE|Standalone|Headless]
-mplabx_version: v5.30        # if MPLAB X plugin only
-plugin_version: v3.6.2        # if MPLAB X plugin only
+mhc_version: v3.8.3
+mplabx_version: v5.45        # if MPLAB X plugin only
+plugin_version: v3.6.4        # if MPLAB X plugin only
+compiler: XC32 (2.50)
 
 modules:
-    - {name: "bsp", version: "v3.8.2"}
-    - {name: "CMSIS-FreeRTOS", version: "v10.3.1"}
-    - {name: "contentmanager", version: "v1.6.0"}
-    - {name: "core", version: "v3.8.1"}
-    - {name: "csp", version: "v3.5.2"}
-    - {name: "dev_packs", version: "v3.5.0"}
-    - {name: "quick_docs", version: "v1.1.0"}
-    - {name: "usb", version: "v3.7.0"}
+    - {name: "csp", version: "v3.11.0"}
+    - {name: "core", version: "v3.10.0"}
+    - {name: "dev_packs", version: "v3.11.1"}
 

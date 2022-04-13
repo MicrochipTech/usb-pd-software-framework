@@ -6,6 +6,23 @@
                    projectFiles="true">
       <logicalFolder name="f1" displayName="config" projectFiles="true">
         <logicalFolder name="f1" displayName="default" projectFiles="true">
+          <logicalFolder name="f2" displayName="driver" projectFiles="true">
+            <logicalFolder name="f2" displayName="spi" projectFiles="true">
+              <itemPath>../src/config/default/driver/spi/drv_spi.h</itemPath>
+              <itemPath>../src/config/default/driver/spi/drv_spi_definitions.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f1" displayName="usart" projectFiles="true">
+              <itemPath>../src/config/default/driver/usart/drv_usart.h</itemPath>
+              <itemPath>../src/config/default/driver/usart/drv_usart_definitions.h</itemPath>
+            </logicalFolder>
+            <itemPath>../src/config/default/driver/driver.h</itemPath>
+            <itemPath>../src/config/default/driver/driver_common.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f4" displayName="osal" projectFiles="true">
+            <itemPath>../src/config/default/osal/osal.h</itemPath>
+            <itemPath>../src/config/default/osal/osal_definitions.h</itemPath>
+            <itemPath>../src/config/default/osal/osal_impl_basic.h</itemPath>
+          </logicalFolder>
           <logicalFolder name="f1" displayName="peripheral" projectFiles="true">
             <logicalFolder name="f5" displayName="clock" projectFiles="true">
               <itemPath>../src/config/default/peripheral/clock/plib_clock.h</itemPath>
@@ -26,13 +43,13 @@
               <itemPath>../src/config/default/peripheral/port/plib_port.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="sercom" projectFiles="true">
-              <logicalFolder name="f2" displayName="spim" projectFiles="true">
-                <itemPath>../src/config/default/peripheral/sercom/spim/plib_sercom0_spi.h</itemPath>
-                <itemPath>../src/config/default/peripheral/sercom/spim/plib_sercom_spi_common.h</itemPath>
+              <logicalFolder name="f2" displayName="spi_master" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/sercom/spi_master/plib_sercom0_spi_master.h</itemPath>
+                <itemPath>../src/config/default/peripheral/sercom/spi_master/plib_sercom_spi_master_common.h</itemPath>
               </logicalFolder>
               <logicalFolder name="f1" displayName="usart" projectFiles="true">
-                <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h</itemPath>
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom_usart_common.h</itemPath>
+                <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom1_usart.h</itemPath>
               </logicalFolder>
             </logicalFolder>
             <logicalFolder name="f8" displayName="tc" projectFiles="true">
@@ -40,9 +57,30 @@
               <itemPath>../src/config/default/peripheral/tc/plib_tc0.h</itemPath>
             </logicalFolder>
           </logicalFolder>
+          <logicalFolder name="f3" displayName="system" projectFiles="true">
+            <logicalFolder name="f5" displayName="debug" projectFiles="true">
+              <itemPath>../src/config/default/system/debug/sys_debug.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f1" displayName="int" projectFiles="true">
+              <itemPath>../src/config/default/system/int/sys_int.h</itemPath>
+              <itemPath>../src/config/default/system/int/sys_int_mapping.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f2" displayName="ports" projectFiles="true">
+              <itemPath>../src/config/default/system/ports/sys_ports.h</itemPath>
+              <itemPath>../src/config/default/system/ports/sys_ports_mapping.h</itemPath>
+            </logicalFolder>
+            <itemPath>../src/config/default/system/system.h</itemPath>
+            <itemPath>../src/config/default/system/system_common.h</itemPath>
+            <itemPath>../src/config/default/system/system_module.h</itemPath>
+          </logicalFolder>
           <itemPath>../src/config/default/device_cache.h</itemPath>
           <itemPath>../src/config/default/toolchain_specifics.h</itemPath>
           <itemPath>../src/config/default/definitions.h</itemPath>
+          <itemPath>../src/config/default/interrupts.h</itemPath>
+          <itemPath>../src/config/default/device_vectors.h</itemPath>
+          <itemPath>../src/config/default/device.h</itemPath>
+          <itemPath>../src/config/default/user.h</itemPath>
+          <itemPath>../src/config/default/configuration.h</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="packs" projectFiles="true">
@@ -66,33 +104,58 @@
             <itemPath>../src/packs/ATSAMD20E16_DFP/component/tc.h</itemPath>
             <itemPath>../src/packs/ATSAMD20E16_DFP/component/wdt.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f2" displayName="pio" projectFiles="true">
+          <logicalFolder name="f2" displayName="instance" projectFiles="true">
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/ac.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/adc.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/dac.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/dsu.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/eic.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/evsys.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/gclk.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/nvmctrl.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/pac0.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/pac1.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/pac2.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/pm.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/port.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/ptc.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/rtc.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/sercom0.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/sercom1.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/sercom2.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/sercom3.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/sercom4.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/sercom5.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/sysctrl.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/tc0.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/tc1.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/tc2.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/tc3.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/tc4.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/tc5.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/tc6.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/tc7.h</itemPath>
+            <itemPath>../src/packs/ATSAMD20E16_DFP/instance/wdt.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f3" displayName="pio" projectFiles="true">
             <itemPath>../src/packs/ATSAMD20E16_DFP/pio/samd20e16.h</itemPath>
           </logicalFolder>
-          <itemPath>../src/packs/ATSAMD20E16_DFP/device.h</itemPath>
-          <itemPath>../src/packs/ATSAMD20E16_DFP/atsamd20e16.h</itemPath>
+          <itemPath>../src/packs/ATSAMD20E16_DFP/samd20e16.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f2" displayName="CMSIS" projectFiles="true">
           <logicalFolder name="f1" displayName="CMSIS" projectFiles="true">
             <logicalFolder name="f1" displayName="Core" projectFiles="true">
               <logicalFolder name="f1" displayName="Include" projectFiles="true">
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_version.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_iccarm.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_gcc.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armcc.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_armclang_ltm.h</itemPath>
-                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/tz_context.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/core_cm0plus.h</itemPath>
                 <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/mpu_armv7.h</itemPath>
-                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cmsis_version.h</itemPath>
-              </logicalFolder>
-            </logicalFolder>
-            <logicalFolder name="f2" displayName="DSP" projectFiles="true">
-              <logicalFolder name="f1" displayName="Include" projectFiles="true">
-                <itemPath>../src/packs/CMSIS/CMSIS/DSP/Include/arm_common_tables.h</itemPath>
-                <itemPath>../src/packs/CMSIS/CMSIS/DSP/Include/arm_const_structs.h</itemPath>
-                <itemPath>../src/packs/CMSIS/CMSIS/DSP/Include/arm_math.h</itemPath>
+                <itemPath>../src/packs/CMSIS/CMSIS/Core/Include/cachel1_armv7.h</itemPath>
               </logicalFolder>
             </logicalFolder>
           </logicalFolder>
@@ -139,12 +202,27 @@
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
+      <logicalFolder name="f1" displayName="config" projectFiles="true">
+        <logicalFolder name="f1" displayName="default" projectFiles="true">
+          <itemPath>../src/config/default/ATSAMD20E16.ld</itemPath>
+        </logicalFolder>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="f1" displayName="config" projectFiles="true">
         <logicalFolder name="f1" displayName="default" projectFiles="true">
+          <logicalFolder name="f3" displayName="driver" projectFiles="true">
+            <logicalFolder name="f2" displayName="spi" projectFiles="true">
+              <itemPath>../src/config/default/driver/spi/src/drv_spi.c</itemPath>
+              <itemPath>../src/config/default/driver/spi/src/drv_spi_local.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f1" displayName="usart" projectFiles="true">
+              <itemPath>../src/config/default/driver/usart/src/drv_usart.c</itemPath>
+              <itemPath>../src/config/default/driver/usart/src/drv_usart_local.h</itemPath>
+            </logicalFolder>
+          </logicalFolder>
           <logicalFolder name="f1" displayName="peripheral" projectFiles="true">
             <logicalFolder name="f5" displayName="clock" projectFiles="true">
               <itemPath>../src/config/default/peripheral/clock/plib_clock.c</itemPath>
@@ -165,8 +243,8 @@
               <itemPath>../src/config/default/peripheral/port/plib_port.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="sercom" projectFiles="true">
-              <logicalFolder name="f2" displayName="spim" projectFiles="true">
-                <itemPath>../src/config/default/peripheral/sercom/spim/plib_sercom0_spi.c</itemPath>
+              <logicalFolder name="f2" displayName="spi_master" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/sercom/spi_master/plib_sercom0_spi_master.c</itemPath>
               </logicalFolder>
               <logicalFolder name="f1" displayName="usart" projectFiles="true">
                 <itemPath>../src/config/default/peripheral/sercom/usart/plib_sercom1_usart.c</itemPath>
@@ -179,11 +257,17 @@
           <logicalFolder name="f2" displayName="stdio" projectFiles="true">
             <itemPath>../src/config/default/stdio/xc32_monitor.c</itemPath>
           </logicalFolder>
+          <logicalFolder name="f4" displayName="system" projectFiles="true">
+            <logicalFolder name="f1" displayName="int" projectFiles="true">
+              <itemPath>../src/config/default/system/int/src/sys_int.c</itemPath>
+            </logicalFolder>
+          </logicalFolder>
           <itemPath>../src/config/default/initialization.c</itemPath>
           <itemPath>../src/config/default/interrupts.c</itemPath>
           <itemPath>../src/config/default/exceptions.c</itemPath>
           <itemPath>../src/config/default/startup_xc32.c</itemPath>
           <itemPath>../src/config/default/libc_syscalls.c</itemPath>
+          <itemPath>../src/config/default/tasks.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="PowerDelivery"
@@ -227,7 +311,25 @@
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
+      <logicalFolder name="f1" displayName="default.mhc" projectFiles="true">
+        <itemPath>../src/config/default/default.mhc/cmsis.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/core.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/dfp.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/drv_spi.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/drv_usart.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/eic.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/evsys.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/GraphSettings.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/HarmonyCore.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/nvmctrl.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/project.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/sercom0.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/sercom1.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/settings.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/tc0.yml</itemPath>
+      </logicalFolder>
       <itemPath>Makefile</itemPath>
+      <itemPath>../src/config/default/harmony-manifest-success.yml</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -241,15 +343,17 @@
         <targetDevice>ATSAMD20E16</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>AtmelIceTool</platformTool>
+        <platformTool>nEdbgTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>2.30</languageToolchainVersion>
+        <languageToolchainVersion>2.50</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
-        <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
+        <pack name="SAMD20_DFP" vendor="Microchip" version="3.3.56"/>
+        <pack name="CMSIS" vendor="ARM" version="5.4.0"/>
       </packs>
+      <ScriptingSettings>
+      </ScriptingSettings>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -267,6 +371,7 @@
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
+        <makeUseCleanTarget>false</makeUseCleanTarget>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
@@ -276,13 +381,19 @@
       </makeCustomizationType>
       <AtmelIceTool>
         <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="arm.use_vtor" value="false"/>
+        <property key="arm.vtor_adr" value="exception_table"/>
         <property key="communication.activationmode" value="nohv"/>
         <property key="communication.interface" value="swd"/>
         <property key="communication.speed" value="4.000"/>
         <property key="debugoptions.useswbreakpoints" value="true"/>
         <property key="firmware.path"
                   value="Press to browse for a specific firmware version"/>
+        <property key="firmware.toolpack"
+                  value="Press to select which tool pack to use"/>
         <property key="firmware.update.action" value="firmware.update.use.latest"/>
+        <property key="freeze.timers" value="false"/>
+        <property key="lastid" value=""/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
@@ -296,7 +407,10 @@
                   value="${memories.instruction.ram.ranges}"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0x400000-0x5fffff"/>
+        <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/PSF/PSF/Demo/UPD301B_Basic_Source_AE/firmware/UPD301B_Basic_Source_AE.X/debug/default/UPD301B_Basic_Source_AE_ptg"/>
         <property key="programoptions.eraseb4program" value="false"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"
@@ -307,6 +421,13 @@
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveuserid" value="false"/>
         <property key="programoptions.programuserotp" value="false"/>
+        <property key="script.log_level" value="0"/>
+        <property key="script.reset_delay" value="0"/>
+        <property key="script.show_output" value="false"/>
+        <property key="toolpack.updateoptions"
+                  value="toolpack.updateoptions.uselatestoolpack"/>
+        <property key="toolpack.updateoptions.packversion"
+                  value="Press to select which tool pack to use"/>
         <property key="voltagevalue" value=""/>
       </AtmelIceTool>
       <C32>
@@ -318,7 +439,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/config/default;../src/packs/ATSAMD20E16_DFP;../src/packs/CMSIS/CMSIS/Core/Include;../src/packs/CMSIS/;../src/arm"/>
+                  value="../src;../src/config/default;../src/packs/ATSAMD20E16_DFP;../src/packs/CMSIS/;../src/packs/CMSIS/CMSIS/Core/Include"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -397,7 +518,7 @@
         <property key="report-memory-usage" value="false"/>
         <property key="serial-length" value=""/>
         <property key="serial-origin" value=""/>
-        <property key="stack-size" value=""/>
+        <property key="stack-size" value="4096"/>
         <property key="symbol-stripping" value=""/>
         <property key="trace-symbols" value=""/>
         <property key="warn-section-align" value="false"/>
@@ -413,7 +534,8 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exceptions" value="true"/>
         <property key="exclude-floating-point" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories"
+                  value="../src;../src/config/default;../src/packs/ATSAMD20E16_DFP;../src/packs/CMSIS/;../src/packs/CMSIS/CMSIS/Core/Include"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -439,6 +561,7 @@
         <property key="mdtcm" value=""/>
         <property key="mitcm" value=""/>
         <property key="mstacktcm" value="false"/>
+        <property key="omit-pack-options" value="1"/>
         <property key="relaxed-math" value="false"/>
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
@@ -930,6 +1053,57 @@
                   value=""/>
         <property key="warningmessagebreakoptions.warningmessages" value="holdstate"/>
       </Simulator>
+      <Tool>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="arm.use_vtor" value="false"/>
+        <property key="arm.vtor_adr" value="exception_table"/>
+        <property key="communication.activationmode" value="nohv"/>
+        <property key="communication.interface" value="swd"/>
+        <property key="communication.speed" value="4.000"/>
+        <property key="debugoptions.useswbreakpoints" value="true"/>
+        <property key="firmware.path"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="firmware.toolpack"
+                  value="Press to select which tool pack to use"/>
+        <property key="firmware.update.action" value="firmware.update.use.latest"/>
+        <property key="freeze.timers" value="false"/>
+        <property key="lastid" value=""/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.configurationmemory2" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.exclude.configurationmemory" value="true"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.instruction.ram.ranges"
+                  value="${memories.instruction.ram.ranges}"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.ranges" value="0x400000-0x5fffff"/>
+        <property key="memories.rww" value="true"/>
+        <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/PSF/PSF/Demo/UPD301B_Basic_Source_AE/firmware/UPD301B_Basic_Source_AE.X/debug/default/UPD301B_Basic_Source_AE_ptg"/>
+        <property key="programoptions.eraseb4program" value="false"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preservedataflash.ranges"
+                  value="${memories.dataflash.default}"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveeeprom.ranges" value=""/>
+        <property key="programoptions.preserveprogram.ranges" value=""/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
+        <property key="script.log_level" value="0"/>
+        <property key="script.reset_delay" value="0"/>
+        <property key="script.show_output" value="false"/>
+        <property key="toolpack.updateoptions"
+                  value="toolpack.updateoptions.uselatestoolpack"/>
+        <property key="toolpack.updateoptions.packversion"
+                  value="Press to select which tool pack to use"/>
+        <property key="voltagevalue" value=""/>
+      </Tool>
       <nEdbgTool>
         <property key="AutoSelectMemRanges" value="auto"/>
         <property key="communication.activationmode" value="nohv"/>

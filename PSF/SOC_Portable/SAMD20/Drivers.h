@@ -362,6 +362,10 @@ void PSF_APP_UART_Write_Int(UINT32, UINT8);
 
 void PSF_APP_UART_Write_String(char*);
 
+void PSF_APP_UART_Read_Char(char* );
+
+bool  PSF_APP_UART_Read_DataAvailable();
+
 #endif //CONFIG_HOOK_DEBUG_MSG
 
 

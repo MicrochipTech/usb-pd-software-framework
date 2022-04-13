@@ -16,7 +16,7 @@
     machines of all modules in the system
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright ©  [2020] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -56,12 +56,15 @@ int main ( void )
 {
     /* Initialize all modules */
     SYS_Initialize ( NULL );
-
-	/*PSF init called*/
+    
+    /*EIC will enable later as after UPD350 initialization*/
+    EIC_REGS->EIC_INTENCLR = 0x4000;
+    
 	(void)MchpPSF_Init();
-
+    
     while ( true )
     {
+
         /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
 		

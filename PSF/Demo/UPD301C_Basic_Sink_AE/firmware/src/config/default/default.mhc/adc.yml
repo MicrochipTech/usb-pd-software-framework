@@ -1,0 +1,171 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: adc}
+children:
+- type: Symbols
+  children:
+  - type: String
+    attributes: {id: ADC_CALLBACK_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_CallbackRegister}
+  - type: String
+    attributes: {id: ADC_CHANNEL_SELECT_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_ChannelSelect}
+  - type: String
+    attributes: {id: ADC_CH_PHASE_U}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_POSINPUT_AIN2}
+  - type: String
+    attributes: {id: ADC_CH_PHASE_V}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_POSINPUT_AIN5}
+  - type: String
+    attributes: {id: ADC_CH_POT}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_POSINPUT_AIN0}
+  - type: String
+    attributes: {id: ADC_CH_VDC_BUS}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_POSINPUT_AIN0}
+  - type: Combo
+    attributes: {id: ADC_CONV_TRIGGER}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: SW Trigger}
+  - type: KeyValueSet
+    attributes: {id: ADC_CTRLB_PRESCALER}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '3'}
+  - type: String
+    attributes: {id: ADC_GET_RESULT_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_ConversionResultGet}
+  - type: String
+    attributes: {id: ADC_GND}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_NEGINPUT_GND}
+  - type: KeyValueSet
+    attributes: {id: ADC_INPUTCTRL_GAIN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '5'}
+  - type: KeyValueSet
+    attributes: {id: ADC_INPUTCTRL_MUXPOS}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '4'}
+  - type: String
+    attributes: {id: ADC_INT_CLEAR_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_InterruptsClear}
+  - type: String
+    attributes: {id: ADC_INT_DISABLE_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_InterruptsDisable}
+  - type: String
+    attributes: {id: ADC_INT_ENABLE_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_InterruptsEnable}
+  - type: String
+    attributes: {id: ADC_IS_RESULT_READY_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_ConversionStatusGet}
+  - type: KeyValueSet
+    attributes: {id: ADC_REFCTRL_REFSEL}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '2'}
+  - type: Integer
+    attributes: {id: ADC_SAMPCTRL_SAMPLEN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '8'}
+  - type: Comment
+    attributes: {id: ADC_SAMPCTRL_SAMPLEN_TIME}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: text}
+        children:
+        - {type: Value, value: '**** Conversion Time is 8.0 uS ****'}
+  - type: String
+    attributes: {id: ADC_START_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_Enable}
+  - type: String
+    attributes: {id: ADC_START_CONV_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_ConversionStart}
+  - type: String
+    attributes: {id: ADC_STOP_API}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_Disable}
+  - type: String
+    attributes: {id: INTERRUPT_ADC_RESULT}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: adc, value: ADC_RESRDY_IRQn}
+- type: ElementPosition
+  attributes: {x: '190', y: '160', id: adc}

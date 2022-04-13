@@ -73,23 +73,29 @@ void PORT_Initialize(void)
 {
    /************************** GROUP 0 Initialization *************************/
    PORT_REGS->GROUP[0].PORT_DIR = 0xc00a00;
-   PORT_REGS->GROUP[0].PORT_OUT = 0xc04e01;
+   PORT_REGS->GROUP[0].PORT_OUT = 0xcc4e01;
    PORT_REGS->GROUP[0].PORT_PINCFG[0] = 0x6;
+   PORT_REGS->GROUP[0].PORT_PINCFG[1] = 0x0;
    PORT_REGS->GROUP[0].PORT_PINCFG[2] = 0x1;
    PORT_REGS->GROUP[0].PORT_PINCFG[4] = 0x1;
    PORT_REGS->GROUP[0].PORT_PINCFG[5] = 0x1;
    PORT_REGS->GROUP[0].PORT_PINCFG[8] = 0x3;
    PORT_REGS->GROUP[0].PORT_PINCFG[9] = 0x1;
+   PORT_REGS->GROUP[0].PORT_PINCFG[10] = 0x0;
    PORT_REGS->GROUP[0].PORT_PINCFG[11] = 0x1;
    PORT_REGS->GROUP[0].PORT_PINCFG[14] = 0x7;
+   PORT_REGS->GROUP[0].PORT_PINCFG[15] = 0x0;
    PORT_REGS->GROUP[0].PORT_PINCFG[18] = 0x1;
    PORT_REGS->GROUP[0].PORT_PINCFG[19] = 0x1;
+   PORT_REGS->GROUP[0].PORT_PINCFG[22] = 0x0;
+   PORT_REGS->GROUP[0].PORT_PINCFG[23] = 0x0;
 
    PORT_REGS->GROUP[0].PORT_PMUX[1] = 0x1;
    PORT_REGS->GROUP[0].PORT_PMUX[2] = 0x11;
    PORT_REGS->GROUP[0].PORT_PMUX[4] = 0x22;
    PORT_REGS->GROUP[0].PORT_PMUX[5] = 0x20;
    PORT_REGS->GROUP[0].PORT_PMUX[9] = 0x22;
+
 }
 
 // *****************************************************************************
@@ -245,7 +251,7 @@ void PORT_GroupToggle(PORT_GROUP group, uint32_t mask)
     void PORT_GroupInputEnable(PORT_GROUP group, uint32_t mask)
 
   Summary:
-    Confgiures the selected IO pins of a group as input.
+    Configures the selected IO pins of a group as input.
 
   Description:
     This function configures the selected IO pins of a group as input. The pins
@@ -266,7 +272,7 @@ void PORT_GroupInputEnable(PORT_GROUP group, uint32_t mask)
     void PORT_GroupOutputEnable(PORT_GROUP group, uint32_t mask)
 
   Summary:
-    Confgiures the selected IO pins of a group as output.
+    Configures the selected IO pins of a group as output.
 
   Description:
     This function configures the selected IO pins of a group as output. The pins
@@ -280,4 +286,61 @@ void PORT_GroupInputEnable(PORT_GROUP group, uint32_t mask)
 void PORT_GroupOutputEnable(PORT_GROUP group, uint32_t mask)
 {
    ((port_group_registers_t*)group)->PORT_DIRSET = mask;
+}
+
+// *****************************************************************************
+/* Function:
+    void PORT_PinPeripheralFunctionConfig(PORT_PIN pin, PERIPHERAL_FUNCTION function)
+
+  Summary:
+    Configures the peripheral function on the selected port pin
+
+  Description:
+    This function configures the selected peripheral function on the given port pin.
+
+  Remarks:
+    Refer plib_port.h file for more information.
+*/
+void PORT_PinPeripheralFunctionConfig(PORT_PIN pin, PERIPHERAL_FUNCTION function)
+{
+    uint32_t periph_func = (uint32_t) function;
+    PORT_GROUP group = GET_PORT_GROUP(pin);
+    uint32_t pin_num = ((uint32_t)pin) & 0x1FU;
+    uint32_t pinmux_val = (uint32_t)((port_group_registers_t*)group)->PORT_PMUX[(pin_num >> 1)];
+
+    /* For odd pins */
+    if (0U != (pin_num & 0x01U))
+    {
+        pinmux_val = (pinmux_val & ~0xF0U) | (periph_func << 4);
+    }
+    else
+    {
+        pinmux_val = (pinmux_val & ~0x0FU) | periph_func;
+    }
+    ((port_group_registers_t*)group)->PORT_PMUX[(pin_num >> 1)] = (uint8_t)pinmux_val;
+
+    /* Enable peripheral control of the pin */
+    ((port_group_registers_t*)group)->PORT_PINCFG[pin_num] |= (uint8_t)PORT_PINCFG_PMUXEN_Msk;
+}
+
+// *****************************************************************************
+/* Function:
+    void PORT_PinGPIOConfig(PORT_PIN pin)
+
+  Summary:
+    Configures the selected pin as GPIO
+
+  Description:
+    This function configures the given pin as GPIO.
+
+  Remarks:
+    Refer plib_port.h file for more information.
+*/
+void PORT_PinGPIOConfig(PORT_PIN pin)
+{
+    PORT_GROUP group = GET_PORT_GROUP(pin);
+    uint32_t pin_num = ((uint32_t)pin) & 0x1FU;
+
+    /* Disable peripheral control of the pin */
+    ((port_group_registers_t*)group)->PORT_PINCFG[pin_num] &= ((uint8_t)(~PORT_PINCFG_PMUXEN_Msk));
 }

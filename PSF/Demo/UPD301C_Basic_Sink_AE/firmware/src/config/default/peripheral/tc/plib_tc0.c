@@ -54,6 +54,7 @@
 */
 
 #include "plib_tc0.h"
+#include "interrupts.h"
 
 
 // *****************************************************************************
@@ -128,6 +129,15 @@ uint32_t TC0_TimerFrequencyGet( void )
     return (uint32_t)(46875UL);
 }
 
+void TC0_TimerCommandSet(TC_COMMAND command)
+{
+    TC0_REGS->COUNT8.TC_CTRLBSET = command << TC_CTRLBSET_CMD_Pos;
+    while((TC0_REGS->COUNT8.TC_STATUS & TC_STATUS_SYNCBUSY_Msk))
+    {
+        /* Wait for Write Synchronization */
+    }    
+}
+
 /* Get the current timer counter value */
 uint8_t TC0_Timer8bitCounterGet( void )
 {
@@ -191,7 +201,7 @@ void TC0_TimerCallbackRegister( TC_TIMER_CALLBACK callback, uintptr_t context )
 void TC0_TimerInterruptHandler( void )
 {
     TC_TIMER_STATUS status;
-    status = TC0_REGS->COUNT8.TC_INTFLAG;
+    status = (TC_TIMER_STATUS) (TC0_REGS->COUNT8.TC_INTFLAG);
     /* Clear interrupt flags */
     TC0_REGS->COUNT8.TC_INTFLAG = TC_INTFLAG_Msk;
     if(TC0_CallbackObject.callback != NULL)

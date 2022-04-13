@@ -242,6 +242,32 @@ void PSF_APP_UART_Write_String(char* pbyMessage)
     }
     UsartData.transferStatus = false;
     DRV_USART_WriteBufferAdd(UsartData.usartHandle, (void*)pbyMessage, strlen(pbyMessage), &UsartData.bufferHandle);
+    while(UsartData.transferStatus != true)
+    {
+    }
+}
+
+void PSF_APP_UART_Read_Char(char* pbyMessage)
+{
+    while(UsartData.transferStatus != true)
+    {
+    }
+    UsartData.transferStatus = false;
+    DRV_USART_ReadBufferAdd(UsartData.usartHandle, (void*)pbyMessage,1, &UsartData.bufferHandle);
+   
+}
+
+bool  PSF_APP_UART_Read_DataAvailable()
+{
+   
+    if(UsartData.transferStatus == TRUE)
+    {
+        return (TRUE);
+    }else
+    {
+        return (FALSE);
+    }
+    
 }
 static void Drv_USARTBufferEventHandler(
     DRV_USART_BUFFER_EVENT bufferEvent,
@@ -279,7 +305,8 @@ void PSF_APP_USART_Drv_Initialize( void )
 }
 
 #endif /* CONFIG_HOOK_DEBUG_MSG */
-static void Drv_SPIEventHandler (
+
+static void Drv_SPIEventHandler(
     DRV_SPI_TRANSFER_EVENT event,
     DRV_SPI_TRANSFER_HANDLE transferHandle, 
     uintptr_t context 
@@ -319,8 +346,7 @@ void PSF_APP_SPI_Drv_Initialize( void )
             DRV_SPI_TransferEventHandlerSet(SpiData.drvSPIHandle, Drv_SPIEventHandler, (uintptr_t)NULL);
 
         }
-    }
-              
+    }             
 }
 
 
