@@ -57,6 +57,9 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define APP_VOLTAGE_15000mV     15000
 #define APP_VOLTAGE_20000mV     20000
 
+/* USART module initialization*/
+/*SERCOM1_USART_Initialize is initialized as part of initialization.c */
+#define PSF_DEBUG_INIT()  PSF_APP_USART_Drv_Initialize();
 
 // *****************************************************************************
 // *****************************************************************************

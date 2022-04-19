@@ -86,7 +86,7 @@ typedef enum
     TC_CAPTURE_STATUS_ERROR = TC_INTFLAG_ERR_Msk,
 
     /* Capture status ready for channel 0 */
-    TC_CAPTURE_STAUTS_CAPTURE0_READY = TC_INTFLAG_MC0_Msk,
+    TC_CAPTURE_STATUS_CAPTURE0_READY = TC_INTFLAG_MC0_Msk,
 
     /* Capture status ready for channel 1 */
     TC_CAPTURE_STATUS_CAPTURE1_READY = TC_INTFLAG_MC1_Msk,

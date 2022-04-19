@@ -65,6 +65,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 /* Defines the type of DC DC Controller used */
 #define CONFIG_DCDC_CTRL        PWRCTRL_GPIO_DC_DC_MCP19119
 
+/* USART module initialization*/
+/*SERCOM1_USART_Initialize is initialized as part of initialization.c */
+#define PSF_DEBUG_INIT() PSF_APP_USART_Drv_Initialize();
+
 
 // *****************************************************************************
 // *****************************************************************************

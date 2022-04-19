@@ -60,13 +60,7 @@ int main ( void )
     EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA14);
     EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA15);
     
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-    PSF_APP_USART_Drv_Initialize();
-#endif
-    PSF_APP_SPI_Drv_Initialize();
-#if (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)    
-    PSF_APP_I2C_Drv_Initialize();
-#endif
+
 	/*PSF init called*/
 	(void)MchpPSF_Init();
 

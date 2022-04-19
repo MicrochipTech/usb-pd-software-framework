@@ -59,10 +59,7 @@ int main ( void )
     SYS_Initialize ( NULL );
     /*Disable pin 14 initially*/
     EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA14);
-#if (TRUE == CONFIG_HOOK_DEBUG_MSG)
-    PSF_APP_USART_Drv_Initialize();
-#endif
-    PSF_APP_SPI_Drv_Initialize();
+
 	/*PSF init called*/
 	(void)MchpPSF_Init();
 

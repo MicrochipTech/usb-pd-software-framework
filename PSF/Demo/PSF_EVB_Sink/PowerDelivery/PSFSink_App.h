@@ -50,6 +50,10 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define APP_DAC_MAX_STEP_COUNT  0x3FF
 #define APP_DAC_VREF            3300
 
+/* USART module initialization*/
+/*SERCOM1_USART_Initialize is initialized as part of initialization.c */
+#define PSF_DEBUG_INIT() PSF_APP_USART_Drv_Initialize();
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Functions

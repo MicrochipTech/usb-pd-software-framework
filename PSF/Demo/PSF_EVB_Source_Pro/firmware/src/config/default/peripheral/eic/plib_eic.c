@@ -102,7 +102,7 @@ void EIC_Initialize(void)
     EIC_REGS->EIC_WAKEUP = 0xc00c;
 
     /* External Interrupt enable*/
-    //EIC_REGS->EIC_INTENSET = 0xc00c;
+    EIC_REGS->EIC_INTENSET = 0xc00c;
 
     /* Callbacks for enabled interrupts */
     eicCallbackObject[0].eicPinNo = EIC_PIN_MAX;

@@ -39,16 +39,16 @@ HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 UINT8 MchpPSF_Init (void)
 {
+    
     UINT8 u8InitStatus = TRUE;
 
-    /* Disbale external interrupt until PSF initialization- It was enabled by 
-     * default by Harmony and PSF init will enable when it is required*/
-    //EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA14);
-    
 	/*Initialize PSF Stack and Structure version*/
     IntGlobals_StackStructVersion ();
     
-    PSF_APP_SPI_Drv_Initialize();
+   PSF_APP_SPI_Drv_Initialize();
+#if defined (CONFIG_DCDC_CTRL) && (CONFIG_DCDC_CTRL == PWRCTRL_I2C_DC_DC_MPQ4230)
+    PSF_APP_I2C_Drv_Initialize();
+#endif
      
     
     /* Load configurations */
