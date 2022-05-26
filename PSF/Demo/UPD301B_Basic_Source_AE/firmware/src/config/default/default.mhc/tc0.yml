@@ -142,4 +142,4 @@ children:
       - type: Dynamic
         attributes: {id: tc0, value: '8'}
 - type: ElementPosition
-  attributes: {x: '466', y: '210', id: tc0}
+  attributes: {x: '271', y: '64', id: tc0}

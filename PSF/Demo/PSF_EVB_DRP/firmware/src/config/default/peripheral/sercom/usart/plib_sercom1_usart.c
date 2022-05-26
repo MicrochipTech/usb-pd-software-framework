@@ -20,7 +20,7 @@
 *******************************************************************************/
 
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2022] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -58,8 +58,8 @@
 // *****************************************************************************
 
 
-/* SERCOM1 USART baud value for 3000000 Hz baud rate */
-#define SERCOM1_USART_INT_BAUD_VALUE            (0UL)
+/* SERCOM1 USART baud value for 115200 Hz baud rate */
+#define SERCOM1_USART_INT_BAUD_VALUE            (63019UL)
 
 static SERCOM_USART_OBJECT sercom1USARTObj;
 

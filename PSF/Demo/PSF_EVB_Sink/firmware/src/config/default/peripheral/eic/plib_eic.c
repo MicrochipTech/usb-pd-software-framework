@@ -22,7 +22,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2022] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -96,13 +96,13 @@ void EIC_Initialize(void)
                               EIC_CONFIG_SENSE4_NONE  |
                               EIC_CONFIG_SENSE5_NONE  |
                               EIC_CONFIG_SENSE6_LOW  |
-                              EIC_CONFIG_SENSE7_LOW ;
+                              EIC_CONFIG_SENSE7_NONE ;
 
     /* External Interrupt Asynchronous Mode enable */
-    EIC_REGS->EIC_WAKEUP = 0xc000;
+    EIC_REGS->EIC_WAKEUP = 0x4000;
 
     /* External Interrupt enable*/
-    EIC_REGS->EIC_INTENSET = 0xc000;
+    EIC_REGS->EIC_INTENSET = 0x4000;
 
     /* Callbacks for enabled interrupts */
     eicCallbackObject[0].eicPinNo = EIC_PIN_MAX;
@@ -120,7 +120,7 @@ void EIC_Initialize(void)
     eicCallbackObject[12].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[13].eicPinNo = EIC_PIN_MAX;
     eicCallbackObject[14].eicPinNo = EIC_PIN_14;
-    eicCallbackObject[15].eicPinNo = EIC_PIN_15;
+    eicCallbackObject[15].eicPinNo = EIC_PIN_MAX;
 
     /* Enable the EIC */
     EIC_REGS->EIC_CTRL |= EIC_CTRL_ENABLE_Msk;

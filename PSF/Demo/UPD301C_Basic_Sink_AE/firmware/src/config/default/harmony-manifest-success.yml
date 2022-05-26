@@ -4,16 +4,18 @@
 
 
 project: UPD301C_Basic_Sink_AE
-creation_date: 2022-03-16T16:28:48.084+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
+creation_date: 2022-05-23T15:18:01.804+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
 operating_system: Windows 10
-mhc_mode: IDE            # [IDE|Standalone|Headless]
-mhc_version: v3.8.3
-mplabx_version: v5.45        # if MPLAB X plugin only
-plugin_version: v3.6.4        # if MPLAB X plugin only
-compiler: XC32 (2.50)
+mhc_mode: Standalone            # [IDE|Standalone|Headless]
+mhc_version: v3.8.4
+mplabx_version: NA        # if MPLAB X plugin only
+plugin_version: NA        # if MPLAB X plugin only
+compiler: xc32
 
 modules:
     - {name: "csp", version: "v3.11.0"}
     - {name: "core", version: "v3.10.0"}
-    - {name: "dev_packs", version: "v3.11.1"}
+    - {name: "dev_packs", version: "v3.11.2"}
+    - {name: "usb_powerdelivery", version: "unknown"}
+    - {name: "usb-pd-software-framework", version: "unknown"}
 

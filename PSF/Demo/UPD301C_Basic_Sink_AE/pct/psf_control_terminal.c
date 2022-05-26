@@ -14,7 +14,7 @@
     This file is based on UART functionality which helps the user to configure various parameters on the stack.
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright Â© [2022] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -183,7 +183,7 @@ void PCTPrintVersion ()
 	UINT8 u8aDemoVersionString[] = "\n\r> demo version=";
 	UINT8 u8aPSFVersionString[] = "\n\r> PSF version=";
     
-	u32DemoVersion = DEMO_VERSION;
+	u32DemoVersion = (APP_REV_MAJOR << 2) | (APP_REV_MINOR);
 	u32FirmwareVersion = SYSTEM_FW_REV;
 
 	pu8PrintValue = HextoAscii (u32DemoVersion, sizeof(u32DemoVersion));

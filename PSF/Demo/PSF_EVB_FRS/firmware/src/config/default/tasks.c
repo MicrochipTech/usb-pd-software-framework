@@ -21,7 +21,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2022] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -78,7 +78,24 @@ void SYS_Tasks ( void )
     
 
     /* Maintain Middleware & Other Libraries */
+    static UINT8 isInitDone = SET_TO_ZERO;
     
+if(0 == isInitDone){    
+
+    /* Disabled UPD IRQ Pins Initially*/
+    EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA14);
+    EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA15);
+
+    /*PSF init called*/
+    (void)MchpPSF_Init();
+    isInitDone = SET_TO_ONE;
+}
+
+    /*PSF stack Run*/
+    MchpPSF_RUN();
+
+
+
 
 
 }

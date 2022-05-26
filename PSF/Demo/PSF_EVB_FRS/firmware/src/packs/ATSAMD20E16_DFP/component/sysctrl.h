@@ -1,7 +1,7 @@
 /**
  * \brief Component description for SYSCTRL
  *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
+ * Copyright (C) [2022] Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software and any derivatives
  * exclusively with Microchip products. It is your responsibility to comply with third party license
@@ -300,7 +300,6 @@
 #define   SYSCTRL_XOSC32K_STARTUP_CYCLE32768_Val _U_(0x5)                                             /**< (SYSCTRL_XOSC32K) 1000.092 ms  */
 #define   SYSCTRL_XOSC32K_STARTUP_CYCLE65536_Val _U_(0x6)                                             /**< (SYSCTRL_XOSC32K) 2000.092 ms  */
 #define   SYSCTRL_XOSC32K_STARTUP_CYCLE131072_Val _U_(0x7)                                             /**< (SYSCTRL_XOSC32K) 4000.092 ms  */
-
 #define SYSCTRL_XOSC32K_STARTUP_CYCLE1        (SYSCTRL_XOSC32K_STARTUP_CYCLE1_Val << SYSCTRL_XOSC32K_STARTUP_Pos) /**< (SYSCTRL_XOSC32K) 0.122 ms Position  */
 #define SYSCTRL_XOSC32K_STARTUP_CYCLE32       (SYSCTRL_XOSC32K_STARTUP_CYCLE32_Val << SYSCTRL_XOSC32K_STARTUP_Pos) /**< (SYSCTRL_XOSC32K) 1.068 ms Position  */
 #define SYSCTRL_XOSC32K_STARTUP_CYCLE2048     (SYSCTRL_XOSC32K_STARTUP_CYCLE2048_Val << SYSCTRL_XOSC32K_STARTUP_Pos) /**< (SYSCTRL_XOSC32K) 62.592 ms Position  */

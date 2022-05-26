@@ -776,24 +776,42 @@ children:
   - type: String
     attributes: {id: PIN_13_DIR}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: High Impedance}
   - type: String
     attributes: {id: PIN_13_FUNCTION_NAME}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: SPI_SS_0}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: SPI_SS_0}
   - type: String
     attributes: {id: PIN_13_FUNCTION_TYPE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: GPIO}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: GPIO}
   - type: String
     attributes: {id: PIN_13_INEN}
     children:
@@ -804,15 +822,29 @@ children:
   - type: String
     attributes: {id: PIN_13_LAT}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: High}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
   - type: String
     attributes: {id: PIN_13_MODE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Digital}
       - type: User
         attributes: {value: ''}
   - type: String
@@ -825,10 +857,16 @@ children:
   - type: String
     attributes: {id: PIN_13_PULLEN}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
   - type: String
     attributes: {id: PIN_14_DIR}
     children:
@@ -881,24 +919,42 @@ children:
   - type: String
     attributes: {id: PIN_15_DIR}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: In}
   - type: String
     attributes: {id: PIN_15_FUNCTION_NAME}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: SPI_IRQ_N0}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: UPD_IRQ_0}
   - type: String
     attributes: {id: PIN_15_FUNCTION_TYPE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: EIC_EXTINT14}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: EIC_EXTINT14}
   - type: String
     attributes: {id: PIN_15_INEN}
     children:
@@ -909,15 +965,29 @@ children:
   - type: String
     attributes: {id: PIN_15_LAT}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: High}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: High}
   - type: String
     attributes: {id: PIN_15_MODE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Digital}
       - type: User
         attributes: {value: ''}
   - type: String
@@ -930,31 +1000,55 @@ children:
   - type: String
     attributes: {id: PIN_15_PULLEN}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: 'True'}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'True'}
   - type: String
     attributes: {id: PIN_16_DIR}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Out}
   - type: String
     attributes: {id: PIN_16_FUNCTION_NAME}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: SNK_3A_IND}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: SNK_3A_IND}
   - type: String
     attributes: {id: PIN_16_FUNCTION_TYPE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: GPIO}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: GPIO}
   - type: String
     attributes: {id: PIN_16_INEN}
     children:
@@ -965,15 +1059,29 @@ children:
   - type: String
     attributes: {id: PIN_16_LAT}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Low}
   - type: String
     attributes: {id: PIN_16_MODE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Digital}
       - type: User
         attributes: {value: ''}
   - type: String
@@ -986,10 +1094,16 @@ children:
   - type: String
     attributes: {id: PIN_16_PULLEN}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
   - type: String
     attributes: {id: PIN_19_DIR}
     children:
@@ -1049,22 +1163,46 @@ children:
   - type: String
     attributes: {id: PIN_1_DIR}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
       - type: User
         attributes: {value: ''}
   - type: String
     attributes: {id: PIN_1_FUNCTION_NAME}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
       - type: User
         attributes: {value: RESET_N_COM}
   - type: String
     attributes: {id: PIN_1_FUNCTION_TYPE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
       - type: User
         attributes: {value: GPIO}
   - type: String
@@ -1077,15 +1215,31 @@ children:
   - type: String
     attributes: {id: PIN_1_LAT}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
       - type: User
         attributes: {value: High}
   - type: String
     attributes: {id: PIN_1_MODE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
       - type: User
         attributes: {value: ''}
   - type: String
@@ -1098,8 +1252,16 @@ children:
   - type: String
     attributes: {id: PIN_1_PULLEN}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
       - type: User
         attributes: {value: 'True'}
   - type: String
@@ -1210,24 +1372,42 @@ children:
   - type: String
     attributes: {id: PIN_22_DIR}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: Out}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Out}
   - type: String
     attributes: {id: PIN_22_FUNCTION_NAME}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: CAP_MISMATCH}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: SNK_CAP_MISMATCH}
   - type: String
     attributes: {id: PIN_22_FUNCTION_TYPE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: GPIO}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: GPIO}
   - type: String
     attributes: {id: PIN_22_INEN}
     children:
@@ -1238,15 +1418,29 @@ children:
   - type: String
     attributes: {id: PIN_22_LAT}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: High}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Low}
   - type: String
     attributes: {id: PIN_22_MODE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Digital}
       - type: User
         attributes: {value: ''}
   - type: String
@@ -1259,10 +1453,16 @@ children:
   - type: String
     attributes: {id: PIN_22_PULLEN}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
   - type: String
     attributes: {id: PIN_27_PERIPHERAL_FUNCTION}
     children:
@@ -1273,24 +1473,42 @@ children:
   - type: String
     attributes: {id: PIN_2_DIR}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Out}
   - type: String
     attributes: {id: PIN_2_FUNCTION_NAME}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: SNK_1_5A_IND}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: SNK_1_5A_IND}
   - type: String
     attributes: {id: PIN_2_FUNCTION_TYPE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: GPIO}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: GPIO}
   - type: String
     attributes: {id: PIN_2_INEN}
     children:
@@ -1301,15 +1519,29 @@ children:
   - type: String
     attributes: {id: PIN_2_LAT}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Low}
   - type: String
     attributes: {id: PIN_2_MODE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: Digital}
       - type: User
         attributes: {value: ''}
   - type: String
@@ -1322,10 +1554,16 @@ children:
   - type: String
     attributes: {id: PIN_2_PULLEN}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
     - type: Values
       children:
-      - type: User
-        attributes: {value: ''}
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: ''}
   - type: String
     attributes: {id: PIN_3_FUNCTION_NAME}
     children:
@@ -1465,14 +1703,14 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '0xc00a00'}
+        attributes: {id: core, value: '0xc08a02'}
   - type: String
     attributes: {id: PORT_GROUP_0_OUT}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '0xcc4e01'}
+        attributes: {id: core, value: '0x4c4a01'}
   - type: String
     attributes: {id: PORT_GROUP_0_PAD_0}
     children:

@@ -2,6 +2,15 @@ format_version: v1.0
 type: GeneratorComponent
 attributes: {id: drv_usart}
 children:
+- type: Symbols
+  children:
+  - type: Combo
+    attributes: {id: DRV_USART_COMMON_MODE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drv_usart, value: Asynchronous}
 - type: Instances
   children:
   - type: InstanceComponent
@@ -32,4 +41,4 @@ children:
             children:
             - {type: Value, value: SERCOM1_UART}
 - type: ElementPosition
-  attributes: {x: '350', y: '180', id: drv_usart}
+  attributes: {x: '186', y: '317', id: drv_usart}

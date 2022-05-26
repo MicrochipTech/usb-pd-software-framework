@@ -18,6 +18,15 @@
             <itemPath>../src/config/default/driver/driver.h</itemPath>
             <itemPath>../src/config/default/driver/driver_common.h</itemPath>
           </logicalFolder>
+          <logicalFolder name="f5" displayName="library" projectFiles="true">
+            <logicalFolder name="f1" displayName="usb_pd" projectFiles="true">
+              <logicalFolder name="f1" displayName="PowerDelivery" projectFiles="true">
+                <itemPath>../src/config/default/library/usb_pd/PowerDelivery/PSF_Config.h</itemPath>
+                <itemPath>../src/config/default/library/usb_pd/PowerDelivery/PSF_BootCfg.h</itemPath>
+                <itemPath>../src/config/default/library/usb_pd/PowerDelivery/PSF_App.h</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+          </logicalFolder>
           <logicalFolder name="f4" displayName="osal" projectFiles="true">
             <itemPath>../src/config/default/osal/osal.h</itemPath>
             <itemPath>../src/config/default/osal/osal_definitions.h</itemPath>
@@ -164,9 +173,6 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFSourceLite_App.h</itemPath>
-        <itemPath>../../PowerDelivery/PSFSourceLite_BootCfg.h</itemPath>
-        <itemPath>../../PowerDelivery/PSF_Config.h</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -178,7 +184,6 @@
       </logicalFolder>
       <logicalFolder name="Source" displayName="Source" projectFiles="true">
         <logicalFolder name="include" displayName="include" projectFiles="true">
-          <itemPath>../../../../Source/include/ProjectVersion.h</itemPath>
           <itemPath>../../../../Source/include/debug.h</itemPath>
           <itemPath>../../../../Source/include/generic_defs.h</itemPath>
           <itemPath>../../../../Source/include/int_globals.h</itemPath>
@@ -187,12 +192,19 @@
           <itemPath>../../../../Source/include/policy_engine_fwup.h</itemPath>
           <itemPath>../../../../Source/include/policy_manager.h</itemPath>
           <itemPath>../../../../Source/include/portpower_control.h</itemPath>
+          <itemPath>../../../../Source/include/ProjectVersion.h</itemPath>
           <itemPath>../../../../Source/include/protocol_layer.h</itemPath>
           <itemPath>../../../../Source/include/psf_stdinc.h</itemPath>
+          <itemPath>../../../../Source/include/timer_defs.h</itemPath>
           <itemPath>../../../../Source/include/typeC_control.h</itemPath>
           <itemPath>../../../../Source/include/upd_hw.h</itemPath>
           <itemPath>../../../../Source/include/upd_interrupts.h</itemPath>
-          <itemPath>../../../../Source/include/timer_defs.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="PB" displayName="PB" projectFiles="true">
+          <itemPath>../../../../Source/PB/pb_mngr.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="PT" displayName="PT" projectFiles="true">
+          <itemPath>../../../../Source/PT/pt_mngr.h</itemPath>
         </logicalFolder>
         <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
           <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.h</itemPath>
@@ -221,6 +233,14 @@
             <logicalFolder name="f1" displayName="usart" projectFiles="true">
               <itemPath>../src/config/default/driver/usart/src/drv_usart.c</itemPath>
               <itemPath>../src/config/default/driver/usart/src/drv_usart_local.h</itemPath>
+            </logicalFolder>
+          </logicalFolder>
+          <logicalFolder name="f5" displayName="library" projectFiles="true">
+            <logicalFolder name="f1" displayName="usb_pd" projectFiles="true">
+              <logicalFolder name="f1" displayName="PowerDelivery" projectFiles="true">
+                <itemPath>../src/config/default/library/usb_pd/PowerDelivery/PSF_BootCfg.c</itemPath>
+                <itemPath>../src/config/default/library/usb_pd/PowerDelivery/PSF_App.c</itemPath>
+              </logicalFolder>
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="f1" displayName="peripheral" projectFiles="true">
@@ -273,8 +293,6 @@
       <logicalFolder name="PowerDelivery"
                      displayName="PowerDelivery"
                      projectFiles="true">
-        <itemPath>../../PowerDelivery/PSFSourceLite_App.c</itemPath>
-        <itemPath>../../PowerDelivery/PSFSourceLite_BootCfg.c</itemPath>
       </logicalFolder>
       <logicalFolder name="SOC_Portable"
                      displayName="SOC_Portable"
@@ -284,6 +302,12 @@
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="Source" displayName="Source" projectFiles="true">
+        <logicalFolder name="include" displayName="include" projectFiles="true">
+        </logicalFolder>
+        <logicalFolder name="PB" displayName="PB" projectFiles="true">
+          <itemPath>../../../../Source/PB/pb_helper.c</itemPath>
+          <itemPath>../../../../Source/PB/pb_mngr.c</itemPath>
+        </logicalFolder>
         <logicalFolder name="PD3_0" displayName="PD3_0" projectFiles="true">
           <itemPath>../../../../Source/PD3_0/int_globals.c</itemPath>
           <itemPath>../../../../Source/PD3_0/pd_main.c</itemPath>
@@ -292,15 +316,18 @@
           <itemPath>../../../../Source/PD3_0/policy_engine_fwup.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_engine_snk.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_engine_src.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_engine_swap.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_engine_vdm.c</itemPath>
           <itemPath>../../../../Source/PD3_0/policy_manager.c</itemPath>
+          <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
           <itemPath>../../../../Source/PD3_0/portpower_control.c</itemPath>
           <itemPath>../../../../Source/PD3_0/protocol_layer.c</itemPath>
           <itemPath>../../../../Source/PD3_0/typeC_control.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_hw.c</itemPath>
           <itemPath>../../../../Source/PD3_0/upd_interrupts.c</itemPath>
-          <itemPath>../../../../Source/PD3_0/policy_manager_sm.c</itemPath>
-          <itemPath>../../../../Source/PD3_0/policy_engine_swap.c</itemPath>
-          <itemPath>../../../../Source/PD3_0/policy_engine_vdm.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="PT" displayName="PT" projectFiles="true">
+          <itemPath>../../../../Source/PT/pt_mngr.c</itemPath>
         </logicalFolder>
         <logicalFolder name="UPD_PIO" displayName="UPD_PIO" projectFiles="true">
           <itemPath>../../../../Source/UPD_PIO/upd350_pio_drivers.c</itemPath>
@@ -322,6 +349,7 @@
         <itemPath>../src/config/default/default.mhc/GraphSettings.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/HarmonyCore.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/nvmctrl.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/PD_CONFIGURATOR.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/project.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/sercom0.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/sercom1.yml</itemPath>
@@ -330,6 +358,7 @@
       </logicalFolder>
       <itemPath>Makefile</itemPath>
       <itemPath>../src/config/default/harmony-manifest-success.yml</itemPath>
+      <itemPath>PSF_EVB_Source_Lite.mc3</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -343,7 +372,7 @@
         <targetDevice>ATSAMD20E16</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>AtmelIceTool</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.30</languageToolchainVersion>
         <platform>3</platform>
@@ -352,6 +381,8 @@
         <pack name="CMSIS" vendor="ARM" version="5.0.1"/>
         <pack name="SAMD20_DFP" vendor="Microchip" version="3.0.19"/>
       </packs>
+      <ScriptingSettings>
+      </ScriptingSettings>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -369,6 +400,7 @@
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
+        <makeUseCleanTarget>false</makeUseCleanTarget>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
@@ -384,7 +416,10 @@
         <property key="debugoptions.useswbreakpoints" value="true"/>
         <property key="firmware.path"
                   value="Press to browse for a specific firmware version"/>
+        <property key="firmware.toolpack"
+                  value="Press to select which tool pack to use"/>
         <property key="firmware.update.action" value="firmware.update.use.latest"/>
+        <property key="freeze.timers" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
@@ -398,6 +433,7 @@
                   value="${memories.instruction.ram.ranges}"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0x400000-0x5fffff"/>
+        <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programoptions.eraseb4program" value="false"/>
         <property key="programoptions.preservedataflash" value="false"/>
@@ -409,6 +445,10 @@
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveuserid" value="false"/>
         <property key="programoptions.programuserotp" value="false"/>
+        <property key="toolpack.updateoptions"
+                  value="toolpack.updateoptions.uselatestoolpack"/>
+        <property key="toolpack.updateoptions.packversion"
+                  value="Press to select which tool pack to use"/>
         <property key="voltagevalue" value=""/>
       </AtmelIceTool>
       <C32>
@@ -420,7 +460,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/config/default;../src/packs/ATSAMD20E16_DFP;../src/packs/CMSIS/;../src/packs/CMSIS/CMSIS/Core/Include"/>
+                  value="../src;../src/config/default;../src/packs/ATSAMD20E16_DFP;../src/packs/CMSIS/CMSIS/Core/Include;../src/packs/CMSIS/"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -432,6 +472,7 @@
         <property key="preprocessor-macros" value=""/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
+        <property key="tentative-definitions" value=""/>
         <property key="toplevel-reordering" value=""/>
         <property key="unaligned-access" value=""/>
         <property key="use-cci" value="false"/>
@@ -463,6 +504,7 @@
       </C32-AS>
       <C32-CO>
         <property key="coverage-enable" value=""/>
+        <property key="stack-guidance" value="false"/>
       </C32-CO>
       <C32-LD>
         <property key="additional-options-use-response-files" value="false"/>
@@ -516,7 +558,7 @@
         <property key="exceptions" value="true"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/config/default;../src/packs/ATSAMD20E16_DFP;../src/packs/CMSIS/;../src/packs/CMSIS/CMSIS/Core/Include"/>
+                  value="../src;../src/config/default;../src/packs/ATSAMD20E16_DFP;../src/packs/CMSIS/CMSIS/Core/Include;../src/packs/CMSIS/"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -536,14 +578,16 @@
       </C32CPP>
       <C32Global>
         <property key="common-include-directories"
-                  value="..\..\..\..\Source\include;..\..\PowerDelivery;..\..\..\..\Source\UPD_PIO;..\..\..\..\SOC_Portable\SAMD20"/>
+                  value="../src/config/default/library/usb_pd/PowerDelivery;..\..\..\..\SOC_Portable\SAMD20;..\..\..\..\Source\include;..\..\..\..\Source\PB;..\..\..\..\Source\PT;..\..\..\..\Source\UPD_PIO;../../PowerDelivery"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>
         <property key="mitcm" value=""/>
         <property key="mstacktcm" value="false"/>
+        <property key="omit-pack-options" value="1"/>
         <property key="relaxed-math" value="false"/>
         <property key="save-temps" value="false"/>
+        <property key="stack-smashing" value=""/>
         <property key="wpo-lto" value="false"/>
         <appendMe value="-Wno-packed-bitfield-compat"/>
       </C32Global>
@@ -1033,6 +1077,51 @@
                   value=""/>
         <property key="warningmessagebreakoptions.warningmessages" value="holdstate"/>
       </Simulator>
+      <Tool>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="communication.activationmode" value="nohv"/>
+        <property key="communication.interface" value="swd"/>
+        <property key="communication.speed" value="4.000"/>
+        <property key="debugoptions.debug-startup" value="Use system settings"/>
+        <property key="debugoptions.reset-behaviour" value="Use system settings"/>
+        <property key="debugoptions.useswbreakpoints" value="true"/>
+        <property key="firmware.path"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="firmware.toolpack"
+                  value="Press to select which tool pack to use"/>
+        <property key="firmware.update.action" value="firmware.update.use.latest"/>
+        <property key="freeze.timers" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.configurationmemory2" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.exclude.configurationmemory" value="true"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.instruction.ram.ranges"
+                  value="${memories.instruction.ram.ranges}"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.ranges" value="0x400000-0x5fffff"/>
+        <property key="memories.rww" value="true"/>
+        <property key="poweroptions.powerenable" value="false"/>
+        <property key="programoptions.eraseb4program" value="false"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preservedataflash.ranges"
+                  value="${memories.dataflash.default}"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveeeprom.ranges" value=""/>
+        <property key="programoptions.preserveprogram.ranges" value=""/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
+        <property key="toolpack.updateoptions"
+                  value="toolpack.updateoptions.uselatestoolpack"/>
+        <property key="toolpack.updateoptions.packversion"
+                  value="Press to select which tool pack to use"/>
+        <property key="voltagevalue" value=""/>
+      </Tool>
       <nEdbgTool>
         <property key="AutoSelectMemRanges" value="auto"/>
         <property key="communication.activationmode" value="nohv"/>

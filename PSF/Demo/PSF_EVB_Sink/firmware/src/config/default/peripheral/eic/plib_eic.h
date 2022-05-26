@@ -21,7 +21,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2022] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -79,9 +79,6 @@ typedef enum
 {
     /* External Interrupt Controller Pin 14 */
     EIC_PIN_14 = 14,
-
-    /* External Interrupt Controller Pin 15 */
-    EIC_PIN_15 = 15,
 
     EIC_PIN_MAX = 16
 

@@ -22,7 +22,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2022] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -102,7 +102,7 @@ void EIC_Initialize(void)
     EIC_REGS->EIC_WAKEUP = 0x4000;
 
     /* External Interrupt enable*/
-   // EIC_REGS->EIC_INTENSET = 0x4000;
+    EIC_REGS->EIC_INTENSET = 0x4000;
 
     /* Callbacks for enabled interrupts */
     eicCallbackObject[0].eicPinNo = EIC_PIN_MAX;

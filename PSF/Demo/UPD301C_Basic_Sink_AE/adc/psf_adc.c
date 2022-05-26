@@ -14,7 +14,7 @@
     This file is based on UART functionality which interacts with user through the terminal.
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019] Microchip Technology Inc. and its subsidiaries.
+Copyright Â© [2022] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -146,15 +146,14 @@ void PSF_ADCRun()
              */
             u16adc_count = ADC_ConversionResultGet();
             u32input_voltage = u16adc_count * ADC_VREF / 4095U;
-            memset(gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO,0,7);
+            memset(gasCfgStatusData.sPerPortData[PORT0].u32aNewSinkPDO,0,7*4);
             
             if(!(gu8PDContract == true))
             {
                 u8State = eADC_INIT;
                 break;
             }
-            gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
-                (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
+            gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = CFG_PORT_0_SINK_CONFIG_SEL;
             
             if (300U < u32input_voltage && u32input_voltage < 600U) 
             {
@@ -203,8 +202,7 @@ void PSF_ADCRun()
                 /* BIT[1:0] - Sink Selection mode for operation.
                 1. '0x00' Mode A: Prefer Higher Voltage and Wattage
                 2. '0x01' Mode B: Prefer Lower Voltage and Wattage */
-                gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE)| \
-                (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
+                gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = CFG_PORT_0_SINK_CONFIG_SEL;
                 gu8CurrentPos = 5;
             } 
             else if (2100U < u32input_voltage && u32input_voltage < 2700U)  
@@ -219,8 +217,7 @@ void PSF_ADCRun()
                 /* BIT[1:0] - Sink Selection mode for operation.
                 1. '0x00' Mode A: Prefer Higher Voltage and Wattage
                 2. '0x01' Mode B: Prefer Lower Voltage and Wattage */
-                gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = ((CFG_PORT_0_SINK_MODE | 0x01) | \
-                (CFG_PORT_0_SINK_USB_SUSP) | (CFG_PORT_0_SINK_GIVE_BACK_FLAG ));
+                gasCfgStatusData.sPerPortData[PORT0].u8SinkConfigSel = CFG_PORT_0_SINK_CONFIG_SEL;
                 gu8CurrentPos = 6;
             } 
             else

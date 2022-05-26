@@ -21,7 +21,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2022] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -52,6 +52,8 @@
 
 #include "configuration.h"
 #include "definitions.h"
+#include "psf_control_terminal.h"
+#include "psf_adc.h"
 
 
 
@@ -78,7 +80,35 @@ void SYS_Tasks ( void )
     
 
     /* Maintain Middleware & Other Libraries */
+    static UINT8 isInitDone = SET_TO_ZERO;
     
+if(0 == isInitDone){    
+
+    /* Disabled UPD IRQ Pins Initially*/
+    EIC_InterruptDisable((EIC_PIN)PORT_PIN_PA14);
+
+    /*PSF init called*/
+    (void)MchpPSF_Init();
+    /*UART should be initialized after PSF init since UART line is connected 
+     * GPIO4 of UPD350 where it is the TEST pin for it*/
+     /*PCT is using UART and it is available in the default firmware*/
+    (void)MchpPSF_PCTInit();
+    
+#ifdef WAIT_FOR_PCT_CONFIGURATON
+    /*Always monitor SPACE BAR for Enter or exit PCT*/
+    (void)PSF_monitorandwait();
+#endif
+    isInitDone = SET_TO_ONE;
+    }
+    /*ADC Run called*/
+    (void)PSF_ADCRun();
+    /*PCT  monitors during the debug trace*/
+    (void)MchpPSF_PCTRUN(ePCT_UNLOCK); 
+    /*PSF stack Run*/
+    MchpPSF_RUN();
+
+
+
 
     /* Maintain the application's state machine. */
         /* Call Application task APP. */

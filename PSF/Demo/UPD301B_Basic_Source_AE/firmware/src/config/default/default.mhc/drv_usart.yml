@@ -48,4 +48,4 @@ children:
             children:
             - {type: Value, value: SERCOM1_UART}
 - type: ElementPosition
-  attributes: {x: '653', y: '275', id: drv_usart}
+  attributes: {x: '302', y: '137', id: drv_usart}

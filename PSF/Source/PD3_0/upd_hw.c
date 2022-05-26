@@ -12,7 +12,7 @@
     API definitions.
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright Â©  [2022] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -1008,13 +1008,13 @@ void UPD_SetIdleCB (UINT8 u8PortNum, UINT8 u8DummyVariable)
 	UPD_RegByteClearBit (u8PortNum, UPD_CLK_CTL, \
             (UPD_RING_OSC_ENABLE | UPD_48MHZ_OSC_ENABLE | UPD_SYS_CLK_ENABLE));
     
-    DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"UPDHW: Set Port Idle\r\n");
+    
 	
 	/* Put MCU into IDLE */
 
 	if (FALSE == UPD_ReturnUPDsActiveSts ())
 	{
-        DEBUG_PRINT_PORT_STR (PSF_PROTOCOL_TYPEC_LAYER_DEBUG_MSG,u8PortNum,"UPDHW: Set MCU IDLE\r\n");
+        
                 
 		gu8SetMCUIdle = UPD_MCU_IDLE;
 	}	

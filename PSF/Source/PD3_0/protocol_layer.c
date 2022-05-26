@@ -12,7 +12,7 @@
     UPD HW to transmit and receive PD message,UPD HW Physical layer configuration, Chunking state machine
  *******************************************************************************/
 /*******************************************************************************
-Copyright ©  [2019-2020] Microchip Technology Inc. and its subsidiaries.
+Copyright Â©  [2022] Microchip Technology Inc. and its subsidiaries.
 
 Subject to your compliance with these terms, you may use Microchip software and
 any derivatives exclusively with Microchip products. It is your responsibility
@@ -116,7 +116,7 @@ void  PRL_Init (UINT8 u8PortNum)
 	UPD_RegWriteWord (u8PortNum, PRL_RX_BIT_PER_CNT_MAX_BR, 
 					  MAKE_UINT16 (PRL_RX_BIT_PER_CNT_MIN_BR_TIME_VALUE, PRL_RX_BIT_PER_CNT_MAX_BR_TIME_VALUE));
 
-	/* Configuring CRCReceiveTimer timeout value (tReceive) in terms of 10’s of micro seconds */
+	/* Configuring CRCReceiveTimer timeout value (tReceive) in terms of 10ï¿½s of micro seconds */
 	UPD_RegWriteByte (u8PortNum, PRL_RX_TRECEIVE_TIME, PRL_RX_TRECEIVE_TIME_VALUE_IN_10US_UNITS);
 
 	/* Configuring Value of Hard and Cable Reset detection window 

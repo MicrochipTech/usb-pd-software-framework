@@ -17,7 +17,7 @@
 *******************************************************************************/
 
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2022] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -116,9 +116,9 @@
 #define SPI_MOSI_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 11U)) & 0x01U)
 #define SPI_MOSI_PIN                  PORT_PIN_PA11
 
-/*** Macros for SPI_IRQ_N0 pin ***/
-#define SPI_IRQ_N0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 14U)) & 0x01U)
-#define SPI_IRQ_N0_PIN                  PORT_PIN_PA14
+/*** Macros for UPD_IRQ_0 pin ***/
+#define UPD_IRQ_0_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 14U)) & 0x01U)
+#define UPD_IRQ_0_PIN                  PORT_PIN_PA14
 
 /*** Macros for SNK_3A_IND pin ***/
 #define SNK_3A_IND_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 15U))
@@ -146,14 +146,14 @@
 #define EN_SINK_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 22U)) & 0x01U)
 #define EN_SINK_PIN                  PORT_PIN_PA22
 
-/*** Macros for CAP_MISMATCH pin ***/
-#define CAP_MISMATCH_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 23U))
-#define CAP_MISMATCH_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 23U))
-#define CAP_MISMATCH_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 23U))
-#define CAP_MISMATCH_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 23U))
-#define CAP_MISMATCH_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 23U))
-#define CAP_MISMATCH_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 23U)) & 0x01U)
-#define CAP_MISMATCH_PIN                  PORT_PIN_PA23
+/*** Macros for SNK_CAP_MISMATCH pin ***/
+#define SNK_CAP_MISMATCH_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 23U))
+#define SNK_CAP_MISMATCH_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 23U))
+#define SNK_CAP_MISMATCH_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 23U))
+#define SNK_CAP_MISMATCH_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 23U))
+#define SNK_CAP_MISMATCH_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 23U))
+#define SNK_CAP_MISMATCH_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 23U)) & 0x01U)
+#define SNK_CAP_MISMATCH_PIN                  PORT_PIN_PA23
 
 // *****************************************************************************
 /* PORT Group

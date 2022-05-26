@@ -17,7 +17,7 @@
 *******************************************************************************/
 
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) [2022] Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -73,29 +73,19 @@ void PORT_Initialize(void)
 {
    /************************** GROUP 0 Initialization *************************/
    PORT_REGS->GROUP[0].PORT_DIR = 0x1b030070;
-   PORT_REGS->GROUP[0].PORT_OUT = 0xc0c40f;
+   PORT_REGS->GROUP[0].PORT_OUT = 0xc0c00f;
    PORT_REGS->GROUP[0].PORT_PINCFG[0] = 0x6;
-   PORT_REGS->GROUP[0].PORT_PINCFG[1] = 0x0;
    PORT_REGS->GROUP[0].PORT_PINCFG[2] = 0x5;
    PORT_REGS->GROUP[0].PORT_PINCFG[3] = 0x5;
-   PORT_REGS->GROUP[0].PORT_PINCFG[4] = 0x0;
-   PORT_REGS->GROUP[0].PORT_PINCFG[5] = 0x0;
-   PORT_REGS->GROUP[0].PORT_PINCFG[6] = 0x0;
    PORT_REGS->GROUP[0].PORT_PINCFG[8] = 0x1;
    PORT_REGS->GROUP[0].PORT_PINCFG[9] = 0x1;
    PORT_REGS->GROUP[0].PORT_PINCFG[10] = 0x0;
    PORT_REGS->GROUP[0].PORT_PINCFG[11] = 0x1;
    PORT_REGS->GROUP[0].PORT_PINCFG[14] = 0x5;
    PORT_REGS->GROUP[0].PORT_PINCFG[15] = 0x5;
-   PORT_REGS->GROUP[0].PORT_PINCFG[16] = 0x0;
-   PORT_REGS->GROUP[0].PORT_PINCFG[17] = 0x0;
    PORT_REGS->GROUP[0].PORT_PINCFG[18] = 0x1;
    PORT_REGS->GROUP[0].PORT_PINCFG[22] = 0x5;
    PORT_REGS->GROUP[0].PORT_PINCFG[23] = 0x5;
-   PORT_REGS->GROUP[0].PORT_PINCFG[24] = 0x0;
-   PORT_REGS->GROUP[0].PORT_PINCFG[25] = 0x0;
-   PORT_REGS->GROUP[0].PORT_PINCFG[27] = 0x0;
-   PORT_REGS->GROUP[0].PORT_PINCFG[28] = 0x0;
 
    PORT_REGS->GROUP[0].PORT_PMUX[4] = 0x22;
    PORT_REGS->GROUP[0].PORT_PMUX[5] = 0x20;

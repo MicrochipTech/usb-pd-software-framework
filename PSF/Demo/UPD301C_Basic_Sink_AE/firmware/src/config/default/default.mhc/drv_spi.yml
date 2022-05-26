@@ -34,6 +34,19 @@ children:
             attributes: {id: drv_spi_0, value: SERCOM0}
     - type: Attachments
       children:
+      - type: DirectCapability
+        attributes: {id: drv_spi}
+        children:
+        - type: Attributes
+          children:
+          - type: String
+            attributes: {id: targetComponentID}
+            children:
+            - {type: Value, value: PD_CONFIGURATOR}
+          - type: String
+            attributes: {id: targetAttachmentID}
+            children:
+            - {type: Value, value: UPD_SPI_DRIVER_DEPENDENCY}
       - type: DirectDependency
         attributes: {id: drv_spi_SPI_dependency}
         children:
@@ -48,4 +61,4 @@ children:
             children:
             - {type: Value, value: SERCOM0_SPI}
 - type: ElementPosition
-  attributes: {x: '745', y: '64', id: drv_spi}
+  attributes: {x: '137', y: '284', id: drv_spi}

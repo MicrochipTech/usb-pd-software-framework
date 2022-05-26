@@ -168,4 +168,4 @@ children:
       - type: Dynamic
         attributes: {id: adc, value: ADC_RESRDY_IRQn}
 - type: ElementPosition
-  attributes: {x: '190', y: '160', id: adc}
+  attributes: {x: '32', y: '91', id: adc}

@@ -27,6 +27,19 @@ children:
             attributes: {id: drv_usart_0, value: SERCOM1}
     - type: Attachments
       children:
+      - type: DirectCapability
+        attributes: {id: drv_usart}
+        children:
+        - type: Attributes
+          children:
+          - type: String
+            attributes: {id: targetComponentID}
+            children:
+            - {type: Value, value: PD_CONFIGURATOR}
+          - type: String
+            attributes: {id: targetAttachmentID}
+            children:
+            - {type: Value, value: HOOK_DEBUG_USART_DRIVER_DEPENDENCY}
       - type: DirectDependency
         attributes: {id: drv_usart_UART_dependency}
         children:
@@ -41,4 +54,4 @@ children:
             children:
             - {type: Value, value: SERCOM1_UART}
 - type: ElementPosition
-  attributes: {x: '387', y: '201', id: drv_usart}
+  attributes: {x: '142', y: '120', id: drv_usart}

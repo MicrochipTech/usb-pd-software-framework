@@ -5,7 +5,7 @@
  * @date     19. March 2019
  ******************************************************************************/
 /*
- * Copyright (c) 2018-2019 Arm Limited. All rights reserved.
+ * Copyright (C) [2022]-2019 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *

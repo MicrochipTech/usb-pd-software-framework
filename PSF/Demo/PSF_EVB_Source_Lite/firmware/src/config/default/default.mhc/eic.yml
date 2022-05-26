@@ -27,10 +27,6 @@ children:
         attributes: {id: visible}
         children:
         - {type: Value, value: 'true'}
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: 'false'}
   - type: Boolean
     attributes: {id: EIC_CONFIG_FILTEN_15}
     children:
@@ -40,10 +36,6 @@ children:
         attributes: {id: visible}
         children:
         - {type: Value, value: 'true'}
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: 'false'}
   - type: KeyValueSet
     attributes: {id: EIC_CONFIG_SENSE_14}
     children:

@@ -78,14 +78,14 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: '300000'}
+        attributes: {value: '3000000'}
   - type: Integer
     attributes: {id: USART_BAUD_VALUE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: sercom1, value: '58982'}
+        attributes: {id: sercom1, value: '0'}
   - type: KeyValueSet
     attributes: {id: USART_FORM}
     children:

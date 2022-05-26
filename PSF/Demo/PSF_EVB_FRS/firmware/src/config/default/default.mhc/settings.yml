@@ -1,12 +1,11 @@
 configName: default
 folderName: ''
 format_version: v1.0
-frameworkPath: ../../../../../RiyasSir/Harmony3
+frameworkPath: D:\Harmony_Framework_3.11
 processor: ATSAMD20E16
 projectName: ''
 settings:
-  PackageFilter: bsp;core;core_apps_sam_d20;crypto;csp;csp_apps_sam_d5x_e5x;dev_packs;ethercat;ethercat
-    - Copy;ethercat -enc;net;net_apps_pic32mx;net_apps_sam_e5x;profine;quick_docs
+  PackageFilter: bsp;core;csp;dev_packs;harmony-services;quick_docs;usb_powerdelivery
   FORCE_OPTIMIZATION: 'false'
   GENERATE_BACKUP: 'true'
   CMSISPath: .\dev_packs\arm\CMSIS\5.8.0

@@ -37,7 +37,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
   - type: ListEntry
     attributes: {id: DATA_ROLE_1_ENABLED_TRIGGER_LIST}
     children:
@@ -46,9 +46,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_1_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: DATA_ROLE_1_PREVIOUS}
     children:
@@ -63,15 +61,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
-  - type: KeyValueSet
-    attributes: {id: DATA_ROLE_2}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: DATA_ROLE_2_ENABLED_TRIGGER_LIST}
     children:
@@ -80,9 +69,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_2_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: DATA_ROLE_2_PREVIOUS}
     children:
@@ -120,6 +107,15 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+  - type: ListEntry
+    attributes: {id: DATA_ROLE_PINS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: String
     attributes: {id: DATA_ROLE_PINS_VALUE}
     children:
@@ -160,7 +156,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
   - type: ListEntry
     attributes: {id: DC_DC_ALERT_1_ENABLED_TRIGGER_LIST}
     children:
@@ -169,9 +165,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_1_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: DC_DC_ALERT_1_PREVIOUS}
     children:
@@ -186,15 +180,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
-  - type: KeyValueSet
-    attributes: {id: DC_DC_ALERT_2}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: DC_DC_ALERT_2_ENABLED_TRIGGER_LIST}
     children:
@@ -203,9 +188,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_2_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: DC_DC_ALERT_2_PREVIOUS}
     children:
@@ -243,6 +226,15 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+  - type: ListEntry
+    attributes: {id: DC_DC_ALERT_PINS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: String
     attributes: {id: DC_DC_ALERT_PINS_VALUE}
     children:
@@ -283,7 +275,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
   - type: ListEntry
     attributes: {id: DC_DC_EN_1_ENABLED_TRIGGER_LIST}
     children:
@@ -292,9 +284,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_1_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: DC_DC_EN_1_PREVIOUS}
     children:
@@ -309,15 +299,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
-  - type: KeyValueSet
-    attributes: {id: DC_DC_EN_2}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: DC_DC_EN_2_ENABLED_TRIGGER_LIST}
     children:
@@ -326,9 +307,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_2_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: DC_DC_EN_2_PREVIOUS}
     children:
@@ -366,6 +345,15 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+  - type: ListEntry
+    attributes: {id: DC_DC_EN_PINS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: String
     attributes: {id: DC_DC_EN_PINS_VALUE}
     children:
@@ -413,15 +401,6 @@ children:
         - type: Values
           children:
           - {type: Value, value: INCLUDE_PD_SINK}
-  - type: Hex
-    attributes: {id: GLOBAL_CFG_PB_ENABLE_SELECT}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: GLOBAL_CFG_PB_ENABLE_SELECT_ENABLED_TRIGGER_LIST}
     children:
@@ -430,9 +409,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_POWER_BALANCING}
+        - {type: Values}
   - type: Hex
     attributes: {id: GLOBAL_CFG_PB_MIN_POWER_BANKA_IN_250mW}
     children:
@@ -518,14 +495,12 @@ children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '1'}
   - type: Hex
-    attributes: {id: GLOBAL_CFG_PWR_THROTTLE_CONFIG}
+    attributes: {id: GLOBAL_CFG_PRODUCT_ID}
     children:
-    - type: Attributes
+    - type: Values
       children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
+      - type: User
+        attributes: {value: '848'}
   - type: ListEntry
     attributes: {id: GLOBAL_CFG_PWR_THROTTLE_CONFIG_ENABLED_TRIGGER_LIST}
     children:
@@ -534,18 +509,17 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_POWER_THROTTLING}
+        - {type: Values}
+  - type: Hex
+    attributes: {id: GLOBAL_CFG_VENDOR_ID}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1060'}
   - type: Integer
     attributes: {id: GLOBAL_CONFIG_DCDC_CTRL}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -558,9 +532,35 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_SOURCE}
+        - {type: Values}
+  - type: KeyValueSet
+    attributes: {id: GLOBAL_CONFIG_DEFINE_UPD350_HW_INTF_SEL}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '0'}
+  - type: Boolean
+    attributes: {id: GLOBAL_CONFIG_HOOK_DEBUG_MSG}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+      - type: User
+        attributes: {value: 'false'}
   - type: ListEntry
     attributes: {id: GLOBAL_CONFIG_HWMAJOR_VERSION_ENABLED_TRIGGER_LIST}
     children:
@@ -612,7 +612,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: '3'}
+        attributes: {value: '1'}
   - type: ListEntry
     attributes: {id: GLOBAL_CONFIG_RECONFIG_PHASE_WAITTIME_ENABLED_TRIGGER_LIST}
     children:
@@ -650,14 +650,30 @@ children:
         children:
         - {type: Values}
   - type: Comment
-    attributes: {id: GLOBAL_PB_PT_CONFIGURATIONS}
+    attributes: {id: GLOBAL_DEBUG_MSG_LAYERS}
     children:
     - type: Attributes
       children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
+  - type: ListEntry
+    attributes: {id: GLOBAL_DEBUG_MSG_LAYERS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
+  - type: Boolean
+    attributes: {id: GLOBAL_IS_UPD_INTF_SPI}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'true'}
   - type: ListEntry
     attributes: {id: GLOBAL_PB_PT_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
     children:
@@ -666,10 +682,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_POWER_BALANCING}
-          - {type: Value, value: INCLUDE_POWER_THROTTLING}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: GLOBAL_PDFU_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
     children:
@@ -679,15 +692,32 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
-  - type: Boolean
-    attributes: {id: INCLUDE_PDFU}
+  - type: ListEntry
+    attributes: {id: GLOBAL_UPD_DCDC_EN_PIN_ENABLED_TRIGGER_LIST}
     children:
     - type: Attributes
       children:
-      - type: Boolean
-        attributes: {id: readOnly}
+      - type: StringArray
+        attributes: {id: values}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Values}
+  - type: KeyValueSet
+    attributes: {id: GLOBAL_UPD_ORIENTATION_PIN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '3'}
+  - type: KeyValueSet
+    attributes: {id: GLOBAL_UPD_VBUS_DIS_PIN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '5'}
+  - type: Boolean
+    attributes: {id: INCLUDE_PDFU}
+    children:
     - type: Values
       children:
       - type: Dynamic
@@ -699,17 +729,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: ListEntry
-    attributes: {id: INCLUDE_PD_3_0_ENABLED_TRIGGER_LIST}
-    children:
-    - type: Attributes
-      children:
-      - type: StringArray
-        attributes: {id: values}
-        children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_SOURCE_PPS}
   - type: Boolean
     attributes: {id: INCLUDE_PD_3_0_PREVIOUS_VALUE}
     children:
@@ -720,12 +739,6 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_PD_ALT_MODE}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
@@ -733,34 +746,13 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_PD_DRP}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'false'}
-      - type: User
-        attributes: {value: 'true'}
-  - type: Boolean
-    attributes: {id: INCLUDE_PD_DRP_PREVIOUS_VALUE}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
   - type: Boolean
     attributes: {id: INCLUDE_PD_DR_SWAP}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
@@ -768,12 +760,6 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_PD_FR_SWAP}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
@@ -781,12 +767,6 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_PD_PR_SWAP}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
@@ -794,27 +774,10 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_PD_SINK}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: ListEntry
-    attributes: {id: INCLUDE_PD_SINK_ENABLED_TRIGGER_LIST}
-    children:
-    - type: Attributes
-      children:
-      - type: StringArray
-        attributes: {id: values}
-        children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_DRP}
   - type: Boolean
     attributes: {id: INCLUDE_PD_SINK_PREVIOUS_VALUE}
     children:
@@ -828,48 +791,14 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: ListEntry
-    attributes: {id: INCLUDE_PD_SOURCE_ENABLED_TRIGGER_LIST}
-    children:
-    - type: Attributes
-      children:
-      - type: StringArray
-        attributes: {id: values}
-        children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_POWER_BALANCING}
-          - {type: Value, value: INCLUDE_POWER_THROTTLING}
-          - {type: Value, value: INCLUDE_PD_SOURCE_PPS}
-          - {type: Value, value: INCLUDE_PD_DRP}
+        attributes: {id: PD_CONFIGURATOR, value: 'false'}
   - type: Boolean
     attributes: {id: INCLUDE_PD_SOURCE_PPS}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Boolean
-    attributes: {id: INCLUDE_PD_SOURCE_PPS_PREVIOUS_VALUE}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Boolean
-    attributes: {id: INCLUDE_PD_SOURCE_PREVIOUS_VALUE}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+        attributes: {id: PD_CONFIGURATOR, value: 'false'}
   - type: Boolean
     attributes: {id: INCLUDE_PD_VCONN_SWAP}
     children:
@@ -877,17 +806,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: ListEntry
-    attributes: {id: INCLUDE_PD_VCONN_SWAP_ENABLED_TRIGGER_LIST}
-    children:
-    - type: Attributes
-      children:
-      - type: StringArray
-        attributes: {id: values}
-        children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_SOURCE}
   - type: Boolean
     attributes: {id: INCLUDE_PD_VCONN_SWAP_PREVIOUS_VALUE}
     children:
@@ -898,12 +816,6 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_PD_VDM}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
@@ -911,23 +823,10 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_POWER_BALANCING}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Boolean
-    attributes: {id: INCLUDE_POWER_BALANCING_PREVIOUS_VALUE}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+        attributes: {id: PD_CONFIGURATOR, value: 'false'}
   - type: Boolean
     attributes: {id: INCLUDE_POWER_FAULT_HANDLING}
     children:
@@ -956,12 +855,6 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_POWER_MANAGEMENT_CTRL}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
@@ -976,32 +869,13 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_POWER_THROTTLING}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Boolean
-    attributes: {id: INCLUDE_POWER_THROTTLING_PREVIOUS_VALUE}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+        attributes: {id: PD_CONFIGURATOR, value: 'false'}
   - type: Boolean
     attributes: {id: INCLUDE_UPD_HPD}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
@@ -1009,12 +883,6 @@ children:
   - type: Boolean
     attributes: {id: INCLUDE_UPD_PIO_OVERRIDE_SUPPORT}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'false'}
     - type: Values
       children:
       - type: Dynamic
@@ -1059,7 +927,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
   - type: ListEntry
     attributes: {id: ORIENTATION_1_ENABLED_TRIGGER_LIST}
     children:
@@ -1068,9 +936,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_1_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: ORIENTATION_1_PREVIOUS}
     children:
@@ -1085,15 +951,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
-  - type: KeyValueSet
-    attributes: {id: ORIENTATION_2}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: ORIENTATION_2_ENABLED_TRIGGER_LIST}
     children:
@@ -1102,9 +959,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_2_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: ORIENTATION_2_PREVIOUS}
     children:
@@ -1164,7 +1019,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: '34'}
+        attributes: {id: PD_CONFIGURATOR, value: '568'}
   - type: Comment
     attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS}
     children:
@@ -1213,16 +1068,7 @@ children:
         children:
         - type: Values
           children:
-          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
-  - type: Boolean
-    attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_DATA_STATE_FOR_FRS_SOURCE_DATA_DEVICE}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
+          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SINK}
   - type: ListEntry
     attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_DATA_STATE_FOR_FRS_SOURCE_DATA_DEVICE_ENABLED_TRIGGER_LIST}
     children:
@@ -1231,9 +1077,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
+        - {type: Values}
   - type: Boolean
     attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
     children:
@@ -1242,15 +1086,7 @@ children:
       - type: Boolean
         attributes: {id: readOnly}
         children:
-        - {type: Value, value: 'false'}
-      - type: Boolean
-        attributes: {id: visible}
-        children:
         - {type: Value, value: 'true'}
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: 'true'}
   - type: ListEntry
     attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP_ENABLED_TRIGGER_LIST}
     children:
@@ -1259,22 +1095,20 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_DRP}
+        - {type: Values}
   - type: Boolean
     attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SINK}
     children:
     - type: Attributes
       children:
       - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'true'}
-      - type: Boolean
         attributes: {id: visible}
         children:
         - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
   - type: ListEntry
     attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SINK_ENABLED_TRIGGER_LIST}
     children:
@@ -1295,10 +1129,6 @@ children:
         attributes: {id: readOnly}
         children:
         - {type: Value, value: 'true'}
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SOURCE_ENABLED_TRIGGER_LIST}
     children:
@@ -1307,9 +1137,21 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_SOURCE}
+        - {type: Values}
+  - type: KeyValueSet
+    attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS_RP_SELECTION}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '3'}
+  - type: Boolean
+    attributes: {id: PORT_0_CFG_DATA_CONFIGURATIONS_VCONN_OCS_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
   - type: Boolean
     attributes: {id: PORT_0_CFG_DATA_ENABLE}
     children:
@@ -1328,6 +1170,97 @@ children:
         - type: Values
           children:
           - {type: Value, value: PORT_0_IS_ENABLED}
+  - type: KeyValueSet
+    attributes: {id: PORT_0_DAC_I_CURRENT_IND_MAX_IN_mA}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1'}
+  - type: ListEntry
+    attributes: {id: PORT_0_DAC_I_CURRENT_IND_MAX_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_DAC_I_ENABLE}
+  - type: KeyValueSet
+    attributes: {id: PORT_0_DAC_I_DIRECTION}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_0_DAC_I_DIRECTION_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_DAC_I_ENABLE}
+  - type: Boolean
+    attributes: {id: PORT_0_DAC_I_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Integer
+    attributes: {id: PORT_0_DAC_I_MAX_OUT_VOLT_IN_mV}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_0_DAC_I_MAX_OUT_VOLT_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_DAC_I_ENABLE}
+  - type: Integer
+    attributes: {id: PORT_0_DAC_I_MIN_OUT_VOLT_IN_mV}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_0_DAC_I_MIN_OUT_VOLT_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_DAC_I_ENABLE}
   - type: Hex
     attributes: {id: PORT_0_FEATURE_SELECT}
     children:
@@ -1347,16 +1280,6 @@ children:
   - type: Boolean
     attributes: {id: PORT_0_FEATURE_SELECT_POWER_BALANCING}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: readOnly}
-        children:
-        - {type: Value, value: 'true'}
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -1369,10 +1292,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_POWER_BALANCING}
-          - {type: Value, value: INCLUDE_POWER_THROTTLING}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: PORT_0_FEATURE_SELECT_VDM_SUPPORTED_ENABLED_TRIGGER_LIST}
     children:
@@ -1431,6 +1351,33 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '1'}
+  - type: Integer
+    attributes: {id: PORT_0_MIN_PREFERRED_CURRENT_SINK_PDO_2}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Integer
+    attributes: {id: PORT_0_MIN_PREFERRED_CURRENT_SINK_PDO_3}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Integer
+    attributes: {id: PORT_0_MIN_PREFERRED_CURRENT_SINK_PDO_4}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
   - type: Hex
     attributes: {id: PORT_0_MODES_TABLE_0}
     children:
@@ -1612,16 +1559,7 @@ children:
         children:
         - type: Values
           children:
-          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
-  - type: KeyValueSet
-    attributes: {id: PORT_0_MODE_EN_VBUS}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
+          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SINK}
   - type: ListEntry
     attributes: {id: PORT_0_MODE_EN_VBUS_ENABLED_TRIGGER_LIST}
     children:
@@ -1630,9 +1568,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
+        - {type: Values}
   - type: KeyValueSet
     attributes: {id: PORT_0_MODE_FAULT_IN}
     children:
@@ -1700,6 +1636,10 @@ children:
         attributes: {id: visible}
         children:
         - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '7'}
   - type: ListEntry
     attributes: {id: PORT_0_PIO_EN_SINK_ENABLED_TRIGGER_LIST}
     children:
@@ -1710,16 +1650,7 @@ children:
         children:
         - type: Values
           children:
-          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
-  - type: KeyValueSet
-    attributes: {id: PORT_0_PIO_EN_VBUS}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
+          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SINK}
   - type: ListEntry
     attributes: {id: PORT_0_PIO_EN_VBUS_ENABLED_TRIGGER_LIST}
     children:
@@ -1728,9 +1659,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
+        - {type: Values}
   - type: KeyValueSet
     attributes: {id: PORT_0_PIO_FAULT_IN}
     children:
@@ -1740,6 +1669,10 @@ children:
         attributes: {id: visible}
         children:
         - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '6'}
   - type: ListEntry
     attributes: {id: PORT_0_PIO_FAULT_IN_ENABLED_TRIGGER_LIST}
     children:
@@ -1760,6 +1693,55 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
+  - type: Integer
+    attributes: {id: PORT_0_SINK_CAPS_EXTD_MAX_PDP_IN_WATT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '60'}
+  - type: Integer
+    attributes: {id: PORT_0_SINK_CAPS_EXTD_MIN_PDP_IN_WATT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '5'}
+  - type: Integer
+    attributes: {id: PORT_0_SINK_CAPS_EXTD_OPERATIONAL_PDP_IN_WATT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '60'}
+  - type: Hex
+    attributes: {id: PORT_0_SINK_CAPS_EXTD_PID}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '848'}
+  - type: Integer
+    attributes: {id: PORT_0_SINK_CAPS_EXTD_SINK_MODES}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '4'}
+  - type: Hex
+    attributes: {id: PORT_0_SINK_CAPS_EXTD_SKEDB_VERSION}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1'}
+  - type: Hex
+    attributes: {id: PORT_0_SINK_CAPS_EXTD_VID}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1060'}
   - type: Comment
     attributes: {id: PORT_0_SINK_CONFIGURATIONS}
     children:
@@ -1779,116 +1761,16 @@ children:
         children:
         - type: Values
           children:
-          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
+          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SINK}
   - type: Hex
     attributes: {id: PORT_0_SINK_PDO_1}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: '102700'}
-  - type: Boolean
-    attributes: {id: PORT_0_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Hex
-    attributes: {id: PORT_0_SINK_PDO_2}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: '102700'}
-  - type: Boolean
-    attributes: {id: PORT_0_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Hex
-    attributes: {id: PORT_0_SINK_PDO_3}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: '102700'}
-  - type: Boolean
-    attributes: {id: PORT_0_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Hex
-    attributes: {id: PORT_0_SINK_PDO_4}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: '102700'}
-  - type: Boolean
-    attributes: {id: PORT_0_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Hex
-    attributes: {id: PORT_0_SINK_PDO_5}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: '102700'}
-  - type: Boolean
-    attributes: {id: PORT_0_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Hex
-    attributes: {id: PORT_0_SINK_PDO_6}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: '102700'}
-  - type: Boolean
-    attributes: {id: PORT_0_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Hex
-    attributes: {id: PORT_0_SINK_PDO_7}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: '102700'}
-  - type: Boolean
-    attributes: {id: PORT_0_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Comment
-    attributes: {id: PORT_0_SOURCE_CONFIGURATIONS}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
+        attributes: {id: PD_CONFIGURATOR, value: '402755884'}
   - type: ListEntry
-    attributes: {id: PORT_0_SOURCE_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
+    attributes: {id: PORT_0_SINK_PDO_1_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
     children:
     - type: Attributes
       children:
@@ -1897,7 +1779,310 @@ children:
         children:
         - type: Values
           children:
-          - {type: Value, value: PORT_0_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
+          - {type: Value, value: PORT_0_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
+  - type: Boolean
+    attributes: {id: PORT_0_SINK_PDO_1_HIGHER_CAPABILITY}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: PORT_0_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: Boolean
+    attributes: {id: PORT_0_SINK_PDO_1_UNCONSTRAINED_POWER}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_1_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
+  - type: Hex
+    attributes: {id: PORT_0_SINK_PDO_2}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '184620'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_2_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
+  - type: Boolean
+    attributes: {id: PORT_0_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: Integer
+    attributes: {id: PORT_0_SINK_PDO_2_VOLTAGE_IN_mV}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '9000'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_2_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
+  - type: Hex
+    attributes: {id: PORT_0_SINK_PDO_3}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '307500'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_3_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
+  - type: Boolean
+    attributes: {id: PORT_0_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: Integer
+    attributes: {id: PORT_0_SINK_PDO_3_VOLTAGE_IN_mV}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '15000'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_3_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
+  - type: Hex
+    attributes: {id: PORT_0_SINK_PDO_4}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '409900'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_4_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
+  - type: Boolean
+    attributes: {id: PORT_0_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: Integer
+    attributes: {id: PORT_0_SINK_PDO_4_VOLTAGE_IN_mV}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '20000'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_4_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
+  - type: Hex
+    attributes: {id: PORT_0_SINK_PDO_5}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_5_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
+  - type: Boolean
+    attributes: {id: PORT_0_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_5_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
+  - type: Hex
+    attributes: {id: PORT_0_SINK_PDO_6}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_6_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
+  - type: Boolean
+    attributes: {id: PORT_0_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_6_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
+  - type: Hex
+    attributes: {id: PORT_0_SINK_PDO_7}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_7_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
+  - type: Boolean
+    attributes: {id: PORT_0_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SINK_PDO_7_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
+  - type: Integer
+    attributes: {id: PORT_0_SINK_PDO_CNT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '4'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SOURCE_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: Hex
     attributes: {id: PORT_0_SOURCE_PDO_1}
     children:
@@ -1905,6 +2090,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_0_SOURCE_PDO_1_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_0_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
     children:
@@ -1912,15 +2108,20 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
-  - type: Hex
-    attributes: {id: PORT_0_SOURCE_PDO_2}
+  - type: ListEntry
+    attributes: {id: PORT_0_SOURCE_PDO_1_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
     children:
     - type: Attributes
       children:
-      - type: Boolean
-        attributes: {id: visible}
+      - type: StringArray
+        attributes: {id: values}
         children:
-        - {type: Value, value: 'true'}
+        - type: Values
+          children:
+          - {type: Value, value: PORT_0_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
+  - type: Hex
+    attributes: {id: PORT_0_SOURCE_PDO_2}
+    children:
     - type: Values
       children:
       - type: Dynamic
@@ -1928,12 +2129,6 @@ children:
   - type: Hex
     attributes: {id: PORT_0_SOURCE_PDO_3}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -1941,12 +2136,6 @@ children:
   - type: Hex
     attributes: {id: PORT_0_SOURCE_PDO_4}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -1972,13 +2161,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
-  - type: Integer
-    attributes: {id: PORT_0_SOURCE_PDO_CNT}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: '4'}
   - type: Hex
     attributes: {id: PORT_0_SVID_ENTRY_TABLE_0}
     children:
@@ -2042,6 +2224,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '1'}
+  - type: Hex
+    attributes: {id: PORT_0_SWAP_POLICY}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '3072'}
   - type: ListEntry
     attributes: {id: PORT_0_SWAP_POLICY_AS_DFP_ACCEPT_DR_SWAP_ENABLED_TRIGGER_LIST}
     children:
@@ -2069,6 +2258,10 @@ children:
         attributes: {id: visible}
         children:
         - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
   - type: ListEntry
     attributes: {id: PORT_0_SWAP_POLICY_AS_NOT_VCONN_SRC_ACCEPT_VCONN_SWAP_ENABLED_TRIGGER_LIST}
     children:
@@ -2163,6 +2356,10 @@ children:
         attributes: {id: visible}
         children:
         - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
   - type: ListEntry
     attributes: {id: PORT_0_SWAP_POLICY_AS_VCONN_SRC_ACCEPT_VCONN_SWAP_ENABLED_TRIGGER_LIST}
     children:
@@ -2248,15 +2445,15 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
-  - type: Boolean
-    attributes: {id: PORT_1_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
+  - type: ListEntry
+    attributes: {id: PORT_1_CFG_DATA_CONFIGURATIONS_POWER_DATA_STATE_FOR_FRS_SINK_DATA_HOST_ENABLED_TRIGGER_LIST}
     children:
     - type: Attributes
       children:
-      - type: Boolean
-        attributes: {id: visible}
+      - type: StringArray
+        attributes: {id: values}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: PORT_1_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP_ENABLED_TRIGGER_LIST}
     children:
@@ -2265,9 +2462,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_DRP}
+        - {type: Values}
   - type: Boolean
     attributes: {id: PORT_1_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SINK}
     children:
@@ -2288,15 +2483,6 @@ children:
         - type: Values
           children:
           - {type: Value, value: INCLUDE_PD_SINK}
-  - type: Boolean
-    attributes: {id: PORT_1_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SOURCE}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: PORT_1_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SOURCE_ENABLED_TRIGGER_LIST}
     children:
@@ -2305,9 +2491,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_SOURCE}
+        - {type: Values}
   - type: Comment
     attributes: {id: PORT_1_CONFIGURATIONS}
     children:
@@ -2316,7 +2500,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
   - type: ListEntry
     attributes: {id: PORT_1_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
     children:
@@ -2325,9 +2509,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_1_IS_ENABLED}
+        - {type: Values}
   - type: Hex
     attributes: {id: PORT_1_FEATURE_SELECT}
     children:
@@ -2347,12 +2529,6 @@ children:
   - type: Boolean
     attributes: {id: PORT_1_FEATURE_SELECT_POWER_BALANCING}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -2365,10 +2541,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_POWER_BALANCING}
-          - {type: Value, value: INCLUDE_POWER_THROTTLING}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: PORT_1_FEATURE_SELECT_VDM_SUPPORTED_ENABLED_TRIGGER_LIST}
     children:
@@ -2384,7 +2557,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+        attributes: {id: PD_CONFIGURATOR, value: 'false'}
   - type: Hex
     attributes: {id: PORT_1_MAX_PWR_BANKA_IN_250mW}
     children:
@@ -2589,6 +2762,15 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
+  - type: ListEntry
+    attributes: {id: PORT_1_MODE_EN_SINK_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: KeyValueSet
     attributes: {id: PORT_1_MODE_FAULT_IN}
     children:
@@ -2630,7 +2812,25 @@ children:
           children:
           - {type: Value, value: INCLUDE_POWER_FAULT_HANDLING}
   - type: ListEntry
+    attributes: {id: PORT_1_PB_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
+  - type: ListEntry
     attributes: {id: PORT_1_PIO_EN_FRS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
+  - type: ListEntry
+    attributes: {id: PORT_1_PIO_EN_SINK_ENABLED_TRIGGER_LIST}
     children:
     - type: Attributes
       children:
@@ -2667,6 +2867,15 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: Hex
     attributes: {id: PORT_1_SINK_PDO_1}
     children:
@@ -2674,6 +2883,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_1_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_1_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
     children:
@@ -2681,6 +2901,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_1_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_1_SINK_PDO_2}
     children:
@@ -2688,6 +2919,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_2_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_1_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
     children:
@@ -2695,6 +2937,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_2_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_1_SINK_PDO_3}
     children:
@@ -2702,6 +2955,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_3_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_1_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
     children:
@@ -2709,6 +2973,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_3_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_1_SINK_PDO_4}
     children:
@@ -2716,6 +2991,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_4_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_1_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
     children:
@@ -2723,6 +3009,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_4_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_1_SINK_PDO_5}
     children:
@@ -2730,6 +3027,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_5_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_1_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
     children:
@@ -2737,6 +3045,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_5_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_1_SINK_PDO_6}
     children:
@@ -2744,6 +3063,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_6_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_1_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
     children:
@@ -2751,6 +3081,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_6_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_1_SINK_PDO_7}
     children:
@@ -2758,6 +3099,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_7_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_1_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
     children:
@@ -2765,6 +3117,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SINK_PDO_7_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_1_SOURCE_PDO_1}
     children:
@@ -2772,6 +3135,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SOURCE_PDO_1_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_1_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
     children:
@@ -2779,6 +3153,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_1_SOURCE_PDO_1_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_1_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_1_SOURCE_PDO_2}
     children:
@@ -2884,6 +3269,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '1'}
+  - type: Hex
+    attributes: {id: PORT_1_SWAP_POLICY}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '0'}
   - type: ListEntry
     attributes: {id: PORT_1_SWAP_POLICY_AS_DFP_ACCEPT_DR_SWAP_ENABLED_TRIGGER_LIST}
     children:
@@ -3090,15 +3482,15 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
-  - type: Boolean
-    attributes: {id: PORT_2_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
+  - type: ListEntry
+    attributes: {id: PORT_2_CFG_DATA_CONFIGURATIONS_POWER_DATA_STATE_FOR_FRS_SINK_DATA_HOST_ENABLED_TRIGGER_LIST}
     children:
     - type: Attributes
       children:
-      - type: Boolean
-        attributes: {id: visible}
+      - type: StringArray
+        attributes: {id: values}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: PORT_2_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP_ENABLED_TRIGGER_LIST}
     children:
@@ -3107,9 +3499,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_DRP}
+        - {type: Values}
   - type: Boolean
     attributes: {id: PORT_2_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SINK}
     children:
@@ -3130,15 +3520,6 @@ children:
         - type: Values
           children:
           - {type: Value, value: INCLUDE_PD_SINK}
-  - type: Boolean
-    attributes: {id: PORT_2_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SOURCE}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: PORT_2_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SOURCE_ENABLED_TRIGGER_LIST}
     children:
@@ -3147,18 +3528,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_SOURCE}
-  - type: Comment
-    attributes: {id: PORT_2_CONFIGURATIONS}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: PORT_2_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
     children:
@@ -3167,9 +3537,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_2_IS_ENABLED}
+        - {type: Values}
   - type: Hex
     attributes: {id: PORT_2_FEATURE_SELECT}
     children:
@@ -3189,12 +3557,6 @@ children:
   - type: Boolean
     attributes: {id: PORT_2_FEATURE_SELECT_POWER_BALANCING}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -3207,10 +3569,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_POWER_BALANCING}
-          - {type: Value, value: INCLUDE_POWER_THROTTLING}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: PORT_2_FEATURE_SELECT_VDM_SUPPORTED_ENABLED_TRIGGER_LIST}
     children:
@@ -3226,7 +3585,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'true'}
+        attributes: {id: PD_CONFIGURATOR, value: 'false'}
   - type: Hex
     attributes: {id: PORT_2_MAX_PWR_BANKA_IN_250mW}
     children:
@@ -3431,6 +3790,15 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
+  - type: ListEntry
+    attributes: {id: PORT_2_MODE_EN_SINK_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: KeyValueSet
     attributes: {id: PORT_2_MODE_FAULT_IN}
     children:
@@ -3472,7 +3840,25 @@ children:
           children:
           - {type: Value, value: INCLUDE_POWER_FAULT_HANDLING}
   - type: ListEntry
+    attributes: {id: PORT_2_PB_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
+  - type: ListEntry
     attributes: {id: PORT_2_PIO_EN_FRS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
+  - type: ListEntry
+    attributes: {id: PORT_2_PIO_EN_SINK_ENABLED_TRIGGER_LIST}
     children:
     - type: Attributes
       children:
@@ -3509,6 +3895,15 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: Hex
     attributes: {id: PORT_2_SINK_PDO_1}
     children:
@@ -3516,6 +3911,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_1_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_2_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
     children:
@@ -3523,6 +3929,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_1_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_2_SINK_PDO_2}
     children:
@@ -3530,6 +3947,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_2_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_2_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
     children:
@@ -3537,6 +3965,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_2_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_2_SINK_PDO_3}
     children:
@@ -3544,6 +3983,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_3_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_2_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
     children:
@@ -3551,6 +4001,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_3_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_2_SINK_PDO_4}
     children:
@@ -3558,6 +4019,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_4_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_2_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
     children:
@@ -3565,6 +4037,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_4_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_2_SINK_PDO_5}
     children:
@@ -3572,6 +4055,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_5_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_2_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
     children:
@@ -3579,6 +4073,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_5_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_2_SINK_PDO_6}
     children:
@@ -3586,6 +4091,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_6_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_2_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
     children:
@@ -3593,6 +4109,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_6_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_2_SINK_PDO_7}
     children:
@@ -3600,6 +4127,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_7_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_2_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
     children:
@@ -3607,6 +4145,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SINK_PDO_7_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_2_SOURCE_PDO_1}
     children:
@@ -3614,6 +4163,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SOURCE_PDO_1_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_2_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
     children:
@@ -3621,6 +4181,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_2_SOURCE_PDO_1_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_2_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_2_SOURCE_PDO_2}
     children:
@@ -3726,6 +4297,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '1'}
+  - type: Hex
+    attributes: {id: PORT_2_SWAP_POLICY}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '0'}
   - type: ListEntry
     attributes: {id: PORT_2_SWAP_POLICY_AS_DFP_ACCEPT_DR_SWAP_ENABLED_TRIGGER_LIST}
     children:
@@ -3932,15 +4510,15 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
-  - type: Boolean
-    attributes: {id: PORT_3_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP}
+  - type: ListEntry
+    attributes: {id: PORT_3_CFG_DATA_CONFIGURATIONS_POWER_DATA_STATE_FOR_FRS_SINK_DATA_HOST_ENABLED_TRIGGER_LIST}
     children:
     - type: Attributes
       children:
-      - type: Boolean
-        attributes: {id: visible}
+      - type: StringArray
+        attributes: {id: values}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: PORT_3_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_DRP_ENABLED_TRIGGER_LIST}
     children:
@@ -3949,9 +4527,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_DRP}
+        - {type: Values}
   - type: Boolean
     attributes: {id: PORT_3_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SINK}
     children:
@@ -3972,15 +4548,6 @@ children:
         - type: Values
           children:
           - {type: Value, value: INCLUDE_PD_SINK}
-  - type: Boolean
-    attributes: {id: PORT_3_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SOURCE}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: PORT_3_CFG_DATA_CONFIGURATIONS_POWER_ROLE_IS_SOURCE_ENABLED_TRIGGER_LIST}
     children:
@@ -3989,9 +4556,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_PD_SOURCE}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: PORT_3_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
     children:
@@ -4020,12 +4585,6 @@ children:
   - type: Boolean
     attributes: {id: PORT_3_FEATURE_SELECT_POWER_BALANCING}
     children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -4038,10 +4597,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: INCLUDE_POWER_BALANCING}
-          - {type: Value, value: INCLUDE_POWER_THROTTLING}
+        - {type: Values}
   - type: ListEntry
     attributes: {id: PORT_3_FEATURE_SELECT_VDM_SUPPORTED_ENABLED_TRIGGER_LIST}
     children:
@@ -4262,6 +4818,15 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
+  - type: ListEntry
+    attributes: {id: PORT_3_MODE_EN_SINK_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: KeyValueSet
     attributes: {id: PORT_3_MODE_FAULT_IN}
     children:
@@ -4303,7 +4868,25 @@ children:
           children:
           - {type: Value, value: INCLUDE_POWER_FAULT_HANDLING}
   - type: ListEntry
+    attributes: {id: PORT_3_PB_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
+  - type: ListEntry
     attributes: {id: PORT_3_PIO_EN_FRS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
+  - type: ListEntry
+    attributes: {id: PORT_3_PIO_EN_SINK_ENABLED_TRIGGER_LIST}
     children:
     - type: Attributes
       children:
@@ -4340,6 +4923,15 @@ children:
         attributes: {id: values}
         children:
         - {type: Values}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_CONFIGURATIONS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: Hex
     attributes: {id: PORT_3_SINK_PDO_1}
     children:
@@ -4347,6 +4939,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_1_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_3_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
     children:
@@ -4354,6 +4957,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_1_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_3_SINK_PDO_2}
     children:
@@ -4361,6 +4975,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_2_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_3_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
     children:
@@ -4368,6 +4993,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_2_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_2_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_3_SINK_PDO_3}
     children:
@@ -4375,6 +5011,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_3_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_3_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
     children:
@@ -4382,6 +5029,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_3_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_3_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_3_SINK_PDO_4}
     children:
@@ -4389,6 +5047,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_4_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_3_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
     children:
@@ -4396,6 +5065,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_4_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_4_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_3_SINK_PDO_5}
     children:
@@ -4403,6 +5083,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_5_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_3_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
     children:
@@ -4410,6 +5101,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_5_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_5_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_3_SINK_PDO_6}
     children:
@@ -4417,6 +5119,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_6_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_3_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
     children:
@@ -4424,6 +5137,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_6_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_6_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_3_SINK_PDO_7}
     children:
@@ -4431,6 +5155,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_7_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_3_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
     children:
@@ -4438,6 +5173,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SINK_PDO_7_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SINK_PDO_7_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_3_SOURCE_PDO_1}
     children:
@@ -4445,6 +5191,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '102700'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SOURCE_PDO_1_CURRENT_IN_mA_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Boolean
     attributes: {id: PORT_3_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
     children:
@@ -4452,6 +5209,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'true'}
+  - type: ListEntry
+    attributes: {id: PORT_3_SOURCE_PDO_1_VOLTAGE_IN_mV_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: PORT_3_SOURCE_PDO_1_PDO_TYPE_FIXED_PDO}
   - type: Hex
     attributes: {id: PORT_3_SOURCE_PDO_2}
     children:
@@ -4557,6 +5325,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: '1'}
+  - type: Hex
+    attributes: {id: PORT_3_SWAP_POLICY}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: PD_CONFIGURATOR, value: '0'}
   - type: ListEntry
     attributes: {id: PORT_3_SWAP_POLICY_AS_DFP_ACCEPT_DR_SWAP_ENABLED_TRIGGER_LIST}
     children:
@@ -4744,7 +5519,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: '6'}
+        attributes: {value: '3'}
   - type: ListEntry
     attributes: {id: POWER_ROLE_0_ENABLED_TRIGGER_LIST}
     children:
@@ -4778,7 +5553,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
   - type: ListEntry
     attributes: {id: POWER_ROLE_1_ENABLED_TRIGGER_LIST}
     children:
@@ -4787,9 +5562,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_1_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: POWER_ROLE_1_PREVIOUS}
     children:
@@ -4804,15 +5577,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
-  - type: KeyValueSet
-    attributes: {id: POWER_ROLE_2}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: POWER_ROLE_2_ENABLED_TRIGGER_LIST}
     children:
@@ -4821,9 +5585,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_2_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: POWER_ROLE_2_PREVIOUS}
     children:
@@ -4861,6 +5623,15 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+  - type: ListEntry
+    attributes: {id: POWER_ROLE_PINS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - {type: Values}
   - type: String
     attributes: {id: POWER_ROLE_PINS_VALUE}
     children:
@@ -4868,6 +5639,40 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+  - type: Boolean
+    attributes: {id: PSF_STACK_GENERATION_CHECK}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: File
+    attributes: {id: SAMD20_DRIVERS_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SAMD20_DRIVERS_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SAMD20_PSF_API_HOOK_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
   - type: Comment
     attributes: {id: SINK_PINS}
     children:
@@ -4895,48 +5700,418 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+  - type: KeyValueSet
+    attributes: {id: SNK_1_5A_IND}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '2'}
   - type: String
     attributes: {id: SNK_1_5A_IND_PREVIOUS}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: '2'}
   - type: String
     attributes: {id: SNK_1_5A_IND_VALUE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: PA01}
+  - type: KeyValueSet
+    attributes: {id: SNK_3A_IND}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '14'}
   - type: String
     attributes: {id: SNK_3A_IND_PREVIOUS}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: '16'}
   - type: String
     attributes: {id: SNK_3A_IND_VALUE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: PA15}
+  - type: KeyValueSet
+    attributes: {id: SNK_CAP_MISMATCH}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '5'}
   - type: String
     attributes: {id: SNK_CAP_MISMATCH_PREVIOUS}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: '5'}
   - type: String
     attributes: {id: SNK_CAP_MISMATCH_VALUE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: PA04}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_DEBUG_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_GENERIC_DEFS_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_INT_GLOBALS_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_PD_TIMER_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_POLICY_ENGINE_FWUP_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_POLICY_ENGINE_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_POLICY_MANAGER_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_PORTPOWER_CONTROL_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_PROJECTVERSION_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_PROTOCOL_LAYER_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_PSF_STDINC_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_TIMER_DEFS_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_TYPEC_CONTROL_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_UPD_HW_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_INCLUDE_UPD_INTERRUPTS_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PB_PB_HELPER_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PB_PB_MNGR_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PB_PB_MNGR_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_INT_GLOBALS_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_PD_MAIN_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_PD_TIMER_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_POLICY_ENGINE_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_POLICY_ENGINE_FWUP_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_POLICY_ENGINE_SNK_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_POLICY_ENGINE_SRC_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_POLICY_ENGINE_SWAP_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_POLICY_ENGINE_VDM_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_POLICY_MANAGER_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_POLICY_MANAGER_SM_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_PORTPOWER_CONTROL_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_PROTOCOL_LAYER_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_TYPEC_CONTROL_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_UPD_HW_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PD3_0_UPD_INTERRUPTS_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PT_PT_MNGR_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_PT_PT_MNGR_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_UPD_PIO_UPD350_PIO_DRIVERS_C}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: SOURCE_UPD_PIO_UPD350_PIO_DRIVERS_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: KeyValueSet
+    attributes: {id: SPI_SS_0}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '11'}
   - type: ListEntry
     attributes: {id: SPI_SS_0_ENABLED_TRIGGER_LIST}
     children:
@@ -4954,14 +6129,14 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: '13'}
   - type: String
     attributes: {id: SPI_SS_0_VALUE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: PA10}
   - type: KeyValueSet
     attributes: {id: SPI_SS_1}
     children:
@@ -4970,7 +6145,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
   - type: ListEntry
     attributes: {id: SPI_SS_1_ENABLED_TRIGGER_LIST}
     children:
@@ -4979,9 +6154,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_1_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: SPI_SS_1_PREVIOUS}
     children:
@@ -4996,15 +6169,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
-  - type: KeyValueSet
-    attributes: {id: SPI_SS_2}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: SPI_SS_2_ENABLED_TRIGGER_LIST}
     children:
@@ -5013,9 +6177,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_2_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: SPI_SS_2_PREVIOUS}
     children:
@@ -5053,6 +6215,17 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+  - type: ListEntry
+    attributes: {id: SPI_SS_PINS_ENABLED_TRIGGER_LIST}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: GLOBAL_IS_UPD_INTF_SPI}
   - type: String
     attributes: {id: SPI_SS_PINS_VALUE}
     children:
@@ -5060,20 +6233,34 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+  - type: KeyValueSet
+    attributes: {id: UPD350_RESET}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1'}
   - type: String
     attributes: {id: UPD350_RESET_PREVIOUS}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: '1'}
   - type: String
     attributes: {id: UPD350_RESET_VALUE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: PA00}
+  - type: KeyValueSet
+    attributes: {id: UPD_IRQ_0}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '12'}
   - type: ListEntry
     attributes: {id: UPD_IRQ_0_ENABLED_TRIGGER_LIST}
     children:
@@ -5091,14 +6278,14 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: '15'}
   - type: String
     attributes: {id: UPD_IRQ_0_VALUE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+        attributes: {id: PD_CONFIGURATOR, value: PA14}
   - type: KeyValueSet
     attributes: {id: UPD_IRQ_1}
     children:
@@ -5107,7 +6294,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'true'}
+        - {type: Value, value: 'false'}
   - type: ListEntry
     attributes: {id: UPD_IRQ_1_ENABLED_TRIGGER_LIST}
     children:
@@ -5116,9 +6303,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_1_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: UPD_IRQ_1_PREVIOUS}
     children:
@@ -5133,15 +6318,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
-  - type: KeyValueSet
-    attributes: {id: UPD_IRQ_2}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: UPD_IRQ_2_ENABLED_TRIGGER_LIST}
     children:
@@ -5150,9 +6326,7 @@ children:
       - type: StringArray
         attributes: {id: values}
         children:
-        - type: Values
-          children:
-          - {type: Value, value: PORT_2_IS_ENABLED}
+        - {type: Values}
   - type: String
     attributes: {id: UPD_IRQ_2_PREVIOUS}
     children:
@@ -5197,5 +6371,29 @@ children:
       children:
       - type: Dynamic
         attributes: {id: PD_CONFIGURATOR, value: 'NULL'}
+- type: Attachments
+  children:
+  - type: DirectDependency
+    attributes: {id: UPD_I2C_DRIVER_DEPENDENCY}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'false'}
+  - type: DirectDependency
+    attributes: {id: UPD_SPI_DRIVER_DEPENDENCY}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: drv_spi_0}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: drv_spi}
 - type: ElementPosition
-  attributes: {x: '30', y: '580', id: PD_CONFIGURATOR}
+  attributes: {x: '339', y: '196', id: PD_CONFIGURATOR}

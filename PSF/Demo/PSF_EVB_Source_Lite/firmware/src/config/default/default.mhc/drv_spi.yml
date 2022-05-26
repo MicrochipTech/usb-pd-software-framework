@@ -2,6 +2,15 @@ format_version: v1.0
 type: GeneratorComponent
 attributes: {id: drv_spi}
 children:
+- type: Symbols
+  children:
+  - type: Combo
+    attributes: {id: DRV_SPI_COMMON_MODE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drv_spi, value: Asynchronous}
 - type: Instances
   children:
   - type: InstanceComponent
@@ -25,6 +34,19 @@ children:
             attributes: {id: drv_spi_0, value: SERCOM0}
     - type: Attachments
       children:
+      - type: DirectCapability
+        attributes: {id: drv_spi}
+        children:
+        - type: Attributes
+          children:
+          - type: String
+            attributes: {id: targetComponentID}
+            children:
+            - {type: Value, value: PD_CONFIGURATOR}
+          - type: String
+            attributes: {id: targetAttachmentID}
+            children:
+            - {type: Value, value: UPD_SPI_DRIVER_DEPENDENCY}
       - type: DirectDependency
         attributes: {id: drv_spi_SPI_dependency}
         children:
