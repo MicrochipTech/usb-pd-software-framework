@@ -72,7 +72,7 @@ We recommend using the pre-configured application example projects under the [De
 | 10. | [UPD301C Basic Sink](PSF/Demo/UPD301C_Basic_Sink_AE) | EV11L78A | Single port sink-only application example for UPD301C. Supports dynamic PDO configuration using rotary switch and advanced control options through UART terminal |
 | 11. | [UPD301B Basic Source](PSF/Demo/UPD301B_Basic_Source_AE) | EV56W72A | Single port source-only application example for UPD301B. Supports advanced control options through UART terminal|
 
-
+This release includes MCC support for automatic code generation. This support is available only for PSF Source Lite, PSF Source Pro, PSF Sink, PSF DRP, PSF FRS, UPD301C Basic Sink and UPD301B Basic Source.
 Please refer the readme file of your chosen application example for instructions on running the example project. This space will be updated as more features get added to PSF.
 
 ## Versioning
