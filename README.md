@@ -78,7 +78,9 @@ Please refer the readme file of your chosen application example for instructions
 
 ## Versioning
 
-Release version numbers will have a prefix *PSF_STACK_V* and a version number in the  format *XX.YZ* where:
+Release version numbers prior to v1.14 will have a prefix *PSF_STACK_V* and a version number in the  format *XX.YZ* 
+
+Release version numbers from v1.14 will have a prefix *v* and a version number in the  format *XX.YZ* where:
 
 *XX*: Represents the major version number.
 
